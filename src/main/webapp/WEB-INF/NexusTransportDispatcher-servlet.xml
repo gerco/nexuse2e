@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+    <!--
+	<bean id="nexusTransportDispatcherMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="mappings">
+            <value>
+            </value>
+                /ebxml20=ebXml20Controller
+                /ebxml10=ebXml10Controller
+                /httpplain=httpplainController
+                /SimpleXMLDocService=wsGenericReceiver
+        </property>
+    </bean>
+    -->
+</beans>

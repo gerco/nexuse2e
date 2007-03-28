@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+ <!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 1.1//EN"
+       "http://jakarta.apache.org/struts/dtds/tiles-config_1_1.dtd">
+
+
+<!--
+     This is a blank Tiles definition file with a commented example.
+-->
+
+<tiles-definitions>
+	<!-- 
+  **************************************************************************
+  Layout definitions
+  **************************************************************************
+  -->
+	<definition name="skeleton" path="/WEB-INF/pages/skeleton.jsp">
+		<put name="title" value="NEXUSe2e Server" />
+		<put name="content" value="" />
+	</definition>
+  
+  <definition name="layout.default" path="/WEB-INF/pages/layout_default.jsp">
+		<put name="header" value="/WEB-INF/pages/banner.jsp" />
+    <put name="menu" value="/WEB-INF/pages/navigator.jsp" />
+    <put name="document" value="" />
+	</definition>
+  
+  <definition name="layout.noNavigator" path="/WEB-INF/pages/layout_no_navigator.jsp">
+		<put name="header" value="/WEB-INF/pages/banner.jsp" />
+    <put name="document" value="" />
+	</definition>
+  
+  <!-- 
+  **************************************************************************
+  Pages
+  **************************************************************************
+  -->
+  
+  <definition name="login.content.tile" extends="layout.noNavigator">
+		<put name="document" value="/WEB-INF/pages/user/login.jsp" />
+	</definition>
+  <definition name="login.page" extends="skeleton">
+		<put name="content" value="login.content.tile" />
+	</definition>
+  
+  <definition name="admin.content.tile" extends="layout.default">
+		<put name="document" value="/WEB-INF/pages/home.jsp" />
+	</definition>
+  <definition name="admin.page" extends="skeleton">
+		<put name="content" value="admin.content.tile" />
+	</definition>
+  
+</tiles-definitions>

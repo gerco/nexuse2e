@@ -1,0 +1,18 @@
+<HTML>
+<BODY>
+<p>The central concept in the processing of messages in the NEXUSe2e
+system is that of a pipeline: a <code>Pipeline</code> is a processing
+chain that can contain a virtually unlimited number of processing
+components, the so called <code>Pipelet</code>. Each Pipelet performs a
+well defined operation on the message flowing through the system, e.g.
+compiling message header information, handling compression of data etc.</p>
+<p>The overall system is segmented into the fronent and backend. The
+frontend is responsible for implementing the transport, routing and
+packaging of messages. The backend handles any kind of data creation,
+conversion or consumption of message payloads.</p>
+<p>The processing of messages is distinguishes between inbound and
+outbound message processing. Consequently there are different pipelines
+operating on inbound and outbound messages.</p>
+<p><img src="{@docRoot}/doc-files/processing_overview.png" /></p>
+</BODY>
+</HTML>

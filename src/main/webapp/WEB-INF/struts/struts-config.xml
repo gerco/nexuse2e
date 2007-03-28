@@ -1,0 +1,802 @@
+<?xml version="1.0"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+  <data-sources>
+  </data-sources>
+  <form-beans>
+  	<!--  
+    <form-bean name="registeredComponentForm" type="org.nexuse2e.ui.form.RegisteredComponentForm"/>
+    <form-bean name="registeredDatabaseForm" type="org.nexuse2e.ui.form.RegisteredDatabaseForm"/>
+    <form-bean name="nexusUserForm" type="org.nexuse2e.ui.form.NexusUserForm"/>
+    <form-bean name="notifierForm" type="org.nexuse2e.ui.form.NotifierForm"/>
+    <form-bean name="requestButtonStateForm" type="org.nexuse2e.ui.form.RequestButtonStateForm"/>
+    <form-bean name="partnerContactForm" type="org.nexuse2e.ui.form.PartnerContactForm"/>
+    -->
+    
+    <form-bean name="partnerCertificateForm" type="org.nexuse2e.ui.form.PartnerCertificateForm"/>
+    <form-bean name="requestButtonStateForm" type="org.nexuse2e.ui.form.RequestButtonStateForm"/>
+    <form-bean name="certificateRequestForm" type="org.nexuse2e.ui.form.CertificateRequestForm"/>
+    <form-bean name="certificatePropertiesForm" type="org.nexuse2e.ui.form.CertificatePropertiesForm"/>
+    <form-bean name="protectedFileAccessForm" type="org.nexuse2e.ui.form.ProtectedFileAccessForm"/>
+    
+    <form-bean name="serviceForm" type="org.nexuse2e.ui.form.ServiceForm"/>
+    <form-bean name="loggerForm" type="org.nexuse2e.ui.form.LoggerForm"/>
+    
+    <form-bean name="pipelineForm" type="org.nexuse2e.ui.form.PipelineForm"/>
+    <form-bean name="componentForm" type="org.nexuse2e.ui.form.ComponentForm"/>
+    <form-bean name="collaborationPartnerForm" type="org.nexuse2e.ui.form.CollaborationPartnerForm"/>
+    <form-bean name="choreographyForm" type="org.nexuse2e.ui.form.ChoreographyForm"/>
+    <form-bean name="choreographyActionForm" type="org.nexuse2e.ui.form.ChoreographyActionForm"/>
+    <form-bean name="participantForm" type="org.nexuse2e.ui.form.ParticipantForm"/>
+    <form-bean name="partnerConnectionForm" type="org.nexuse2e.ui.form.PartnerConnectionForm"/>
+    
+    <form-bean name="reportingPropertiesForm" type="org.nexuse2e.ui.form.ReportingPropertiesForm"/>
+    <form-bean name="reportConversationEntryForm" type="org.nexuse2e.ui.form.ReportConversationEntryForm"/>
+    <form-bean name="reportMessageEntryForm" type="org.nexuse2e.ui.form.ReportMessageEntryForm"/>
+
+    <form-bean name="certificatePromotionForm" type="org.nexuse2e.ui.form.CertificatePromotionForm"/>
+    
+    <form-bean name="loginForm" type="org.nexuse2e.ui.form.LoginForm"/>
+    <form-bean name="userForm" type="org.nexuse2e.ui.form.UserForm"/>
+    <form-bean name="roleForm" type="org.nexuse2e.ui.form.RoleForm"/>
+    
+    <form-bean name="messageSubmissionForm" type="org.nexuse2e.ui.form.MessageSubmissionForm"/>
+    <form-bean name="provisioningSubmissionForm" type="org.nexuse2e.ui.form.ProvisioningSubmissionForm"/>
+    <!-- 
+    <form-bean name="mailSettingsForm" type="org.nexuse2e.ui.form.MailSettingsForm"/>
+    <form-bean name="transportForm" type="org.nexuse2e.ui.form.TransportForm"/>
+    <form-bean name="componentForm" type="org.nexuse2e.ui.form.ComponentForm"/>
+    <form-bean name="dashboardForm" type="org.nexuse2e.ui.form.DashboardForm"/>
+    <form-bean name="importExportForm" type="org.nexuse2e.ui.form.ImportExportForm"/>
+    -->
+  </form-beans>
+  <global-exceptions>
+  </global-exceptions>
+  <global-forwards>
+    <!--
+    <forward name="welcome" path="/Welcome.do"/>
+    -->
+    <forward name="login" path="/WEB-INF/pages/user/login_forward.jsp"/>
+    <forward name="error" path="/WEB-INF/pages/error.jsp"/>
+    <forward name="accessDenied" path="/WEB-INF/pages/error.jsp"/>
+  </global-forwards>
+  <action-mappings>
+    
+    <!--
+    
+    USER MAPPINGS
+      
+    -->
+    
+    <action
+        path="/Login"
+        type="org.apache.struts.actions.ForwardAction"
+        parameter="login.page" />
+        
+    <action
+        path="/LoginCheck"
+        name="loginForm"
+        type="org.nexuse2e.ui.action.user.LoginAction">
+        <forward name="error" path="login.page" />
+        <forward name="success" redirect="true" path="/NexusE2EAdmin.do" />
+    </action>
+    
+    <action
+        path="/LoginCheck"
+        name="loginForm"
+        type="org.nexuse2e.ui.action.user.LoginAction">
+        <forward name="error" path="login.page" />
+        <forward name="success" redirect="true" path="/NexusE2EAdmin.do" />
+    </action>
+    <action
+        path="/Logout"
+        type="org.nexuse2e.ui.action.user.LogoutAction">
+        <forward name="error" path="login.page" />
+        <forward name="success" path="login.page" />
+    </action>
+    
+    <action
+        path="/Home"
+        type="org.nexuse2e.ui.action.NoOpAction">
+        <forward name="success" path="/WEB-INF/pages/home.jsp" />
+    </action>
+    
+    <action path="/Banner" type="org.apache.struts.actions.ForwardAction" parameter="/WEB-INF/pages/banner.jsp">
+    </action>
+    
+    <action path="/NexusE2EAdmin" type="org.nexuse2e.ui.action.NoOpAction">
+      <forward name="success" path="admin.page"/>
+    </action>
+    <!--
+    <action path="/Dashboard" name="dashboardForm" type="org.nexuse2e.ui.action.DashboardAction">
+      <forward name="success" path="/WEB-INF/pages/dashboard.jsp"/>
+    </action>
+    <action path="/DashboardSettings" name="dashboardForm" type="org.nexuse2e.ui.action.DashboardSettingsAction">
+      <forward name="success" path="/WEB-INF/pages/dashboard_settings.jsp"/>
+    </action>
+    <action path="/Logout" type="org.nexuse2e.ui.action.LogoutAction">
+      <forward name="success" redirect="true" path="/NexusE2EAdmin.do"/>
+    </action>
+    -->
+
+    <action path="/UserMaintenance" type="org.nexuse2e.ui.action.NoOpAction">
+      <forward name="success" path="/WEB-INF/pages/user/user_maintenance.jsp"/>
+    </action>
+    <action
+        path="/UserList"
+        type="org.nexuse2e.ui.action.user.UserListAction">
+        <forward name="success" path="/WEB-INF/pages/user/user_list.jsp" />
+    </action>
+    
+    <action
+        path="/UserAdd"
+        name="userForm"
+        validate="false"
+        input="/WEB-INF/pages/user/user_list.jsp"
+        type="org.nexuse2e.ui.action.user.UserAddAction">
+        <forward name="success" path="/WEB-INF/pages/user/user_edit.jsp" />
+        <forward name="error" path="/WEB-INF/pages/error.jsp" />
+    </action>
+    
+    <action
+        path="/UserEdit"
+        name="userForm"
+        validate="false"
+        input="/WEB-INF/pages/user/user_list.jsp"
+        type="org.nexuse2e.ui.action.user.UserViewAction">
+        <forward name="success" path="/WEB-INF/pages/user/user_edit.jsp" />
+        <forward name="error" path="/WEB-INF/pages/error.jsp" />
+    </action>
+    
+    <action
+        path="/UserSave"
+        name="userForm"
+        validate="true"
+        input="/WEB-INF/pages/user/user_edit.jsp"  
+      type="org.nexuse2e.ui.action.user.UserSaveAction">
+        <forward name="success" path="/WEB-INF/pages/user/user_edit.jsp" />
+        <forward name="error" path="/WEB-INF/pages/error.jsp" />
+    </action>
+    
+    <action
+        path="/UserDelete"
+        name="userForm"
+        validate="false"
+        input="/WEB-INF/pages/user/user_edit.jsp"  
+        type="org.nexuse2e.ui.action.user.UserDeleteAction">
+        <forward name="success" path="/UserList.do" />
+        <forward name="error" path="/WEB-INF/pages/error.jsp" />
+    </action>
+    
+    <!--
+    
+    ROLE MAPPINGS
+      
+    -->
+    
+    <action
+        path="/RoleList"
+        type="org.nexuse2e.ui.action.user.RoleListAction">
+        <forward name="success" path="/WEB-INF/pages/user/role_list.jsp" />
+    </action>
+    
+    <action
+        path="/RoleAdd"
+        name="roleForm"
+        validate="false"
+        input="/WEB-INF/pages/user/role_list.jsp"
+        type="org.nexuse2e.ui.action.user.RoleAddAction">
+        <forward name="success" path="/WEB-INF/pages/user/role_edit.jsp" />
+        <forward name="error" path="/WEB-INF/pages/error.jsp" />
+    </action>
+    
+    <action
+        path="/RoleEdit"
+        name="roleForm"
+        validate="false"
+        input="/WEB-INF/pages/user/role_list.jsp"
+        type="org.nexuse2e.ui.action.user.RoleViewAction">
+        <forward name="success" path="/WEB-INF/pages/user/role_edit.jsp" />
+        <forward name="error" path="/WEB-INF/pages/error.jsp" />
+    </action>
+    
+    <action
+        path="/RoleSave"
+        name="roleForm"
+        validate="true"
+        input="/WEB-INF/pages/user/role_edit.jsp"  
+      type="org.nexuse2e.ui.action.user.RoleSaveAction">
+        <forward name="success" path="/WEB-INF/pages/user/role_edit.jsp" />
+        <forward name="error" path="/WEB-INF/pages/error.jsp" />
+    </action>
+    
+    <action
+        path="/RoleDelete"
+        name="roleForm"
+        validate="false"
+        input="/WEB-INF/pages/user/role_edit.jsp"  
+        type="org.nexuse2e.ui.action.user.RoleDeleteAction">
+        <forward name="success" path="/RoleList.do" />
+        <forward name="error" path="/WEB-INF/pages/error.jsp" />
+    </action>
+    
+    <!-- 
+    <action path="/RegisteredComponentList" name="registeredComponentForm" type="org.nexuse2e.ui.action.serverconfig.RegisteredComponentListAction">
+      <forward name="success" path="/WEB-INF/pages/serverconfig/registered_component_list.jsp"/>
+    </action>
+    <action path="/RegisteredComponentAdd" name="registeredComponentForm" type="org.nexuse2e.ui.action.serverconfig.RegisteredComponentAddAction">
+      <forward name="success" path="/WEB-INF/pages/serverconfig/registered_component_add.jsp"/>
+    </action>
+    <action path="/RegisteredComponentView" name="registeredComponentForm" type="org.nexuse2e.ui.action.serverconfig.RegisteredComponentViewAction">
+      <forward name="success" path="/WEB-INF/pages/serverconfig/registered_component_view.jsp"/>
+    </action>
+    <action path="/RegisteredComponentSave" name="registeredComponentForm" type="org.nexuse2e.ui.action.serverconfig.RegisteredComponentSaveAction">
+      <forward name="success" path="/RegisteredComponentList.do"/>
+      <forward name="error" path="/WEB-INF/pages/error.jsp"/>
+    </action>
+    <action path="/RegisteredComponentDelete" name="registeredComponentForm" type="org.nexuse2e.ui.action.serverconfig.RegisteredComponentDeleteAction">
+      <forward name="success" path="/RegisteredComponentList.do"/>
+      <forward name="error" path="/WEB-INF/pages/error.jsp"/>
+    </action>
+    <action path="/NexusUserList" name="nexusUserForm" type="org.nexuse2e.ui.action.serverconfig.NexusUserListAction" validate="false">
+      <forward name="success" path="/WEB-INF/pages/serverconfig/nexus_user_list.jsp"/>
+    </action>
+    <action path="/NexusUserAdd" name="nexusUserForm" type="org.nexuse2e.ui.action.serverconfig.NexusUserAddAction" validate="false">
+      <forward name="success" path="/WEB-INF/pages/serverconfig/nexus_user_add.jsp"/>
+    </action>
+    <action path="/NexusUserView" name="nexusUserForm" type="org.nexuse2e.ui.action.serverconfig.NexusUserViewAction" validate="false">
+      <forward name="success" path="/WEB-INF/pages/serverconfig/nexus_user_view.jsp"/>
+    </action>
+    <action path="/NexusUserCreate" name="nexusUserForm" type="org.nexuse2e.ui.action.serverconfig.NexusUserSaveAction" input="/WEB-INF/pages/serverconfig/nexus_user_add.jsp">
+      <forward name="success" path="/NexusUserList.do"/>
+      <forward name="error" path="/WEB-INF/pages/error.jsp"/>
+    </action>
+    <action path="/NexusUserSave" name="nexusUserForm" type="org.nexuse2e.ui.action.serverconfig.NexusUserSaveAction" input="/WEB-INF/pages/serverconfig/nexus_user_view.jsp">
+      <forward name="success" path="/NexusUserList.do"/>
+      <forward name="error" path="/WEB-INF/pages/error.jsp"/>
+    </action>
+    <action path="/NexusUserDelete" name="nexusUserForm" type="org.nexuse2e.ui.action.serverconfig.NexusUserDeleteAction" validate="false">
+      <forward name="success" path="/NexusUserList.do"/>
+      <forward name="error" path="/WEB-INF/pages/error.jsp"/>
+    </action>
+    <action path="/RegisteredDatabaseList" name="registeredDatabaseForm" type="org.nexuse2e.ui.action.serverconfig.RegisteredDatabaseListAction">
+      <forward name="success" path="/WEB-INF/pages/serverconfig/registered_database_list.jsp"/>
+    </action>
+    <action path="/RegisteredDatabaseAdd" name="registeredDatabaseForm" type="org.nexuse2e.ui.action.serverconfig.RegisteredDatabaseAddAction">
+      <forward name="success" path="/WEB-INF/pages/serverconfig/registered_database_add.jsp"/>
+    </action>
+    <action path="/RegisteredDatabaseView" name="registeredDatabaseForm" type="org.nexuse2e.ui.action.serverconfig.RegisteredDatabaseViewAction">
+      <forward name="success" path="/WEB-INF/pages/serverconfig/registered_database_view.jsp"/>
+    </action>
+    <action path="/RegisteredDatabaseSave" name="registeredDatabaseForm" type="org.nexuse2e.ui.action.serverconfig.RegisteredDatabaseSaveAction">
+      <forward name="success" path="/RegisteredDatabaseList.do"/>
+      <forward name="error" path="/WEB-INF/pages/error.jsp"/>
+    </action>
+    <action path="/RegisteredDatabaseDelete" name="registeredDatabaseForm" type="org.nexuse2e.ui.action.serverconfig.RegisteredDatabaseDeleteAction">
+      <forward name="success" path="/RegisteredDatabaseList.do"/>
+      <forward name="error" path="/WEB-INF/pages/error.jsp"/>
+    </action>
+    -->
+    
+    <action path="/ServiceList" name="serviceForm" type="org.nexuse2e.ui.action.ServicesAction">
+      <forward name="success" path="/WEB-INF/pages/services.jsp"/>
+    </action>
+
+    <action path="/ServiceAdd" name="serviceForm" type="org.nexuse2e.ui.action.services.ServiceAddAction">
+      <forward name="success" path="/WEB-INF/pages/services/service_view.jsp"/>
+      <forward name="created" path="/ServiceList.do"/>
+      <forward name="error" path="/ServiceList.do"/>
+    </action>
+    
+    <action path="/ServiceView" name="serviceForm" type="org.nexuse2e.ui.action.services.ServiceViewAction">
+      <forward name="success" path="/WEB-INF/pages/services/service_view.jsp"/>
+      <forward name="error" path="/ServiceList.do"/>
+    </action>
+    
+    <action path="/ServiceUpdate" name="serviceForm" type="org.nexuse2e.ui.action.services.ServiceUpdateAction">
+      <forward name="refresh" path="/WEB-INF/pages/services/service_view.jsp"/>
+      <forward name="update" path="/ServiceList.do"/>
+      <forward name="error" path="/ServiceList.do"/>
+    </action>
+
+    <action path="/ServiceDelete" name="serviceForm" type="org.nexuse2e.ui.action.services.ServiceDeleteAction">
+      <forward name="success" path="/ServiceList.do"/>
+    </action>
+
+    
+    <action path="/NotifierList" name="loggerForm" type="org.nexuse2e.ui.action.serverconfig.NotifierListAction">
+      <forward name="success" path="/WEB-INF/pages/serverconfig/notifier_list.jsp"/>
+    </action>
+    
+    
+    <action path="/NotifierAdd" name="loggerForm" type="org.nexuse2e.ui.action.serverconfig.NotifierAddAction">
+      <forward name="success" path="/WEB-INF/pages/serverconfig/notifier_view.jsp"/>
+      <forward name="created" path="/NotifierList.do"/>
+      <forward name="error" path="/NotifierList.do"/>
+    </action>
+    
+    
+    <action path="/NotifierView" name="loggerForm" type="org.nexuse2e.ui.action.serverconfig.NotifierViewAction">
+      <forward name="success" path="/WEB-INF/pages/serverconfig/notifier_view.jsp"/>
+      <forward name="error" path="/NotifierList.do"/>
+    </action>
+      
+    <action path="/NotifierUpdate" name="loggerForm" type="org.nexuse2e.ui.action.serverconfig.NotifierUpdateAction">
+      <forward name="refresh" path="/WEB-INF/pages/serverconfig/notifier_view.jsp"/>
+      <forward name="update" path="/NotifierList.do"/>
+      <forward name="error" path="/NotifierList.do"/>
+    </action>
+    
+    <action path="/NotifierDelete" name="loggerForm" type="org.nexuse2e.ui.action.serverconfig.NotifierDeleteAction">
+      <forward name="success" path="/NotifierList.do"/>
+    </action>
+    
+
+
+
+
+
+    <action path="/ServerCertificateView" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.ServerCertViewAction">
+      <forward name="success" path="/WEB-INF/pages/communications/server_certificate_view.jsp"/>
+    </action>
+    <action path="/ServerCertificateUpdate" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.ServerCertUpdateAction">
+      <forward name="success" path="/WEB-INF/pages/communications/server_certificate_update.jsp"/>
+    </action>
+    <action path="/ServerCertificateSave" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.ServerCertSaveAction">
+      <forward name="success" path="/ServerCertificateView.do"/>
+      <forward name="error" path="/WEB-INF/pages/communications/server_certificate_update.jsp"/>
+    </action>
+    <action path="/CACertificatesList" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.CACertListAction">
+      <forward name="success" path="/WEB-INF/pages/communications/ca_certificate_list.jsp"/>
+    </action>
+    <action path="/CACertificateAddSingleCert" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.CACertAddAction">
+      <forward name="success" path="/WEB-INF/pages/communications/ca_certificate_add.jsp"/>
+    </action>
+    <action path="/CACertificateSaveSingleCert" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.CACertSaveSingleCertAction">
+      <forward name="success" path="/CACertificatesList.do"/>
+      <forward name="error" path="/WEB-INF/pages/communications/ca_certificate_add.jsp"/>
+    </action>
+    <action path="/CACertificateImportKeyStore" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.CACertImportAction">
+      <forward name="success" path="/WEB-INF/pages/communications/ca_certificate_import.jsp"/>
+    </action>
+    <action path="/CACertificateSaveKeyStore" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.CACertSaveKeyStoreAction">
+      <forward name="success" path="/CACertificatesList.do"/>
+      <forward name="error" path="/WEB-INF/pages/communications/ca_certificate_import.jsp"/>
+    </action>
+    <action path="/CACertificateDelete" name="certificatePropertiesForm" type="org.nexuse2e.ui.action.communications.CACertDeleteAction">
+      <forward name="success" path="/CACertificatesList.do"/>
+      <forward name="error" path="/WEB-INF/pages/communications/ca_certificate_view.jsp"/>
+    </action>
+    <action path="/CACertificateView" name="certificatePropertiesForm" type="org.nexuse2e.ui.action.communications.CACertViewAction">
+      <forward name="success" path="/WEB-INF/pages/communications/ca_certificate_view.jsp"/>
+    </action>
+    <action path="/CACertificateVerifyAddCert" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.CACertVerifyAddAction">
+      <forward name="update" path="/WEB-INF/pages/communications/ca_certificate_verify_add.jsp"/>
+      <forward name="error" path="/WEB-INF/pages/communications/ca_certificate_add.jsp"/>
+      <forward name="new" path="/CACertificateSaveSingleCert.do"/>
+    </action>
+    <action path="/CACertificateExportKeyStore" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.CACertExportAction">
+      <forward name="success" path="/WEB-INF/pages/communications/ca_certificate_export.jsp"/>
+    </action>
+    <action path="/CACertificateFinishExport" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.CACertFinishExportAction">
+      <forward name="success" path="/CACertificatesList.do"/>
+    </action>
+    <action path="/CACertificateChangePWD" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.CACertChangePWD">
+      <forward name="success" path="/WEB-INF/pages/communications/ca_certificate_change_pwd.jsp"/>
+    </action>
+    <action path="/CACertificateSavePWD" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.CACertSavePWD">
+      <forward name="success" path="/CACertificatesList.do"/>
+      <forward name="error" path="/WEB-INF/pages/communications/ca_certificate_import.jsp"/>
+    </action>
+    <action path="/RequestOverview" name="requestButtonStateForm" type="org.nexuse2e.ui.action.communications.RequestOverviewAction">
+      <forward name="success" path="/WEB-INF/pages/communications/request_overview.jsp"/>
+    </action>
+    <action path="/RequestCreate" name="certificateRequestForm" type="org.nexuse2e.ui.action.communications.RequestCreateAction">
+      <forward name="success" path="/WEB-INF/pages/communications/request_create.jsp"/>
+    </action>
+    <action path="/RequestImportCert" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.RequestImportCertAction">
+      <forward name="success" path="/WEB-INF/pages/communications/request_import_cert.jsp"/>
+    </action>
+    <action path="/RequestExportPKCS12" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.RequestExportPKCS12Action">
+      <forward name="success" path="/WEB-INF/pages/communications/request_export_pkcs12.jsp"/>
+      <forward name="error" path="/RequestOverview.do"/>
+    </action>
+    <action path="/RequestExportCSR" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.RequestExportCSRAction">
+      <forward name="success" path="/WEB-INF/pages/communications/request_export_csr.jsp"/>
+      <forward name="error" path="/RequestOverview.do"/>
+    </action>
+    <action path="/RequestDelete" type="org.nexuse2e.ui.action.communications.RequestDeleteRequest">
+      <forward name="success" path="/RequestOverview.do"/>
+    </action>
+    <action path="/RequestSaveRequest" name="certificateRequestForm" type="org.nexuse2e.ui.action.communications.RequestSaveRequestAction">
+      <forward name="success" path="/RequestOverview.do"/>
+      <forward name="error" path="/WEB-INF/pages/communications/request_create.jsp"/>
+    </action>
+    <action path="/RequestShowCSR" name="certificateRequestForm" type="org.nexuse2e.ui.action.communications.RequestShowCSRAction">
+      <forward name="success" path="/WEB-INF/pages/communications/request_show_csr.jsp"/>
+      <forward name="error" path="/WEB-INF/pages/error.jsp"/>
+    </action>
+    <action path="/RequestSaveCert" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.RequestSaveCertAction">
+      <forward name="incomplete" path="/RequestImportCert.do"/>
+      <forward name="complete" path="/RequestOverview.do"/>
+    </action>
+    <action path="/RequestSaveCSRFile" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.RequestSaveCSRFileAction">
+      <forward name="success" path="/RequestOverview.do"/>
+      <forward name="error" path="/WEB-INF/pages/communications/request_export_csr.jsp"/>
+    </action>
+    <action path="/RequestSavePKCS12File" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.RequestSavePKCS12FileAction">
+      <forward name="error" path="/WEB-INF/pages/communications/request_export_pkcs12.jsp"/>
+      <forward name="success" path="/RequestOverview.do"/>
+    </action>
+    <action path="/StagingList" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.StagingListAction">
+      <forward name="success" path="/WEB-INF/pages/communications/staging_list.jsp"/>
+    </action>
+    <action path="/StagingCertificateView" name="certificatePromotionForm" type="org.nexuse2e.ui.action.communications.StagingCertViewAction">
+      <forward name="success" path="/WEB-INF/pages/communications/staging_certificate_view.jsp"/>
+      <forward name="error" path="/WEB-INF/pages/error.jsp"/>
+    </action>
+    <action path="/StagingDeleteCertificate" name="certificatePromotionForm" type="org.nexuse2e.ui.action.communications.StagingDeleteCertificateAction">
+      <forward name="success" path="/StagingList.do"/>
+    </action>
+    <action path="/StagingPromoteCertificate" name="certificatePromotionForm" type="org.nexuse2e.ui.action.communications.StagingPromoteCertificateAction">
+      <forward name="success" path="/StagingList.do"/>
+      <forward name="error" path="/WEB-INF/pages/error.jsp"/>
+    </action>
+    <action path="/StagingExportCertificate" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.StagingExportCertificateAction">
+      <forward name="success" path="/WEB-INF/pages/communications/staging_export_certificate.jsp"/>
+      <forward name="error" path="/WEB-INF/pages/error.jsp"/>
+    </action>
+    <action path="/Certificates" type="org.nexuse2e.ui.action.communications.CertificatesAction">
+      <forward name="success" path="/WEB-INF/pages/communications/certificates.jsp"/>
+    </action>
+    <action path="/Tools" type="org.nexuse2e.ui.action.NoOpAction">
+      <forward name="success" path="/WEB-INF/pages/tools.jsp"/>
+    </action>
+    <action path="/StagingImportCertificate" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.StagingImportCertificateAction">
+      <forward name="success" path="/WEB-INF/pages/communications/staging_import_certificate.jsp"/>
+    </action>
+    <action path="/StagingSaveCertificate" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.StagingSaveCertificateAction">
+      <forward name="success" path="/StagingList.do"/>
+      <forward name="error" path="/WEB-INF/pages/communications/staging_import_certificate.jsp"/>
+    </action>
+    <action path="/StagingStoreExported" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.StagingStoreExportedAction">
+      <forward name="success" path="/StagingList.do"/>
+      <forward name="error" path="/StagingExportCertificate.do"/>
+    </action>
+
+    <action path="/Reporting" type="org.nexuse2e.ui.action.NoOpAction">
+      <forward name="success" path="/WEB-INF/pages/reporting.jsp"/>
+    </action>
+
+    <action path="/ProcessConversationReport" name="reportingPropertiesForm" type="org.nexuse2e.ui.action.reporting.ProcessConversationReportAction" scope="session">
+      <forward name="success" path="/WEB-INF/pages/reporting/transaction_report.jsp"/>
+    </action>
+    
+    
+    <action path="/ConversationView" name="reportConversationEntryForm" type="org.nexuse2e.ui.action.reporting.ConversationViewAction">
+      <forward name="success" path="/WEB-INF/pages/reporting/conversation_view.jsp"/>
+    </action>
+    
+    <action path="/MessageView" name="reportMessageEntryForm" type="org.nexuse2e.ui.action.reporting.MessageViewAction">
+      <forward name="success" path="/WEB-INF/pages/reporting/message_view.jsp"/>
+      <forward name="error" path="/ProcessConversationReport.do"/>
+    </action>
+    <action path="/ProcessEngineLog" name="reportingPropertiesForm" type="org.nexuse2e.ui.action.reporting.ProcessEngineLogAction">
+      <forward name="success" path="/WEB-INF/pages/reporting/engine_logging.jsp"/>
+    </action>
+    
+    <action path="/ReportingForward" name="reportingPropertiesForm" type="org.nexuse2e.ui.action.reporting.ReportingForwardAction">
+      <forward name="conversation" path="/ProcessConversationReport.do"/>
+      <forward name="engine" path="/ProcessEngineLog.do"/>
+      <forward name="error" path="/Reporting.do"/>
+    </action>
+    
+    <!-- 
+      <forward name="save" path="/ReportingSaveConfigFields.do"/>
+    
+    <action path="/ServerCertificateDelete" type="org.nexuse2e.ui.action.communications.ServerCertDeleteAction">
+      <forward name="success" path="/Certificates.do"/>
+    </action>
+    <action path="/ModifyMessage" type="org.nexuse2e.ui.action.reporting.ModifyMessageAction">
+      <forward name="success" path="/ProcessConversationReport.do"/>
+    </action>
+    <action path="/ServerCertificateExport" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.ServerCertExportAction">
+      <forward name="success" path="/WEB-INF/pages/communications/server_certificate_export.jsp"/>
+    </action>
+    <action path="/ServerCertificateSaveToDisk" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.ServerCertSaveToDiskAction">
+      <forward name="success" path="/ServerCertificateView.do"/>
+    </action>
+    <action path="/ReportingSaveConfigFields" name="reportingPropertiesForm" type="org.nexuse2e.ui.action.reporting.SaveConfigFieldsAction">
+      <forward name="success" path="/Reporting.do"/>
+    </action>
+    <action path="/RequestImportBackup" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.RequestImportBackupAction">
+      <forward name="success" path="/WEB-INF/pages/communications/request_import_backup.jsp"/>
+    </action>
+    <action path="/RequestSaveBackup" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.RequestSaveBackupAction">
+      <forward name="success" path="/RequestOverview.do"/>
+      <forward name="error" path="/WEB-INF/pages/communications/request_import_backup.jsp"/>
+    </action>
+    -->
+    
+    <action path="/Components" type="org.nexuse2e.ui.action.ComponentsAction">
+      <forward name="success" path="/WEB-INF/pages/components.jsp"/>
+    </action>
+    <action path="/ComponentView" name="componentForm" type="org.nexuse2e.ui.action.components.ComponentViewAction">
+      <forward name="success" path="/WEB-INF/pages/components/component_view.jsp"/>
+    </action>
+    <action path="/ComponentDelete" name="componentForm" type="org.nexuse2e.ui.action.components.ComponentDeleteAction">
+      <forward name="success" path="/Components.do"/>
+    </action>
+    <action path="/ComponentUpdate" name="componentForm" type="org.nexuse2e.ui.action.components.ComponentUpdateAction">
+      <forward name="error" path="/Components.do"/>
+      <forward name="success" path="/ComponentView.do"/>
+    </action>
+    <action path="/ComponentAdd" name="componentForm" type="org.nexuse2e.ui.action.components.ComponentAddAction">
+      <forward name="success" path="/WEB-INF/pages/components/component_view.jsp"/>
+    </action>
+    <action path="/ComponentCreate" name="componentForm" type="org.nexuse2e.ui.action.components.ComponentCreateAction">
+      <forward name="success" path="/Components.do"/>
+    </action>
+    
+    
+    
+    
+    
+    <action path="/FrontendPipelines" type="org.nexuse2e.ui.action.PipelinesAction" parameter="frontend">
+      <forward name="success" path="/WEB-INF/pages/pipelines.jsp"/>
+    </action>
+    <action path="/BackendPipelines" type="org.nexuse2e.ui.action.PipelinesAction" parameter="backend">
+      <forward name="success" path="/WEB-INF/pages/pipelines.jsp"/>
+    </action>
+    <action path="/PipelineView" name="pipelineForm" type="org.nexuse2e.ui.action.pipelines.PipelineViewAction">
+      <forward name="success" path="/WEB-INF/pages/pipelines/pipeline_view.jsp"/>
+    </action>
+    <action path="/PipelineDelete" name="pipelineForm" type="org.nexuse2e.ui.action.pipelines.PipelineDeleteAction">
+      <forward name="frontend" path="/FrontendPipelines.do"/>
+      <forward name="backend" path="/BackendPipelines.do"/>
+    </action>
+    <action path="/PipelineUpdate" name="pipelineForm" type="org.nexuse2e.ui.action.pipelines.PipelineUpdateAction">
+      <forward name="frontendError" path="/Pipelines.do"/>
+      <forward name="backendError" path="/Pipelines.do"/>
+      <forward name="config" path="/PipeletParamsView.do"/>
+      <forward name="success" path="/PipelineView.do"/>
+    </action>
+    <action path="/PipelineAdd" name="pipelineForm" type="org.nexuse2e.ui.action.pipelines.PipelineAddAction">
+      <forward name="success" path="/WEB-INF/pages/pipelines/pipeline_add.jsp"/>
+    </action>
+    <action path="/PipelineCreate" name="pipelineForm" type="org.nexuse2e.ui.action.pipelines.PipelineCreateAction">
+      <forward name="frontend" path="/FrontendPipelines.do"/>
+      <forward name="backend" path="/BackendPipelines.do"/>
+    </action>
+    
+    <action path="/PipeletParamsView" name="pipelineForm" type="org.nexuse2e.ui.action.pipelines.PipeletParamsViewAction">
+      <forward name="success" path="/WEB-INF/pages/pipelines/pipeletparams_view.jsp"/>
+    </action>
+    <action path="/PipeletParamsUpdate" name="pipelineForm" type="org.nexuse2e.ui.action.pipelines.PipeletParamsUpdateAction">
+      <forward name="update" path="/PipelineView.do"/>
+      <forward name="view" path="/PipeletParamsView.do"/>
+    </action>
+    
+   
+   
+   
+   
+    
+    <action path="/CollaborationPartners" type="org.nexuse2e.ui.action.CollaborationPartnersAction">
+      <forward name="success" path="/WEB-INF/pages/collaboration_partners.jsp"/>
+    </action>
+    
+    <action path="/ServerIdentities" type="org.nexuse2e.ui.action.CollaborationPartnersAction">
+      <forward name="success" path="/WEB-INF/pages/collaboration_partners.jsp"/>
+    </action>
+    
+    <action path="/CollaborationPartnerAdd" name="collaborationPartnerForm" type="org.nexuse2e.ui.action.partners.PartnerAddAction">
+      <forward name="success" path="/WEB-INF/pages/partners/partner_add.jsp"/>
+    </action>
+    
+    <action path="/PartnerInfoView" name="collaborationPartnerForm" type="org.nexuse2e.ui.action.partners.PartnerInfoViewAction">
+      <forward name="success" path="/WEB-INF/pages/partners/partner_info_view.jsp"/>
+      <forward name="error" path="/CollaborationPartners.do"/>
+    </action>
+    
+    <action path="/PartnerConnectionList" name="collaborationPartnerForm" type="org.nexuse2e.ui.action.partners.PartnerConnectionListAction">
+      <forward name="success" path="/WEB-INF/pages/partners/partner_connection_list.jsp"/>
+    </action>
+    <!--
+    <action path="/PartnerContactList" name="collaborationPartnerForm" type="org.nexuse2e.ui.action.partners.PartnerContactListAction">
+      <forward name="success" path="/WEB-INF/pages/partners/partner_contact_list.jsp"/>
+    </action>
+    -->
+    
+    <action path="/PartnerCertificateList" name="collaborationPartnerForm" type="org.nexuse2e.ui.action.partners.PartnerCertificateListAction">
+      <forward name="success" path="/WEB-INF/pages/partners/partner_certificate_list.jsp"/>
+    </action>
+    
+    <action path="/UpdatePartnerInfo" name="collaborationPartnerForm" type="org.nexuse2e.ui.action.partners.PartnerInfoUpdateAction">
+      <forward name="error" path="/CollaborationPartners.do"/>
+      <forward name="success" path="/PartnerInfoView.do"/>
+    </action>
+    
+    
+    <action path="/PartnerCertificateView" name="partnerCertificateForm" type="org.nexuse2e.ui.action.partners.PartnerCertificateUpdateAction">
+      <forward name="success" path="/WEB-INF/pages/partners/partner_certificate_view.jsp"/>
+      <forward name="error" path="/CollaborationPartners.do"/>
+    </action>
+    <action path="/PartnerCertificateSave" name="partnerCertificateForm" type="org.nexuse2e.ui.action.partners.PartnerCertificateSaveAction">
+      <forward name="success" path="/CollaborationPartners.do"/>
+      <forward name="error" path="/PartnerCertificateList.do"/>
+    </action>
+    <action path="/PartnerCertificateDelete" name="partnerCertificateForm" type="org.nexuse2e.ui.action.partners.PartnerCertificateDeleteAction">
+      <forward name="success" path="/PartnerCertificateList.do"/>
+    </action>
+    <!--
+    <action path="/PartnerContactSave" name="partnerContactForm" type="org.nexuse2e.ui.action.partners.PartnerContactSaveAction">
+      <forward name="success" path="/CollaborationPartners.do"/>
+      <forward name="error" path="/PartnerContactList.do"/>
+    </action>
+    <action path="/PartnerContactView" name="partnerContactForm" type="org.nexuse2e.ui.action.partners.PartnerContactUpdateAction">
+      <forward name="success" path="/WEB-INF/pages/partners/partner_contact_view.jsp"/>
+      <forward name="error" path="/PartnerContactList.do"/>
+    </action>
+    <action path="/PartnerContactDelete" name="partnerContactForm" type="org.nexuse2e.ui.action.partners.PartnerContactDeleteAction">
+      <forward name="success" path="/PartnerContactList.do"/>
+    </action>
+    -->
+    <action path="/PartnerConnectionView" name="partnerConnectionForm" type="org.nexuse2e.ui.action.partners.PartnerConnectionUpdateAction">
+      <forward name="success" path="/WEB-INF/pages/partners/partner_connection_view.jsp"/>
+    </action>
+    <action path="/PartnerConnectionDelete" name="partnerConnectionForm" type="org.nexuse2e.ui.action.partners.PartnerConnectionDeleteAction">
+      <forward name="success" path="/PartnerConnectionList.do"/>
+    </action>
+    <action path="/PartnerConnectionSave" name="partnerConnectionForm" type="org.nexuse2e.ui.action.partners.PartnerConnectionSaveAction">
+      <forward name="success" path="/PartnerConnectionList.do"/>
+      <forward name="error" path="/PartnerConnectionList.do"/>
+    </action>
+    <action path="/PartnerConnectionCreate" name="partnerConnectionForm" type="org.nexuse2e.ui.action.partners.PartnerConnectionCreateAction">
+      <forward name="success" path="/PartnerConnectionList.do"/>
+    </action>
+    <action path="/PartnerConnectionAdd" name="partnerConnectionForm" type="org.nexuse2e.ui.action.partners.PartnerConnectionAddAction">
+      <forward name="success" path="/WEB-INF/pages/partners/partner_connection_add.jsp"/>
+      <forward name="error" path="/PartnerConnectionList.do"/>
+    </action>
+    <!-- 
+    
+    <action path="/PartnerContactAdd" name="partnerContactForm" type="org.nexuse2e.ui.action.partners.PartnerContactAddAction">
+      <forward name="success" path="/WEB-INF/pages/partners/partner_contact_add.jsp"/>
+    </action>
+    <action path="/PartnerContactCreate" name="partnerContactForm" type="org.nexuse2e.ui.action.partners.PartnerContactCreateAction">
+      <forward name="success" path="/PartnerContactList.do"/>
+    </action>
+    -->
+    
+    <action path="/PartnerCertificateAdd" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.partners.PartnerCertificateAddAction">
+      <forward name="success" path="/WEB-INF/pages/partners/partner_certificate_add.jsp"/>
+      <forward name="error" path="/PartnerCertificateList.do"/>
+    </action>
+    <action path="/PartnerCertificateCreate" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.partners.PartnerCertificateCreateAction">
+      <forward name="success" path="/PartnerCertificateList.do"/>
+    </action>
+    
+    
+    <action path="/CollaborationPartnerCreate" name="collaborationPartnerForm" type="org.nexuse2e.ui.action.partners.PartnerCreateAction">
+      <forward name="success" path="/CollaborationPartners.do"/>
+    </action>
+    <action path="/CollaborationPartnerDelete" name="collaborationPartnerForm" type="org.nexuse2e.ui.action.partners.PartnerDeleteAction">
+      <forward name="success" path="/ServerIdentities.do"/>
+    </action>
+    
+    <action path="/Choreographies" type="org.nexuse2e.ui.action.ChoreographiesAction">
+      <forward name="success" path="/WEB-INF/pages/choreographies.jsp"/>
+    </action>
+    
+      
+    <action path="/ChoreographyView" name="choreographyForm" type="org.nexuse2e.ui.action.choreographies.ChoreographyViewAction">
+      <forward name="success" path="/WEB-INF/pages/choreographies/choreography_view.jsp"/>
+      <forward name="error" path="/Choreographies.do"/>
+    </action>
+    
+    <action path="/ChoreographyUpdate" name="choreographyForm" type="org.nexuse2e.ui.action.choreographies.ChoreographyUpdateAction">
+      <forward name="success" path="/Choreographies.do"/>
+    </action>
+    <action path="/MessageSubmission" name="messageSubmissionForm" type="org.nexuse2e.ui.action.tools.MessageSubmissionAction">
+      <forward name="success" path="/WEB-INF/pages/tools/message_submission.jsp"/>
+    </action>
+    <action path="/ProvisioningSubmission" name="provisioningSubmissionForm" type="org.nexuse2e.ui.action.tools.ProvisioningSubmissionAction">
+      <forward name="success" path="/WEB-INF/pages/communications/provisioning_submission.jsp"/>
+    </action>
+    <!--
+    <action path="/MailSettings" name="mailSettingsForm" type="org.nexuse2e.ui.action.communications.MailSettingsAction">
+      <forward name="success" path="/WEB-INF/pages/communications/mail_settings.jsp"/>
+    </action>
+    <action path="/TransportList" name="transportForm" type="org.nexuse2e.ui.action.communications.TransportListAction">
+      <forward name="success" path="/WEB-INF/pages/communications/transport_list.jsp"/>
+    </action>
+    <action path="/TransportView" name="transportForm" type="org.nexuse2e.ui.action.communications.TransportViewAction">
+      <forward name="success" path="/WEB-INF/pages/communications/transport_view.jsp"/>
+    </action>
+    -->
+    <action path="/ActionSettingsView" name="choreographyActionForm" type="org.nexuse2e.ui.action.choreographies.ActionSettingsViewAction">
+      <forward name="success" path="/WEB-INF/pages/choreographies/action_settings_view.jsp"/>
+      <forward name="error" path="/ActionsList.do"/>
+    </action>
+    
+    <action path="/ActionsList" name="choreographyForm" type="org.nexuse2e.ui.action.choreographies.ActionsListAction">
+      <forward name="success" path="/WEB-INF/pages/choreographies/actions.jsp"/>
+      <forward name="error" path="/ChoreographyView.do"/>
+    </action>
+    
+    <action path="/ActionSettingsUpdate" name="choreographyActionForm" type="org.nexuse2e.ui.action.choreographies.ActionSettingsUpdateAction">
+      <forward name="success" path="/ActionsList.do"/>
+    </action>
+    <action path="/ActionDelete" name="choreographyActionForm" type="org.nexuse2e.ui.action.choreographies.ActionDeleteAction">
+      <forward name="success" path="/ActionsList.do"/>
+    </action>
+    <action path="/ActionAdd" name="choreographyActionForm" type="org.nexuse2e.ui.action.choreographies.ActionAddAction">
+      <forward name="success" path="/WEB-INF/pages/choreographies/action_add.jsp"/>
+      <forward name="error" path="/ActionsList.do"/>
+    </action>
+    <action path="/ActionCreate" name="choreographyActionForm" type="org.nexuse2e.ui.action.choreographies.ActionCreateAction">
+      <forward name="success" path="/ActionsList.do"/>
+    </action>
+    <!-- 
+    
+    <action path="/ComponentConfiguration" name="componentForm" type="org.nexuse2e.ui.action.serverconfig.ComponentConfigurationAction">
+      <forward name="success" path="/WEB-INF/pages/serverconfig/component_configuration_view.jsp"/>
+    </action>
+    <action path="/ActionOptionsView" name="choreographyActionForm" type="org.nexuse2e.ui.action.choreographies.ActionOptionsViewAction">
+      <forward name="success" path="/WEB-INF/pages/choreographies/action_options_view.jsp"/>
+      <forward name="error" path="/ActionsList.do"/>
+    </action>
+    <action path="/ActionOptionsUpdate" name="choreographyActionForm" type="org.nexuse2e.ui.action.choreographies.ActionOptionsUpdateAction">
+      <forward name="success" path="/ActionsList.do"/>
+    </action>
+    -->
+    <action path="/ParticipantList" name="choreographyForm" type="org.nexuse2e.ui.action.choreographies.ParticipantsListAction">
+      <forward name="success" path="/WEB-INF/pages/choreographies/participants.jsp"/>
+      <forward name="error" path="/ChoreographyView.do"/>
+    </action>
+    <action path="/ParticipantView" name="participantForm" type="org.nexuse2e.ui.action.choreographies.ParticipantViewAction">
+      <forward name="success" path="/WEB-INF/pages/choreographies/participant_view.jsp"/>
+    </action>
+    <action path="/ParticipantUpdate" name="participantForm" type="org.nexuse2e.ui.action.choreographies.ParticipantUpdateAction">
+      <forward name="reload" path="/WEB-INF/pages/choreographies/participant_view.jsp"/>
+      <forward name="update" path="/ParticipantList.do"/>
+      <forward name="error" path="/ParticipantList.do"/>
+    </action>
+    <action path="/ParticipantDelete" name="participantForm" type="org.nexuse2e.ui.action.choreographies.ParticipantDeleteAction">
+      <forward name="success" path="/ParticipantList.do"/>
+    </action>
+    <action path="/ParticipantAdd" name="participantForm" type="org.nexuse2e.ui.action.choreographies.ParticipantAddAction">
+      <forward name="reload" path="/WEB-INF/pages/choreographies/participant_add.jsp"/>
+      <forward name="created" path="/ParticipantList.do"/>
+      <forward name="error" path="/ParticipantList.do"/>
+    </action>
+    
+    <action path="/ChoreographyAdd" name="choreographyForm" type="org.nexuse2e.ui.action.choreographies.ChoreographyAddAction">
+      <forward name="success" path="/WEB-INF/pages/choreographies/choreography_add.jsp"/>
+      <forward name="error" path="/Choreographies.do"/>
+    </action>
+    <action path="/ChoreographyCreate" name="choreographyForm" type="org.nexuse2e.ui.action.choreographies.ChoreographyCreateAction">
+      <forward name="success" path="/Choreographies.do"/>
+    </action>
+    <action path="/ChoreographyDelete" name="choreographyForm" type="org.nexuse2e.ui.action.choreographies.ChoreographyDeleteAction">
+      <forward name="success" path="/Choreographies.do"/>
+    </action>
+    <action path="/ServerConfiguration" type="org.nexuse2e.ui.action.NoOpAction">
+      <forward name="success" path="/WEB-INF/pages/server_configuration.jsp"/>
+    </action>
+    <!-- 
+    <action path="/ImportExportList" name="importExportForm" type="org.nexuse2e.ui.action.serverconfig.ImportExportListAction">
+      <forward name="success" path="/WEB-INF/pages/serverconfig/import_export_list.jsp"/>
+    </action>
+    -->
+  </action-mappings>
+  <controller processorClass="org.apache.struts.tiles.TilesRequestProcessor"/>
+  <message-resources parameter="ApplicationResources" null="false"/>
+  
+  <plug-in className="org.apache.struts.tiles.TilesPlugin">
+    <set-property property="definitions-config" value="/WEB-INF/struts/tiles-defs.xml"/>
+    <set-property property="moduleAware" value="true"/>
+  </plug-in>
+  
+</struts-config>

@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping default-cascade="all">
+    <class name="org.nexuse2e.pojo.PipelinePojo" table="nx_pipeline" lazy="false">
+        <comment></comment>
+        <id name="nxPipelineId" type="int">
+            <column name="nx_pipeline_id" sql-type="integer"/>
+            <generator class="native" />
+        </id>
+        
+        <property name="outbound" type="boolean">
+            <column name="direction_flag"  not-null="true" sql-type="integer">
+                <comment></comment>
+            </column>
+        </property>
+
+        <property name="frontend" type="boolean">
+            <column name="frontend_flag" not-null="true" sql-type="integer">
+                <comment>frontend is true, backend is false</comment>
+            </column>
+        </property>
+        <property name="manual" type="boolean">
+            <column name="manual_flag"  not-null="true" sql-type="integer">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="timer" type="boolean">
+            <column name="timer_flag"  not-null="true" sql-type="integer">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="timerInterval" type="int">
+            <column name="timer_interval" not-null="false" sql-type="integer">
+                <comment></comment>
+            </column>
+        </property>
+        
+        <many-to-one foreign-key="fk__pipeline__trp_id" name="trp" column="nx_trp_id" not-null="false" class="org.nexuse2e.pojo.TRPPojo" cascade="none" index="ix_pipeline_1"/>
+        
+        <property name="createdDate" type="timestamp">
+            <column name="created_date" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="modifiedDate" type="timestamp">
+            <column name="modified_date" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="modifiedNxUserId" type="int">
+            <column name="modified_nx_user_id" not-null="true" sql-type="integer">
+                <comment></comment>
+            </column>
+        </property>
+       
+        <property name="description" type="string">
+            <column name="description" length="64">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="name" type="string">
+            <column name="name" length="64" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+         
+        <bag name="pipelets" inverse="true" lazy="false" cascade="all,delete-orphan">
+        	<key column="nx_pipeline_id"/> 
+        	<one-to-many class="org.nexuse2e.pojo.PipeletPojo"/>
+		</bag>
+        
+        
+    </class>
+</hibernate-mapping>

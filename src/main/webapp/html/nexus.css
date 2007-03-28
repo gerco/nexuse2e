@@ -1,0 +1,359 @@
+html, body {
+  height: 100%;
+	width: 100%;
+	overflow: hidden;
+  padding:0px;
+	margin:0px;
+	background-color:#FFFFFF;
+	text-align:center;
+	font-size:10pt;
+  font-family:Helvetica,Arial,sans-serif;
+}
+
+a:link { color:#000000; text-decoration:none }
+a:visited { color:#000000; text-decoration:none }
+a:active { color:#000000; text-decoration:none }
+a:hover { color:#000000; text-decoration:none }
+
+form {
+	margin:0;
+}
+
+#header  {
+  position: absolute;
+	top: 0px;
+	left: 0px;
+	background-color:#80C050;
+  height:80px;
+  width: 100%;
+	text-align:right;
+        vertical-align:bottom;
+	color: #FFFFFF;
+	font-weight: bold;
+	background-image:url(../images/strip.jpg);
+	background-repeat:no-repeat;
+	background-position:0px 0px;
+}
+
+#content {
+	height: 100%;
+	width: 100%;
+	left: 0%;
+	top: 0%;
+	position: relative;
+}
+
+#navigator  {
+	text-align: left;
+	width: 250px;
+	padding: 10px;
+	background-color: #FFFFFF;
+}
+
+#docpane  {
+	padding: 10px;
+	background-color:#FFFFFF;
+}
+
+div.helpBar {
+	text-align: right;
+	padding-top: 5px;
+	padding-right: 10px;
+	padding-bottom: 5px;
+	margin-bottom: 10px;
+	background-color: #000080;
+	color: #A0D13A;
+}
+
+a.helpBar {
+	font-weight: bold;
+	color: #A0D13A;
+}
+
+img.helpBar {
+	border-width: 0px;
+	border-style: none;
+	vertical-align: middle;
+}
+
+img.button {
+	border-width: 0px;
+	border-style: none;
+	vertical-align: middle;
+	padding: 5px;
+}
+
+a.button {
+	text-decoration: none;
+	color: #000080;
+	font-weight: bold;
+	font-style: oblique;
+}
+
+.img {
+	border-width: 0px;
+	border-style: none;
+}
+
+/*
+ * ================
+ * OLD NEXUS styles
+ * ================
+ */
+
+TABLE {
+	background: white;
+	width: 100%;
+	padding : 0pt;
+	margin-bottom: 10pt;
+	border-width: 0pt;
+	border-style: none;
+}
+
+TABLE.NEXUS_TABLE {
+	background: #EEEEEE;
+}
+
+TABLE.NEXUS_BUTTON_TABLE {
+	background: #FFFFFF;
+	color: #000080;
+}
+
+TD {
+	margin:0;
+	border-width: 0pt;
+	border-style: none;
+	padding : 2pt;
+	font-family: verdana, garamond;
+	font-size: 10pt;
+}
+
+TABLE.NEXUS_TAB_TABLE {
+	width: 0;
+	padding: 0;
+	margin: 0;
+	border-spacing: 0;
+	border-collapse: collapse;
+}
+
+TD.NEXUS_TAB_UNSELECTED {
+	padding: 0;
+	background: #666666;
+	height: 20;
+	font-weight: bold;
+	white-space: nowrap;
+}
+
+A.NEXUS_TAB_UNSELECTED_LINK {
+	color: #FFFFFF;
+	text-decoration: none;
+}
+
+A.NEXUS_TAB_UNSELECTED_LINK:visited{color: #FFFFFF;}
+A.NEXUS_TAB_UNSELECTED_LINK:link{color: #FFFFFF;}
+A.NEXUS_TAB_UNSELECTED_LINK:active{color: #FFFFFF;}
+
+TD.NEXUS_TAB_LEFT_UNSELECTED {
+	padding: 0;
+	width: 20;
+	height: 20;
+}
+
+TD.NEXUS_TAB_RIGHT_UNSELECTED {
+	padding: 0;
+	width: 20;
+	height: 20;
+}
+
+TD.NEXUS_TAB_SELECTED {
+	padding: 0;
+	background: #CCCCCC;
+	height: 20;
+	color: #000000;
+	font-weight: bold;
+	white-space: nowrap;
+}
+
+TD.NEXUS_TAB_LEFT_SELECTED {
+	padding: 0;
+	width: 20;
+	height: 20;
+}
+
+TD.NEXUS_TAB_RIGHT_SELECTED {
+	padding: 0;
+	width: 20;
+	height: 20;
+}
+
+TD.BUTTON_LEFT {
+	text-align: left;
+}
+
+TD.BUTTON_RIGHT {
+	text-align: right;
+	width: 95%;
+}
+
+.NEXUSLocation {
+	background: #EEEEEE;
+	font-size: 12pt;
+	white-space: nowrap;
+}
+
+.NEXUSScreenName {
+	background: #DDDDDD;
+	font-size: 12pt;
+	font-weight: bold;
+	font-family:  arial;
+	color: #000080;
+	font-style:  oblique;
+	white-space: nowrap;
+}
+
+.NEXUSScreenPath {
+	background: #EEEEEE;
+	font-size: 10pt;
+	font-weight: bold;
+	font-family:  arial;
+	color: #000000;
+	font-style:  oblique;
+	white-space: nowrap;
+}
+
+.NEXUSScreenPathLink {
+	text-decoration: none;
+	font-size: 10pt;
+	font-weight: bold;
+	font-family:  arial;
+	color: #000000;
+	font-style:  oblique;
+}
+
+.NEXUSScreenPathLinkInactive {
+	text-decoration: none;
+	font-size: 10pt;
+	font-weight: bold;
+	font-family:  arial;
+	color: #888888;
+	font-style:  oblique;
+}
+
+.NEXUSScreenPathLink:HOVER {
+	text-decoration: underline;
+	font-size: 10pt;
+	font-weight: bold;
+	font-family:  arial;
+	color: #000000;
+	font-style:  oblique;
+}
+
+.NEXUSSection {
+	background: #CCCCCC;
+	font-weight: bold;
+	white-space: nowrap;
+}
+
+.NEXUSName {
+	background: #DDDDDD;
+	width: 25%;
+	white-space: nowrap;
+}
+
+.NEXUSNameNoWidth {
+	background: #DDDDDD;
+	white-space: nowrap;
+}
+
+.NEXUSIcon {
+	background: #DDDDDD;
+	white-space: nowrap;
+	width: 24;
+}
+
+.NEXUSValue {
+	background: #DDDDDD;
+	color: #000000;
+	white-space: nowrap;
+}
+.NEXUSSelect {
+	background: #FFFFFF;
+	color: #000000;
+	white-space: nowrap;
+}
+.NEXUSValueDisabled {
+	background: #DDDDDD;
+	color: #aaaaaa;
+	white-space: nowrap;
+}
+
+.NexusHeaderLink {
+	text-decoration: none;
+	color: #000080;
+	font-weight: bold;
+	font-style: oblique;
+	width: 140px;
+}
+
+.NexusLink {
+	text-decoration: none;
+	border-width: 1pt;
+	border-style: ridge;
+	font-family: verdana, garamond;
+	color: #ffffff;
+	font-size: 10pt;
+	padding-top: 1pt;
+	padding-bottom: 1pt;
+	padding-right: 3pt;
+	padding-left: 3pt;
+}
+
+.NexusLinkDisabled {
+	text-decoration: none;
+	border-width: 0pt;
+	border-style: ridge;
+	font-family: verdana, garamond;
+	color: #000080;
+	font-size: 10pt;
+	padding-top: 1pt;
+	padding-bottom: 1pt;
+	padding-right: 3pt;
+	padding-left: 3pt;
+}
+
+.NexusLink:HOVER {
+	text-decoration: underline;
+	font-family: verdana, garamond;
+	font-size: 10pt;
+	color: #000080;
+	border-width: 1pt;
+	border-style: inset;
+	padding-top: 1pt;
+	padding-bottom: 1pt;
+	padding-right: 3pt;
+	padding-left: 3pt;
+}
+
+.NexusDrillDownLink {
+	text-decoration: none;
+	color: #000080;
+	font-style: oblique;
+	font-family: verdana, garamond;
+	font-size: 10pt;
+}
+
+.NexusDrillDownLink:HOVER {
+	text-decoration: underline;
+	color: #000080;
+	font-family: verdana, garamond;
+	font-size: 10pt;
+	font-style: oblique;
+}
+
+.NexusError {
+	background-color: #FFCCCC;
+}
+
+.NexusMessage {
+	background-color: #CCFFCC;
+}

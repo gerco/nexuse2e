@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.nexuse2e.pojo.MessagePojo" table="nx_message" lazy="false">
+        <comment></comment>
+        <id name="nxMessageId" type="int">
+            <column name="nx_message_id" sql-type="integer"/>
+            <generator class="native" />
+        </id>
+        
+        <many-to-one foreign-key="fk__message__conversation_id" name="conversation" column="nx_conversation_id" class="org.nexuse2e.pojo.ConversationPojo" not-null="true" index="ix_message_1"/>
+        
+        <property name="messageId" type="string">
+            <column name="message_id" length="64" not-null="true">
+                <comment>Protocol specific Message Id</comment>
+            </column>
+        </property>
+        <property name="headerData" type="org.nexuse2e.pojo.BinaryBlobType">
+            <column name="header_data" not-null="false" length="128000">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="type" type="int">
+            <column name="type" not-null="true" sql-type="integer">
+                <comment>Message Type: e.g. 1=Normal, 2=Ack, 3=Error (Defined in messaging.Constants)</comment>
+            </column>
+        </property>
+        
+        <many-to-one foreign-key="fk__message__action_id" name="action" column="nx_action_id" class="org.nexuse2e.pojo.ActionPojo" not-null="true" cascade="none" index="ix_message_2"/>
+        
+        <property name="status" type="int" index="ix_message_5">
+            <column name="status" not-null="true" sql-type="integer">
+                <comment>Message Status: e.g. queued, stopped, failed, retrying, send</comment>
+            </column>
+        </property>
+        
+        
+        <many-to-one foreign-key="fk__message__trp_id" name="TRP" column="nx_trp_id" class="org.nexuse2e.pojo.TRPPojo" cascade="none" index="ix_message_3"/>
+
+        <many-to-one foreign-key="fk__message__referenced_message_id" name="referencedMessage" column="referenced_nx_message_id" class="org.nexuse2e.pojo.MessagePojo" cascade="none" index="ix_message_4"/>
+        
+        <property name="retries" type="int">
+            <column name="retries" not-null="true" sql-type="integer">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="outbound" type="boolean">
+            <column name="direction_flag" not-null="true" sql-type="integer">
+                <comment>outbound is true, inbound is false</comment>
+            </column>
+        </property>
+        <property name="expirationDate" type="timestamp" >
+            <column name="expiration_date">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="endDate" type="timestamp" >
+            <column name="end_date">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="createdDate" type="timestamp" not-null="true">
+            <column name="created_date" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="modifiedDate" type="timestamp" >
+            <column name="modified_date" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="modifiedNxUserId" type="int" >
+            <column name="modified_nx_user_id" not-null="true" sql-type="integer">
+                <comment></comment>
+            </column>
+        </property>
+        <bag name="messagePayloads" inverse="true" cascade="save-update,delete-orphan" lazy="false">
+        	<key column="nx_message_id"/> 
+        	<one-to-many class="org.nexuse2e.pojo.MessagePayloadPojo"/>
+		</bag>
+		
+		<bag name="messageLabels" inverse="true" cascade="all,delete-orphan">
+        	<key column="nx_message_id"/> 
+        	<one-to-many class="org.nexuse2e.pojo.MessageLabelPojo"/>
+		</bag>
+    </class>
+</hibernate-mapping>

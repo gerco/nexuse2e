@@ -1,0 +1,326 @@
+/**
+ * NEXUSe2e Business Messaging Open Source  
+ * Copyright 2007, Tamgroup and X-ioma GmbH   
+ *  
+ * This is free software; you can redistribute it and/or modify it  
+ * under the terms of the GNU Lesser General Public License as  
+ * published by the Free Software Foundation version 2.1 of  
+ * the License.  
+ *  
+ * This software is distributed in the hope that it will be useful,  
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of  
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU  
+ * Lesser General Public License for more details.  
+ *  
+ * You should have received a copy of the GNU Lesser General Public  
+ * License along with this software; if not, write to the Free  
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+package org.nexuse2e.messaging.ebxml;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import javax.servlet.ServletInputStream;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.log4j.Logger;
+import org.codehaus.xfire.util.Base64;
+import org.nexuse2e.configuration.ParameterDescriptor;
+import org.nexuse2e.messaging.AbstractPipelet;
+import org.nexuse2e.messaging.MessageContext;
+import org.nexuse2e.pojo.MessagePayloadPojo;
+import org.nexuse2e.pojo.MessagePojo;
+
+/**
+ * @author mbreilmann
+ *
+ */
+public class HTTPMessageUnpackager extends AbstractPipelet {
+
+    private static Logger       LOG = Logger.getLogger( HTTPMessageUnpackager.class );
+
+    private Map<String, Object> parameters;
+
+    /**
+     * Default constructor.
+     */
+    public HTTPMessageUnpackager() {
+
+        parameters = new HashMap<String, Object>();
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.messaging.MessageUnpackager#processMessage(com.tamgroup.nexus.e2e.persistence.pojo.MessagePojo, byte[])
+     */
+    public MessageContext processMessage( MessageContext messagePipeletParameter )
+            throws IllegalArgumentException, IllegalStateException {
+
+        MessagePojo messagePojo = messagePipeletParameter.getMessagePojo();
+        Object object = messagePipeletParameter.getGenericData();
+        if ( !( object instanceof HttpServletRequest ) ) {
+            throw new IllegalArgumentException( "Unable to process message: raw data not of type HttpServletRequest!" );
+        }
+
+        HttpServletRequest request = (HttpServletRequest) object;
+        // strip http header information in put in mime message for decoding
+        StringBuffer sb = new StringBuffer();
+        if ( request.getHeader( "message-id" ) != null ) {
+            sb.append( "Message-ID: " + request.getHeader( "message-id" ) + '\n' );
+        }
+        String contentType = request.getHeader( "content-type" );
+        sb.append( "Mime-Version: 1.0\n" );
+        sb.append( "Content-type: " + contentType + "\n\n" );
+
+        String stringData = sb.toString();
+        byte[] data = stringData.getBytes();
+        int preBufLen = stringData.length();
+
+        try {
+
+            byte[] packedMessage = getContentFromRequest( request, data, preBufLen );
+
+            byte[] bodyPart = null;
+            List<MessagePayloadPojo> payloads = new ArrayList<MessagePayloadPojo>();
+
+            MimeBodyPart[] messageBodyParts = decode( packedMessage );
+
+            MimeBodyPart headerMimeBodyPart = messageBodyParts[0];
+
+            String msgHdr = (String) headerMimeBodyPart.getContent();
+            LOG.trace( "Message Header: '" + msgHdr + "'" );
+            if ( msgHdr != null ) {
+                msgHdr = msgHdr.trim();
+            }
+            
+            LOG.trace( "Message Header Content Type: '" + headerMimeBodyPart.getContentType() + "'" );
+            messagePojo.setHeaderData( msgHdr.getBytes() );
+            messagePojo.setMessagePayloads( payloads );
+
+            for ( int i = 1; i < messageBodyParts.length; i++ ) {
+                MimeBodyPart mimeBodyPart = messageBodyParts[i];
+                Object bodyPartContent = mimeBodyPart.getContent();
+                if ( bodyPartContent instanceof ByteArrayInputStream ) {
+                    ByteArrayInputStream contentIS = (ByteArrayInputStream) bodyPartContent;
+                    if ( isBinaryType() ) {
+                        bodyPart = retrieveBinaryContent( contentIS );
+                    } else {
+                        bodyPart = retrieveContent( contentIS );
+                    }
+                } else {
+                    if ( isBinaryType() ) {
+                        bodyPart = (byte[]) ( bodyPartContent );
+                    } else {
+                        bodyPart = ( (String) bodyPartContent ).getBytes();
+                    }
+                }
+
+                MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo();
+                messagePayloadPojo.setSequenceNumber( i );
+                messagePayloadPojo.setPayloadData( bodyPart );
+                String contentId = messageBodyParts[i].getContentID();
+                if ( contentId != null ) {
+                    if ( contentId.startsWith( "<" ) && contentId.endsWith( ">" ) ) {
+                        contentId = contentId.substring( 1, contentId.length() - 2 );
+                    }
+                }
+                LOG.trace( "contentId:" + contentId );
+                messagePayloadPojo.setContentId( contentId );
+                messagePayloadPojo.setMimeType( mimeBodyPart.getContentType() );
+                messagePayloadPojo.setMessage( messagePojo );
+                payloads.add( messagePayloadPojo );
+            }
+        } catch ( IOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            throw new IllegalArgumentException( e.getMessage() );
+        } catch ( MessagingException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            throw new IllegalArgumentException( e.getMessage() );
+        } catch ( Exception e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            throw new IllegalArgumentException( e.getMessage() );
+        }
+
+        return messagePipeletParameter;
+
+    } // processMessage
+
+    /**
+     * @param request
+     * @param preBuffer
+     * @param preBufferLen
+     * @return
+     * @throws IOException
+     */
+    public byte[] getContentFromRequest( ServletRequest request, byte[] preBuffer, int preBufferLen )
+            throws IOException {
+
+        int contentLength = request.getContentLength();
+        if ( contentLength < 0 ) {
+            throw new IOException( "No payload in HTTP request!" );
+        }
+        byte bufferArray[] = new byte[contentLength + preBufferLen];
+        ServletInputStream inputStream = request.getInputStream();
+        int offset = 0;
+        int restBytes = contentLength;
+
+        while ( offset < preBufferLen ) {
+            bufferArray[offset] = preBuffer[offset];
+            offset++;
+        }
+
+        for ( int bytesRead = inputStream.readLine( bufferArray, offset, contentLength ); bytesRead != -1
+                && restBytes != 0; bytesRead = inputStream.readLine( bufferArray, offset, restBytes ) ) {
+            offset += bytesRead;
+            restBytes -= bytesRead;
+        }
+
+        return bufferArray;
+    }
+
+    /**
+     * dcode a mime message based on a byte array.
+     */
+    public MimeBodyPart[] decode( byte[] data ) throws IllegalArgumentException {
+
+        MimeBodyPart[] messageBodyParts = null;
+
+        try {
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream( data );
+            MimeMessage mimeMessage = new MimeMessage( null, byteArrayInputStream );
+            if ( mimeMessage.getContentType().startsWith( "multipart" ) ) {
+                MimeMultipart mimeMultipart = (MimeMultipart) mimeMessage.getContent();
+                if ( mimeMultipart.getCount() != 0 ) {
+                    messageBodyParts = new MimeBodyPart[mimeMultipart.getCount()];
+                    for ( int i = 0; i < mimeMultipart.getCount(); i++ ) {
+                        MimeBodyPart mimeBodyPart = (MimeBodyPart) mimeMultipart.getBodyPart( i );
+                        messageBodyParts[i] = mimeBodyPart;
+                    } //for
+                } else {
+                    LOG.error( "MIME message contains no body parts!" );
+                }
+            } else {
+                LOG.error( "MIME message doesn't seem to be of type multipart: " + mimeMessage.getContentType() );
+                throw new IllegalArgumentException( "MIME message doesn't seem to be of type multipart: "
+                        + mimeMessage.getContentType() );
+            } // if
+        } catch ( javax.mail.MessagingException mEx ) {
+            LOG.error( "Error reading message: " + mEx, mEx );
+            throw new IllegalArgumentException( mEx.toString() );
+        } catch ( IOException ioEx ) {
+            LOG.error( "Error reading message: " + ioEx, ioEx );
+            throw new IllegalArgumentException( ioEx.toString() );
+        }
+
+        return messageBodyParts;
+    }
+
+    /**
+     * Determin if this payload is a wrapper for a binary type.
+     * @returns boolean
+     */
+    public boolean isBinaryType() {
+
+        // TODO
+        // return Engine.getInstance().isBinaryType( contentType );
+        return false;
+    }
+
+    /**
+     * Retrieve the Mime content from an Input stream, and do Base64 decoding to the stream.
+     * @param newInputStream
+     */
+    private final byte[] retrieveBinaryContent( InputStream newInputStream ) throws Exception {
+
+        char buf[] = retrieveCharArray( newInputStream );
+        byte[] returnBuffer = Base64.decode( buf, 0, buf.length );
+        return returnBuffer;
+    }
+
+    /**
+     * Retrieve the Mime content from an Input stream, assuming it's character data already.
+     * @param newInputStream
+     */
+    private final byte[] retrieveContent( InputStream newInputStream ) throws Exception {
+
+        char buf[] = retrieveCharArray( newInputStream );
+        return new String( buf ).getBytes();
+    }
+
+    /**
+     * Retrieve a character array from an InputStream.
+     * @param newInputStream
+     */
+    private final char[] retrieveCharArray( InputStream newInputStream ) throws Exception {
+
+        InputStreamReader is = new InputStreamReader( newInputStream );
+        int pos = 0;
+        int count;
+        char buf[] = new char[1024];
+
+        while ( ( count = is.read( buf, pos, 1024 ) ) != -1 ) {
+            pos += count;
+            char tbuf[] = new char[pos + 1024];
+            System.arraycopy( buf, 0, tbuf, 0, pos );
+            buf = tbuf;
+        }
+
+        return buf;
+    }
+
+    public void afterPropertiesSet() throws Exception {
+
+        // TODO Auto-generated method stub
+
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.Configurable#getParameter(java.lang.String)
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T getParameter( String name ) {
+
+        return (T) parameters.get( name );
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.Configurable#getParameterMap()
+     */
+    @SuppressWarnings("unchecked")
+    public Map<String, ParameterDescriptor> getParameterMap() {
+
+        return Collections.EMPTY_MAP;
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.Configurable#getParameters()
+     */
+    public Map<String, Object> getParameters() {
+
+        return Collections.unmodifiableMap( parameters );
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.Configurable#setParameter(java.lang.String, java.lang.Object)
+     */
+    public void setParameter( String name, Object value ) {
+
+        parameters.put( name, value );
+    }
+}

@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.nexuse2e.pojo.LoggerParamPojo" table="nx_logger_param" lazy="false">
+        <comment></comment>
+        <id name="nxLoggerParamId" type="int">
+            <column name="nx_logger_param_id" sql-type="integer"/>
+            <generator class="native" />
+        </id>
+        
+        <many-to-one foreign-key="fk__logger_param__logger_id" name="logger" column="nx_logger_id" class="org.nexuse2e.pojo.LoggerPojo" not-null="true"/>
+        
+        <property name="createdDate" type="timestamp">
+            <column name="created_date" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+        
+        <property name="modifiedDate" type="timestamp">
+            <column name="modified_date" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+        
+        <property name="modifiedNxUserId" type="int">
+            <column name="modified_nx_user_id" not-null="true" sql-type="integer">
+                <comment></comment>
+            </column>
+        </property>
+        
+        <property name="paramName" type="string">
+            <column name="param_name" length="64" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+        
+        <property name="label" type="string">
+            <column name="label" length="64">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="value" type="string">
+            <column name="value" length="64" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="sequenceNumber" type="int">
+            <column name="sequence_number" sql-type="integer">
+                <comment></comment>
+            </column>
+        </property>
+        
+    </class>
+</hibernate-mapping>

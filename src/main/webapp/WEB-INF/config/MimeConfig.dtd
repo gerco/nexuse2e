@@ -1,0 +1,14 @@
+<!ELEMENT MimeConfig (MimeHandlers, FileMappings)>
+<!ELEMENT MimeHandlers (Handler*)>
+<!ELEMENT Handler (Class)>
+<!ATTLIST Handler
+	MimeType CDATA #REQUIRED
+>
+<!ELEMENT Class (#PCDATA)>
+<!ELEMENT FileMappings (MimeMapping*)>
+<!ELEMENT MimeMapping (FileType*)>
+<!ATTLIST MimeMapping
+	MimeType CDATA #REQUIRED
+>
+<!ELEMENT FileType (#PCDATA)>
+

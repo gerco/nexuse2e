@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE MimeConfig SYSTEM "MimeConfig.dtd">
+<MimeConfig>
+	<MimeHandlers>
+		<Handler MimeType="application/xml">
+			<Class>org.nexuse2e.messaging.mime.text_xml</Class>
+		</Handler>	
+		<Handler MimeType="text/xml">
+			<Class>org.nexuse2e.messaging.mime.text_xml</Class>
+		</Handler>
+		<Handler MimeType="application/pdf">
+			<Class>org.nexuse2e.messaging.mime.binary_base64</Class>
+		</Handler>
+		<Handler MimeType="application/msword">
+			<Class>org.nexuse2e.messaging.mime.binary_base64</Class>
+		</Handler>
+		<Handler MimeType="application/octet-stream">
+			<Class>org.nexuse2e.messaging.mime.binary_base64</Class>
+		</Handler>
+		<Handler MimeType="application/x-zip-compressed">
+			<Class>org.nexuse2e.messaging.mime.binary_base64</Class>
+		</Handler>
+		<Handler MimeType="application/zip">
+			<Class>org.nexuse2e.messaging.mime.binary_base64</Class>
+		</Handler>
+		<Handler MimeType="image/gif">
+			<Class>org.nexuse2e.messaging.mime.binary_base64</Class>
+		</Handler>
+		<Handler MimeType="image/jpeg">
+			<Class>org.nexuse2e.messaging.mime.binary_base64</Class>
+		</Handler>
+		<Handler MimeType="image/gif">
+			<Class>org.nexuse2e.messaging.mime.binary_base64</Class>
+		</Handler>
+		<Handler MimeType="audio/x-mpeg">
+			<Class>org.nexuse2e.messaging.mime.binary_base64</Class>
+		</Handler>
+		<Handler MimeType="audio/wav">
+			<Class>org.nexuse2e.messaging.mime.binary_base64</Class>
+		</Handler>
+		<Handler MimeType="text/plain">
+			<Class>com.sun.mail.handlers.text_plain</Class>
+		</Handler>
+	</MimeHandlers>
+	<FileMappings>
+		<MimeMapping MimeType="text/plain">
+			<FileType>txt</FileType>
+			<FileType>TXT</FileType>
+		</MimeMapping>
+		<MimeMapping MimeType="text/xml">
+			<FileType>xml</FileType>
+			<FileType>XML</FileType>
+		</MimeMapping>
+		<MimeMapping MimeType="text/xsl">
+			<FileType>xsl</FileType>
+			<FileType>XSL</FileType>
+		</MimeMapping>
+		<MimeMapping MimeType="text/xsd">
+			<FileType>xsd</FileType>
+			<FileType>XSD</FileType>
+		</MimeMapping>
+		<MimeMapping MimeType="text/dtd">
+			<FileType>dtd</FileType>
+			<FileType>DTD</FileType>
+		</MimeMapping>
+		<MimeMapping MimeType="application/pdf">
+			<FileType>pdf</FileType>
+			<FileType>PDF</FileType>
+		</MimeMapping>
+		<MimeMapping MimeType="application/x-zip-compressed">
+			<FileType>zip</FileType>
+			<FileType>ZIP</FileType>
+		</MimeMapping>
+		<MimeMapping MimeType="application/msword">
+			<FileType>doc</FileType>
+			<FileType>DOC</FileType>
+		</MimeMapping>
+		<MimeMapping MimeType="audio/x-mpeg">
+			<FileType>mp3</FileType>
+			<FileType>MP3</FileType>
+		</MimeMapping>
+		<MimeMapping MimeType="audio/wav">
+			<FileType>wav</FileType>
+			<FileType>WAV</FileType>
+		</MimeMapping>
+		<MimeMapping MimeType="image/jpeg">
+			<FileType>jpg</FileType>
+			<FileType>JPG</FileType>
+		</MimeMapping>
+		<MimeMapping MimeType="application/msword">
+			<FileType>doc</FileType>
+			<FileType>DOC</FileType>
+		</MimeMapping>
+		<MimeMapping MimeType="image/gif">
+			<FileType>gif</FileType>
+			<FileType>GIF</FileType>
+		</MimeMapping>
+	</FileMappings>
+</MimeConfig>

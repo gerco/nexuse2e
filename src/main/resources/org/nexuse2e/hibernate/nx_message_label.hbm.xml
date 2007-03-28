@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.nexuse2e.pojo.MessageLabelPojo" table="nx_message_label" lazy="false">
+        <comment></comment>
+        <id name="nxMessageLabelId" type="int">
+            <column name="nx_message_label_id" sql-type="integer"/>
+            <generator class="native" />
+        </id>
+        
+        <many-to-one foreign-key="fk__message_label__message_id" name="message" column="nx_message_id" class="org.nexuse2e.pojo.MessagePojo" not-null="true" index="ix_message_label_1"/>
+        
+        <property name="createdDate" type="timestamp">
+            <column name="created_date" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+        
+        <property name="modifiedDate" type="timestamp">
+            <column name="modified_date" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+        
+        <property name="modifiedNxUserId" type="int">
+            <column name="modified_nx_user_id" not-null="true" sql-type="integer">
+                <comment></comment>
+            </column>
+        </property>
+        
+        <property name="label" type="string">
+            <column name="label" length="64">
+                <comment></comment>
+            </column>
+        </property>
+        
+        <property name="value" type="string">
+            <column name="value" length="512" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+        
+    </class>
+</hibernate-mapping>

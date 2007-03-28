@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.nexuse2e.pojo.PipeletPojo" table="nx_pipelet" lazy="false">
+        <comment></comment>
+        <id name="nxPipeletId" type="integer">
+            <column name="nx_pipelet_id" />
+            <generator class="native" />
+        </id>
+        
+        <many-to-one foreign-key="fk__pipelet__pipeline_id" name="pipeline" column="nx_pipeline_id" class="org.nexuse2e.pojo.PipelinePojo" not-null="true" index="ix_pipelet_1"/>
+        
+        <many-to-one foreign-key="fk__pipelet__component_id" name="component" column="nx_component_id" class="org.nexuse2e.pojo.ComponentPojo" not-null="true" index="ix_pipelet_2"/>
+        
+        <property name="frontend" type="boolean">
+            <column name="frontend_flag" not-null="true" sql-type="integer">
+                <comment>frontend is true, backend is false</comment>
+            </column>
+        </property>
+        <property name="forward" type="boolean">
+            <column name="forward_flag" not-null="true" sql-type="integer">
+                <comment>forward is true, return is false</comment>
+            </column>
+        </property>
+        <property name="endpoint" type="boolean">
+            <column name="endpoint_flag" not-null="true" sql-type="integer">
+                <comment>endpoint is true, pipelet in pipeline is false</comment>
+            </column>
+        </property>
+        <property name="createdDate" type="timestamp">
+            <column name="created_date" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="modifiedDate" type="timestamp">
+            <column name="modified_date" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+        
+        <property name="modifiedNxUserId" type="int">
+            <column name="modified_nx_user_id" not-null="true" sql-type="integer">
+                <comment></comment>
+            </column>
+        </property>
+        
+        <property name="position" type="int">
+            <column name="position" not-null="true" sql-type="integer">
+                <comment>position in pipeline. Starting with 0</comment>
+            </column>
+        </property>
+        
+        <property name="name" type="string">
+            <column name="name" length="64" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="description" type="string">
+            <column name="description" length="64">
+                <comment></comment>
+            </column>
+        </property>
+        
+        <bag name="pipeletParams" lazy="false" inverse="true" cascade="all,delete-orphan">
+        	<key column="nx_pipelet_id"/> 
+        	<one-to-many class="org.nexuse2e.pojo.PipeletParamPojo"/>
+		</bag>
+        
+        
+        
+    </class>
+</hibernate-mapping>

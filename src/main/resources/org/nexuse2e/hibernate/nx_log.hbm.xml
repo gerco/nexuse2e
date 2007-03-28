@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping default-cascade="all">
+    <class name="org.nexuse2e.pojo.LogPojo" table="nx_log" lazy="false">
+        <comment></comment>
+        <id name="nxLogId" type="int">
+            <column name="nx_log_id" sql-type="integer"/>
+            <generator class="native" />
+        </id>
+        <property name="logId" type="string">
+            <column name="log_id" length="255" not-null="true">
+                <comment>might be used to separate different nexus processes</comment>
+            </column>
+        </property>
+        <property name="className" type="string">
+            <column name="class_name" length="255" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="methodName" type="string">
+            <column name="method_name" length="255" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="eventId" type="int">
+            <column name="event_id" not-null="true" sql-type="integer">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="severity" type="int">
+            <column name="severity" not-null="true" sql-type="integer">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="conversationId" type="string">
+            <column name="conversation_id" length="64" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="messageId" type="string">
+            <column name="message_id" length="64" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="description" type="string">
+            <column name="description" length="255" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="createdDate" type="timestamp">
+            <column name="created_date" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+        
+        
+    </class>
+</hibernate-mapping>

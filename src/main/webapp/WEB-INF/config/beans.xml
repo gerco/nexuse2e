@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <bean id="placeholderConfig" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="locations">
+      <list>
+        <value>/WEB-INF/config/database.properties</value>
+        <value>/WEB-INF/config/bean.properties</value>
+      </list>
+    </property>
+  </bean>
+
+	<bean id="nexusTransportDispatcherMapping" class="org.nexuse2e.configuration.UpdateableUrlHandlerMapping">
+        <property name="mappings">
+            <value>
+            </value>
+            <!--
+                /ebxml20=ebXml20Controller
+                /ebxml10=ebXml10Controller
+                /httpplain=httpplainController
+                /SimpleXMLDocService=wsGenericReceiver
+            -->
+        </property>
+    </bean>
+
+  <!-- Engine  -->
+  <bean id="engineNG" class="org.nexuse2e.Engine" init-method="initialize" destroy-method="shutdown">
+    <property name="baseConfigurationProviderClass" value="${configuration.base.class}" />
+    <property name="cacertsPath" value="/Volumes/nexus" />
+    <property name="certificatePath" value="/Volumes/nexus" />
+  </bean>
+
+  <!-- Integration beans -->
+  <bean id="httpIntegrationController" class="org.nexuse2e.integration.HTTPIntegrationController">
+  </bean>
+  <bean id="debugController" class="org.nexuse2e.integration.DebugController">
+  </bean>
+
+  <!-- ********************************************** -->
+  <!-- Web services                                   -->
+  <!-- ********************************************** -->
+  
+  <bean id="nexusE2EInterfaceBean" class="org.nexuse2e.integration.NEXUSe2eInterfaceImpl" />
+
+  <!-- Generic Web services interface (XFire) -->
+  <!--
+  <bean id="wsGenericReceiver" class="org.nexuse2e.transport.WebServiceGenericXMLDocumentReceiver">
+    <property name="key">
+      <bean class="org.nexuse2e.ProtocolSpecificKey">
+        <property name="communicationProtocolId" value="ws-generic" />
+        <property name="communicationProtocolVersion" value="0.1" />
+        <property name="transportProtocolId" value="soap" />
+      </bean>
+    </property>
+    <property name="XFire" ref="xfire" />
+    <property name="frontendPipeline" ref="wsGenericInboundPipeline" />
+    <property name="synchronous" value="true" />
+  </bean>
+  <bean id="wsGenericSender" class="org.nexuse2e.transport.WebServiceGenericXMLDocumentSender">
+    <property name="key">
+      <bean class="org.nexuse2e.ProtocolSpecificKey">
+        <property name="communicationProtocolId" value="ws-generic" />
+        <property name="communicationProtocolVersion" value="0.1" />
+        <property name="transportProtocolId" value="soap" />
+      </bean>
+    </property>
+  </bean>
+  -->
+
+  <!-- Sample for Web services, needs other header parser
+  <bean id="wsGenericInboundPipeline" class="org.nexuse2e.messaging.FrontendPipeline">
+    <property name="key">
+      <bean class="org.nexuse2e.ProtocolSpecificKey">
+        <property name="communicationProtocolId" value="ws-generic" />
+        <property name="communicationProtocolVersion" value="0.1" />
+        <property name="transportProtocolId" value="soap" />
+      </bean>
+    </property>
+
+    <property name="forwardPipelets">
+      <list>
+        <ref bean="cidxDummyHeaderBuilder" />
+      </list>
+    </property>
+
+    <property name="pipelineEndpoint">
+      <ref bean="frontendInboundDispatcher" />
+    </property>
+
+    <property name="returnPipelets">
+      <list></list>
+    </property>
+  </bean>
+
+  <bean id="wsGenericOutboundPipeline" class="org.nexuse2e.messaging.FrontendPipeline">
+    <property name="key">
+      <bean class="org.nexuse2e.ProtocolSpecificKey">
+        <property name="communicationProtocolId" value="ws-generic" />
+        <property name="communicationProtocolVersion" value="0.1" />
+        <property name="transportProtocolId" value="soap" />
+      </bean>
+    </property>
+
+    <property name="forwardPipelets">
+      <list></list>
+    </property>
+
+    <property name="pipelineEndpoint">
+      <ref bean="wsGenericSender" />
+    </property>
+
+    <property name="returnPipelets">
+      <list></list>
+    </property>
+  </bean>
+  
+  <bean id="cidxDummyHeaderBuilder" class="org.nexuse2e.messaging.cidx.CIDXDummyHeaderBuilder" />
+
+  <bean id="wsGenericAdapter" class="org.nexuse2e.messaging.cidx.ProtocolAdapter">
+    <property name="key">
+      <bean class="org.nexuse2e.ProtocolSpecificKey">
+        <property name="communicationProtocolId" value="ws-generic" />
+        <property name="communicationProtocolVersion" value="0.1" />
+        <property name="transportProtocolId" value="soap" />
+      </bean>
+    </property>
+  </bean>
+
+  -->
+
+  <!-- Endpoints (Transports and Dispatchers) -->
+  <bean id="frontendInboundDispatcher" class="org.nexuse2e.messaging.FrontendInboundDispatcher">
+    <property name="protocolAdapters">
+      <list>
+        <ref bean="ebxml20Adapter" />
+        <ref bean="httpPlainAdapter" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="backendInboundDispatcher" class="org.nexuse2e.messaging.BackendInboundDispatcher" />
+
+  <bean id="backendOutboundDispatcher" class="org.nexuse2e.messaging.BackendOutboundDispatcher">
+    <property name="protocolAdapters">
+      <list>
+        <ref bean="ebxml20Adapter" />
+        <ref bean="httpPlainAdapter" />
+      </list>
+    </property>
+  </bean>
+
+  <bean id="frontendOutboundDispatcher" class="org.nexuse2e.messaging.FrontendOutboundDispatcher">
+    <property name="frontendOutboundPipelines">
+      <list>
+      <!--
+        <ref bean="ebXML20HttpOutboundPipeline" />
+        <ref bean="ebXML20SmtpOutboundPipeline" />
+        <ref bean="httpPlainOutboundPipeline" />
+        -->
+      </list>
+    </property>
+  </bean>
+
+  <bean id="backendPipelineDispatcher" class="org.nexuse2e.backend.BackendPipelineDispatcher" />
+
+  <!--  ProtocolAdapter -->
+  <bean id="ebxml20Adapter" class="org.nexuse2e.messaging.ebxml.v20.ProtocolAdapter">
+    <property name="key">
+      <bean class="org.nexuse2e.ProtocolSpecificKey">
+        <property name="communicationProtocolId" value="ebxml" />
+        <property name="communicationProtocolVersion" value="2.0" />
+        <property name="transportProtocolId" value="http" />
+      </bean>
+    </property>
+  </bean>
+  <bean id="httpPlainAdapter" class="org.nexuse2e.messaging.ebxml.v20.ProtocolAdapter">
+    <property name="key">
+      <bean class="org.nexuse2e.ProtocolSpecificKey">
+        <property name="communicationProtocolId" value="httpplain" />
+        <property name="communicationProtocolVersion" value="1.0" />
+        <property name="transportProtocolId" value="http" />
+      </bean>
+    </property>
+  </bean>
+
+  <!-- misc  -->
+  <!--
+  <bean id="directoryScanner" class="org.nexuse2e.backend.DummyDirectoryScanner">
+    <property name="directory" value="${scanner.directory}" />
+    <property name="interval" value="${scanner.interval}" />
+    <property name="backendPipelineDispatcher" ref="backendPipelineDispatcher" />
+    <property name="partnerId" value="${scanner.partnerId}" />
+    <property name="choreographyId" value="${scanner.choreographyId}" />
+    <property name="actionId" value="${scanner.actionId}" />
+  </bean>
+  -->
+
+  <!--  DatabaseConfig -->
+  <bean id="internal" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <property name="driverClassName" value="${database.driverClassName}" />
+    <property name="url" value="${database.url}" />
+    <property name="username" value="${database.user}" />
+    <property name="password" value="${database.password}" />
+    <property name="maxActive" value="-1" />
+  </bean>
+
+<!-- 
+  <bean id="external" class="org.springframework.jndi.JndiObjectFactoryBean">
+    <property name="jndiName" value="${datasource.logicalName}"/>
+  </bean>
+ -->
+ 
+  <bean id="HibernateSessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+    <property name="dataSource" ref="${datasource.type}" />
+    <!-- <property name="dataSource" ref="external"/> -->
+    <property name="useTransactionAwareDataSource" value="false" />
+    <property name="mappingResources">
+      <list>
+        <value>org/nexuse2e/hibernate/nx_conversation.hbm.xml</value>
+        <value>org/nexuse2e/hibernate/nx_message.hbm.xml</value>
+        <value>org/nexuse2e/hibernate/nx_message_label.hbm.xml</value>
+        <value>org/nexuse2e/hibernate/nx_message_payload.hbm.xml</value>
+        <value>org/nexuse2e/hibernate/nx_participant.hbm.xml</value>
+        <value>org/nexuse2e/hibernate/nx_choreography.hbm.xml</value>
+        <value>org/nexuse2e/hibernate/nx_action.hbm.xml</value>
+        <value>org/nexuse2e/hibernate/nx_partner.hbm.xml</value>
+        <value>org/nexuse2e/hibernate/nx_component.hbm.xml</value>
+        <value>org/nexuse2e/hibernate/nx_certificate.hbm.xml</value>
+        <value>org/nexuse2e/hibernate/nx_connection.hbm.xml</value>
+        <value>org/nexuse2e/hibernate/nx_pipelet_param.hbm.xml</value>
+        <value>org/nexuse2e/hibernate/nx_follow_up_action.hbm.xml</value>
+        <value>org/nexuse2e/hibernate/nx_user.hbm.xml</value>
+        <value>org/nexuse2e/hibernate/nx_grant.hbm.xml</value>
+        <value>org/nexuse2e/hibernate/nx_role.hbm.xml</value>
+        <value>org/nexuse2e/hibernate/nx_pipeline.hbm.xml</value>
+        <value>org/nexuse2e/hibernate/nx_pipelet.hbm.xml</value>
+        <value>org/nexuse2e/hibernate/nx_service.hbm.xml</value>
+        <value>org/nexuse2e/hibernate/nx_service_param.hbm.xml</value>
+        <value>org/nexuse2e/hibernate/nx_trp.hbm.xml</value>
+        <value>org/nexuse2e/hibernate/nx_log.hbm.xml</value>
+        <value>org/nexuse2e/hibernate/nx_logger.hbm.xml</value>
+        <value>org/nexuse2e/hibernate/nx_logger_param.hbm.xml</value>
+      </list>
+    </property>
+    <property name="hibernateProperties">
+      <props>        <prop key="hibernate.show_sql">${database.showSQL}</prop>        <prop key="hibernate.dialect">${database.dialect}</prop>
+        <prop key="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</prop>
+        <prop key="hibernate.current_session_context_class">org.hibernate.context.ThreadLocalSessionContext</prop>        <!--
+          <prop key="transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</prop>
+        -->      </props>
+    </property>
+  </bean>
+  
+  <bean id="logDao" class="org.nexuse2e.dao.LogDAO">
+    <property name="sessionFactory" ref="HibernateSessionFactory" />
+  </bean>
+  <bean id="configDao" class="org.nexuse2e.dao.ConfigDAO">
+    <property name="sessionFactory" ref="HibernateSessionFactory" />
+  </bean>
+  <bean id="transactionDao" class="org.nexuse2e.dao.TransactionDAO">
+    <property name="sessionFactory" ref="HibernateSessionFactory" />
+  </bean>
+  
+  <!-- ui structure -->
+  
+  <bean id="targetProviderManager" class="org.nexuse2e.ui.structure.impl.DefaultTargetProviderManager">
+    <property name="targetProviders">
+      <map>
+        <!-- add TargetProvider intances to the map below -->
+        <entry>
+          <key>
+            <value>serverIdentityTargetProvider</value>
+          </key>
+          <bean class="org.nexuse2e.ui.structure.impl.ServerIdentityTargetProvider"/>
+        </entry>
+        <entry>
+          <key>
+            <value>frontendPipelineTargetProvider</value>
+          </key>
+          <bean class="org.nexuse2e.ui.structure.impl.PipelineTargetProvider">
+            <property name="frontend">
+              <value>true</value>
+            </property>
+          </bean>
+        </entry>
+        <entry>
+          <key>
+            <value>backendPipelineTargetProvider</value>
+          </key>
+          <bean class="org.nexuse2e.ui.structure.impl.PipelineTargetProvider">
+            <property name="frontend">
+              <value>false</value>
+            </property>
+          </bean>
+        </entry>
+        <entry>
+          <key>
+            <value>componentTargetProvider</value>
+          </key>
+          <bean class="org.nexuse2e.ui.structure.impl.ComponentTargetProvider"/>
+        </entry>
+        <entry>
+          <key>
+            <value>serviceTargetProvider</value>
+          </key>
+          <bean class="org.nexuse2e.ui.structure.impl.ServiceTargetProvider"/>
+        </entry>
+        <entry>
+          <key>
+            <value>notifierTargetProvider</value>
+          </key>
+          <bean class="org.nexuse2e.ui.structure.impl.NotifierTargetProvider"/>
+        </entry>
+        <entry>
+          <key>
+            <value>choreographyTargetProvider</value>
+          </key>
+          <bean class="org.nexuse2e.ui.structure.impl.ChoreographyTargetProvider"/>
+        </entry>
+        <entry>
+          <key>
+            <value>collaborationPartnerTargetProvider</value>
+          </key>
+          <bean class="org.nexuse2e.ui.structure.impl.CollaborationPartnerTargetProvider"/>
+        </entry>
+        <entry>
+          <key>
+            <value>participantTargetProvider</value>
+          </key>
+          <bean class="org.nexuse2e.ui.structure.impl.ParticipantTargetProvider"/>
+        </entry>
+        <entry>
+          <key>
+            <value>userTargetProvider</value>
+          </key>
+          <bean class="org.nexuse2e.ui.structure.impl.UserTargetProvider"/>
+        </entry>
+        <entry>
+          <key>
+            <value>roleTargetProvider</value>
+          </key>
+          <bean class="org.nexuse2e.ui.structure.impl.RoleTargetProvider"/>
+        </entry>
+      </map>
+    </property>
+  </bean>
+  
+  <bean id="structureService" class="org.nexuse2e.ui.structure.impl.CachedXmlStructureServer">
+    <property name="spec">
+      <value>${struct.spec}</value>
+    </property>
+    <property name="targetProviderManager">
+      <ref bean="targetProviderManager"/>      
+    </property>
+  </bean>
+
+</beans>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- this dtd specifies the format of the ui structure of the webapp -->
+
+<!-- root element for the ui -->
+<!ELEMENT nxs:structure (nxs:menu?,nxs:site?)>
+
+<!-- parent element for the tree menu -->
+<!ELEMENT nxs:menu (nxs:page)>
+
+<!-- parent element for commands not included in the menu -->
+<!ELEMENT nxs:site (nxs:page)>
+
+<!-- page is a leaf in the menu or element of the site and parent of subpages and commands -->
+  <!ELEMENT nxs:page ( (nxs:page|nxs:command)* )>
+  <!ATTLIST nxs:page
+    type   (url|provider) "url"
+    provider CDATA #IMPLIED
+    target   CDATA #REQUIRED
+    label    CDATA #REQUIRED
+    icon     CDATA #REQUIRED
+  >
+  
+  <!-- specifies a command which is a leaf of a page -->
+  <!ELEMENT nxs:command EMPTY>
+  <!ATTLIST nxs:command
+    type   (url|provider) "url"
+    provider CDATA #IMPLIED
+    target   CDATA #REQUIRED
+    label    CDATA #REQUIRED
+    icon     CDATA #REQUIRED
+  >

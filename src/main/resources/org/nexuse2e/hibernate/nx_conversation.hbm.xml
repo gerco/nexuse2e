@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.nexuse2e.pojo.ConversationPojo" table="nx_conversation" lazy="false">
+        <comment></comment>
+        <id name="nxConversationId" type="int">
+            <column name="nx_conversation_id" sql-type="integer"/>
+            <generator class="native" />
+        </id>
+        
+        <many-to-one foreign-key="fk__conversation__choreography_id" name="choreography" column="nx_choreography_id" class="org.nexuse2e.pojo.ChoreographyPojo" not-null="true" cascade="none" index="ix_conversation_1"/>
+
+        <many-to-one foreign-key="fk__conversation__partner_id" name="partner" column="nx_partner_id" class="org.nexuse2e.pojo.PartnerPojo" not-null="true" cascade="none" index="ix_conversation_2"/>
+
+        <property name="conversationId" type="string">
+            <column name="conversation_id" length="64" not-null="true">
+                <comment>Protocol specific conversation Id</comment>
+            </column>
+        </property>
+        <property name="createdDate" type="timestamp">
+            <column name="created_date" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="endDate" type="timestamp">
+            <column name="end_date">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="modifiedDate" type="timestamp">
+            <column name="modified_date" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="modifiedNxUserId" type="int">
+            <column name="modified_nx_user_id" not-null="true" sql-type="integer">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="status" type="int">
+            <column name="status" not-null="true" sql-type="integer">
+                <comment>Message Status: e.g. processing, idle, awaiting_ack, error, complete</comment>
+            </column>
+        </property>
+        <property name="messageCount" type="int">
+            <column name="message_count" not-null="true" sql-type="integer">
+            </column>
+        </property>
+        
+        <many-to-one foreign-key="fk__conversation__current_action_id" name="currentAction" column="current_nx_action_id" class="org.nexuse2e.pojo.ActionPojo" not-null="true" cascade="none" index="ix_conversation_3"/>
+                
+        <bag name="messages" inverse="true" cascade="save-update,delete-orphan" lazy="false">
+        	<key column="nx_conversation_id"/> 
+        	<one-to-many class="org.nexuse2e.pojo.MessagePojo"/>
+		</bag>
+
+    </class>
+</hibernate-mapping>

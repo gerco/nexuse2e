@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping default-cascade="all">
+    <class name="org.nexuse2e.pojo.ConnectionPojo" table="nx_connection" lazy="false">
+        <comment></comment>
+        <id name="nxConnectionId" type="int">
+            <column name="nx_connection_id"  sql-type="integer" />
+            <generator class="native" />
+        </id>
+        
+        <many-to-one foreign-key="fk__connection__certificate_id" name="certificate" column="nx_certificate_id" class="org.nexuse2e.pojo.CertificatePojo" not-null="false" cascade="none" index="ix_connection_1"/>
+        
+        <many-to-one foreign-key="fk__connection__trp_id" name="trp" column="nx_trp_id" class="org.nexuse2e.pojo.TRPPojo" not-null="true" cascade="none" index="ix_connection_2"/>
+        
+        <many-to-one foreign-key="fk__connection__partner_id" name="partner" column="nx_partner_id" class="org.nexuse2e.pojo.PartnerPojo" not-null="true" cascade="none" index="ix_connection_3"/>
+        
+        <property name="timeout" type="int">
+            <column name="timeout" not-null="true" sql-type="integer">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="messageInterval" type="int">
+            <column name="message_interval" not-null="true" sql-type="integer">
+                <comment></comment>
+            </column>
+        </property>
+        
+        <property name="secure" type="boolean">
+            <column name="security_flag" not-null="true" sql-type="integer">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="reliable" type="boolean">
+            <column name="reliable_flag" not-null="true" sql-type="integer">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="synchronous" type="boolean">
+            <column name="synchronous_flag" not-null="true" sql-type="integer">
+            </column>
+        </property>
+        <property name="synchronousTimeout" type="int">
+            <column name="synchronous_timeout" not-null="true" sql-type="integer">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="retries" type="int">
+            <column name="retries" not-null="true" sql-type="integer">
+                <comment></comment>
+            </column>
+        </property>
+        
+        <property name="createdDate" type="timestamp">
+            <column name="created_date" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="modifiedDate" type="timestamp">
+            <column name="modified_date" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="modifiedNxUserId" type="int">
+            <column name="modified_nx_user_id" not-null="true" sql-type="integer">
+                <comment></comment>
+            </column>
+        </property>
+        
+        <property name="uri" type="string">
+            <column name="uri" length="512" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+        
+        <property name="name" type="string">
+            <column name="name" length="64" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+        
+        <property name="loginName" type="string">
+            <column name="login_name" length="64" not-null="false">
+                <comment></comment>
+            </column>
+        </property>
+        
+        <property name="password" type="string">
+            <column name="password" length="64" not-null="false">
+                <comment></comment>
+            </column>
+        </property>
+        
+        <property name="description" type="string">
+            <column name="description" length="64">
+                <comment></comment>
+            </column>
+        </property>
+        
+        <set name="partcipants" inverse="true" lazy="false" cascade="none">
+        	<key column="nx_connection_id"/> 
+        	<one-to-many class="org.nexuse2e.pojo.ParticipantPojo"/>
+		</set>
+      
+        
+        
+    </class>
+</hibernate-mapping>

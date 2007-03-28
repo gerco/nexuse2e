@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping default-cascade="all">
+    <class name="org.nexuse2e.pojo.PartnerPojo" table="nx_partner" lazy="false">
+        <comment></comment>
+        <id name="nxPartnerId" type="int">
+            <column name="nx_partner_id" sql-type="integer"/>
+            <generator class="native" />
+        </id>
+        
+        <property name="type" type="int">
+            <column name="type" not-null="true" sql-type="integer">
+                <comment>e.g Localpartner information or Businesspartner</comment>
+            </column>
+        </property>
+        
+        <property name="companyName" type="string">
+            <column name="company_name" length="64">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="addressLine1" type="string">
+            <column name="address_line_1" length="64">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="addressLine2" type="string">
+            <column name="address_line_2" length="64">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="city" type="string">
+            <column name="city" length="64">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="state" type="string">
+            <column name="state" length="64">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="zip" type="string">
+            <column name="zip" length="64">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="country" type="string">
+            <column name="country" length="64">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="createdDate" type="timestamp">
+            <column name="created_date" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="modifiedDate" type="timestamp">
+            <column name="modified_date" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="modifiedNxUserId" type="int">
+            <column name="modified_nx_user_id" not-null="true" sql-type="integer">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="name" type="string">
+            <column name="name" length="64">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="description" type="string">
+            <column name="description" length="64">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="partnerId" type="string">
+            <column name="partner_id" length="64" not-null="true" unique="true">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="partnerIdType" type="string">
+            <column name="partner_id_type" length="64" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+        
+        <set name="conversations" inverse="true" lazy="true">
+        	<key column="nx_partner_id"/> 
+        	<one-to-many class="org.nexuse2e.pojo.ConversationPojo"/>
+		</set>
+        
+        <set name="certificates" inverse="true" lazy="false" cascade="none">
+        	<key column="nx_partner_id"/> 
+        	<one-to-many class="org.nexuse2e.pojo.CertificatePojo"/>
+		</set>
+		
+		<set name="connections" inverse="true" lazy="false" cascade="all,delete-orphan">
+        	<key column="nx_partner_id"/> 
+        	<one-to-many class="org.nexuse2e.pojo.ConnectionPojo"/>
+		</set>
+		
+		<bag name="participants" inverse="true" lazy="false" cascade="none">
+        	<key column="nx_partner_id"/> 
+        	<one-to-many class="org.nexuse2e.pojo.ParticipantPojo"/>
+		</bag>
+        
+        
+    </class>
+</hibernate-mapping>

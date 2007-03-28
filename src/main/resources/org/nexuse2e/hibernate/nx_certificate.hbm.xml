@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping default-cascade="all">
+    <class name="org.nexuse2e.pojo.CertificatePojo" table="nx_certificate" lazy="false">
+        <comment></comment>
+        <id name="nxCertificateId" type="int">
+            <column name="nx_certificate_id" sql-type="integer" />
+            <generator class="native" />
+        </id>
+        
+        <property name="type" type="int">
+            <column name="type" not-null="true" sql-type="integer">
+                <comment>e.g. 1=Local Server Certificate, 2=PartnerCertificate, 3=CA Certificate, 4=Request</comment>
+            </column>
+        </property>
+        
+        <property name="password" type="string">
+            <column name="password" length="64">
+                <comment></comment>
+            </column>
+        </property>
+        
+        
+        <property name="createdDate" type="timestamp">
+            <column name="created_date" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="modifiedDate" type="timestamp">
+            <column name="modified_date" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="modifiedNxUserId" type="int">
+            <column name="modified_nx_user_id" not-null="true" sql-type="integer">
+                <comment></comment>
+            </column>
+        </property>
+        
+       <many-to-one foreign-key="fk__certificate__partner_id" name="partner" column="nx_partner_id" class="org.nexuse2e.pojo.PartnerPojo" not-null="false" cascade="none" index="ix_certificate_1"/>
+         <!--
+         <property name="partner" type="org.nexuse2e.pojo.PartnerPojo">
+            <column name="nx_partner_id" not-null="true" sql-type="integer">
+                <comment></comment>
+            </column>
+        </property>
+        -->
+        
+        <property name="name" type="string">
+            <column name="name" length="64" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+        
+        <property name="description" type="string">
+            <column name="description" length="64">
+                <comment></comment>
+            </column>
+        </property>
+        <property name="binaryData" type="org.nexuse2e.pojo.BinaryBlobType" >
+            <column name="binary_data" not-null="true" length="128000">
+                <comment></comment>
+            </column>
+        </property>
+        
+    </class>
+</hibernate-mapping>
