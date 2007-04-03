@@ -52,6 +52,9 @@ public class Constants {
     public static final String POSTFIX_FRONTEND_ACTION_SERIALIZER = "-Frontend-Action-Serializer";
     public static final String POSTFIX_BACKEND_ACTION_SERIALIZER  = "-Backend-Action-Serializer";
 
+    public static final String POSTFIX_BACKEND_PIPELINE  = "-Backend-Pipeline";
+    public static final String POSTFIX_FRONTEND_PIPELINE  = "-Frontend-Pipeline";
+    
     /**
      * The possible states of a bean that implements the <code>Manageable</code> interface.
      * @see org.nexuse2e.Manageable
