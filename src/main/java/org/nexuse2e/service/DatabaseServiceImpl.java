@@ -24,6 +24,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 
+import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
@@ -34,10 +35,10 @@ import org.nexuse2e.configuration.ListParameter;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
 
-public class DatabaseService extends AbstractService {
+public class DatabaseServiceImpl extends AbstractService implements DatabaseService {
 
-    private static Logger LOG               = Logger.getLogger( DatabaseService.class );
-    
+    private static Logger      LOG                = Logger.getLogger( DatabaseServiceImpl.class );
+
     public static final String EXTERNALDATASOURCE = "externaldatasource";
     public static final String DATASOURCEID       = "datasourceid";
     public static final String CONNECTIONURL      = "url";
@@ -48,13 +49,13 @@ public class DatabaseService extends AbstractService {
     public static final String AUTOCOMMIT         = "autocommit";
     public static final String READONLY           = "readonly";
     public static final String ISOLATIONLEVEL     = "isolationlevel";
-    
-    private DataSource    datasource        = null;
-    
+
+    private DataSource         datasource         = null;
+
     /**
      * Used for debug issues
      */
-    private int           connectionCounter = 0;
+    private int                connectionCounter  = 0;
 
     /* (non-Javadoc)
      * @see org.nexuse2e.service.AbstractService#start()
@@ -62,13 +63,44 @@ public class DatabaseService extends AbstractService {
     @Override
     public void start() {
 
-        BasicDataSource ds = new BasicDataSource();
-        ds.setDriverClassName( (String) getParameter( DRIVERCLASSNAME ) );
-        ds.setUsername( (String) getParameter( USER ) );
-        ds.setPassword( (String) getParameter( PASSWORD ) );
-        ds.setUrl( (String) getParameter( CONNECTIONURL ) );
+        LOG.trace( "starting" );
 
-        datasource = ds;
+        boolean useExternalDataSource = (Boolean)getParameter( EXTERNALDATASOURCE );
+        
+        LOG.debug( "useExternalDatasource: "+useExternalDataSource );
+        
+        
+        
+        
+        if(!useExternalDataSource){
+            BasicDataSource bds = new BasicDataSource();
+            bds.setDriverClassName( (String) getParameter( DRIVERCLASSNAME ) );
+            bds.setUsername( (String) getParameter( USER ) );
+            bds.setPassword( (String) getParameter( PASSWORD ) );
+            bds.setUrl( (String) getParameter( CONNECTIONURL ) );
+            bds.setDefaultAutoCommit( (Boolean) getParameter( AUTOCOMMIT ) );
+            bds.setDefaultReadOnly( (Boolean) getParameter( READONLY ) );
+            datasource = bds;
+
+        } else {
+            try {
+                InitialContext cxt = new InitialContext();
+                String extdatasourceId = "java:/comp/env/"+(String) getParameter( DATASOURCEID );
+                LOG.debug( "external datasourceId: "+ extdatasourceId);
+                datasource = (DataSource) cxt.lookup( extdatasourceId );
+                if ( datasource == null ) {
+                   LOG.error("Data source not found!");
+                }
+                datasource.getConnection();
+                
+            } catch ( Exception e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+         
+        
+        
         super.start();
     }
 
@@ -82,29 +114,27 @@ public class DatabaseService extends AbstractService {
         super.stop();
     }
 
-    /**
-     * @return
-     * @throws SQLException
+    /* (non-Javadoc)
+     * @see org.nexuse2e.service.DatabaseService#getDatabaseConnection()
      */
     public Connection getDatabaseConnection() throws SQLException {
 
         if ( datasource != null ) {
             connectionCounter++;
             Connection connection = datasource.getConnection();
-            LOG.trace( "connection requested ("+connectionCounter+"): "+connection );
+            LOG.trace( "connection requested (" + connectionCounter + "): " + connection );
             return connection;
         }
         return null;
     }
 
-    /**
-     * @param connection
-     * @throws SQLException
+    /* (non-Javadoc)
+     * @see org.nexuse2e.service.DatabaseService#releaseDatabaseConnection(java.sql.Connection)
      */
     public void releaseDatabaseConnection( Connection connection ) throws SQLException {
 
         connectionCounter--;
-        LOG.trace( "connection released ("+connectionCounter+"): "+connection );
+        LOG.trace( "connection released (" + connectionCounter + "): " + connection );
         connection.close();
     }
 
@@ -125,7 +155,7 @@ public class DatabaseService extends AbstractService {
                 "Use External DataSource", "Use external configured datasource, or use local connection pool instead.",
                 Boolean.FALSE ) );
         parameterMap.put( DATASOURCEID, new ParameterDescriptor( ParameterType.STRING, "DataSource Logical ID",
-                "the externally configured logical datasource id", "" ) );
+                "the externally configured logical datasource id, java:/comp/env/ is prepended automatically", "" ) );
         parameterMap.put( CONNECTIONURL, new ParameterDescriptor( ParameterType.STRING, "Connection URL",
                 "URL used to establish database connections", "" ) );
         parameterMap.put( USER, new ParameterDescriptor( ParameterType.STRING, "Username", "Database Username", "" ) );
@@ -163,22 +193,6 @@ public class DatabaseService extends AbstractService {
     public Runlevel getActivationRunlevel() {
 
         return Runlevel.OUTBOUND_PIPELINES;
-    }
-
-    /**
-     * @return the datasource
-     */
-    public DataSource getDatasource() {
-
-        return datasource;
-    }
-
-    /**
-     * @param datasource the datasource to set
-     */
-    public void setDatasource( DataSource datasource ) {
-
-        this.datasource = datasource;
     }
 
     /**

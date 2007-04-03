@@ -113,6 +113,9 @@ abstract public class AbstractPipeline implements Pipeline{
                 returnPipelets[i].activate();
             }
         }
+        if(getPipelineEndpoint() != null) {
+            ((Pipelet)getPipelineEndpoint()).activate();
+        }
     }
 
     /* (non-Javadoc)
@@ -129,6 +132,9 @@ abstract public class AbstractPipeline implements Pipeline{
             for ( int i = 0; i < returnPipelets.length; i++ ) {
                 returnPipelets[i].deactivate();
             }
+        }
+        if(getPipelineEndpoint() != null) {
+            ((Pipelet)getPipelineEndpoint()).deactivate();
         }
     }
 
@@ -148,22 +154,44 @@ abstract public class AbstractPipeline implements Pipeline{
      */
     public BeanStatus getStatus() {
 
-        BeanStatus minimumStatus = BeanStatus.STARTED;
-        if(forwardPipelets != null) {
-            for ( int i = 0; i < forwardPipelets.length; i++ ) {
-                if(forwardPipelets[i].getStatus().getValue()<minimumStatus.getValue()) {
-                    minimumStatus = forwardPipelets[i].getStatus();
+        
+        try {
+            BeanStatus minimumStatus = BeanStatus.STARTED;
+            if(forwardPipelets != null) {
+                for ( int i = 0; i < forwardPipelets.length; i++ ) {
+                    if(forwardPipelets[i] == null) {
+                        return BeanStatus.ERROR;
+                    }
+                    if(forwardPipelets[i].getStatus().getValue()<minimumStatus.getValue()) {
+                        minimumStatus = forwardPipelets[i].getStatus();
+                    }
                 }
             }
-        }
-        if(returnPipelets != null) {
-            for ( int i = 0; i < returnPipelets.length; i++ ) {
-                if(returnPipelets[i].getStatus().getValue()<minimumStatus.getValue()) {
-                    minimumStatus = returnPipelets[i].getStatus();
+            if(returnPipelets != null) {
+                for ( int i = 0; i < returnPipelets.length; i++ ) {
+                    if(returnPipelets[i] == null) {
+                        return BeanStatus.ERROR;
+                    }
+                    if(returnPipelets[i].getStatus().getValue()<minimumStatus.getValue()) {
+                        minimumStatus = returnPipelets[i].getStatus();
+                    }
                 }
             }
+            if(getPipelineEndpoint() == null) {
+                return BeanStatus.ERROR;
+            }
+            if(getPipelineEndpoint() != null && getPipelineEndpoint() instanceof Pipelet) {
+                if(((Pipelet)getPipelineEndpoint()).getStatus().getValue()<minimumStatus.getValue()) {
+                    minimumStatus = ((Pipelet)getPipelineEndpoint()).getStatus();
+                }    
+            }
+            
+            return minimumStatus;
+        } catch ( Exception e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
-        return minimumStatus;
+        return BeanStatus.UNDEFINED;
     }
 
     /* (non-Javadoc)
@@ -181,6 +209,9 @@ abstract public class AbstractPipeline implements Pipeline{
                 returnPipelets[i].initialize(null);
             }
         }
+        if(getPipelineEndpoint() != null) {
+            ((Pipelet)getPipelineEndpoint()).initialize( config );
+        }
     }
 
     /* (non-Javadoc)
@@ -197,6 +228,9 @@ abstract public class AbstractPipeline implements Pipeline{
             for ( int i = 0; i < returnPipelets.length; i++ ) {
                 returnPipelets[i].teardown();
             }
+        }
+        if(getPipelineEndpoint() != null) {
+            ((Pipelet)getPipelineEndpoint()).teardown();
         }
     }
 

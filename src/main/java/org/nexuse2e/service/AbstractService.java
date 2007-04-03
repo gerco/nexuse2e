@@ -40,7 +40,7 @@ import org.nexuse2e.configuration.ParameterDescriptor;
  */
 public abstract class AbstractService implements Service {
 
-    private BeanStatus                         status;
+    protected BeanStatus                         status;
 
     /**
      * Map parameter names to <code>ParameterDescriptor</code> objects in

@@ -28,8 +28,6 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.ConfigurationUtil;
-import org.nexuse2e.configuration.Constants;
-import org.nexuse2e.configuration.Constants.ComponentType;
 import org.nexuse2e.pojo.ServiceParamPojo;
 import org.nexuse2e.pojo.ServicePojo;
 import org.nexuse2e.service.Service;
@@ -63,8 +61,7 @@ public class ServiceViewAction extends NexusE2EAction {
         serviceForm.createParameterMapFromPojos();
         serviceForm.setServiceInstance( service );
 
-        request.setAttribute( ATTRIBUTE_COLLECTION, Engine.getInstance().getActiveConfigurationAccessService().getComponents(
-                ComponentType.SERVICE, Constants.COMPONENTCOMPARATOR ) );
+        request.setAttribute( ATTRIBUTE_COLLECTION, Engine.getInstance().getActiveConfigurationAccessService().getServices( ) );
 
         return success;
     }

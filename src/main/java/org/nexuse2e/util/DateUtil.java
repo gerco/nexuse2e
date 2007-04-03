@@ -29,6 +29,8 @@ import java.util.TimeZone;
  */
 public class DateUtil {
 
+    public static final String  dbFormat      = "yyyyMMddHHmmssSSS";
+    
     /**
      * Converts local Date to displayable String using the given Timezone and a optional pattern 
      * 
@@ -55,4 +57,15 @@ public class DateUtil {
         return "#" + time + "#";
     }
 
+    /**
+     *  Static method returns the current date in String format used by Nexus 3.x.
+     *  @returns java.lang.String Representings Local Date String
+     */
+    public static String getFormatedNowString() {
+
+        Date date = new Date();
+        SimpleDateFormat databaseDateFormat = new SimpleDateFormat( dbFormat );
+        String stringDate = databaseDateFormat.format( date );
+        return stringDate;
+    }
 }

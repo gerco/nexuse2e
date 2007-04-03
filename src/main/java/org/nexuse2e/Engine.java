@@ -275,6 +275,8 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
             for ( Manageable bean : currentConfiguration.getStaticBeanContainer().getManagableBeans().values() ) {
                 if ( bean.getStatus().getValue() < BeanStatus.INITIALIZED.getValue() ) {
                     bean.initialize( currentConfiguration );
+                } else {
+                    System.out.println("bean allready initialized: "+bean.getClass().getName());
                 }
             }
             // initialize TransportSender and TransportReceiver if they are configured by Spring
@@ -668,6 +670,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                         }
                     }
                 }
+                
             }
 
             // Recover any pending messages...
