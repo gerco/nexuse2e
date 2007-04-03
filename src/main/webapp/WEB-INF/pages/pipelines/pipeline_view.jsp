@@ -108,7 +108,7 @@
 					<html-el:option value="${component.nxComponentId}">${component.name}</html-el:option>
 				</logic:iterate>
 			</html:select> <nexus:submit
-				onClick="document.forms['pipelineForm'].submitaction.value='add';">
+				onClick="document.forms['pipelineForm'].submitaction.value='add';" form="document.forms['pipelineForm']">
 				<img src="images/submit.gif" class="button">
 			</nexus:submit></td>
 			<td class="NEXUSSection"></td>

@@ -32,6 +32,7 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
+import org.nexuse2e.Configurable;
 import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.ConfigurationUtil;
 import org.nexuse2e.configuration.Constants;
@@ -39,6 +40,7 @@ import org.nexuse2e.messaging.Pipelet;
 import org.nexuse2e.pojo.ComponentPojo;
 import org.nexuse2e.pojo.PipeletPojo;
 import org.nexuse2e.pojo.PipelinePojo;
+import org.nexuse2e.transport.TransportReceiver;
 import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.PipelineForm;
 
@@ -104,9 +106,9 @@ public class PipelineUpdateAction extends NexusE2EAction {
                 try {
                     Object newComponent = Class.forName( component.getClassName() ).newInstance();
                     LOG.trace( "object:" + newComponent.getClass().getName() );
-                    if ( newComponent instanceof Pipelet ) {
+                    if ( (newComponent instanceof Pipelet) || (newComponent instanceof TransportReceiver) ) {
                         pipelet.getPipeletParams().addAll(
-                                ConfigurationUtil.getConfiguration( (Pipelet) newComponent, pipelet ) );
+                                ConfigurationUtil.getConfiguration( (Configurable) newComponent, pipelet ) );
                     } else {
                         ActionMessage errorMessage = new ActionMessage( "generic.error",
                                 "Referenced Component is no pipelet: " + component.getClassName() );

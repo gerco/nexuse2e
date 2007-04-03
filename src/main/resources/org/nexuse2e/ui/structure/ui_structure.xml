@@ -86,19 +86,19 @@
           </nxs:page>
         </nxs:page>
         <nxs:page target="BackendPipelines.do" label="Backend Pipelines" icon="images/tree/businessprocesses.gif">
-          <nxs:command target="PipelineAdd.do" label="Add Pipeline" icon="images/tree/TreeDot.gif"/>
-          <nxs:command target="PipelineCreate.do" label="Create Pipeline" icon="images/tree/TreeDot.gif"/>
+          <nxs:command target="PipelineAdd.do?frontend=false" label="Add Pipeline" icon="images/tree/TreeDot.gif"/>
+          <nxs:command target="PipelineCreate.do?frontend=false" label="Create Pipeline" icon="images/tree/TreeDot.gif"/>
           <nxs:page type="provider" provider="backendPipelineTargetProvider" target="PipelineView.do" label="View Pipeline" icon="images/tree/TreeDot.gif">
-            <nxs:command target="PipelineUpdate.do" label="Update Pipeline" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="PipelineDelete.do" label="Delete Pipeline" icon="images/tree/TreeDot.gif"/>
+            <nxs:command target="PipelineUpdate.do?frontend=false" label="Update Pipeline" icon="images/tree/TreeDot.gif"/>
+            <nxs:command target="PipelineDelete.do?frontend=false" label="Delete Pipeline" icon="images/tree/TreeDot.gif"/>
           </nxs:page>
         </nxs:page>
         <nxs:page target="FrontendPipelines.do" label="Frontend Pipelines" icon="images/tree/businessprocesses.gif">
-          <nxs:command target="PipelineAdd.do" label="Add Pipeline" icon="images/tree/TreeDot.gif"/>
-          <nxs:command target="PipelineCreate.do" label="Create Pipeline" icon="images/tree/TreeDot.gif"/>
+          <nxs:command target="PipelineAdd.do?frontend=true" label="Add Pipeline" icon="images/tree/TreeDot.gif"/>
+          <nxs:command target="PipelineCreate.do?frontend=true" label="Create Pipeline" icon="images/tree/TreeDot.gif"/>
           <nxs:page type="provider" provider="frontendPipelineTargetProvider" target="PipelineView.do" label="View Pipeline" icon="images/tree/TreeDot.gif">
-            <nxs:command target="PipelineUpdate.do" label="Update Pipeline" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="PipelineDelete.do" label="Delete Pipeline" icon="images/tree/TreeDot.gif"/>
+            <nxs:command target="PipelineUpdate.do?frontend=true" label="Update Pipeline" icon="images/tree/TreeDot.gif"/>
+            <nxs:command target="PipelineDelete.do?frontend=true" label="Delete Pipeline" icon="images/tree/TreeDot.gif"/>
           </nxs:page>
         </nxs:page>
         <nxs:page target="ServiceList.do" label="Services" icon="images/tree/businessprocesses.gif">

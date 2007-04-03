@@ -556,8 +556,8 @@
       <forward name="backend" path="/BackendPipelines.do"/>
     </action>
     <action path="/PipelineUpdate" name="pipelineForm" type="org.nexuse2e.ui.action.pipelines.PipelineUpdateAction">
-      <forward name="frontendError" path="/Pipelines.do"/>
-      <forward name="backendError" path="/Pipelines.do"/>
+      <forward name="frontendError" path="/FrontendPipelines.do"/>
+      <forward name="backendError" path="/BackendPipelines.do"/>
       <forward name="config" path="/PipeletParamsView.do"/>
       <forward name="success" path="/PipelineView.do"/>
     </action>

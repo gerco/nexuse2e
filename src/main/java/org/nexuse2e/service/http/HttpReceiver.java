@@ -41,12 +41,6 @@ import org.springframework.web.servlet.mvc.Controller;
  *
  * @author gesch, jonas.reese
  */
-/**
- * A service that can be used by a <code>TransportReceiver</code> in order
- * to receive messages via HTTP.
- *
- * @author gesch, jonas.reese
- */
 public class HttpReceiver extends AbstractService implements Controller, ReceiverAware {
 
     private static Logger     LOG = Logger.getLogger( HttpReceiver.class );

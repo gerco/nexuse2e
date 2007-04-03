@@ -104,7 +104,7 @@ public class TransportReceiver implements Manageable, Configurable, ProtocolSpec
         }
     }
 
-    public void processInboundData( Object data ) throws NexusException {
+    public MessageContext processInboundData( Object data ) throws NexusException {
 
         LOG.trace( "TransportReceiver processing message.." );
         MessageContext messagePipeletParameter = new MessageContext();
@@ -114,7 +114,7 @@ public class TransportReceiver implements Manageable, Configurable, ProtocolSpec
         // Set status to processing
         // messagePipeletParameter.getMessagePojo().getConversation().setStatus( Constants.CONVERSATION_STATUS_PROCESSING );
 
-        frontendPipeline.processMessage( messagePipeletParameter );
+        return frontendPipeline.processMessage( messagePipeletParameter );
     }
 
     /**
