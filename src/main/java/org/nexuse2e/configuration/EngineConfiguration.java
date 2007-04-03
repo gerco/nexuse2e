@@ -843,23 +843,29 @@ public class EngineConfiguration {
 
                     pos = 0;
                     pipelets = new Pipelet[inboundPipelinePojo.getPipelets().size() - 1];
-                    try {
-                        for ( PipeletPojo pipeletPojo : inboundPipelinePojo.getPipelets() ) {
-                            Pipelet pipelet = getPipeletInstanceFromPojo( pipeletPojo );
-                            if ( pos == 0 ) {
-                                backendPipeline.setPipelineEndpoint( pipelet );
-                            } else {
-                                pipelets[pos - 1] = pipelet;
-                            }
-                            pos++;
-                        }
 
-                    } catch ( NexusException e ) {
-                        throw new InstantiationException( e.getMessage() );
+                    for ( PipeletPojo pipeletPojo : inboundPipelinePojo.getPipelets() ) {
+                        Pipelet pipelet;
+                        try {
+                            pipelet = getPipeletInstanceFromPojo( pipeletPojo );
+                        } catch ( NexusException e ) {
+                            LOG.error( "Error while creating pipelet instance: " +e.getMessage() );
+                            break;
+                        }
+                        if ( pos == 0 ) {
+                            backendPipeline.setPipelineEndpoint( pipelet );
+                        } else {
+                            pipelets[pos - 1] = pipelet;
+                        }
+                        pos++;
                     }
+
+                    
                     backendPipeline.setForwardPipelets( pipelets );
                     getBackendInboundPipelines().put( backendPipeline.getKey(), backendPipeline );
 
+                    staticBeanContainer.getManagableBeans().put( inboundPipelinePojo.getName()+Constants.POSTFIX_BACKEND_PIPELINE, backendPipeline );
+                    
                     backendPipeline = new BackendPipeline();
                     backendPipeline.setKey( actionSpecificKey );
                     pos = 0;
@@ -876,7 +882,7 @@ public class EngineConfiguration {
                     backendPipeline.setPipelineEndpoint( getStaticBeanContainer().getBackendOutboundDispatcher() );
                     LOG.debug( "PipelineKey: " + backendPipeline.getKey() + " - " + backendPipeline );
                     getBackendOutboundPipelines().put( backendPipeline.getKey(), backendPipeline );
-
+                    staticBeanContainer.getManagableBeans().put( outboundPipelinePojo.getName()+Constants.POSTFIX_BACKEND_PIPELINE, backendPipeline );
                 }
 
             }
@@ -891,10 +897,17 @@ public class EngineConfiguration {
                     .getTransport() ) );
             frontendPipeline.setReturnPipelets( new Pipelet[0] );
             try {
+                staticBeanContainer.getManagableBeans().put(pipelinePojo.getName()+Constants.POSTFIX_FRONTEND_PIPELINE,frontendPipeline);
                 if ( pipelinePojo.isOutbound() ) {
                     getFrontendOutboundPipelines().put( pipelinePojo.getTrp(), frontendPipeline );
 
-                    Pipelet[] forwardPipelets = new Pipelet[pipelinePojo.getPipelets().size() - 1];
+                    Pipelet[] forwardPipelets = null;
+                    if(pipelinePojo.getPipelets() != null && pipelinePojo.getPipelets().size() > 0) {
+                        forwardPipelets = new Pipelet[pipelinePojo.getPipelets().size() - 1];
+                    } else {
+                        forwardPipelets = new Pipelet[0];
+                    }
+                    
                     int i = 0;
                     for ( PipeletPojo pipeletPojo : pipelinePojo.getPipelets() ) {
                         Pipelet pipelet = getPipeletInstanceFromPojo( pipeletPojo );
@@ -912,8 +925,12 @@ public class EngineConfiguration {
                     frontendPipeline.setForwardPipelets( forwardPipelets );
                 } else {
                     getFrontendInboundPipelines().put( pipelinePojo.getTrp(), frontendPipeline );
-
-                    Pipelet[] forwardPipelets = new Pipelet[pipelinePojo.getPipelets().size() - 1];
+                    Pipelet[] forwardPipelets = null;
+                    if(pipelinePojo.getPipelets() != null && pipelinePojo.getPipelets().size() > 0) {
+                        forwardPipelets = new Pipelet[pipelinePojo.getPipelets().size() - 1];
+                    } else {
+                        forwardPipelets = new Pipelet[0];
+                    }
                     int i = -1;
 
                     // Special treatment for first entry: it's a TransportReceiver
@@ -976,7 +993,7 @@ public class EngineConfiguration {
                         mappings.put( urlAppendix, service );
                     }
                 } catch ( NexusException e ) {
-                    throw new InstantiationException( e.getMessage() );
+                    LOG.error( "Error while creating service "+servicePojo.getName()+": "+e.getMessage() );
                 }
             }
         }
@@ -1013,7 +1030,9 @@ public class EngineConfiguration {
     private Pipelet getPipeletInstanceFromPojo( PipeletPojo pojo ) throws NexusException {
 
         try {
+            
             Object newPipelet = Class.forName( pojo.getComponent().getClassName() ).newInstance();
+            
             if ( newPipelet instanceof Pipelet ) {
                 Pipelet pipelet = (Pipelet) newPipelet;
                 ConfigurationUtil.configurePipelet( pipelet, pojo.getPipeletParams() );
