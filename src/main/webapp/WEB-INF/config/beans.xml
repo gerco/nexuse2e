@@ -15,17 +15,20 @@
         <property name="mappings">
             <value>
             </value>
-            <!--
-                /ebxml20=ebXml20Controller
-                /ebxml10=ebXml10Controller
-                /httpplain=httpplainController
-                /SimpleXMLDocService=wsGenericReceiver
-            -->
         </property>
     </bean>
 
+  <bean id="engineController" class="org.nexuse2e.EngineController" init-method="initialize" destroy-method="teardown">
+    <property name="engineControllerStubClass" value="${engineController.stub.class}" />
+  </bean>
+  <!--
+  <bean id="engineController" class="org.nexuse2e.EngineController" init-method="initialize" destroy-method="teardown">
+    <property name="engineControllerStub" value="${configuration.base.class}" />
+  </bean>
+  -->
+  
   <!-- Engine  -->
-  <bean id="engineNG" class="org.nexuse2e.Engine" init-method="initialize" destroy-method="shutdown">
+  <bean id="engine" class="org.nexuse2e.Engine" init-method="initialize" destroy-method="shutdown">
     <property name="baseConfigurationProviderClass" value="${configuration.base.class}" />
     <property name="cacertsPath" value="/Volumes/nexus" />
     <property name="certificatePath" value="/Volumes/nexus" />
