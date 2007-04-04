@@ -45,6 +45,7 @@ public class EngineController {
                 engineControllerStub = (EngineControllerStub) Class.forName( engineControllerStubClass ).newInstance();
                 LOG.debug( "EngineControllerStub instantiated" );
 
+                engineControllerStub.initialize();
                 if ( engine != null ) {
                     engine.setEngineController( this );
                     engine.initialize( null );

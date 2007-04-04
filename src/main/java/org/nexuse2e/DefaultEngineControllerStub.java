@@ -44,4 +44,11 @@ public class DefaultEngineControllerStub implements EngineControllerStub {
 
         return controller;
     }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.EngineControllerStub#initialize()
+     */
+    public void initialize() {
+        
+    }
 } // DefaultEngineControllerStub

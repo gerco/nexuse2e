@@ -30,4 +30,9 @@ public interface EngineControllerStub {
      */
     public AbstractControllerService getControllerWrapper( String controllerId, AbstractControllerService controller );
 
+    /**
+     * is called before using the underlying stub implementation
+     */
+    public void initialize();
+    
 } // EngineControllerStub
