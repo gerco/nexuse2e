@@ -59,6 +59,7 @@ import org.nexuse2e.pojo.RolePojo;
 import org.nexuse2e.pojo.ServicePojo;
 import org.nexuse2e.pojo.TRPPojo;
 import org.nexuse2e.pojo.UserPojo;
+import org.nexuse2e.service.AbstractControllerService;
 import org.nexuse2e.service.Service;
 import org.nexuse2e.transport.TransportReceiver;
 import org.nexuse2e.transport.TransportSender;
@@ -789,7 +790,7 @@ public class EngineConfiguration {
         int pos = 0;
         Pipelet[] pipelets = null;
         BackendPipeline backendPipeline = null;
-        Map<String, Service> mappings = new HashMap<String, Service>();
+        Map<String, AbstractControllerService> mappings = new HashMap<String, AbstractControllerService>();
         UpdateableUrlHandlerMapping updateableUrlHandlerMapping = null;
 
         backendInboundPipelines = new HashMap<ActionSpecificKey, BackendPipeline>();
@@ -928,6 +929,7 @@ public class EngineConfiguration {
                     frontendPipeline.setForwardPipelets( forwardPipelets );
                 } else {
                     getFrontendInboundPipelines().put( pipelinePojo.getTrp(), frontendPipeline );
+                    LOG.debug( "Frontend inbound pipeline: " + pipelinePojo.getName() );
                     Pipelet[] forwardPipelets = null;
                     if ( pipelinePojo.getPipelets() != null && pipelinePojo.getPipelets().size() > 0 ) {
                         forwardPipelets = new Pipelet[pipelinePojo.getPipelets().size() - 1];
@@ -949,14 +951,16 @@ public class EngineConfiguration {
                             transportReceiver.setFrontendPipeline( frontendPipeline );
                             transportReceiver.setKey( frontendPipeline.getKey() );
                             ConfigurationUtil.configurePipelet( transportReceiver, pipeletPojo.getPipeletParams() );
-                            staticBeanContainer.getManagableBeans().put(
-                                    "TransportReceiver" + frontendPipeline.getKey().toString(), transportReceiver );
-                            /*
-                             if ( transportReceiver instanceof Controller ) {
-                             LOG.trace( "Registering controller: " + pipeletPojo.getName() );
-                             mappings.put( pipeletPojo.getName(), transportReceiver );
-                             }
-                             */
+                            String beanKey = "TransportReceiver" + frontendPipeline.getKey().toString();
+                            if ( !staticBeanContainer.getManagableBeans().containsKey( beanKey ) ) {
+                                LOG
+                                        .debug( "Registering managable bean: " + beanKey + "(" + pipeletPojo.getName()
+                                                + ")" );
+                                staticBeanContainer.getManagableBeans().put( beanKey, transportReceiver );
+                            } else {
+                                LOG.warn( "Managable bean already registered, using first one: " + beanKey + "("
+                                        + pipeletPojo.getName() + ")" );
+                            }
                         }
 
                         i++;
@@ -987,13 +991,15 @@ public class EngineConfiguration {
                     staticBeanContainer.getManagableBeans().put( servicePojo.getName(), service );
 
                     // Register Controller for inbound HTTP messages
-                    if ( service instanceof Controller ) {
+                    if ( service instanceof AbstractControllerService ) {
                         String urlAppendix = service.getParameter( "logical_name" );
                         if ( urlAppendix == null ) {
                             urlAppendix = servicePojo.getName();
                         }
-                        LOG.trace( "Registering controller: " + urlAppendix );
-                        mappings.put( urlAppendix, service );
+                        AbstractControllerService controller = Engine.getInstance().getEngineController()
+                                .getControllerWrapper( urlAppendix, (AbstractControllerService) service );
+                        LOG.debug( "Registering controller: " + urlAppendix + " - " + controller );
+                        mappings.put( urlAppendix, controller );
                     }
                     if ( service instanceof ApplicationObjectSupport ) {
                         ( (ApplicationObjectSupport) service ).setApplicationContext( Engine.getInstance()

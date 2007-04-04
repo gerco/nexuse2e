@@ -155,7 +155,6 @@ public class PipeletParamsUpdateAction extends NexusE2EAction {
 
                 if ( pipeletPojo.getNxPipeletId() != null && pipeletPojo.getNxPipeletId().intValue() != 0 ) {
                     Engine.getInstance().getActiveConfigurationAccessService().updatePipeline( pipelinePojo );
-                    Engine.getInstance().getActiveConfigurationAccessService().applyConfiguration();
 
                     // update form
                     form.setProperties( Engine.getInstance().getActiveConfigurationAccessService().getPipelinePojoByNxPipelineId(

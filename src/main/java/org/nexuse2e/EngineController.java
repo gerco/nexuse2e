@@ -20,6 +20,7 @@
 package org.nexuse2e;
 
 import org.apache.log4j.Logger;
+import org.nexuse2e.service.AbstractControllerService;
 
 /**
  * @author mbreilmann
@@ -31,15 +32,28 @@ public class EngineController {
 
     private EngineControllerStub engineControllerStub      = null;
     private String               engineControllerStubClass = "org.nexuse2e.DefaultEngineControllerStub";
+    private Engine               engine                    = null;
 
     /**
      * 
      */
     public void initialize() {
+
         LOG.debug( "Initializing..." );
         if ( engineControllerStub == null ) {
             try {
                 engineControllerStub = (EngineControllerStub) Class.forName( engineControllerStubClass ).newInstance();
+                LOG.debug( "EngineControllerStub instantiated" );
+
+                if ( engine != null ) {
+                    engine.setEngineController( this );
+                    engine.initialize( null );
+
+                    engine.activate();
+                } else {
+                    LOG.error( "No Engine instance found, exiting..." );
+                }
+
             } catch ( InstantiationException e ) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -55,11 +69,32 @@ public class EngineController {
     } // initialize
 
     /**
+     * Return a controller wrapper for the specified controller ID.
+     * The call will be handled by the <code>EngineControllerStub</code>.
+     * @param controllerId The ID of the controller to wrap.
+     * @return The wrapper for the specified controller.
+     */
+    public AbstractControllerService getControllerWrapper( String controllerId, AbstractControllerService controller ) {
+
+        AbstractControllerService wrapper = null;
+
+        if ( engineControllerStub != null ) {
+            wrapper = engineControllerStub.getControllerWrapper( controllerId, controller );
+        }
+
+        return wrapper;
+    }
+
+    /**
      * 
      */
-    public void teardown() {
+    public void shutdown() {
 
-    } // teardown
+        if ( engine != null ) {
+            engine.shutdown();
+        }
+
+    } // shutdown
 
     /**
      * @return
@@ -77,22 +112,36 @@ public class EngineController {
         this.engineControllerStub = engineControllerStub;
     }
 
-    
     /**
      * @return
      */
     public String getEngineControllerStubClass() {
-    
+
         return engineControllerStubClass;
     }
 
-    
     /**
      * @param engineControllerStubClass
      */
     public void setEngineControllerStubClass( String engineControllerStubClass ) {
-    
+
         this.engineControllerStubClass = engineControllerStubClass;
+    }
+
+    /**
+     * @return
+     */
+    public Engine getEngine() {
+
+        return engine;
+    }
+
+    /**
+     * @param engine
+     */
+    public void setEngine( Engine engine ) {
+
+        this.engine = engine;
     }
 
 } // EngineController

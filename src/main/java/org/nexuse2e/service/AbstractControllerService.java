@@ -17,31 +17,15 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+package org.nexuse2e.service;
 
-package org.nexuse2e;
+import org.springframework.web.servlet.mvc.Controller;
 
-import org.apache.log4j.Logger;
-import org.nexuse2e.service.AbstractControllerService;
 
 /**
  * @author mbreilmann
  *
  */
-public class DefaultEngineControllerStub implements EngineControllerStub {
+public abstract class AbstractControllerService extends AbstractService implements Controller {
 
-    private static Logger LOG = Logger.getLogger( DefaultEngineControllerStub.class );
-
-    public DefaultEngineControllerStub() {
-
-        LOG.debug( "In constructor..." );
-    } // default constructor
-
-    /* (non-Javadoc)
-     * @see org.nexuse2e.EngineControllerStub#getControllerWrapper(java.lang.String)
-     */
-    public AbstractControllerService getControllerWrapper( String controllerId, AbstractControllerService controller ) {
-        LOG.debug( "Returning controller: " + controller );
-
-        return controller;
-    }
-} // DefaultEngineControllerStub
+} // AbstractControllerService

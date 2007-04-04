@@ -19,7 +19,15 @@
  */
 package org.nexuse2e;
 
+import org.nexuse2e.service.AbstractControllerService;
 
 public interface EngineControllerStub {
+
+    /**
+     * Return a controller wrapper for the specified controller ID.
+     * @param controllerId The ID of the controller to wrap.
+     * @return The wrapper for the specified controller.
+     */
+    public AbstractControllerService getControllerWrapper( String controllerId, AbstractControllerService controller );
 
 } // EngineControllerStub

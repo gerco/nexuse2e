@@ -11,125 +11,118 @@
     </property>
   </bean>
 
-	<bean id="nexusTransportDispatcherMapping" class="org.nexuse2e.configuration.UpdateableUrlHandlerMapping">
-        <property name="mappings">
-            <value>
-            </value>
-        </property>
-    </bean>
+  <bean id="nexusTransportDispatcherMapping" class="org.nexuse2e.configuration.UpdateableUrlHandlerMapping">
+    <property name="mappings">
+      <value></value>
+    </property>
+  </bean>
 
-  <bean id="engineController" class="org.nexuse2e.EngineController" init-method="initialize" destroy-method="teardown">
+  <bean id="engineController" class="org.nexuse2e.EngineController" init-method="initialize" destroy-method="shutdown">
     <property name="engineControllerStubClass" value="${engineController.stub.class}" />
+    <property name="engine" ref="engine" />
   </bean>
-  <!--
-  <bean id="engineController" class="org.nexuse2e.EngineController" init-method="initialize" destroy-method="teardown">
-    <property name="engineControllerStub" value="${configuration.base.class}" />
-  </bean>
-  -->
-  
+
   <!-- Engine  -->
-  <bean id="engine" class="org.nexuse2e.Engine" init-method="initialize" destroy-method="shutdown">
+  <bean id="engine" class="org.nexuse2e.Engine">
     <property name="baseConfigurationProviderClass" value="${configuration.base.class}" />
     <property name="cacertsPath" value="/Volumes/nexus" />
     <property name="certificatePath" value="/Volumes/nexus" />
   </bean>
 
   <!-- Integration beans -->
-  <bean id="httpIntegrationController" class="org.nexuse2e.integration.HTTPIntegrationController">
-  </bean>
-  <bean id="debugController" class="org.nexuse2e.integration.DebugController">
-  </bean>
+  <bean id="httpIntegrationController" class="org.nexuse2e.integration.HTTPIntegrationController"></bean>
+  <bean id="debugController" class="org.nexuse2e.integration.DebugController"></bean>
 
   <!-- ********************************************** -->
   <!-- Web services                                   -->
   <!-- ********************************************** -->
-  
+
   <bean id="nexusE2EInterfaceBean" class="org.nexuse2e.integration.NEXUSe2eInterfaceImpl" />
 
   <!-- Generic Web services interface (XFire) -->
   <!--
-  <bean id="wsGenericReceiver" class="org.nexuse2e.transport.WebServiceGenericXMLDocumentReceiver">
+    <bean id="wsGenericReceiver" class="org.nexuse2e.transport.WebServiceGenericXMLDocumentReceiver">
     <property name="key">
-      <bean class="org.nexuse2e.ProtocolSpecificKey">
-        <property name="communicationProtocolId" value="ws-generic" />
-        <property name="communicationProtocolVersion" value="0.1" />
-        <property name="transportProtocolId" value="soap" />
-      </bean>
+    <bean class="org.nexuse2e.ProtocolSpecificKey">
+    <property name="communicationProtocolId" value="ws-generic" />
+    <property name="communicationProtocolVersion" value="0.1" />
+    <property name="transportProtocolId" value="soap" />
+    </bean>
     </property>
     <property name="XFire" ref="xfire" />
     <property name="frontendPipeline" ref="wsGenericInboundPipeline" />
     <property name="synchronous" value="true" />
-  </bean>
-  <bean id="wsGenericSender" class="org.nexuse2e.transport.WebServiceGenericXMLDocumentSender">
+    </bean>
+    <bean id="wsGenericSender" class="org.nexuse2e.transport.WebServiceGenericXMLDocumentSender">
     <property name="key">
-      <bean class="org.nexuse2e.ProtocolSpecificKey">
-        <property name="communicationProtocolId" value="ws-generic" />
-        <property name="communicationProtocolVersion" value="0.1" />
-        <property name="transportProtocolId" value="soap" />
-      </bean>
+    <bean class="org.nexuse2e.ProtocolSpecificKey">
+    <property name="communicationProtocolId" value="ws-generic" />
+    <property name="communicationProtocolVersion" value="0.1" />
+    <property name="transportProtocolId" value="soap" />
+    </bean>
     </property>
-  </bean>
+    </bean>
   -->
 
   <!-- Sample for Web services, needs other header parser
-  <bean id="wsGenericInboundPipeline" class="org.nexuse2e.messaging.FrontendPipeline">
+    <bean id="wsGenericInboundPipeline" class="org.nexuse2e.messaging.FrontendPipeline">
     <property name="key">
-      <bean class="org.nexuse2e.ProtocolSpecificKey">
-        <property name="communicationProtocolId" value="ws-generic" />
-        <property name="communicationProtocolVersion" value="0.1" />
-        <property name="transportProtocolId" value="soap" />
-      </bean>
+    <bean class="org.nexuse2e.ProtocolSpecificKey">
+    <property name="communicationProtocolId" value="ws-generic" />
+    <property name="communicationProtocolVersion" value="0.1" />
+    <property name="transportProtocolId" value="soap" />
+    </bean>
     </property>
-
+    
     <property name="forwardPipelets">
-      <list>
-        <ref bean="cidxDummyHeaderBuilder" />
-      </list>
+    <list>
+    <ref bean="cidxDummyHeaderBuilder" />
+    </list>
     </property>
-
+    
     <property name="pipelineEndpoint">
-      <ref bean="frontendInboundDispatcher" />
+    <ref bean="frontendInboundDispatcher" />
     </property>
-
+    
     <property name="returnPipelets">
-      <list></list>
+    <list></list>
     </property>
-  </bean>
-
-  <bean id="wsGenericOutboundPipeline" class="org.nexuse2e.messaging.FrontendPipeline">
+    </bean>
+    
+    <bean id="wsGenericOutboundPipeline" class="org.nexuse2e.messaging.FrontendPipeline">
     <property name="key">
-      <bean class="org.nexuse2e.ProtocolSpecificKey">
-        <property name="communicationProtocolId" value="ws-generic" />
-        <property name="communicationProtocolVersion" value="0.1" />
-        <property name="transportProtocolId" value="soap" />
-      </bean>
+    <bean class="org.nexuse2e.ProtocolSpecificKey">
+    <property name="communicationProtocolId" value="ws-generic" />
+    <property name="communicationProtocolVersion" value="0.1" />
+    <property name="transportProtocolId" value="soap" />
+    </bean>
     </property>
-
+    
     <property name="forwardPipelets">
-      <list></list>
+    <list></list>
     </property>
-
+    
     <property name="pipelineEndpoint">
-      <ref bean="wsGenericSender" />
+    <ref bean="wsGenericSender" />
     </property>
-
+    
     <property name="returnPipelets">
-      <list></list>
+    <list></list>
     </property>
-  </bean>
-  
-  <bean id="cidxDummyHeaderBuilder" class="org.nexuse2e.messaging.cidx.CIDXDummyHeaderBuilder" />
-
-  <bean id="wsGenericAdapter" class="org.nexuse2e.messaging.cidx.ProtocolAdapter">
+    </bean>
+    
+    <bean id="cidxDummyHeaderBuilder" class="org.nexuse2e.messaging.cidx.CIDXDummyHeaderBuilder" />
+    
+    <bean id="wsGenericAdapter" class="org.nexuse2e.messaging.cidx.ProtocolAdapter">
     <property name="key">
-      <bean class="org.nexuse2e.ProtocolSpecificKey">
-        <property name="communicationProtocolId" value="ws-generic" />
-        <property name="communicationProtocolVersion" value="0.1" />
-        <property name="transportProtocolId" value="soap" />
-      </bean>
+    <bean class="org.nexuse2e.ProtocolSpecificKey">
+    <property name="communicationProtocolId" value="ws-generic" />
+    <property name="communicationProtocolVersion" value="0.1" />
+    <property name="transportProtocolId" value="soap" />
+    </bean>
     </property>
-  </bean>
-
+    </bean>
+    
   -->
 
   <!-- Endpoints (Transports and Dispatchers) -->
@@ -156,10 +149,10 @@
   <bean id="frontendOutboundDispatcher" class="org.nexuse2e.messaging.FrontendOutboundDispatcher">
     <property name="frontendOutboundPipelines">
       <list>
-      <!--
-        <ref bean="ebXML20HttpOutboundPipeline" />
-        <ref bean="ebXML20SmtpOutboundPipeline" />
-        <ref bean="httpPlainOutboundPipeline" />
+        <!--
+          <ref bean="ebXML20HttpOutboundPipeline" />
+          <ref bean="ebXML20SmtpOutboundPipeline" />
+          <ref bean="httpPlainOutboundPipeline" />
         -->
       </list>
     </property>
@@ -189,14 +182,14 @@
 
   <!-- misc  -->
   <!--
-  <bean id="directoryScanner" class="org.nexuse2e.backend.DummyDirectoryScanner">
+    <bean id="directoryScanner" class="org.nexuse2e.backend.DummyDirectoryScanner">
     <property name="directory" value="${scanner.directory}" />
     <property name="interval" value="${scanner.interval}" />
     <property name="backendPipelineDispatcher" ref="backendPipelineDispatcher" />
     <property name="partnerId" value="${scanner.partnerId}" />
     <property name="choreographyId" value="${scanner.choreographyId}" />
     <property name="actionId" value="${scanner.actionId}" />
-  </bean>
+    </bean>
   -->
 
   <!--  DatabaseConfig -->
@@ -208,13 +201,13 @@
     <property name="maxActive" value="-1" />
   </bean>
 
-<!-- 
-  <bean id="external" class="org.springframework.jndi.JndiObjectFactoryBean">
+  <!-- 
+    <bean id="external" class="org.springframework.jndi.JndiObjectFactoryBean">
     <property name="jndiName" value="${datasource.logicalName}"/>
-  </bean>
- -->
- 
-  <bean id="HibernateSessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+    </bean>
+  -->
+
+  <bean id="hibernateSessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
     <property name="dataSource" ref="${datasource.type}" />
     <!-- <property name="dataSource" ref="external"/> -->
     <property name="useTransactionAwareDataSource" value="false" />
@@ -254,19 +247,19 @@
         -->      </props>
     </property>
   </bean>
-  
+
   <bean id="logDao" class="org.nexuse2e.dao.LogDAO">
-    <property name="sessionFactory" ref="HibernateSessionFactory" />
+    <property name="sessionFactory" ref="hibernateSessionFactory" />
   </bean>
   <bean id="configDao" class="org.nexuse2e.dao.ConfigDAO">
-    <property name="sessionFactory" ref="HibernateSessionFactory" />
+    <property name="sessionFactory" ref="hibernateSessionFactory" />
   </bean>
   <bean id="transactionDao" class="org.nexuse2e.dao.TransactionDAO">
-    <property name="sessionFactory" ref="HibernateSessionFactory" />
+    <property name="sessionFactory" ref="hibernateSessionFactory" />
   </bean>
-  
+
   <!-- ui structure -->
-  
+
   <bean id="targetProviderManager" class="org.nexuse2e.ui.structure.impl.DefaultTargetProviderManager">
     <property name="targetProviders">
       <map>
@@ -275,7 +268,7 @@
           <key>
             <value>serverIdentityTargetProvider</value>
           </key>
-          <bean class="org.nexuse2e.ui.structure.impl.ServerIdentityTargetProvider"/>
+          <bean class="org.nexuse2e.ui.structure.impl.ServerIdentityTargetProvider" />
         </entry>
         <entry>
           <key>
@@ -301,60 +294,60 @@
           <key>
             <value>componentTargetProvider</value>
           </key>
-          <bean class="org.nexuse2e.ui.structure.impl.ComponentTargetProvider"/>
+          <bean class="org.nexuse2e.ui.structure.impl.ComponentTargetProvider" />
         </entry>
         <entry>
           <key>
             <value>serviceTargetProvider</value>
           </key>
-          <bean class="org.nexuse2e.ui.structure.impl.ServiceTargetProvider"/>
+          <bean class="org.nexuse2e.ui.structure.impl.ServiceTargetProvider" />
         </entry>
         <entry>
           <key>
             <value>notifierTargetProvider</value>
           </key>
-          <bean class="org.nexuse2e.ui.structure.impl.NotifierTargetProvider"/>
+          <bean class="org.nexuse2e.ui.structure.impl.NotifierTargetProvider" />
         </entry>
         <entry>
           <key>
             <value>choreographyTargetProvider</value>
           </key>
-          <bean class="org.nexuse2e.ui.structure.impl.ChoreographyTargetProvider"/>
+          <bean class="org.nexuse2e.ui.structure.impl.ChoreographyTargetProvider" />
         </entry>
         <entry>
           <key>
             <value>collaborationPartnerTargetProvider</value>
           </key>
-          <bean class="org.nexuse2e.ui.structure.impl.CollaborationPartnerTargetProvider"/>
+          <bean class="org.nexuse2e.ui.structure.impl.CollaborationPartnerTargetProvider" />
         </entry>
         <entry>
           <key>
             <value>participantTargetProvider</value>
           </key>
-          <bean class="org.nexuse2e.ui.structure.impl.ParticipantTargetProvider"/>
+          <bean class="org.nexuse2e.ui.structure.impl.ParticipantTargetProvider" />
         </entry>
         <entry>
           <key>
             <value>userTargetProvider</value>
           </key>
-          <bean class="org.nexuse2e.ui.structure.impl.UserTargetProvider"/>
+          <bean class="org.nexuse2e.ui.structure.impl.UserTargetProvider" />
         </entry>
         <entry>
           <key>
             <value>roleTargetProvider</value>
           </key>
-          <bean class="org.nexuse2e.ui.structure.impl.RoleTargetProvider"/>
+          <bean class="org.nexuse2e.ui.structure.impl.RoleTargetProvider" />
         </entry>
       </map>
     </property>
   </bean>
-  
+
   <bean id="structureService" class="org.nexuse2e.ui.structure.impl.CachedXmlStructureServer">
     <property name="spec">
       <value>${struct.spec}</value>
     </property>
     <property name="targetProviderManager">
-      <ref bean="targetProviderManager"/>      
+      <ref bean="targetProviderManager" />
     </property>
   </bean>
 

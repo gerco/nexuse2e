@@ -269,7 +269,7 @@ public class UpdateableUrlHandlerMapping extends AbstractHandlerMapping {
     protected void registerHandlers( Map urlMap ) throws BeansException {
 
         if ( urlMap.isEmpty() ) {
-            logger.warn( "Neither 'urlMap' nor 'mappings' set on SimpleUrlHandlerMapping" );
+            logger.debug( "Neither 'urlMap' nor 'mappings' set on UpdateableUrlHandlerMapping" );
         } else {
             Iterator it = urlMap.keySet().iterator();
             while ( it.hasNext() ) {

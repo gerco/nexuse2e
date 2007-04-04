@@ -29,11 +29,10 @@ import org.apache.log4j.Logger;
 import org.nexuse2e.Constants.Runlevel;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
-import org.nexuse2e.service.AbstractService;
+import org.nexuse2e.service.AbstractControllerService;
 import org.nexuse2e.service.ReceiverAware;
 import org.nexuse2e.transport.TransportReceiver;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
 
 /**
  * A service that can be used by a <code>TransportReceiver</code> in order
@@ -41,7 +40,7 @@ import org.springframework.web.servlet.mvc.Controller;
  *
  * @author gesch, jonas.reese
  */
-public class HttpReceiver extends AbstractService implements Controller, ReceiverAware {
+public class HttpReceiver extends AbstractControllerService implements ReceiverAware {
 
     private static Logger     LOG = Logger.getLogger( HttpReceiver.class );
 

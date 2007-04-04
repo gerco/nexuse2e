@@ -184,7 +184,6 @@ public class PipelineUpdateAction extends NexusE2EAction {
         if ( action.equals( "update" ) ) {
             form.getProperties( pipeline );
             Engine.getInstance().getActiveConfigurationAccessService().updatePipeline( pipeline );
-            Engine.getInstance().getActiveConfigurationAccessService().applyConfiguration();
         }
 
         form.setSubmitaction( "" );

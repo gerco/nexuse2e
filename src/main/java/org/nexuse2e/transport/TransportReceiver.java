@@ -169,9 +169,11 @@ public class TransportReceiver implements Manageable, Configurable, ProtocolSpec
      * @see org.nexuse2e.Manageable#initialize(org.nexuse2e.configuration.EngineConfiguration)
      */
     public void initialize( EngineConfiguration config ) {
+        
 
         Service service = null;
         String s = getParameter( SERVICE_PARAM_NAME );
+        LOG.debug( "TransportReceiver - service: " + s );
         if ( s != null && s.trim().length() > 0 ) {
             service = config.getStaticBeanContainer().getService( s );
             if ( service == null ) {

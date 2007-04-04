@@ -81,6 +81,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     private static Logger                    LOG                            = Logger.getLogger( Engine.class );
 
     private static Engine                    instance                       = null;
+    private EngineController                 engineController               = null;
 
     private EngineConfiguration              currentConfiguration;
     private BeanFactory                      beanFactory                    = null;
@@ -146,15 +147,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     }
 
     /**
-     * 
-     */
-    public void initialize() {
-
-        initialize( null );
-    }
-
-    /**
-     * temporary called by bean init-method!!!
+     * Initialize the engine
      */
     public void initialize( EngineConfiguration config ) {
 
@@ -213,7 +206,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
             try {
                 // NOTE: & is needed to retrieve the actual bean class and not a proxy!!!
                 localSessionFactoryBean = (LocalSessionFactoryBean) getBeanFactory().getBean(
-                        "&HibernateSessionFactory" );
+                        "&hibernateSessionFactory" );
                 if ( localSessionFactoryBean != null ) {
                     localSessionFactoryBean.createDatabaseSchema();
 
@@ -274,9 +267,10 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
 
             for ( Manageable bean : currentConfiguration.getStaticBeanContainer().getManagableBeans().values() ) {
                 if ( bean.getStatus().getValue() < BeanStatus.INITIALIZED.getValue() ) {
+                    LOG.trace( "Initializing bean: " + bean.getClass().getName() );
                     bean.initialize( currentConfiguration );
                 } else {
-                    System.out.println("bean allready initialized: "+bean.getClass().getName());
+                    LOG.error( "Bean already initialized: " + bean.getClass().getName() );
                 }
             }
             // initialize TransportSender and TransportReceiver if they are configured by Spring
@@ -303,8 +297,8 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
-        activate();
+        
+        LOG.debug( "Engine initialized." );
     }
 
     /**
@@ -670,7 +664,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                         }
                     }
                 }
-                
+
             }
 
             // Recover any pending messages...
@@ -919,4 +913,22 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
         this.baseConfigurationProviderClass = baseConfigurationProviderClass;
     }
 
-}
+    
+    /**
+     * @return
+     */
+    public EngineController getEngineController() {
+    
+        return engineController;
+    }
+
+    
+    /**
+     * @param engineController
+     */
+    public void setEngineController( EngineController engineController ) {
+    
+        this.engineController = engineController;
+    }
+
+} // Engine
