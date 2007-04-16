@@ -163,14 +163,14 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
                     "ebXMLHttpUnpacker Pipelet" );
             ComponentPojo ebxml20Deserializer = new ComponentPojo( new Date(), new Date(), 1, ComponentType.PIPELET
                     .getValue(), "ebXML20Deserializer", "org.nexuse2e.messaging.ebxml.v20.HeaderDeserializer",
-                    "ebXML20Deserializer Pipelet" );
+                    "ebXML 2.0 Deserializer Pipelet" );
             ComponentPojo ebxmlPatcher = new ComponentPojo( new Date(), new Date(), 1,
                     ComponentType.PIPELET.getValue(), "ebXMLPatcher",
                     "org.nexuse2e.messaging.ebxml.MessagePojoPatcher", "ebXMLPatcher Pipelet" );
 
             ComponentPojo ebxml20Serializer = new ComponentPojo( new Date(), new Date(), 1, ComponentType.PIPELET
                     .getValue(), "ebXML20Serializer", "org.nexuse2e.messaging.ebxml.v20.HeaderSerializer",
-                    "ebXML20Serializer Pipelet" );
+                    "ebXML 2.0 Serializer Pipelet" );
             ComponentPojo ebxmlHttpPacker = new ComponentPojo( new Date(), new Date(), 1, ComponentType.PIPELET
                     .getValue(), "ebXMLHttpPacker", "org.nexuse2e.messaging.ebxml.HTTPMessagePackager",
                     "ebXMLHttpPacker Pipelet" );
@@ -183,6 +183,13 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             ComponentPojo ebxmlSmtpPacker = new ComponentPojo( new Date(), new Date(), 1, ComponentType.PIPELET
                     .getValue(), "ebXMLSmtpPacker", "org.nexuse2e.messaging.ebxml.MimeMessagePackager",
                     "ebXMLSmtpPacker Pipelet" );
+
+            ComponentPojo ebxml10Deserializer = new ComponentPojo( new Date(), new Date(), 1, ComponentType.PIPELET
+                    .getValue(), "ebXML10Deserializer", "org.nexuse2e.messaging.ebxml.v10.HeaderDeserializer",
+                    "ebXML 1.0 Deserializer Pipelet" );
+            ComponentPojo ebxml10Serializer = new ComponentPojo( new Date(), new Date(), 1, ComponentType.PIPELET
+                    .getValue(), "ebXML10Serializer", "org.nexuse2e.messaging.ebxml.v10.HeaderSerializer",
+                    "ebXML 1.0 Serializer Pipelet" );
 
             ComponentPojo httpPlainMessageUnpacker = new ComponentPojo( new Date(), new Date(), 1,
                     ComponentType.PIPELET.getValue(), "httpPlainMessageUnpacker",
@@ -203,6 +210,9 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             components.add( ebxmlHttpPacker );
             components.add( transportSender );
 
+            components.add( ebxml10Deserializer );
+            components.add( ebxml10Serializer );
+
             components.add( ebxmlPop3Unpacker );
             components.add( ebxmlSmtpPacker );
 
@@ -210,6 +220,106 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             components.add( httpPlainHeaderDeserializer );
             components.add( httpPlainMessagePacker );
 
+            List<PipeletParamPojo> params = null;
+            PipeletParamPojo param = null;
+            
+            /* --------------------------------------------------------------
+             * ebXML 1.0
+             * --------------------------------------------------------------
+             */
+            
+            // HTTP
+            PipelinePojo ebXML10InboundPipelinePojo = new PipelinePojo();
+            PipelinePojo ebXML10OutboundPipelinePojo = new PipelinePojo();
+
+            // inbound
+            PipeletPojo ebxml10HTTPTransportReceiverPipeletPojo = new PipeletPojo( ebXML10InboundPipelinePojo,
+                    transportReceiver, new Date(), new Date(), 1, 0, "ebxml10", "ebxmlHTTPTransportReceiver", null );
+            ebxml10HTTPTransportReceiverPipeletPojo.setFrontend( true );
+            ebxml10HTTPTransportReceiverPipeletPojo.setPosition( 0 );
+            params = new ArrayList<PipeletParamPojo>();
+            param = new PipeletParamPojo( ebxml10HTTPTransportReceiverPipeletPojo, new Date(),
+                    new Date(), 1, "service", "HttpReceiverService_ebXML_1.0" );
+            params.add( param );
+            ebxml10HTTPTransportReceiverPipeletPojo.setPipeletParams( params );
+            PipeletPojo ebxml10HttpUnpackerPipeletPojo = new PipeletPojo( ebXML10InboundPipelinePojo, ebxmlHttpUnpacker,
+                    new Date(), new Date(), 1, 0, "ebxmlHttpUnpacker", "ebxmlHttpUnpacker", null );
+            ebxml10HttpUnpackerPipeletPojo.setFrontend( true );
+            ebxml10HttpUnpackerPipeletPojo.setPosition( 1 );
+            PipeletPojo ebxml10DeserializerPipeletPojo = new PipeletPojo( ebXML10InboundPipelinePojo,
+                    ebxml10Deserializer, new Date(), new Date(), 1, 0, "ebxml10Deserializer", "ebxml10Deserializer",
+                    null );
+            ebxml10DeserializerPipeletPojo.setFrontend( true );
+            ebxml10DeserializerPipeletPojo.setPosition( 2 );
+            PipeletPojo ebxml10PatcherPipeletPojo = new PipeletPojo( ebXML10InboundPipelinePojo, ebxmlPatcher,
+                    new Date(), new Date(), 1, 0, "ebxmlPatcher", "ebxmlPatcher", null );
+            ebxml10PatcherPipeletPojo.setFrontend( true );
+            ebxml10PatcherPipeletPojo.setPosition( 3 );
+            // outbound
+            PipeletPojo ebxml10SerializerPipeletPojo = new PipeletPojo( ebXML10OutboundPipelinePojo, ebxml10Serializer,
+                    new Date(), new Date(), 1, 0, "ebxml10Serializer", "ebxml10Serializer", null );
+            ebxml10SerializerPipeletPojo.setFrontend( true );
+            ebxml10SerializerPipeletPojo.setPosition( 0 );
+            PipeletPojo ebxml10HttpPackerPipeletPojo = new PipeletPojo( ebXML10OutboundPipelinePojo, ebxmlHttpPacker,
+                    new Date(), new Date(), 1, 0, "ebxmlHttpPacker", "ebxmlHttpPacker", null );
+            ebxml10HttpPackerPipeletPojo.setFrontend( true );
+            ebxml10HttpPackerPipeletPojo.setPosition( 1 );
+            PipeletPojo ebxml10HttpTransportSenderPipeletPojo = new PipeletPojo( ebXML10OutboundPipelinePojo,
+                    transportSender, new Date(), new Date(), 1, 0, "ebxmlHttpTransportSender",
+                    "ebxmlHttpTransportSender", null );
+            ebxml10HttpTransportSenderPipeletPojo.setFrontend( true );
+            ebxml10HttpTransportSenderPipeletPojo.setPosition( 2 );
+            params = new ArrayList<PipeletParamPojo>();
+            param = new PipeletParamPojo( ebxml10HttpTransportSenderPipeletPojo, new Date(), new Date(), 1, "service",
+                    "HttpSenderService_ebXML_1.0" );
+            params.add( param );
+            ebxml10HttpTransportSenderPipeletPojo.setPipeletParams( params );
+
+            ArrayList<PipeletPojo> ebXML10InboundPipelets = new ArrayList<PipeletPojo>();
+            ebXML10InboundPipelets.add( ebxml10HTTPTransportReceiverPipeletPojo );
+            ebXML10InboundPipelets.add( ebxml10HttpUnpackerPipeletPojo );
+            ebXML10InboundPipelets.add( ebxml10DeserializerPipeletPojo );
+            ebXML10InboundPipelets.add( ebxml10PatcherPipeletPojo );
+
+            ArrayList<PipeletPojo> ebXML10OutboundPipelets = new ArrayList<PipeletPojo>();
+            ebXML10OutboundPipelets.add( ebxml10SerializerPipeletPojo );
+            ebXML10OutboundPipelets.add( ebxml10HttpPackerPipeletPojo );
+            ebXML10OutboundPipelets.add( ebxml10HttpTransportSenderPipeletPojo );
+
+            ebXML10InboundPipelinePojo.setOutbound( false );
+            ebXML10InboundPipelinePojo.setManual( false );
+            ebXML10InboundPipelinePojo.setTimer( false );
+            ebXML10InboundPipelinePojo.setTimerInterval( 0 );
+            ebXML10InboundPipelinePojo.setCreatedDate( new Date() );
+            ebXML10InboundPipelinePojo.setModifiedDate( new Date() );
+            ebXML10InboundPipelinePojo.setModifiedNxUserId( 1 );
+            ebXML10InboundPipelinePojo.setDescription( "ebXML 1.0 Inbound Pipeline" );
+            ebXML10InboundPipelinePojo.setName( "ebXML10InboundPipeline" );
+            ebXML10InboundPipelinePojo.setFrontend( true );
+            ebXML10InboundPipelinePojo.setPipelets( ebXML10InboundPipelets );
+            ebXML10InboundPipelinePojo.setTrp( ebXML1HttpTRPPojo );
+
+            ebXML10OutboundPipelinePojo.setOutbound( true );
+            ebXML10OutboundPipelinePojo.setManual( false );
+            ebXML10OutboundPipelinePojo.setTimer( false );
+            ebXML10OutboundPipelinePojo.setTimerInterval( 0 );
+            ebXML10OutboundPipelinePojo.setCreatedDate( new Date() );
+            ebXML10OutboundPipelinePojo.setModifiedDate( new Date() );
+            ebXML10OutboundPipelinePojo.setModifiedNxUserId( 1 );
+            ebXML10OutboundPipelinePojo.setDescription( "ebXML 1.0 Outbound Pipeline" );
+            ebXML10OutboundPipelinePojo.setName( "ebXML10OutboundPipeline" );
+            ebXML10OutboundPipelinePojo.setFrontend( true );
+            ebXML10OutboundPipelinePojo.setPipelets( ebXML10OutboundPipelets );
+            ebXML10OutboundPipelinePojo.setTrp( ebXML1HttpTRPPojo );
+
+            frontendPipelineTemplates.add( ebXML10InboundPipelinePojo );
+            frontendPipelineTemplates.add( ebXML10OutboundPipelinePojo );
+
+            /* --------------------------------------------------------------
+             * ebXML 2.0
+             * --------------------------------------------------------------
+             */
+            
             // HTTP
             PipelinePojo ebXML20InboundPipelinePojo = new PipelinePojo();
             PipelinePojo ebXML20OutboundPipelinePojo = new PipelinePojo();
@@ -219,8 +329,8 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
                     transportReceiver, new Date(), new Date(), 1, 0, "ebxml20", "ebxmlHTTPTransportReceiver", null );
             ebxmlHTTPTransportReceiverPipeletPojo.setFrontend( true );
             ebxmlHTTPTransportReceiverPipeletPojo.setPosition( 0 );
-            List<PipeletParamPojo> params = new ArrayList<PipeletParamPojo>();
-            PipeletParamPojo param = new PipeletParamPojo( ebxmlHTTPTransportReceiverPipeletPojo, new Date(),
+            params = new ArrayList<PipeletParamPojo>();
+            param = new PipeletParamPojo( ebxmlHTTPTransportReceiverPipeletPojo, new Date(),
                     new Date(), 1, "service", "HttpReceiverService" );
             params.add( param );
             ebxmlHTTPTransportReceiverPipeletPojo.setPipeletParams( params );
@@ -398,14 +508,18 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
                     "Xioma HTTP" );
             partnerPojo.getConnections().add( httpConnectionPojo );
 
+            /*
             ConnectionPojo mailConnectionPojo = new ConnectionPojo( ebXML2MailTRPPojo, partnerPojo, 30000, 3000, true,
                     true, false, 0, 3, new Date(), new Date(), 1, "test@dummy", "Xioma Mail" );
+                    */
             // partnerPojo.getConnections().add( mailConnectionPojo );
 
             ParticipantPojo httpParticipantPojo = new ParticipantPojo( partnerPojo, httpChoreographyPojo,
                     localPartnerPojo, httpConnectionPojo, new Date(), new Date(), 1, "XiomaHttp" );
+            /*
             ParticipantPojo mailParticipantPojo = new ParticipantPojo( partnerPojo, httpChoreographyPojo,
                     localPartnerPojo, mailConnectionPojo, new Date(), new Date(), 1, "XiomaMail" );
+                    */
 
             ActionPojo sendFileActionPojo = new ActionPojo( httpChoreographyPojo, new Date(), new Date(), 1, true,
                     true, fileSaveInboundPipelinePojo, fileLoadOutboundPipelinePojo, "SendFile" );
@@ -420,7 +534,20 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             ComponentPojo pop3ReceiverComponent = new ComponentPojo( new Date(), new Date(), 1, ComponentType.SERVICE
                     .getValue(), "Pop3Receiver", Pop3Receiver.class.getName(), "The receiver service for POP3" );
 
-            ServicePojo httpSenderService = new ServicePojo( httpSenderComponent, new Date(), new Date(), 1, 0,
+            List<ServiceParamPojo> serviceParams = null;
+            ServiceParamPojo serviceParam = null;
+            
+            ServicePojo httpSenderService10 = new ServicePojo( httpSenderComponent, new Date(), new Date(), 1, 0,
+                    "HttpSenderService_ebXML_1.0", "A sender service for HTTP", new ArrayList<ServiceParamPojo>() );
+            ServicePojo httpReceiverService10 = new ServicePojo( httpReceiverComponent, new Date(), new Date(), 1, 0,
+                    "HttpReceiverService_ebXML_1.0", "A receiver service for HTTP", new ArrayList<ServiceParamPojo>() );
+            serviceParams = new ArrayList<ServiceParamPojo>();
+            serviceParam = new ServiceParamPojo( httpReceiverService10, new Date(), new Date(), 1, "logical_name",
+                    "ebxml10" );
+            serviceParams.add( serviceParam );
+            httpReceiverService10.setServiceParams( serviceParams );
+            
+            ServicePojo httpSenderService20 = new ServicePojo( httpSenderComponent, new Date(), new Date(), 1, 0,
                     "HttpSenderService", "The default sender service for HTTP", new ArrayList<ServiceParamPojo>() );
             ServicePojo httpPlainSenderService = new ServicePojo( httpSenderComponent, new Date(), new Date(), 1, 0,
                     "HttpPlainSenderService", "The default sender service for HTTPPlain",
@@ -428,13 +555,13 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             ServicePojo smtpSenderService = new ServicePojo( smtpSenderComponent, new Date(), new Date(), 1, 0,
                     "SmtpSenderService", "The default sender service for SMTP", new ArrayList<ServiceParamPojo>() );
 
-            ServicePojo httpReceiverService = new ServicePojo( httpReceiverComponent, new Date(), new Date(), 1, 0,
+            ServicePojo httpReceiverService20 = new ServicePojo( httpReceiverComponent, new Date(), new Date(), 1, 0,
                     "HttpReceiverService", "The default receiver service for HTTP", new ArrayList<ServiceParamPojo>() );
-            List<ServiceParamPojo> serviceParams = new ArrayList<ServiceParamPojo>();
-            ServiceParamPojo serviceParam = new ServiceParamPojo( httpReceiverService, new Date(), new Date(), 1, "logical_name",
+            serviceParams = new ArrayList<ServiceParamPojo>();
+            serviceParam = new ServiceParamPojo( httpReceiverService20, new Date(), new Date(), 1, "logical_name",
                     "ebxml20" );
             serviceParams.add( serviceParam );
-            httpReceiverService.setServiceParams( serviceParams );
+            httpReceiverService20.setServiceParams( serviceParams );
             
             ServicePojo httpPlainReceiverService = new ServicePojo( httpReceiverComponent, new Date(), new Date(), 1,
                     0, "HttpPlainReceiverService", "The default receiver service for HTTPPlain",
@@ -478,8 +605,10 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
 
             backendPipelineTemplates.add( fileSaveInboundPipelinePojo );
             backendPipelineTemplates.add( fileLoadOutboundPipelinePojo );
-            services.add( httpSenderService );
-            services.add( httpReceiverService );
+            services.add( httpSenderService10 );
+            services.add( httpReceiverService10 );
+            services.add( httpSenderService20 );
+            services.add( httpReceiverService20 );
             services.add( httpPlainSenderService );
             services.add( httpPlainReceiverService );
             services.add( smtpSenderService );

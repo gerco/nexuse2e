@@ -17,11 +17,12 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.nexuse2e.messaging.ebxml.v20;
+package org.nexuse2e.messaging.ebxml.v10;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.xml.soap.MessageFactory;
@@ -43,13 +44,14 @@ import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.ErrorDescriptor;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.messaging.TimestampFormatter;
+import org.nexuse2e.pojo.ConnectionPojo;
 import org.nexuse2e.pojo.MessagePayloadPojo;
 import org.nexuse2e.pojo.MessagePojo;
 
 public class HeaderSerializer extends AbstractPipelet {
 
-    private static Logger       LOG = Logger.getLogger( HeaderDeserializer.class );
-   
+    private static Logger LOG = Logger.getLogger( HeaderDeserializer.class );
+
     /**
      * Default constructor.
      */
@@ -61,8 +63,7 @@ public class HeaderSerializer extends AbstractPipelet {
      * 
      */
     @SuppressWarnings("unchecked")
-    public MessageContext processMessage( MessageContext messagePipeletParameter )
-            throws NexusException {
+    public MessageContext processMessage( MessageContext messagePipeletParameter ) throws NexusException {
 
         try {
             MessagePojo messagePojo = messagePipeletParameter.getMessagePojo();
@@ -132,7 +133,7 @@ public class HeaderSerializer extends AbstractPipelet {
             SOAPHeaderElement msgHeader = soapHeader.addHeaderElement( name );
             msgHeader.setMustUnderstand( true );
             msgHeader.addAttribute( soapFactory.createName( Constants.VERSION, Constants.EBXML_NAMESPACE_PREFIX,
-                    Constants.EBXML_NAMESPACE ), Constants.EBXMLVERSION );
+                    Constants.EBXML_NAMESPACE ), Constants.EBXML_VERSION );
 
             // TO & FROM -----------------------------------------------------------
             String from = messagePojo.getCustomParameters().get( Constants.PROTOCOLSPECIFIC_FROM );
@@ -177,12 +178,17 @@ public class HeaderSerializer extends AbstractPipelet {
                         Constants.EBXML_NAMESPACE ), service );
             }
 
-            String serviceVal = new String();
-            if ( !( service.startsWith( "uri:" ) || service.startsWith( "urn:" ) ) ) {
-                serviceVal += "uri:";
-            }
+            if ( ack ) {
+                soapElement.addTextNode( Constants.ACK_SERVICE );
+            } else {
 
-            soapElement.addTextNode( serviceVal + service );
+                String serviceVal = new String();
+                if ( !( service.startsWith( "uri:" ) || service.startsWith( "urn:" ) ) ) {
+                    serviceVal += "uri:";
+                }
+
+                soapElement.addTextNode( serviceVal + service );
+            }
             msgHeader.addChildElement( soapElement );
 
             // ACTION --------------------------------------------------------------
@@ -225,6 +231,13 @@ public class HeaderSerializer extends AbstractPipelet {
 
             if ( ack ) { // ack
                 // ACKNOWLEDGEMENT--------------------------------------------------
+                if ( messagePojo.getParticipant().getConnection().isReliable() ) {
+                    soapElement = soapFactory.createElement( "QualityOfServiceInfo", Constants.EBXML_NAMESPACE_PREFIX,
+                            Constants.EBXML_NAMESPACE );
+                    soapElement.addAttribute( soapFactory.createName( "deliverySemantics",
+                            Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE ), "OnceAndOnlyOnce" );
+                    msgHeader.addChildElement( soapElement );
+                }
                 createAck( soapFactory, soapHeader, createdDate, messagePojo.getReferencedMessage().getMessageId(),
                         from, fromIdType );
             } else if ( error ) { // error
@@ -233,19 +246,60 @@ public class HeaderSerializer extends AbstractPipelet {
             } else { // regular message
                 // QUALITY OF SERVICE---------------------------------------------------
                 if ( messagePojo.getParticipant().getConnection().isReliable() ) {
-                    name = soapFactory.createName( "AckRequested", Constants.EBXML_NAMESPACE_PREFIX,
+                    soapElement = soapFactory.createElement( "QualityOfServiceInfo", Constants.EBXML_NAMESPACE_PREFIX,
                             Constants.EBXML_NAMESPACE );
-                    SOAPHeaderElement ackReq = soapHeader.addHeaderElement( name );
-                    ackReq.setMustUnderstand( true );
-                    ackReq.addAttribute( soapFactory.createName( Constants.VERSION, Constants.EBXML_NAMESPACE_PREFIX,
-                            Constants.EBXML_NAMESPACE ), Constants.EBXMLVERSION );
-                    ackReq.addAttribute( soapFactory.createName( "signed", Constants.EBXML_NAMESPACE_PREFIX,
-                            Constants.EBXML_NAMESPACE ), Constants.ACKREQUESTED_UNSIGNED );
-                    msgHeader.addChildElement( soapElement );
-                    soapElement = soapFactory.createElement( "DuplicateElimination", Constants.EBXML_NAMESPACE_PREFIX,
-                            Constants.EBXML_NAMESPACE );
+                    soapElement.addAttribute( soapFactory.createName( "deliverySemantics",
+                            Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE ), "OnceAndOnlyOnce" );
                     msgHeader.addChildElement( soapElement );
                 }
+
+                name = soapFactory.createName( "TraceHeaderList", Constants.EBXML_NAMESPACE_PREFIX,
+                        Constants.EBXML_NAMESPACE );
+                SOAPHeaderElement traceHeaderList = soapHeader.addHeaderElement( name );
+                traceHeaderList.setMustUnderstand( true );
+                traceHeaderList.setActor( Constants.SOAPACTOR );
+                traceHeaderList.addAttribute( soapFactory.createName( Constants.VERSION,
+                        Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE ), Constants.EBXML_VERSION );
+
+                SOAPElement traceHeader = soapFactory.createElement( "TraceHeader", Constants.EBXML_NAMESPACE_PREFIX,
+                        Constants.EBXML_NAMESPACE );
+                SOAPElement sender = createPartyElement( soapFactory, "Sender", from, fromIdType, null );
+                SOAPElement senderLocation = soapFactory.createElement( "Location", Constants.EBXML_NAMESPACE_PREFIX,
+                        Constants.EBXML_NAMESPACE );
+                Set<ConnectionPojo> localConnections = messagePojo.getParticipant().getLocalPartner().getConnections();
+                String localURI = "http://localhost:8080/NEXUSe2e/handler/ebxml10";
+                if ( !localConnections.isEmpty() ) {
+                    localURI = localConnections.iterator().next().getUri();
+                }
+                senderLocation.addTextNode( localURI );
+                sender.addChildElement( senderLocation );
+                traceHeader.addChildElement( sender );
+
+                SOAPElement receiver = createPartyElement( soapFactory, "Receiver", to, toIDType, null );
+                SOAPElement receiverLocation = soapFactory.createElement( "Location", Constants.EBXML_NAMESPACE_PREFIX,
+                        Constants.EBXML_NAMESPACE );
+                receiverLocation.addTextNode( messagePojo.getParticipant().getConnection().getUri() );
+                receiver.addChildElement( receiverLocation );
+                traceHeader.addChildElement( receiver );
+
+                soapElement = soapFactory.createElement( Constants.TIMESTAMP_ID, Constants.EBXML_NAMESPACE_PREFIX,
+                        Constants.EBXML_NAMESPACE );
+                soapElement.addTextNode( createdDate );
+                traceHeader.addChildElement( soapElement );
+
+                traceHeaderList.addChildElement( traceHeader );
+
+                name = soapFactory.createName( "Via", Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE );
+                SOAPHeaderElement via = soapHeader.addHeaderElement( name );
+                via.setMustUnderstand( true );
+                via.setActor( Constants.SOAPACTOR );
+                via.addAttribute( soapFactory.createName( Constants.VERSION, Constants.EBXML_NAMESPACE_PREFIX,
+                        Constants.EBXML_NAMESPACE ), Constants.EBXML_VERSION );
+                via.addAttribute( soapFactory.createName( Constants.ACK_REQUESTED, Constants.EBXML_NAMESPACE_PREFIX,
+                        Constants.EBXML_NAMESPACE ), Constants.ACK_REQUESTED_VALUE );
+                via.addAttribute( soapFactory.createName( Constants.RELIABLE_MESSAGING_METHOD,
+                        Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE ),
+                        Constants.RELIABLE_MESSAGING_METHOD_VALUE );
 
                 SOAPElement soapManifest = null;
 
@@ -256,7 +310,7 @@ public class HeaderSerializer extends AbstractPipelet {
                 soapManifest.addAttribute( soapFactory.createName( Constants.MUSTUNDERSTAND,
                         Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE ), Constants.MUSTUNDERSTAND_VALUE );
                 soapManifest.addAttribute( soapFactory.createName( Constants.VERSION, Constants.EBXML_NAMESPACE_PREFIX,
-                        Constants.EBXML_NAMESPACE ), Constants.EBXMLVERSION );
+                        Constants.EBXML_NAMESPACE ), Constants.EBXML_VERSION );
 
                 // REFERENCES ------------------------------------------------------
 
@@ -307,7 +361,7 @@ public class HeaderSerializer extends AbstractPipelet {
         ackEl.setActor( Constants.SOAPACTOR );
         ackEl.setMustUnderstand( true );
         ackEl.addAttribute( soapFactory.createName( Constants.VERSION, Constants.EBXML_NAMESPACE_PREFIX,
-                Constants.EBXML_NAMESPACE ), Constants.EBXMLVERSION );
+                Constants.EBXML_NAMESPACE ), Constants.EBXML_VERSION );
 
         // TIMESTAMP------------------------------------------------------------
         SOAPElement soapEl = soapFactory.createElement( Constants.TIMESTAMP_ID, Constants.EBXML_NAMESPACE_PREFIX,
@@ -316,10 +370,12 @@ public class HeaderSerializer extends AbstractPipelet {
         ackEl.addChildElement( soapEl );
 
         // RefToMessageId-------------------------------------------------------
-        soapEl = soapFactory.createElement( Constants.REFTOMESSAGE_ID, Constants.EBXML_NAMESPACE_PREFIX,
-                Constants.EBXML_NAMESPACE );
-        soapEl.addTextNode( refMessageId );
-        ackEl.addChildElement( soapEl );
+        /*
+         soapEl = soapFactory.createElement( Constants.REFTOMESSAGE_ID, Constants.EBXML_NAMESPACE_PREFIX,
+         Constants.EBXML_NAMESPACE );
+         soapEl.addTextNode( refMessageId );
+         ackEl.addChildElement( soapEl );
+         */
 
         // FROM-----------------------------------------------------------------
         ackEl.addChildElement( createPartyElement( soapFactory, "From", from, FromIDType, null ) );
@@ -355,7 +411,7 @@ public class HeaderSerializer extends AbstractPipelet {
         //errorListEl.setActor( Constants.SOAPACTOR );
         errorListEl.setMustUnderstand( true );
         errorListEl.addAttribute( soapFactory.createName( Constants.VERSION, Constants.EBXML_NAMESPACE_PREFIX,
-                Constants.EBXML_NAMESPACE ), Constants.EBXMLVERSION );
+                Constants.EBXML_NAMESPACE ), Constants.EBXML_VERSION );
         errorListEl.addAttribute( soapFactory.createName( "id", Constants.EBXML_NAMESPACE_PREFIX,
                 Constants.EBXML_NAMESPACE ), "unknown" );
         int severityCode = -1;
@@ -506,5 +562,5 @@ public class HeaderSerializer extends AbstractPipelet {
         // TODO Auto-generated method stub
 
     }
-    
+
 }

@@ -35,7 +35,7 @@ public interface MessageProcessor {
      * @throws IllegalStateException Thrown if the system is not in a correct state to handle this specific message.
      * @throws NexusException Thrown if any other processing related exception occured.
      */
-    public abstract MessageContext processMessage( MessageContext frontendPipeletParameter )
+    public abstract MessageContext processMessage( MessageContext messageContext )
             throws IllegalArgumentException, IllegalStateException, NexusException;
 
 }

@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://integration.nexuse2e.org" xmlns:tns="http://integration.nexuse2e.org"
+  xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope" xmlns:ns1="http://nexuse2e.org"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenc11="http://schemas.xmlsoap.org/soap/encoding/"
+  xmlns:soapenc12="http://www.w3.org/2003/05/soap-encoding" xmlns:soap11="http://schemas.xmlsoap.org/soap/envelope/"
+  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="qualified" elementFormDefault="qualified"
+      targetNamespace="http://integration.nexuse2e.org">
+      <xsd:element name="triggerSendingNewMessage">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element maxOccurs="1" minOccurs="1" name="choreographyId" nillable="true" type="xsd:string" />
+            <xsd:element maxOccurs="1" minOccurs="1" name="businessPartnerId" nillable="true" type="xsd:string" />
+            <xsd:element maxOccurs="1" minOccurs="1" name="actionId" nillable="true" type="xsd:string" />
+            <xsd:element maxOccurs="1" minOccurs="1" name="primaryKey" nillable="true" type="xsd:anyType" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="triggerSendingNewMessageResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element maxOccurs="1" minOccurs="1" name="conversationId" nillable="true" type="xsd:string" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="NexusException" type="ns1:NexusException" />
+      <xsd:element name="sendNewStringMessage">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element maxOccurs="1" minOccurs="1" name="choreographyId" nillable="true" type="xsd:string" />
+            <xsd:element maxOccurs="1" minOccurs="1" name="businessPartnerId" nillable="true" type="xsd:string" />
+            <xsd:element maxOccurs="1" minOccurs="1" name="actionId" nillable="true" type="xsd:string" />
+            <xsd:element maxOccurs="1" minOccurs="1" name="payload" nillable="true" type="xsd:string" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="sendNewStringMessageResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element maxOccurs="1" minOccurs="1" name="conversationId" nillable="true" type="xsd:string" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="createConversation">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element maxOccurs="1" minOccurs="1" name="choreographyId" nillable="true" type="xsd:string" />
+            <xsd:element maxOccurs="1" minOccurs="1" name="businessPartnerId" nillable="true" type="xsd:string" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="createConversationResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element maxOccurs="1" minOccurs="1" name="conversationId" nillable="true" type="xsd:string" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="sendStringMessage">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element maxOccurs="1" minOccurs="1" name="conversationId" nillable="true" type="xsd:string" />
+            <xsd:element maxOccurs="1" minOccurs="1" name="actionId" nillable="true" type="xsd:string" />
+            <xsd:element maxOccurs="1" minOccurs="1" name="payload" nillable="true" type="xsd:string" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="sendStringMessageResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element maxOccurs="1" minOccurs="1" name="successful" type="xsd:boolean" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="triggerSendingMessage">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element maxOccurs="1" minOccurs="1" name="conversationId" nillable="true" type="xsd:string" />
+            <xsd:element maxOccurs="1" minOccurs="1" name="actionId" nillable="true" type="xsd:string" />
+            <xsd:element maxOccurs="1" minOccurs="1" name="primaryKey" nillable="true" type="xsd:anyType" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="triggerSendingMessageResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element maxOccurs="1" minOccurs="1" name="successful" type="xsd:boolean" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:schema>
+    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="qualified" elementFormDefault="qualified"
+      targetNamespace="http://nexuse2e.org">
+      <xsd:complexType name="NexusException">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="choreographyId" nillable="true" type="xsd:string" />
+          <xsd:element minOccurs="0" name="conversationDetails" nillable="true" type="xsd:string" />
+          <xsd:element minOccurs="0" name="conversationId" nillable="true" type="xsd:string" />
+          <xsd:element minOccurs="0" name="messageId" nillable="true" type="xsd:string" />
+          <xsd:element minOccurs="0" name="partnerId" nillable="true" type="xsd:string" />
+          <xsd:element minOccurs="0" name="protocolId" nillable="true" type="xsd:string" />
+          <xsd:element minOccurs="0" name="protocolVersion" nillable="true" type="xsd:string" />
+          <xsd:element minOccurs="0" name="severity" type="xsd:int" />
+          <xsd:element minOccurs="0" name="transportId" nillable="true" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="sendStringMessageRequest">
+    <wsdl:part name="parameters" element="tns:sendStringMessage" />
+  </wsdl:message>
+  <wsdl:message name="triggerSendingMessageResponse">
+    <wsdl:part name="parameters" element="tns:triggerSendingMessageResponse" />
+  </wsdl:message>
+  <wsdl:message name="sendNewStringMessageResponse">
+    <wsdl:part name="parameters" element="tns:sendNewStringMessageResponse" />
+  </wsdl:message>
+  <wsdl:message name="sendStringMessageResponse">
+    <wsdl:part name="parameters" element="tns:sendStringMessageResponse" />
+  </wsdl:message>
+  <wsdl:message name="NexusException">
+    <wsdl:part name="NexusException" element="tns:NexusException" />
+  </wsdl:message>
+  <wsdl:message name="triggerSendingNewMessageResponse">
+    <wsdl:part name="parameters" element="tns:triggerSendingNewMessageResponse" />
+  </wsdl:message>
+  <wsdl:message name="createConversationResponse">
+    <wsdl:part name="parameters" element="tns:createConversationResponse" />
+  </wsdl:message>
+  <wsdl:message name="createConversationRequest">
+    <wsdl:part name="parameters" element="tns:createConversation" />
+  </wsdl:message>
+  <wsdl:message name="triggerSendingMessageRequest">
+    <wsdl:part name="parameters" element="tns:triggerSendingMessage" />
+  </wsdl:message>
+  <wsdl:message name="sendNewStringMessageRequest">
+    <wsdl:part name="parameters" element="tns:sendNewStringMessage" />
+  </wsdl:message>
+  <wsdl:message name="triggerSendingNewMessageRequest">
+    <wsdl:part name="parameters" element="tns:triggerSendingNewMessage" />
+  </wsdl:message>
+  <wsdl:portType name="NEXUSe2eInterfacePortType">
+    <wsdl:operation name="triggerSendingNewMessage">
+      <wsdl:input name="triggerSendingNewMessageRequest" message="tns:triggerSendingNewMessageRequest" />
+      <wsdl:output name="triggerSendingNewMessageResponse" message="tns:triggerSendingNewMessageResponse" />
+      <wsdl:fault name="NexusException" message="tns:NexusException" />
+    </wsdl:operation>
+    <wsdl:operation name="sendNewStringMessage">
+      <wsdl:input name="sendNewStringMessageRequest" message="tns:sendNewStringMessageRequest" />
+      <wsdl:output name="sendNewStringMessageResponse" message="tns:sendNewStringMessageResponse" />
+      <wsdl:fault name="NexusException" message="tns:NexusException" />
+    </wsdl:operation>
+    <wsdl:operation name="createConversation">
+      <wsdl:input name="createConversationRequest" message="tns:createConversationRequest" />
+      <wsdl:output name="createConversationResponse" message="tns:createConversationResponse" />
+      <wsdl:fault name="NexusException" message="tns:NexusException" />
+    </wsdl:operation>
+    <wsdl:operation name="sendStringMessage">
+      <wsdl:input name="sendStringMessageRequest" message="tns:sendStringMessageRequest" />
+      <wsdl:output name="sendStringMessageResponse" message="tns:sendStringMessageResponse" />
+      <wsdl:fault name="NexusException" message="tns:NexusException" />
+    </wsdl:operation>
+    <wsdl:operation name="triggerSendingMessage">
+      <wsdl:input name="triggerSendingMessageRequest" message="tns:triggerSendingMessageRequest" />
+      <wsdl:output name="triggerSendingMessageResponse" message="tns:triggerSendingMessageResponse" />
+      <wsdl:fault name="NexusException" message="tns:NexusException" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="NEXUSe2eInterfaceHttpBinding" type="tns:NEXUSe2eInterfacePortType">
+    <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="triggerSendingNewMessage">
+      <wsdlsoap:operation soapAction="" />
+      <wsdl:input name="triggerSendingNewMessageRequest">
+        <wsdlsoap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="triggerSendingNewMessageResponse">
+        <wsdlsoap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="NexusException">
+        <wsdlsoap:fault name="NexusException" use="literal" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="sendNewStringMessage">
+      <wsdlsoap:operation soapAction="" />
+      <wsdl:input name="sendNewStringMessageRequest">
+        <wsdlsoap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="sendNewStringMessageResponse">
+        <wsdlsoap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="NexusException">
+        <wsdlsoap:fault name="NexusException" use="literal" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="createConversation">
+      <wsdlsoap:operation soapAction="" />
+      <wsdl:input name="createConversationRequest">
+        <wsdlsoap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="createConversationResponse">
+        <wsdlsoap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="NexusException">
+        <wsdlsoap:fault name="NexusException" use="literal" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="sendStringMessage">
+      <wsdlsoap:operation soapAction="" />
+      <wsdl:input name="sendStringMessageRequest">
+        <wsdlsoap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="sendStringMessageResponse">
+        <wsdlsoap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="NexusException">
+        <wsdlsoap:fault name="NexusException" use="literal" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="triggerSendingMessage">
+      <wsdlsoap:operation soapAction="" />
+      <wsdl:input name="triggerSendingMessageRequest">
+        <wsdlsoap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="triggerSendingMessageResponse">
+        <wsdlsoap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="NexusException">
+        <wsdlsoap:fault name="NexusException" use="literal" />
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="NEXUSe2eInterface">
+    <wsdl:port name="NEXUSe2eInterfaceHttpPort" binding="tns:NEXUSe2eInterfaceHttpBinding">
+      <wsdlsoap:address location="http://localhost:8080/NEXUSe2e/webservice/NEXUSe2eInterface" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

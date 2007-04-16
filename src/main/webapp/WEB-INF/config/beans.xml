@@ -129,6 +129,7 @@
   <bean id="frontendInboundDispatcher" class="org.nexuse2e.messaging.FrontendInboundDispatcher">
     <property name="protocolAdapters">
       <list>
+        <ref bean="ebxml10Adapter" />
         <ref bean="ebxml20Adapter" />
         <ref bean="httpPlainAdapter" />
       </list>
@@ -140,6 +141,7 @@
   <bean id="backendOutboundDispatcher" class="org.nexuse2e.messaging.BackendOutboundDispatcher">
     <property name="protocolAdapters">
       <list>
+        <ref bean="ebxml10Adapter" />
         <ref bean="ebxml20Adapter" />
         <ref bean="httpPlainAdapter" />
       </list>
@@ -161,6 +163,15 @@
   <bean id="backendPipelineDispatcher" class="org.nexuse2e.backend.BackendPipelineDispatcher" />
 
   <!--  ProtocolAdapter -->
+  <bean id="ebxml10Adapter" class="org.nexuse2e.messaging.ebxml.v10.ProtocolAdapter">
+    <property name="key">
+      <bean class="org.nexuse2e.ProtocolSpecificKey">
+        <property name="communicationProtocolId" value="ebxml" />
+        <property name="communicationProtocolVersion" value="1.0" />
+        <property name="transportProtocolId" value="http" />
+      </bean>
+    </property>
+  </bean>
   <bean id="ebxml20Adapter" class="org.nexuse2e.messaging.ebxml.v20.ProtocolAdapter">
     <property name="key">
       <bean class="org.nexuse2e.ProtocolSpecificKey">
