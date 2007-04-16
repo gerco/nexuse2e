@@ -266,7 +266,7 @@ public class TransactionDAO extends BasicDAO {
             } else {
                 query.append( " where " );
             }
-            query.append( "conversation.choreography.nxChoreographyId = '" + nxChoreographyId + "' " );
+            query.append( "conversation.choreography.nxChoreographyId = " + nxChoreographyId + " " );
             first = false;
         }
         if ( nxPartnerId != 0 ) {
@@ -276,7 +276,7 @@ public class TransactionDAO extends BasicDAO {
                 query.append( " where " );
             }
             LOG.trace( "nxpartnerid: " + nxPartnerId );
-            query.append( "conversation.partner.nxPartnerId = '" + nxPartnerId + "' " );
+            query.append( "conversation.partner.nxPartnerId = " + nxPartnerId + " " );
             first = false;
         }
         if ( conversationId != null ) {
@@ -363,7 +363,7 @@ public class TransactionDAO extends BasicDAO {
             } else {
                 query.append( " where " );
             }
-            query.append( "message.conversation.choreography.nxChoreographyId = '" + nxChoreographyId + "' " );
+            query.append( "message.conversation.choreography.nxChoreographyId = " + nxChoreographyId + " " );
             first = false;
         }
         if ( nxPartnerId != 0 ) {
@@ -372,7 +372,7 @@ public class TransactionDAO extends BasicDAO {
             } else {
                 query.append( " where " );
             }
-            query.append( "message.conversation.partner.nxPartnerId = '" + nxPartnerId + "' " );
+            query.append( "message.conversation.partner.nxPartnerId = " + nxPartnerId + " " );
             first = false;
         }
         if ( conversationId != null ) {

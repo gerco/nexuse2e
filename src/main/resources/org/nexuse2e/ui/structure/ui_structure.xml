@@ -203,11 +203,11 @@
         </nxs:page>
       </nxs:page>
       <nxs:page target="Reporting.do" label="Reporting" icon="images/tree/reports.gif">
-        <nxs:page target="ReportingForward.do?command=transaction" label="Transaction Reporting" icon="images/tree/TreeDot.gif">
-          <nxs:command target="ProcessConversationReport.do" label="Process Conversation Report" icon="images/tree/TreeDot.gif"/> 
+        <nxs:page target="ReportingForward.do?command=transaction&amp;noReset=true" label="Transaction Reporting" icon="images/tree/TreeDot.gif">
+          <nxs:command target="ProcessConversationReport.do?noReset=true" label="Process Conversation Report" icon="images/tree/TreeDot.gif"/> 
         </nxs:page>
-        <nxs:page target="ReportingForward.do?command=engine" label="Engine Log" icon="images/tree/TreeDot.gif">
-          <nxs:command target="ProcessConversationReport.do" label="Process Conversation Report" icon="images/tree/TreeDot.gif"/> 
+        <nxs:page target="ReportingForward.do?command=engine&amp;noReset=true" label="Engine Log" icon="images/tree/TreeDot.gif">
+          <nxs:command target="ProcessEngineLog.do?noReset=true" label="Process Engine Log" icon="images/tree/TreeDot.gif"/> 
         </nxs:page>
       </nxs:page>
     </nxs:page>

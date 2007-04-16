@@ -24,7 +24,7 @@
 			<img border="0" src="images/tree/reports_g.gif">
 		</nexus:link></td>
 		<td class="NEXUSNameNoWidth"><nexus:link styleClass="NexusLink"
-			href="ProcessConversationReport.do">Transaction Reporting</nexus:link></td>
+			href="ProcessConversationReport.do?noReset=true">Transaction Reporting</nexus:link></td>
 	</tr>
 	<tr>
 		<td class="NEXUSIcon"><nexus:link styleClass="NexusLink"
@@ -32,7 +32,7 @@
 			<img border="0" src="images/tree/reports_g.gif">
 		</nexus:link></td>
 		<td class="NEXUSNameNoWidth"><nexus:link styleClass="NexusLink"
-			href="ProcessEngineLog.do">Engine Log</nexus:link></td>
+			href="ProcessEngineLog.do?noReset=true">Engine Log</nexus:link></td>
 	</tr>
 </table>
 

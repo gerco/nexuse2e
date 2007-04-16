@@ -188,14 +188,14 @@ public class ReportingPropertiesForm extends ActionForm {
     }
 
     @Override
-    public void reset( ActionMapping arg0, HttpServletRequest arg1 ) {
+    public void reset( ActionMapping actionMapping, HttpServletRequest request ) {
 
         //        LOG.trace( "path:" + arg0.getPath() );
-        if ( arg1.getParameter( "noReset" ) != null ) {
+        if ( request.getParameter( "noReset" ) != null ) {
             return;
         }
-        if ( arg0.getPath().equals( "/ReportingForward" ) || arg0.getPath().equals( "/ProcessConversationReport" )
-                || arg0.getPath().equals( "/ProcessEngineLog" ) ) {
+        if ( actionMapping.getPath().equals( "/ReportingForward" ) || actionMapping.getPath().equals( "/ProcessConversationReport" )
+                || actionMapping.getPath().equals( "/ProcessEngineLog" ) ) {
             setStartEnabled( false );
             setEndEnabled( false );
             setConversationEnabled( false );
