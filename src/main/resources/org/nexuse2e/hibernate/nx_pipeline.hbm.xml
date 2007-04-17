@@ -20,21 +20,6 @@
                 <comment>frontend is true, backend is false</comment>
             </column>
         </property>
-        <property name="manual" type="boolean">
-            <column name="manual_flag"  not-null="true" sql-type="integer">
-                <comment></comment>
-            </column>
-        </property>
-        <property name="timer" type="boolean">
-            <column name="timer_flag"  not-null="true" sql-type="integer">
-                <comment></comment>
-            </column>
-        </property>
-        <property name="timerInterval" type="int">
-            <column name="timer_interval" not-null="false" sql-type="integer">
-                <comment></comment>
-            </column>
-        </property>
         
         <many-to-one foreign-key="fk__pipeline__trp_id" name="trp" column="nx_trp_id" not-null="false" class="org.nexuse2e.pojo.TRPPojo" cascade="none" index="ix_pipeline_1"/>
         
