@@ -38,9 +38,6 @@ public class PipelinePojo implements java.io.Serializable {
     private int                     nxPipelineId;
     private TRPPojo                 trp;
     private boolean                 outbound;
-    private boolean                 manual           = false;
-    private boolean                 timer            = false;
-    private int                     timerInterval    = 0;
     private boolean                 frontend;
     private Date                    createdDate;
     private Date                    modifiedDate;
@@ -58,12 +55,11 @@ public class PipelinePojo implements java.io.Serializable {
     }
 
     /** minimal constructor */
-    public PipelinePojo( boolean outbound, boolean manual, boolean timer, Date createdDate, Date modifiedDate,
+    public PipelinePojo( boolean outbound, Date createdDate, Date modifiedDate,
             int modifiedNxUserId, String name ) {
 
         this.outbound = outbound;
-        this.manual = manual;
-        this.timer = timer;
+        
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
         this.modifiedNxUserId = modifiedNxUserId;
@@ -71,13 +67,10 @@ public class PipelinePojo implements java.io.Serializable {
     }
 
     /** full constructor */
-    public PipelinePojo( boolean outbound, boolean manual, boolean timer, int timerInterval, Date createdDate,
+    public PipelinePojo( boolean outbound, Date createdDate,
             Date modifiedDate, int modifiedNxUserId, String description, String name, Collection<PipeletPojo> pipelets ) {
 
         this.outbound = outbound;
-        this.manual = manual;
-        this.timer = timer;
-        this.timerInterval = timerInterval;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
         this.modifiedNxUserId = modifiedNxUserId;
@@ -105,36 +98,6 @@ public class PipelinePojo implements java.io.Serializable {
     public void setOutbound( boolean outbound ) {
 
         this.outbound = outbound;
-    }
-
-    public boolean isManual() {
-
-        return this.manual;
-    }
-
-    public void setManual( boolean manual ) {
-
-        this.manual = manual;
-    }
-
-    public boolean isTimer() {
-
-        return this.timer;
-    }
-
-    public void setTimer( boolean timer ) {
-
-        this.timer = timer;
-    }
-
-    public int getTimerInterval() {
-
-        return this.timerInterval;
-    }
-
-    public void setTimerInterval( int timerInterval ) {
-
-        this.timerInterval = timerInterval;
     }
 
     public Date getCreatedDate() {

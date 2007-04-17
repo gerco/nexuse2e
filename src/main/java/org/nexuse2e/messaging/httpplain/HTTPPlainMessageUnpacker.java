@@ -53,7 +53,7 @@ public class HTTPPlainMessageUnpacker extends AbstractPipelet {
         byte[] payloadData = null;
         MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo();
 
-        Object object = messagePipeletParameter.getGenericData();
+        Object object = messagePipeletParameter.getData();
         if ( !( object instanceof HttpServletRequest ) ) {
             LOG.error( "Unable to process message: raw data not of type HttpServletRequest!" );
             throw new IllegalArgumentException( "Unable to process message: raw data not of type HttpServletRequest!" );

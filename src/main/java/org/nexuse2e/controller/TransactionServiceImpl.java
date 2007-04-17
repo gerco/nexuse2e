@@ -333,8 +333,8 @@ public class TransactionServiceImpl implements TransactionService {
         senderIdType = participant.getLocalPartner().getPartnerIdType();
 
         //TODO refactor and standard constants
-        message.getCustomParameters().put( "from", senderId );
-        message.getCustomParameters().put( "fromIdType", senderIdType );
+        message.getCustomParameters().put(org.nexuse2e.messaging.ebxml.v20.Constants.PARAMETER_PREFIX_EBXML20 + "from", senderId );
+        message.getCustomParameters().put(org.nexuse2e.messaging.ebxml.v20.Constants.PARAMETER_PREFIX_EBXML20 + "fromIdType", senderIdType );
 
         message.setTRP( participant.getConnection().getTrp() );
         ActionPojo action = null;

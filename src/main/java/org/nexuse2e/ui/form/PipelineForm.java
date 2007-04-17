@@ -65,12 +65,7 @@ public class PipelineForm extends ActionForm {
     private List<PipeletParamPojo>  parameters         = new Vector<PipeletParamPojo>();
     private List<TRPPojo>           trps               = null;
 
-    private int                     hours              = 0;
-    private int                     minutes            = 0;
-    private int                     seconds            = 0;
     private boolean                 frontend           = false;
-    private boolean                 manual             = false;
-    private boolean                 timer              = false;
     private PipeletPojo             currentPipelet     = null;
     private Configurable            configurable    = null;
 
@@ -226,11 +221,7 @@ public class PipelineForm extends ActionForm {
         setDescription( null );
         setDirection( -1 );
         setPipelets( null );
-        setHours( 0 );
-        setMinutes( 0 );
-        setSeconds( 0 );
-        setManual( false );
-        setTimer( false );
+        
     }
 
     /**
@@ -391,86 +382,6 @@ public class PipelineForm extends ActionForm {
     public void setSortaction( int sortaction ) {
 
         this.sortaction = sortaction;
-    }
-
-    /**
-     * @return the hours
-     */
-    public int getHours() {
-
-        return hours;
-    }
-
-    /**
-     * @param hours the hours to set
-     */
-    public void setHours( int hours ) {
-
-        this.hours = hours;
-    }
-
-    /**
-     * @return the manual
-     */
-    public boolean isManual() {
-
-        return manual;
-    }
-
-    /**
-     * @param manual the manual to set
-     */
-    public void setManual( boolean manual ) {
-
-        this.manual = manual;
-    }
-
-    /**
-     * @return the minutes
-     */
-    public int getMinutes() {
-
-        return minutes;
-    }
-
-    /**
-     * @param minutes the minutes to set
-     */
-    public void setMinutes( int minutes ) {
-
-        this.minutes = minutes;
-    }
-
-    /**
-     * @return the seconds
-     */
-    public int getSeconds() {
-
-        return seconds;
-    }
-
-    /**
-     * @param seconds the seconds to set
-     */
-    public void setSeconds( int seconds ) {
-
-        this.seconds = seconds;
-    }
-
-    /**
-     * @return the timer
-     */
-    public boolean isTimer() {
-
-        return timer;
-    }
-
-    /**
-     * @param timer the timer to set
-     */
-    public void setTimer( boolean timer ) {
-
-        this.timer = timer;
     }
 
     /**

@@ -126,7 +126,7 @@ public class Constants {
      * @see org.nexuse2e.Manageable
      */
     public static enum Runlevel {
-        CONFIGURATION, CORE, OUTBOUND_PIPELINES, INBOUND_PIPELINES, INTERFACES
+        UNKNOWN, CREATED, CONFIGURATION, CORE, OUTBOUND_PIPELINES, INBOUND_PIPELINES, INTERFACES
     };
 
 }

@@ -84,7 +84,7 @@ public class MimeMessageUnpackager extends AbstractPipelet {
             throws NexusException {
 
         MessagePojo messagePojo = messagePipeletParameter.getMessagePojo();
-        List<MessagePayloadPojo> payloads = getDataFromMailMsg( (Message) messagePipeletParameter.getGenericData() );
+        List<MessagePayloadPojo> payloads = getDataFromMailMsg( (Message) messagePipeletParameter.getData() );
 
         String msgHdr = new String( payloads.get( 0 ).getPayloadData() );
         if ( msgHdr != null ) {

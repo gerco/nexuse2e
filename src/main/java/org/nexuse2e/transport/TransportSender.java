@@ -31,7 +31,7 @@ import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.service.SenderAware;
 import org.nexuse2e.service.Service;
-import org.nexuse2e.service.http.HttpSender;
+import org.nexuse2e.service.http.HttpSenderService;
 
 /**
  * The <code>TransportSender</code> is a <code>Pipelet</code> (and thus, it
@@ -91,7 +91,7 @@ public class TransportSender extends AbstractPipelet {
             } else {
                 LOG.warn( "Invalid service configured for TransportSender. Using default (HTTP)" );
             }
-            service = new HttpSender();
+            service = new HttpSenderService();
         } else {
             ( (SenderAware) service ).setTransportSender( this );
         }

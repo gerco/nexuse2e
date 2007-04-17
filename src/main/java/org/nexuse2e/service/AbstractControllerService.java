@@ -19,6 +19,7 @@
  */
 package org.nexuse2e.service;
 
+import org.nexuse2e.messaging.MessageProcessor;
 import org.springframework.web.servlet.mvc.Controller;
 
 
@@ -26,6 +27,6 @@ import org.springframework.web.servlet.mvc.Controller;
  * @author mbreilmann
  *
  */
-public abstract class AbstractControllerService extends AbstractService implements Controller {
+public abstract class AbstractControllerService extends AbstractService implements Controller, MessageProcessor {
 
 } // AbstractControllerService

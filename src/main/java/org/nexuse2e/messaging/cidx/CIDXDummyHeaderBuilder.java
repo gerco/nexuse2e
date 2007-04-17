@@ -82,7 +82,7 @@ public class CIDXDummyHeaderBuilder extends AbstractPipelet {
         choreographyId = "not set";
         actionId = "not set";
 
-        ByteArrayInputStream bais = new ByteArrayInputStream( frontendPipeletParameter.getData() );
+        ByteArrayInputStream bais = new ByteArrayInputStream( (byte[])frontendPipeletParameter.getData() );
         XMLInputFactory factory = XMLInputFactory.newInstance();
         try {
             XMLStreamReader parser = factory.createXMLStreamReader( bais );
@@ -107,12 +107,12 @@ public class CIDXDummyHeaderBuilder extends AbstractPipelet {
 
             LOG.debug( "CIDXDummyHeaderBuilder.processMessage triggered... " );
 
-            String payload = new String( frontendPipeletParameter.getData() );
+            String payload = new String( (byte[])frontendPipeletParameter.getData() );
 
             LOG.debug( "CIDXDummyHeaderBuilder.processMessage - payload:\n" + payload );
             MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo();
             messagePayloadPojo.setMessage( messagePojo );
-            messagePayloadPojo.setPayloadData( frontendPipeletParameter.getData() );
+            messagePayloadPojo.setPayloadData( (byte[])frontendPipeletParameter.getData() );
             messagePayloadPojo.setMimeType( "text/xml" );
             messagePayloadPojo.setContentId( messagePojo.getMessageId() + "-body1" );
             messagePayloadPojo.setSequenceNumber( new Integer( 1 ) );

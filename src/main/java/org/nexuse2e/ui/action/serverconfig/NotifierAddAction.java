@@ -33,7 +33,7 @@ import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.ConfigurationUtil;
 import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.configuration.Constants.ComponentType;
-import org.nexuse2e.logging.Logger;
+import org.nexuse2e.logging.LogAppender;
 import org.nexuse2e.pojo.ComponentPojo;
 import org.nexuse2e.pojo.LoggerPojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
@@ -61,7 +61,7 @@ public class NotifierAddAction extends NexusE2EAction {
 
         LoggerForm loggerForm = (LoggerForm) actionForm;
         if ( loggerForm.getName() != null && loggerForm.getName().trim().length() > 0 ) {
-            Logger logger = Engine.getInstance().getActiveConfigurationAccessService().getLogger( loggerForm.getName() );
+            LogAppender logger = Engine.getInstance().getActiveConfigurationAccessService().getLogger( loggerForm.getName() );
             if ( logger != null ) {
                 loggerForm.setName( "" );
             }
@@ -89,11 +89,11 @@ public class NotifierAddAction extends NexusE2EAction {
         }
 
         if ( componentPojo != null ) {
-            Logger logger = null;
+            LogAppender logger = null;
             String className = componentPojo.getClassName();
             Object obj = Class.forName( className ).newInstance();
-            if ( obj instanceof Logger ) {
-                logger = (Logger) obj;
+            if ( obj instanceof LogAppender ) {
+                logger = (LogAppender) obj;
                 loggerForm.setLoggerInstance( logger );
                 loggerForm.setParameters( ConfigurationUtil.getConfiguration( logger, new LoggerPojo() ) );
                 loggerForm.createParameterMapFromPojos();

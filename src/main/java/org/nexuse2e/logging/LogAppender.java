@@ -17,35 +17,22 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+package org.nexuse2e.logging;
 
-package org.nexuse2e;
-
-import org.nexuse2e.Constants.Runlevel;
-import org.nexuse2e.StatusSummary.Status;
+import org.apache.log4j.Appender;
+import org.nexuse2e.Configurable;
+import org.nexuse2e.Manageable;
 
 /**
  * @author gesch
- *
  */
-public class EngineMonitor {
-    /**
-     * 
-     */
-    public void init() {
-        
-    }
-    /**
-     * @return
-     */
-    public EngineStatusSummary getStatus() {
-        return new EngineStatusSummary();
-    }
-    
-    public EngineStatusSummary filloutStatusSummary(EngineStatusSummary summary) {
-        summary.setStatus( Status.ACTIVE );
-        summary.setEngineRunlevel( Runlevel.UNKNOWN );
-        return summary;
-    }
-    
-    
+public interface LogAppender extends Appender, Configurable, Manageable {
+
+    public void registerLogger( org.apache.log4j.Logger logger );
+
+    public void deregisterLoggers();
+
+    public void setLogThreshold( int threshold );
+
+    public int getLogThreshold();
 }

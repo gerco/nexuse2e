@@ -60,11 +60,12 @@
 
                         <td class="NEXUSValue">
                           <html:select property="threshold">
-                            	<html:option value="1">Debug</html:option>
-                            	<html:option value="2">Trace</html:option>
-                            	<html:option value="3">Info</html:option>
-                            	<html:option value="4">Warning</html:option>
-                            	<html:option value="5">Error</html:option>
+                            	<html:option value="5000">Trace</html:option>
+                            	<html:option value="10000">Debug</html:option>
+                            	<html:option value="20000">Info</html:option>
+                            	<html:option value="30000">Warning</html:option>
+                            	<html:option value="40000">Error</html:option>
+                            	<html:option value="50000">Fatal</html:option>
                           </html:select>
                           </td>
                     </tr>

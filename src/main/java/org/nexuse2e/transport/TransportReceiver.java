@@ -41,7 +41,7 @@ import org.nexuse2e.messaging.FrontendPipeline;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.service.ReceiverAware;
 import org.nexuse2e.service.Service;
-import org.nexuse2e.service.http.HttpReceiver;
+import org.nexuse2e.service.http.HttpReceiverService;
 
 /**
  * A <code>TransportReceiver</code> is the starting point of a pipeline. It uses
@@ -104,17 +104,22 @@ public class TransportReceiver implements Manageable, Configurable, ProtocolSpec
         }
     }
 
-    public MessageContext processInboundData( Object data ) throws NexusException {
+    /**
+     * @param data
+     * @return
+     * @throws NexusException
+     */
+    public MessageContext processInboundData( MessageContext data ) throws NexusException {
 
         LOG.trace( "TransportReceiver processing message.." );
-        MessageContext messagePipeletParameter = new MessageContext();
-        messagePipeletParameter.setProtocolSpecificKey( getKey() );
-        messagePipeletParameter.setGenericData( data );
+//        MessageContext messagePipeletParameter = new MessageContext();
+        data.setProtocolSpecificKey( getKey() );
+//        messagePipeletParameter.setData( data );
 
         // Set status to processing
         // messagePipeletParameter.getMessagePojo().getConversation().setStatus( Constants.CONVERSATION_STATUS_PROCESSING );
 
-        return frontendPipeline.processMessage( messagePipeletParameter );
+        return frontendPipeline.processMessage( data );
     }
 
     /**
@@ -170,7 +175,7 @@ public class TransportReceiver implements Manageable, Configurable, ProtocolSpec
      */
     public void initialize( EngineConfiguration config ) {
         
-
+        
         Service service = null;
         String s = getParameter( SERVICE_PARAM_NAME );
         LOG.debug( "TransportReceiver - service: " + s );
@@ -187,8 +192,9 @@ public class TransportReceiver implements Manageable, Configurable, ProtocolSpec
             } else {
                 LOG.warn( "Invalid service configured for TransportReceiver. " + "Using default (HTTP with EBXML 2.0)" );
             }
-            service = new HttpReceiver();
+            service = new HttpReceiverService();
         }
+        LOG.debug( "TransportService: " +service );
         ( (ReceiverAware) service ).setTransportReceiver( this );
         this.service = service;
         status = BeanStatus.INITIALIZED;

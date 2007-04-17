@@ -19,11 +19,112 @@
  */
 package org.nexuse2e;
 
+import org.nexuse2e.Constants.Runlevel;
+
 
 /**
  * @author gesch
  *
  */
-public class EngineStatusSummary {
+public class EngineStatusSummary implements StatusSummary {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 5958453423169252669L;
+    private Status status = Status.UNKNOWN;
+    private Runlevel engineRunlevel = Runlevel.UNKNOWN;
+    private Status databaseStatus = Status.UNKNOWN;
+    private Status inboundStatus = Status.UNKNOWN;
+    private Status outboundStatus = Status.UNKNOWN;
+    
+    
+    /* (non-Javadoc)
+     * @see org.nexuse2e.StatusSummary#getStatus()
+     */
+    public Status getStatus() {
+
+        return status;
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.StatusSummary#setStatus()
+     */
+    public void setStatus(Status status) {
+
+        this.status = status;
+    }
+
+    
+    /**
+     * @return the databaseStatus
+     */
+    public Status getDatabaseStatus() {
+    
+        return databaseStatus;
+    }
+
+    
+    /**
+     * @param databaseStatus the databaseStatus to set
+     */
+    public void setDatabaseStatus( Status databaseStatus ) {
+    
+        this.databaseStatus = databaseStatus;
+    }
+
+    
+    /**
+     * @return the engineRunlevel
+     */
+    public Runlevel getEngineRunlevel() {
+    
+        return engineRunlevel;
+    }
+
+    
+    /**
+     * @param engineRunlevel the engineRunlevel to set
+     */
+    public void setEngineRunlevel( Runlevel engineRunlevel ) {
+    
+        this.engineRunlevel = engineRunlevel;
+    }
+
+    
+    /**
+     * @return the inboundStatus
+     */
+    public Status getInboundStatus() {
+    
+        return inboundStatus;
+    }
+
+    
+    /**
+     * @param inboundStatus the inboundStatus to set
+     */
+    public void setInboundStatus( Status inboundStatus ) {
+    
+        this.inboundStatus = inboundStatus;
+    }
+
+    
+    /**
+     * @return the outboundStatus
+     */
+    public Status getOutboundStatus() {
+    
+        return outboundStatus;
+    }
+
+    
+    /**
+     * @param outboundStatus the outboundStatus to set
+     */
+    public void setOutboundStatus( Status outboundStatus ) {
+    
+        this.outboundStatus = outboundStatus;
+    }
+    
 }

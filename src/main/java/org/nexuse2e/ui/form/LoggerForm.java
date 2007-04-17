@@ -29,7 +29,7 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMapping;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
-import org.nexuse2e.logging.Logger;
+import org.nexuse2e.logging.LogAppender;
 import org.nexuse2e.pojo.LoggerParamPojo;
 import org.nexuse2e.pojo.LoggerPojo;
 
@@ -67,7 +67,7 @@ public class LoggerForm extends ActionForm {
 
     private LoggerPojo                     logger                   = null;
 
-    private Logger                         loggerInstance           = null;
+    private LogAppender                         loggerInstance           = null;
 
     /* (non-Javadoc)
      * @see org.apache.struts.action.ActionForm#reset(org.apache.struts.action.ActionMapping, javax.servlet.http.HttpServletRequest)
@@ -478,12 +478,12 @@ public class LoggerForm extends ActionForm {
         this.componentName = componentName;
     }
 
-    public Logger getLoggerInstance() {
+    public LogAppender getLoggerInstance() {
 
         return loggerInstance;
     }
 
-    public void setLoggerInstance( Logger loggerInstance ) {
+    public void setLoggerInstance( LogAppender loggerInstance ) {
 
         this.loggerInstance = loggerInstance;
     }

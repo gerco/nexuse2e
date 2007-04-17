@@ -214,7 +214,7 @@ public class HeaderDeserializer extends AbstractPipelet {
                                 String fromIdType = innerElement.getAttributeValue( soapEnvelope.createName( "type",
                                         Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE ) );
                                 LOG.trace( "FromIDType:" + fromIdType );
-                                messagePojo.getCustomParameters().put( Constants.PROTOCOLSPECIFIC_FROMIDTYPE,
+                                messagePojo.getCustomParameters().put(Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_FROMIDTYPE,
                                         fromIdType );
                                 fromId = innerElement.getValue();
                                 // Cut off 'uri:'in case there was no type information
@@ -239,7 +239,7 @@ public class HeaderDeserializer extends AbstractPipelet {
                                 String toIdType = innerElement.getAttributeValue( soapEnvelope.createName( "type",
                                         Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE ) );
                                 LOG.trace( "ToIDType:" + toIdType );
-                                messagePojo.getCustomParameters().put( Constants.PROTOCOLSPECIFIC_TOIDTYPE, toIdType );
+                                messagePojo.getCustomParameters().put(Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_TOIDTYPE, toIdType );
 
                                 String to = innerElement.getValue();
                                 // Cut off 'uri:'in case there was no type information
@@ -248,7 +248,7 @@ public class HeaderDeserializer extends AbstractPipelet {
                                     to = to.substring( lastColon + 1 );
                                 }
                                 LOG.trace( "To:" + to );
-                                messagePojo.getCustomParameters().put( Constants.PROTOCOLSPECIFIC_TO, to );
+                                messagePojo.getCustomParameters().put(Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_TO, to );
                             }
                         } else {
                             throw new NexusException( "No from party found in ebXML 2.0 message!" );
@@ -263,7 +263,7 @@ public class HeaderDeserializer extends AbstractPipelet {
                     } else if ( localName.equals( "Service" ) ) {
                         String service = element.getValue();
                         LOG.trace( "Service(? dummy, uri: required, but not saved in database):" + service );
-                        messagePojo.getCustomParameters().put( "service", service );
+                        messagePojo.getCustomParameters().put(Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_SERVICE, service );
                     } else if ( localName.equals( "Action" ) ) {
                         actionId = element.getValue();
                         LOG.trace( "Action:" + actionId );

@@ -124,7 +124,7 @@ public class NotifierUpdateAction extends NexusE2EAction {
             StringBuffer filter = new StringBuffer();
             for ( String group : form.getLogFilterValues().keySet() ) {
                 LOG.trace( "group:" + group + "  -  " + form.getLogFilterValue( group ) );
-                filter.append( group.substring( 6 ).trim() );
+                filter.append( group );
                 filter.append( "," );
             }
             filter.append( form.getFilterJavaPackagePattern() );
@@ -142,6 +142,8 @@ public class NotifierUpdateAction extends NexusE2EAction {
             }
             originalLogger.setLoggerParams( list );
 
+            originalLogger.setThreshold( form.getThreshold() );
+            
             Engine.getInstance().getActiveConfigurationAccessService().updateLogger( originalLogger );
             form
                     .setLoggerInstance( Engine.getInstance().getActiveConfigurationAccessService().getLogger(

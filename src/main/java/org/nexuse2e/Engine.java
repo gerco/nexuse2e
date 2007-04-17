@@ -574,6 +574,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
             LOG.debug( "1partners: " + newConfiguration.getPartners().size() );
             LOG.debug( "2partners: " + this.currentConfiguration.getPartners().size() );
             initialize( newConfiguration );
+            activate();
         } else {
             this.currentConfiguration = newConfiguration;
         }
@@ -683,8 +684,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     public void deactivate() {
 
         LOG.debug( "Engine.deactivate..." );
-        // new Exception().printStackTrace();
-
+         
         if ( currentConfiguration != null ) {
             Runlevel[] runlevels = Runlevel.values();
             for ( int i = runlevels.length - 1; i >= 0; i-- ) {

@@ -35,8 +35,7 @@ import org.nexuse2e.pojo.PartnerPojo;
 public class MessageContext {
 
     private MessagePojo         messagePojo         = null;
-    private byte[]              data                = null;
-    private Object              genericData         = null;
+    private Object              data                = null;
     private ProtocolSpecificKey protocolSpecificKey = null;
     private ActionSpecificKey   actionSpecificKey   = null;
 
@@ -48,7 +47,7 @@ public class MessageContext {
     /**
      * @return the data
      */
-    public byte[] getData() {
+    public Object getData() {
 
         return data;
     }
@@ -56,25 +55,9 @@ public class MessageContext {
     /**
      * @param data the data to set
      */
-    public void setData( byte[] data ) {
+    public void setData( Object data ) {
 
         this.data = data;
-    }
-
-    /**
-     * @return the genericData
-     */
-    public Object getGenericData() {
-
-        return genericData;
-    }
-
-    /**
-     * @param genericData the genericData to set
-     */
-    public void setGenericData( Object genericData ) {
-
-        this.genericData = genericData;
     }
 
     /**
@@ -201,7 +184,6 @@ public class MessageContext {
         clone.setCommunicationPartner( this.getPartner() );
         clone.setConversation( this.getConversation() );
         clone.setData( this.getData() );
-        clone.setGenericData( this.getGenericData() );
         clone.setMessagePojo( this.getMessagePojo() );
         clone.setParticipant( this.getParticipant() );
         clone.setProtocolSpecificKey( this.getProtocolSpecificKey() );

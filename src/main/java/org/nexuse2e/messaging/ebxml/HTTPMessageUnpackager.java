@@ -42,6 +42,7 @@ import org.codehaus.xfire.util.Base64;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
+import org.nexuse2e.messaging.ebxml.v20.Constants;
 import org.nexuse2e.pojo.MessagePayloadPojo;
 import org.nexuse2e.pojo.MessagePojo;
 
@@ -70,18 +71,17 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
             throws IllegalArgumentException, IllegalStateException {
 
         MessagePojo messagePojo = messagePipeletParameter.getMessagePojo();
-        Object object = messagePipeletParameter.getGenericData();
-        if ( !( object instanceof HttpServletRequest ) ) {
-            throw new IllegalArgumentException( "Unable to process message: raw data not of type HttpServletRequest!" );
+        Object object = messagePipeletParameter.getData();
+        if ( !( object instanceof byte[] ) ) {
+            throw new IllegalArgumentException( "Unable to process message: raw data not of type byte[] but: "+object.getClass().getName() );
         }
 
-        HttpServletRequest request = (HttpServletRequest) object;
         // strip http header information in put in mime message for decoding
         StringBuffer sb = new StringBuffer();
-        if ( request.getHeader( "message-id" ) != null ) {
-            sb.append( "Message-ID: " + request.getHeader( "message-id" ) + '\n' );
+        if ( messagePojo.getCustomParameters().get( Constants.PARAMETER_PREFIX_HTTP+"message-id" ) != null ) {
+            sb.append( "Message-ID: " + messagePojo.getCustomParameters().get( Constants.PARAMETER_PREFIX_HTTP+ "message-id" ) + '\n' );
         }
-        String contentType = request.getHeader( "content-type" );
+        String contentType = messagePojo.getCustomParameters().get( Constants.PARAMETER_PREFIX_HTTP+"content-type" );
         sb.append( "Mime-Version: 1.0\n" );
         sb.append( "Content-type: " + contentType + "\n\n" );
 
@@ -91,8 +91,16 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
 
         try {
 
-            byte[] packedMessage = getContentFromRequest( request, data, preBufLen );
+//            byte[] packedMessage = getContentFromRequest( request, data, preBufLen );
 
+            int payloadLength = ((byte[])messagePipeletParameter.getData()).length;
+            byte[] packedMessage = new byte[payloadLength+preBufLen];
+            System.arraycopy( data, 0, packedMessage, 0, preBufLen );
+            System.arraycopy( (byte[])messagePipeletParameter.getData(), 0, packedMessage, preBufLen, payloadLength );
+            
+            System.out.println("--------------");
+            System.out.println(new String(packedMessage));
+            System.out.println("--------------");
             byte[] bodyPart = null;
             List<MessagePayloadPojo> payloads = new ArrayList<MessagePayloadPojo>();
 
@@ -161,38 +169,7 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
 
     } // processMessage
 
-    /**
-     * @param request
-     * @param preBuffer
-     * @param preBufferLen
-     * @return
-     * @throws IOException
-     */
-    public byte[] getContentFromRequest( ServletRequest request, byte[] preBuffer, int preBufferLen )
-            throws IOException {
-
-        int contentLength = request.getContentLength();
-        if ( contentLength < 0 ) {
-            throw new IOException( "No payload in HTTP request!" );
-        }
-        byte bufferArray[] = new byte[contentLength + preBufferLen];
-        ServletInputStream inputStream = request.getInputStream();
-        int offset = 0;
-        int restBytes = contentLength;
-
-        while ( offset < preBufferLen ) {
-            bufferArray[offset] = preBuffer[offset];
-            offset++;
-        }
-
-        for ( int bytesRead = inputStream.readLine( bufferArray, offset, contentLength ); bytesRead != -1
-                && restBytes != 0; bytesRead = inputStream.readLine( bufferArray, offset, restBytes ) ) {
-            offset += bytesRead;
-            restBytes -= bytesRead;
-        }
-
-        return bufferArray;
-    }
+    
 
     /**
      * dcode a mime message based on a byte array.

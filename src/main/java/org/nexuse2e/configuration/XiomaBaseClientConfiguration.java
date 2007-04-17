@@ -123,9 +123,6 @@ System.out.println("neeuuuuuuuuuuu");
 
             clientInboundPipelinePojo.setPipelets( pipelets );
             clientInboundPipelinePojo.setOutbound( false );
-            clientInboundPipelinePojo.setManual( false );
-            clientInboundPipelinePojo.setTimer( false );
-            clientInboundPipelinePojo.setTimerInterval( 0 );
             clientInboundPipelinePojo.setCreatedDate( new Date() );
             clientInboundPipelinePojo.setModifiedDate( new Date() );
             clientInboundPipelinePojo.setModifiedNxUserId( 1 );
@@ -137,9 +134,6 @@ System.out.println("neeuuuuuuuuuuu");
 
             clientOutboundPipelinePojo.setPipelets( pipelets );
             clientOutboundPipelinePojo.setOutbound( true );
-            clientOutboundPipelinePojo.setManual( false );
-            clientOutboundPipelinePojo.setTimer( false );
-            clientOutboundPipelinePojo.setTimerInterval( 0 );
             clientOutboundPipelinePojo.setCreatedDate( new Date() );
             clientOutboundPipelinePojo.setModifiedDate( new Date() );
             clientOutboundPipelinePojo.setModifiedNxUserId( 1 );

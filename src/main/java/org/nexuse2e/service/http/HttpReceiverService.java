@@ -19,16 +19,26 @@
  */
 package org.nexuse2e.service.http;
 
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.ServletInputStream;
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.Runlevel;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.messaging.MessageContext;
+import org.nexuse2e.messaging.MessageProcessor;
+import org.nexuse2e.messaging.ebxml.v20.Constants;
+import org.nexuse2e.pojo.MessagePojo;
 import org.nexuse2e.service.AbstractControllerService;
 import org.nexuse2e.service.ReceiverAware;
 import org.nexuse2e.transport.TransportReceiver;
@@ -40,9 +50,9 @@ import org.springframework.web.servlet.ModelAndView;
  *
  * @author gesch, jonas.reese
  */
-public class HttpReceiver extends AbstractControllerService implements ReceiverAware {
+public class HttpReceiverService extends AbstractControllerService implements ReceiverAware, MessageProcessor {
 
-    private static Logger     LOG = Logger.getLogger( HttpReceiver.class );
+    private static Logger     LOG = Logger.getLogger( HttpReceiverService.class );
 
     public static final String URL_PARAM_NAME          = "logical_name";
 
@@ -60,8 +70,22 @@ public class HttpReceiver extends AbstractControllerService implements ReceiverA
     public ModelAndView handleRequest( HttpServletRequest request, HttpServletResponse response ) throws Exception {
 
         try {
-
-            transportReceiver.processInboundData( request );
+            LOG.debug( "HTTPService: "+this );
+            
+            MessageContext messageContext = new MessageContext();
+            
+            
+            messageContext.setData( getContentFromRequest(request) );
+            messageContext.setMessagePojo( new MessagePojo() );
+            messageContext.getMessagePojo().setCustomParameters( new HashMap<String, String>() );
+            Enumeration<String> headerNames = request.getHeaderNames();
+            while(headerNames.hasMoreElements()) {
+                String key = headerNames.nextElement();
+                String value = request.getHeader( key );
+                messageContext.getMessagePojo().getCustomParameters().put(Constants.PARAMETER_PREFIX_HTTP + key, value );
+            }
+            
+            processMessage( messageContext );
 
             LOG.trace( "Processing Done" );
 
@@ -78,6 +102,34 @@ public class HttpReceiver extends AbstractControllerService implements ReceiverA
         }
 
         return null;
+    }
+    
+    /**
+     * @param request
+     * @param preBuffer
+     * @param preBufferLen
+     * @return
+     * @throws IOException
+     */
+    public byte[] getContentFromRequest( ServletRequest request )
+            throws IOException {
+
+        int contentLength = request.getContentLength();
+        if ( contentLength < 0 ) {
+            throw new IOException( "No payload in HTTP request!" );
+        }
+        byte bufferArray[] = new byte[contentLength];
+        ServletInputStream inputStream = request.getInputStream();
+        int offset = 0;
+        int restBytes = contentLength;
+
+        for ( int bytesRead = inputStream.readLine( bufferArray, offset, contentLength ); bytesRead != -1
+                && restBytes != 0; bytesRead = inputStream.readLine( bufferArray, offset, restBytes ) ) {
+            offset += bytesRead;
+            restBytes -= bytesRead;
+        }
+
+        return bufferArray;
     }
 
     /* (non-Javadoc)
@@ -106,5 +158,11 @@ public class HttpReceiver extends AbstractControllerService implements ReceiverA
     public void setTransportReceiver( TransportReceiver transportReceiver ) {
 
         this.transportReceiver = transportReceiver;
+    }
+
+    public MessageContext processMessage( MessageContext messageContext ) throws IllegalArgumentException, IllegalStateException, NexusException {
+
+        transportReceiver.processInboundData( messageContext );
+        return null;
     }
 }

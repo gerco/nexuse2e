@@ -135,12 +135,12 @@ public class HeaderSerializer extends AbstractPipelet {
                     Constants.EBXML_NAMESPACE ), Constants.EBXMLVERSION );
 
             // TO & FROM -----------------------------------------------------------
-            String from = messagePojo.getCustomParameters().get( Constants.PROTOCOLSPECIFIC_FROM );
+            String from = messagePojo.getCustomParameters().get(Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_FROM );
             if ( from == null ) {
                 //TODO: for testing..
                 from = "dummyfrom";
             }
-            String fromIdType = messagePojo.getCustomParameters().get( Constants.PROTOCOLSPECIFIC_FROMIDTYPE );
+            String fromIdType = messagePojo.getCustomParameters().get(Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_FROMIDTYPE );
             if ( fromIdType == null ) {
                 //              TODO: for testing..
                 fromIdType = "dummyFromType";
@@ -166,7 +166,7 @@ public class HeaderSerializer extends AbstractPipelet {
 
             // SERVICE -------------------------------------------------------------
             //  service is hard coded to  meet spec.  Services are not used.
-            String service = messagePojo.getCustomParameters().get( Constants.PROTOCOLSPECIFIC_SERVICE );
+            String service = messagePojo.getCustomParameters().get(Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_SERVICE );
             if ( service == null ) {
                 service = messagePojo.getConversation().getChoreography().getName();
             }
@@ -229,7 +229,7 @@ public class HeaderSerializer extends AbstractPipelet {
                         from, fromIdType );
             } else if ( error ) { // error
                 createErrorList( soapFactory, soapHeader, messagePojo.getReferencedMessage().getMessageId(),
-                        (Vector<ErrorDescriptor>) messagePipeletParameter.getGenericData() );
+                        (Vector<ErrorDescriptor>) messagePipeletParameter.getData() );
             } else { // regular message
                 // QUALITY OF SERVICE---------------------------------------------------
                 if ( messagePojo.getParticipant().getConnection().isReliable() ) {

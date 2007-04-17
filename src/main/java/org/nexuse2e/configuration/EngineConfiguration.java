@@ -27,6 +27,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -65,7 +66,6 @@ import org.nexuse2e.transport.TransportReceiver;
 import org.nexuse2e.transport.TransportSender;
 import org.nexuse2e.ui.structure.impl.CachedXmlStructureServer;
 import org.springframework.context.support.ApplicationObjectSupport;
-import org.springframework.web.servlet.mvc.Controller;
 
 /**
  * @author gesch
@@ -138,6 +138,9 @@ public class EngineConfiguration {
 
     BaseConfigurationProvider                           baseConfigurationProvider = null;
 
+    private HashMap<String, List<String>> logCategories = new HashMap<String, List<String>>();
+    
+    
     /**
      * @param baseConfigurationProvider
      */
@@ -157,6 +160,9 @@ public class EngineConfiguration {
      */
     public void init() throws InstantiationException {
 
+        initLoggerCategories();
+        
+        
         createStaticBeanContainer();
         if ( isDatabasePopulated() ) {
             loadDatafromDB();
@@ -198,11 +204,52 @@ public class EngineConfiguration {
 
     } // init
 
+    private void initLoggerCategories() {
+
+        String categoryName = "core";
+        List<String> categoryList = new ArrayList<String>();
+        categoryList.add( "org.nexuse2e.Engine" );
+        categoryList.add( "org.nexuse2e.EngineController" );
+        categoryList.add( "org.nexuse2e.EngineMonitor" );
+        categoryList.add( "org.nexuse2e.DefaultEngineControllerStub" );
+        categoryList.add( "org.nexuse2e.configuration" );
+        categoryList.add( "org.nexuse2e.controller" );
+        categoryList.add( "org.nexuse2e.service" );
+        logCategories.put( categoryName, categoryList );
+        
+        categoryName = "database";
+        categoryList = new ArrayList<String>();
+        categoryList.add( "org.nexuse2e.dao" );
+        categoryList.add( "org.nexuse2e.pojo" );
+        logCategories.put( categoryName, categoryList );
+        
+        categoryName = "backend";
+        categoryList = new ArrayList<String>();
+        categoryList.add( "org.nexuse2e.backend" );
+        logCategories.put( categoryName, categoryList );
+        
+        categoryName = "frontend";
+        categoryList = new ArrayList<String>();
+        categoryList.add( "org.nexuse2e.messaging" );
+        categoryList.add( "org.nexuse2e.transport" );
+        logCategories.put( categoryName, categoryList );
+        
+        categoryName = "frontend";
+        categoryList = new ArrayList<String>();
+        categoryList.add( "org.nexuse2e.ui" );
+        logCategories.put( categoryName, categoryList );
+        
+        
+        
+    }
+
     private void initializeLogAppenders() throws InstantiationException {
 
+        LOG.debug( "Initializing Appenders" );
         if ( loggers != null ) {
             if ( components != null ) {
                 for ( LoggerPojo logger : loggers ) {
+                    LOG.debug( "initializing Logger: "+logger.getName() );
                     if ( logger.getComponent() == null ) {
                         throw new InstantiationError( "No ComponentReference found for logger: " + logger.getName() );
                     }
@@ -218,16 +265,41 @@ public class EngineConfiguration {
                         throw new InstantiationError( "Error while creating instance for logger: " + logger.getName()
                                 + " - " + e.getMessage() );
                     }
-                    if ( !( obj instanceof org.nexuse2e.logging.Logger ) ) {
+                    if ( !( obj instanceof org.nexuse2e.logging.LogAppender ) ) {
                         throw new InstantiationError( "class: " + classname
                                 + " is not instance of org.nexuse2e.logging.Logger" );
                     }
-                    org.nexuse2e.logging.Logger logAppender = (org.nexuse2e.logging.Logger) obj;
+                    org.nexuse2e.logging.LogAppender logAppender = (org.nexuse2e.logging.LogAppender) obj;
                     ConfigurationUtil.configureLogger( logAppender, logger.getLoggerParams() );
-                    Logger.getRootLogger().addAppender( logAppender );
+                    
+                    logAppender.setLogThreshold( logger.getThreshold() );
+                    
+                    
+                    StringTokenizer st = new StringTokenizer(logger.getFilter(),",");
+                    LOG.debug( "filter: "+logger.getFilter() );
+                    while(st.hasMoreElements()) {
+                        String token = st.nextToken();
+                        if(token.startsWith( "group_" )) {
+                            List<String> packageNames = logCategories.get( token.substring( 6 ).trim() );
+                            if(packageNames != null) {
+                                for ( String packageName : packageNames ) {
+                                    if(packageName != null) {
+                                        Logger targetlogger = Logger.getLogger( packageName );
+                                        targetlogger.addAppender( logAppender );
+                                    }
+                                }
+                            }
+                        } else {
+                            Logger targetlogger = Logger.getLogger( token );
+                            targetlogger.addAppender( logAppender );
+                        }
+                    }
+                   
+
                     staticBeanContainer.getManagableBeans().put( logger.getName(), logAppender );
                     try {
                         logAppender.initialize( this );
+                        LOG.debug( "activating logger: "+logAppender.getName() );
                         logAppender.activate();
                     } catch ( RuntimeException rex ) {
                         rex.printStackTrace();
@@ -1521,6 +1593,24 @@ public class EngineConfiguration {
         container.cloneContainer( tempConfiguration );
 
         return tempConfiguration;
+    }
+
+    
+    /**
+     * @return the logCategories
+     */
+    public HashMap<String, List<String>> getLogCategories() {
+    
+        return logCategories;
+    }
+
+    
+    /**
+     * @param logCategories the logCategories to set
+     */
+    public void setLogCategories( HashMap<String, List<String>> logCategories ) {
+    
+        this.logCategories = logCategories;
     }
 
 }

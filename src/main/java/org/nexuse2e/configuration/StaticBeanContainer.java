@@ -27,7 +27,7 @@ import java.util.Map;
 import org.nexuse2e.Manageable;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.backend.BackendPipelineDispatcher;
-import org.nexuse2e.logging.Logger;
+import org.nexuse2e.logging.LogAppender;
 import org.nexuse2e.messaging.BackendInboundDispatcher;
 import org.nexuse2e.messaging.BackendOutboundDispatcher;
 import org.nexuse2e.messaging.FrontendInboundDispatcher;
@@ -140,15 +140,15 @@ public class StaticBeanContainer {
      * @return A <code>Logger</code> instance, or <code>null</code>
      * if no logger with the given name exists.
      */
-    public Logger getLogger( String name ) {
+    public LogAppender getLogger( String name ) {
 
         Map<String, Manageable> manageableBeans = this.managableBeans;
         if ( manageableBeans == null ) {
             return null;
         }
         Manageable m = manageableBeans.get( name );
-        if ( m instanceof Logger ) {
-            return (Logger) m;
+        if ( m instanceof LogAppender ) {
+            return (LogAppender) m;
         }
         return null;
     }
@@ -161,7 +161,7 @@ public class StaticBeanContainer {
      * @throws NexusException if <code>oldName</code> was not found or <code>newName</code>
      * already exists.
      */
-    public Logger renameLogger( String oldName, String newName ) throws NexusException {
+    public LogAppender renameLogger( String oldName, String newName ) throws NexusException {
 
         if ( newName == null || newName.trim().length() == 0 ) {
             throw new NexusException( "Logger name must not be empty" );
@@ -174,9 +174,9 @@ public class StaticBeanContainer {
             throw new NexusException( "Cannot rename logger: Target name '" + newName + "' already exists" );
         }
         Manageable m = manageableBeans.get( oldName );
-        Logger l = null;
-        if ( m instanceof Logger ) {
-            l = (Logger) m;
+        LogAppender l = null;
+        if ( m instanceof LogAppender ) {
+            l = (LogAppender) m;
         } else {
             throw new NexusException( "Logger with name '" + oldName + "' not found" );
         }

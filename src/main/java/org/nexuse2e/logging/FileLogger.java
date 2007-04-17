@@ -19,12 +19,15 @@
  */
 package org.nexuse2e.logging;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.FileAppender;
+import org.apache.log4j.Logger;
 import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Runlevel;
 import org.nexuse2e.configuration.EngineConfiguration;
@@ -35,10 +38,11 @@ import org.nexuse2e.configuration.Constants.ParameterType;
  * @author gesch
  *
  */
-public class FileLogger extends FileAppender implements Logger {
+public class FileLogger extends FileAppender implements LogAppender {
 
     private Map<String, Object>              parameters;
     private Map<String, ParameterDescriptor> parameterMap;
+    private List<Logger>                     loggers = new ArrayList<Logger>();
     private BeanStatus                       status = BeanStatus.UNDEFINED;
 
     /**
@@ -125,7 +129,34 @@ public class FileLogger extends FileAppender implements Logger {
      */
     public void teardown() {
         // LOG.debug( "Freeing resources..." );
-
+        deregisterLoggers();
+        loggers.clear();
     } // teardown
+    
+    public void deregisterLoggers() {
 
+        for ( Logger logger : loggers ) {
+            logger.removeAppender( this );
+        }
+        
+    }
+
+    public void registerLogger( Logger logger ) {
+
+        if(loggers != null) {
+            loggers.add( logger );
+        }
+    }
+
+    public int getLogThreshold() {
+
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    public void setLogThreshold( int threshold ) {
+
+        // TODO Auto-generated method stub
+        
+    }
 }

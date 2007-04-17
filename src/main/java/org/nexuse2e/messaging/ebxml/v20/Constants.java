@@ -44,6 +44,8 @@ public class Constants extends org.nexuse2e.messaging.ebxml.Constants {
     public static final String ACKREQUESTED_SIGNED         = "true";
     public static final String ACKREQUESTED_UNSIGNED       = "false";
 
+    public static final String PARAMETER_PREFIX_HTTP       = "http_";
+    public static final String PARAMETER_PREFIX_EBXML20    = "ebxml20_";
     public static final String PROTOCOLSPECIFIC_FROM       = "from";
     public static final String PROTOCOLSPECIFIC_TO         = "to";
     public static final String PROTOCOLSPECIFIC_FROMIDTYPE = "fromIDType";

@@ -19,14 +19,18 @@
  */
 package org.nexuse2e.logging;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
@@ -42,12 +46,13 @@ import org.nexuse2e.pojo.LogPojo;
  * @author gesch
  *
  */
-public class DatabaseLogger extends AppenderSkeleton implements Logger {
+public class DatabaseLogger extends AppenderSkeleton implements LogAppender {
 
     private Map<String, Object>              parameters;
     private Map<String, ParameterDescriptor> parameterMap;
-
-    private BeanStatus                       status = BeanStatus.UNDEFINED;
+    private List<Logger>                     loggers      = new ArrayList<Logger>();
+    private BeanStatus                       status       = BeanStatus.UNDEFINED;
+    private int                              logThreshold = 0;
 
     /**
      * Default constructor.
@@ -56,19 +61,19 @@ public class DatabaseLogger extends AppenderSkeleton implements Logger {
 
         parameters = new HashMap<String, Object>();
         parameterMap = new LinkedHashMap<String, ParameterDescriptor>();
-        parameterMap.put( "machineid", new ParameterDescriptor( ParameterType.STRING, false, "MachineId",
-                "Used to separate different nexus process in logs", "nexus" ) );
-        parameterMap.put( "details", new ParameterDescriptor( ParameterType.BOOLEAN, false, "Details",
-                "Displays the detailed class and method names.", true ) );
-        parameterMap.put( "external", new ParameterDescriptor( ParameterType.BOOLEAN, true, "external",
-                "if enabled, the specified database is used to store upcomming log messages", true ) );
-        parameterMap.put( "url", new ParameterDescriptor( ParameterType.STRING, false, "Database URL",
-                "Connection String", "" ) );
-        parameterMap
-                .put( "username", new ParameterDescriptor( ParameterType.STRING, false, "Username", "Username", "" ) );
-        parameterMap.put( "password", new ParameterDescriptor( ParameterType.PASSWORD, "Password", "Password",
-                "/nexus/dump" ) );
-        parameterMap.put( "prefix", new ParameterDescriptor( ParameterType.STRING, "Prefix", "obsolete", "" ) );
+//        parameterMap.put( "machineid", new ParameterDescriptor( ParameterType.STRING, false, "MachineId",
+//                "Used to separate different nexus process in logs", "nexus" ) );
+//        parameterMap.put( "details", new ParameterDescriptor( ParameterType.BOOLEAN, false, "Details",
+//                "Displays the detailed class and method names.", true ) );
+//        parameterMap.put( "external", new ParameterDescriptor( ParameterType.BOOLEAN, true, "external",
+//                "if enabled, the specified database is used to store upcomming log messages", true ) );
+//        parameterMap.put( "url", new ParameterDescriptor( ParameterType.STRING, false, "Database URL",
+//                "Connection String", "" ) );
+//        parameterMap
+//                .put( "username", new ParameterDescriptor( ParameterType.STRING, false, "Username", "Username", "" ) );
+//        parameterMap.put( "password", new ParameterDescriptor( ParameterType.PASSWORD, "Password", "Password",
+//                "/nexus/dump" ) );
+//        parameterMap.put( "prefix", new ParameterDescriptor( ParameterType.STRING, "Prefix", "obsolete", "" ) );
         //        DropdownParameter dropdown = new DropdownParameter();
         //        dropdown.addElement( "Option 1", "1" );
         //        dropdown.addElement( "Option 2", "2" );
@@ -77,7 +82,8 @@ public class DatabaseLogger extends AppenderSkeleton implements Logger {
         //        parameterMap.put( "dropdown", new ParameterDescriptor(
         //                ParameterType.DROPDOWN, "Choice", "Select an option", dropdown ) );
 
-        threshold = Level.ERROR;
+        // Workaround for derby performace issues
+        //threshold = Level.ERROR;
     }
 
     @SuppressWarnings("unchecked")
@@ -112,12 +118,13 @@ public class DatabaseLogger extends AppenderSkeleton implements Logger {
 
     @Override
     protected void append( LoggingEvent loggingevent ) {
-
+        
+        //        loggingevent.get
         if ( status != BeanStatus.ACTIVATED ) {
             return;
         }
 
-        if ( loggingevent.level.isGreaterOrEqual( threshold ) ) {
+        if ( !loggingevent.getLevel().isGreaterOrEqual( Level.toLevel( getLogThreshold(), Level.ERROR ) ) ) {
             return;
         }
 
@@ -229,8 +236,34 @@ public class DatabaseLogger extends AppenderSkeleton implements Logger {
      */
     public void teardown() {
 
-        // LOG.debug( "Freeing resources..." );
-
+        System.out.println( "deregistering loggers" );
+        deregisterLoggers();
+        loggers.clear();
     } // teardown
+
+    public void deregisterLoggers() {
+
+        for ( Logger logger : loggers ) {
+            logger.removeAppender( this );
+        }
+
+    }
+
+    public void registerLogger( Logger logger ) {
+
+        if ( loggers != null ) {
+            loggers.add( logger );
+        }
+    }
+
+    public int getLogThreshold() {
+
+        return logThreshold;
+    }
+
+    public void setLogThreshold( int threshold ) {
+
+        logThreshold = threshold;
+    }
 
 }

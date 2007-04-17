@@ -956,7 +956,7 @@ public class ConfigurationAccessService {
         try {
             List<LoggerPojo> loggers = engineConfig.getLoggers();
             LoggerPojo oldLoggerPojo = getLoggerByNxLoggerId( loggerPojo.getNxLoggerId() );
-            org.nexuse2e.logging.Logger logger = null;
+            org.nexuse2e.logging.LogAppender logger = null;
             if ( oldLoggerPojo != null ) {
                 logger = getLogger( oldLoggerPojo.getName() );
                 loggers.remove( oldLoggerPojo );
@@ -968,7 +968,7 @@ public class ConfigurationAccessService {
                     ConfigurationUtil.configureLogger( logger, loggerPojo.getLoggerParams() );
                 }
             } else {
-                logger = (org.nexuse2e.logging.Logger) Class.forName( loggerPojo.getComponent().getClassName() )
+                logger = (org.nexuse2e.logging.LogAppender) Class.forName( loggerPojo.getComponent().getClassName() )
                         .newInstance();
                 if ( loggerPojo.getLoggerParams() != null ) {
                     ConfigurationUtil.configureLogger( logger, loggerPojo.getLoggerParams() );
@@ -1034,7 +1034,7 @@ public class ConfigurationAccessService {
      * @return A <code>Logger</code> instance, or <code>null</code>
      * if no logger with the given name exists.
      */
-    public org.nexuse2e.logging.Logger getLogger( String name ) {
+    public org.nexuse2e.logging.LogAppender getLogger( String name ) {
 
         if(engineConfig != null) {
             return engineConfig.getStaticBeanContainer().getLogger( name );
@@ -1050,7 +1050,7 @@ public class ConfigurationAccessService {
      * @throws NexusException if <code>oldName</code> was not found or <code>newName</code>
      * already exists.
      */
-    public org.nexuse2e.logging.Logger renameLogger( String oldName, String newName ) throws NexusException {
+    public org.nexuse2e.logging.LogAppender renameLogger( String oldName, String newName ) throws NexusException {
 
         if(engineConfig != null) {
             return engineConfig.getStaticBeanContainer().renameLogger( oldName, newName );

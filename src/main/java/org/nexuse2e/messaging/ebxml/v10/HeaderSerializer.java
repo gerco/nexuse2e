@@ -242,7 +242,7 @@ public class HeaderSerializer extends AbstractPipelet {
                         from, fromIdType );
             } else if ( error ) { // error
                 createErrorList( soapFactory, soapHeader, messagePojo.getReferencedMessage().getMessageId(),
-                        (Vector<ErrorDescriptor>) messagePipeletParameter.getGenericData() );
+                        (Vector<ErrorDescriptor>) messagePipeletParameter.getData() );
             } else { // regular message
                 // QUALITY OF SERVICE---------------------------------------------------
                 if ( messagePojo.getParticipant().getConnection().isReliable() ) {

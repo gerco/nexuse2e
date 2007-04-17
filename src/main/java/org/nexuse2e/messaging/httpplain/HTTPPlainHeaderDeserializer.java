@@ -49,7 +49,7 @@ public class HTTPPlainHeaderDeserializer extends AbstractPipelet {
     public MessageContext processMessage( MessageContext messagePipeletParameter )
             throws IllegalArgumentException, IllegalStateException, NexusException {
 
-        Object object = messagePipeletParameter.getGenericData();
+        Object object = messagePipeletParameter.getData();
         if ( !( object instanceof HttpServletRequest ) ) {
             throw new IllegalArgumentException( "Unable to process message: raw data not of type HttpServletRequest!" );
         }

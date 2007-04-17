@@ -20,6 +20,7 @@
 package org.nexuse2e.ui.action.serverconfig;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,7 +32,7 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.ConfigurationUtil;
-import org.nexuse2e.logging.Logger;
+import org.nexuse2e.logging.LogAppender;
 import org.nexuse2e.pojo.LoggerParamPojo;
 import org.nexuse2e.pojo.LoggerPojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
@@ -63,7 +64,7 @@ public class NotifierViewAction extends NexusE2EAction {
                 loggerForm.getNxLoggerId() );
 
         loggerForm.setProperties( loggerPojo );
-        Logger logger = Engine.getInstance().getActiveConfigurationAccessService().getLogger( loggerPojo.getName() );
+        LogAppender logger = Engine.getInstance().getActiveConfigurationAccessService().getLogger( loggerPojo.getName() );
         for ( LoggerParamPojo loggerParam : loggerPojo.getLoggerParams() ) {
             loggerParam.setParameterDescriptor( logger.getParameterMap().get( loggerParam.getParamName() ) );
         }
@@ -74,8 +75,10 @@ public class NotifierViewAction extends NexusE2EAction {
 
         // Filtergroup Fake
 
-        String[] groups = new String[] { "core", "inbound", "outbound", "mail", "http"};
+//        String[] groups = new String[] { "core", "inbound", "outbound", "mail", "http"};
 
+        HashMap<String, List<String>> logCategories = Engine.getInstance().getCurrentConfiguration().getLogCategories();
+        
         loggerForm.getGroupNames().clear();
         HashMap<String, String> tempFilterValues = new HashMap<String, String>();
         HashMap<String, String> enabledFilterValues = new HashMap<String, String>();
@@ -84,13 +87,15 @@ public class NotifierViewAction extends NexusE2EAction {
             enabledFilterValues.put( st.nextToken(), "true" );
         }
 
-        for ( String group : groups ) {
+        loggerForm.setThreshold( loggerPojo.getThreshold() );
+        
+        for ( String group : logCategories.keySet() ) {
 
-            String value = enabledFilterValues.get( group );
+            String value = enabledFilterValues.get( "group_" + group );
             if ( value != null ) {
                 LOG.trace( "value:" + value );
                 tempFilterValues.put( "group_" + group, value );
-                enabledFilterValues.remove( group );
+                enabledFilterValues.remove( "group_" + group );
             } else {
                 tempFilterValues.put( "group_" + group, "false" );
             }

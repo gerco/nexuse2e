@@ -91,12 +91,12 @@ public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
                 .getParticipantFromChoreographyByPartner(
                         messagePipeletParameter.getMessagePojo().getConversation().getChoreography(), partner );
 
-        acknowledgment.getCustomParameters().put( Constants.PROTOCOLSPECIFIC_TOIDTYPE, partner.getPartnerIdType() );
-        acknowledgment.getCustomParameters().put( Constants.PROTOCOLSPECIFIC_FROM,
+        acknowledgment.getCustomParameters().put( Constants.PARAMETER_PREFIX_EBXML20 +Constants.PROTOCOLSPECIFIC_TOIDTYPE, partner.getPartnerIdType() );
+        acknowledgment.getCustomParameters().put( Constants.PARAMETER_PREFIX_EBXML20 +Constants.PROTOCOLSPECIFIC_FROM,
                 participant.getLocalPartner().getPartnerId() );
-        acknowledgment.getCustomParameters().put( Constants.PROTOCOLSPECIFIC_FROMIDTYPE,
+        acknowledgment.getCustomParameters().put( Constants.PARAMETER_PREFIX_EBXML20 +Constants.PROTOCOLSPECIFIC_FROMIDTYPE,
                 participant.getLocalPartner().getPartnerIdType() );
-        acknowledgment.getCustomParameters().put( Constants.PROTOCOLSPECIFIC_SERVICE, "uri:Acknowledgement" );
+        acknowledgment.getCustomParameters().put( Constants.PARAMETER_PREFIX_EBXML20 +Constants.PROTOCOLSPECIFIC_SERVICE, "uri:Acknowledgement" );
 
         LOG.trace( "-----conversation:" + messagePipeletParameter.getMessagePojo().getConversation() );
         acknowledgment.setConversation( messagePipeletParameter.getMessagePojo().getConversation() );
@@ -192,8 +192,8 @@ public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
         String localPartnerId = messagePipeletParameter.getParticipant().getLocalPartner().getPartnerId();
         String localPartnerType = messagePipeletParameter.getParticipant().getLocalPartner().getPartnerIdType();
         HashMap<String, String> parameters = new HashMap<String, String>();
-        parameters.put( Constants.PROTOCOLSPECIFIC_FROM, localPartnerId );
-        parameters.put( Constants.PROTOCOLSPECIFIC_FROMIDTYPE, localPartnerType );
+        parameters.put( Constants.PARAMETER_PREFIX_EBXML20 +Constants.PROTOCOLSPECIFIC_FROM, localPartnerId );
+        parameters.put( Constants.PARAMETER_PREFIX_EBXML20 +Constants.PROTOCOLSPECIFIC_FROMIDTYPE, localPartnerType );
         messagePipeletParameter.getMessagePojo().setCustomParameters( parameters );
 
     }

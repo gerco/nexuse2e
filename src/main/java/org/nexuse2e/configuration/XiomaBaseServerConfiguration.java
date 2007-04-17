@@ -45,8 +45,8 @@ import org.nexuse2e.pojo.ServiceParamPojo;
 import org.nexuse2e.pojo.ServicePojo;
 import org.nexuse2e.pojo.TRPPojo;
 import org.nexuse2e.pojo.UserPojo;
-import org.nexuse2e.service.http.HttpReceiver;
-import org.nexuse2e.service.http.HttpSender;
+import org.nexuse2e.service.http.HttpReceiverService;
+import org.nexuse2e.service.http.HttpSenderService;
 import org.nexuse2e.service.mail.Pop3Receiver;
 import org.nexuse2e.service.mail.SmtpSender;
 
@@ -118,9 +118,6 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             fileLoadOutboundPipelets.add( fileLoadOutboundPipeletPojo );
 
             fileSaveInboundPipelinePojo.setOutbound( false );
-            fileSaveInboundPipelinePojo.setManual( false );
-            fileSaveInboundPipelinePojo.setTimer( false );
-            fileSaveInboundPipelinePojo.setTimerInterval( 0 );
             fileSaveInboundPipelinePojo.setCreatedDate( new Date() );
             fileSaveInboundPipelinePojo.setModifiedDate( new Date() );
             fileSaveInboundPipelinePojo.setModifiedNxUserId( 1 );
@@ -130,9 +127,6 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             fileSaveInboundPipelinePojo.setPipelets( fileSaveInboundPipelets );
 
             fileLoadOutboundPipelinePojo.setOutbound( true );
-            fileLoadOutboundPipelinePojo.setManual( false );
-            fileLoadOutboundPipelinePojo.setTimer( false );
-            fileLoadOutboundPipelinePojo.setTimerInterval( 0 );
             fileLoadOutboundPipelinePojo.setCreatedDate( new Date() );
             fileLoadOutboundPipelinePojo.setModifiedDate( new Date() );
             fileLoadOutboundPipelinePojo.setModifiedNxUserId( 1 );
@@ -287,9 +281,6 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             ebXML10OutboundPipelets.add( ebxml10HttpTransportSenderPipeletPojo );
 
             ebXML10InboundPipelinePojo.setOutbound( false );
-            ebXML10InboundPipelinePojo.setManual( false );
-            ebXML10InboundPipelinePojo.setTimer( false );
-            ebXML10InboundPipelinePojo.setTimerInterval( 0 );
             ebXML10InboundPipelinePojo.setCreatedDate( new Date() );
             ebXML10InboundPipelinePojo.setModifiedDate( new Date() );
             ebXML10InboundPipelinePojo.setModifiedNxUserId( 1 );
@@ -300,9 +291,6 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             ebXML10InboundPipelinePojo.setTrp( ebXML1HttpTRPPojo );
 
             ebXML10OutboundPipelinePojo.setOutbound( true );
-            ebXML10OutboundPipelinePojo.setManual( false );
-            ebXML10OutboundPipelinePojo.setTimer( false );
-            ebXML10OutboundPipelinePojo.setTimerInterval( 0 );
             ebXML10OutboundPipelinePojo.setCreatedDate( new Date() );
             ebXML10OutboundPipelinePojo.setModifiedDate( new Date() );
             ebXML10OutboundPipelinePojo.setModifiedNxUserId( 1 );
@@ -379,9 +367,6 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             ebXML20OutboundPipelets.add( ebxmlHttpTransportSenderPipeletPojo );
 
             ebXML20InboundPipelinePojo.setOutbound( false );
-            ebXML20InboundPipelinePojo.setManual( false );
-            ebXML20InboundPipelinePojo.setTimer( false );
-            ebXML20InboundPipelinePojo.setTimerInterval( 0 );
             ebXML20InboundPipelinePojo.setCreatedDate( new Date() );
             ebXML20InboundPipelinePojo.setModifiedDate( new Date() );
             ebXML20InboundPipelinePojo.setModifiedNxUserId( 1 );
@@ -392,9 +377,6 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             ebXML20InboundPipelinePojo.setTrp( ebXML2HttpTRPPojo );
 
             ebXML20OutboundPipelinePojo.setOutbound( true );
-            ebXML20OutboundPipelinePojo.setManual( false );
-            ebXML20OutboundPipelinePojo.setTimer( false );
-            ebXML20OutboundPipelinePojo.setTimerInterval( 0 );
             ebXML20OutboundPipelinePojo.setCreatedDate( new Date() );
             ebXML20OutboundPipelinePojo.setModifiedDate( new Date() );
             ebXML20OutboundPipelinePojo.setModifiedNxUserId( 1 );
@@ -441,9 +423,6 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             ebXML20POP3InboundPipelets.add( ebxmlPOP3PatcherPipeletPojo );
 
             ebXML20POP3InboundPipelinePojo.setOutbound( false );
-            ebXML20POP3InboundPipelinePojo.setManual( false );
-            ebXML20POP3InboundPipelinePojo.setTimer( false );
-            ebXML20POP3InboundPipelinePojo.setTimerInterval( 0 );
             ebXML20POP3InboundPipelinePojo.setCreatedDate( new Date() );
             ebXML20POP3InboundPipelinePojo.setModifiedDate( new Date() );
             ebXML20POP3InboundPipelinePojo.setModifiedNxUserId( 1 );
@@ -479,9 +458,6 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             ebXML20SMTPOutboundPipelets.add( ebxmlSMTPTransportSenderPipeletPojo );
 
             ebXML20SMTPOutboundPipelinePojo.setOutbound( true );
-            ebXML20SMTPOutboundPipelinePojo.setManual( false );
-            ebXML20SMTPOutboundPipelinePojo.setTimer( false );
-            ebXML20SMTPOutboundPipelinePojo.setTimerInterval( 0 );
             ebXML20SMTPOutboundPipelinePojo.setCreatedDate( new Date() );
             ebXML20SMTPOutboundPipelinePojo.setModifiedDate( new Date() );
             ebXML20SMTPOutboundPipelinePojo.setModifiedNxUserId( 1 );
@@ -526,9 +502,9 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
 
             // Sender and Receiver components/services
             ComponentPojo httpSenderComponent = new ComponentPojo( new Date(), new Date(), 1, ComponentType.SERVICE
-                    .getValue(), "HttpSender", HttpSender.class.getName(), "The sender service for HTTP" );
+                    .getValue(), "HttpSender", HttpSenderService.class.getName(), "The sender service for HTTP" );
             ComponentPojo httpReceiverComponent = new ComponentPojo( new Date(), new Date(), 1, ComponentType.SERVICE
-                    .getValue(), "HttpReceiver", HttpReceiver.class.getName(), "The receiver service for HTTP" );
+                    .getValue(), "HttpReceiver", HttpReceiverService.class.getName(), "The receiver service for HTTP" );
             ComponentPojo smtpSenderComponent = new ComponentPojo( new Date(), new Date(), 1, ComponentType.SERVICE
                     .getValue(), "SmtpSender", SmtpSender.class.getName(), "The sender service for SMTP" );
             ComponentPojo pop3ReceiverComponent = new ComponentPojo( new Date(), new Date(), 1, ComponentType.SERVICE

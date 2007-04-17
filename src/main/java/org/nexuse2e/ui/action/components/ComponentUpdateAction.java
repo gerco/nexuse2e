@@ -30,7 +30,7 @@ import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.Constants.ComponentType;
-import org.nexuse2e.logging.Logger;
+import org.nexuse2e.logging.LogAppender;
 import org.nexuse2e.messaging.Pipelet;
 import org.nexuse2e.pojo.ComponentPojo;
 import org.nexuse2e.service.Service;
@@ -71,7 +71,7 @@ public class ComponentUpdateAction extends NexusE2EAction {
             Object o = Class.forName( form.getClassName() ).newInstance();
             if ( o instanceof Service ) {
                 component.setType( ComponentType.SERVICE.getValue() );
-            } else if ( o instanceof Logger ) {
+            } else if ( o instanceof LogAppender ) {
                 component.setType( ComponentType.LOGGER.getValue() );
             } else if ( o instanceof Pipelet ) {
                 component.setType( ComponentType.PIPELET.getValue() );

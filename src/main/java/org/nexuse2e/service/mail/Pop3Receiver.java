@@ -39,6 +39,7 @@ import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Runlevel;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.service.AbstractService;
 import org.nexuse2e.service.ReceiverAware;
 import org.nexuse2e.transport.TransportReceiver;
@@ -200,7 +201,9 @@ public class Pop3Receiver extends AbstractService implements ReceiverAware, Runn
 
                 // TODO: handle exceptions
                 try {
-                    transportReceiver.processInboundData( msgs[msgNum] );
+                    MessageContext messageContext = new MessageContext();
+                    messageContext.setData( msgs[msgNum] );
+                    transportReceiver.processInboundData( messageContext );
                 } catch ( Exception e ) {
                     LOG.error( "Error processing email message: " + e );
                     e.printStackTrace();

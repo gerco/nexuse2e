@@ -90,7 +90,7 @@ public class FileSystemLoadPipelet extends AbstractOutboundBackendPipelet {
             throws NexusException {
 
         byte[] documentBuffer = null; // The binary data buffer that will hold the document
-        String newPrimaryKey = (String) backendPipeletParameter.getGenericData(); // Cast primary key to correct type
+        String newPrimaryKey = (String) backendPipeletParameter.getData(); // Cast primary key to correct type
         String fileName = null;
 
         if ( ( backendPipeletParameter == null ) || ( backendPipeletParameter.getMessagePojo() == null ) ) {

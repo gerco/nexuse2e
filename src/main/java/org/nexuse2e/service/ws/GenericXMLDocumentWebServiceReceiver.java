@@ -423,16 +423,20 @@ public class GenericXMLDocumentWebServiceReceiver extends AbstractController imp
                 TransportReceiver transportReceiver = null;
 
                 if ( transportReceiver != null ) {
-                    MessageContext messageContext = transportReceiver.processInboundData( baos.toByteArray() );
+                    
+                    MessageContext inboundContext = new MessageContext();
+                    inboundContext.setData( baos.toByteArray() );
+                    
+                    MessageContext outboundContext = transportReceiver.processInboundData( inboundContext );
 
-                    List<MessagePayloadPojo> payloads = messageContext.getMessagePojo().getMessagePayloads();
+                    List<MessagePayloadPojo> payloads = outboundContext.getMessagePojo().getMessagePayloads();
                     if ( !payloads.isEmpty() ) {
                         payload = payloads.iterator().next();
                     } else {
                         StringBuffer errorMessage = new StringBuffer(
                                 "Errors occured during processing of Web services request" );
-                        if ( messageContext.getMessagePojo().getErrors() != null ) {
-                            for ( Iterator iter = messageContext.getMessagePojo().getErrors().iterator(); iter
+                        if ( outboundContext.getMessagePojo().getErrors() != null ) {
+                            for ( Iterator iter = outboundContext.getMessagePojo().getErrors().iterator(); iter
                                     .hasNext(); ) {
                                 ErrorDescriptor errorDescriptor = (ErrorDescriptor) iter.next();
                                 errorMessage.append( "\n" + errorDescriptor.getDescription() );

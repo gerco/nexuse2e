@@ -34,6 +34,8 @@ public class EngineController {
     private String               engineControllerStubClass = "org.nexuse2e.DefaultEngineControllerStub";
     private Engine               engine                    = null;
 
+    private EngineMonitor        engineMonitor             = null;
+
     /**
      * 
      */
@@ -46,6 +48,8 @@ public class EngineController {
                 LOG.debug( "EngineControllerStub instantiated" );
 
                 engineControllerStub.initialize();
+                engineMonitor = new EngineMonitor();
+                
                 if ( engine != null ) {
                     engine.setEngineController( this );
                     engine.initialize( null );
@@ -143,6 +147,24 @@ public class EngineController {
     public void setEngine( Engine engine ) {
 
         this.engine = engine;
+    }
+
+    
+    /**
+     * @return the engineMonitor
+     */
+    public EngineMonitor getEngineMonitor() {
+    
+        return engineMonitor;
+    }
+
+    
+    /**
+     * @param engineMonitor the engineMonitor to set
+     */
+    public void setEngineMonitor( EngineMonitor engineMonitor ) {
+    
+        this.engineMonitor = engineMonitor;
     }
 
 } // EngineController

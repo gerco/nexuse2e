@@ -59,9 +59,9 @@ import org.nexuse2e.util.EncryptionUtil;
  * 
  * @author gesch, jonas.reese
  */
-public class HttpSender extends AbstractService implements SenderAware {
+public class HttpSenderService extends AbstractService implements SenderAware {
 
-    private static Logger   LOG = Logger.getLogger( HttpSender.class );
+    private static Logger   LOG = Logger.getLogger( HttpSenderService.class );
 
     private TransportSender transportSender;
 
@@ -142,7 +142,7 @@ public class HttpSender extends AbstractService implements SenderAware {
         try {
             String httpReply = null;
 
-            LOG.debug( "Data:\n" + new String( messagePipeletParameter.getData() ) );
+            LOG.debug( "Data:\n" + new String( (byte[])messagePipeletParameter.getData() ) );
 
             // Support for HTTP plain
             TRPPojo trpPojo = messagePipeletParameter.getMessagePojo().getTRP();
@@ -168,7 +168,7 @@ public class HttpSender extends AbstractService implements SenderAware {
                 uri.setQuery( uriParams.toString() );
                 method.setURI( uri );
                 LOG.debug( "URI: " + uri );
-                method.setRequestEntity( new StringRequestEntity( new String( messagePipeletParameter.getData() ) ) );
+                method.setRequestEntity( new StringRequestEntity( new String( (byte[])messagePipeletParameter.getData() ) ) );
             } else {
                 ContentType contentType = new ContentType( "multipart/related" );
                 contentType.setParameter( "type", "text/xml" );
@@ -176,8 +176,8 @@ public class HttpSender extends AbstractService implements SenderAware {
                 contentType.setParameter( "start", messagePipeletParameter.getMessagePojo().getMessageId()
                         + messagePipeletParameter.getMessagePojo().getTRP().getProtocol() + "-Header" );
 
-                LOG.debug( "HTTP Message:\n" + new String( messagePipeletParameter.getData() ) );
-                RequestEntity requestEntity = new ByteArrayRequestEntity( messagePipeletParameter.getData(),
+                LOG.debug( "HTTP Message:\n" + new String( (byte[])messagePipeletParameter.getData() ) );
+                RequestEntity requestEntity = new ByteArrayRequestEntity( (byte[])messagePipeletParameter.getData(),
                         "Content-Type:" + contentType.toString() );
                 method.setRequestEntity( requestEntity );
 

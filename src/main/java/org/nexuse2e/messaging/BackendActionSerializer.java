@@ -54,9 +54,7 @@ public class BackendActionSerializer extends AbstractPipelet {
     private BlockingQueue<MessageContext> queue                      = new LinkedBlockingQueue<MessageContext>();
 
     private String                                 queueName                  = "queue_name_not_set";
-
-    private BeanStatus                             status                     = BeanStatus.UNDEFINED;
-
+    
     private OutboundQueueListener                  outboundQueueListener      = null;
 
     private Thread                                 queueListenerThread        = null;

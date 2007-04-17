@@ -17,14 +17,38 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.nexuse2e.logging;
+package org.nexuse2e;
 
-import org.apache.log4j.Appender;
-import org.nexuse2e.Configurable;
-import org.nexuse2e.Manageable;
+import java.io.Serializable;
 
-/**
- * @author gesch
- */
-public interface Logger extends Appender, Configurable, Manageable {
+public interface StatusSummary extends Serializable{
+
+    /**
+     * @author gesch
+     */
+    public static enum Status {
+        ERROR(-1), UNKNOWN(0), DISABLED(1), ACTIVE(2);
+
+        private int type;
+
+        Status( int type ) {
+
+            this.type = type;
+        }
+
+        public int getValue() {
+
+            return type;
+        }
+    }
+
+    /**
+     * @return
+     */
+    public Status getStatus();
+
+    /**
+     * 
+     */
+    public void setStatus(Status status);
 }

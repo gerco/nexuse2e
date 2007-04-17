@@ -47,21 +47,6 @@
 		</logic:equal>
 
 		<tr>
-			<td class="NEXUSName">Timer Interval</td>
-			<td class="NEXUSValue"><html:text property="hours" size="3" /><html:text
-				property="minutes" size="2" /><html:text property="seconds"
-				size="2" /></td>
-		</tr>
-		<tr>
-			<td class="NEXUSValue" colspan="2"><html:checkbox
-				property="manual">Manual</html:checkbox></td>
-		</tr>
-		<tr>
-			<td class="NEXUSValue" colspan="2"><html:checkbox
-				property="timer">Enable Timer</html:checkbox></td>
-		</tr>
-
-		<tr>
 			<td class="NEXUSName">Description</td>
 			<td class="NEXUSValue"><html:text property="description"
 				size="50" /></td>

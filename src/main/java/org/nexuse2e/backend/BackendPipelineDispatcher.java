@@ -170,7 +170,7 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
         messagePojo.setOutbound( true );
 
         if ( primaryKey != null ) {
-            pipeletParameter.setGenericData( primaryKey );
+            pipeletParameter.setData( primaryKey );
         }
         if ( payload != null && payload.length > 0 ) {
             MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo();
