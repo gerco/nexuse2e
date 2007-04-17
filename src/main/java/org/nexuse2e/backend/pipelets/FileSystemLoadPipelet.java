@@ -73,7 +73,7 @@ public class FileSystemLoadPipelet extends AbstractOutboundBackendPipelet {
     }
 
     /* (non-Javadoc)
-     * @see org.nexuse2e.backend.pipelets.AbstractOutboundBackendPipelet#processPayloadAvailable(org.nexuse2e.messaging.MessagePipeletParameter)
+     * @see org.nexuse2e.backend.pipelets.AbstractOutboundBackendPipelet#processPayloadAvailable(org.nexuse2e.messaging.MessageContext)
      */
     @Override
     public MessageContext processPayloadAvailable( MessageContext backendPipeletParameter )
@@ -83,18 +83,18 @@ public class FileSystemLoadPipelet extends AbstractOutboundBackendPipelet {
     } // processPayloadAvailable
 
     /* (non-Javadoc)
-     * @see org.nexuse2e.backend.pipelets.AbstractOutboundBackendPipelet#processPrimaryKeyAvailable(org.nexuse2e.messaging.MessagePipeletParameter)
+     * @see org.nexuse2e.backend.pipelets.AbstractOutboundBackendPipelet#processPrimaryKeyAvailable(org.nexuse2e.messaging.MessageContext)
      */
     @Override
-    public MessageContext processPrimaryKeyAvailable( MessageContext backendPipeletParameter )
+    public MessageContext processPrimaryKeyAvailable( MessageContext messageContext )
             throws NexusException {
 
         byte[] documentBuffer = null; // The binary data buffer that will hold the document
-        String newPrimaryKey = (String) backendPipeletParameter.getData(); // Cast primary key to correct type
+        String newPrimaryKey = (String) messageContext.getData(); // Cast primary key to correct type
         String fileName = null;
 
-        if ( ( backendPipeletParameter == null ) || ( backendPipeletParameter.getMessagePojo() == null ) ) {
-            throw new NexusException( "MessagePipeletParameter not properly initialized, missing MessagePojo!" );
+        if ( ( messageContext == null ) || ( messageContext.getMessagePojo() == null ) ) {
+            throw new NexusException( "MessageContext not properly initialized, missing MessagePojo!" );
         }
 
         StringTokenizer tokens = new StringTokenizer( newPrimaryKey, "," );
@@ -153,16 +153,16 @@ public class FileSystemLoadPipelet extends AbstractOutboundBackendPipelet {
             String mimeType = mimetypesFileTypeMap.getContentType( fileName );
 
             // Prepare the Payload and set the MIME content type
-            MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo( backendPipeletParameter.getMessagePojo(),
+            MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo( messageContext.getMessagePojo(),
                     i, mimeType, Engine.getInstance().getIdGenerator(
                             org.nexuse2e.Constants.ID_GENERATOR_MESSAGE_PAYLOAD ).getId(), documentBuffer, new Date(),
                     new Date(), 1 );
             messagePayloads.add( messagePayloadPojo );
 
         } // for
-        backendPipeletParameter.getMessagePojo().setMessagePayloads( messagePayloads );
+        messageContext.getMessagePojo().setMessagePayloads( messagePayloads );
 
-        return backendPipeletParameter;
+        return messageContext;
     } // processPrimaryKeyAvailable
 
     /* (non-Javadoc)

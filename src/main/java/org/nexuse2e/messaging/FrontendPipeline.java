@@ -23,12 +23,11 @@ import org.nexuse2e.NexusException;
 import org.nexuse2e.ProtocolSpecific;
 import org.nexuse2e.ProtocolSpecificKey;
 import org.nexuse2e.pojo.MessagePojo;
-import org.springframework.beans.factory.InitializingBean;
 
 /**
  * A <code>Pipeline</code> handling the processing of messages in the NEXUSe2e frontend. 
  * A <code>FrontendPipeline</code> can optionally process a synchronously generated reply
- * (represented by a new <code>MessagePipeletParameter</code>) and will trigger a different
+ * (represented by a new <code>MessageContext</code>) and will trigger a different
  * set of <code>Pipelet</code> components for processing it. This set of <code>Pipelet</code> 
  * components be similar to that of an outbound <code>FrontendPipeline</code> processing 
  * outbound messages or asynchronously created reply messages.
@@ -49,24 +48,24 @@ public class FrontendPipeline extends AbstractPipeline implements ProtocolSpecif
      * <li>The massage data is unpacked using an approriate MessageUnpackager</li>
      * <li>The massage header is de-serialized using an approriate HeaderDeserializer</li>
      * </ol>
-     * @param messagePipeletParameter The message progressing through the <code>Pipeline</code>. 
-     * The <code>MessagePipeletParameter</code> contains additional meta data useful for the processing 
+     * @param messageContext The message progressing through the <code>Pipeline</code>. 
+     * The <code>MessageContext</code> contains additional meta data useful for the processing 
      * of the message in addition to the actual message itself.
-     * @return The potentially modified The <code>MessagePipeletParameter</code>.
-     * @throws IllegalArgumentException Thrown if information provided in the <code>MessagePipeletParameter</code> 
+     * @return The potentially modified The <code>MessageContext</code>.
+     * @throws IllegalArgumentException Thrown if information provided in the <code>MessageContext</code> 
      * did not meet expectations.
      * @throws IllegalStateException Thrown if the system is not in a correct state to handle this specific message.
      * @throws NexusException Thrown if any other processing related exception occured.
      */
-    public MessageContext processMessage( MessageContext messagePipeletParameter )
+    public MessageContext processMessage( MessageContext messageContext )
             throws IllegalArgumentException, IllegalStateException, NexusException {
 
-        if ( !validateProtocolSpecificKey( messagePipeletParameter.getProtocolSpecificKey() ) ) {
+        if ( !validateProtocolSpecificKey( messageContext.getProtocolSpecificKey() ) ) {
             throw new IllegalArgumentException( "PipelineKey:" + getKey() + " doesn't match MessageKey:"
-                    + messagePipeletParameter.getProtocolSpecificKey() );
+                    + messageContext.getProtocolSpecificKey() );
         }
 
-        if ( messagePipeletParameter == null ) {
+        if ( messageContext == null ) {
             throw new IllegalArgumentException( "No content found" );
         }
 
@@ -74,27 +73,27 @@ public class FrontendPipeline extends AbstractPipeline implements ProtocolSpecif
             throw new IllegalStateException( "MessageUnpackager not configured/instantiated!" );
         }
 
-        if ( messagePipeletParameter.getMessagePojo() == null ) {
-            messagePipeletParameter.setMessagePojo( new MessagePojo() );
+        if ( messageContext.getMessagePojo() == null ) {
+            messageContext.setMessagePojo( new MessagePojo() );
         }
 
         for ( int i = 0; i < forwardPipelets.length; i++ ) {
             MessageProcessor messagePipelet = forwardPipelets[i];
 
-            messagePipeletParameter = messagePipelet.processMessage( messagePipeletParameter );
+            messageContext = messagePipelet.processMessage( messageContext );
         }
 
-        messagePipeletParameter = pipelineEndpoint.processMessage( messagePipeletParameter );
+        messageContext = pipelineEndpoint.processMessage( messageContext );
 
         if ( returnPipelets != null ) {
             for ( int i = 0; i < returnPipelets.length; i++ ) {
                 MessageProcessor messagePipelet = returnPipelets[i];
 
-                messagePipeletParameter = messagePipelet.processMessage( messagePipeletParameter );
+                messageContext = messagePipelet.processMessage( messageContext );
             }
         }
 
-        return messagePipeletParameter;
+        return messageContext;
     } // processMessage
 
     /**

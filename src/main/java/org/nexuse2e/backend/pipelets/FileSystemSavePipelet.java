@@ -51,13 +51,13 @@ public class FileSystemSavePipelet extends AbstractPipelet {
     }
 
     /* (non-Javadoc)
-     * @see org.nexuse2e.messaging.Pipelet#processMessage(org.nexuse2e.messaging.MessagePipeletParameter)
+     * @see org.nexuse2e.messaging.Pipelet#processMessage(org.nexuse2e.messaging.MessageContext)
      */
-    public MessageContext processMessage( MessageContext backendPipeletParameter )
+    public MessageContext processMessage( MessageContext messageContext )
             throws NexusException {
 
         try {
-            writePayloadToUniqueFile( (String) getParameter( DIRECTORY_PARAM_NAME ), backendPipeletParameter );
+            writePayloadToUniqueFile( (String) getParameter( DIRECTORY_PARAM_NAME ), messageContext );
         } catch ( FileNotFoundException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -69,7 +69,7 @@ public class FileSystemSavePipelet extends AbstractPipelet {
         }
 
         // TODO Auto-generated method stub
-        return backendPipeletParameter;
+        return messageContext;
     }
 
     /**

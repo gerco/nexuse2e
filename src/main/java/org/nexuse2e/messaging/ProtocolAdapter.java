@@ -37,25 +37,25 @@ public interface ProtocolAdapter extends ProtocolSpecific {
      * Create an acknowledgement message if the implemented messaging protocol supports acknowledgements.
      * 
      * @param choreography The choreography for which to create the acknowledgement.
-     * @param messagePipeletParameter The <code>MessagePipeletParameter</code> for which the acknowledgement shall be created.
-     * @return The <code>MessagePipeletParameter</code> representing the acknowledgement, null if none was created.
+     * @param messageContext The <code>MessageContext</code> for which the acknowledgement shall be created.
+     * @return The <code>MessageContext</code> representing the acknowledgement, null if none was created.
      * @throws NexusException
      */
-    public MessageContext createAcknowledgement( ChoreographyPojo choreography,
-            MessageContext messagePipeletParameter ) throws NexusException;
+    public MessageContext createAcknowledgement( ChoreographyPojo choreography, MessageContext messageContext )
+            throws NexusException;
 
     /**
      * Create an error message if the implemented messaging protocol supports error messages.
      * 
      * @param reasonCode Code identifying the reason for the error. 
      * @param choreography The choreography for which to create the error.
-     * @param messagePipeletParameter  The <code>MessagePipeletParameter</code> for which the acknowledgement shall be created.
+     * @param messageContext  The <code>MessageContext</code> for which the acknowledgement shall be created.
      * @param errorMessages
      * @return
      */
-    public MessageContext createErrorAcknowledgement( Constants.ErrorMessageReasonCode reasonCode, ChoreographyPojo choreography,
-            MessageContext messagePipeletParameter, Vector<ErrorDescriptor> errorMessages );
+    public MessageContext createErrorAcknowledgement( Constants.ErrorMessageReasonCode reasonCode,
+            ChoreographyPojo choreography, MessageContext messageContext, Vector<ErrorDescriptor> errorMessages );
 
-    public void addProtcolSpecificParameters( MessageContext messagePipeletParameter );
+    public void addProtcolSpecificParameters( MessageContext messageContext );
 
 } // ProtocolAdapter

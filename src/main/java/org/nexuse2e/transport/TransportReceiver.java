@@ -112,12 +112,12 @@ public class TransportReceiver implements Manageable, Configurable, ProtocolSpec
     public MessageContext processInboundData( MessageContext data ) throws NexusException {
 
         LOG.trace( "TransportReceiver processing message.." );
-//        MessageContext messagePipeletParameter = new MessageContext();
+//        MessageContext messageContext = new MessageContext();
         data.setProtocolSpecificKey( getKey() );
-//        messagePipeletParameter.setData( data );
+//        messageContext.setData( data );
 
         // Set status to processing
-        // messagePipeletParameter.getMessagePojo().getConversation().setStatus( Constants.CONVERSATION_STATUS_PROCESSING );
+        // messageContext.getMessagePojo().getConversation().setStatus( Constants.CONVERSATION_STATUS_PROCESSING );
 
         return frontendPipeline.processMessage( data );
     }

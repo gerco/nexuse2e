@@ -79,32 +79,32 @@ public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
                                                                + "    </ReceiptAcknowledgement>\n";
     private ProtocolSpecificKey key                    = null;
 
-    public void addProtcolSpecificParameters( MessageContext messagePipeletParameter ) {
+    public void addProtcolSpecificParameters( MessageContext messageContext ) {
 
         // TODO Auto-generated method stub
 
     }
 
     public MessageContext createAcknowledgement( ChoreographyPojo choreography,
-            MessageContext messagePipeletParameter ) {
+            MessageContext messageContext ) {
 
         // TODO Auto-generated method stub
         return null;
     }
 
     public MessageContext createErrorAcknowledgement( Constants.ErrorMessageReasonCode reasonCode, ChoreographyPojo choreography,
-            MessageContext messagePipeletParameter, Vector<ErrorDescriptor> errorMessages ) {
+            MessageContext messageContext, Vector<ErrorDescriptor> errorMessages ) {
 
         // TODO Auto-generated method stub
         return null;
     }
 
-    public int determineMessageType( MessageContext messagePipeletParameter ) {
+    public int determineMessageType( MessageContext messageContext ) {
 
-        if ( messagePipeletParameter.getMessagePojo().getAction().equals(
+        if ( messageContext.getMessagePojo().getAction().equals(
                 org.nexuse2e.messaging.ebxml.Constants.MESSAGE_TYPE_ACK ) ) {
             return org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ACK;
-        } else if ( messagePipeletParameter.getMessagePojo().getAction().equals(
+        } else if ( messageContext.getMessagePojo().getAction().equals(
                 org.nexuse2e.messaging.ebxml.Constants.MESSAGE_TYPE_ERROR ) ) {
             return org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ERROR;
         }

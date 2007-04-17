@@ -24,13 +24,13 @@ import org.nexuse2e.NexusException;
 public interface MessageProcessor {
 
     /**
-     * Process the <code>MessagePipeletParameter</code> by performing a well defined task.
+     * Process the <code>MessageContext</code> by performing a well defined task.
      * The parameter includes a <code>MessagePojo</code>, potentially the raw message data
      * and additional information to characterize the nature of the message being processed.
-     * @param messagePipeletParameter The <code>MessagePipeletParameter</code> progressing through the <code>Pipeline</code>.
+     * @param messageContext The <code>MessageContext</code> progressing through the <code>Pipeline</code>.
      * @return The potentially modified or transformed message data encapsulated in the 
-     * <code>MessagePipeletParameter</code>.
-     * @throws IllegalArgumentException Thrown if information provided in the <code>MessagePipeletParameter</code> 
+     * <code>MessageContext</code>.
+     * @throws IllegalArgumentException Thrown if information provided in the <code>MessageContext</code> 
      * did not meet expectations.
      * @throws IllegalStateException Thrown if the system is not in a correct state to handle this specific message.
      * @throws NexusException Thrown if any other processing related exception occured.

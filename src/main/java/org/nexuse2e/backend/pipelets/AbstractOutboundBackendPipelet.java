@@ -41,26 +41,26 @@ public abstract class AbstractOutboundBackendPipelet extends AbstractPipelet {
     }
 
     /* (non-Javadoc)
-     * @see org.nexuse2e.messaging.Pipelet#processMessage(org.nexuse2e.messaging.MessagePipeletParameter)
+     * @see org.nexuse2e.messaging.Pipelet#processMessage(org.nexuse2e.messaging.MessageContext)
      */
-    public MessageContext processMessage( MessageContext backendPipeletParameter )
+    public MessageContext processMessage( MessageContext messageContext )
             throws NexusException {
 
-        if ( backendPipeletParameter != null && backendPipeletParameter.getMessagePojo() != null
-                && backendPipeletParameter.getMessagePojo().getMessagePayloads() != null
-                && backendPipeletParameter.getMessagePojo().getMessagePayloads().size() > 0 ) {
+        if ( messageContext != null && messageContext.getMessagePojo() != null
+                && messageContext.getMessagePojo().getMessagePayloads() != null
+                && messageContext.getMessagePojo().getMessagePayloads().size() > 0 ) {
 
-            return processPayloadAvailable( backendPipeletParameter );
+            return processPayloadAvailable( messageContext );
         }
-        return processPrimaryKeyAvailable( backendPipeletParameter );
+        return processPrimaryKeyAvailable( messageContext );
 
     }
 
     /**
      * Method intended for processing outbound messages for which the payload has already been provided. 
-     * @param backendPipeletParameter The <code>MessagePipeletParameter</code> parameter that contains
+     * @param backendPipeletParameter The <code>MessageContext</code> parameter that contains
      * all information in order to process the outbound message.
-     * @return The modified <code>MessagePipeletParameter</code> parameter that was operated on.
+     * @return The modified <code>MessageContext</code> parameter that was operated on.
      */
     public abstract MessageContext processPayloadAvailable( MessageContext backendPipeletParameter )
             throws NexusException;
@@ -68,11 +68,11 @@ public abstract class AbstractOutboundBackendPipelet extends AbstractPipelet {
     /**
      * Method intended for processing outbound messages for which only identifying information been provided
      * required to retrieve the payload of the message through other means. 
-     * @param backendPipeletParameter The <code>MessagePipeletParameter</code> parameter that contains
+     * @param messageContext The <code>MessageContext</code> parameter that contains
      * all information in order to process the outbound message.
-     * @return The modified <code>MessagePipeletParameter</code> parameter that was operated on.
+     * @return The modified <code>MessageContext</code> parameter that was operated on.
      */
-    public abstract MessageContext processPrimaryKeyAvailable( MessageContext backendPipeletParameter )
+    public abstract MessageContext processPrimaryKeyAvailable( MessageContext messageContext )
             throws NexusException;
     
 } // AbstractOutboundBackendPipelet

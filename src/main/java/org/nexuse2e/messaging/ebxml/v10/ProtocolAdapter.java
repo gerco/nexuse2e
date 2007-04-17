@@ -46,26 +46,25 @@ public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
     private ProtocolSpecificKey key = null;
 
     /* (non-Javadoc)
-     * @see org.nexuse2e.messaging.ProtocolAdapter#createAcknowledge(org.nexuse2e.messaging.MessagePipeletParameter)
+     * @see org.nexuse2e.messaging.ProtocolAdapter#createAcknowledge(org.nexuse2e.messaging.MessageContext)
      */
-    public MessageContext createAcknowledgement( ChoreographyPojo choreography,
-            MessageContext messagePipeletParameter ) throws NexusException {
+    public MessageContext createAcknowledgement( ChoreographyPojo choreography, MessageContext messageContext )
+            throws NexusException {
 
-        String currentMessageId = messagePipeletParameter.getMessagePojo().getMessageId();
-        String currentPartnerId = messagePipeletParameter.getMessagePojo().getConversation().getPartner()
-                .getPartnerId();
+        String currentMessageId = messageContext.getMessagePojo().getMessageId();
+        String currentPartnerId = messageContext.getMessagePojo().getConversation().getPartner().getPartnerId();
 
         MessagePojo acknowledgment = new MessagePojo();
         acknowledgment.setCustomParameters( new HashMap<String, String>() );
         acknowledgment.setCreatedDate( new Date() );
         acknowledgment.setModifiedDate( new Date() );
 
-        acknowledgment.setTRP( messagePipeletParameter.getMessagePojo().getTRP() );
+        acknowledgment.setTRP( messageContext.getMessagePojo().getTRP() );
 
         acknowledgment.setType( org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ACK );
 
         // TODO: verify that using this instance does not create problems
-        acknowledgment.setAction( messagePipeletParameter.getMessagePojo().getAction() );
+        acknowledgment.setAction( messageContext.getMessagePojo().getAction() );
 
         String messageId;
         try {
@@ -73,23 +72,24 @@ public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
         } catch ( NexusException e ) {
             LOG.fatal( "Unable to create AcknowldegeMessageId for message: " + currentMessageId );
             e.printStackTrace();
-            messagePipeletParameter.setMessagePojo( null );
-            return messagePipeletParameter;
+            messageContext.setMessagePojo( null );
+            return messageContext;
         }
         acknowledgment.setMessageId( messageId );
 
-        acknowledgment.setReferencedMessage( messagePipeletParameter.getMessagePojo() );
+        acknowledgment.setReferencedMessage( messageContext.getMessagePojo() );
 
-        PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByPartnerId( currentPartnerId );
+        PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByPartnerId(
+                currentPartnerId );
 
         if ( partner == null ) {
-            messagePipeletParameter.setMessagePojo( null );
+            messageContext.setMessagePojo( null );
             LOG.error( "No partner entry found for partnerId: " + currentPartnerId );
-            return messagePipeletParameter;
+            return messageContext;
         }
         ParticipantPojo participant = Engine.getInstance().getActiveConfigurationAccessService()
                 .getParticipantFromChoreographyByPartner(
-                        messagePipeletParameter.getMessagePojo().getConversation().getChoreography(), partner );
+                        messageContext.getMessagePojo().getConversation().getChoreography(), partner );
 
         acknowledgment.getCustomParameters().put( Constants.PROTOCOLSPECIFIC_TOIDTYPE, partner.getPartnerIdType() );
         acknowledgment.getCustomParameters().put( Constants.PROTOCOLSPECIFIC_FROM,
@@ -98,27 +98,27 @@ public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
                 participant.getLocalPartner().getPartnerIdType() );
         acknowledgment.getCustomParameters().put( Constants.PROTOCOLSPECIFIC_SERVICE, "uri:Acknowledgement" );
 
-        LOG.trace( "-----conversation:" + messagePipeletParameter.getMessagePojo().getConversation() );
-        acknowledgment.setConversation( messagePipeletParameter.getMessagePojo().getConversation() );
+        LOG.trace( "-----conversation:" + messageContext.getMessagePojo().getConversation() );
+        acknowledgment.setConversation( messageContext.getMessagePojo().getConversation() );
         acknowledgment.setOutbound( true );
 
-        messagePipeletParameter.setMessagePojo( acknowledgment );
+        messageContext.setMessagePojo( acknowledgment );
 
-        return messagePipeletParameter;
+        return messageContext;
     } // createAcknowledgement
 
     /* (non-Javadoc)
-     * @see org.nexuse2e.messaging.ProtocolAdapter#createErrorAcknowledge(int, org.nexuse2e.messaging.MessagePipeletParameter)
+     * @see org.nexuse2e.messaging.ProtocolAdapter#createErrorAcknowledge(int, org.nexuse2e.messaging.MessageContext)
      */
-    public MessageContext createErrorAcknowledgement( Constants.ErrorMessageReasonCode reasonCode, ChoreographyPojo choreography,
-            MessageContext messagePipeletParameter, Vector<ErrorDescriptor> errorMessages ) {
+    public MessageContext createErrorAcknowledgement( Constants.ErrorMessageReasonCode reasonCode,
+            ChoreographyPojo choreography, MessageContext messageContext, Vector<ErrorDescriptor> errorMessages ) {
 
-        //        String currentMessageId = messagePipeletParameter.getMessagePojo().getMessageKey().getMessageId();
-        //        String currentConversationId = messagePipeletParameter.getMessagePojo().getMessageKey()
+        //        String currentMessageId = messageContext.getMessagePojo().getMessageKey().getMessageId();
+        //        String currentConversationId = messageContext.getMessagePojo().getMessageKey()
         //                .getConversationId();
-        //        String currentChoreographyId = messagePipeletParameter.getMessagePojo().getMessageKey()
+        //        String currentChoreographyId = messageContext.getMessagePojo().getMessageKey()
         //                .getChoreographyId();
-        //        String currentPartnerId = messagePipeletParameter.getMessagePojo().getMessageKey().getPartnerId();
+        //        String currentPartnerId = messageContext.getMessagePojo().getMessageKey().getPartnerId();
         //
         //        MessagePojo errrorNotification = new MessagePojo();
         //
@@ -128,7 +128,7 @@ public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
         //        errrorNotification.setCommunicationProtocolId( "ebXML" );
         //        errrorNotification.setCommunicationProtocolVersion( "2.0" );
         //
-        //        errrorNotification.setAction( messagePipeletParameter.getMessagePojo().getAction() );
+        //        errrorNotification.setAction( messageContext.getMessagePojo().getAction() );
         //        errrorNotification.setMessageType( Constants.MESSAGE_TYPE_ERROR );
         //        errrorNotification.setOutbound( true );
         //
@@ -138,8 +138,8 @@ public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
         //        } catch ( NexusException e ) {
         //            LOG.fatal( "unable to create ErrorMessageId for message:" + currentMessageId );
         //            e.printStackTrace();
-        //            messagePipeletParameter.setMessagePojo( null );
-        //            return messagePipeletParameter;
+        //            messageContext.setMessagePojo( null );
+        //            return messageContext;
         //        }
         //
         //        errrorNotification.setMessageKey( new MessageKey( currentChoreographyId, currentConversationId, messageId,
@@ -156,9 +156,9 @@ public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
         //            }
         //        }
         //        if ( partner == null ) {
-        //            messagePipeletParameter.setMessagePojo( null );
+        //            messageContext.setMessagePojo( null );
         //            LOG.error( "no partner entry found for partnerId:" + currentPartnerId );
-        //            return messagePipeletParameter;
+        //            return messageContext;
         //        }
         //
         //        errrorNotification.getCustomParameters().put( Constants.PROTOCOLSPECIFIC_TOIDTYPE, partner.getPartnerType() );
@@ -166,9 +166,9 @@ public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
         //        String from = null;
         //        String fromIdType = null;
         //        if ( choreography == null ) {
-        //            from = messagePipeletParameter.getMessagePojo().getCustomParameters().get(
+        //            from = messageContext.getMessagePojo().getCustomParameters().get(
         //                    Constants.PROTOCOLSPECIFIC_TO );
-        //            fromIdType = messagePipeletParameter.getMessagePojo().getCustomParameters().get(
+        //            fromIdType = messageContext.getMessagePojo().getCustomParameters().get(
         //                    Constants.PROTOCOLSPECIFIC_TOIDTYPE );
         //        } else {
         //            from = choreography.getLocalPartnerId();
@@ -178,23 +178,23 @@ public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
         //                .put( Constants.PROTOCOLSPECIFIC_FROM, from );
         //        errrorNotification.getCustomParameters().put( Constants.PROTOCOLSPECIFIC_FROMIDTYPE, fromIdType );
         //        errrorNotification.getCustomParameters().put( Constants.PROTOCOLSPECIFIC_SERVICE,
-        //                "uri:" + messagePipeletParameter.getMessagePojo().getAction() );
-        //        messagePipeletParameter.setMessagePojo( errrorNotification );
+        //                "uri:" + messageContext.getMessagePojo().getAction() );
+        //        messageContext.setMessagePojo( errrorNotification );
 
-        return messagePipeletParameter;
+        return messageContext;
     }
 
     /* (non-Javadoc)
-     * @see org.nexuse2e.messaging.ProtocolAdapter#addProtcolSpecificParameters(org.nexuse2e.messaging.MessagePipeletParameter)
+     * @see org.nexuse2e.messaging.ProtocolAdapter#addProtcolSpecificParameters(org.nexuse2e.messaging.MessageContext)
      */
-    public void addProtcolSpecificParameters( MessageContext messagePipeletParameter ) {
+    public void addProtcolSpecificParameters( MessageContext messageContext ) {
 
-        String localPartnerId = messagePipeletParameter.getParticipant().getLocalPartner().getPartnerId();
-        String localPartnerType = messagePipeletParameter.getParticipant().getLocalPartner().getPartnerIdType();
+        String localPartnerId = messageContext.getParticipant().getLocalPartner().getPartnerId();
+        String localPartnerType = messageContext.getParticipant().getLocalPartner().getPartnerIdType();
         HashMap<String, String> parameters = new HashMap<String, String>();
         parameters.put( Constants.PROTOCOLSPECIFIC_FROM, localPartnerId );
         parameters.put( Constants.PROTOCOLSPECIFIC_FROMIDTYPE, localPartnerType );
-        messagePipeletParameter.getMessagePojo().setCustomParameters( parameters );
+        messageContext.getMessagePojo().setCustomParameters( parameters );
 
     }
 

@@ -45,25 +45,22 @@ public class StateMachineExecutor {
     private static Logger LOG = Logger.getLogger( StateMachineExecutor.class );
 
     /**
-     * @param messagePipelineParameter
+     * @param messageContext
      * @param direction
      * @return
      * @throws NexusException
      */
-    protected ChoreographyPojo validateChoreography( MessageContext messagePipelineParameter, boolean direction )
+    protected ChoreographyPojo validateChoreography( MessageContext messageContext, boolean direction )
             throws NexusException {
 
         MessagePojo messagePojo = null;
 
-        messagePojo = messagePipelineParameter.getMessagePojo();
+        messagePojo = messageContext.getMessagePojo();
 
-        LOG.debug( "messagePojo:" + messagePojo );
-        LOG.debug( "messagePojo.getConversation():" + messagePojo.getConversation() );
-        LOG
-                .debug( "messagePojo.getConversation().getChoreography():"
-                        + messagePojo.getConversation().getChoreography() );
-        LOG.debug( "messagePojo.getConversation().getChoreography().getName():"
-                + messagePojo.getConversation().getChoreography().getName() );
+        LOG.trace( "messagePojo:" + messagePojo );
+        LOG.trace( "Conversation:" + messagePojo.getConversation() );
+        LOG.trace( "Choreography:" + messagePojo.getConversation().getChoreography() );
+        LOG.debug( "ChoreographyID:" + messagePojo.getConversation().getChoreography().getName() );
 
         String choreographyId = messagePojo.getConversation().getChoreography().getName();
         if ( choreographyId == null || choreographyId.equals( "" ) ) {
@@ -79,7 +76,7 @@ public class StateMachineExecutor {
             throw new NexusException( "No matching choreography found for choreographyId: "
                     + messagePojo.getConversation().getChoreography().getName() );
         }
-        messagePipelineParameter.setChoreography( choreography );
+        messageContext.setChoreography( choreography );
 
         return choreography;
     } // validateChoreography
@@ -194,19 +191,18 @@ public class StateMachineExecutor {
     } // validateParticipant
 
     /**
-     * @param messagePipeletParameter
+     * @param messageContext
      * @return
      * @throws NexusException
      */
-    protected ConversationPojo validateTransition( MessageContext messagePipeletParameter )
-            throws NexusException {
+    protected ConversationPojo validateTransition( MessageContext messageContext ) throws NexusException {
 
-        String currentMessageId = messagePipeletParameter.getMessagePojo().getMessageId();
-        String currentActionId = messagePipeletParameter.getMessagePojo().getAction().getName();
-        String currentConversationId = messagePipeletParameter.getMessagePojo().getConversation().getConversationId();
-        String currentChoreographyId = messagePipeletParameter.getMessagePojo().getConversation().getChoreography()
+        String currentMessageId = messageContext.getMessagePojo().getMessageId();
+        String currentActionId = messageContext.getMessagePojo().getAction().getName();
+        String currentConversationId = messageContext.getMessagePojo().getConversation().getConversationId();
+        String currentChoreographyId = messageContext.getMessagePojo().getConversation().getChoreography()
                 .getName();
-        String currentPartnerId = messagePipeletParameter.getMessagePojo().getConversation().getPartner()
+        String currentPartnerId = messageContext.getMessagePojo().getConversation().getPartner()
                 .getPartnerId();
 
         LOG.debug( "MessageId:" + currentMessageId );
@@ -215,12 +211,12 @@ public class StateMachineExecutor {
         LOG.debug( "ChoreographyId:" + currentChoreographyId );
         LOG.debug( "PartnerId:" + currentPartnerId );
 
-        ConversationPojo conversation = messagePipeletParameter.getMessagePojo().getConversation();
-        if ( messagePipeletParameter.getMessagePojo().getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
+        ConversationPojo conversation = messageContext.getMessagePojo().getConversation();
+        if ( messageContext.getMessagePojo().getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
             if ( conversation.getCurrentAction() == null ) {
 
-                if ( messagePipeletParameter.getMessagePojo().getAction().isStart() ) {
-                    conversation.setCurrentAction( messagePipeletParameter.getMessagePojo().getAction() );
+                if ( messageContext.getMessagePojo().getAction().isStart() ) {
+                    conversation.setCurrentAction( messageContext.getMessagePojo().getAction() );
                     return conversation;
                 }
             } else {

@@ -80,11 +80,11 @@ public class MimeMessageUnpackager extends AbstractPipelet {
 
     }
 
-    public MessageContext processMessage( MessageContext messagePipeletParameter )
+    public MessageContext processMessage( MessageContext messageContext )
             throws NexusException {
 
-        MessagePojo messagePojo = messagePipeletParameter.getMessagePojo();
-        List<MessagePayloadPojo> payloads = getDataFromMailMsg( (Message) messagePipeletParameter.getData() );
+        MessagePojo messagePojo = messageContext.getMessagePojo();
+        List<MessagePayloadPojo> payloads = getDataFromMailMsg( (Message) messageContext.getData() );
 
         String msgHdr = new String( payloads.get( 0 ).getPayloadData() );
         if ( msgHdr != null ) {
@@ -103,7 +103,7 @@ public class MimeMessageUnpackager extends AbstractPipelet {
         }
         messagePojo.setMessagePayloads( payloads );
 
-        return messagePipeletParameter;
+        return messageContext;
     }
 
    

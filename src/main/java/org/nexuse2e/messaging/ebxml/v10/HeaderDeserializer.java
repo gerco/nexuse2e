@@ -61,12 +61,12 @@ public class HeaderDeserializer extends AbstractPipelet {
     /* (non-Javadoc)
      * @see org.nexuse2e.messaging.HeaderDeserializer#processMessage(com.tamgroup.nexus.e2e.persistence.pojo.MessagePojo)
      */
-    public MessageContext processMessage( MessageContext messagePipeletParameter ) throws IllegalArgumentException,
+    public MessageContext processMessage( MessageContext messageContext ) throws IllegalArgumentException,
             IllegalStateException {
 
         LOG.trace( "enter EbXMLV20HeaderDeserializer.processMessageImpl" );
 
-        MessagePojo messagePojo = messagePipeletParameter.getMessagePojo();
+        MessagePojo messagePojo = messageContext.getMessagePojo();
 
         if ( messagePojo.getCustomParameters() == null ) {
             messagePojo.setCustomParameters( new HashMap<String, String>() );
@@ -168,7 +168,7 @@ public class HeaderDeserializer extends AbstractPipelet {
 
         LOG.trace( "leave EbXMLV20HeaderDeserializer.processMessageImpl" );
 
-        return messagePipeletParameter;
+        return messageContext;
     }
 
     /**

@@ -117,7 +117,7 @@
 		<td class="NEXUSName">Header</td>
 		<td class="NEXUSValue">text/xml</td>
 		<td class="NEXUSValue"><a
-			href="DataSaveAs?type=content&chorId=${reportMessageEntryForm.choreographyId}&partnerId=${reportMessageEntryForm.participantId}&convId=${reportMessageEntryForm.conversationId}&mId=${reportMessageEntryForm.messageId}"
+			href="DataSaveAs?type=content&choreographyId=${reportMessageEntryForm.choreographyId}&participantId=${reportMessageEntryForm.participantId}&conversationId=${reportMessageEntryForm.conversationId}&messageId=${reportMessageEntryForm.messageId}"
 			target="_blank"> View</a></td>
 	</tr>
 	<logic:iterate indexId="counter" id="payloads" name="collection">
@@ -125,7 +125,7 @@
 			<td class="NEXUSName">Payload <bean:write name="counter" /></td>
 			<td class="NEXUSValue"><bean:write name="payloads" /></td>
 			<td class="NEXUSValue"><a
-				href="DataSaveAs?type=content&chorId=${reportMessageEntryForm.choreographyId}&partnerId=${reportMessageEntryForm.participantId}&convId=${reportMessageEntryForm.conversationId}&mId=${reportMessageEntryForm.messageId}&no=${counter}"
+				href="DataSaveAs?type=content&choreographyId=${reportMessageEntryForm.choreographyId}&participantId=${reportMessageEntryForm.participantId}&conversationId=${reportMessageEntryForm.conversationId}&messageId=${reportMessageEntryForm.messageId}&no=${counter}"
 				target="_blank"> View</a></td>
 		</tr>
 	</logic:iterate>
@@ -135,13 +135,13 @@
 	<tr>
 
 		<td class="BUTTON_RIGHT"><nexus:link
-			href="ModifyMessage.do?noReset&refresh&type=transaction&command=requeue&partner=${reportMessageEntryForm.participantId}&chor=${reportMessageEntryForm.choreographyId}&conv=${reportMessageEntryForm.conversationId}&msg=${reportMessageEntryForm.messageId}"
+			href="ModifyMessage.do?noReset&refresh&type=transaction&command=requeue&participantId=${reportMessageEntryForm.participantId}&choreographyId=${reportMessageEntryForm.choreographyId}&conversationId=${reportMessageEntryForm.conversationId}&messageId=${reportMessageEntryForm.messageId}&outbound=${reportMessageEntryForm.outbound}"
 			styleClass="NexusHeaderLink">
 			<img src="images/submit.gif" border="0" alt="">
 		</nexus:link></td>
 		<td class="NexusHeaderLink">Re-Queue</td>
 		<td class="BUTTON_RIGHT"><nexus:link
-			href="ModifyMessage.do?noReset&refresh&type=transaction&command=stop&partner=${reportMessageEntryForm.participantId}&chor=${reportMessageEntryForm.choreographyId}&conv=${reportMessageEntryForm.conversationId}&msg=${reportMessageEntryForm.messageId}"
+			href="ModifyMessage.do?noReset&refresh&type=transaction&command=stop&participantId=${reportMessageEntryForm.participantId}&choreographyId=${reportMessageEntryForm.choreographyId}&conversationId=${reportMessageEntryForm.conversationId}&messageId=${reportMessageEntryForm.messageId}&outbound=${reportMessageEntryForm.outbound}"
 			styleClass="NexusHeaderLink">
 			<img src="images/reset.gif" onclick="" border="0" alt="">
 		</nexus:link></td>

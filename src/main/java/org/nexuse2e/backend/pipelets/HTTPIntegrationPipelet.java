@@ -75,9 +75,9 @@ public class HTTPIntegrationPipelet extends AbstractPipelet {
     }
 
     /* (non-Javadoc)
-     * @see org.nexuse2e.messaging.Pipelet#processMessage(org.nexuse2e.messaging.MessagePipeletParameter)
+     * @see org.nexuse2e.messaging.Pipelet#processMessage(org.nexuse2e.messaging.MessageContext)
      */
-    public MessageContext processMessage( MessageContext messagePipeletParameter )
+    public MessageContext processMessage( MessageContext messageContext )
             throws IllegalArgumentException, IllegalStateException, NexusException {
 
         boolean debug = false;
@@ -85,7 +85,7 @@ public class HTTPIntegrationPipelet extends AbstractPipelet {
         Boolean sendAsParamBoolean = getParameter( SEND_AS_PARAM );
         boolean sendAsParam = sendAsParamBoolean.booleanValue();
 
-        MessagePojo messagePojo = messagePipeletParameter.getMessagePojo();
+        MessagePojo messagePojo = messageContext.getMessagePojo();
 
         String user = getParameter( USER );
         String password = getParameter( PASSWORD );

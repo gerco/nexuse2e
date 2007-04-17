@@ -45,19 +45,19 @@ public class HTTPPlainMessagePacker extends AbstractPipelet {
     /* (non-Javadoc)
      * @see org.nexuse2e.messaging.MessageUnpackager#processMessage(com.tamgroup.nexus.e2e.persistence.pojo.MessagePojo, byte[])
      */
-    public MessageContext processMessage( MessageContext messagePipeletParameter )
+    public MessageContext processMessage( MessageContext messageContext )
             throws IllegalArgumentException, IllegalStateException, NexusException {
 
-        List<MessagePayloadPojo> payloads = messagePipeletParameter.getMessagePojo().getMessagePayloads();
+        List<MessagePayloadPojo> payloads = messageContext.getMessagePojo().getMessagePayloads();
 
         if ( !payloads.isEmpty() ) {
-            messagePipeletParameter.setData( payloads.iterator().next().getPayloadData() );
+            messageContext.setData( payloads.iterator().next().getPayloadData() );
         } else {
             LOG.error( "No payload found in HTTPPlain outbound message!" );
             throw new NexusException( "No payload found in HTTPPlain outbound message!" );
         }
 
-        return messagePipeletParameter;
+        return messageContext;
     }
 
 } // HTTPPlainMessagePacker

@@ -23,9 +23,9 @@ package org.nexuse2e.pojo;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.nexuse2e.messaging.ErrorDescriptor;
@@ -64,7 +64,7 @@ public class MessagePojo implements java.io.Serializable {
     private List<MessageLabelPojo>   messageLabels    = new ArrayList<MessageLabelPojo>( 0 );
 
     private List<ErrorDescriptor>    errors           = new ArrayList<ErrorDescriptor>();
-    private Map<String, String>      customParameters;
+    private Map<String, String>      customParameters = new HashMap<String, String>();
 
     // Constructors
 

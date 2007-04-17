@@ -60,6 +60,7 @@ public class ReportingPropertiesForm extends ActionForm {
     private boolean           conversationEnabled  = false;
     private boolean           messageEnabled       = false;
     private boolean           messageTextEnabled   = false;
+    private boolean           outbound             = false;
     private String            searchFor            = null;
     private String            messageId            = null;
     private boolean           nextActive           = false;
@@ -194,7 +195,8 @@ public class ReportingPropertiesForm extends ActionForm {
         if ( request.getParameter( "noReset" ) != null ) {
             return;
         }
-        if ( actionMapping.getPath().equals( "/ReportingForward" ) || actionMapping.getPath().equals( "/ProcessConversationReport" )
+        if ( actionMapping.getPath().equals( "/ReportingForward" )
+                || actionMapping.getPath().equals( "/ProcessConversationReport" )
                 || actionMapping.getPath().equals( "/ProcessEngineLog" ) ) {
             setStartEnabled( false );
             setEndEnabled( false );
@@ -867,5 +869,17 @@ public class ReportingPropertiesForm extends ActionForm {
     public void setTimezone( String timezone ) {
 
         this.timezone = timezone;
+    }
+
+    
+    public boolean isOutbound() {
+    
+        return outbound;
+    }
+
+    
+    public void setOutbound( boolean outbound ) {
+    
+        this.outbound = outbound;
     }
 }

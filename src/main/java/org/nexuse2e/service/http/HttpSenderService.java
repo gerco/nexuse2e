@@ -86,15 +86,15 @@ public class HttpSenderService extends AbstractService implements SenderAware {
         this.transportSender = transportSender;
     }
 
-    public void sendMessage( MessageContext messagePipeletParameter ) throws NexusException {
+    public void sendMessage( MessageContext messageContext ) throws NexusException {
 
-        ParticipantPojo participant = messagePipeletParameter.getParticipant();
+        ParticipantPojo participant = messageContext.getParticipant();
         int timeout = participant.getConnection().getTimeout() * 1000;
         PostMethod method = null;
         HttpClient client = null;
         try {
 
-            URL receiverURL = new URL( messagePipeletParameter.getParticipant().getConnection().getUri() );
+            URL receiverURL = new URL( messageContext.getParticipant().getConnection().getUri() );
             LOG.debug( "ConnectionURL:" + receiverURL );
             client = new HttpClient();
             //TODO: check for https and check isEnforced
@@ -142,42 +142,42 @@ public class HttpSenderService extends AbstractService implements SenderAware {
         try {
             String httpReply = null;
 
-            LOG.debug( "Data:\n" + new String( (byte[])messagePipeletParameter.getData() ) );
+            LOG.debug( "Data:\n" + new String( (byte[])messageContext.getData() ) );
 
             // Support for HTTP plain
-            TRPPojo trpPojo = messagePipeletParameter.getMessagePojo().getTRP();
+            TRPPojo trpPojo = messageContext.getMessagePojo().getTRP();
             if ( trpPojo.getProtocol().equalsIgnoreCase( org.nexuse2e.Constants.PROTOCOL_ID_HTTP_PLAIN ) ) {
                 StringBuffer uriParams = new StringBuffer();
                 uriParams.append( "ChoreographyID="
-                        + messagePipeletParameter.getMessagePojo().getConversation().getChoreography().getName() );
+                        + messageContext.getMessagePojo().getConversation().getChoreography().getName() );
                 uriParams.append( "&ActionID="
-                        + messagePipeletParameter.getMessagePojo().getConversation().getCurrentAction().getName() );
+                        + messageContext.getMessagePojo().getConversation().getCurrentAction().getName() );
 
-                ChoreographyPojo choreographyPojo = messagePipeletParameter.getMessagePojo().getConversation()
+                ChoreographyPojo choreographyPojo = messageContext.getMessagePojo().getConversation()
                         .getChoreography();
                 ParticipantPojo participantPojo = Engine.getInstance().getActiveConfigurationAccessService()
                         .getParticipantFromChoreographyByNxPartnerId(
                                 choreographyPojo,
-                                messagePipeletParameter.getMessagePojo().getConversation().getPartner()
+                                messageContext.getMessagePojo().getConversation().getPartner()
                                         .getNxPartnerId() );
                 uriParams.append( "&ParticipantID=" + participantPojo.getLocalPartner().getPartnerId() );
                 uriParams.append( "&ConversationID="
-                        + messagePipeletParameter.getMessagePojo().getConversation().getConversationId() );
-                uriParams.append( "&MessageID=" + messagePipeletParameter.getMessagePojo().getMessageId() );
+                        + messageContext.getMessagePojo().getConversation().getConversationId() );
+                uriParams.append( "&MessageID=" + messageContext.getMessagePojo().getMessageId() );
                 URI uri = method.getURI();
                 uri.setQuery( uriParams.toString() );
                 method.setURI( uri );
                 LOG.debug( "URI: " + uri );
-                method.setRequestEntity( new StringRequestEntity( new String( (byte[])messagePipeletParameter.getData() ) ) );
+                method.setRequestEntity( new StringRequestEntity( new String( (byte[])messageContext.getData() ) ) );
             } else {
                 ContentType contentType = new ContentType( "multipart/related" );
                 contentType.setParameter( "type", "text/xml" );
                 contentType.setParameter( "boundary", "MIME_boundary" );
-                contentType.setParameter( "start", messagePipeletParameter.getMessagePojo().getMessageId()
-                        + messagePipeletParameter.getMessagePojo().getTRP().getProtocol() + "-Header" );
+                contentType.setParameter( "start", messageContext.getMessagePojo().getMessageId()
+                        + messageContext.getMessagePojo().getTRP().getProtocol() + "-Header" );
 
-                LOG.debug( "HTTP Message:\n" + new String( (byte[])messagePipeletParameter.getData() ) );
-                RequestEntity requestEntity = new ByteArrayRequestEntity( (byte[])messagePipeletParameter.getData(),
+                LOG.debug( "HTTP Message:\n" + new String( (byte[])messageContext.getData() ) );
+                RequestEntity requestEntity = new ByteArrayRequestEntity( (byte[])messageContext.getData(),
                         "Content-Type:" + contentType.toString() );
                 method.setRequestEntity( requestEntity );
 
@@ -194,7 +194,7 @@ public class HttpSenderService extends AbstractService implements SenderAware {
 
         } catch ( ConnectTimeoutException e ) {
             LOG.error( "Message submission failed, connection timeout for URL: "
-                    + messagePipeletParameter.getParticipant().getConnection().getUri() + " - " + e );
+                    + messageContext.getParticipant().getConnection().getUri() + " - " + e );
             throw new NexusException( "Message submission failed, connection timeout for URL: " + e );
         } catch ( Exception ex ) {
             LOG.error( "Message submission failed: " + ex );

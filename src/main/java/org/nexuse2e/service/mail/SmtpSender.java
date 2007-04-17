@@ -131,13 +131,13 @@ public class SmtpSender extends AbstractService implements SenderAware {
         this.transportSender = transportSender;
     }
 
-    public void sendMessage( MessageContext messagePipeletParameter ) throws NexusException {
+    public void sendMessage( MessageContext messageContext ) throws NexusException {
 
         Session session = null;
         Transport transport = null;
 
         try {
-            ParticipantPojo participant = messagePipeletParameter.getParticipant();
+            ParticipantPojo participant = messageContext.getParticipant();
             String emailAddr = participant.getConnection().getUri();
 
             // LOG.trace( "sendMessage: " + smtpHost + " - " + smtpUser + " - " + smtpPassword );
@@ -149,11 +149,11 @@ public class SmtpSender extends AbstractService implements SenderAware {
 
                 InternetAddress addr = new InternetAddress( emailAddr );
 
-                MimeMessage mimeMsg = createMimeSMTPMsg( session, messagePipeletParameter, participant.getConnection()
+                MimeMessage mimeMsg = createMimeSMTPMsg( session, messageContext, participant.getConnection()
                         .isSecure() );
                 mimeMsg.setRecipient( javax.mail.Message.RecipientType.TO, addr );
                 mimeMsg.setFrom( new InternetAddress( (String) getParameter( EMAIL_PARAM_NAME ) ) );
-                mimeMsg.setSubject( messagePipeletParameter.getMessagePojo().getConversation().getConversationId() );
+                mimeMsg.setSubject( messageContext.getMessagePojo().getConversation().getConversationId() );
                 mimeMsg.setSentDate( new java.util.Date() );
                 mimeMsg.setHeader( "SOAPAction", "ebXML" );
                 mimeMsg.saveChanges();

@@ -189,4 +189,4 @@ public class MessageContext {
         clone.setProtocolSpecificKey( this.getProtocolSpecificKey() );
         return clone;
     }
-} // MessagePipeletParameter
+} // MessageContext

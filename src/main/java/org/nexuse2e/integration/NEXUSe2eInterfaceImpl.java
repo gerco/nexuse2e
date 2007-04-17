@@ -94,7 +94,7 @@ public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
     public String triggerSendingNewMessage( String choreographyId, String businessPartnerId, String actionId,
             Object primaryKey ) throws NexusException {
 
-        MessageContext messagePipeletParameter = null;
+        MessageContext messageContext = null;
 
         LOG.debug( "triggerSendingNewMessage - choreographyId: " + choreographyId + ", businessPartnerId: "
                 + businessPartnerId + ", actionId: " + actionId + ", primaryKey: " + primaryKey );
@@ -104,7 +104,7 @@ public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
         LOG.debug( "sendNewStringMessage - backendPipelineDispatcher: " + backendPipelineDispatcher );
         if ( backendPipelineDispatcher != null ) {
             try {
-                messagePipeletParameter = backendPipelineDispatcher.processMessage( businessPartnerId, choreographyId,
+                messageContext = backendPipelineDispatcher.processMessage( businessPartnerId, choreographyId,
                         actionId, null, null, primaryKey, null );
             } catch ( NexusException e ) {
                 LOG.debug( "sendNewStringMessage - error: " + e );
@@ -112,7 +112,7 @@ public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
             }
         }
 
-        return messagePipeletParameter.getMessagePojo().getConversation().getConversationId();
+        return messageContext.getMessagePojo().getConversation().getConversationId();
     } // triggerSendingNewMessage
 
     /* (non-Javadoc)
@@ -121,7 +121,7 @@ public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
     public String sendNewStringMessage( String choreographyId, String businessPartnerId, String actionId, String payload )
             throws NexusException {
 
-        MessageContext messagePipeletParameter = null;
+        MessageContext messageContext = null;
 
         LOG.debug( "sendNewStringMessage - choreographyId: " + choreographyId + ", businessPartnerId: "
                 + businessPartnerId + ", actionId: " + actionId + ", primaryKey: " + payload );
@@ -131,7 +131,7 @@ public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
         LOG.debug( "sendNewStringMessage - backendPipelineDispatcher: " + backendPipelineDispatcher );
         if ( backendPipelineDispatcher != null ) {
             try {
-                messagePipeletParameter = backendPipelineDispatcher.processMessage( businessPartnerId, choreographyId,
+                messageContext = backendPipelineDispatcher.processMessage( businessPartnerId, choreographyId,
                         actionId, null, null, null, payload.getBytes() );
             } catch ( NexusException e ) {
                 LOG.debug( "sendNewStringMessage - error: " + e );
@@ -139,7 +139,7 @@ public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
             }
         }
 
-        return messagePipeletParameter.getMessagePojo().getConversation().getConversationId();
+        return messageContext.getMessagePojo().getConversation().getConversationId();
     } // sendNewStringMessage
 
 } // NEXUSe2eInterfaceImpl

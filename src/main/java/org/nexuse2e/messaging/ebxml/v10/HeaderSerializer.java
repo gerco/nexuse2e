@@ -63,10 +63,10 @@ public class HeaderSerializer extends AbstractPipelet {
      * 
      */
     @SuppressWarnings("unchecked")
-    public MessageContext processMessage( MessageContext messagePipeletParameter ) throws NexusException {
+    public MessageContext processMessage( MessageContext messageContext ) throws NexusException {
 
         try {
-            MessagePojo messagePojo = messagePipeletParameter.getMessagePojo();
+            MessagePojo messagePojo = messageContext.getMessagePojo();
 
             //messagePojo.setCreatedDate( "2006-09-15T17:50:24Z" );
 
@@ -242,7 +242,7 @@ public class HeaderSerializer extends AbstractPipelet {
                         from, fromIdType );
             } else if ( error ) { // error
                 createErrorList( soapFactory, soapHeader, messagePojo.getReferencedMessage().getMessageId(),
-                        (Vector<ErrorDescriptor>) messagePipeletParameter.getData() );
+                        (Vector<ErrorDescriptor>) messageContext.getData() );
             } else { // regular message
                 // QUALITY OF SERVICE---------------------------------------------------
                 if ( messagePojo.getParticipant().getConnection().isReliable() ) {
@@ -337,7 +337,7 @@ public class HeaderSerializer extends AbstractPipelet {
             e.printStackTrace();
         }
 
-        return messagePipeletParameter;
+        return messageContext;
     }
 
     /**

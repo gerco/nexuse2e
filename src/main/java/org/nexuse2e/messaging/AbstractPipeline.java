@@ -24,31 +24,28 @@ import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Runlevel;
 import org.nexuse2e.configuration.EngineConfiguration;
 
+abstract public class AbstractPipeline implements Pipeline {
 
-abstract public class AbstractPipeline implements Pipeline{
-
-    protected boolean frontendPipeline;
-    protected boolean outboundPipeline;
-    
+    protected boolean          frontendPipeline;
+    protected boolean          outboundPipeline;
 
     /**
      * The pipelets used for processing the message.
      */
-    protected Pipelet[]           forwardPipelets  = null;
+    protected Pipelet[]        forwardPipelets  = null;
 
     /**
      * The pipelets used for processing an optionally synchronously created return message in frontend pipelines.
      */
-    protected Pipelet[]           returnPipelets   = null;
-    
+    protected Pipelet[]        returnPipelets   = null;
+
     /**
      * The endpoint of this pipeline handling the message when this pipeline is done processing it.
      */
-    protected MessageProcessor             pipelineEndpoint = null;
-    
-    
-    abstract public MessageContext processMessage( MessageContext messagePipeletParameter )
-            throws IllegalArgumentException, IllegalStateException, NexusException;
+    protected MessageProcessor pipelineEndpoint = null;
+
+    abstract public MessageContext processMessage( MessageContext messageContext ) throws IllegalArgumentException,
+            IllegalStateException, NexusException;
 
     /* (non-Javadoc)
      * @see org.nexuse2e.messaging.Pipeline#getPipelineEndpoint()
@@ -97,24 +94,24 @@ abstract public class AbstractPipeline implements Pipeline{
 
         this.returnPipelets = returnPipelets;
     }
-    
+
     /* (non-Javadoc)
      * @see org.nexuse2e.Manageable#activate()
      */
     public void activate() {
 
-        if(forwardPipelets != null) {
+        if ( forwardPipelets != null ) {
             for ( int i = 0; i < forwardPipelets.length; i++ ) {
                 forwardPipelets[i].activate();
             }
         }
-        if(returnPipelets != null) {
+        if ( returnPipelets != null ) {
             for ( int i = 0; i < returnPipelets.length; i++ ) {
                 returnPipelets[i].activate();
             }
         }
-        if(getPipelineEndpoint() != null) {
-            ((Pipelet)getPipelineEndpoint()).activate();
+        if ( getPipelineEndpoint() != null ) {
+            ( (Pipelet) getPipelineEndpoint() ).activate();
         }
     }
 
@@ -123,18 +120,18 @@ abstract public class AbstractPipeline implements Pipeline{
      */
     public void deactivate() {
 
-        if(forwardPipelets != null) {
+        if ( forwardPipelets != null ) {
             for ( int i = 0; i < forwardPipelets.length; i++ ) {
                 forwardPipelets[i].deactivate();
             }
         }
-        if(returnPipelets != null) {
+        if ( returnPipelets != null ) {
             for ( int i = 0; i < returnPipelets.length; i++ ) {
                 returnPipelets[i].deactivate();
             }
         }
-        if(getPipelineEndpoint() != null) {
-            ((Pipelet)getPipelineEndpoint()).deactivate();
+        if ( getPipelineEndpoint() != null ) {
+            ( (Pipelet) getPipelineEndpoint() ).deactivate();
         }
     }
 
@@ -143,7 +140,7 @@ abstract public class AbstractPipeline implements Pipeline{
      */
     public Runlevel getActivationRunlevel() {
 
-        if(isOutboundPipeline()){
+        if ( isOutboundPipeline() ) {
             return Runlevel.OUTBOUND_PIPELINES;
         }
         return Runlevel.INBOUND_PIPELINES;
@@ -154,38 +151,37 @@ abstract public class AbstractPipeline implements Pipeline{
      */
     public BeanStatus getStatus() {
 
-        
         try {
             BeanStatus minimumStatus = BeanStatus.STARTED;
-            if(forwardPipelets != null) {
+            if ( forwardPipelets != null ) {
                 for ( int i = 0; i < forwardPipelets.length; i++ ) {
-                    if(forwardPipelets[i] == null) {
+                    if ( forwardPipelets[i] == null ) {
                         return BeanStatus.ERROR;
                     }
-                    if(forwardPipelets[i].getStatus().getValue()<minimumStatus.getValue()) {
+                    if ( forwardPipelets[i].getStatus().getValue() < minimumStatus.getValue() ) {
                         minimumStatus = forwardPipelets[i].getStatus();
                     }
                 }
             }
-            if(returnPipelets != null) {
+            if ( returnPipelets != null ) {
                 for ( int i = 0; i < returnPipelets.length; i++ ) {
-                    if(returnPipelets[i] == null) {
+                    if ( returnPipelets[i] == null ) {
                         return BeanStatus.ERROR;
                     }
-                    if(returnPipelets[i].getStatus().getValue()<minimumStatus.getValue()) {
+                    if ( returnPipelets[i].getStatus().getValue() < minimumStatus.getValue() ) {
                         minimumStatus = returnPipelets[i].getStatus();
                     }
                 }
             }
-            if(getPipelineEndpoint() == null) {
+            if ( getPipelineEndpoint() == null ) {
                 return BeanStatus.ERROR;
             }
-            if(getPipelineEndpoint() != null && getPipelineEndpoint() instanceof Pipelet) {
-                if(((Pipelet)getPipelineEndpoint()).getStatus().getValue()<minimumStatus.getValue()) {
-                    minimumStatus = ((Pipelet)getPipelineEndpoint()).getStatus();
-                }    
+            if ( getPipelineEndpoint() != null && getPipelineEndpoint() instanceof Pipelet ) {
+                if ( ( (Pipelet) getPipelineEndpoint() ).getStatus().getValue() < minimumStatus.getValue() ) {
+                    minimumStatus = ( (Pipelet) getPipelineEndpoint() ).getStatus();
+                }
             }
-            
+
             return minimumStatus;
         } catch ( Exception e ) {
             // TODO Auto-generated catch block
@@ -199,18 +195,18 @@ abstract public class AbstractPipeline implements Pipeline{
      */
     public void initialize( EngineConfiguration config ) {
 
-        if(forwardPipelets != null) {
+        if ( forwardPipelets != null ) {
             for ( int i = 0; i < forwardPipelets.length; i++ ) {
-                forwardPipelets[i].initialize(null);
+                forwardPipelets[i].initialize( null );
             }
         }
-        if(returnPipelets != null) {
+        if ( returnPipelets != null ) {
             for ( int i = 0; i < returnPipelets.length; i++ ) {
-                returnPipelets[i].initialize(null);
+                returnPipelets[i].initialize( null );
             }
         }
-        if(getPipelineEndpoint() != null) {
-            ((Pipelet)getPipelineEndpoint()).initialize( config );
+        if ( getPipelineEndpoint() != null ) {
+            ( (Pipelet) getPipelineEndpoint() ).initialize( config );
         }
     }
 
@@ -219,18 +215,18 @@ abstract public class AbstractPipeline implements Pipeline{
      */
     public void teardown() {
 
-        if(forwardPipelets != null) {
+        if ( forwardPipelets != null ) {
             for ( int i = 0; i < forwardPipelets.length; i++ ) {
                 forwardPipelets[i].teardown();
             }
         }
-        if(returnPipelets != null) {
+        if ( returnPipelets != null ) {
             for ( int i = 0; i < returnPipelets.length; i++ ) {
                 returnPipelets[i].teardown();
             }
         }
-        if(getPipelineEndpoint() != null) {
-            ((Pipelet)getPipelineEndpoint()).teardown();
+        if ( getPipelineEndpoint() != null ) {
+            ( (Pipelet) getPipelineEndpoint() ).teardown();
         }
     }
 
@@ -265,6 +261,5 @@ abstract public class AbstractPipeline implements Pipeline{
 
         outboundPipeline = isOutboundPipeline;
     }
-    
-    
+
 }

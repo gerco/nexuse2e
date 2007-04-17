@@ -47,13 +47,13 @@ public class HTTPPlainMessageUnpacker extends AbstractPipelet {
     /* (non-Javadoc)
      * @see org.nexuse2e.messaging.MessageUnpackager#processMessage(com.tamgroup.nexus.e2e.persistence.pojo.MessagePojo, byte[])
      */
-    public MessageContext processMessage( MessageContext messagePipeletParameter )
+    public MessageContext processMessage( MessageContext messageContext )
             throws IllegalArgumentException, IllegalStateException, NexusException {
 
         byte[] payloadData = null;
         MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo();
 
-        Object object = messagePipeletParameter.getData();
+        Object object = messageContext.getData();
         if ( !( object instanceof HttpServletRequest ) ) {
             LOG.error( "Unable to process message: raw data not of type HttpServletRequest!" );
             throw new IllegalArgumentException( "Unable to process message: raw data not of type HttpServletRequest!" );
@@ -64,7 +64,7 @@ public class HTTPPlainMessageUnpacker extends AbstractPipelet {
         try {
             payloadData = getContentFromRequest( request );
 
-            messagePayloadPojo.setMessage( messagePipeletParameter.getMessagePojo() );
+            messagePayloadPojo.setMessage( messageContext.getMessagePojo() );
             messagePayloadPojo.setPayloadData( payloadData );
             if ( request.getContentType() != null ) {
                 messagePayloadPojo.setMimeType( request.getContentType() );
@@ -77,13 +77,13 @@ public class HTTPPlainMessageUnpacker extends AbstractPipelet {
             messagePayloadPojo.setSequenceNumber( 1 );
             messagePayloadPojo.setContentId( "HTTPPlain_contentId" );
 
-            messagePipeletParameter.getMessagePojo().getMessagePayloads().add( messagePayloadPojo );
+            messageContext.getMessagePojo().getMessagePayloads().add( messagePayloadPojo );
         } catch ( IOException e ) {
             LOG.error( "Error retrieving payload from HTTP POST: " + e );
             throw new NexusException( "Error retrieving payload from HTTP POST: " + e );
         }
 
-        return messagePipeletParameter;
+        return messageContext;
     }
 
     /**

@@ -47,35 +47,35 @@ public class BackendInboundDispatcher implements InitializingBean, Manageable {
 
     /**
      * Dispatch a message to the correct backend inbound pipeline.
-     * @param messagePipeletParameter The message to process wrapped in a <code>MessagePipeletParameter</code>.
+     * @param messageContext The message to process wrapped in a <code>MessageContext</code>.
      * @return 
      * @throws NexusException
      */
-    public MessageContext processMessage( MessageContext messagePipeletParameter )
+    public MessageContext processMessage( MessageContext messageContext )
             throws NexusException {
 
         LOG.debug( "BackendInboundDispatcher.processMessage..." );
 
         if ( backendInboundPipelines != null ) {
-            ActionSpecificKey actionSpecificKey = new ActionSpecificKey( messagePipeletParameter.getMessagePojo()
-                    .getAction().getName(), messagePipeletParameter.getMessagePojo().getConversation()
+            ActionSpecificKey actionSpecificKey = new ActionSpecificKey( messageContext.getMessagePojo()
+                    .getAction().getName(), messageContext.getMessagePojo().getConversation()
                     .getChoreography().getName() );
             BackendPipeline backendInboundPipeline = backendInboundPipelines.get( actionSpecificKey );
             if ( backendInboundPipeline != null ) {
                 LOG.debug( "Found pipeline: " + backendInboundPipeline + " - " + actionSpecificKey );
 
-                backendInboundPipeline.processMessage( messagePipeletParameter );
+                backendInboundPipeline.processMessage( messageContext );
             } else {
                 throw new NexusException( "No backend inbound pipeline found for message: "
-                        + messagePipeletParameter.getMessagePojo().getMessageId() + " ("
-                        + messagePipeletParameter.getMessagePojo().getConversation().getChoreography().getName()
-                        + " - " + messagePipeletParameter.getMessagePojo().getAction() + ")" );
+                        + messageContext.getMessagePojo().getMessageId() + " ("
+                        + messageContext.getMessagePojo().getConversation().getChoreography().getName()
+                        + " - " + messageContext.getMessagePojo().getAction() + ")" );
             }
         } else {
             throw new NexusException( "No backend inbound pipelines configured!" );
         }
 
-        return messagePipeletParameter;
+        return messageContext;
     } // processMessage
 
     /**

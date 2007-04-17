@@ -33,9 +33,6 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.codehaus.xfire.util.Base64;
@@ -67,11 +64,11 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
     /* (non-Javadoc)
      * @see org.nexuse2e.messaging.MessageUnpackager#processMessage(com.tamgroup.nexus.e2e.persistence.pojo.MessagePojo, byte[])
      */
-    public MessageContext processMessage( MessageContext messagePipeletParameter )
+    public MessageContext processMessage( MessageContext messageContext )
             throws IllegalArgumentException, IllegalStateException {
 
-        MessagePojo messagePojo = messagePipeletParameter.getMessagePojo();
-        Object object = messagePipeletParameter.getData();
+        MessagePojo messagePojo = messageContext.getMessagePojo();
+        Object object = messageContext.getData();
         if ( !( object instanceof byte[] ) ) {
             throw new IllegalArgumentException( "Unable to process message: raw data not of type byte[] but: "+object.getClass().getName() );
         }
@@ -93,10 +90,10 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
 
 //            byte[] packedMessage = getContentFromRequest( request, data, preBufLen );
 
-            int payloadLength = ((byte[])messagePipeletParameter.getData()).length;
+            int payloadLength = ((byte[])messageContext.getData()).length;
             byte[] packedMessage = new byte[payloadLength+preBufLen];
             System.arraycopy( data, 0, packedMessage, 0, preBufLen );
-            System.arraycopy( (byte[])messagePipeletParameter.getData(), 0, packedMessage, preBufLen, payloadLength );
+            System.arraycopy( (byte[])messageContext.getData(), 0, packedMessage, preBufLen, payloadLength );
             
             System.out.println("--------------");
             System.out.println(new String(packedMessage));
@@ -165,7 +162,7 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
             throw new IllegalArgumentException( e.getMessage() );
         }
 
-        return messagePipeletParameter;
+        return messageContext;
 
     } // processMessage
 

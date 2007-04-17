@@ -491,6 +491,10 @@
       <forward name="error" path="/Reporting.do"/>
     </action>
     
+    <action path="/ModifyMessage" name="reportingPropertiesForm" type="org.nexuse2e.ui.action.reporting.ModifyMessageAction">
+      <forward name="success" path="/ProcessConversationReport.do"/>
+    </action>
+
     <!-- 
       <forward name="save" path="/ReportingSaveConfigFields.do"/>
     

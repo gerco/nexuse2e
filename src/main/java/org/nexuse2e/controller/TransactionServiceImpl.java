@@ -30,8 +30,10 @@ import org.apache.log4j.Logger;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.nexuse2e.ActionSpecificKey;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.ProtocolSpecificKey;
 import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Runlevel;
 import org.nexuse2e.configuration.EngineConfiguration;
@@ -39,6 +41,7 @@ import org.nexuse2e.configuration.IdGenerator;
 import org.nexuse2e.dao.LogDAO;
 import org.nexuse2e.dao.TransactionDAO;
 import org.nexuse2e.messaging.Constants;
+import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ConversationPojo;
@@ -333,8 +336,10 @@ public class TransactionServiceImpl implements TransactionService {
         senderIdType = participant.getLocalPartner().getPartnerIdType();
 
         //TODO refactor and standard constants
-        message.getCustomParameters().put(org.nexuse2e.messaging.ebxml.v20.Constants.PARAMETER_PREFIX_EBXML20 + "from", senderId );
-        message.getCustomParameters().put(org.nexuse2e.messaging.ebxml.v20.Constants.PARAMETER_PREFIX_EBXML20 + "fromIdType", senderIdType );
+        message.getCustomParameters().put(
+                org.nexuse2e.messaging.ebxml.v20.Constants.PARAMETER_PREFIX_EBXML20 + "from", senderId );
+        message.getCustomParameters().put(
+                org.nexuse2e.messaging.ebxml.v20.Constants.PARAMETER_PREFIX_EBXML20 + "fromIdType", senderIdType );
 
         message.setTRP( participant.getConnection().getTrp() );
         ActionPojo action = null;
@@ -369,6 +374,38 @@ public class TransactionServiceImpl implements TransactionService {
 
         return message;
     } // initializeMessage
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.controller.TransactionService#getMessageContext(java.lang.String)
+     */
+    public MessageContext getMessageContext( String messageId ) throws NexusException {
+
+        MessageContext messageContext = null;
+        MessagePojo messagePojo = Engine.getInstance().getTransactionService().getMessage( messageId );
+
+        if ( messagePojo != null ) {
+            messageContext = new MessageContext();
+            messageContext.setActionSpecificKey( new ActionSpecificKey( messagePojo.getAction().getName(), messagePojo
+                    .getConversation().getChoreography().getName() ) );
+            messageContext.setChoreography( messagePojo.getConversation().getChoreography() );
+            messageContext.setCommunicationPartner( messagePojo.getConversation().getPartner() );
+            messageContext.setParticipant( messagePojo.getParticipant() );
+            messageContext.setConversation( messagePojo.getConversation() );
+            messageContext.setProtocolSpecificKey( new ProtocolSpecificKey( messagePojo.getTRP().getProtocol(),
+                    messagePojo.getTRP().getVersion(), messagePojo.getTRP().getTransport() ) );
+            messageContext.setMessagePojo( messagePojo );
+            String senderId = messagePojo.getParticipant().getLocalPartner().getPartnerId();
+            String senderIdType = messagePojo.getParticipant().getLocalPartner().getPartnerIdType();
+
+            //TODO refactor and standard constants
+            messagePojo.getCustomParameters().put(
+                    org.nexuse2e.messaging.ebxml.v20.Constants.PARAMETER_PREFIX_EBXML20 + "from", senderId );
+            messagePojo.getCustomParameters().put(
+                    org.nexuse2e.messaging.ebxml.v20.Constants.PARAMETER_PREFIX_EBXML20 + "fromIdType", senderIdType );
+        }
+
+        return messageContext;
+    } // getMessageContext
 
     /* (non-Javadoc)
      * @see org.nexuse2e.controller.TransactionService#storeTransaction(org.nexuse2e.pojo.ConversationPojo, org.nexuse2e.pojo.MessagePojo)
@@ -531,14 +568,15 @@ public class TransactionServiceImpl implements TransactionService {
         transactionDao.deleteMessage( message, session, transaction );
 
     }
-    
+
     /**
      * @param conversation
      * @param session
      * @param transaction
      * @throws NexusException
      */
-    public void deleteConversation( ConversationPojo conversation, Session session, Transaction transaction ) throws NexusException {
+    public void deleteConversation( ConversationPojo conversation, Session session, Transaction transaction )
+            throws NexusException {
 
         TransactionDAO transactionDao;
         try {
@@ -593,12 +631,11 @@ public class TransactionServiceImpl implements TransactionService {
         return transactionDao.getConversationsByPartner( partner, session, transaction );
     }
 
-    
     /* (non-Javadoc)
      * @see org.nexuse2e.controller.TransactionService#getConversationsByChoreography(org.nexuse2e.pojo.ChoreographyPojo, org.hibernate.Session, org.hibernate.Transaction)
      */
-    public List<ConversationPojo> getConversationsByChoreography( ChoreographyPojo choreography, 
-            Session session, Transaction transaction ) throws NexusException {
+    public List<ConversationPojo> getConversationsByChoreography( ChoreographyPojo choreography, Session session,
+            Transaction transaction ) throws NexusException {
 
         TransactionDAO transactionDao;
         try {
@@ -612,8 +649,7 @@ public class TransactionServiceImpl implements TransactionService {
         }
         return transactionDao.getConversationsByChoreography( choreography, session, transaction );
     }
-    
-    
+
     /* (non-Javadoc)
      * @see org.nexuse2e.controller.TransactionService#getConversationsByPartnerAndChoreography(org.nexuse2e.pojo.PartnerPojo, org.nexuse2e.pojo.ChoreographyPojo, org.hibernate.Session, org.hibernate.Transaction)
      */

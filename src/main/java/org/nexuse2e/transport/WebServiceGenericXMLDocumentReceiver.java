@@ -247,21 +247,21 @@ public class WebServiceGenericXMLDocumentReceiver extends AbstractController imp
                         .getInstance().getBeanFactory().getBean( "wsGenericReceiver" );
 
                 if ( webServiceGenericXMLDocumentReceiver != null ) {
-                    MessageContext messagePipeletParameter = new MessageContext();
-                    messagePipeletParameter.setData( baos.toByteArray() );
-                    messagePipeletParameter.setProtocolSpecificKey( webServiceGenericXMLDocumentReceiver.getKey() );
+                    MessageContext messageContext = new MessageContext();
+                    messageContext.setData( baos.toByteArray() );
+                    messageContext.setProtocolSpecificKey( webServiceGenericXMLDocumentReceiver.getKey() );
 
-                    MessageContext replyMessagePipeletParameter = webServiceGenericXMLDocumentReceiver
-                            .getFrontendPipeline().processMessage( messagePipeletParameter );
-                    List<MessagePayloadPojo> payloads = replyMessagePipeletParameter.getMessagePojo()
+                    MessageContext replyMessageContext = webServiceGenericXMLDocumentReceiver
+                            .getFrontendPipeline().processMessage( messageContext );
+                    List<MessagePayloadPojo> payloads = replyMessageContext.getMessagePojo()
                             .getMessagePayloads();
                     if ( !payloads.isEmpty() ) {
                         payload = payloads.iterator().next();
                     } else {
                         StringBuffer errorMessage = new StringBuffer(
                                 "Errors occured during processing of Web services request" );
-                        if ( replyMessagePipeletParameter.getMessagePojo().getErrors() != null ) {
-                            for ( Iterator iter = replyMessagePipeletParameter.getMessagePojo().getErrors().iterator(); iter
+                        if ( replyMessageContext.getMessagePojo().getErrors() != null ) {
+                            for ( Iterator iter = replyMessageContext.getMessagePojo().getErrors().iterator(); iter
                                     .hasNext(); ) {
                                 ErrorDescriptor errorDescriptor = (ErrorDescriptor) iter.next();
                                 errorMessage.append( "\n" + errorDescriptor.getDescription() );

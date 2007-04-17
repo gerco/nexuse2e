@@ -57,45 +57,44 @@ public class BackendOutboundDispatcher extends StateMachineExecutor implements P
     private FrontendOutboundDispatcher               frontendOutboundDispatcher = null;
     private BeanStatus                               status                     = BeanStatus.UNDEFINED;
 
-    private boolean forwardPipeline;
-    private boolean frontendPipeline;
-    
+    private boolean                                  forwardPipeline;
+    private boolean                                  frontendPipeline;
+
     private Map<String, Object>                      parameters                 = new HashMap<String, Object>();
 
     /* (non-Javadoc)
-     * @see org.nexuse2e.messaging.Pipelet#processMessage(org.nexuse2e.messaging.MessagePipeletParameter)
+     * @see org.nexuse2e.messaging.Pipelet#processMessage(org.nexuse2e.messaging.MessageContext)
      */
-    public MessageContext processMessage( MessageContext messagePipeletParameter )
-            throws NexusException {
+    public MessageContext processMessage( MessageContext messageContext ) throws NexusException {
 
-        ChoreographyPojo choreography = validateChoreography( messagePipeletParameter, Constants.INBOUND );
+        ChoreographyPojo choreography = validateChoreography( messageContext, Constants.INBOUND );
         LOG.trace( "Matching choreography found: " + choreography.getName() );
 
-        ParticipantPojo participant = validateParticipant( messagePipeletParameter, Constants.INBOUND );
+        ParticipantPojo participant = validateParticipant( messageContext, Constants.INBOUND );
         LOG.trace( "Matching participant found: " + participant.getPartner().getPartnerId() );
 
         // create protocolspecific key
 
-        ProtocolSpecificKey key = new ProtocolSpecificKey( messagePipeletParameter.getMessagePojo().getTRP()
-                .getProtocol().toLowerCase(), messagePipeletParameter.getMessagePojo().getTRP().getVersion(),
-                messagePipeletParameter.getMessagePojo().getTRP().getTransport().toLowerCase() );
-        messagePipeletParameter.setProtocolSpecificKey( key );
+        ProtocolSpecificKey key = new ProtocolSpecificKey( messageContext.getMessagePojo().getTRP().getProtocol()
+                .toLowerCase(), messageContext.getMessagePojo().getTRP().getVersion(), messageContext.getMessagePojo()
+                .getTRP().getTransport().toLowerCase() );
+        messageContext.setProtocolSpecificKey( key );
         LOG.debug( "ProtocolKey:" + key );
 
-        ProtocolAdapter protocolAdapter = getProtocolAdapterByKey( messagePipeletParameter.getProtocolSpecificKey() );
+        ProtocolAdapter protocolAdapter = getProtocolAdapterByKey( messageContext.getProtocolSpecificKey() );
         if ( protocolAdapter == null ) {
-            LOG.error( "No protocol implementation found for key: " + messagePipeletParameter.getProtocolSpecificKey() );
+            LOG.error( "No protocol implementation found for key: " + messageContext.getProtocolSpecificKey() );
             throw new NexusException( "No ProtocolAdapter found for key: " + key );
         }
-        protocolAdapter.addProtcolSpecificParameters( messagePipeletParameter );
+        protocolAdapter.addProtcolSpecificParameters( messageContext );
 
         // Forward the message to check the transistion, persist it and pass to backend
-        BackendActionSerializer backendActionSerializer = backendActionSerializers.get( messagePipeletParameter
-                .getMessagePojo().getConversation().getChoreography().getName() );
+        BackendActionSerializer backendActionSerializer = backendActionSerializers.get( messageContext.getMessagePojo()
+                .getConversation().getChoreography().getName() );
 
-        backendActionSerializer.processMessage( messagePipeletParameter );
+        backendActionSerializer.processMessage( messageContext );
 
-        return messagePipeletParameter;
+        return messageContext;
     } // processMessage
 
     /**
@@ -112,27 +111,42 @@ public class BackendOutboundDispatcher extends StateMachineExecutor implements P
             activeMessagePojos = Engine.getInstance().getTransactionService().getActiveMessages();
             LOG.trace( "Found active messages: " + activeMessagePojos.size() );
             for ( MessagePojo messagePojo : activeMessagePojos ) {
-                MessageContext messagePipeletParameter = new MessageContext();
 
-                List<ParticipantPojo> paticipants = messagePojo.getConversation().getChoreography().getParticipants();
-                for ( ParticipantPojo participantPojo : paticipants ) {
-                    if ( participantPojo.getPartner().getPartnerId().equals(
-                            messagePojo.getConversation().getPartner().getPartnerId() ) ) {
-                        messagePipeletParameter.setParticipant( participantPojo );
-                        break;
-                    }
+                /*
+                 MessageContext messageContext = new MessageContext();
+
+                 List<ParticipantPojo> paticipants = messagePojo.getConversation().getChoreography().getParticipants();
+                 for ( ParticipantPojo participantPojo : paticipants ) {
+                 if ( participantPojo.getPartner().getPartnerId().equals(
+                 messagePojo.getConversation().getPartner().getPartnerId() ) ) {
+                 messageContext.setParticipant( participantPojo );
+                 break;
+                 }
+                 }
+
+                 messageContext.setActionSpecificKey( new ActionSpecificKey( messagePojo.getAction().getName(),
+                 messagePojo.getConversation().getChoreography().getName() ) );
+                 messageContext.setChoreography( messagePojo.getConversation().getChoreography() );
+                 messageContext.setCommunicationPartner( messagePojo.getConversation().getPartner() );
+                 messageContext.setParticipant( messagePojo.getParticipant() );
+                 messageContext.setConversation( messagePojo.getConversation() );
+                 messageContext.setProtocolSpecificKey( new ProtocolSpecificKey( messagePojo.getTRP().getProtocol(),
+                 messagePojo.getTRP().getVersion(), messagePojo.getTRP().getTransport() ) );
+                 messageContext.setMessagePojo( messagePojo );
+
+                 LOG.trace( "Created MessageContext: " + messageContext );
+                 */
+
+                MessageContext messageContext = Engine.getInstance().getTransactionService().getMessageContext(
+                        messagePojo.getMessageId() );
+
+                if ( ( messageContext != null ) && messagePojo.isOutbound() ) {
+                    LOG.debug( "Recovered message: " + messagePojo.getMessageId() );
+                    BackendActionSerializer backendActionSerializer = backendActionSerializers.get( messagePojo
+                            .getConversation().getChoreography().getName() );
+
+                    backendActionSerializer.processMessage( messageContext );
                 }
-
-                messagePipeletParameter.setActionSpecificKey( new ActionSpecificKey( messagePojo.getAction().getName(),
-                        messagePojo.getConversation().getChoreography().getName() ) );
-                messagePipeletParameter.setChoreography( messagePojo.getConversation().getChoreography() );
-                messagePipeletParameter.setCommunicationPartner( messagePojo.getConversation().getPartner() );
-                messagePipeletParameter.setConversation( messagePojo.getConversation() );
-                messagePipeletParameter.setProtocolSpecificKey( new ProtocolSpecificKey( messagePojo.getTRP()
-                        .getProtocol(), messagePojo.getTRP().getVersion(), messagePojo.getTRP().getTransport() ) );
-                messagePipeletParameter.setMessagePojo( messagePojo );
-
-                LOG.trace( "Created MessagePipeletParameter: " + messagePipeletParameter );
             }
         } catch ( NexusException e ) {
             // TODO Auto-generated catch block
@@ -227,11 +241,11 @@ public class BackendOutboundDispatcher extends StateMachineExecutor implements P
      * @see org.nexuse2e.Manageable#teardown()
      */
     public void teardown() {
+
         LOG.debug( "Freeing resources..." );
 
         status = BeanStatus.INSTANTIATED;
     } // teardown
-
 
     /* (non-Javadoc)
      * @see org.nexuse2e.Manageable#getRunLevel()
@@ -324,7 +338,7 @@ public class BackendOutboundDispatcher extends StateMachineExecutor implements P
      * @see org.nexuse2e.messaging.Pipelet#isForwardPipelet()
      */
     public boolean isForwardPipelet() {
-        
+
         return forwardPipeline;
     }
 
@@ -342,7 +356,7 @@ public class BackendOutboundDispatcher extends StateMachineExecutor implements P
     public void setForwardPipelet( boolean isForwardPipelet ) {
 
         forwardPipeline = isForwardPipelet;
-        
+
     }
 
     /* (non-Javadoc)
@@ -351,6 +365,6 @@ public class BackendOutboundDispatcher extends StateMachineExecutor implements P
     public void setFrontendPipelet( boolean isFrontendPipelet ) {
 
         frontendPipeline = isFrontendPipelet;
-        
+
     }
 } // BackendOutboundDispatcher

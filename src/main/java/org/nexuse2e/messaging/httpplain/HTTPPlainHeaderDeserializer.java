@@ -46,10 +46,10 @@ public class HTTPPlainHeaderDeserializer extends AbstractPipelet {
     /* (non-Javadoc)
      * @see org.nexuse2e.messaging.MessageUnpackager#processMessage(com.tamgroup.nexus.e2e.persistence.pojo.MessagePojo, byte[])
      */
-    public MessageContext processMessage( MessageContext messagePipeletParameter )
+    public MessageContext processMessage( MessageContext messageContext )
             throws IllegalArgumentException, IllegalStateException, NexusException {
 
-        Object object = messagePipeletParameter.getData();
+        Object object = messageContext.getData();
         if ( !( object instanceof HttpServletRequest ) ) {
             throw new IllegalArgumentException( "Unable to process message: raw data not of type HttpServletRequest!" );
         }
@@ -79,7 +79,7 @@ public class HTTPPlainHeaderDeserializer extends AbstractPipelet {
             messageId = Engine.getInstance().getIdGenerator( org.nexuse2e.Constants.ID_GENERATOR_MESSAGE ).getId();
         }
 
-        MessagePojo messagePojo = messagePipeletParameter.getMessagePojo();
+        MessagePojo messagePojo = messageContext.getMessagePojo();
 
         messagePojo = Engine.getInstance().getTransactionService().initializeMessage( messagePojo, messageId,
                 conversationId, actionId, participantId, choreographyId );
@@ -87,7 +87,7 @@ public class HTTPPlainHeaderDeserializer extends AbstractPipelet {
         messagePojo.setOutbound( false );
         messagePojo.setType( org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_NORMAL );
 
-        return messagePipeletParameter;
+        return messageContext;
     } // processMessage
     
 

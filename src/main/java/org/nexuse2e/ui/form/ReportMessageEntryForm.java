@@ -52,63 +52,67 @@ public class ReportMessageEntryForm extends ActionForm {
     private String            protocol         = null;
     private String            direction        = null;
     private String            timezone         = null;
+    private boolean           outbound         = false;
 
-    public void setMessageProperties( MessagePojo pojo ) {
+    public void setMessageProperties( MessagePojo messagePojo ) {
 
-        setChoreographyId( pojo.getConversation().getChoreography().getName() );
-        setParticipantId( pojo.getConversation().getPartner().getPartnerId() );
-        setMessageId( pojo.getMessageId() );
+        setChoreographyId( messagePojo.getConversation().getChoreography().getName() );
+        setParticipantId( messagePojo.getConversation().getPartner().getPartnerId() );
+        setMessageId( messagePojo.getMessageId() );
 
-        setConversationId( pojo.getConversation().getConversationId() );
-        if ( pojo.getReferencedMessage() == null ) {
+        setConversationId( messagePojo.getConversation().getConversationId() );
+        if ( messagePojo.getReferencedMessage() == null ) {
             setReferencedId( "n/a" );
         } else {
-            setReferencedId( pojo.getReferencedMessage().getMessageId() );
+            setReferencedId( messagePojo.getReferencedMessage().getMessageId() );
         }
-        setModifiedDate( pojo.getModifiedDate() );
+        setModifiedDate( messagePojo.getModifiedDate() );
         // LOG.trace("modified: "+pojo.getModifiedDate());
-        setCreatedDate( pojo.getCreatedDate() );
+        setCreatedDate( messagePojo.getCreatedDate() );
         // LOG.trace("created: "+pojo.getCreatedDate());
-        setExpireDate( pojo.getExpirationDate() );
-        setRetries( "" + pojo.getRetries() );
-        setProtocol( pojo.getTRP().getProtocol() + " / " + pojo.getTRP().getVersion() );
-        if ( pojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ACK ) {
+        setExpireDate( messagePojo.getExpirationDate() );
+        setRetries( "" + messagePojo.getRetries() );
+        
+        setOutbound( messagePojo.isOutbound() );
+        
+        setProtocol( messagePojo.getTRP().getProtocol() + " / " + messagePojo.getTRP().getVersion() );
+        if ( messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ACK ) {
             setType( "Acknowledgement" );
-        } else if ( pojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_NORMAL ) {
+        } else if ( messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_NORMAL ) {
             setType( "Normal" );
-        } else if ( pojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ERROR ) {
+        } else if ( messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ERROR ) {
             setType( "Error" );
         } else {
-            setType( "Unknown Messagetype (" + pojo.getType() + ")" );
+            setType( "Unknown Messagetype (" + messagePojo.getType() + ")" );
         }
 
-        switch ( pojo.getStatus() ) {
+        switch ( messagePojo.getStatus() ) {
             case org.nexuse2e.Constants.MESSAGE_STATUS_FAILED:
-                setStatus( "Failed (" + pojo.getStatus() + ")" );
+                setStatus( "Failed (" + messagePojo.getStatus() + ")" );
                 break;
             case org.nexuse2e.Constants.MESSAGE_STATUS_QUEUED:
-                setStatus( "Queued (" + pojo.getStatus() + ")" );
+                setStatus( "Queued (" + messagePojo.getStatus() + ")" );
                 break;
             case org.nexuse2e.Constants.MESSAGE_STATUS_RETRYING:
-                setStatus( "Retrying (" + pojo.getStatus() + ")" );
+                setStatus( "Retrying (" + messagePojo.getStatus() + ")" );
                 break;
             case org.nexuse2e.Constants.MESSAGE_STATUS_SENT:
-                setStatus( "Sent (" + pojo.getStatus() + ")" );
+                setStatus( "Sent (" + messagePojo.getStatus() + ")" );
                 break;
             case org.nexuse2e.Constants.MESSAGE_STATUS_STOPPED:
-                setStatus( "Stopped (" + pojo.getStatus() + ")" );
+                setStatus( "Stopped (" + messagePojo.getStatus() + ")" );
                 break;
             default:
-                setStatus( "unknown (" + pojo.getStatus() + ")" );
+                setStatus( "unknown (" + messagePojo.getStatus() + ")" );
         }
-        setAction( pojo.getAction().getName() );
-        if ( pojo.isOutbound() ) {
+        setAction( messagePojo.getAction().getName() );
+        if ( messagePojo.isOutbound() ) {
             setDirection( "Outbound" );
         } else {
             setDirection( "Inbound" );
         }
 
-        setEndDate( pojo.getEndDate() );
+        setEndDate( messagePojo.getEndDate() );
 
         //        if ( pojo.getEndDate() == null || pojo.getEndDate().equals( "" ) ) {
         //            setTurnaroundTime( "not terminated" );
@@ -309,5 +313,17 @@ public class ReportMessageEntryForm extends ActionForm {
     public void setCreatedDate( Date createdDate ) {
 
         this.createdDate = createdDate;
+    }
+
+    
+    public boolean isOutbound() {
+    
+        return outbound;
+    }
+
+    
+    public void setOutbound( boolean outbound ) {
+    
+        this.outbound = outbound;
     }
 }

@@ -44,7 +44,7 @@ public class BackendPipeline extends AbstractPipeline implements ActionSpecific 
     // private String            name             = null;
 
     /* (non-Javadoc)
-     * @see org.nexuse2e.messaging.Pipeline#processMessage(org.nexuse2e.messaging.MessagePipeletParameter)
+     * @see org.nexuse2e.messaging.Pipeline#processMessage(org.nexuse2e.messaging.MessageContext)
      */
     public MessageContext processMessage( MessageContext backendPipeletParameter )
             throws IllegalArgumentException, IllegalStateException, NexusException {

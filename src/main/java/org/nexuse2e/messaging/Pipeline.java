@@ -30,21 +30,21 @@ import org.nexuse2e.NexusException;
  * @see org.nexuse2e.messaging.Pipelet
  * @see org.nexuse2e.messaging.MessageContext
  */
-public interface Pipeline extends Manageable{
+public interface Pipeline extends Manageable {
 
     /**
      * The method handling the processing of the message in this <code>Pipeline</code>. 
-     * @param messagePipeletParameter The message progressing through the <code>Pipeline</code>. 
-     * The <code>MessagePipeletParameter</code> contains additional meta data useful for the processing 
+     * @param messageContext The message progressing through the <code>Pipeline</code>. 
+     * The <code>MessageContext</code> contains additional meta data useful for the processing 
      * of the message in addition to the actual message itself.
-     * @return The potentially modified The <code>MessagePipeletParameter</code>.
-     * @throws IllegalArgumentException Thrown if information provided in the <code>MessagePipeletParameter</code> 
+     * @return The potentially modified The <code>MessageContext</code>.
+     * @throws IllegalArgumentException Thrown if information provided in the <code>MessageContext</code> 
      * did not meet expectations.
      * @throws IllegalStateException Thrown if the system is not in a correct state to handle this specific message.
      * @throws NexusException Thrown if any other processing related exception occured.
      */
-    public MessageContext processMessage( MessageContext messagePipeletParameter )
-            throws IllegalArgumentException, IllegalStateException, NexusException;
+    public MessageContext processMessage( MessageContext messageContext ) throws IllegalArgumentException,
+            IllegalStateException, NexusException;
 
     /**
      * The endpoint of this processing chain.
@@ -57,24 +57,24 @@ public interface Pipeline extends Manageable{
      * @param pipelineEndpoint The endpoint to set for this <code>Pipeline</code>.
      */
     public void setPipelineEndpoint( MessageProcessor pipelineEndpoint );
-    
+
     /**
      * @return
      */
     public boolean isFrontendPipeline();
-    
+
     /**
      * @param isFrontendPipeline
      */
-    public void setFrontendPipeline(boolean isFrontendPipeline);
-    
+    public void setFrontendPipeline( boolean isFrontendPipeline );
+
     /**
      * @return
      */
     public boolean isOutboundPipeline();
-    
+
     /**
      * @param isOutboundPipeline
      */
-    public void setOutboundPipeline(boolean isOutboundPipeline);
+    public void setOutboundPipeline( boolean isOutboundPipeline );
 } // Pipeline

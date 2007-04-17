@@ -49,40 +49,40 @@ import org.springframework.beans.factory.InitializingBean;
  */
 public class FrontendInboundDispatcher extends StateMachineExecutor implements Dispatcher, Pipelet, InitializingBean {
 
-    private static Logger                              LOG                       = Logger
-                                                                                         .getLogger( HeaderDeserializer.class );
+    private static Logger                             LOG                       = Logger
+                                                                                        .getLogger( HeaderDeserializer.class );
 
-    private ProtocolAdapter[]                          protocolAdapters;
+    private ProtocolAdapter[]                         protocolAdapters;
 
-    private HashMap<String, FrontendActionSerializer>  frontendActionSerializers = new HashMap<String, FrontendActionSerializer>();
+    private HashMap<String, FrontendActionSerializer> frontendActionSerializers = new HashMap<String, FrontendActionSerializer>();
 
-    private BeanStatus                                 status                    = BeanStatus.UNDEFINED;
+    private BeanStatus                                status                    = BeanStatus.UNDEFINED;
 
-    private Hashtable<String, MessageContext> synchronousReplies        = new Hashtable<String, MessageContext>();
+    private Hashtable<String, MessageContext>         synchronousReplies        = new Hashtable<String, MessageContext>();
 
-    private Map<String, Object>                        parameters                = new HashMap<String, Object>();
+    private Map<String, Object>                       parameters                = new HashMap<String, Object>();
 
-    private boolean frontendPipelet;
-    private boolean forwardPipelet;
-    
+    private boolean                                   frontendPipelet;
+    private boolean                                   forwardPipelet;
+
     /**
      * temporary !!
      */
-    private BackendOutboundDispatcher                  backendOutboundDispatcher = null;
+    private BackendOutboundDispatcher                 backendOutboundDispatcher = null;
 
     /* (non-Javadoc)
-     * @see org.nexuse2e.messaging.FrontendDispatcher#processMessage(org.nexuse2e.messaging.MessagePipeletParameter)
+     * @see org.nexuse2e.messaging.FrontendDispatcher#processMessage(org.nexuse2e.messaging.MessageContext)
      */
-    public MessageContext processMessage( MessageContext messagePipeletParameter ) {
+    public MessageContext processMessage( MessageContext messageContext ) {
 
         boolean errorFlag = false;
         ChoreographyPojo choreography = null;
         ParticipantPojo participant = null;
-        MessageContext clonedMessagePipeletParameter = null;
-        MessageContext responseMessagePipeletParameter = null;
+        MessageContext clonedMessageContext = null;
+        MessageContext responseMessageContext = null;
         Vector<ErrorDescriptor> errorMessages = new Vector<ErrorDescriptor>();
 
-        MessagePojo messagePojo = messagePipeletParameter.getMessagePojo();
+        MessagePojo messagePojo = messageContext.getMessagePojo();
 
         LOG.trace( "Entering FrontendInboundDispatcher.processMessage..." );
 
@@ -92,29 +92,29 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
 
         LOG.debug( "MessageType:" + messagePojo.getType() );
 
-        ProtocolAdapter protocolAdapter = getProtocolAdapterByKey( messagePipeletParameter.getProtocolSpecificKey() );
+        ProtocolAdapter protocolAdapter = getProtocolAdapterByKey( messageContext.getProtocolSpecificKey() );
         if ( protocolAdapter == null ) {
-            LOG.error( "No protocol implementation found for key: " + messagePipeletParameter.getProtocolSpecificKey() );
+            LOG.error( "No protocol implementation found for key: " + messageContext.getProtocolSpecificKey() );
             return null;
         }
         LOG.trace( "ProtocolAdapter found for incoming message" );
 
         try {
-            choreography = validateChoreography( messagePipeletParameter, Constants.INBOUND );
+            choreography = validateChoreography( messageContext, Constants.INBOUND );
             LOG.trace( "matching choreography found" );
         } catch ( NexusException e ) {
             e.printStackTrace();
             LOG.error( "No matching choreography found: " + messagePojo.getConversation().getChoreography().getName() );
-            responseMessagePipeletParameter = protocolAdapter.createErrorAcknowledgement(
-                    Constants.ErrorMessageReasonCode.CHOREOGRAPHY_NOT_FOUND, null, messagePipeletParameter, null );
+            responseMessageContext = protocolAdapter.createErrorAcknowledgement(
+                    Constants.ErrorMessageReasonCode.CHOREOGRAPHY_NOT_FOUND, null, messageContext, null );
             errorFlag = true;
             errorMessages.add( new ErrorDescriptor( "No matching choreography found in configuration: "
                     + messagePojo.getConversation().getChoreography().getName() ) );
         }
 
         String actionId = messagePojo.getAction().getName();
-        ActionPojo action = Engine.getInstance().getActiveConfigurationAccessService().getActionFromChoreographyByActionId(
-                choreography, actionId );
+        ActionPojo action = Engine.getInstance().getActiveConfigurationAccessService()
+                .getActionFromChoreographyByActionId( choreography, actionId );
         if ( action == null ) {
             errorFlag = true;
             errorMessages.add( new ErrorDescriptor( "No matching action found in configuration: "
@@ -124,15 +124,14 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
         if ( !errorFlag ) {
 
             try {
-                participant = validateParticipant( messagePipeletParameter, Constants.INBOUND );
+                participant = validateParticipant( messageContext, Constants.INBOUND );
                 LOG.trace( "matching participant found" );
             } catch ( NexusException e ) {
                 e.printStackTrace();
                 LOG.error( "No matching participant found: "
                         + messagePojo.getConversation().getPartner().getPartnerId() );
-                responseMessagePipeletParameter = protocolAdapter.createErrorAcknowledgement(
-                        Constants.ErrorMessageReasonCode.PARTICIPANT_NOT_FOUND, choreography, messagePipeletParameter,
-                        null );
+                responseMessageContext = protocolAdapter.createErrorAcknowledgement(
+                        Constants.ErrorMessageReasonCode.PARTICIPANT_NOT_FOUND, choreography, messageContext, null );
                 errorFlag = true;
                 errorMessages.add( new ErrorDescriptor( "No matching participant found in configuration: "
                         + messagePojo.getConversation().getPartner().getPartnerId() ) );
@@ -147,17 +146,17 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                         .getConversation().getChoreography().getName() );
                 if ( frontendActionSerializer != null ) {
                     try {
-                        clonedMessagePipeletParameter = (MessageContext) messagePipeletParameter.clone();
+                        clonedMessageContext = (MessageContext) messageContext.clone();
 
                         // Forward message to MrontendActionSerializer for further processing/queueing
-                        frontendActionSerializer.processMessage( messagePipeletParameter );
+                        frontendActionSerializer.processMessage( messageContext );
 
                         // Block for synchronous processing
                         if ( participant.getConnection().isSynchronous() ) {
                             LOG.debug( "Found synchronous connection setting." );
                             Engine.getInstance().getTransactionService().addSynchronousRequest(
                                     messagePojo.getMessageId() );
-                            while ( responseMessagePipeletParameter == null ) {
+                            while ( responseMessageContext == null ) {
                                 synchronized ( synchronousReplies ) {
                                     try {
                                         LOG.debug( "Waiting for reply..." );
@@ -168,10 +167,10 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                                     }
                                 }
 
-                                responseMessagePipeletParameter = synchronousReplies.get( messagePipeletParameter
+                                responseMessageContext = synchronousReplies.get( messageContext
                                         .getMessagePojo().getMessageId() );
                             }
-                            LOG.debug( "Found reply: " + responseMessagePipeletParameter );
+                            LOG.debug( "Found reply: " + responseMessageContext );
                         }
                     } catch ( CloneNotSupportedException e ) {
                         e.printStackTrace();
@@ -191,33 +190,32 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
             if ( !participant.getConnection().isSynchronous() ) {
                 if ( !errorFlag ) {
                     LOG.trace( "no error response message found, creating ack" );
-                    responseMessagePipeletParameter = null;
+                    responseMessageContext = null;
                     try {
-                        responseMessagePipeletParameter = protocolAdapter.createAcknowledgement( choreography,
-                                clonedMessagePipeletParameter );
+                        responseMessageContext = protocolAdapter.createAcknowledgement( choreography,
+                                clonedMessageContext );
                     } catch ( NexusException e ) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
                 } else {
                     LOG.trace( "error response message found" );
-                    responseMessagePipeletParameter = protocolAdapter.createErrorAcknowledgement(
-                            Constants.ErrorMessageReasonCode.UNKNOWN, choreography, messagePipeletParameter,
-                            errorMessages );
+                    responseMessageContext = protocolAdapter.createErrorAcknowledgement(
+                            Constants.ErrorMessageReasonCode.UNKNOWN, choreography, messageContext, errorMessages );
                 }
             }
 
-            if ( responseMessagePipeletParameter == null ) {
+            if ( responseMessageContext == null ) {
                 LOG.error( "No dispatcheable return message created" );
                 return null;
             }
 
             // Send acknowledgment/error message back asynchronously
             if ( participant.getConnection().isSynchronous() ) {
-                return responseMessagePipeletParameter;
+                return responseMessageContext;
             } else {
                 try {
-                    backendOutboundDispatcher.processMessage( responseMessagePipeletParameter );
+                    backendOutboundDispatcher.processMessage( responseMessageContext );
                     return null;
                 } catch ( NexusException e ) {
                     LOG.error( "unable to process Acknowledgement:" + e.getMessage() );
@@ -268,15 +266,15 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
             LOG.error( "Message of unknown type received: " + messagePojo.getType() );
         }
 
-        return responseMessagePipeletParameter;
+        return responseMessageContext;
     } // processMessage
 
     /**
-     * @param messagePipeletParameter
+     * @param messageContext
      */
-    protected void processSynchronousReplyMessage( MessageContext messagePipeletParameter ) {
+    protected void processSynchronousReplyMessage( MessageContext messageContext ) {
 
-        synchronousReplies.put( messagePipeletParameter.getMessagePojo().getMessageId(), messagePipeletParameter );
+        synchronousReplies.put( messageContext.getMessagePojo().getMessageId(), messageContext );
         synchronized ( synchronousReplies ) {
             synchronousReplies.notifyAll();
         }
@@ -449,12 +447,12 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
     public void setForwardPipelet( boolean isForwardPipelet ) {
 
         forwardPipelet = isForwardPipelet;
-        
+
     }
 
     public void setFrontendPipelet( boolean isFrontendPipelet ) {
 
         frontendPipelet = isFrontendPipelet;
-        
+
     }
 } // FrontendInboundDispatcher

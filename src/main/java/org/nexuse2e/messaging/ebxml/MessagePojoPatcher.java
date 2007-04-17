@@ -38,10 +38,10 @@ public class MessagePojoPatcher extends AbstractPipelet {
 
     }
 
-    public MessageContext processMessage( MessageContext messagePipeletParameter )
+    public MessageContext processMessage( MessageContext messageContext )
             throws IllegalArgumentException, IllegalStateException {
 
-        //MessagePojo messagePojo = messagePipeletParameter.getMessagePojo();
+        //MessagePojo messagePojo = messageContext.getMessagePojo();
 
         LOG.trace( "MessagePojoPatcher - processMessage" );
 
@@ -57,7 +57,7 @@ public class MessagePojoPatcher extends AbstractPipelet {
          }
          */
 
-        return messagePipeletParameter;
+        return messageContext;
     }
 
 } // MessagePojoPatcher

@@ -48,10 +48,10 @@ public class MimeMessagePackager extends AbstractPipelet {
         parameters = new HashMap<String, Object>();
     }
 
-    public MessageContext processMessage( MessageContext messagePipeletParameter )
+    public MessageContext processMessage( MessageContext messageContext )
             throws NexusException {
 
-        return messagePipeletParameter;
+        return messageContext;
     }
 
     @SuppressWarnings("unchecked")

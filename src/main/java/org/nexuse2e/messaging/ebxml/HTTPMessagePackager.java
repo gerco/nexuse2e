@@ -53,12 +53,12 @@ public class HTTPMessagePackager extends AbstractPipelet {
     }
 
     /* (non-Javadoc)
-     * @see org.nexuse2e.messaging.MessagePipelet#processMessage(org.nexuse2e.messaging.MessagePipeletParameter)
+     * @see org.nexuse2e.messaging.MessagePipelet#processMessage(org.nexuse2e.messaging.MessageContext)
      */
-    public MessageContext processMessage( MessageContext messagePipeletParameter ) {
+    public MessageContext processMessage( MessageContext messageContext ) {
 
         String serializedSOAPMessage = null;
-        MessagePojo messagePojo = messagePipeletParameter.getMessagePojo();
+        MessagePojo messagePojo = messageContext.getMessagePojo();
         LOG.debug( "Entering HTTPMessagePackager.processMessage..." );
 
         try {
@@ -73,13 +73,13 @@ public class HTTPMessagePackager extends AbstractPipelet {
         }
 
         if ( serializedSOAPMessage != null ) {
-            messagePipeletParameter.setData( serializedSOAPMessage.getBytes() );
-            //LOG.trace( new String(messagePipeletParameter.getData()) );
+            messageContext.setData( serializedSOAPMessage.getBytes() );
+            //LOG.trace( new String(messageContext.getData()) );
         } else {
             throw new IllegalArgumentException( "unable to create SOAPMessage" );
         }
 
-        return messagePipeletParameter;
+        return messageContext;
     }
 
     // TODO move to header (for ack and normal msg)

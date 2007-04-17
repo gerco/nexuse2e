@@ -49,23 +49,23 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
     private BeanStatus          status     = BeanStatus.UNDEFINED;
     
     /* (non-Javadoc)
-     * @see org.nexuse2e.messaging.Pipelet#processMessage(org.nexuse2e.messaging.MessagePipeletParameter)
+     * @see org.nexuse2e.messaging.Pipelet#processMessage(org.nexuse2e.messaging.MessageContext)
      */
-    public MessageContext processMessage( MessageContext messagePipeletParameter )
+    public MessageContext processMessage( MessageContext messageContext )
             throws NexusException {
 
         int interval = Constants.DEFAULT_MESSAGE_INTERVAL;
 
-        FrontendPipeline pipeline = getProtocolSpecificPipeline( messagePipeletParameter.getProtocolSpecificKey() );
+        FrontendPipeline pipeline = getProtocolSpecificPipeline( messageContext.getProtocolSpecificKey() );
         if ( pipeline == null ) {
-            throw new NexusException( "No valid pipeline found for " + messagePipeletParameter.getProtocolSpecificKey() );
+            throw new NexusException( "No valid pipeline found for " + messageContext.getProtocolSpecificKey() );
         }
 
-        final Runnable messageSender = new MessageSender( pipeline, messagePipeletParameter, messagePipeletParameter
+        final Runnable messageSender = new MessageSender( pipeline, messageContext, messageContext
                 .getParticipant().getConnection().getRetries() );
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool( 1 );
 
-        ParticipantPojo participantPojo = messagePipeletParameter.getMessagePojo().getParticipant();
+        ParticipantPojo participantPojo = messageContext.getMessagePojo().getParticipant();
         if ( participantPojo != null ) {
             interval = participantPojo.getConnection().getMessageInterval();
         }
@@ -74,9 +74,9 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
 
         ScheduledFuture<?> handle = scheduler.scheduleAtFixedRate( messageSender, 0, interval, TimeUnit.SECONDS );
         Engine.getInstance().getTransactionService().registerProcessingMessage(
-                messagePipeletParameter.getMessagePojo().getMessageId(), handle, scheduler );
+                messageContext.getMessagePojo().getMessageId(), handle, scheduler );
 
-        return messagePipeletParameter;
+        return messageContext;
     } // processMessage
 
 
@@ -164,19 +164,19 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
      */
     private class MessageSender implements Runnable {
 
-        MessageContext messagePipeletParameter = null;
+        MessageContext messageContext = null;
         FrontendPipeline        pipeline                = null;
         int                     retries                 = 0;
         int                     retryCount              = 0;
 
         /**
          * @param pipeline
-         * @param messagePipeletParameter
+         * @param messageContext
          * @param retries
          */
-        MessageSender( FrontendPipeline pipeline, MessageContext messagePipeletParameter, int retries ) {
+        MessageSender( FrontendPipeline pipeline, MessageContext messageContext, int retries ) {
 
-            this.messagePipeletParameter = messagePipeletParameter;
+            this.messageContext = messageContext;
             this.pipeline = pipeline;
             this.retries = retries;
             LOG.debug( "Retries: " + retries );
@@ -184,7 +184,7 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
 
         public void run() {
 
-            MessagePojo messagePojo = messagePipeletParameter.getMessagePojo();
+            MessagePojo messagePojo = messageContext.getMessagePojo();
             ;
             ConversationPojo conversationPojo = messagePojo.getConversation();
 
@@ -199,7 +199,7 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                         }
 
                         // Send message
-                        messagePipeletParameter = pipeline.processMessage( messagePipeletParameter );
+                        messageContext = pipeline.processMessage( messageContext );
 
                         if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
                             if ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_PROCESSING ) {
@@ -247,7 +247,7 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
          */
         private void cancelRetrying() {
 
-            MessagePojo messagePojo = messagePipeletParameter.getMessagePojo();
+            MessagePojo messagePojo = messageContext.getMessagePojo();
             synchronized ( messagePojo.getConversation() ) {
 
                 messagePojo.setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_FAILED );
@@ -259,7 +259,7 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                     e.printStackTrace();
                 }
                 Engine.getInstance().getTransactionService().deregisterProcessingMessage(
-                        messagePipeletParameter.getMessagePojo().getMessageId() );
+                        messageContext.getMessagePojo().getMessageId() );
             } // synchronized
         }
 

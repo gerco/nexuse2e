@@ -24,8 +24,10 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.Logger;
+import org.nexuse2e.ActionSpecificKey;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.ProtocolSpecificKey;
 import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Runlevel;
 import org.nexuse2e.configuration.EngineConfiguration;
@@ -40,25 +42,24 @@ import org.nexuse2e.pojo.MessagePojo;
  */
 public class BackendActionSerializer extends AbstractPipelet {
 
-    private static Logger                          LOG                        = Logger
-                                                                                      .getLogger( BackendActionSerializer.class );
+    private static Logger                 LOG                        = Logger.getLogger( BackendActionSerializer.class );
 
-    private String                                 choreographyId             = null;
+    private String                        choreographyId             = null;
 
-    private FrontendOutboundDispatcher             frontendOutboundDispatcher = null;
+    private FrontendOutboundDispatcher    frontendOutboundDispatcher = null;
 
-    private FrontendInboundDispatcher              frontendInboundDispatcher  = null;
+    private FrontendInboundDispatcher     frontendInboundDispatcher  = null;
 
-    private StateMachineExecutor                   stateMachineExecutor       = null;
+    private StateMachineExecutor          stateMachineExecutor       = null;
 
     private BlockingQueue<MessageContext> queue                      = new LinkedBlockingQueue<MessageContext>();
 
-    private String                                 queueName                  = "queue_name_not_set";
-    
-    private OutboundQueueListener                  outboundQueueListener      = null;
+    private String                        queueName                  = "queue_name_not_set";
 
-    private Thread                                 queueListenerThread        = null;
-    
+    private OutboundQueueListener         outboundQueueListener      = null;
+
+    private Thread                        queueListenerThread        = null;
+
     /**
      * @param choreographyId
      */
@@ -71,10 +72,9 @@ public class BackendActionSerializer extends AbstractPipelet {
     } // constructor
 
     /* (non-Javadoc)
-     * @see org.nexuse2e.messaging.Pipelet#processMessage(org.nexuse2e.messaging.MessagePipeletParameter)
+     * @see org.nexuse2e.messaging.Pipelet#processMessage(org.nexuse2e.messaging.MessageContext)
      */
-    public MessageContext processMessage( MessageContext messagePipeletParameter )
-            throws NexusException {
+    public MessageContext processMessage( MessageContext messageContext ) throws NexusException {
 
         LOG.debug( "BackendActionSerializer.processMessage - " + choreographyId );
 
@@ -83,43 +83,21 @@ public class BackendActionSerializer extends AbstractPipelet {
             //Test whether the action is allowed at this time
             ConversationPojo conversationPojo = null;
             try {
-                conversationPojo = stateMachineExecutor.validateTransition( messagePipeletParameter );
+                conversationPojo = stateMachineExecutor.validateTransition( messageContext );
             } catch ( NexusException e ) {
                 e.printStackTrace();
-                LOG.error( "Not a valid action: " + messagePipeletParameter.getMessagePojo().getAction() );
+                LOG.error( "Not a valid action: " + messageContext.getMessagePojo().getAction() );
                 throw e;
             }
 
             if ( conversationPojo == null ) {
                 throw new NexusException( "Choreography transition not allowed at this time - message ID: "
-                        + messagePipeletParameter.getMessagePojo().getMessageId() );
+                        + messageContext.getMessagePojo().getMessageId() );
             }
 
-            // Persist the message
+            // Persist and queue the message
             try {
-                synchronized ( conversationPojo ) {
-
-                    List<MessagePojo> messages = conversationPojo.getMessages();
-
-                    messagePipeletParameter.getMessagePojo().setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_QUEUED );
-                    if ( messagePipeletParameter.getMessagePojo().getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
-                        messagePipeletParameter.getMessagePojo().getConversation().setStatus(
-                                org.nexuse2e.Constants.CONVERSATION_STATUS_PROCESSING );
-                        messages.add( messagePipeletParameter.getMessagePojo() );
-                        Engine.getInstance().getTransactionService().storeTransaction( conversationPojo,
-                                messagePipeletParameter.getMessagePojo() );
-                    } else {
-                        messagePipeletParameter.getMessagePojo().setConversation( null );
-                        // Engine.getInstance().getTransactionService().reattachConversation( conversationPojo );
-
-                        messages.add( messagePipeletParameter.getMessagePojo() );
-                        messagePipeletParameter.getMessagePojo().setConversation( conversationPojo );
-                        Engine.getInstance().getTransactionService().updateTransaction( conversationPojo );
-                    }
-
-                    // Submit the message to the queue/backend
-                    queue.add( messagePipeletParameter );
-                } // synchronized
+                queueMessage( messageContext, conversationPojo, true );
             } catch ( Exception e ) {
                 e.printStackTrace();
                 LOG.error( "OutboundQueueListener.run detected an exception when storing message status: " + e );
@@ -130,8 +108,66 @@ public class BackendActionSerializer extends AbstractPipelet {
                     + ") which hasn't been properly started!" );
         }
 
-        return messagePipeletParameter;
+        return messageContext;
     } // processMessage
+
+    /**
+     * @param messageContext
+     * @param conversationPojo
+     * @param newMessage
+     * @throws NexusException
+     */
+    private void queueMessage( MessageContext messageContext, ConversationPojo conversationPojo, boolean newMessage )
+            throws NexusException {
+
+        synchronized ( conversationPojo ) {
+
+            List<MessagePojo> messages = conversationPojo.getMessages();
+
+            messageContext.getMessagePojo().setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_QUEUED );
+            if ( messageContext.getMessagePojo().getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
+                messageContext.getMessagePojo().getConversation().setStatus(
+                        org.nexuse2e.Constants.CONVERSATION_STATUS_PROCESSING );
+                if ( newMessage ) {
+                    messages.add( messageContext.getMessagePojo() );
+                    Engine.getInstance().getTransactionService().storeTransaction( conversationPojo,
+                            messageContext.getMessagePojo() );
+                } else {
+                    Engine.getInstance().getTransactionService().updateTransaction( conversationPojo );
+                }
+            } else {
+                messageContext.getMessagePojo().setConversation( null );
+                messages.add( messageContext.getMessagePojo() );
+                messageContext.getMessagePojo().setConversation( conversationPojo );
+                Engine.getInstance().getTransactionService().updateTransaction( conversationPojo );
+            }
+
+            // Submit the message to the queue/backend
+            queue.add( messageContext );
+        } // synchronized
+    } // queueMessage
+
+    /**
+     * @param choreographyId
+     * @param participantId
+     * @param conversationId
+     * @param messageId
+     * @throws NexusException
+     */
+    public void requeueMessage( String choreographyId, String participantId, String conversationId, String messageId )
+            throws NexusException {
+
+        LOG.debug( "Requeueing message " + messageId + " for choreography " + choreographyId + ", participant "
+                + participantId + ", conversation " + conversationId );
+
+        MessageContext messageContext = Engine.getInstance().getTransactionService().getMessageContext( messageId );
+
+        if ( messageContext != null ) {
+            queueMessage( messageContext, messageContext.getConversation(), false );
+        } else {
+            LOG.error( "Message: " + messageId + " could not be found in database, cancelled requeueing!" );
+        }
+    } // requeueMessage
 
     /* (non-Javadoc)
      * @see org.nexuse2e.Manageable#deactivate()
@@ -171,7 +207,6 @@ public class BackendActionSerializer extends AbstractPipelet {
         }
     } // start
 
-   
     /* (non-Javadoc)
      * @see org.nexuse2e.Manageable#initialize(org.nexuse2e.configuration.EngineConfiguration)
      */
@@ -243,7 +278,6 @@ public class BackendActionSerializer extends AbstractPipelet {
         this.choreographyId = choreographyId;
     } // setChoreographyId
 
-    
     /**
      * Listener that processes the next element from the queue
      * @author mbreilmann
@@ -262,17 +296,16 @@ public class BackendActionSerializer extends AbstractPipelet {
 
             while ( !stopRequested ) {
                 try {
-                    MessageContext messagePipeletParameter = queue.take();
+                    MessageContext messageContext = queue.take();
                     if ( Engine.getInstance().getTransactionService().isSynchronousReply(
-                            messagePipeletParameter.getMessagePojo().getMessageId() ) ) {
+                            messageContext.getMessagePojo().getMessageId() ) ) {
                         // TODO: Needs to be routed through queue
                         BackendActionSerializer.this.frontendInboundDispatcher
-                                .processSynchronousReplyMessage( messagePipeletParameter );
+                                .processSynchronousReplyMessage( messageContext );
                         Engine.getInstance().getTransactionService().removeSynchronousRequest(
-                                messagePipeletParameter.getMessagePojo().getMessageId() );
+                                messageContext.getMessagePojo().getMessageId() );
                     } else {
-                        BackendActionSerializer.this.frontendOutboundDispatcher
-                                .processMessage( messagePipeletParameter );
+                        BackendActionSerializer.this.frontendOutboundDispatcher.processMessage( messageContext );
                     }
                 } catch ( NexusException nex ) {
                     nex.printStackTrace();
