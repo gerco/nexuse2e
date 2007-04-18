@@ -23,8 +23,8 @@ public class Version {
 
     public static final String  distributor        = "Xáioma GmbH";
     // private static final String VERSIONSTRING      = "$Id: Version.java.template 1287 2006-07-24 10:20:36Z markus.breilmann $";
-    private static final String subversionRevision = "2016";
-    private static final String subversionDate     = "2007/03/09 16:00:00";
+    private static final String subversionRevision = "20";
+    private static final String subversionDate     = "2007/04/18 16:00:00";
     private static final String version            = "4.0.0 beta5, Build " + subversionRevision + " ("
                                                            + subversionDate + ")";
 

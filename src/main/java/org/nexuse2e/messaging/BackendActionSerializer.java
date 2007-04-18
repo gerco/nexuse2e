@@ -24,10 +24,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.Logger;
-import org.nexuse2e.ActionSpecificKey;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
-import org.nexuse2e.ProtocolSpecificKey;
 import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Runlevel;
 import org.nexuse2e.configuration.EngineConfiguration;
@@ -148,6 +146,18 @@ public class BackendActionSerializer extends AbstractPipelet {
     } // queueMessage
 
     /**
+     * @param messageContext
+     * @throws NexusException
+     */
+    public void requeueMessage( MessageContext messageContext ) throws NexusException {
+        if ( messageContext == null ) {
+            LOG.error( "No MessageContext supplied!" );
+            throw new NexusException( "No MessageContext supplied!" );
+        }
+        queueMessage( messageContext, messageContext.getConversation(), false );        
+    } // requeueMessage
+    
+    /**
      * @param choreographyId
      * @param participantId
      * @param conversationId
@@ -166,6 +176,7 @@ public class BackendActionSerializer extends AbstractPipelet {
             queueMessage( messageContext, messageContext.getConversation(), false );
         } else {
             LOG.error( "Message: " + messageId + " could not be found in database, cancelled requeueing!" );
+            throw new NexusException( "Message: " + messageId + " could not be found in database, cancelled requeueing!" );
         }
     } // requeueMessage
 

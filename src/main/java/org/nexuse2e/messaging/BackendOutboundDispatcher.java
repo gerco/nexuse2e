@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.nexuse2e.ActionSpecificKey;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.ProtocolSpecificKey;
@@ -112,31 +111,6 @@ public class BackendOutboundDispatcher extends StateMachineExecutor implements P
             LOG.trace( "Found active messages: " + activeMessagePojos.size() );
             for ( MessagePojo messagePojo : activeMessagePojos ) {
 
-                /*
-                 MessageContext messageContext = new MessageContext();
-
-                 List<ParticipantPojo> paticipants = messagePojo.getConversation().getChoreography().getParticipants();
-                 for ( ParticipantPojo participantPojo : paticipants ) {
-                 if ( participantPojo.getPartner().getPartnerId().equals(
-                 messagePojo.getConversation().getPartner().getPartnerId() ) ) {
-                 messageContext.setParticipant( participantPojo );
-                 break;
-                 }
-                 }
-
-                 messageContext.setActionSpecificKey( new ActionSpecificKey( messagePojo.getAction().getName(),
-                 messagePojo.getConversation().getChoreography().getName() ) );
-                 messageContext.setChoreography( messagePojo.getConversation().getChoreography() );
-                 messageContext.setCommunicationPartner( messagePojo.getConversation().getPartner() );
-                 messageContext.setParticipant( messagePojo.getParticipant() );
-                 messageContext.setConversation( messagePojo.getConversation() );
-                 messageContext.setProtocolSpecificKey( new ProtocolSpecificKey( messagePojo.getTRP().getProtocol(),
-                 messagePojo.getTRP().getVersion(), messagePojo.getTRP().getTransport() ) );
-                 messageContext.setMessagePojo( messagePojo );
-
-                 LOG.trace( "Created MessageContext: " + messageContext );
-                 */
-
                 MessageContext messageContext = Engine.getInstance().getTransactionService().getMessageContext(
                         messagePojo.getMessageId() );
 
@@ -145,7 +119,7 @@ public class BackendOutboundDispatcher extends StateMachineExecutor implements P
                     BackendActionSerializer backendActionSerializer = backendActionSerializers.get( messagePojo
                             .getConversation().getChoreography().getName() );
 
-                    backendActionSerializer.processMessage( messageContext );
+                    backendActionSerializer.requeueMessage( messageContext );
                 }
             }
         } catch ( NexusException e ) {
