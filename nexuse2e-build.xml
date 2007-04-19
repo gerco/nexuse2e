@@ -1,8 +1,29 @@
 <project name="nexuse2e-server" default="copy" basedir=".">
 	<property file="nexuse2e-build.properties" />
 
+	<target name="init" description="Initialize properties etc.">
+		<available file="${basedir}/bin/subwcrev" type="dir" property="subwcrev" />
+	</target>
+
 	<target name="copy" description="Copy the nexuse2e.jar file" if="nexuse2e.client.jar">
 		<echo message="Copying nexuse2e.jar..." />
-		<copy file="${basedir}/target/nexuse2e.jar" tofile="${nexuse2e.client.jar}" overwrite="true"/>
+		<copy file="${basedir}/target/nexuse2e.jar" tofile="${nexuse2e.client.jar}" overwrite="true" />
+	</target>
+
+	<target name="test" description="Test">
+		<echo message="Testing..." />
+	</target>
+
+	<target name="VersionNumber" depends="init" if="subwcrev">
+		<echo message="Base dir: ${basedir}" />
+		<exec os="Mac OS X" dir="${basedir}" executable="${basedir}/bin/subwcrev/svnwcrev">
+			<arg line="${basedir} ${basedir}/bin/subwcrev/Version.java ${basedir}/src/main/java/org/nexuse2e/Version.java" />
+		</exec>
+		<exec os="Windows XP" dir="${basedir}" executable="${basedir}/bin/subwcrev/SubWCRev.exe">
+			<arg line="${basedir} ${basedir}/bin/subwcrev/Version.java ${basedir}/src/main/java/org/nexuse2e/Version.java" />
+		</exec>
+		<exec os="Windows 2003" dir="${basedir}" executable="${basedir}/bin/subwcrev/SubWCRev.exe">
+			<arg line="${basedir} ${basedir}/bin/subwcrev/Version.java ${basedir}/src/main/java/org/nexuse2e/Version.java" />
+		</exec>
 	</target>
 </project>

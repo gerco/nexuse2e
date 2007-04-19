@@ -21,20 +21,21 @@ package org.nexuse2e;
 
 public class Version {
 
-    public static final String  distributor        = "Xáioma GmbH";
-    // private static final String VERSIONSTRING      = "$Id: Version.java.template 1287 2006-07-24 10:20:36Z markus.breilmann $";
-    private static final String subversionRevision = "20";
-    private static final String subversionDate     = "2007/04/18 16:00:00";
-    private static final String version            = "4.0.0 beta5, Build " + subversionRevision + " ("
-                                                           + subversionDate + ")";
+    private static final String  SUBVERSION_REVISION = "21";
+    private static final String  SUBVERSION_DATE     = "2007/04/18 18:22:28";
+    private static final boolean BETA                = true;
+    private static final int     BETA_VERSION        = 5;
+    private static final String  VERSION             = "4.0.0 " + ( BETA ? "BETA-" + BETA_VERSION : "" ) + ", Build "
+                                                             + SUBVERSION_REVISION + " (" + SUBVERSION_DATE + ")";
 
     public static String getVersion() {
 
-        return version;
+        return VERSION;
     }
 
     public static void main( String[] args ) {
-		System.out.println( "NexusE2E Version: " + version );
+
+        System.out.println( "NexusE2E Version: " + VERSION );
     }
 
 } // Version

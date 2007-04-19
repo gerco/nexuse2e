@@ -512,13 +512,13 @@
       <scope>compile</scope>
     </dependency>
     <!-- 
-    <dependency>
+      <dependency>
       <groupId>xml-apis</groupId>
       <artifactId>xml-apis</artifactId>
       <version>2.0.2</version>
       <scope>compile</scope>
-    </dependency>
-     -->
+      </dependency>
+    -->
     <dependency>
       <groupId>xml-security</groupId>
       <artifactId>xmlsec</artifactId>
@@ -593,8 +593,8 @@
         <artifactId>maven-site-plugin</artifactId>
         <configuration>
           <locales>en</locales>
-            <templateDirectory>${basedir}</templateDirectory>
-            <template>nexuse2e-site.vm</template>
+          <templateDirectory>${basedir}</templateDirectory>
+          <template>nexuse2e-site.vm</template>
         </configuration>
       </plugin>
       <plugin>
@@ -615,12 +615,32 @@
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
-        <configuration>
+        <executions>
+          <execution>
+            <id>generate-sources</id>
+            <phase>generate-sources</phase>
+            <configuration>
+              <tasks>
+                <ant antfile="${basedir}/nexuse2e-build.xml">
+                  <target name="VersionNumber" />
+                </ant>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+        <!--  
+          <artifactId>maven-antrun-plugin</artifactId>
+          <configuration>
           <tasks>
-            <ant antfile="${basedir}/nexuse2e-build.xml" target="copy" />
+          <ant antfile="${basedir}/nexuse2e-build.xml" target="copy" />
           </tasks>
-        </configuration>
+          </configuration>
+        -->
       </plugin>
       <plugin>
         <groupId>org.mortbay.jetty</groupId>
