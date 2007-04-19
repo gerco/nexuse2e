@@ -36,12 +36,12 @@
         </property>
         
         <property name="label" type="string">
-            <column name="label" length="64">
+            <column name="param_label" length="64">
                 <comment></comment>
             </column>
         </property>
         <property name="value" type="string">
-            <column name="value" length="64" not-null="true">
+            <column name="param_value" length="64" not-null="true">
                 <comment></comment>
             </column>
         </property>

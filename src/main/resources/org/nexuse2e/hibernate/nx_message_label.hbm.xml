@@ -30,13 +30,13 @@
         </property>
         
         <property name="label" type="string">
-            <column name="label" length="64">
+            <column name="message_label" length="64">
                 <comment></comment>
             </column>
         </property>
         
         <property name="value" type="string">
-            <column name="value" length="512" not-null="true">
+            <column name="message_label_value" length="512" not-null="true">
                 <comment></comment>
             </column>
         </property>
