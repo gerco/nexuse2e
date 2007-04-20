@@ -592,6 +592,9 @@
           <webResources>
             <resource>
               <directory>src/main/war_resources</directory>
+              <includes>
+                <include>**/*.properties</include>
+              </includes>
             </resource>
           </webResources>
         </configuration>
