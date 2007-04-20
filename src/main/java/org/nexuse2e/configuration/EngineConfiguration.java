@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -52,6 +53,7 @@ import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ComponentPojo;
 import org.nexuse2e.pojo.ConversationPojo;
+import org.nexuse2e.pojo.GenericParamPojo;
 import org.nexuse2e.pojo.LoggerPojo;
 import org.nexuse2e.pojo.PartnerPojo;
 import org.nexuse2e.pojo.PipeletPojo;
@@ -136,11 +138,12 @@ public class EngineConfiguration {
 
     private List<RolePojo>                              roles                     = null;
 
+    private HashMap<String, List<GenericParamPojo>>     genericParameters         = new HashMap<String, List<GenericParamPojo>>();
+
     BaseConfigurationProvider                           baseConfigurationProvider = null;
 
-    private HashMap<String, List<String>> logCategories = new HashMap<String, List<String>>();
-    
-    
+    private HashMap<String, List<String>>               logCategories             = new HashMap<String, List<String>>();
+
     /**
      * @param baseConfigurationProvider
      */
@@ -161,8 +164,7 @@ public class EngineConfiguration {
     public void init() throws InstantiationException {
 
         initLoggerCategories();
-        
-        
+
         createStaticBeanContainer();
         if ( isDatabasePopulated() ) {
             loadDatafromDB();
@@ -181,7 +183,8 @@ public class EngineConfiguration {
             certificates = new ArrayList<CertificatePojo>();
             users = new ArrayList<UserPojo>();
             roles = new ArrayList<RolePojo>();
-
+            
+            
             baseConfigurationProvider.createBaseConfiguration( components, choreographies, partners,
                     backendPipelineTemplates, frontendPipelineTemplates, services, certificates, trps, users, roles,
                     loggers );
@@ -216,31 +219,29 @@ public class EngineConfiguration {
         categoryList.add( "org.nexuse2e.controller" );
         categoryList.add( "org.nexuse2e.service" );
         logCategories.put( categoryName, categoryList );
-        
+
         categoryName = "database";
         categoryList = new ArrayList<String>();
         categoryList.add( "org.nexuse2e.dao" );
         categoryList.add( "org.nexuse2e.pojo" );
         logCategories.put( categoryName, categoryList );
-        
+
         categoryName = "backend";
         categoryList = new ArrayList<String>();
         categoryList.add( "org.nexuse2e.backend" );
         logCategories.put( categoryName, categoryList );
-        
+
         categoryName = "frontend";
         categoryList = new ArrayList<String>();
         categoryList.add( "org.nexuse2e.messaging" );
         categoryList.add( "org.nexuse2e.transport" );
         logCategories.put( categoryName, categoryList );
-        
+
         categoryName = "frontend";
         categoryList = new ArrayList<String>();
         categoryList.add( "org.nexuse2e.ui" );
         logCategories.put( categoryName, categoryList );
-        
-        
-        
+
     }
 
     private void initializeLogAppenders() throws InstantiationException {
@@ -249,7 +250,7 @@ public class EngineConfiguration {
         if ( loggers != null ) {
             if ( components != null ) {
                 for ( LoggerPojo logger : loggers ) {
-                    LOG.debug( "initializing Logger: "+logger.getName() );
+                    LOG.debug( "initializing Logger: " + logger.getName() );
                     if ( logger.getComponent() == null ) {
                         throw new InstantiationError( "No ComponentReference found for logger: " + logger.getName() );
                     }
@@ -271,35 +272,42 @@ public class EngineConfiguration {
                     }
                     org.nexuse2e.logging.LogAppender logAppender = (org.nexuse2e.logging.LogAppender) obj;
                     ConfigurationUtil.configureLogger( logAppender, logger.getLoggerParams() );
-                    
+
                     logAppender.setLogThreshold( logger.getThreshold() );
-                    
-                    
-                    StringTokenizer st = new StringTokenizer(logger.getFilter(),",");
-                    LOG.debug( "filter: "+logger.getFilter() );
-                    while(st.hasMoreElements()) {
-                        String token = st.nextToken();
-                        if(token.startsWith( "group_" )) {
+
+                    StringTokenizer st = new StringTokenizer( logger.getFilter(), "," );
+                    LOG.debug( "filter: " + logger.getFilter() );
+                    while ( st.hasMoreElements() ) {
+                        String token = st.nextToken().trim();
+                        if ( token.startsWith( "group_" ) ) {
                             List<String> packageNames = logCategories.get( token.substring( 6 ).trim() );
-                            if(packageNames != null) {
+                            if ( packageNames != null ) {
                                 for ( String packageName : packageNames ) {
-                                    if(packageName != null) {
+                                    if ( packageName != null ) {
                                         Logger targetlogger = Logger.getLogger( packageName );
+                                        logAppender.registerLogger( targetlogger );
                                         targetlogger.addAppender( logAppender );
                                     }
                                 }
                             }
                         } else {
+                            if(StringUtils.isEmpty( token )) {
+                                continue;
+                            }
+                            System.out.println("adding logger: "+token);
                             Logger targetlogger = Logger.getLogger( token );
+                            logAppender.registerLogger( targetlogger );
+                            if(targetlogger.getLevel() == null || targetlogger.getLevel().toInt() < logger.getThreshold() ) {
+                                targetlogger.setLevel( Level.toLevel( logger.getThreshold() ) );
+                            }
                             targetlogger.addAppender( logAppender );
                         }
                     }
-                   
 
                     staticBeanContainer.getManagableBeans().put( logger.getName(), logAppender );
                     try {
                         logAppender.initialize( this );
-                        LOG.debug( "activating logger: "+logAppender.getName() );
+                        LOG.debug( "activating logger: " + logAppender.getName() );
                         logAppender.activate();
                     } catch ( RuntimeException rex ) {
                         rex.printStackTrace();
@@ -465,6 +473,19 @@ public class EngineConfiguration {
             List<RolePojo> roles = configDao.getRoles( session, null );
             setRoles( roles );
 
+            setGenericParameters( new HashMap<String, List<GenericParamPojo>>() );
+            List<GenericParamPojo> tempParams = configDao.getGenericParameters( session, null );
+            if(tempParams != null && tempParams.size() >0) {
+                for ( GenericParamPojo pojo : tempParams ) {
+                   List<GenericParamPojo> catParams = getGenericParameters().get( pojo.getCategory() );
+                   if(catParams == null) {
+                       catParams = new ArrayList<GenericParamPojo>();
+                       getGenericParameters().put( pojo.getCategory(), catParams );
+                   }
+                   catParams.add( pojo );
+                }
+            }
+            
         } catch ( NexusException e ) {
             InstantiationException ie = new InstantiationException( e.getMessage() );
             ie.setStackTrace( e.getStackTrace() );
@@ -829,6 +850,37 @@ public class EngineConfiguration {
             }
         }
 
+        
+        List<GenericParamPojo> tempList = new ArrayList<GenericParamPojo>();
+        for ( String name : genericParameters.keySet() ) {
+            List<GenericParamPojo> values = genericParameters.get( name );
+            tempList.addAll( values );
+        }
+        
+        
+//        List<UserPojo> obsoleteUsers = getObsoleteEntries( users, current.getUsers( null ) );
+//        for ( UserPojo pojo : obsoleteUsers ) {
+//            configDao.deleteUser( pojo, session, transaction );
+//        }
+//        obsoleteUsers.clear();
+
+        if ( tempList != null && tempList.size() > 0 ) {
+
+            for ( GenericParamPojo param : tempList ) {
+                LOG.debug( "Parameter: " + param.getNxGenericParamId() + " - ("+param.getCategory()+"/"+param.getTag()+"):" + param.getParamName()+"="+param.getValue() );
+                if ( param.getNxGenericParamId() != 0 ) {
+                    param.setModifiedDate( new Date() );
+                    configDao.updateGenericParameter( param, session, transaction );
+                } else {
+                    param.setCreatedDate( new Date() );
+                    param.setModifiedDate( new Date() );
+                    configDao.saveGenericParameter( param, session, transaction );
+                }
+            }
+        }
+
+        
+        
         transaction.commit();
         configDao.releaseDBSession( session );
     } // saveConfigurationToDB
@@ -1595,22 +1647,38 @@ public class EngineConfiguration {
         return tempConfiguration;
     }
 
-    
     /**
      * @return the logCategories
      */
     public HashMap<String, List<String>> getLogCategories() {
-    
+
         return logCategories;
     }
 
-    
     /**
      * @param logCategories the logCategories to set
      */
     public void setLogCategories( HashMap<String, List<String>> logCategories ) {
-    
+
         this.logCategories = logCategories;
+    }
+
+    
+    /**
+     * @return the genericParameters
+     */
+    public HashMap<String, List<GenericParamPojo>> getGenericParameters() {
+    
+        return genericParameters;
+    }
+
+    
+    /**
+     * @param genericParameters the genericParameters to set
+     */
+    public void setGenericParameters( HashMap<String, List<GenericParamPojo>> genericParameters ) {
+    
+        this.genericParameters = genericParameters;
     }
 
 }

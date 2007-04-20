@@ -84,6 +84,7 @@ public class LoggerForm extends ActionForm {
         if ( pipeletParamValues != null ) {
             pipeletParamValues.clear();
         }
+        filterJavaPackagePattern = "";
     } // reset
 
     /**

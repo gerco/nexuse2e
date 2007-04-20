@@ -20,6 +20,7 @@
 
 package org.nexuse2e;
 
+import org.apache.log4j.Logger;
 import org.nexuse2e.Constants.Runlevel;
 import org.nexuse2e.StatusSummary.Status;
 
@@ -28,11 +29,14 @@ import org.nexuse2e.StatusSummary.Status;
  *
  */
 public class EngineMonitor {
+    
+    private static Logger                    LOG                            = Logger.getLogger( EngineMonitor.class );
+    
     /**
      * 
      */
     public void init() {
-        
+        LOG.debug( "Engine monitor initalized" );
     }
     /**
      * @return

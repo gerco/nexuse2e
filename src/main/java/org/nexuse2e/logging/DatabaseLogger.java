@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Level;
@@ -38,7 +37,6 @@ import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Runlevel;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
-import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.dao.LogDAO;
 import org.nexuse2e.pojo.LogPojo;
 
@@ -61,29 +59,7 @@ public class DatabaseLogger extends AppenderSkeleton implements LogAppender {
 
         parameters = new HashMap<String, Object>();
         parameterMap = new LinkedHashMap<String, ParameterDescriptor>();
-//        parameterMap.put( "machineid", new ParameterDescriptor( ParameterType.STRING, false, "MachineId",
-//                "Used to separate different nexus process in logs", "nexus" ) );
-//        parameterMap.put( "details", new ParameterDescriptor( ParameterType.BOOLEAN, false, "Details",
-//                "Displays the detailed class and method names.", true ) );
-//        parameterMap.put( "external", new ParameterDescriptor( ParameterType.BOOLEAN, true, "external",
-//                "if enabled, the specified database is used to store upcomming log messages", true ) );
-//        parameterMap.put( "url", new ParameterDescriptor( ParameterType.STRING, false, "Database URL",
-//                "Connection String", "" ) );
-//        parameterMap
-//                .put( "username", new ParameterDescriptor( ParameterType.STRING, false, "Username", "Username", "" ) );
-//        parameterMap.put( "password", new ParameterDescriptor( ParameterType.PASSWORD, "Password", "Password",
-//                "/nexus/dump" ) );
-//        parameterMap.put( "prefix", new ParameterDescriptor( ParameterType.STRING, "Prefix", "obsolete", "" ) );
-        //        DropdownParameter dropdown = new DropdownParameter();
-        //        dropdown.addElement( "Option 1", "1" );
-        //        dropdown.addElement( "Option 2", "2" );
-        //        dropdown.addElement( "Option 3", "3" );
-        //        dropdown.setSelectedValue( "1" );
-        //        parameterMap.put( "dropdown", new ParameterDescriptor(
-        //                ParameterType.DROPDOWN, "Choice", "Select an option", dropdown ) );
 
-        // Workaround for derby performace issues
-        //threshold = Level.ERROR;
     }
 
     @SuppressWarnings("unchecked")
@@ -236,7 +212,6 @@ public class DatabaseLogger extends AppenderSkeleton implements LogAppender {
      */
     public void teardown() {
 
-        System.out.println( "deregistering loggers" );
         deregisterLoggers();
         loggers.clear();
     } // teardown

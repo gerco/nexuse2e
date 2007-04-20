@@ -27,7 +27,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.FileAppender;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+import org.apache.log4j.spi.LoggingEvent;
 import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Runlevel;
 import org.nexuse2e.configuration.EngineConfiguration;
@@ -40,10 +43,16 @@ import org.nexuse2e.configuration.Constants.ParameterType;
  */
 public class FileLogger extends FileAppender implements LogAppender {
 
+    public final static String               DIRECTORY = "directory";
+    public final static String               PREFIX = "prefix";
+    public final static String               APPEND = "append";
+    public final static String               PATTERN = "pattern";
+    
+    
     private Map<String, Object>              parameters;
     private Map<String, ParameterDescriptor> parameterMap;
-    private List<Logger>                     loggers = new ArrayList<Logger>();
-    private BeanStatus                       status = BeanStatus.UNDEFINED;
+    private List<Logger>                     loggers   = new ArrayList<Logger>();
+    private BeanStatus                       status    = BeanStatus.UNDEFINED;
 
     /**
      * Default constructor.
@@ -52,12 +61,14 @@ public class FileLogger extends FileAppender implements LogAppender {
 
         parameters = new HashMap<String, Object>();
         parameterMap = new LinkedHashMap<String, ParameterDescriptor>();
-        parameterMap.put( "directory", new ParameterDescriptor( ParameterType.STRING, "Directory", "Target directory",
+        parameterMap.put( DIRECTORY, new ParameterDescriptor( ParameterType.STRING, "Directory", "Target directory",
                 "/nexus/dump" ) );
-        parameterMap.put( "prefix", new ParameterDescriptor( ParameterType.STRING, "Prefix",
+        parameterMap.put( PREFIX, new ParameterDescriptor( ParameterType.STRING, "Prefix",
                 "Prefix used to create the Filename", "" ) );
-        parameterMap.put( "append", new ParameterDescriptor( ParameterType.BOOLEAN, "Append", "Appends log entries",
+        parameterMap.put( APPEND, new ParameterDescriptor( ParameterType.BOOLEAN, "Append", "Appends log entries",
                 Boolean.TRUE ) );
+        parameterMap.put( PATTERN, new ParameterDescriptor( ParameterType.STRING, "Pattern", "The Logger Pattern to be used",
+                " [%c %M] %-5p %m%n" ) );
     }
 
     @SuppressWarnings("unchecked")
@@ -120,43 +131,65 @@ public class FileLogger extends FileAppender implements LogAppender {
      */
     public void initialize( EngineConfiguration config ) {
 
+        System.out.println("initialized");
         status = BeanStatus.INITIALIZED;
 
+        PatternLayout patternLayout = new PatternLayout(); 
+        String pattern = (String)getParameter( PATTERN );
+        if(pattern == null) {
+            pattern = " [%c %M] %-5p %m%n";
+        }
+        patternLayout.setConversionPattern(pattern);
+        setName( "NexusFileAppender" );
+        setFile( getParameter( DIRECTORY )+"/log.log" );
+        setLayout( patternLayout );
+        setBufferedIO( false );
+        setAppend( ((Boolean)getParameter( APPEND )).booleanValue() );
+        activateOptions();
     }
 
     /* (non-Javadoc)
      * @see org.nexuse2e.Manageable#teardown()
      */
     public void teardown() {
-        // LOG.debug( "Freeing resources..." );
+
+        
         deregisterLoggers();
         loggers.clear();
     } // teardown
-    
+
     public void deregisterLoggers() {
 
         for ( Logger logger : loggers ) {
             logger.removeAppender( this );
         }
-        
+
     }
 
     public void registerLogger( Logger logger ) {
 
-        if(loggers != null) {
+        if ( loggers != null ) {
             loggers.add( logger );
         }
     }
 
     public int getLogThreshold() {
 
-        // TODO Auto-generated method stub
-        return 0;
+        return threshold.toInt();
     }
 
     public void setLogThreshold( int threshold ) {
 
-        // TODO Auto-generated method stub
-        
+        this.threshold = Level.toLevel( threshold );
+
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.log4j.WriterAppender#append(org.apache.log4j.spi.LoggingEvent)
+     */
+    @Override
+    public void append( LoggingEvent arg0 ) {
+
+        super.append( arg0 );
     }
 }

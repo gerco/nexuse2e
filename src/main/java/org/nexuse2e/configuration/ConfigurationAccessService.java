@@ -24,22 +24,28 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.nexuse2e.Configurable;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.backend.BackendPipelineDispatcher;
 import org.nexuse2e.configuration.Constants.ComponentType;
+import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ComponentPojo;
 import org.nexuse2e.pojo.ConnectionPojo;
+import org.nexuse2e.pojo.GenericParamPojo;
 import org.nexuse2e.pojo.LoggerPojo;
 import org.nexuse2e.pojo.ParticipantPojo;
 import org.nexuse2e.pojo.PartnerPojo;
@@ -73,7 +79,7 @@ public class ConfigurationAccessService {
             validConfiguration = true;
         }
     }
-    
+
     /**
      * @param nxPipelineId
      * @return
@@ -142,12 +148,13 @@ public class ConfigurationAccessService {
         }
         return null;
     }
-    
+
     /**
      * @param name
      * @return
      */
     public ServicePojo getServicePojoName( String name ) {
+
         for ( ServicePojo service : engineConfig.getServices() ) {
             if ( service.getName().equals( name ) ) {
                 return service;
@@ -155,14 +162,14 @@ public class ConfigurationAccessService {
         }
         return null;
     }
-    
-    
+
     /**
      * Return the BackendPipelineDispatcher instance
      * @return The BackendPipelineDispatcher instance
      */
     public BackendPipelineDispatcher getBackendPipelineDispatcher() {
-        if(engineConfig != null) {
+
+        if ( engineConfig != null ) {
             return engineConfig.getBackendPipelineDispatcher();
         }
         return null;
@@ -174,10 +181,10 @@ public class ConfigurationAccessService {
     @SuppressWarnings("unchecked")
     public List<PipelinePojo> getFrontendPipelinePojos( int type, GenericComparator comparator ) {
 
-        if(engineConfig == null) {
+        if ( engineConfig == null ) {
             return null;
         }
-        
+
         List<PipelinePojo> filteredList = null;
         if ( type != Constants.PIPELINE_TYPE_ALL ) {
             filteredList = new ArrayList<PipelinePojo>();
@@ -205,7 +212,7 @@ public class ConfigurationAccessService {
     @SuppressWarnings("unchecked")
     public List<PipelinePojo> getBackendPipelinePojos( int type, GenericComparator comparator ) {
 
-        if(engineConfig == null) {
+        if ( engineConfig == null ) {
             return null;
         }
         List<PipelinePojo> filteredList = null;
@@ -233,7 +240,8 @@ public class ConfigurationAccessService {
      * @return
      */
     public List<TRPPojo> getTrps() {
-        if(engineConfig != null) {
+
+        if ( engineConfig != null ) {
             return engineConfig.getTrps();
         }
         return null;
@@ -403,8 +411,8 @@ public class ConfigurationAccessService {
      * @throws NexusException
      */
     public List<ChoreographyPojo> getChoreographies() throws NexusException {
-        
-        if(engineConfig != null) {
+
+        if ( engineConfig != null ) {
             return engineConfig.getChoreographies();
         }
         return null;
@@ -419,7 +427,7 @@ public class ConfigurationAccessService {
     @SuppressWarnings("unchecked")
     public List<ComponentPojo> getComponents( ComponentType type, Comparator comparator ) throws NexusException {
 
-        if(engineConfig == null) {
+        if ( engineConfig == null ) {
             return null;
         }
         List<ComponentPojo> filteredList = null;
@@ -448,7 +456,7 @@ public class ConfigurationAccessService {
     @SuppressWarnings("unchecked")
     public List<PartnerPojo> getPartners( int type, Comparator comparator ) throws NexusException {
 
-        if(engineConfig == null) {
+        if ( engineConfig == null ) {
             return null;
         }
         List<PartnerPojo> filteredList = null;
@@ -480,7 +488,7 @@ public class ConfigurationAccessService {
     @SuppressWarnings("unchecked")
     public List<CertificatePojo> getCertificates( int type, Comparator comparator ) throws NexusException {
 
-        if(engineConfig == null) {
+        if ( engineConfig == null ) {
             return null;
         }
         List<CertificatePojo> filteredList = null;
@@ -686,7 +694,7 @@ public class ConfigurationAccessService {
 
         return engineConfig;
     }
-    
+
     /**
      * @return the validConfiguration
      */
@@ -1008,7 +1016,7 @@ public class ConfigurationAccessService {
      */
     public List<LoggerPojo> getLoggers() {
 
-        if(engineConfig != null) {
+        if ( engineConfig != null ) {
             return engineConfig.getLoggers();
         }
         return null;
@@ -1036,7 +1044,7 @@ public class ConfigurationAccessService {
      */
     public org.nexuse2e.logging.LogAppender getLogger( String name ) {
 
-        if(engineConfig != null) {
+        if ( engineConfig != null ) {
             return engineConfig.getStaticBeanContainer().getLogger( name );
         }
         return null;
@@ -1052,7 +1060,7 @@ public class ConfigurationAccessService {
      */
     public org.nexuse2e.logging.LogAppender renameLogger( String oldName, String newName ) throws NexusException {
 
-        if(engineConfig != null) {
+        if ( engineConfig != null ) {
             return engineConfig.getStaticBeanContainer().renameLogger( oldName, newName );
         }
         return null;
@@ -1066,7 +1074,7 @@ public class ConfigurationAccessService {
      */
     public Service getService( String name ) {
 
-        if(engineConfig != null) {
+        if ( engineConfig != null ) {
             return engineConfig.getStaticBeanContainer().getService( name );
         }
         return null;
@@ -1082,7 +1090,7 @@ public class ConfigurationAccessService {
      */
     public Service renameService( String oldName, String newName ) throws NexusException {
 
-        if(engineConfig != null) {
+        if ( engineConfig != null ) {
             return engineConfig.getStaticBeanContainer().renameService( oldName, newName );
         }
         return null;
@@ -1094,7 +1102,7 @@ public class ConfigurationAccessService {
      */
     public List<Service> getServiceInstances() {
 
-        if(engineConfig != null) {
+        if ( engineConfig != null ) {
             return engineConfig.getStaticBeanContainer().getServices();
         }
         return null;
@@ -1106,7 +1114,7 @@ public class ConfigurationAccessService {
      */
     public List<ServicePojo> getServices() {
 
-        if(engineConfig != null) {
+        if ( engineConfig != null ) {
             return engineConfig.getServices();
         }
         return null;
@@ -1196,7 +1204,7 @@ public class ConfigurationAccessService {
      */
     public List<UserPojo> getUsers( Comparator<UserPojo> comparator ) {
 
-        if(engineConfig == null) {
+        if ( engineConfig == null ) {
             return null;
         }
         List<UserPojo> users = engineConfig.getUsers();
@@ -1231,8 +1239,8 @@ public class ConfigurationAccessService {
      *          if no such user exists.
      */
     public UserPojo getUserByNxUserId( int nxUserId ) {
-        
-        if(engineConfig == null) {
+
+        if ( engineConfig == null ) {
             return null;
         }
         for ( UserPojo user : engineConfig.getUsers() ) {
@@ -1242,26 +1250,26 @@ public class ConfigurationAccessService {
         }
         return null;
     }
-    
+
     /**
      * Updates the given user or adds her to the list if she is new.
      * @param user User to add or update.
      */
     public void updateUser( UserPojo user ) {
-        
+
         try {
             UserPojo oldUser = getUserByNxUserId( user.getNxUserId() );
             if ( oldUser != null ) {
                 getUsers( null ).remove( oldUser );
             }
             getUsers( null ).add( user );
-    
+
             applyConfiguration();
         } catch ( NexusException e ) {
             e.printStackTrace();
         }
     }
-    
+
     /**
      * Deletes the given user.
      * @param user User to delete.
@@ -1270,7 +1278,7 @@ public class ConfigurationAccessService {
 
         try {
             UserPojo oldUser = getUserByNxUserId( user.getNxUserId() );
-            if ( oldUser!= null ) {
+            if ( oldUser != null ) {
                 getUsers( null ).remove( oldUser );
             }
             engineConfig.deleteUserInDB( user );
@@ -1287,7 +1295,7 @@ public class ConfigurationAccessService {
      */
     public List<RolePojo> getRoles( Comparator<RolePojo> comparator ) {
 
-        if(engineConfig == null) {
+        if ( engineConfig == null ) {
             return null;
         }
         List<RolePojo> roles = engineConfig.getRoles();
@@ -1312,7 +1320,7 @@ public class ConfigurationAccessService {
         }
         return null;
     }
-    
+
     /**
      * Returns the role with the given <code>name</code>.
      * @param name name of the desired role.
@@ -1320,6 +1328,7 @@ public class ConfigurationAccessService {
      *          if no such role exists.
      */
     public RolePojo getRoleByName( String name ) {
+
         if ( name != null ) {
             for ( RolePojo role : engineConfig.getRoles() ) {
                 if ( name.equals( role.getName() ) ) {
@@ -1329,26 +1338,26 @@ public class ConfigurationAccessService {
         }
         return null;
     }
-    
+
     /**
      * Updates the given role or adds it to the list if it is new.
      * @param role Role to add or update.
      */
     public void updateRole( RolePojo role ) {
-        
+
         try {
             RolePojo oldRole = getRoleByNxRoleId( role.getNxRoleId() );
             if ( oldRole != null ) {
                 getRoles( null ).remove( oldRole );
             }
             getRoles( null ).add( role );
-    
+
             applyConfiguration();
         } catch ( NexusException e ) {
             e.printStackTrace();
         }
     }
-    
+
     /**
      * Deletes the given role.
      * @param role Role to delete.
@@ -1357,7 +1366,7 @@ public class ConfigurationAccessService {
 
         try {
             RolePojo oldRole = getRoleByNxRoleId( role.getNxRoleId() );
-            if ( oldRole!= null ) {
+            if ( oldRole != null ) {
                 getRoles( null ).remove( oldRole );
             }
             engineConfig.deleteRoleInDB( role );
@@ -1376,10 +1385,189 @@ public class ConfigurationAccessService {
         // TODO: swap configurations
         Engine.getInstance().setCurrentConfiguration( engineConfig );
         // update menu tree
-        CachedXmlStructureServer cachedStructureServer = (CachedXmlStructureServer) Engine.getInstance().getBeanFactory().getBean( "structureService" );
+        CachedXmlStructureServer cachedStructureServer = (CachedXmlStructureServer) Engine.getInstance()
+                .getBeanFactory().getBean( "structureService" );
         cachedStructureServer.clearStructureCache();
-        
+
+    }
+
+    /**
+     * @param category any subsystem selects its own category id to avaid parameter naming conflicts. 
+     * @param tag optional ability to separate different sets of parameters for the same category, e.g. for different instances. 
+     * @param descriptors 
+     * @return
+     */
+    public Map<String, Object> getGenericParameters( String category, String tag,
+            Map<String, ParameterDescriptor> descriptors ) {
+
+        if ( StringUtils.isEmpty( category ) ) {
+            return null;
+        }
+        if ( descriptors == null || descriptors.size() == 0 ) {
+            return null;
+        }
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        List<GenericParamPojo> values = engineConfig.getGenericParameters().get( category );
+        if ( values == null ) {
+            values = new ArrayList<GenericParamPojo>();
+        }
+        boolean isUpdated = false;
+        for ( String name : descriptors.keySet() ) {
+            ParameterDescriptor descriptor = descriptors.get( name );
+            if ( descriptor != null ) {
+                isUpdated = false;
+                for ( GenericParamPojo value : values ) {
+                    if ( ( value.getTag() == null && tag == null )
+                            || ( value.getTag() != null && value.getTag().equals( tag ) )
+                            && value.getParamName().equals( name ) ) {
+                        resultMap.put( value.getParamName(), getParameterValue( descriptor, value.getValue() ) );
+                        isUpdated = true;
+                    }
+                }
+                if ( !isUpdated ) {
+                    if ( descriptor.getDefaultValue() != null ) {
+                        resultMap.put( name, descriptor.getDefaultValue() );
+                    }
+                }
+            }
+        }
+
+        return resultMap;
     }
 
     
+    /**
+     * @param category
+     * @param tag
+     * @param values Name, Value pairs you want to set. Values for missing descriptors are ingnored while changing configuration.
+     * @param descriptors Map containing the matching ParameterDescriptors and Names, If there is no matching value for one
+     * if the descriptors, the default value(specified in descriptor) is used.  
+     * @param persistToDB if true, the engine is stoped, Configuration is Saved to database and engine is started again.
+     * @throws NexusException Thrown on various database problems.
+     */
+    public void setGenericParameters( String category, String tag, Map<String, Object> values,
+            Map<String, ParameterDescriptor> descriptors, boolean persistToDB ) throws NexusException  {
+
+        if ( StringUtils.isEmpty( category ) ) {
+            return;
+        }
+        if ( StringUtils.isEmpty( tag ) ) {
+            tag = null;
+        }
+        if ( values == null || descriptors == null || values.size() == 0 || descriptors.size() == 0 ) {
+            return;
+        }
+        List<GenericParamPojo> oldValues = engineConfig.getGenericParameters().get( category );
+        if ( oldValues == null ) {
+            oldValues = new ArrayList<GenericParamPojo>();
+            engineConfig.getGenericParameters().put( category, oldValues );
+        }
+        int seqNo = 0;
+        for ( String name : values.keySet() ) {
+            ParameterDescriptor pd = descriptors.get( name );
+            if ( pd == null ) {
+                continue;
+            }
+            GenericParamPojo param = null;
+            for ( GenericParamPojo pojo : oldValues ) {
+                if ( pojo.getParamName().equals( name ) ) {
+                    if ( ( pojo.getTag() == null && tag == null ) || ( pojo.getTag() != null && pojo.equals( tag ) ) ) {
+                        param = pojo;
+                    }
+                }
+            }
+            if ( param == null ) {
+                param = new GenericParamPojo();
+                param.setCreatedDate( new Date() );
+                param.setModifiedDate( new Date() );
+                param.setParamName( name );
+                param.setLabel( pd.getLabel() );
+                param.setSequenceNumber( seqNo++ );
+                param.setTag( tag );
+                param.setCategory( category );
+                oldValues.add( param );
+            }
+            if ( pd.getParameterType() == ParameterType.LIST ) {
+                ListParameter dropdown = (ListParameter) values.get( name );
+                if ( dropdown != null ) {
+                    param.setValue( dropdown.getSelectedValue() );
+                }
+            } else if ( pd.getParameterType() == ParameterType.ENUMERATION ) {
+                // TODO: implement this
+            } else {
+                Object value = values.get( name );
+                if ( value == null ) {
+                    param.setValue( toString( pd.getDefaultValue() ) );
+                } else {
+                    param.setValue( toString( value ) );
+                }
+            }
+
+        }
+
+        if ( persistToDB ) {
+                applyConfiguration();
+            
+        }
+
+    }
+
+    /**
+     * Might be used to determine whether parameters are available for this category and tag or even not.
+     * Returns true, if there is one or more matching parameter available in your configuration.
+     * 
+     * @param category 
+     * @param tag optional identifier for seprating different values for one category.
+     * @return
+     */
+    public boolean containsParameters( String category, String tag ) {
+
+        List<GenericParamPojo> values = engineConfig.getGenericParameters().get( category );
+        if ( values != null ) {
+            for ( GenericParamPojo pojo : values ) {
+                if ( ( tag == null && pojo.getTag() == null ) || ( tag != null && tag.equals( pojo.getTag() ) ) ) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * encapsulates the required checks for NULL values.
+     * 
+     * @param value
+     * @return
+     */
+    private static String toString( Object value ) {
+
+        if ( value == null ) {
+            return null;
+        }
+        return value.toString();
+    }
+
+    /**
+     * Converts a <code>String</code> parameter value into an object
+     * of it's domain type.
+     * 
+     * @param pd The <code>ParameterDescriptor</code> that contains the type.
+     * @param value The <code>String</code> representation to be converted.
+     * @return The domain type, except for types ENUMERATION and DROPDOWN
+     */
+    private static Object getParameterValue( ParameterDescriptor pd, String value ) {
+
+        switch ( pd.getParameterType() ) {
+            case UNKNOWN:
+            case STRING:
+            case PASSWORD:
+            case SERVICE:
+                return value;
+            case BOOLEAN:
+                return Boolean.valueOf( value );
+            default:
+                return null;
+        }
+    }
+
 }
