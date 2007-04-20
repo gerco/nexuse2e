@@ -46,7 +46,7 @@
             </column>
         </property>
         <property name="outbound" type="boolean">
-            <column name="direction_flag" not-null="true" sql-type="integer">
+            <column name="direction_flag" not-null="true">
                 <comment>outbound is true, inbound is false</comment>
             </column>
         </property>

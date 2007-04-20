@@ -54,12 +54,12 @@
         </property>
         
         <property name="active" type="boolean">
-            <column name="active_flag"  not-null="true" sql-type="integer">
+            <column name="active_flag"  not-null="true">
                 <comment></comment>
             </column>
         </property>
         <property name="visible" type="boolean">
-            <column name="visible_flag" not-null="true" sql-type="integer">
+            <column name="visible_flag" not-null="true">
                 <comment></comment>
             </column>
         </property>

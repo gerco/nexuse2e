@@ -27,17 +27,17 @@
         </property>
         
         <property name="secure" type="boolean">
-            <column name="security_flag" not-null="true" sql-type="integer">
+            <column name="security_flag" not-null="true">
                 <comment></comment>
             </column>
         </property>
         <property name="reliable" type="boolean">
-            <column name="reliable_flag" not-null="true" sql-type="integer">
+            <column name="reliable_flag" not-null="true">
                 <comment></comment>
             </column>
         </property>
         <property name="synchronous" type="boolean">
-            <column name="synchronous_flag" not-null="true" sql-type="integer">
+            <column name="synchronous_flag" not-null="true">
             </column>
         </property>
         <property name="synchronousTimeout" type="int">

@@ -86,8 +86,9 @@ public class ConversationViewAction extends NexusE2EAction {
 
         Vector reportMessages = new Vector();
 
-        List<MessagePojo> messagePojos = Engine.getInstance().getTransactionService().getMessagesFromConversation(
-                cPojo );
+        // List<MessagePojo> messagePojos = Engine.getInstance().getTransactionService().getMessagesFromConversation( cPojo );
+
+        List<MessagePojo> messagePojos = cPojo.getMessages();
 
         //List messagePojos = 
         //mDao.getMessagesByChoreographyPartnerAndConversation( choreographyId, partnerId,

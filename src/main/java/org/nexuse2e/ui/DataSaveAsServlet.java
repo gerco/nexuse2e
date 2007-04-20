@@ -315,7 +315,7 @@ public class DataSaveAsServlet extends HttpServlet {
 
                 byte[] data = new byte[0];
 
-                String messageId = request.getParameter( "mId" );
+                String messageId = request.getParameter( "messageId" );
                 String contentNo = request.getParameter( "no" );
                 MessagePojo message = Engine.getInstance().getTransactionService().getMessage( messageId );
                 if ( message != null ) {

@@ -29,13 +29,13 @@
         </property>
         
         <property name="start" type="boolean">
-            <column name="start_flag" not-null="true" sql-type="integer">
+            <column name="start_flag" not-null="true">
                 <comment></comment>
             </column>
         </property>
         
         <property name="end" type="boolean">
-            <column name="end_flag" not-null="true" sql-type="integer">
+            <column name="end_flag" not-null="true">
                 <comment></comment>
             </column>
         </property>

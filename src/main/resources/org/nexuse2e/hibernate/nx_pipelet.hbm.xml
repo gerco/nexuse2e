@@ -14,17 +14,17 @@
         <many-to-one foreign-key="fk__pipelet__component_id" name="component" column="nx_component_id" class="org.nexuse2e.pojo.ComponentPojo" not-null="true" index="ix_pipelet_2"/>
         
         <property name="frontend" type="boolean">
-            <column name="frontend_flag" not-null="true" sql-type="integer">
+            <column name="frontend_flag" not-null="true">
                 <comment>frontend is true, backend is false</comment>
             </column>
         </property>
         <property name="forward" type="boolean">
-            <column name="forward_flag" not-null="true" sql-type="integer">
+            <column name="forward_flag" not-null="true">
                 <comment>forward is true, return is false</comment>
             </column>
         </property>
         <property name="endpoint" type="boolean">
-            <column name="endpoint_flag" not-null="true" sql-type="integer">
+            <column name="endpoint_flag" not-null="true">
                 <comment>endpoint is true, pipelet in pipeline is false</comment>
             </column>
         </property>

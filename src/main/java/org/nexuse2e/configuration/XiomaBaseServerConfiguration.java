@@ -396,25 +396,21 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             PipeletPojo ebxmlPOP3ransportReceiverPipeletPojo = new PipeletPojo( ebXML20POP3InboundPipelinePojo,
                     transportReceiver, new Date(), new Date(), 1, 0, "ebxml20POP3", "ebxmlPOP3TransportReceiver", null );
             ebxmlHTTPTransportReceiverPipeletPojo.setFrontend( true );
-            ebxmlHTTPTransportReceiverPipeletPojo.setPosition( 0 );
             params = new ArrayList<PipeletParamPojo>();
             param = new PipeletParamPojo( ebxmlPOP3ransportReceiverPipeletPojo, new Date(), new Date(), 1, "service",
                     "Pop3ReceiverService" );
             params.add( param );
             ebxmlPOP3ransportReceiverPipeletPojo.setPipeletParams( params );
             PipeletPojo ebxmlPOP3UnpackerPipeletPojo = new PipeletPojo( ebXML20POP3InboundPipelinePojo,
-                    ebxmlPop3Unpacker, new Date(), new Date(), 1, 0, "ebxmlPOP3Unpacker", "ebxmlPOP3Unpacker", null );
+                    ebxmlPop3Unpacker, new Date(), new Date(), 1, 1, "ebxmlPOP3Unpacker", "ebxmlPOP3Unpacker", null );
             ebxml20DeserializerPipeletPojo.setFrontend( true );
-            ebxml20DeserializerPipeletPojo.setPosition( 1 );
             PipeletPojo ebxml20POP3DeserializerPipeletPojo = new PipeletPojo( ebXML20POP3InboundPipelinePojo,
-                    ebxml20Deserializer, new Date(), new Date(), 1, 0, "ebxml20Deserializer", "ebxml20Deserializer",
+                    ebxml20Deserializer, new Date(), new Date(), 1, 2, "ebxml20Deserializer", "ebxml20Deserializer",
                     null );
             ebxml20DeserializerPipeletPojo.setFrontend( true );
-            ebxml20DeserializerPipeletPojo.setPosition( 2 );
             PipeletPojo ebxmlPOP3PatcherPipeletPojo = new PipeletPojo( ebXML20POP3InboundPipelinePojo, ebxmlPatcher,
-                    new Date(), new Date(), 1, 0, "ebxmlPatcher", "ebxmlPatcher", null );
+                    new Date(), new Date(), 1, 3, "ebxmlPatcher", "ebxmlPatcher", null );
             ebxmlPatcherPipeletPojo.setFrontend( true );
-            ebxmlPatcherPipeletPojo.setPosition( 3 );
 
             ArrayList<PipeletPojo> ebXML20POP3InboundPipelets = new ArrayList<PipeletPojo>();
             ebXML20POP3InboundPipelets.add( ebxmlPOP3ransportReceiverPipeletPojo );
@@ -436,16 +432,13 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
                     ebxml20Serializer, new Date(), new Date(), 1, 0, "ebxml20SMTPSerializer", "ebxml20SMTPSerializer",
                     null );
             ebxml20SMTPSerializerPipeletPojo.setFrontend( true );
-            ebxml20SMTPSerializerPipeletPojo.setPosition( 0 );
             PipeletPojo ebxmlSMTPPackerPipeletPojo = new PipeletPojo( ebXML20SMTPOutboundPipelinePojo, ebxmlSmtpPacker,
-                    new Date(), new Date(), 1, 0, "ebxmlSMTPPacker", "ebxmlSMTPPacker", null );
+                    new Date(), new Date(), 1, 1, "ebxmlSMTPPacker", "ebxmlSMTPPacker", null );
             ebxmlSMTPPackerPipeletPojo.setFrontend( true );
-            ebxmlSMTPPackerPipeletPojo.setPosition( 1 );
             PipeletPojo ebxmlSMTPTransportSenderPipeletPojo = new PipeletPojo( ebXML20SMTPOutboundPipelinePojo,
-                    transportSender, new Date(), new Date(), 1, 0, "ebxmlSMTPTransportSender",
+                    transportSender, new Date(), new Date(), 1, 2, "ebxmlSMTPTransportSender",
                     "ebxmlSMTPTransportSender", null );
             ebxmlSMTPTransportSenderPipeletPojo.setFrontend( true );
-            ebxmlSMTPTransportSenderPipeletPojo.setPosition( 2 );
             params = new ArrayList<PipeletParamPojo>();
             param = new PipeletParamPojo( ebxmlSMTPTransportSenderPipeletPojo, new Date(), new Date(), 1, "service",
                     "SmtpSenderService" );

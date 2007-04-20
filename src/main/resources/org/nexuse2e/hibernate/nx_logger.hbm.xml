@@ -35,7 +35,7 @@
         </property>
         
         <property name="autostart" type="boolean">
-            <column name="autostart_flag" not-null="true" sql-type="integer">
+            <column name="autostart_flag" not-null="true">
                 <comment></comment>
             </column>
         </property>

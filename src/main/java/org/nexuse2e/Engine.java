@@ -571,14 +571,14 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                 e.printStackTrace();
             }
             LOG.debug( "Initialize Engine" );
-            LOG.debug( "1partners: " + newConfiguration.getPartners().size() );
-            LOG.debug( "2partners: " + this.currentConfiguration.getPartners().size() );
+            // LOG.debug( "1partners: " + newConfiguration.getPartners().size() );
+            // LOG.debug( "2partners: " + this.currentConfiguration.getPartners().size() );
             initialize( newConfiguration );
             activate();
         } else {
             this.currentConfiguration = newConfiguration;
         }
-        LOG.debug( "3partners: " + this.currentConfiguration.getPartners().size() );
+        // LOG.debug( "3partners: " + this.currentConfiguration.getPartners().size() );
     }
 
     /* (non-Javadoc)
