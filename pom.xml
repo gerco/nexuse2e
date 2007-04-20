@@ -243,18 +243,20 @@
       <version>1.0</version>
       <scope>compile</scope>
     </dependency>
-    <dependency>
+    <!-- 
+      <dependency>
       <groupId>jetty</groupId>
       <artifactId>jetty</artifactId>
       <version>6.0.2</version>
       <scope>compile</scope>
-    </dependency>
-    <dependency>
+      </dependency>
+      <dependency>
       <groupId>jetty</groupId>
       <artifactId>jetty-util</artifactId>
       <version>6.0.2</version>
       <scope>compile</scope>
-    </dependency>
+      </dependency>
+    -->
     <dependency>
       <groupId>org.jibx</groupId>
       <artifactId>jibx-run</artifactId>
@@ -310,12 +312,6 @@
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
       <version>1.4</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
-      <version>5.0.4</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -544,6 +540,18 @@
       <version>1.0-M5</version>
       </dependency>
     -->
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>5.0.4</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>8.2-504.jdbc3</version>
+      <scope>run</scope>
+    </dependency>
     <!-- <type>zip</type> -->
   </dependencies>
   <distributionManagement>
@@ -579,7 +587,7 @@
           <archiveClasses>true</archiveClasses>
           <warName>NEXUSe2e</warName>
           <warSourceExcludes>
-            **/ant-1.5.jar,**/antlr-2.7.2.jar,**/bcprov-jdk15-133.jar,**/cglib-2.1.jar,**/jsp*,**/servlet-api*,**/javax.xml.bind-jaxb-api-2.0.jar,**/xml-apis*,WEB-INF/classes/tldCache.ser,WEB-INF/classes/org/**,WEB-INF/config/database/derby/**
+            **/ant-1.5.jar,**/antlr-2.7.2.jar,**/bcprov-jdk15-133.jar,**/cglib-2.1.jar,**/jsp*,**/servlet-api*,**/javax.xml.bind-jaxb-api-2.0.jar,**/xml-apis*,WEB-INF/classes/tldCache.ser,WEB-INF/classes/org/**,WEB-INF/config/database/derby/**,/WEB-INF/config/bean.properties,/WEB-INF/config/database.properties
           </warSourceExcludes>
           <webResources>
             <resource>
