@@ -248,6 +248,7 @@
         <value>org/nexuse2e/hibernate/nx_log.hbm.xml</value>
         <value>org/nexuse2e/hibernate/nx_logger.hbm.xml</value>
         <value>org/nexuse2e/hibernate/nx_logger_param.hbm.xml</value>
+        <value>org/nexuse2e/hibernate/nx_generic_param.hbm.xml</value>
       </list>
     </property>
     <property name="hibernateProperties">
