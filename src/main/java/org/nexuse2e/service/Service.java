@@ -53,4 +53,10 @@ public interface Service extends Manageable, Configurable {
      * @return <code>true</code> if the service shall be automatically started.
      */
     public boolean isAutostart();
+
+    /**
+     * Sets the <code>autostart</code> flag.
+     * @param autostart Flag whether this service needs to be started automatically at startup
+     */
+    public void setAutostart( boolean autostart );
 }

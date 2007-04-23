@@ -76,10 +76,10 @@ public class FileSystemLoadPipelet extends AbstractOutboundBackendPipelet {
      * @see org.nexuse2e.backend.pipelets.AbstractOutboundBackendPipelet#processPayloadAvailable(org.nexuse2e.messaging.MessageContext)
      */
     @Override
-    public MessageContext processPayloadAvailable( MessageContext backendPipeletParameter )
+    public MessageContext processPayloadAvailable( MessageContext messageContext )
             throws NexusException {
 
-        return backendPipeletParameter;
+        return messageContext;
     } // processPayloadAvailable
 
     /* (non-Javadoc)

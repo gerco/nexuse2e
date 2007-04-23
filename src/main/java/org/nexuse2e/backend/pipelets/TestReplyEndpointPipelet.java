@@ -37,16 +37,17 @@ public class TestReplyEndpointPipelet extends AbstractPipelet {
 
     }
 
-    public MessageContext processMessage( MessageContext backendPipeletParameter )
+    public MessageContext processMessage( MessageContext messageContext )
             throws NexusException {
 
         LOG.debug( "Entered TestReplyEndpointPipelet.processMessage..." );
 
         BackendPipelineDispatcher backendPipelineDispatcher = (BackendPipelineDispatcher) Engine.getInstance()
                 .getBeanFactory().getBean( "backendPipelineDispatcher" );
-        backendPipelineDispatcher.processMessage( backendPipeletParameter.getPartner().getPartnerId(),
-                backendPipeletParameter.getChoreography().getName(), backendPipeletParameter.getMessagePojo()
-                        .getAction().getName(), null, backendPipeletParameter.getMessagePojo().getMessageId(), null,
+        backendPipelineDispatcher.processMessage( messageContext.getPartner().getPartnerId(),
+                messageContext.getChoreography().getName(), messageContext.getMessagePojo()
+                        .getAction().getName(), null,
+                messageContext.getMessagePojo().getMessageId(), null,
                 null, "<Test />".getBytes() );
         return null;
     }

@@ -42,14 +42,11 @@ import org.apache.log4j.Logger;
 import org.apache.ws.security.WSPasswordCallback;
 import org.apache.ws.security.handler.WSHandlerConstants;
 import org.codehaus.xfire.XFire;
-import org.codehaus.xfire.security.wss4j.WSS4JInHandler;
 import org.codehaus.xfire.service.Service;
 import org.codehaus.xfire.service.binding.MessageBindingProvider;
 import org.codehaus.xfire.service.binding.ObjectServiceFactory;
 import org.codehaus.xfire.service.invoker.BeanInvoker;
-import org.codehaus.xfire.service.invoker.ObjectInvoker;
 import org.codehaus.xfire.transport.http.XFireServletController;
-import org.codehaus.xfire.util.dom.DOMInHandler;
 import org.codehaus.xfire.util.jdom.StaxBuilder;
 import org.codehaus.xfire.wsdl.WSDLWriter;
 import org.jdom.Element;
@@ -81,6 +78,8 @@ public class GenericXMLDocumentWebServiceReceiver extends AbstractController imp
     private XFireServletController             controller        = null;
     protected byte[]                           wsdl              = null;
     private BeanStatus                         status            = BeanStatus.UNDEFINED;
+    private boolean                            autostart         = false;
+
     /**
      * Map parameter names to <code>ParameterDescriptor</code> objects in
      * this <code>Map</code>. The insertion order will be maintained.
@@ -142,7 +141,7 @@ public class GenericXMLDocumentWebServiceReceiver extends AbstractController imp
      */
     public boolean isAutostart() {
 
-        return true;
+        return autostart;
     }
 
     /* (non-Javadoc)
@@ -254,7 +253,7 @@ public class GenericXMLDocumentWebServiceReceiver extends AbstractController imp
         }
 
         try {
-            
+
             // xfire = createXFire();
             getController();
 
@@ -303,7 +302,7 @@ public class GenericXMLDocumentWebServiceReceiver extends AbstractController imp
             getController().getServiceRegistry().register( service );
             Iterator services = getController().getServiceRegistry().getServices().iterator();
             while ( services.hasNext() ) {
-                Service tempService = (Service)services.next();
+                Service tempService = (Service) services.next();
                 LOG.debug( "Service: " + tempService.getSimpleName() );
                 LOG.debug( "ServiceInfo: " + tempService.getServiceInfo() );
             }
@@ -423,10 +422,10 @@ public class GenericXMLDocumentWebServiceReceiver extends AbstractController imp
                 TransportReceiver transportReceiver = null;
 
                 if ( transportReceiver != null ) {
-                    
+
                     MessageContext inboundContext = new MessageContext();
                     inboundContext.setData( baos.toByteArray() );
-                    
+
                     MessageContext outboundContext = transportReceiver.processInboundData( inboundContext );
 
                     List<MessagePayloadPojo> payloads = outboundContext.getMessagePojo().getMessagePayloads();
@@ -473,5 +472,10 @@ public class GenericXMLDocumentWebServiceReceiver extends AbstractController imp
             return element;
         }
     } // inner class SimpleXMLDocServiceImpl
+
+    public void setAutostart( boolean autostart ) {
+
+        this.autostart = autostart;
+    }
 
 } // GenericXMLDocumentWebServiceReceiver

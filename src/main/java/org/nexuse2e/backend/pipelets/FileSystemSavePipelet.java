@@ -80,10 +80,10 @@ public class FileSystemSavePipelet extends AbstractPipelet {
      * @param payload the contents of the message
      * returns the full name of the file written.
      */
-    public String writePayloadToUniqueFile( String destinationDirectory, MessageContext backendPipeletParameter )
+    public String writePayloadToUniqueFile( String destinationDirectory, MessageContext messageContext )
             throws FileNotFoundException, IOException {
 
-        return writePayloadToUniqueFile( destinationDirectory, backendPipeletParameter, false );
+        return writePayloadToUniqueFile( destinationDirectory, messageContext, false );
     }
 
     /**
@@ -96,7 +96,7 @@ public class FileSystemSavePipelet extends AbstractPipelet {
      * returns the full name of the file written.
      */
     public String writePayloadToUniqueFile( String destinationDirectory,
-            MessageContext backendPipeletParameter, boolean includeSender ) throws FileNotFoundException,
+            MessageContext messageContext, boolean includeSender ) throws FileNotFoundException,
             IOException {
 
         String retVal = null;
@@ -105,7 +105,7 @@ public class FileSystemSavePipelet extends AbstractPipelet {
         // Workaround, sometimes filesystem are 'sleeping' and need two tries to
         // get things rolling. Try once and ignore failure.
         try {
-            retVal = writePayload( destinationDirectory, backendPipeletParameter, includeSender );
+            retVal = writePayload( destinationDirectory, messageContext, includeSender );
             success = true;
         } catch ( Exception ex ) {
             // ignore
@@ -114,7 +114,7 @@ public class FileSystemSavePipelet extends AbstractPipelet {
 
         // If 1st time failed, try again
         if ( success == false ) {
-            retVal = writePayload( destinationDirectory, backendPipeletParameter, includeSender );
+            retVal = writePayload( destinationDirectory, messageContext, includeSender );
         }
 
         return retVal;
@@ -123,29 +123,29 @@ public class FileSystemSavePipelet extends AbstractPipelet {
 
     /**
      * @param destinationDirectory
-     * @param backendPipeletParameter
+     * @param messageContext
      * @param includeSender
      * @return
      * @throws FileNotFoundException
      * @throws IOException
      */
-    private String writePayload( String destinationDirectory, MessageContext backendPipeletParameter,
+    private String writePayload( String destinationDirectory, MessageContext messageContext,
             boolean includeSender ) throws FileNotFoundException, IOException {
 
         File destDirFile = new File( destinationDirectory );
         StringBuffer fileName = new StringBuffer();
 
-        List<MessagePayloadPojo> messagePayloadPojos = backendPipeletParameter.getMessagePojo().getMessagePayloads();
+        List<MessagePayloadPojo> messagePayloadPojos = messageContext.getMessagePojo().getMessagePayloads();
         Iterator<MessagePayloadPojo> iterator = messagePayloadPojos.iterator();
         if ( iterator.hasNext() ) {
             DateFormat df = new SimpleDateFormat( "yyyyMMddHHmmss" );
             MessagePayloadPojo payload = iterator.next();
             if ( includeSender ) {
-                fileName.append( backendPipeletParameter.getPartner().getPartnerId() + "_"
-                        + df.format( backendPipeletParameter.getMessagePojo().getCreatedDate() ) + "_"
+                fileName.append( messageContext.getPartner().getPartnerId() + "_"
+                        + df.format( messageContext.getMessagePojo().getCreatedDate() ) + "_"
                         + payload.getSequenceNumber() );
             } else {
-                fileName.append( df.format( backendPipeletParameter.getMessagePojo().getCreatedDate() ) + "_"
+                fileName.append( df.format( messageContext.getMessagePojo().getCreatedDate() ) + "_"
                         + payload.getSequenceNumber() );
             }
             fileName.append( "_" ); // separator for java random part of filename

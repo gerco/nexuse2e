@@ -42,6 +42,7 @@ public class ServicePojo implements java.io.Serializable {
     private Date                   modifiedDate;
     private int                    modifiedNxUserId;
     private int                    position;
+    private boolean                autostart;
     private String                 name;
     private String                 description;
     private List<ServiceParamPojo> serviceParams    = new Vector<ServiceParamPojo>( 0 );
@@ -50,6 +51,7 @@ public class ServicePojo implements java.io.Serializable {
 
     /** default constructor */
     public ServicePojo() {
+
         createdDate = new Date();
         modifiedDate = createdDate;
     }
@@ -199,6 +201,18 @@ public class ServicePojo implements java.io.Serializable {
         }
 
         return nxServiceId;
+    }
+
+    
+    public boolean isAutostart() {
+    
+        return autostart;
+    }
+
+    
+    public void setAutostart( boolean autostart ) {
+    
+        this.autostart = autostart;
     }
 
 }

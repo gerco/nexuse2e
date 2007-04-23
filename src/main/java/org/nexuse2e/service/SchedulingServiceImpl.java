@@ -28,10 +28,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
-import org.nexuse2e.Engine;
 import org.nexuse2e.Constants.Runlevel;
 import org.nexuse2e.configuration.ParameterDescriptor;
-import org.nexuse2e.configuration.Constants.ParameterType;
 
 /**
  * @author gesch
@@ -40,7 +38,8 @@ import org.nexuse2e.configuration.Constants.ParameterType;
  */
 public class SchedulingServiceImpl extends AbstractService implements SchedulingService {
 
-    private static Logger                             LOG        = Logger.getLogger( SchedulingServiceImpl.class );
+    private static Logger                                      LOG        = Logger
+                                                                                  .getLogger( SchedulingServiceImpl.class );
 
     private HashMap<SchedulerClient, ScheduledFuture>          clients    = new HashMap<SchedulerClient, ScheduledFuture>();
     private HashMap<SchedulerClient, ScheduledExecutorService> schedulers = new HashMap<SchedulerClient, ScheduledExecutorService>();
@@ -50,7 +49,7 @@ public class SchedulingServiceImpl extends AbstractService implements Scheduling
      */
     @Override
     public void start() {
-        
+
         LOG.trace( "starting" );
         super.start();
     }
@@ -98,6 +97,7 @@ public class SchedulingServiceImpl extends AbstractService implements Scheduling
      * @see org.nexuse2e.service.SchedulingService#deregisterClient(org.nexuse2e.service.SchedulerClient)
      */
     public void deregisterClient( SchedulerClient client ) throws IllegalArgumentException {
+
         LOG.trace( "deregistering client" );
         ScheduledFuture handle = clients.get( client );
         if ( handle != null ) {

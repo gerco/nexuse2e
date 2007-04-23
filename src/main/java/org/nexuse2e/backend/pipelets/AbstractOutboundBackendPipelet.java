@@ -58,11 +58,11 @@ public abstract class AbstractOutboundBackendPipelet extends AbstractPipelet {
 
     /**
      * Method intended for processing outbound messages for which the payload has already been provided. 
-     * @param backendPipeletParameter The <code>MessageContext</code> parameter that contains
+     * @param messageContext The <code>MessageContext</code> parameter that contains
      * all information in order to process the outbound message.
      * @return The modified <code>MessageContext</code> parameter that was operated on.
      */
-    public abstract MessageContext processPayloadAvailable( MessageContext backendPipeletParameter )
+    public abstract MessageContext processPayloadAvailable( MessageContext messageContext )
             throws NexusException;
 
     /**

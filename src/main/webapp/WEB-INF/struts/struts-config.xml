@@ -302,6 +302,13 @@
     <action path="/ServiceDelete" name="serviceForm" type="org.nexuse2e.ui.action.services.ServiceDeleteAction">
       <forward name="success" path="/ServiceList.do"/>
     </action>
+    <action path="/ServiceStop" name="serviceForm" type="org.nexuse2e.ui.action.services.ServiceStopAction">
+      <forward name="success" path="/ServiceList.do"/>
+    </action>
+    <action path="/ServiceStart" name="serviceForm" type="org.nexuse2e.ui.action.services.ServiceStartAction">
+      <forward name="success" path="/ServiceList.do"/>
+    </action>
+
 
     
     <action path="/NotifierList" name="loggerForm" type="org.nexuse2e.ui.action.serverconfig.NotifierListAction">

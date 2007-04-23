@@ -40,7 +40,9 @@ import org.nexuse2e.configuration.ParameterDescriptor;
  */
 public abstract class AbstractService implements Service {
 
-    protected BeanStatus                         status;
+    protected BeanStatus                       status;
+
+    private boolean                            autostart = false;
 
     /**
      * Map parameter names to <code>ParameterDescriptor</code> objects in
@@ -125,6 +127,7 @@ public abstract class AbstractService implements Service {
      * @see org.nexuse2e.Manageable#teardown()
      */
     public void teardown() {
+
         // LOG.debug( "Freeing resources..." );
 
         status = BeanStatus.INSTANTIATED;
@@ -163,12 +166,19 @@ public abstract class AbstractService implements Service {
         parameters.put( name, value );
     }
 
-    /**
-     * Returns <code>true</code> per default.
-     * @return <code>true</code>.
+    /* (non-Javadoc)
+     * @see org.nexuse2e.service.Service#isAutostart()
      */
     public boolean isAutostart() {
 
-        return true;
+        return autostart;
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.service.Service#setAutostart(boolean)
+     */
+    public void setAutostart( boolean autostart ) {
+
+        this.autostart = autostart;
     }
 }

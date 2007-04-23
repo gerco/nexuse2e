@@ -61,7 +61,7 @@ public class WebServiceGenericXMLDocumentSender extends AbstractPipelet {
     private static Logger       LOG = Logger.getLogger( WebServiceGenericXMLDocumentSender.class );
 
     private ProtocolSpecificKey key;
-   
+
     /**
      * Default constructor.
      */
@@ -70,11 +70,10 @@ public class WebServiceGenericXMLDocumentSender extends AbstractPipelet {
         key = null;
     }
 
-    public MessageContext processMessage( MessageContext frontendPipeletParameter )
-            throws NexusException {
+    public MessageContext processMessage( MessageContext messageContext ) throws NexusException {
 
         LOG.debug( "Entering WebServiceGenericXMLDocumentSender.processMessage..." );
-        String receiverURL = frontendPipeletParameter.getParticipant().getConnection().getUri();
+        String receiverURL = messageContext.getParticipant().getConnection().getUri();
         LOG.debug( "Web service connection URL: " + receiverURL );
 
         Client client;
@@ -86,18 +85,16 @@ public class WebServiceGenericXMLDocumentSender extends AbstractPipelet {
 
             Service serviceModel = objectServiceFactory.create( SimpleXMLDocService.class );
 
-            serviceModel.setProperty( Channel.USERNAME, frontendPipeletParameter.getParticipant().getConnection()
-                    .getLoginName() );
-            serviceModel.setProperty( Channel.PASSWORD, frontendPipeletParameter.getParticipant().getConnection()
-                    .getPassword() );
+            serviceModel.setProperty( Channel.USERNAME, messageContext.getParticipant().getConnection().getLoginName() );
+            serviceModel.setProperty( Channel.PASSWORD, messageContext.getParticipant().getConnection().getPassword() );
             // serviceModel.setName( new QName( "SetShipStatusWS" ) );
 
             serviceModel.addInHandler( new AddressingInHandler() );
             serviceModel.addOutHandler( new AddressingOutHandler() );
-            serviceModel.addOutHandler( new SoapActionOutHandler( frontendPipeletParameter.getMessagePojo().getAction()
-                    .getName() ) );
+            serviceModel
+                    .addOutHandler( new SoapActionOutHandler( messageContext.getMessagePojo().getAction().getName() ) );
 
-            List<MessagePayloadPojo> payloads = frontendPipeletParameter.getMessagePojo().getMessagePayloads();
+            List<MessagePayloadPojo> payloads = messageContext.getMessagePojo().getMessagePayloads();
             MessagePayloadPojo payload = payloads.iterator().next();
 
             StaxBuilder builder = new StaxBuilder();
@@ -112,8 +109,7 @@ public class WebServiceGenericXMLDocumentSender extends AbstractPipelet {
             client = Client.getInstance( service );
             client.addInHandler( new AddressingInHandler() );
 
-            client.addOutHandler( new SoapActionOutHandler( frontendPipeletParameter.getMessagePojo().getAction()
-                    .getName() ) );
+            client.addOutHandler( new SoapActionOutHandler( messageContext.getMessagePojo().getAction().getName() ) );
 
             client.addOutHandler( new DOMOutHandler() );
             Properties outProperties = new Properties();
@@ -157,8 +153,6 @@ public class WebServiceGenericXMLDocumentSender extends AbstractPipelet {
 
     }
 
-   
-
     /* (non-Javadoc)
      * @see org.nexuse2e.Manageable#getRunLevel()
      */
@@ -166,7 +160,6 @@ public class WebServiceGenericXMLDocumentSender extends AbstractPipelet {
 
         return Runlevel.INTERFACES;
     }
-
 
     public ProtocolSpecificKey getKey() {
 
@@ -223,5 +216,5 @@ public class WebServiceGenericXMLDocumentSender extends AbstractPipelet {
             pc.setPassword( passwords.get( id ) );
         }
     } // PasswordHandler
-   
+
 } // WebServiceGenericXMLDocumentSender

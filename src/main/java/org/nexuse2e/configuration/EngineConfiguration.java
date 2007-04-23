@@ -183,8 +183,7 @@ public class EngineConfiguration {
             certificates = new ArrayList<CertificatePojo>();
             users = new ArrayList<UserPojo>();
             roles = new ArrayList<RolePojo>();
-            
-            
+
             baseConfigurationProvider.createBaseConfiguration( components, choreographies, partners,
                     backendPipelineTemplates, frontendPipelineTemplates, services, certificates, trps, users, roles,
                     loggers );
@@ -291,13 +290,14 @@ public class EngineConfiguration {
                                 }
                             }
                         } else {
-                            if(StringUtils.isEmpty( token )) {
+                            if ( StringUtils.isEmpty( token ) ) {
                                 continue;
                             }
-                            System.out.println("adding logger: "+token);
+                            System.out.println( "adding logger: " + token );
                             Logger targetlogger = Logger.getLogger( token );
                             logAppender.registerLogger( targetlogger );
-                            if(targetlogger.getLevel() == null || targetlogger.getLevel().toInt() < logger.getThreshold() ) {
+                            if ( targetlogger.getLevel() == null
+                                    || targetlogger.getLevel().toInt() < logger.getThreshold() ) {
                                 targetlogger.setLevel( Level.toLevel( logger.getThreshold() ) );
                             }
                             targetlogger.addAppender( logAppender );
@@ -475,17 +475,17 @@ public class EngineConfiguration {
 
             setGenericParameters( new HashMap<String, List<GenericParamPojo>>() );
             List<GenericParamPojo> tempParams = configDao.getGenericParameters( session, null );
-            if(tempParams != null && tempParams.size() >0) {
+            if ( tempParams != null && tempParams.size() > 0 ) {
                 for ( GenericParamPojo pojo : tempParams ) {
-                   List<GenericParamPojo> catParams = getGenericParameters().get( pojo.getCategory() );
-                   if(catParams == null) {
-                       catParams = new ArrayList<GenericParamPojo>();
-                       getGenericParameters().put( pojo.getCategory(), catParams );
-                   }
-                   catParams.add( pojo );
+                    List<GenericParamPojo> catParams = getGenericParameters().get( pojo.getCategory() );
+                    if ( catParams == null ) {
+                        catParams = new ArrayList<GenericParamPojo>();
+                        getGenericParameters().put( pojo.getCategory(), catParams );
+                    }
+                    catParams.add( pojo );
                 }
             }
-            
+
         } catch ( NexusException e ) {
             InstantiationException ie = new InstantiationException( e.getMessage() );
             ie.setStackTrace( e.getStackTrace() );
@@ -850,24 +850,23 @@ public class EngineConfiguration {
             }
         }
 
-        
         List<GenericParamPojo> tempList = new ArrayList<GenericParamPojo>();
         for ( String name : genericParameters.keySet() ) {
             List<GenericParamPojo> values = genericParameters.get( name );
             tempList.addAll( values );
         }
-        
-        
-//        List<UserPojo> obsoleteUsers = getObsoleteEntries( users, current.getUsers( null ) );
-//        for ( UserPojo pojo : obsoleteUsers ) {
-//            configDao.deleteUser( pojo, session, transaction );
-//        }
-//        obsoleteUsers.clear();
+
+        //        List<UserPojo> obsoleteUsers = getObsoleteEntries( users, current.getUsers( null ) );
+        //        for ( UserPojo pojo : obsoleteUsers ) {
+        //            configDao.deleteUser( pojo, session, transaction );
+        //        }
+        //        obsoleteUsers.clear();
 
         if ( tempList != null && tempList.size() > 0 ) {
 
             for ( GenericParamPojo param : tempList ) {
-                LOG.debug( "Parameter: " + param.getNxGenericParamId() + " - ("+param.getCategory()+"/"+param.getTag()+"):" + param.getParamName()+"="+param.getValue() );
+                LOG.debug( "Parameter: " + param.getNxGenericParamId() + " - (" + param.getCategory() + "/"
+                        + param.getTag() + "):" + param.getParamName() + "=" + param.getValue() );
                 if ( param.getNxGenericParamId() != 0 ) {
                     param.setModifiedDate( new Date() );
                     configDao.updateGenericParameter( param, session, transaction );
@@ -879,8 +878,6 @@ public class EngineConfiguration {
             }
         }
 
-        
-        
         transaction.commit();
         configDao.releaseDBSession( session );
     } // saveConfigurationToDB
@@ -1192,6 +1189,7 @@ public class EngineConfiguration {
             Object newService = Class.forName( pojo.getComponent().getClassName() ).newInstance();
             if ( newService instanceof Service ) {
                 Service service = (Service) newService;
+                service.setAutostart( pojo.isAutostart() );
                 ConfigurationUtil.configureService( service, pojo.getServiceParams() );
                 return service;
             } else {
@@ -1663,21 +1661,19 @@ public class EngineConfiguration {
         this.logCategories = logCategories;
     }
 
-    
     /**
      * @return the genericParameters
      */
     public HashMap<String, List<GenericParamPojo>> getGenericParameters() {
-    
+
         return genericParameters;
     }
 
-    
     /**
      * @param genericParameters the genericParameters to set
      */
     public void setGenericParameters( HashMap<String, List<GenericParamPojo>> genericParameters ) {
-    
+
         this.genericParameters = genericParameters;
     }
 

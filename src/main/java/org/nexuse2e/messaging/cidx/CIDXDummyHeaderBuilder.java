@@ -21,11 +21,8 @@ package org.nexuse2e.messaging.cidx;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -35,14 +32,11 @@ import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.IdGenerator;
-import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
-import org.nexuse2e.messaging.Pipelet;
 import org.nexuse2e.pojo.MessagePayloadPojo;
 import org.nexuse2e.pojo.MessagePojo;
 import org.nexuse2e.transport.WebServiceGenericXMLDocumentReceiver;
-import org.springframework.beans.factory.InitializingBean;
 
 public class CIDXDummyHeaderBuilder extends AbstractPipelet {
 
@@ -56,7 +50,7 @@ public class CIDXDummyHeaderBuilder extends AbstractPipelet {
 
     }
 
-    public MessageContext processMessage( MessageContext frontendPipeletParameter )
+    public MessageContext processMessage( MessageContext messageContext )
             throws NexusException {
 
         String partnerId = null;
@@ -65,7 +59,7 @@ public class CIDXDummyHeaderBuilder extends AbstractPipelet {
         String actionId = null;
         String choreographyId = null;
 
-        MessagePojo messagePojo = frontendPipeletParameter.getMessagePojo();
+        MessagePojo messagePojo = messageContext.getMessagePojo();
         messagePojo.setType( org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_NORMAL );
         messagePojo.setCreatedDate( new Date() );
         messagePojo.setModifiedDate( new Date() );
@@ -82,7 +76,7 @@ public class CIDXDummyHeaderBuilder extends AbstractPipelet {
         choreographyId = "not set";
         actionId = "not set";
 
-        ByteArrayInputStream bais = new ByteArrayInputStream( (byte[])frontendPipeletParameter.getData() );
+        ByteArrayInputStream bais = new ByteArrayInputStream( (byte[])messageContext.getData() );
         XMLInputFactory factory = XMLInputFactory.newInstance();
         try {
             XMLStreamReader parser = factory.createXMLStreamReader( bais );
@@ -107,12 +101,12 @@ public class CIDXDummyHeaderBuilder extends AbstractPipelet {
 
             LOG.debug( "CIDXDummyHeaderBuilder.processMessage triggered... " );
 
-            String payload = new String( (byte[])frontendPipeletParameter.getData() );
+            String payload = new String( (byte[])messageContext.getData() );
 
             LOG.debug( "CIDXDummyHeaderBuilder.processMessage - payload:\n" + payload );
             MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo();
             messagePayloadPojo.setMessage( messagePojo );
-            messagePayloadPojo.setPayloadData( (byte[])frontendPipeletParameter.getData() );
+            messagePayloadPojo.setPayloadData( (byte[])messageContext.getData() );
             messagePayloadPojo.setMimeType( "text/xml" );
             messagePayloadPojo.setContentId( messagePojo.getMessageId() + "-body1" );
             messagePayloadPojo.setSequenceNumber( new Integer( 1 ) );
@@ -128,7 +122,7 @@ public class CIDXDummyHeaderBuilder extends AbstractPipelet {
             throw new NexusException( "Error processing inbound CIDX message: " + e, e );
         }
 
-        return frontendPipeletParameter;
+        return messageContext;
     }
    
 }

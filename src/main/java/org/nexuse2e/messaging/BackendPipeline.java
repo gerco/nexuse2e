@@ -46,12 +46,12 @@ public class BackendPipeline extends AbstractPipeline implements ActionSpecific 
     /* (non-Javadoc)
      * @see org.nexuse2e.messaging.Pipeline#processMessage(org.nexuse2e.messaging.MessageContext)
      */
-    public MessageContext processMessage( MessageContext backendPipeletParameter )
+    public MessageContext processMessage( MessageContext messageContext )
             throws IllegalArgumentException, IllegalStateException, NexusException {
 
         LOG.debug( "BackendPipeline.processMessage..." );
 
-        if ( backendPipeletParameter == null ) {
+        if ( messageContext == null ) {
             throw new IllegalArgumentException( "No content found" );
         }
 
@@ -59,7 +59,7 @@ public class BackendPipeline extends AbstractPipeline implements ActionSpecific 
             throw new NexusException( "PipelineEndpoint must not be null!" );
         }
 
-        if ( backendPipeletParameter.getMessagePojo() == null ) {
+        if ( messageContext.getMessagePojo() == null ) {
             throw new IllegalStateException( "MessagePojo must not be null" );
         }
 
@@ -71,19 +71,19 @@ public class BackendPipeline extends AbstractPipeline implements ActionSpecific 
                     LOG.debug( "processing pipelet[" + i + "]" );
                     MessageProcessor backendPipelet = forwardPipelets[i];
 
-                    backendPipeletParameter = backendPipelet.processMessage( backendPipeletParameter );
+                    messageContext = backendPipelet.processMessage( messageContext );
                 }
             } else {
                 LOG.error( "No pipelets found." );
             }
-            pipelineEndpoint.processMessage( backendPipeletParameter );
+            pipelineEndpoint.processMessage( messageContext );
 
         } catch ( Exception e ) {
             e.printStackTrace();
             throw new NexusException( "Error processing backend pipeline: " + e );
         }
 
-        return backendPipeletParameter;
+        return messageContext;
     } // processMessage
 
     /* (non-Javadoc)

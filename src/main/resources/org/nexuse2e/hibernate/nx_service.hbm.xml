@@ -34,6 +34,12 @@
             </column>
         </property>
         
+        <property name="autostart" type="boolean">
+            <column name="autostart_flag" not-null="true">
+                <comment></comment>
+            </column>
+        </property>
+         
         <property name="name" type="string">
             <column name="name" length="64" not-null="true">
                 <comment></comment>

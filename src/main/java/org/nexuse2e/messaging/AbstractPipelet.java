@@ -30,35 +30,38 @@ import org.nexuse2e.Constants.Runlevel;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 
-
 abstract public class AbstractPipelet implements Pipelet {
 
-    protected Map<String, Object>              parameters = new HashMap<String, Object>();
+    protected Map<String, Object>              parameters   = new HashMap<String, Object>();
     protected Map<String, ParameterDescriptor> parameterMap = new LinkedHashMap<String, ParameterDescriptor>();
-    
-    protected boolean frontendPipelet;
-    protected boolean forwardPipelet;
-    protected BeanStatus status = BeanStatus.UNDEFINED;
-    
+
+    protected boolean                          frontendPipelet;
+    protected boolean                          forwardPipelet;
+    protected BeanStatus                       status       = BeanStatus.UNDEFINED;
+
     /* (non-Javadoc)
      * @see org.nexuse2e.Manageable#activate()
      */
     public void activate() {
+
         status = BeanStatus.ACTIVATED;
     }
 
     public void deactivate() {
+
         status = BeanStatus.INITIALIZED;
     }
 
-    public void initialize(EngineConfiguration config) {
+    public void initialize( EngineConfiguration config ) {
+
         status = BeanStatus.INITIALIZED;
     }
 
-    abstract public MessageContext processMessage( MessageContext frontendPipeletParameter )
-            throws IllegalArgumentException, IllegalStateException, NexusException;
+    abstract public MessageContext processMessage( MessageContext messageContext ) throws IllegalArgumentException,
+            IllegalStateException, NexusException;
 
     public void teardown() {
+
         status = BeanStatus.INSTANTIATED;
     }
 
@@ -95,7 +98,6 @@ abstract public class AbstractPipelet implements Pipelet {
 
         parameters.put( name, value );
     }
-
 
     /* (non-Javadoc)
      * @see org.nexuse2e.Manageable#getActivationRunlevel()
@@ -143,7 +145,7 @@ abstract public class AbstractPipelet implements Pipelet {
     public void setFrontendPipelet( boolean isFrontendPipelet ) {
 
         frontendPipelet = isFrontendPipelet;
-        
+
     }
 
 }

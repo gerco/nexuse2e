@@ -45,6 +45,7 @@ import org.nexuse2e.pojo.ServiceParamPojo;
 import org.nexuse2e.pojo.ServicePojo;
 import org.nexuse2e.pojo.TRPPojo;
 import org.nexuse2e.pojo.UserPojo;
+import org.nexuse2e.service.SchedulingServiceImpl;
 import org.nexuse2e.service.http.HttpReceiverService;
 import org.nexuse2e.service.http.HttpSenderService;
 import org.nexuse2e.service.mail.Pop3Receiver;
@@ -508,8 +509,10 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             
             ServicePojo httpSenderService10 = new ServicePojo( httpSenderComponent, new Date(), new Date(), 1, 0,
                     "HttpSenderService_ebXML_1.0", "A sender service for HTTP", new ArrayList<ServiceParamPojo>() );
+            httpSenderService10.setAutostart( true );
             ServicePojo httpReceiverService10 = new ServicePojo( httpReceiverComponent, new Date(), new Date(), 1, 0,
                     "HttpReceiverService_ebXML_1.0", "A receiver service for HTTP", new ArrayList<ServiceParamPojo>() );
+            httpReceiverService10.setAutostart( true );
             serviceParams = new ArrayList<ServiceParamPojo>();
             serviceParam = new ServiceParamPojo( httpReceiverService10, new Date(), new Date(), 1, "logical_name",
                     "ebxml10" );
@@ -518,14 +521,18 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             
             ServicePojo httpSenderService20 = new ServicePojo( httpSenderComponent, new Date(), new Date(), 1, 0,
                     "HttpSenderService", "The default sender service for HTTP", new ArrayList<ServiceParamPojo>() );
+            httpSenderService20.setAutostart( true );
             ServicePojo httpPlainSenderService = new ServicePojo( httpSenderComponent, new Date(), new Date(), 1, 0,
                     "HttpPlainSenderService", "The default sender service for HTTPPlain",
                     new ArrayList<ServiceParamPojo>() );
+            httpPlainSenderService.setAutostart( true );
             ServicePojo smtpSenderService = new ServicePojo( smtpSenderComponent, new Date(), new Date(), 1, 0,
                     "SmtpSenderService", "The default sender service for SMTP", new ArrayList<ServiceParamPojo>() );
+            smtpSenderService.setAutostart( true );
 
             ServicePojo httpReceiverService20 = new ServicePojo( httpReceiverComponent, new Date(), new Date(), 1, 0,
                     "HttpReceiverService", "The default receiver service for HTTP", new ArrayList<ServiceParamPojo>() );
+            httpReceiverService20.setAutostart( true );
             serviceParams = new ArrayList<ServiceParamPojo>();
             serviceParam = new ServiceParamPojo( httpReceiverService20, new Date(), new Date(), 1, "logical_name",
                     "ebxml20" );
@@ -535,6 +542,7 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             ServicePojo httpPlainReceiverService = new ServicePojo( httpReceiverComponent, new Date(), new Date(), 1,
                     0, "HttpPlainReceiverService", "The default receiver service for HTTPPlain",
                     new ArrayList<ServiceParamPojo>() );
+            httpPlainReceiverService.setAutostart( true );
             serviceParams = new ArrayList<ServiceParamPojo>();
             serviceParam = new ServiceParamPojo( httpPlainReceiverService, new Date(), new Date(), 1, "logical_name",
                     "httpplain" );
@@ -543,6 +551,13 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
 
             ServicePojo pop3ReceiverService = new ServicePojo( pop3ReceiverComponent, new Date(), new Date(), 1, 0,
                     "Pop3ReceiverService", "The default receiver service for POP3", new ArrayList<ServiceParamPojo>() );
+            pop3ReceiverService.setAutostart( true );
+
+            ComponentPojo schedulingServiceComponent = new ComponentPojo( new Date(), new Date(), 1, ComponentType.SERVICE
+                    .getValue(), "SchedulingService", SchedulingServiceImpl.class.getName(), "The scheduling service" );
+            ServicePojo schedulingService = new ServicePojo( schedulingServiceComponent, new Date(), new Date(), 1, 0,
+                    "SchedulingService", "A service for schduling tasks", new ArrayList<ServiceParamPojo>() );
+            schedulingService.setAutostart( true );
 
             List<ParticipantPojo> httpParticipants = new ArrayList<ParticipantPojo>();
             Set<ActionPojo> httpActions = new HashSet<ActionPojo>();
@@ -571,6 +586,7 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             components.add( smtpSenderComponent );
             components.add( pop3ReceiverComponent );
             components.add( dbLoggerComponentPojo );
+            components.add( schedulingServiceComponent );
 
             backendPipelineTemplates.add( fileSaveInboundPipelinePojo );
             backendPipelineTemplates.add( fileLoadOutboundPipelinePojo );
@@ -582,6 +598,7 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             services.add( httpPlainReceiverService );
             services.add( smtpSenderService );
             services.add( pop3ReceiverService );
+            services.add( schedulingService );
 
             /*
              * User configuration

@@ -58,8 +58,8 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
      * @return
      * @throws NexusException
      */
-    public MessageContext processMessage( String conversationId, String actionId, Object primaryKey,
-            byte[] payload ) throws NexusException {
+    public MessageContext processMessage( String conversationId, String actionId, Object primaryKey, byte[] payload )
+            throws NexusException {
 
         ConversationPojo conversationPojo = Engine.getInstance().getTransactionService().getConversation(
                 conversationId );
@@ -153,8 +153,8 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
                     + actionId );
         }
 
-        MessageContext pipeletParameter = new MessageContext();
-        pipeletParameter.setActionSpecificKey( key );
+        MessageContext messageContext = new MessageContext();
+        messageContext.setActionSpecificKey( key );
 
         //      TODO labelhandling
 
@@ -170,7 +170,7 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
         messagePojo.setOutbound( true );
 
         if ( primaryKey != null ) {
-            pipeletParameter.setData( primaryKey );
+            messageContext.setData( primaryKey );
         }
         if ( payload != null && payload.length > 0 ) {
             MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo();
@@ -186,16 +186,16 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
             List<MessagePayloadPojo> bodyParts = new ArrayList<MessagePayloadPojo>();
             bodyParts.add( messagePayloadPojo );
             messagePojo.setMessagePayloads( bodyParts );
-            //pipeletParameter.setData( payload );    
+            //messageContext.setData( payload );    
         }
 
         if ( errors != null ) {
             messagePojo.setErrors( errors );
         }
 
-        pipeletParameter.setMessagePojo( messagePojo );
+        messageContext.setMessagePojo( messagePojo );
         try {
-            pipeline.processMessage( pipeletParameter );
+            pipeline.processMessage( messageContext );
         } catch ( Exception e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -204,7 +204,7 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
             e.printStackTrace();
         }
 
-        return pipeletParameter;
+        return messageContext;
     } // processMessage
 
     /* (non-Javadoc)
