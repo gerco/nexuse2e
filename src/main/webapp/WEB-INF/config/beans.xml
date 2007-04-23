@@ -27,6 +27,7 @@
     <property name="baseConfigurationProviderClass" value="${configuration.base.class}" />
     <property name="cacertsPath" value="/Volumes/nexus" />
     <property name="certificatePath" value="/Volumes/nexus" />
+    <property name="timestampPattern" value="${database.timestamp.pattern}" />
   </bean>
 
   <!-- Integration beans -->
