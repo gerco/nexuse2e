@@ -27,12 +27,14 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.LockMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
@@ -54,12 +56,21 @@ public class BasicDAO extends HibernateDaoSupport {
 
     private static int            sessionCount        = 0;
 
+    private static String         timestampPattern    = null;
+
     /**
      * Default Constructor
      *
      */
     public BasicDAO() {
-
+        
+        if(timestampPattern == null) {
+            timestampPattern = Engine.getInstance().getTimestampPattern();
+            if(StringUtils.isEmpty( timestampPattern )) {
+                timestampPattern = DEFAULT_DATE_FORMAT;
+            }
+        }
+        
     } // BasicDAO
 
     public Session getDBSession() {
@@ -618,6 +629,7 @@ public class BasicDAO extends HibernateDaoSupport {
                     transaction = session.beginTransaction();
                     extTransactionFlag = false;
                 }
+                
                 Query query = session.createQuery( SELECT_COUNT_PREFIX + queryString );
                 count = ( (Long) query.iterate().next() ).intValue();
                 if ( !extTransactionFlag ) {
@@ -659,7 +671,7 @@ public class BasicDAO extends HibernateDaoSupport {
         if ( iSeriesServer ) {
             sdf = new SimpleDateFormat( "yyyy-MM-dd-HH.mm.ss.SSS" );
         } else {
-            sdf = new SimpleDateFormat( DEFAULT_DATE_FORMAT );
+            sdf = new SimpleDateFormat( timestampPattern );
         }
         result = "'" + sdf.format( timestamp ) + "'";
         // Microsoft SQL server: use timestamp escape sequence to work with all region settings

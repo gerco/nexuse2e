@@ -105,6 +105,8 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
 
     private Map<Object, EngineConfiguration> configurations                 = new HashMap<Object, EngineConfiguration>();
 
+    private String                           timestampPattern               = null;
+
     static {
 
         // Make sure we have the right JCE provider available...
@@ -297,7 +299,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        
+
         LOG.debug( "Engine initialized." );
     }
 
@@ -684,7 +686,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     public void deactivate() {
 
         LOG.debug( "Engine.deactivate..." );
-         
+
         if ( currentConfiguration != null ) {
             Runlevel[] runlevels = Runlevel.values();
             for ( int i = runlevels.length - 1; i >= 0; i-- ) {
@@ -913,22 +915,38 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
         this.baseConfigurationProviderClass = baseConfigurationProviderClass;
     }
 
-    
     /**
      * @return
      */
     public EngineController getEngineController() {
-    
+
         return engineController;
     }
 
-    
     /**
      * @param engineController
      */
     public void setEngineController( EngineController engineController ) {
-    
+
         this.engineController = engineController;
+    }
+
+    
+    /**
+     * @return the timestampPattern
+     */
+    public String getTimestampPattern() {
+    
+        return timestampPattern;
+    }
+
+    
+    /**
+     * @param timestampPattern the timestampPattern to set
+     */
+    public void setTimestampPattern( String timestampPattern ) {
+    
+        this.timestampPattern = timestampPattern;
     }
 
 } // Engine

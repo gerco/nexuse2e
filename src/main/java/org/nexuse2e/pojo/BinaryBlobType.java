@@ -42,7 +42,8 @@ import org.hibernate.usertype.UserType;
 public class BinaryBlobType implements UserType {
 
     private static final String   ORACLE_DRIVER_NAME          = "Oracle JDBC driver";
-    private static final int      ORACLE_DRIVER_MAJOR_VERSION = 9;
+    private static final int      ORACLE9_DRIVER_MAJOR_VERSION = 9;
+    private static final int      ORACLE10_DRIVER_MAJOR_VERSION = 10;
     private static final int      ORACLE_DRIVER_MINOR_VERSION = 0;
 
     private static final String   ISERIES_DRIVER_NAME         = "AS/400 Toolbox for Java JDBC Driver";
@@ -103,9 +104,14 @@ public class BinaryBlobType implements UserType {
 
         // LOG.trace( "Driver: " + dbMetaData.getDriverName() );
 
+        
+        
+        
         if ( value != null ) {
             if ( ORACLE_DRIVER_NAME.equalsIgnoreCase( dbMetaData.getDriverName() ) ) {
-                if ( ( dbMetaData.getDriverMajorVersion() >= ORACLE_DRIVER_MAJOR_VERSION )
+                
+                
+                if ( ( dbMetaData.getDriverMajorVersion() == ORACLE9_DRIVER_MAJOR_VERSION )
                         && ( dbMetaData.getDriverMinorVersion() >= ORACLE_DRIVER_MINOR_VERSION ) ) {
                     try {
                         // Code compliments of Scott Miller
@@ -195,9 +201,12 @@ public class BinaryBlobType implements UserType {
                     } catch ( IOException e ) {
                         throw new HibernateException( e.getMessage() );
                     }
+                } else if(( dbMetaData.getDriverMajorVersion() == ORACLE10_DRIVER_MAJOR_VERSION )
+                        && ( dbMetaData.getDriverMinorVersion() >= ORACLE_DRIVER_MINOR_VERSION )) {
+                    st.setBytes( index, (byte[]) value );
                 } else {
                     throw new HibernateException( "No BLOBS support. Use Oracle âdriver version "
-                            + ORACLE_DRIVER_MAJOR_VERSION + ", minor " + ORACLE_DRIVER_MINOR_VERSION + " or higher!" );
+                            + ORACLE9_DRIVER_MAJOR_VERSION + ", minor " + ORACLE_DRIVER_MINOR_VERSION + " or higher!" );
                 }
             } else if ( ISERIES_DRIVER_NAME.equalsIgnoreCase( dbMetaData.getDriverName() )
                     || MICROSOFT_DRIVER_NAME.equalsIgnoreCase( dbMetaData.getDriverName() ) ) {
