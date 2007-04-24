@@ -24,14 +24,20 @@ and your sourceforge.net login and password.
 location and choose "Check Out" or "Find/Check Out As..." from
 the context menu.
 
-The newly created project will show a lot of errors and problem
-that we will fix with the following steps.
+The newly created project will show a lot of errors and problems
+that we will be fixed with the following steps.
 
-2.3 In the Properties for the newly created project
+2.3 
+Clost the project in Eclipse and replace the file .classpath in the 
+root directory of your project with the one from the dev subdirectory.
+Reopen the project in Eclipse.
+or
+In the Properties for the newly created project
 (Context Menu > "Properties" > "Java Build Path" > "Source")
 select as source folders: "src/main/java" and "src/main/resources"
 Define "src/main/webapp/WEB-INF/classes" as output folder
-(these paths are directly under the projects root).
+(these paths are directly under the projects root). You will have to 
+add all required libraries manually. 
 
 2.4 Add a new classpath variable to the global Eclipse preferences
 ("Window" > "Preferences" > "Java" > "Build Path" > "Classpath")
