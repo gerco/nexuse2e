@@ -43,6 +43,19 @@ public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
     }
 
     /* (non-Javadoc)
+     * @see org.nexuse2e.integration.NEXUSe2eInterface#createConversation(java.lang.String, java.lang.String, java.lang.String)
+     */
+    public String createConversation( String choreographyId, String businessPartnerId, String conversationId )
+            throws NexusException {
+
+        LOG.debug( "createConversation - choreographyId: " + choreographyId + ", businessPartnerId: "
+                + businessPartnerId + ", conversationId: " + conversationId );
+        ConversationPojo conversationPojo = Engine.getInstance().getTransactionService().createConversation(
+                choreographyId, businessPartnerId, conversationId );
+        return conversationPojo.getConversationId();
+    }
+
+    /* (non-Javadoc)
      * @see org.nexuse2e.integration.NEXUSe2eInterface#triggerSendingMessage(java.lang.String, java.lang.String, java.lang.Object)
      */
     public boolean triggerSendingMessage( String conversationId, String actionId, Object primaryKey )
@@ -94,6 +107,15 @@ public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
     public String triggerSendingNewMessage( String choreographyId, String businessPartnerId, String actionId,
             Object primaryKey ) throws NexusException {
 
+        return triggerSendingNewMessage( choreographyId, businessPartnerId, actionId, null, primaryKey );
+    } // triggerSendingNewMessage
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.integration.NEXUSe2eInterface#triggerSendingNewMessage(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.Object)
+     */
+    public String triggerSendingNewMessage( String choreographyId, String businessPartnerId, String actionId,
+            String conversationId, Object primaryKey ) throws NexusException {
+
         MessageContext messageContext = null;
 
         LOG.debug( "triggerSendingNewMessage - choreographyId: " + choreographyId + ", businessPartnerId: "
@@ -104,8 +126,8 @@ public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
         LOG.debug( "sendNewStringMessage - backendPipelineDispatcher: " + backendPipelineDispatcher );
         if ( backendPipelineDispatcher != null ) {
             try {
-                messageContext = backendPipelineDispatcher.processMessage( businessPartnerId, choreographyId,
-                        actionId, null, null, primaryKey, null );
+                messageContext = backendPipelineDispatcher.processMessage( businessPartnerId, choreographyId, actionId,
+                        conversationId, null, primaryKey, null );
             } catch ( NexusException e ) {
                 LOG.debug( "sendNewStringMessage - error: " + e );
                 e.printStackTrace();
@@ -121,6 +143,12 @@ public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
     public String sendNewStringMessage( String choreographyId, String businessPartnerId, String actionId, String payload )
             throws NexusException {
 
+        return sendNewStringMessage( choreographyId, businessPartnerId, actionId, null, payload );
+    }
+
+    public String sendNewStringMessage( String choreographyId, String businessPartnerId, String actionId,
+            String conversationId, String payload ) throws NexusException {
+
         MessageContext messageContext = null;
 
         LOG.debug( "sendNewStringMessage - choreographyId: " + choreographyId + ", businessPartnerId: "
@@ -131,8 +159,8 @@ public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
         LOG.debug( "sendNewStringMessage - backendPipelineDispatcher: " + backendPipelineDispatcher );
         if ( backendPipelineDispatcher != null ) {
             try {
-                messageContext = backendPipelineDispatcher.processMessage( businessPartnerId, choreographyId,
-                        actionId, null, null, null, payload.getBytes() );
+                messageContext = backendPipelineDispatcher.processMessage( businessPartnerId, choreographyId, actionId,
+                        conversationId, null, null, payload.getBytes() );
             } catch ( NexusException e ) {
                 LOG.debug( "sendNewStringMessage - error: " + e );
                 e.printStackTrace();

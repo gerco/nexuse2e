@@ -20,3 +20,4 @@ mvn install:install-file -DgroupId=json.org -DartifactId=json -Dversion=1.0 -Dpa
 mvn install:install-file -DgroupId=javamail -DartifactId=javamail -Dversion=1.4 -Dpackaging=jar -Dfile=lib/mail.jar
 mvn install:install-file -DgroupId=javax.transaction -DartifactId=jta -Dversion=1.0.1B -Dpackaging=jar -Dfile=lib/jta-1_0_1B-classes.zip
 mvn install:install-file -DgroupId=javax.xml -DartifactId=saaj-api -Dversion=1.3 -Dpackaging=jar -Dfile=lib/saaj-api.jar
+mvn install:install-file -DgroupId=org.nexuse2e -DartifactId=nexuse2e_legacy -Dversion=3.6.5 -Dpackaging=jar -Dfile=lib/nexuse2e_legacy.jar

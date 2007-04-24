@@ -30,6 +30,13 @@
     <property name="timestampPattern" value="${database.timestamp.pattern}" />
   </bean>
 
+  <!-- RMI  -->
+  <bean id="rmiLegacyServer" class="org.nexuse2e.integration.NEXUSe2eRMILegacyServer">
+    <property name="hostName" value="${rmi.hostName}" />
+    <property name="interfaceName" value="${rmi.interfaceName}" />
+    <property name="rmiPort" value="${rmi.rmiPort}" />
+  </bean>
+
   <!-- Integration beans -->
   <bean id="httpIntegrationController" class="org.nexuse2e.integration.HTTPIntegrationController"></bean>
   <bean id="debugController" class="org.nexuse2e.integration.DebugController"></bean>

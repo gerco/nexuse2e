@@ -552,6 +552,12 @@
       <version>8.2-504.jdbc3</version>
       <scope>run</scope>
     </dependency>
+    <dependency>
+      <groupId>org.nexuse2e</groupId>
+      <artifactId>nexuse2e_legacy</artifactId>
+      <version>3.6.5</version>
+      <scope>compile</scope>
+    </dependency>
     <!-- <type>zip</type> -->
   </dependencies>
   <distributionManagement>

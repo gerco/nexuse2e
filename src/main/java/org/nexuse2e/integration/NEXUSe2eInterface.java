@@ -37,6 +37,16 @@ public interface NEXUSe2eInterface {
     public String createConversation( String choreographyId, String businessPartnerId ) throws NexusException;
 
     /**
+     * Create a new conversation (instance of a choreography) in order to submit messages to a specific partner.
+     * @param choreographyId The ID of the choreography to create the conversation for.
+     * @param businessPartnerId The ID of the partner to exchange messages with.
+     * @param conversationId The ID to use for the new conversation.
+     * @return The ID of the newly created conversation.
+     */
+    public String createConversation( String choreographyId, String businessPartnerId, String conversationId )
+            throws NexusException;
+
+    /**
      * Trigger sending a message by providing some sort of primary key that allows the <code>Pipelet</code>
      * instances in the <code>Pipeline</code> to retrieve or create the message payload(s).
      * @param conversationId The ID of a previously created conversation this message belongs to.
@@ -52,7 +62,7 @@ public interface NEXUSe2eInterface {
      * Send a message with a String payload (e.g. XML or plain text).
      * @param conversationId The ID of a previously created conversation this message belongs to.
      * @param actionId The ID of the action to trigger in the choreography.
-     * @param payload The single payload of the message
+     * @param payload The single payload of the message.
      * @return TRUE if the message was submitted to the engine successfully (i.e. a message could be created 
      * and was persisted).
      */
@@ -72,15 +82,42 @@ public interface NEXUSe2eInterface {
             Object primaryKey ) throws NexusException;
 
     /**
+     * Trigger sending a message by providing some sort of primary key that allows the <code>Pipelet</code>
+     * instances in the <code>Pipeline</code> to retrieve or create the message payload(s) while also creating
+     * a new conversation for the specified choreography and partner.
+     * @param choreographyId The ID of the choreography to create the conversation for.
+     * @param businessPartnerId The ID of the partner to exchange messages with.
+     * @param actionId The ID of the action to trigger in the choreography.
+     * @param conversationId The ID to use for the new conversation.
+     * @param primaryKey The primary key used to retrieve/create the payload.
+     * @return The ID of the conversation that was created for this message.
+     */
+    public String triggerSendingNewMessage( String choreographyId, String businessPartnerId, String actionId,
+            String conversationId, Object primaryKey ) throws NexusException;
+
+    /**
      * Send a message with a String payload (e.g. XML or plain text) while also creating
      * a new conversation for the specified choreography and partner.
      * @param choreographyId The ID of the choreography to create the conversation for.
      * @param businessPartnerId The ID of the partner to exchange messages with.
      * @param actionId The ID of the action to trigger in the choreography.
-     * @param payload
+     * @param payload The single payload of the message.
      * @return The ID of the conversation that was created for this message.
      */
     public String sendNewStringMessage( String choreographyId, String businessPartnerId, String actionId, String payload )
             throws NexusException;
+
+    /**
+     * Send a message with a String payload (e.g. XML or plain text) while also creating
+     * a new conversation for the specified choreography and partner.
+     * @param choreographyId The ID of the choreography to create the conversation for.
+     * @param businessPartnerId The ID of the partner to exchange messages with.
+     * @param actionId The ID of the action to trigger in the choreography.
+     * @param conversationId The ID to use for the new conversation.
+     * @param payload The single payload of the message.
+     * @return The ID of the conversation that was created for this message.
+     */
+    public String sendNewStringMessage( String choreographyId, String businessPartnerId, String actionId,
+            String conversationId, String payload ) throws NexusException;
 
 } // NEXUSe2eInterface
