@@ -89,7 +89,7 @@ public class XiomaBaseClientConfiguration extends XiomaBaseServerConfiguration {
                     break;
                 }
             }
-System.out.println("neeuuuuuuuuuuu");
+
             if ( choreography.getParticipants() != null && choreography.getParticipants().size() > 0 ) {
                 Iterator<ParticipantPojo> i = choreography.getParticipants().iterator();
                 while ( i.hasNext() ) {

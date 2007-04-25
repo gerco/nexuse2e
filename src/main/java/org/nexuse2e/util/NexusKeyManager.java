@@ -20,7 +20,6 @@
 package org.nexuse2e.util;
 
 import java.net.Socket;
-
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -33,6 +32,8 @@ import java.util.Enumeration;
 
 import javax.net.ssl.X509KeyManager;
 
+import org.apache.log4j.Logger;
+
 /**
  * @author guido.esch
  *
@@ -41,8 +42,9 @@ import javax.net.ssl.X509KeyManager;
  */
 public class NexusKeyManager implements X509KeyManager {
 
-    private String   password = null;
-    private KeyStore keystore = null;
+    private static Logger LOG      = Logger.getLogger( NexusKeyManager.class );
+    private String        password = null;
+    private KeyStore      keystore = null;
 
     /**
      * 
@@ -104,9 +106,9 @@ public class NexusKeyManager implements X509KeyManager {
      */
     public String chooseClientAlias( String[] keyTypes, Principal[] issuers, Socket socket ) {
 
-        //        System.out.println( "entering chooseClientAlias" );
+        //        LOG.debug( "entering chooseClientAlias" );
         if ( keystore == null ) {
-            System.out.println( "no keystore found" );
+            LOG.debug( "no keystore found" );
             return null;
         }
         Enumeration e;
@@ -121,36 +123,36 @@ public class NexusKeyManager implements X509KeyManager {
         try {
             while ( e.hasMoreElements() ) {
                 alias = (String) e.nextElement();
-                // System.out.println( "Alias: '" + alias + "', entry is cert: " +  jks.isCertificateEntry( alias ) );
+                // LOG.debug( "Alias: '" + alias + "', entry is cert: " +  jks.isCertificateEntry( alias ) );
                 if ( keystore.isKeyEntry( alias ) ) {
                     foundKey = true;
                     break;
                 }
             }
         } catch ( KeyStoreException e1 ) {
-            System.out.println( "Error accesing private key in Keystore!" );
+            LOG.debug( "Error accesing private key in Keystore!" );
         }
         if ( foundKey ) {
             return alias;
         } else {
-            System.out.println( "No private key found in Keystore!" );
+            LOG.debug( "No private key found in Keystore!" );
             return null;
         }
 
         /*
          if ( !e.hasMoreElements() ) {
-         System.out.println( "no aliases found in Keystore!" );
+         LOG.debug( "no aliases found in Keystore!" );
          return null;
          }
          String alias = (String) e.nextElement();
          if ( e.hasMoreElements() ) {
-         System.out.println( "There is more than one alias in Keystore!!!" );
-         System.out.println( "(usesd): " + alias );
+         LOG.debug( "There is more than one alias in Keystore!!!" );
+         LOG.debug( "(usesd): " + alias );
          while ( e.hasMoreElements() ) {
-         System.out.println( ":" + (String) e.nextElement() );
+         LOG.debug( ":" + (String) e.nextElement() );
          }
          }
-         //        System.out.println("exit chooseClientAlias, return="+alias);
+         //        LOG.debug("exit chooseClientAlias, return="+alias);
          return alias;
          */
     }
@@ -160,7 +162,7 @@ public class NexusKeyManager implements X509KeyManager {
      */
     public String chooseServerAlias( String keyType, Principal[] issuers, Socket socket ) {
 
-        System.out.println( "entering chooseServerAlias" );
+        LOG.debug( "entering chooseServerAlias" );
         return null;
     }
 
@@ -169,9 +171,9 @@ public class NexusKeyManager implements X509KeyManager {
      */
     public String[] getClientAliases( String keyType, Principal[] issuers ) {
 
-        //        System.out.println( "entering getClientAliases" );
+        //        LOG.debug( "entering getClientAliases" );
         if ( keystore == null ) {
-            System.out.println( "no keystore found" );
+            LOG.debug( "no keystore found" );
             return null;
         }
         Enumeration e;
@@ -182,15 +184,15 @@ public class NexusKeyManager implements X509KeyManager {
             return null;
         }
         if ( !e.hasMoreElements() ) {
-            System.out.println( "no aliases found in Keystore!" );
+            LOG.debug( "no aliases found in Keystore!" );
             return null;
         }
         String[] aliases = new String[] { (String) e.nextElement()};
         if ( e.hasMoreElements() ) {
-            System.out.println( "There is more than one alias in Keystore! (getClientAliases)" );
-            System.out.println( "(used): " + aliases[0] );
+            LOG.debug( "There is more than one alias in Keystore! (getClientAliases)" );
+            LOG.debug( "(used): " + aliases[0] );
             while ( e.hasMoreElements() ) {
-                System.out.println( "- " + (String) e.nextElement() );
+                LOG.debug( "- " + (String) e.nextElement() );
             }
         }
         return null;
@@ -201,7 +203,7 @@ public class NexusKeyManager implements X509KeyManager {
      */
     public String[] getServerAliases( String keyType, Principal[] issuers ) {
 
-        System.out.println( "entering getServerAliases" );
+        LOG.debug( "entering getServerAliases" );
         return null;
     }
 }

@@ -15,7 +15,7 @@
 	<tr>
 		<td class="NEXUSName">Login name</td>
 		<td class="NEXUSValue"><input id="loginName" type="text"
-			name="user" value="admin"> <script>
+			name="user" value=""> <script>
   				// set focus to login name input field
   				dojo.addOnLoad( function() {
   					document.getElementById('loginName').focus();
@@ -24,7 +24,7 @@
 	</tr>
 	<tr>
 		<td class="NEXUSName">Password</td>
-		<td class="NEXUSValue"><input type="password" name="pass" value="admin">
+		<td class="NEXUSValue"><input type="password" name="pass" value="">
 		</td>
 	</tr>
 </table>

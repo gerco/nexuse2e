@@ -52,14 +52,15 @@ import org.springframework.web.servlet.ModelAndView;
  */
 public class HttpReceiverService extends AbstractControllerService implements ReceiverAware, MessageProcessor {
 
-    private static Logger     LOG = Logger.getLogger( HttpReceiverService.class );
+    private static Logger      LOG            = Logger.getLogger( HttpReceiverService.class );
 
-    public static final String URL_PARAM_NAME          = "logical_name";
+    public static final String URL_PARAM_NAME = "logical_name";
 
-    private TransportReceiver transportReceiver;
+    private TransportReceiver  transportReceiver;
 
     @Override
     public void fillParameterMap( Map<String, ParameterDescriptor> parameterMap ) {
+
         parameterMap.put( URL_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "Logical Name",
                 "Logical name that is appended to the URL", "not_defined" ) );
     }
@@ -70,21 +71,21 @@ public class HttpReceiverService extends AbstractControllerService implements Re
     public ModelAndView handleRequest( HttpServletRequest request, HttpServletResponse response ) throws Exception {
 
         try {
-            LOG.debug( "HTTPService: "+this );
-            
+            LOG.debug( "HTTPService: " + this );
+
             MessageContext messageContext = new MessageContext();
-            
-            
-            messageContext.setData( getContentFromRequest(request) );
+
+            messageContext.setData( getContentFromRequest( request ) );
             messageContext.setMessagePojo( new MessagePojo() );
             messageContext.getMessagePojo().setCustomParameters( new HashMap<String, String>() );
             Enumeration<String> headerNames = request.getHeaderNames();
-            while(headerNames.hasMoreElements()) {
+            while ( headerNames.hasMoreElements() ) {
                 String key = headerNames.nextElement();
                 String value = request.getHeader( key );
-                messageContext.getMessagePojo().getCustomParameters().put(Constants.PARAMETER_PREFIX_HTTP + key, value );
+                messageContext.getMessagePojo().getCustomParameters()
+                        .put( Constants.PARAMETER_PREFIX_HTTP + key, value );
             }
-            
+
             processMessage( messageContext );
 
             LOG.trace( "Processing Done" );
@@ -103,7 +104,7 @@ public class HttpReceiverService extends AbstractControllerService implements Re
 
         return null;
     }
-    
+
     /**
      * @param request
      * @param preBuffer
@@ -111,8 +112,7 @@ public class HttpReceiverService extends AbstractControllerService implements Re
      * @return
      * @throws IOException
      */
-    public byte[] getContentFromRequest( ServletRequest request )
-            throws IOException {
+    public byte[] getContentFromRequest( ServletRequest request ) throws IOException {
 
         int contentLength = request.getContentLength();
         if ( contentLength < 0 ) {
@@ -145,8 +145,9 @@ public class HttpReceiverService extends AbstractControllerService implements Re
      * @see org.nexuse2e.Manageable#teardown()
      */
     public void teardown() {
+
         super.teardown();
-        
+
         transportReceiver = null;
     } // teardown
 
@@ -160,7 +161,8 @@ public class HttpReceiverService extends AbstractControllerService implements Re
         this.transportReceiver = transportReceiver;
     }
 
-    public MessageContext processMessage( MessageContext messageContext ) throws IllegalArgumentException, IllegalStateException, NexusException {
+    public MessageContext processMessage( MessageContext messageContext ) throws IllegalArgumentException,
+            IllegalStateException, NexusException {
 
         transportReceiver.processInboundData( messageContext );
         return null;

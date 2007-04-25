@@ -236,7 +236,7 @@ public class EngineConfiguration {
         categoryList.add( "org.nexuse2e.transport" );
         logCategories.put( categoryName, categoryList );
 
-        categoryName = "frontend";
+        categoryName = "ui";
         categoryList = new ArrayList<String>();
         categoryList.add( "org.nexuse2e.ui" );
         logCategories.put( categoryName, categoryList );
@@ -293,7 +293,7 @@ public class EngineConfiguration {
                             if ( StringUtils.isEmpty( token ) ) {
                                 continue;
                             }
-                            System.out.println( "adding logger: " + token );
+                            LOG.debug( "adding logger: " + token );
                             Logger targetlogger = Logger.getLogger( token );
                             logAppender.registerLogger( targetlogger );
                             if ( targetlogger.getLevel() == null

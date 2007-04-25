@@ -735,6 +735,8 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
      * this method has been called.
      */
     public void shutdown() {
+        
+        // new Exception().printStackTrace();
 
         deactivate();
         teardown();

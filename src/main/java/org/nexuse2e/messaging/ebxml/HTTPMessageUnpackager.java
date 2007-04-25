@@ -95,9 +95,11 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
             System.arraycopy( data, 0, packedMessage, 0, preBufLen );
             System.arraycopy( (byte[])messageContext.getData(), 0, packedMessage, preBufLen, payloadLength );
             
-            System.out.println("--------------");
-            System.out.println(new String(packedMessage));
-            System.out.println("--------------");
+            if ( LOG.isTraceEnabled() ) {
+                LOG.trace("--------------");
+                LOG.trace(new String(packedMessage));
+                LOG.trace("--------------");
+            }
             byte[] bodyPart = null;
             List<MessagePayloadPojo> payloads = new ArrayList<MessagePayloadPojo>();
 

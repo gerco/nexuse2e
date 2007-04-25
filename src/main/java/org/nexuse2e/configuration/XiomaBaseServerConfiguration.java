@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Level;
 import org.nexuse2e.configuration.Constants.ComponentType;
 import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.CertificatePojo;
@@ -98,6 +99,7 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
 
             LoggerPojo dbRootLogger = new LoggerPojo( dbLoggerComponentPojo, new Date(), new Date(), 1,
                     "DB Root Logger", true, "group_mail,group_core,group_outbound,group_inbound," );
+            dbRootLogger.setThreshold( Level.ERROR_INT );
 
             loggers.add( dbRootLogger );
 

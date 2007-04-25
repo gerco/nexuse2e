@@ -101,7 +101,7 @@ public class WebServiceGenericXMLDocumentSender extends AbstractPipelet {
             org.jdom.Document jDomDoc = builder.build( new ByteArrayInputStream( payload.getPayloadData() ) );
 
             Element element = jDomDoc.getRootElement();
-            System.out.println( "Root element: " + element );
+            LOG.debug( "Root element: " + element );
 
             XFireProxyFactory xFireProxyFactory = new XFireProxyFactory();
             Object service = xFireProxyFactory.create( serviceModel, receiverURL );
@@ -125,7 +125,7 @@ public class WebServiceGenericXMLDocumentSender extends AbstractPipelet {
 
             Object[] result = client.invoke( "handleXMLDoc", new Object[] { element} );
 
-            System.out.println( "Result: " + result );
+            LOG.debug( "Result: " + result );
 
         } catch ( Exception e ) {
             e.printStackTrace();

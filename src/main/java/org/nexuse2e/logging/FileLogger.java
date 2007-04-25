@@ -43,12 +43,12 @@ import org.nexuse2e.configuration.Constants.ParameterType;
  */
 public class FileLogger extends FileAppender implements LogAppender {
 
+    private static Logger                    LOG       = Logger.getLogger( FileLogger.class );
     public final static String               DIRECTORY = "directory";
-    public final static String               PREFIX = "prefix";
-    public final static String               APPEND = "append";
-    public final static String               PATTERN = "pattern";
-    
-    
+    public final static String               PREFIX    = "prefix";
+    public final static String               APPEND    = "append";
+    public final static String               PATTERN   = "pattern";
+
     private Map<String, Object>              parameters;
     private Map<String, ParameterDescriptor> parameterMap;
     private List<Logger>                     loggers   = new ArrayList<Logger>();
@@ -67,8 +67,8 @@ public class FileLogger extends FileAppender implements LogAppender {
                 "Prefix used to create the Filename", "" ) );
         parameterMap.put( APPEND, new ParameterDescriptor( ParameterType.BOOLEAN, "Append", "Appends log entries",
                 Boolean.TRUE ) );
-        parameterMap.put( PATTERN, new ParameterDescriptor( ParameterType.STRING, "Pattern", "The Logger Pattern to be used",
-                " [%c %M] %-5p %m%n" ) );
+        parameterMap.put( PATTERN, new ParameterDescriptor( ParameterType.STRING, "Pattern",
+                "The Logger Pattern to be used", " [%c %M] %-5p %m%n" ) );
     }
 
     @SuppressWarnings("unchecked")
@@ -131,20 +131,20 @@ public class FileLogger extends FileAppender implements LogAppender {
      */
     public void initialize( EngineConfiguration config ) {
 
-        System.out.println("initialized");
+        LOG.debug( "initialized" );
         status = BeanStatus.INITIALIZED;
 
-        PatternLayout patternLayout = new PatternLayout(); 
-        String pattern = (String)getParameter( PATTERN );
-        if(pattern == null) {
+        PatternLayout patternLayout = new PatternLayout();
+        String pattern = (String) getParameter( PATTERN );
+        if ( pattern == null ) {
             pattern = " [%c %M] %-5p %m%n";
         }
-        patternLayout.setConversionPattern(pattern);
+        patternLayout.setConversionPattern( pattern );
         setName( "NexusFileAppender" );
-        setFile( getParameter( DIRECTORY )+"/log.log" );
+        setFile( getParameter( DIRECTORY ) + "/log.log" );
         setLayout( patternLayout );
         setBufferedIO( false );
-        setAppend( ((Boolean)getParameter( APPEND )).booleanValue() );
+        setAppend( ( (Boolean) getParameter( APPEND ) ).booleanValue() );
         activateOptions();
     }
 
@@ -153,7 +153,6 @@ public class FileLogger extends FileAppender implements LogAppender {
      */
     public void teardown() {
 
-        
         deregisterLoggers();
         loggers.clear();
     } // teardown

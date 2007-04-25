@@ -409,7 +409,7 @@ public class CertificateUtil {
             Iterator i = certCollection.iterator();
             while ( i.hasNext() ) {
                 Certificate cert = (Certificate) i.next();
-                System.out.println( cert );
+                LOG.debug( cert );
             }
         } catch ( CertificateException e ) {
             // TODO Auto-generated catch block
@@ -495,7 +495,7 @@ public class CertificateUtil {
         }
         HashMap certHashMap = getX509CertificateHashMapFromKeyStore( certificate );
         X509Name x509Name = request.getCertificationRequestInfo().getSubject();
-        System.out.println( "x509Name: " + x509Name.toString() );
+        LOG.debug( "x509Name: " + x509Name.toString() );
         X509Principal x509Principal = new X509Principal( x509Name );
         x509Principal = cleanPrincipal( x509Principal );
 
@@ -639,7 +639,7 @@ public class CertificateUtil {
                          */
                         X509Principal x509Principal = CertificateUtil.getPrincipalFromCertificate(
                                 (X509Certificate) certs[i], true );
-                        System.out.println( "x509Principal.toString(): " + x509Principal.toString() );
+                        LOG.debug( "x509Principal.toString(): " + x509Principal.toString() );
                         // Remove junk added by VeriSign
                         x509Principal = cleanPrincipal( x509Principal );
 
@@ -659,7 +659,7 @@ public class CertificateUtil {
      */
     public static X509Principal cleanPrincipal( X509Principal principal ) {
 
-        System.out.println( "principal: " + principal.toString() );
+        LOG.debug( "principal: " + principal.toString() );
         X509Principal cleanedPrincipal = null;
 
         Vector oids = principal.getOIDs();
@@ -674,7 +674,7 @@ public class CertificateUtil {
             if ( X509Name.O.equals( oid ) && ( values.elementAt( i ) ).toLowerCase().indexOf( "verisign" ) != -1 ) {
                 isVeriSign = true;
                 break;
-                //System.out.println( "Found VeriSign cert: " + principal.toString() );
+                //LOG.debug( "Found VeriSign cert: " + principal.toString() );
             }
             i++;
         }
@@ -682,13 +682,13 @@ public class CertificateUtil {
             cleanedPrincipal = principal;
         } else {
             i = 0;
-            // System.out.println( "Cleaning cert: " + principal.toString() );
+            // LOG.debug( "Cleaning cert: " + principal.toString() );
             for ( Iterator iter = oids.iterator(); iter.hasNext(); ) {
                 DERObjectIdentifier oid = (DERObjectIdentifier) iter.next();
-                // System.out.println( "OID: " + oid.getId() + " - " + oid.toString() + " - " + values.elementAt( i ) );
+                // LOG.debug( "OID: " + oid.getId() + " - " + oid.toString() + " - " + values.elementAt( i ) );
                 if ( !( X509Name.OU.equals( oid ) & ( ( values.elementAt( i ) ).toLowerCase().indexOf( "verisign" ) != -1 ) )
                         && !X509Name.E.equals( oid ) ) {
-                    // System.out.println( "copy OID: " + oid.getId() + " - " + values.elementAt( i ) );
+                    // LOG.debug( "copy OID: " + oid.getId() + " - " + values.elementAt( i ) );
                     newOids.add( oid );
                     newValues.add( values.elementAt( i ) );
                 }
@@ -696,7 +696,7 @@ public class CertificateUtil {
             }
 
             cleanedPrincipal = new X509Principal( newOids, newValues );
-            System.out.println( "principal: " + cleanedPrincipal.toString() );
+            LOG.debug( "principal: " + cleanedPrincipal.toString() );
         }
 
         return cleanedPrincipal;
@@ -779,12 +779,12 @@ public class CertificateUtil {
             try {
                 x509Certificate = getX509Certificate( certBytes );
 
-                System.out.println( "getCertificateCN( x509Certificate, true ):"
+                LOG.debug( "getCertificateCN( x509Certificate, true ):"
                         + getCertificateCN( x509Certificate, true ) );
 
                 X509Principal x509Principal = getPrincipalFromCertificate( x509Certificate, true );
 
-                System.out.println( "x509Principal.toString(): " + x509Principal.toString() );
+                LOG.debug( "x509Principal.toString(): " + x509Principal.toString() );
 
                 // Remove junk added by VeriSign :-(
                 x509Principal = cleanPrincipal( x509Principal );
@@ -822,7 +822,7 @@ public class CertificateUtil {
                     String temp = st.nextToken().trim();
                     if ( temp.startsWith( "CN=" ) ) {
                         cnImported = temp.substring( 3 );
-                        System.out.println( "Imported CN: " + cnImported );
+                        LOG.debug( "Imported CN: " + cnImported );
                         break;
                     }
                 }
@@ -868,7 +868,7 @@ public class CertificateUtil {
             attrs.put( X509Name.CN, commonName );
             attrs.put( X509Name.C, country );
             // organization = organization.replaceAll( ",", "\\\\," );
-            // System.out.println( "O: " + organization );
+            // LOG.debug( "O: " + organization );
             attrs.put( X509Name.O, organization );
             attrs.put( X509Name.OU, organizationUnit );
             attrs.put( X509Name.L, location );
@@ -1068,19 +1068,19 @@ public class CertificateUtil {
         boolean ver = false;
         int j = 0;
 
-        // System.out.println( "Before clean-up" );
+        // LOG.debug( "Before clean-up" );
         // Remove duplicates
         for ( int i = 0; i != certVector.size(); i++ ) {
-            // System.out.println( "Cert: " + ((X509Certificate) certVector.elementAt( i )).getSubjectDN() );
+            // LOG.debug( "Cert: " + ((X509Certificate) certVector.elementAt( i )).getSubjectDN() );
             certs.put( ( (X509Certificate) certVector.elementAt( i ) ).getSubjectDN(), certVector.elementAt( i ) );
         }
         certVector = new Vector();
         for ( Iterator iter = certs.values().iterator(); iter.hasNext(); ) {
             certVector.add( iter.next() );
         }
-        //        System.out.println( "After clean-up" );
+        //        LOG.debug( "After clean-up" );
         //        for ( int i = 0; i != certVector.size(); i++ ) {
-        //            System.out.println( "Cert: " + ((X509Certificate) certVector.elementAt( i )).getSubjectDN() );
+        //            LOG.debug( "Cert: " + ((X509Certificate) certVector.elementAt( i )).getSubjectDN() );
         //        }
 
         while ( inOrder.size() == 0 ) {
@@ -1147,8 +1147,8 @@ public class CertificateUtil {
 
         boolean ret = false;
 
-        //        System.out.println( "owner : " + cerOwner.getSubjectDN() );
-        //        System.out.println( "issuer: " + cerIssuer.getSubjectDN() );
+        //        LOG.debug( "owner : " + cerOwner.getSubjectDN() );
+        //        LOG.debug( "issuer: " + cerIssuer.getSubjectDN() );
 
         try {
             if ( cerOwner.getSigAlgOID().equalsIgnoreCase( "1.2.840.113549.1.1.5" ) ) {
