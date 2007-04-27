@@ -15,6 +15,8 @@
     width: 240;
     height: 22;
     }
+    
+       
   -->
   </style>
   
@@ -88,18 +90,16 @@
       for (x = length ; x >= 0; x--) {
       	document.forms['reportingPropertiesForm'].status.options[x] = null;
       }
-        
+         
       document.forms['reportingPropertiesForm'].status.options[0] = new Option('','');
-      document.forms['reportingPropertiesForm'].status.options[2] = new Option('Queued','100');
-      document.forms['reportingPropertiesForm'].status.options[3] = new Option('Pending','200');
-      document.forms['reportingPropertiesForm'].status.options[4] = new Option('Error','300');
-      document.forms['reportingPropertiesForm'].status.options[5] = new Option('Stopped','400');
-      document.forms['reportingPropertiesForm'].status.options[6] = new Option('Retrying','500');
-      document.forms['reportingPropertiesForm'].status.options[7] = new Option('Acknowledged','600');
-      document.forms['reportingPropertiesForm'].status.options[8] = new Option('Transmitted','700');
+      document.forms['reportingPropertiesForm'].status.options[2] = new Option('Queued','2');
+      document.forms['reportingPropertiesForm'].status.options[3] = new Option('Error','-1');
+      document.forms['reportingPropertiesForm'].status.options[4] = new Option('Stopped','4');
+      document.forms['reportingPropertiesForm'].status.options[5] = new Option('Retrying','1');
+      document.forms['reportingPropertiesForm'].status.options[6] = new Option('Transmitted','3');
       document.forms['reportingPropertiesForm'].status.options[1] = new Option('Unknown','0');
-      document.forms['reportingPropertiesForm'].status.options[9] = new Option('#active#','100,200,500');
-      document.forms['reportingPropertiesForm'].status.options[10] = new Option('#inactive#','300,400,600,700');
+      document.forms['reportingPropertiesForm'].status.options[7] = new Option('#active#','1,2');
+      document.forms['reportingPropertiesForm'].status.options[8] = new Option('#inactive#','-1,3,4');
     }
     
     this.searchForConversations = function () {
@@ -110,21 +110,24 @@
       for (x = length ; x >= 0; x--) { 
 					document.forms['reportingPropertiesForm'].status.options[x] = null;
     	}
+    	
+    	
+    	
     	document.forms['reportingPropertiesForm'].status.options[0] = new Option('','');
-			document.forms['reportingPropertiesForm'].status.options[2] = new Option('Active','200');
-			document.forms['reportingPropertiesForm'].status.options[5] = new Option('Completed','500');
-			document.forms['reportingPropertiesForm'].status.options[1] = new Option('Created','100');
-			document.forms['reportingPropertiesForm'].status.options[3] = new Option('Error','300');
-			document.forms['reportingPropertiesForm'].status.options[4] = new Option('Stopped','400');
-			document.forms['reportingPropertiesForm'].status.options[6] = new Option('Unkown','0');
-			document.forms['reportingPropertiesForm'].status.options[7] = new Option('#active#','200,100');
-			document.forms['reportingPropertiesForm'].status.options[8] = new Option('#inactive#','500,300,400');
+		document.forms['reportingPropertiesForm'].status.options[2] = new Option('Active','2');
+		document.forms['reportingPropertiesForm'].status.options[5] = new Option('Completed','9');
+		document.forms['reportingPropertiesForm'].status.options[1] = new Option('Created','1');
+		document.forms['reportingPropertiesForm'].status.options[3] = new Option('Error','-1');
+  		document.forms['reportingPropertiesForm'].status.options[4] = new Option('Idle','4');
+		document.forms['reportingPropertiesForm'].status.options[6] = new Option('Unkown','0');
+		document.forms['reportingPropertiesForm'].status.options[7] = new Option('#active#','1,2,3,5,6,7,8');
+		document.forms['reportingPropertiesForm'].status.options[8] = new Option('#inactive#','4,9,-1');
           
     	document.getElementById('messageIdText').className='NEXUSValueDisabled';
     	document.forms['reportingPropertiesForm'].messageEnabled.disabled=true;
     	document.forms['reportingPropertiesForm'].messageId.disabled=true;
   	}
-  	
+/*  	
   	this.searchForConversations = function () {
 			var length = document.forms['reportingPropertiesForm'].status.options.length;
       if(length == 9) {
@@ -147,6 +150,7 @@
     	document.forms['reportingPropertiesForm'].messageEnabled.disabled=true;
     	document.forms['reportingPropertiesForm'].messageId.disabled=true;
   	}
+*/
       
     _container_.addOnLoad( function () {  
 			var seqNo = 0;
@@ -175,7 +179,7 @@
 			}
 		});
 		
-		this.selectAll = function (state) {
+	this.selectAll = function (state) {
       var checkboxes = document.forms['reportingPropertiesForm'].selected;
       for (i = 0; i < checkboxes.length; i++) {     
       	checkboxes[i].checked = state; 
@@ -255,32 +259,31 @@
             
             <tr>
                 
+  
                 <td class="NEXUSValue">Status</td>
                 <td class="NEXUSValue">
                   <html:select onchange="javascript: scriptScope.disableLinks();" styleClass="fixedsize" property="status">
                       <logic:equal name="reportingPropertiesForm" property="searchFor" value="message">
                         <html:option value=""/>
-                        <html:option value="100">Queued</html:option>
-                        <html:option value="200">Pending</html:option>
-                        <html:option value="300">Error</html:option>
-                        <html:option value="400">Stopped</html:option>
-                        <html:option value="500">Retrying</html:option>
-                        <html:option value="600">Acknowledged</html:option>
-                        <html:option value="700">Transmitted</html:option>
+                        <html:option value="2">Queued</html:option>
+                        <html:option value="-1">Error</html:option>
+                        <html:option value="4">Stopped</html:option>
+                        <html:option value="1">Retrying</html:option>
+                        <html:option value="30">Transmitted</html:option>
                         <html:option value="0">Unknown</html:option>
-                          <html:option value="100,200,500">#active#</html:option>
-                          <html:option value="300,400,600,700">#inactive#</html:option>
+                          <html:option value="1,2">#active#</html:option>
+                          <html:option value="-1,3,4">#inactive#</html:option>
                       </logic:equal>
                       <logic:notEqual name="reportingPropertiesForm" property="searchFor" value="message">
                         <html:option value=""/>
-                        <html:option value="200">Active</html:option>
-                        <html:option value="500">Completed</html:option>
-                        <html:option value="100">Created</html:option>
-                        <html:option value="300">Error</html:option>
-                        <html:option value="400">Stopped</html:option>
+                        <html:option value="2">Active</html:option>
+                        <html:option value="9">Completed</html:option>
+                        <html:option value="1">Created</html:option>
+                        <html:option value="-1">Error</html:option>
+                        <html:option value="4">Idle</html:option>
                         <html:option value="0">Unknown</html:option>
-                          <html:option value="200,100">#active#</html:option>
-                          <html:option value="500,300,400">#inactive#</html:option>
+                          <html:option value="1,2,3,5,6,7,8">#active#</html:option>
+                          <html:option value="4,9,-1">#inactive#</html:option>
                       </logic:notEqual>
                   </html:select>
                 </td>
@@ -606,8 +609,8 @@
     <logic:equal name="reportingPropertiesForm" property="convColSelect" value="true">
     <table class="NEXUS_BUTTON_TABLE" width="100%">
         <tr>                
-          <td class="BUTTON_LEFT"><nexus:link href="#" id="startLink" onClick="scriptScope.selectAll(true);" styleClass="NexusLink">Select all</nexus:link></td>
-          <td class="BUTTON_LEFT"><nexus:link href="#" id="startLink" onClick="scriptScope.selectAll(false);" styleClass="NexusLink">Deselect all</nexus:link></td>
+          <td class="BUTTON_LEFT"><nexus:link href="" id="startLink" onClick="scriptScope.selectAll(true);" styleClass="NexusLink"><nobr>Select all</nobr></nexus:link></td>
+          <td class="BUTTON_LEFT"><nexus:link href="" id="startLink" onClick="scriptScope.selectAll(false);" styleClass="NexusLink"><nobr>Deselect all</nobr></nexus:link></td>
           <td class="BUTTON_RIGHT"><nexus:submit onClick="document.forms['reportingPropertiesForm'].command.value='delete';"><img src="images/reset.gif" name="clearButton"></nexus:submit></td>
           <td class="NexusHeaderLink">Delete</td>
         </tr>
