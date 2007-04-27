@@ -138,7 +138,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
             }
         }
         
-        LOG.info( "Received message from " + participant.getDescription() + " for " + choreography.getName() + "/" + action.getName() );
+//        LOG.info( "Received message from " + participant.getDescription() + " for " + choreography.getName() + "/" + action.getName() );
 
         if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
 
