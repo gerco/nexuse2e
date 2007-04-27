@@ -69,6 +69,8 @@ public class ModifyMessageAction extends NexusE2EAction {
             ActionMessage errorMessage = new ActionMessage( "generic.error", "can't modify message status" );
             errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
         }
+        LOG.debug( "Modify Message Action: "+action);
+        
         if ( action.equals( "requeue" ) ) {
 
             if ( outbound ) {

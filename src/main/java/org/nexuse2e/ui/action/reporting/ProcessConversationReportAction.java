@@ -23,6 +23,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.Engine;
 import org.nexuse2e.dao.TransactionDAO;
@@ -151,38 +153,33 @@ public class ProcessConversationReportAction extends NexusE2EAction {
             dir = "transaction";
         }
         if ( searchFor != null && searchFor.equals( "conversation" ) && dir != null && dir.equals( "delete" ) ) {
-            //            for ( int i = 0; i < form.getSelectedResults().length; i++ ) {
-            //
-            //                String messageIdent = form.getSelectedResults()[i];
-            //                StringTokenizer st = new StringTokenizer( messageIdent, "|" );
-            //                if ( st.countTokens() != 3 ) {
-            //                    ActionMessage errorMessage = new ActionMessage( "generic.error", "cant delete conversation: >"
-            //                            + messageIdent + "<" );
-            //                    errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
-            //                    addRedirect( request, URL, TIMEOUT );
-            //                    continue;
-            //                }
-            //                String participant = st.nextToken();
-            //                String choreography = st.nextToken();
-            //                String conversation = st.nextToken();
-            //
-            //                //TODO auto database commit?
-            //                ConversationDAO convDao = new ConversationDAO();
-            //                ConversationPojo convPojo = convDao.getConversationByConversationKey( choreography, conversation, participant );
-            //                
-            //                MessageDAO messageDao = new MessageDAO();
-            //                List messagePojos = messageDao.getMessagesByChoreographyPartnerAndConversation( choreography, participant, conversation, 0,false);
-            //                Iterator messageI = messagePojos.iterator();
-            //                while(messageI.hasNext())
-            //                {
-            //                    MessageDispatcher.getInstance().removeMessageFromQueue( choreography, ((MessagePojo)messageI.next()).getMessageKey().getMessageId());
-            //                }
-            //                MessageBodyPartDAO bodyPartDao = new MessageBodyPartDAO();
-            //                bodyPartDao.deleteMessageBodyPartsByChoreographyPartnerAndConversation( choreography, participant, conversation );
-            //                messageDao.deleteMessagesByChoreographyPartnerAndConversation( choreography, participant, conversation );
-            //                convDao.deleteConversation( convPojo );
-            //               
-            //            }
+            System.out.println( "deleting conversation" );
+
+            for ( int i = 0; i < form.getSelectedResults().length; i++ ) {
+
+                String messageIdent = form.getSelectedResults()[i];
+                StringTokenizer st = new StringTokenizer( messageIdent, "|" );
+                if ( st.countTokens() != 3 ) {
+                    ActionMessage errorMessage = new ActionMessage( "generic.error", "cant delete conversation: >"
+                            + messageIdent + "<" );
+                    errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
+                    addRedirect( request, URL, TIMEOUT );
+                    continue;
+                }
+
+                String participantId = st.nextToken();
+                String choreographyId = st.nextToken();
+                String conversationId = st.nextToken();
+                
+                System.out.println("delete: "+participantId+","+choreographyId+","+conversationId);
+                ConversationPojo conversation = Engine.getInstance().getTransactionService().getConversation( conversationId );
+                
+                if(conversation != null) {
+                    Engine.getInstance().getTransactionService().deleteConversation( conversation, null, null );
+                }
+                
+            }
+
             dir = "transaction";
         }
 
@@ -229,7 +226,8 @@ public class ProcessConversationReportAction extends NexusE2EAction {
         int nxChoreographyId = 0;
 
         if ( participantId != null ) {
-            PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByPartnerId( participantId );
+            PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByPartnerId(
+                    participantId );
             if ( partner != null ) {
                 nxPartnerId = partner.getNxPartnerId();
             }
