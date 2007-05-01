@@ -130,7 +130,7 @@ public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
                         conversationId, null, primaryKey, null );
             } catch ( NexusException e ) {
                 LOG.debug( "sendNewStringMessage - error: " + e );
-                e.printStackTrace();
+                throw e;
             }
         }
 

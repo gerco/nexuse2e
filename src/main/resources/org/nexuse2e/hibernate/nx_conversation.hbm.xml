@@ -14,7 +14,7 @@
         <many-to-one foreign-key="fk__conversation__partner_id" name="partner" column="nx_partner_id" class="org.nexuse2e.pojo.PartnerPojo" not-null="true" cascade="none" index="ix_conversation_2"/>
 
         <property name="conversationId" type="string">
-            <column name="conversation_id" length="64" not-null="true">
+            <column name="conversation_id" length="96" not-null="true">
                 <comment>Protocol specific conversation Id</comment>
             </column>
         </property>

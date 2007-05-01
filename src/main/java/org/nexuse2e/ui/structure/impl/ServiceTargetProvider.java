@@ -21,8 +21,10 @@ package org.nexuse2e.ui.structure.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeSet;
 
 import org.nexuse2e.Engine;
+import org.nexuse2e.configuration.GenericComparator;
 import org.nexuse2e.pojo.ServicePojo;
 import org.nexuse2e.ui.structure.ParentalStructureNode;
 import org.nexuse2e.ui.structure.StructureNode;
@@ -38,13 +40,19 @@ public class ServiceTargetProvider implements TargetProvider {
     /* (non-Javadoc)
      * @see org.nexuse2e.ui.structure.TargetProvider#getStructure(org.nexuse2e.ui.structure.StructureNode)
      */
+    @SuppressWarnings("unchecked")
     public List<StructureNode> getStructure( StructureNode pattern, ParentalStructureNode parent ) {
 
         List<StructureNode> list = new ArrayList<StructureNode>();
         List<ServicePojo> servicePojos = Engine.getInstance().getActiveConfigurationAccessService().getServices();
-        for ( ServicePojo servicePojo : servicePojos ) {
-            StructureNode sn = new PageNode( pattern.getTarget() + "?nxServiceId=" + servicePojo.getNxServiceId(), servicePojo
-                    .getName(), pattern.getIcon() );
+
+        TreeSet<ServicePojo> sortedServices = new TreeSet<ServicePojo>( new GenericComparator( ServicePojo.class,
+                "name", true ) );
+        sortedServices.addAll( servicePojos );
+
+        for ( ServicePojo servicePojo : sortedServices ) {
+            StructureNode sn = new PageNode( pattern.getTarget() + "?nxServiceId=" + servicePojo.getNxServiceId(),
+                    servicePojo.getName(), pattern.getIcon() );
             list.add( sn );
         }
         return list;

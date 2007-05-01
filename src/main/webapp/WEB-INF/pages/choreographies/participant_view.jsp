@@ -61,7 +61,7 @@
                     <td class="NEXUSValue">                    
                       <html:select property="nxConnectionId">
                           <logic:iterate id="con" property="connections" name="participantForm"> 
-                            <html-el:option value="${con.nxConnectionId}"><bean:write name="con" property="name"/> (<bean:write name="con" property="description"/>)</html-el:option>
+                            <html-el:option value="${con.nxConnectionId}"><bean:write name="con" property="name"/> (<bean:write name="con" property="uri"/>)</html-el:option>
                           </logic:iterate>
                       </html:select>
                     </td>

@@ -31,7 +31,7 @@
   </bean>
 
   <!-- RMI  -->
-  <bean id="rmiLegacyServer" class="org.nexuse2e.integration.NEXUSe2eRMILegacyServer">
+  <bean id="rmiServer" class="org.nexuse2e.integration.NEXUSe2eRMIServer">
     <property name="hostName" value="${rmi.hostName}" />
     <property name="interfaceName" value="${rmi.interfaceName}" />
     <property name="rmiPort" value="${rmi.rmiPort}" />
@@ -345,6 +345,12 @@
             <value>participantTargetProvider</value>
           </key>
           <bean class="org.nexuse2e.ui.structure.impl.ParticipantTargetProvider" />
+        </entry>
+        <entry>
+          <key>
+            <value>actionTargetProvider</value>
+          </key>
+          <bean class="org.nexuse2e.ui.structure.impl.ActionTargetProvider" />
         </entry>
         <entry>
           <key>

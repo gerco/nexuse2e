@@ -22,7 +22,7 @@
             </column>
         </property>
         <property name="contentId" type="string">
-            <column name="content_id" length="64" not-null="true">
+            <column name="content_id" length="96" not-null="true">
                 <comment></comment>
             </column>
         </property>

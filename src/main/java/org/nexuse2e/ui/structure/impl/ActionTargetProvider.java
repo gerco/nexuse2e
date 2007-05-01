@@ -17,21 +17,28 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
 package org.nexuse2e.ui.structure.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.GenericComparator;
+import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.ui.structure.ParentalStructureNode;
 import org.nexuse2e.ui.structure.StructureNode;
 import org.nexuse2e.ui.structure.TargetProvider;
 
-public class ChoreographyTargetProvider implements TargetProvider {
+/**
+ * @author mbreilmann
+ *
+ */
+public class ActionTargetProvider implements TargetProvider {
 
     /* (non-Javadoc)
      * @see org.nexuse2e.ui.structure.TargetProvider#getStructure(org.nexuse2e.ui.structure.StructureNode, org.nexuse2e.ui.structure.ParentalStructureNode)
@@ -42,22 +49,27 @@ public class ChoreographyTargetProvider implements TargetProvider {
         List<StructureNode> list = new ArrayList<StructureNode>();
 
         try {
-            List<ChoreographyPojo> choreographies = Engine.getInstance().getActiveConfigurationAccessService()
-                    .getChoreographies();
-            TreeSet<ChoreographyPojo> sortedChoreographies = new TreeSet<ChoreographyPojo>( new GenericComparator(
-                    ChoreographyPojo.class, "name", true ) );
-            sortedChoreographies.addAll( choreographies );
-            for ( ChoreographyPojo choreographyPojo : sortedChoreographies ) {
-                ParentalStructureNode sn = new PageNode( pattern.getTarget() + "?nxChoreographyId="
-                        + choreographyPojo.getNxChoreographyId(), choreographyPojo.getName(), pattern.getIcon() );
-                sn.setProperty( "nxChoreographyId", Integer.toString( choreographyPojo.getNxChoreographyId() ) );
-                list.add( sn );
+            ChoreographyPojo choreographyPojo = Engine.getInstance().getActiveConfigurationAccessService()
+                    .getChoreographyByNxChoreographyId( Integer.parseInt( parent.getProperty( "nxChoreographyId" ) ) );
+            if ( choreographyPojo != null ) {
+                Set<ActionPojo> actions = choreographyPojo.getActions();
+
+                TreeSet<ActionPojo> sortedActions = new TreeSet<ActionPojo>( new GenericComparator( ActionPojo.class,
+                        "name", true ) );
+                sortedActions.addAll( actions );
+                for ( ActionPojo actionPojo : sortedActions ) {
+                    StructureNode sn = new PageNode( pattern.getTarget() + "?nxActionId=" + actionPojo.getNxActionId()
+                            + "&nxChoreographyId=" + choreographyPojo.getNxChoreographyId(), actionPojo.getName(),
+                            pattern.getIcon() );
+                    list.add( sn );
+                }
+
             }
         } catch ( NexusException e ) {
             e.printStackTrace();
         }
 
         return list;
-    }
+    } // getStructure
 
-}
+} // ActionTargetProvider

@@ -187,7 +187,7 @@ public class NEXUSe2eRMILegacyServer implements NexusE2EServerInterface, Initial
 
             registry.rebind( bindTo, remoteObj );
 
-            LOG.info( "RMI: " + interfaceName + " bound in registry" );
+            LOG.info( "RMI: " + bindTo + " bound in registry" );
         } catch ( Exception e ) {
             LOG.error( "Error initializing RMI interface.  Exception " + e.getMessage() );
         } // try

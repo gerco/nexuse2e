@@ -21,6 +21,7 @@ package org.nexuse2e.ui.action;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,6 +31,7 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.Engine;
+import org.nexuse2e.configuration.GenericComparator;
 import org.nexuse2e.pojo.ServicePojo;
 import org.nexuse2e.ui.form.ServiceForm;
 
@@ -39,6 +41,10 @@ import org.nexuse2e.ui.form.ServiceForm;
  */
 public class ServicesAction extends NexusE2EAction {
 
+    /* (non-Javadoc)
+     * @see org.nexuse2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages, org.apache.struts.action.ActionMessages)
+     */
+    @SuppressWarnings("unchecked")
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
             HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
@@ -48,11 +54,14 @@ public class ServicesAction extends NexusE2EAction {
 
         List<ServicePojo> services = Engine.getInstance().getActiveConfigurationAccessService().getServices();
         List<ServiceForm> serviceList = new ArrayList<ServiceForm>();
-        for ( ServicePojo service : services ) {
+        TreeSet<ServicePojo> sortedServices = new TreeSet<ServicePojo>( new GenericComparator( ServicePojo.class,
+                "name", true ) );
+        sortedServices.addAll( services );
+        for ( ServicePojo service : sortedServices ) {
             ServiceForm serviceForm = new ServiceForm();
             serviceForm.setProperties( service );
-            serviceForm.setServiceInstance( Engine.getInstance().getActiveConfigurationAccessService()
-                    .getService( service.getName() ) );
+            serviceForm.setServiceInstance( Engine.getInstance().getActiveConfigurationAccessService().getService(
+                    service.getName() ) );
             serviceList.add( serviceForm );
         }
         request.setAttribute( ATTRIBUTE_COLLECTION, serviceList );

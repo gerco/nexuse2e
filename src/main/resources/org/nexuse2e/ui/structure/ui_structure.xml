@@ -187,7 +187,10 @@
       </nxs:page>
       <nxs:page target="Choreographies.do" label="Choreographies" icon="images/tree/businessprocesses.gif">
         <nxs:page type="provider" provider="choreographyTargetProvider" target="ChoreographyView.do" label="View Choreography" icon="images/tree/businessprocesses.gif">
-          <nxs:page target="ActionsList.do?nxChoreographyId=${nxChoreographyId}" label="Actions" icon="images/tree/actions.gif"/>
+          <nxs:page target="ActionsList.do?nxChoreographyId=${nxChoreographyId}" label="Actions" icon="images/tree/actions.gif">
+            <nxs:page type="provider" provider="actionTargetProvider" target="ActionSettingsView.do" label="View Action" icon="images/tree/TreeDot.gif">
+            </nxs:page>
+          </nxs:page>
           <!-- 
           <nxs:page target="NotifierList.do?nxChoreographyId=${nxChoreographyId}" label="Notifiers" icon="images/tree/notifiers.gif"/>
            -->

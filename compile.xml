@@ -1,0 +1,15 @@
+<project name="nexuse2e-server" default="compile" basedir=".">
+	<property file="nexuse2e-build.properties" />
+
+	<target name="compile" description="Call RMI compiler">
+		<mkdir dir="${basedir}/target/classes_14" />
+		<javac srcdir="${basedir}/src/main/java" destdir="${basedir}/target/classes_14" source="1.4" target="1.4" includes="org/nexuse2e/integration/NexusRemote.java,org/nexuse2e/integration/NEXUSe2eInterface.java,org/nexuse2e/NexusException.java">
+			<classpath refid="maven.compile.classpath" />
+		</javac>
+		<rmic classname="org.nexuse2e.integration.NEXUSe2eInterfaceImpl" base="${basedir}/target/classes_14" stubversion="1.2">
+			<classpath refid="maven.compile.classpath" />
+		</rmic>
+		<jar jarfile="${basedir}/target/nexuse2e_rmi.jar" basedir="${basedir}/target/classes_14" />
+	</target>
+
+</project>

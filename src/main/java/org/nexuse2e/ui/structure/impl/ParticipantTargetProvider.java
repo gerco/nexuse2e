@@ -21,10 +21,11 @@ package org.nexuse2e.ui.structure.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.TreeSet;
 
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.configuration.GenericComparator;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ParticipantPojo;
 import org.nexuse2e.ui.structure.ParentalStructureNode;
@@ -40,6 +41,7 @@ public class ParticipantTargetProvider implements TargetProvider {
     /* (non-Javadoc)
      * @see org.nexuse2e.ui.structure.TargetProvider#getStructure(org.nexuse2e.ui.structure.StructureNode)
      */
+    @SuppressWarnings("unchecked")
     public List<StructureNode> getStructure( StructureNode pattern, ParentalStructureNode parent ) {
 
         List<StructureNode> list = new ArrayList<StructureNode>();
@@ -49,11 +51,14 @@ public class ParticipantTargetProvider implements TargetProvider {
                     .getChoreographyByNxChoreographyId( Integer.parseInt( parent.getProperty( "nxChoreographyId" ) ) );
             if ( choreographyPojo != null ) {
                 List<ParticipantPojo> participants = choreographyPojo.getParticipants();
-                for ( ParticipantPojo participantPojo : participants ) {
+                TreeSet<ParticipantPojo> sortedParticipants = new TreeSet<ParticipantPojo>( new GenericComparator(
+                        ParticipantPojo.class, "description", true ) );
+                sortedParticipants.addAll( participants );
+                for ( ParticipantPojo participantPojo : sortedParticipants ) {
                     StructureNode sn = new PageNode( pattern.getTarget() + "?nxPartnerId="
                             + participantPojo.getPartner().getNxPartnerId() + "&nxChoreographyId="
-                            + choreographyPojo.getNxChoreographyId(), participantPojo.getPartner().getPartnerId(),
-                            pattern.getIcon() );
+                            + choreographyPojo.getNxChoreographyId(), participantPojo.getPartner().getPartnerId() + " ("
+                            + participantPojo.getPartner().getName() + ")", pattern.getIcon() );
                     list.add( sn );
                 }
 

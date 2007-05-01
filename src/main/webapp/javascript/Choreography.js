@@ -31,10 +31,10 @@ function choreographyCheckFields() {
 }
 <!-- *************************************************************************  -->
   function checkChoreographyID() {
-    if (document.choreographyForm.choreographyId.value ==  "" || embeddedSpaces(document.choreographyForm.choreographyId)) {
-      missinginfo = "A Choreography ID must be entered, without embedded spaces.";
+    if (document.choreographyForm.choreographyName.value ==  "" || embeddedSpaces(document.choreographyForm.choreographyName)) {
+      missinginfo = "A Choreography name must be entered, without embedded spaces.";
       alert(missinginfo);
-      document.choreographyForm.choreographyId.focus();
+      document.choreographyForm.choreographyName.focus();
       return false;
     } else {    
       return true;

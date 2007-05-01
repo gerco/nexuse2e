@@ -272,7 +272,6 @@
         <script language="JavaScript" type="text/javascript">
         
           this.Clear = function () {
-            document.forms['reportingPropertiesForm'].origin.options[0].selected = "true";
             document.forms['reportingPropertiesForm'].severity.options[0].selected = "true";
             document.forms['reportingPropertiesForm'].messageTextEnabled.checked = null;
             document.forms['reportingPropertiesForm'].messageText.value = "";
@@ -366,7 +365,7 @@
             <logic:equal name="reportingPropertiesForm" property="engineColSeverity" value="true"><td class="NEXUSValue"><bean:write name="conv" property="severity"/></td></logic:equal>
             <logic:equal name="reportingPropertiesForm" property="engineColIssued" value="true"><td class="NEXUSValue"><bean:write name="conv" property="issuedDate"/></td></logic:equal>
             <td class="NEXUSValue"><bean:write name="conv" property="description"/></td>
-            <logic:equal name="reportingPropertiesForm" property="engineColOrigin" value="true"><td class="NEXUSValue"><bean:write name="conv" property="origin"/></td></logic:equal>
+            <logic:equal name="reportingPropertiesForm" property="engineColOrigin" value="true"><td class="NEXUSValue"></td></logic:equal>
             <logic:equal name="reportingPropertiesForm" property="engineColClassName" value="true"><td class="NEXUSValue"><bean:write name="conv" property="className"/></td></logic:equal>
             <logic:equal name="reportingPropertiesForm" property="engineColmethodName" value="true"><td class="NEXUSValue"><bean:write name="conv" property="methodName"/></td></logic:equal>
         </tr>

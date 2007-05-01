@@ -19,6 +19,9 @@
  */
 package org.nexuse2e.integration;
 
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
 import org.nexuse2e.NexusException;
 
 /**
@@ -26,7 +29,7 @@ import org.nexuse2e.NexusException;
  *
  * @author mbreilmann
  */
-public interface NEXUSe2eInterface {
+public interface NEXUSe2eInterface extends Remote {
 
     /**
      * Create a new conversation (instance of a choreography) in order to submit messages to a specific partner.
@@ -34,7 +37,7 @@ public interface NEXUSe2eInterface {
      * @param businessPartnerId The ID of the partner to exchange messages with.
      * @return The ID of the newly created conversation.
      */
-    public String createConversation( String choreographyId, String businessPartnerId ) throws NexusException;
+    public String createConversation( String choreographyId, String businessPartnerId ) throws RemoteException, NexusException;
 
     /**
      * Create a new conversation (instance of a choreography) in order to submit messages to a specific partner.
@@ -44,7 +47,7 @@ public interface NEXUSe2eInterface {
      * @return The ID of the newly created conversation.
      */
     public String createConversation( String choreographyId, String businessPartnerId, String conversationId )
-            throws NexusException;
+            throws RemoteException, NexusException;
 
     /**
      * Trigger sending a message by providing some sort of primary key that allows the <code>Pipelet</code>
@@ -56,7 +59,7 @@ public interface NEXUSe2eInterface {
      * and was persisted).
      */
     public boolean triggerSendingMessage( String conversationId, String actionId, Object primaryKey )
-            throws NexusException;
+            throws RemoteException, NexusException;
 
     /**
      * Send a message with a String payload (e.g. XML or plain text).
@@ -66,7 +69,7 @@ public interface NEXUSe2eInterface {
      * @return TRUE if the message was submitted to the engine successfully (i.e. a message could be created 
      * and was persisted).
      */
-    public boolean sendStringMessage( String conversationId, String actionId, String payload ) throws NexusException;
+    public boolean sendStringMessage( String conversationId, String actionId, String payload ) throws RemoteException, NexusException;
 
     /**
      * Trigger sending a message by providing some sort of primary key that allows the <code>Pipelet</code>
@@ -79,7 +82,7 @@ public interface NEXUSe2eInterface {
      * @return The ID of the conversation that was created for this message.
      */
     public String triggerSendingNewMessage( String choreographyId, String businessPartnerId, String actionId,
-            Object primaryKey ) throws NexusException;
+            Object primaryKey ) throws RemoteException, NexusException;
 
     /**
      * Trigger sending a message by providing some sort of primary key that allows the <code>Pipelet</code>
@@ -93,7 +96,7 @@ public interface NEXUSe2eInterface {
      * @return The ID of the conversation that was created for this message.
      */
     public String triggerSendingNewMessage( String choreographyId, String businessPartnerId, String actionId,
-            String conversationId, Object primaryKey ) throws NexusException;
+            String conversationId, Object primaryKey ) throws RemoteException, NexusException;
 
     /**
      * Send a message with a String payload (e.g. XML or plain text) while also creating
@@ -105,7 +108,7 @@ public interface NEXUSe2eInterface {
      * @return The ID of the conversation that was created for this message.
      */
     public String sendNewStringMessage( String choreographyId, String businessPartnerId, String actionId, String payload )
-            throws NexusException;
+            throws RemoteException, NexusException;
 
     /**
      * Send a message with a String payload (e.g. XML or plain text) while also creating
@@ -118,6 +121,6 @@ public interface NEXUSe2eInterface {
      * @return The ID of the conversation that was created for this message.
      */
     public String sendNewStringMessage( String choreographyId, String businessPartnerId, String actionId,
-            String conversationId, String payload ) throws NexusException;
+            String conversationId, String payload ) throws RemoteException, NexusException;
 
 } // NEXUSe2eInterface

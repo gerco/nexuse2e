@@ -196,12 +196,10 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
         messageContext.setMessagePojo( messagePojo );
         try {
             pipeline.processMessage( messageContext );
-        } catch ( Exception e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch ( NexusException e ) {
+            throw e;
         } catch ( Error e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new NexusException( e.toString() );
         }
 
         return messageContext;

@@ -79,7 +79,7 @@ public class BackendPipeline extends AbstractPipeline implements ActionSpecific 
             pipelineEndpoint.processMessage( messageContext );
 
         } catch ( Exception e ) {
-            e.printStackTrace();
+            LOG.error( "Error processing backend pipeline: " + e );
             throw new NexusException( "Error processing backend pipeline: " + e );
         }
 

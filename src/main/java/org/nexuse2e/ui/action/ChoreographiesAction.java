@@ -21,6 +21,7 @@ package org.nexuse2e.ui.action;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +33,7 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.Engine;
+import org.nexuse2e.configuration.GenericComparator;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.ui.form.ChoreographyForm;
 
@@ -49,6 +51,7 @@ public class ChoreographiesAction extends NexusE2EAction {
     /* (non-Javadoc)
      * @see com.tamgroup.nexus.e2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
             HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
@@ -67,7 +70,10 @@ public class ChoreographiesAction extends NexusE2EAction {
             return error;
         }
         Vector<ChoreographyForm> choreographies = new Vector<ChoreographyForm>();
-        Iterator<ChoreographyPojo> i = chorpojos.iterator();
+        TreeSet<ChoreographyPojo> sortedChoreographies = new TreeSet<ChoreographyPojo>( new GenericComparator(
+                ChoreographyPojo.class, "name", true ) );
+        sortedChoreographies.addAll( chorpojos );
+        Iterator<ChoreographyPojo> i = sortedChoreographies.iterator();
         while ( i.hasNext() ) {
             ChoreographyForm form = new ChoreographyForm();
             form.setProperties( i.next() );

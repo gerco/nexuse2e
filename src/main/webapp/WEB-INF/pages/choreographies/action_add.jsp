@@ -60,7 +60,10 @@
         <table class="NEXUS_BUTTON_TABLE" width="100%">
             <tr>
                 <td>&nbsp;</td>
+                <!-- 
                 <td class="BUTTON_RIGHT"><nexus:submit precondition="actionCheckFields()" styleClass="button"><img src="images/submit.gif" class="button">Create</nexus:submit></td>
+                 -->
+                <td class="BUTTON_RIGHT"><nexus:submit styleClass="button"><img src="images/submit.gif" class="button">Create</nexus:submit></td>
             </tr>
         </table>
     </html:form>
