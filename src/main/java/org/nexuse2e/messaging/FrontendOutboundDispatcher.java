@@ -212,7 +212,8 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                             if ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_SENDING_ACK ) {
                                 conversationPojo
                                         .setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND );
-                            } else if ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_BACKEND_SENT_SENDING_ACK ) {
+                            } else if ( ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_BACKEND_SENT_SENDING_ACK )
+                                    || ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_IDLE ) ) {
                                 if ( conversationPojo.getCurrentAction().isEnd() ) {
                                     conversationPojo.setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_COMPLETED );
                                 } else {

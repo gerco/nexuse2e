@@ -435,7 +435,8 @@ public class TransactionDAO extends BasicDAO {
         // session = getSession();
         // transaction = session.beginTransaction();
 
-        saveRecord( conversationPojo, session, transaction );
+        // saveRecord( conversationPojo, session, transaction );
+        saveOrUpdateRecord( conversationPojo, session, transaction );
 
         // transaction.commit();
         // releaseSession( session );

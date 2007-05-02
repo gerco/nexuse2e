@@ -111,6 +111,14 @@ public class HttpSenderService extends AbstractService implements SenderAware {
                         LOG.trace( "localcert.name: " + participant.getLocalCertificate().getName() );
                     }
                 }
+                
+                if ( participant.getLocalCertificate() == null ) {
+                    LOG.error( "No local certificate selected for using SSL with partner "
+                            + participant.getPartner().getName() );
+                    throw new NexusException( "No local certificate selected for using SSL with partner "
+                            + participant.getPartner().getName() );
+                }
+                
                 CertificatePojo localCert = Engine.getInstance().getActiveConfigurationAccessService()
                         .getCertificateByNxCertificateId( Constants.CERTIFICATE_TYPE_LOCAL,
                                 participant.getLocalCertificate().getNxCertificateId() );

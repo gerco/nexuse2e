@@ -200,10 +200,8 @@ public class StateMachineExecutor {
         String currentMessageId = messageContext.getMessagePojo().getMessageId();
         String currentActionId = messageContext.getMessagePojo().getAction().getName();
         String currentConversationId = messageContext.getMessagePojo().getConversation().getConversationId();
-        String currentChoreographyId = messageContext.getMessagePojo().getConversation().getChoreography()
-                .getName();
-        String currentPartnerId = messageContext.getMessagePojo().getConversation().getPartner()
-                .getPartnerId();
+        String currentChoreographyId = messageContext.getMessagePojo().getConversation().getChoreography().getName();
+        String currentPartnerId = messageContext.getMessagePojo().getConversation().getPartner().getPartnerId();
 
         LOG.debug( "MessageId:" + currentMessageId );
         LOG.debug( "ActionId:" + currentActionId );
@@ -229,7 +227,9 @@ public class StateMachineExecutor {
                     Iterator<FollowUpActionPojo> i = followUpActions.iterator();
                     while ( i.hasNext() ) {
                         FollowUpActionPojo followUpAction = i.next();
-                        if ( followUpAction.getAction().getName().equals( actionId ) ) {
+                        if ( followUpAction.getAction().getName().equals( actionId )
+                                && followUpAction.getFollowUpAction().getName().equals( currentActionId ) ) {
+                            conversation.setCurrentAction( messageContext.getMessagePojo().getAction() );
                             // message is valid
                             return conversation;
                         }
