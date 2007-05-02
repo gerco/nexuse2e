@@ -59,7 +59,7 @@
             </column>
         </property>
         <property name="binaryData" type="org.nexuse2e.pojo.BinaryBlobType" >
-            <column name="binary_data" not-null="true" length="128000">
+            <column name="binary_data" not-null="false" length="128000">
                 <comment></comment>
             </column>
         </property>
