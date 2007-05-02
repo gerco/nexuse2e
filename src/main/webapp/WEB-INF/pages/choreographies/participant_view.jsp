@@ -38,7 +38,7 @@
                 <tr>
                     <td class="NEXUSName">Local Partner ID</td>
                     <td class="NEXUSValue">
-                      <nexus:select submitOnChange="true" form="document.forms['participantForm']" name="nxLocalPartnerId" >
+                      <nexus:select submitOnChange="true" name="nxLocalPartnerId" >
                         <logic:iterate id="localPartner" property="localPartners" name="participantForm">
                            <option value="${localPartner.nxPartnerId}">${localPartner.name}(${localPartner.partnerId})</option>
                         </logic:iterate>

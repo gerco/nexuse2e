@@ -73,6 +73,7 @@ public class Select extends BodyTagSupport {
     private boolean                submitOnChange             = DEFAULT_SUBMIT_ON_CHANGE;
     private String                 onSubmit;
     private String                 name;
+    private String                 sendFileForm               = null;
     // generated button id
     private String                 buttonId;
 
@@ -90,7 +91,8 @@ public class Select extends BodyTagSupport {
             // create link that clicks the hidden button
             writer.print( "<select"
                     + ( name != null ? " name=\"" + name + "\"" : "" )
-                    + ( submitOnChange ? " onchange=\"" + ( onSubmit == null ? "" : onSubmit + " " ) + "submitForm( "
+                    + ( submitOnChange ? " onchange=\"" + ( onSubmit == null ? "" : onSubmit + " " )
+                            + ( "true".equalsIgnoreCase( sendFileForm ) ? "submitFileForm( " : "submitForm( " )
                             + ( form == null ? "document.forms[0]" : form ) + " );\"" : "" ) + " class=\"" + styleClass
                     + "\">" );
         } catch ( IOException e ) {
@@ -228,6 +230,18 @@ public class Select extends BodyTagSupport {
     public void setOnSubmit( String onSubmit ) {
 
         this.onSubmit = onSubmit;
+    }
+
+    
+    public String getSendFileForm() {
+    
+        return sendFileForm;
+    }
+
+    
+    public void setSendFileForm( String sendFileForm ) {
+    
+        this.sendFileForm = sendFileForm;
     }
 
 }

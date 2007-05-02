@@ -133,7 +133,7 @@ public class NexusRemote {
         } catch ( Exception e ) {
             System.err.println( "### NexusRemote Error: Exception: " + e.toString() );
             // e.printStackTrace();
-            throw e;
+            // throw e;
         }
         // Removed because customers use this from a program
         // System.exit( 0 );

@@ -49,8 +49,9 @@ public class CollaborationPartnerTargetProvider implements TargetProvider {
                     Constants.PARTNER_TYPE_PARTNER, Constants.PARTNERCOMPARATOR );
             if ( partnerPojos != null ) {
                 for ( PartnerPojo partnerPojo : partnerPojos ) {
-                    StructureNode sn = new PageNode( pattern.getTarget() + "?nxPartnerId=" + partnerPojo.getNxPartnerId(),
-                            partnerPojo.getPartnerId(), pattern.getIcon() );
+                    StructureNode sn = new PageNode( pattern.getTarget() + "?nxPartnerId="
+                            + partnerPojo.getNxPartnerId(), partnerPojo.getPartnerId() + " (" + partnerPojo.getName()
+                            + ")", pattern.getIcon() );
                     list.add( sn );
                 }
             }

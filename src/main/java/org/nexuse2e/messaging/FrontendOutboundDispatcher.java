@@ -44,15 +44,14 @@ import org.springframework.beans.factory.InitializingBean;
  */
 public class FrontendOutboundDispatcher extends AbstractPipelet implements InitializingBean {
 
-    private static Logger       LOG        = Logger.getLogger( FrontendOutboundDispatcher.class );
-    private FrontendPipeline[]  frontendOutboundPipelines;
-    private BeanStatus          status     = BeanStatus.UNDEFINED;
-    
+    private static Logger      LOG    = Logger.getLogger( FrontendOutboundDispatcher.class );
+    private FrontendPipeline[] frontendOutboundPipelines;
+    private BeanStatus         status = BeanStatus.UNDEFINED;
+
     /* (non-Javadoc)
      * @see org.nexuse2e.messaging.Pipelet#processMessage(org.nexuse2e.messaging.MessageContext)
      */
-    public MessageContext processMessage( MessageContext messageContext )
-            throws NexusException {
+    public MessageContext processMessage( MessageContext messageContext ) throws NexusException {
 
         int interval = Constants.DEFAULT_MESSAGE_INTERVAL;
 
@@ -61,8 +60,8 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
             throw new NexusException( "No valid pipeline found for " + messageContext.getProtocolSpecificKey() );
         }
 
-        final Runnable messageSender = new MessageSender( pipeline, messageContext, messageContext
-                .getParticipant().getConnection().getRetries() );
+        final Runnable messageSender = new MessageSender( pipeline, messageContext, messageContext.getParticipant()
+                .getConnection().getRetries() );
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool( 1 );
 
         ParticipantPojo participantPojo = messageContext.getMessagePojo().getParticipant();
@@ -78,7 +77,6 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
 
         return messageContext;
     } // processMessage
-
 
     /**
      * @param protocolSpecificKey
@@ -138,7 +136,7 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
         initialize( Engine.getInstance().getCurrentConfiguration() );
 
     }
-    
+
     /* (non-Javadoc)
      * @see org.nexuse2e.Manageable#getRunLevel()
      */
@@ -146,8 +144,6 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
 
         return Runlevel.OUTBOUND_PIPELINES;
     }
-
-    
 
     /* (non-Javadoc)
      * @see org.nexuse2e.Manageable#validate()
@@ -164,10 +160,10 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
      */
     private class MessageSender implements Runnable {
 
-        MessageContext messageContext = null;
-        FrontendPipeline        pipeline                = null;
-        int                     retries                 = 0;
-        int                     retryCount              = 0;
+        MessageContext   messageContext = null;
+        FrontendPipeline pipeline       = null;
+        int              retries        = 0;
+        int              retryCount     = 0;
 
         /**
          * @param pipeline
@@ -202,7 +198,8 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                         messageContext = pipeline.processMessage( messageContext );
 
                         if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
-                            if ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_PROCESSING ) {
+                            if ( ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_PROCESSING )
+                                    || ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_AWAITING_ACK ) ) {
                                 conversationPojo.setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_AWAITING_ACK );
                             } else {
                                 LOG.error( "Unexpected conversation state after sending normal message: "
@@ -264,5 +261,5 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
         }
 
     } // inner class MessageSender
-    
+
 } // FrontendOutboundDispatcher

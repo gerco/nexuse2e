@@ -88,22 +88,28 @@ public class ReportMessageEntryForm extends ActionForm {
 
         switch ( messagePojo.getStatus() ) {
             case org.nexuse2e.Constants.MESSAGE_STATUS_FAILED:
-                setStatus( "Failed (" + messagePojo.getStatus() + ")" );
+                // setStatus( "Failed (" + messagePojo.getStatus() + ")" );
+                setStatus( "Failed" );
                 break;
             case org.nexuse2e.Constants.MESSAGE_STATUS_QUEUED:
-                setStatus( "Queued (" + messagePojo.getStatus() + ")" );
+                // setStatus( "Queued (" + messagePojo.getStatus() + ")" );
+                setStatus( "Queued" );
                 break;
             case org.nexuse2e.Constants.MESSAGE_STATUS_RETRYING:
-                setStatus( "Retrying (" + messagePojo.getStatus() + ")" );
+                // setStatus( "Retrying (" + messagePojo.getStatus() + ")" );
+                setStatus( "Retrying" );
                 break;
             case org.nexuse2e.Constants.MESSAGE_STATUS_SENT:
-                setStatus( "Sent (" + messagePojo.getStatus() + ")" );
+                // setStatus( "Sent (" + messagePojo.getStatus() + ")" );
+                setStatus( "Sent" );
                 break;
             case org.nexuse2e.Constants.MESSAGE_STATUS_STOPPED:
-                setStatus( "Stopped (" + messagePojo.getStatus() + ")" );
+                // setStatus( "Stopped (" + messagePojo.getStatus() + ")" );
+                setStatus( "Stopped" );
                 break;
             default:
-                setStatus( "unknown (" + messagePojo.getStatus() + ")" );
+                // setStatus( "unknown (" + messagePojo.getStatus() + ")" );
+                setStatus( "Unknown" );
         }
         setAction( messagePojo.getAction().getName() );
         if ( messagePojo.isOutbound() ) {

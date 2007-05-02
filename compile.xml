@@ -9,6 +9,9 @@
 		<rmic classname="org.nexuse2e.integration.NEXUSe2eInterfaceImpl" base="${basedir}/target/classes_14" stubversion="1.2">
 			<classpath refid="maven.compile.classpath" />
 		</rmic>
+		<!--
+		<jar jarfile="${basedir}/target/nexuse2e-server-4.0.0/WEB-INF/lib/nexuse2e_rmi.jar" basedir="${basedir}/target/classes_14" />
+		-->
 		<jar jarfile="${basedir}/target/nexuse2e_rmi.jar" basedir="${basedir}/target/classes_14" />
 	</target>
 

@@ -60,37 +60,48 @@ public class ReportConversationEntryForm extends ActionForm {
         setStatus( "" + pojo.getStatus() );
         switch ( pojo.getStatus() ) {
             case org.nexuse2e.Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND:
-                setStatus( "Ack sent, awaiting Backend (" + pojo.getStatus() + ")" );
+                // setStatus( "Ack sent, awaiting Backend (" + pojo.getStatus() + ")" );
+                setStatus( "Ack sent, awaiting Backend" );
                 break;
             case org.nexuse2e.Constants.CONVERSATION_STATUS_AWAITING_ACK:
-                setStatus( "Awaiting Ack (" + pojo.getStatus() + ")" );
+                // setStatus( "Awaiting Ack (" + pojo.getStatus() + ")" );
+                setStatus( "Awaiting Ack" );
                 break;
             case org.nexuse2e.Constants.CONVERSATION_STATUS_AWAITING_BACKEND:
-                setStatus( "Awaiting Backend (" + pojo.getStatus() + ")" );
+                // setStatus( "Awaiting Backend (" + pojo.getStatus() + ")" );
+                setStatus( "Awaiting Backend" );
                 break;
             case org.nexuse2e.Constants.CONVERSATION_STATUS_BACKEND_SENT_SENDING_ACK:
-                setStatus( "Backend sent, sending Ack (" + pojo.getStatus() + ")" );
+                // setStatus( "Backend sent, sending Ack (" + pojo.getStatus() + ")" );
+                setStatus( "Backend sent, sending Ack" );
                 break;
             case org.nexuse2e.Constants.CONVERSATION_STATUS_CREATED:
-                setStatus( "Created (" + pojo.getStatus() + ")" );
+                // setStatus( "Created (" + pojo.getStatus() + ")" );
+                setStatus( "Created" );
                 break;
             case org.nexuse2e.Constants.CONVERSATION_STATUS_ERROR:
-                setStatus( "Error (" + pojo.getStatus() + ")" );
+                // setStatus( "Error (" + pojo.getStatus() + ")" );
+                setStatus( "Error" );
                 break;
             case org.nexuse2e.Constants.CONVERSATION_STATUS_IDLE:
-                setStatus( "Idle (" + pojo.getStatus() + ")" );
+                // setStatus( "Idle (" + pojo.getStatus() + ")" );
+                setStatus( "Idle" );
                 break;
             case org.nexuse2e.Constants.CONVERSATION_STATUS_PROCESSING:
-                setStatus( "Processing (" + pojo.getStatus() + ")" );
+                // setStatus( "Processing (" + pojo.getStatus() + ")" );
+                setStatus( "Processing" );
                 break;
             case org.nexuse2e.Constants.CONVERSATION_STATUS_COMPLETED:
-                setStatus( "Completed (" + pojo.getStatus() + ")" );
+                // setStatus( "Completed (" + pojo.getStatus() + ")" );
+                setStatus( "Completed" );
                 break;
             case org.nexuse2e.Constants.CONVERSATION_STATUS_SENDING_ACK:
-                setStatus( "Sending Ack (" + pojo.getStatus() + ")" );
+                // setStatus( "Sending Ack (" + pojo.getStatus() + ")" );
+                setStatus( "Sending Ack" );
                 break;
             default:
-                setStatus( "unknown(" + pojo.getStatus() + ")" );
+                // setStatus( "unknown(" + pojo.getStatus() + ")" );
+                setStatus( "Unknown" );
         }
 
         setAction( pojo.getCurrentAction().getName() );

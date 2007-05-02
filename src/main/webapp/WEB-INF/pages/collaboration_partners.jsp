@@ -28,7 +28,7 @@
 			<td class="NEXUSName"><nexus:link
 				href="PartnerInfoView.do?nxPartnerId=${partner.nxPartnerId}&type=${TYPE}"
 				styleClass="NexusLink">
-				<bean:write name="partner" property="partnerId" />
+				<bean:write name="partner" property="partnerId" /> (<bean:write name="partner" property="name" />)
 			</nexus:link></td>
 			<td class="NEXUSName"><bean:write name="partner"
 				property="company" /></td>

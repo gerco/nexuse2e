@@ -100,26 +100,37 @@ public class HttpSenderService extends AbstractService implements SenderAware {
             //TODO: check for https and check isEnforced
             if ( receiverURL.toString().toLowerCase().startsWith( "https" ) ) {
 
-                LOG.error( "ssl" );
+                LOG.debug( "Using SSL" );
                 Protocol myhttps;
 
-                LOG.trace( "participant: " + participant );
-                LOG.trace( "participant.name: " + participant.getPartner().getName() );
-                LOG.trace( "participant.localcerts: " + participant.getLocalCertificate() );
-                LOG.trace( "localcert.name: " + participant.getLocalCertificate().getName() );
+                if ( LOG.isTraceEnabled() ) {
+                    LOG.trace( "participant: " + participant );
+                    LOG.trace( "participant.name: " + participant.getPartner().getName() );
+                    LOG.trace( "participant.localcerts: " + participant.getLocalCertificate() );
+                    if ( participant.getLocalCertificate() != null ) {
+                        LOG.trace( "localcert.name: " + participant.getLocalCertificate().getName() );
+                    }
+                }
                 CertificatePojo localCert = Engine.getInstance().getActiveConfigurationAccessService()
                         .getCertificateByNxCertificateId( Constants.CERTIFICATE_TYPE_LOCAL,
                                 participant.getLocalCertificate().getNxCertificateId() );
-                CertificatePojo metaPojo = Engine.getInstance().getActiveConfigurationAccessService().getFirstCertificateByType(
-                        Constants.CERTIFICATE_TYPE_CACERT_METADATA, true );
+                CertificatePojo metaPojo = Engine.getInstance().getActiveConfigurationAccessService()
+                        .getFirstCertificateByType( Constants.CERTIFICATE_TYPE_CACERT_METADATA, true );
+
+                if ( localCert == null ) {
+                    LOG.error( "No local certificate selected for using SSL with partner "
+                            + participant.getPartner().getName() );
+                    throw new NexusException( "No local certificate selected for using SSL with partner "
+                            + participant.getPartner().getName() );
+                }
 
                 KeyStore privateKeyChain = CertificateUtil.getPKCS12KeyStoreFromByteArray( localCert.getBinaryData(),
                         EncryptionUtil.decryptString( localCert.getPassword() ) );
 
                 myhttps = new Protocol( "https", (ProtocolSocketFactory) new CertSSLProtocolSocketFactory(
                         privateKeyChain, EncryptionUtil.decryptString( localCert.getPassword() ), Engine.getInstance()
-                                .getActiveConfigurationAccessService().getCacertsKeyStore(), EncryptionUtil.decryptString( metaPojo
-                                .getPassword() ) ), 443 );
+                                .getActiveConfigurationAccessService().getCacertsKeyStore(), EncryptionUtil
+                                .decryptString( metaPojo.getPassword() ) ), 443 );
 
                 client.getHostConfiguration().setHost( receiverURL.getHost(), receiverURL.getPort(), myhttps );
 
@@ -142,7 +153,7 @@ public class HttpSenderService extends AbstractService implements SenderAware {
         try {
             String httpReply = null;
 
-            LOG.debug( "Data:\n" + new String( (byte[])messageContext.getData() ) );
+            LOG.debug( "HTTP Message Data:\n" + new String( (byte[]) messageContext.getData() ) );
 
             // Support for HTTP plain
             TRPPojo trpPojo = messageContext.getMessagePojo().getTRP();
@@ -153,13 +164,10 @@ public class HttpSenderService extends AbstractService implements SenderAware {
                 uriParams.append( "&ActionID="
                         + messageContext.getMessagePojo().getConversation().getCurrentAction().getName() );
 
-                ChoreographyPojo choreographyPojo = messageContext.getMessagePojo().getConversation()
-                        .getChoreography();
+                ChoreographyPojo choreographyPojo = messageContext.getMessagePojo().getConversation().getChoreography();
                 ParticipantPojo participantPojo = Engine.getInstance().getActiveConfigurationAccessService()
-                        .getParticipantFromChoreographyByNxPartnerId(
-                                choreographyPojo,
-                                messageContext.getMessagePojo().getConversation().getPartner()
-                                        .getNxPartnerId() );
+                        .getParticipantFromChoreographyByNxPartnerId( choreographyPojo,
+                                messageContext.getMessagePojo().getConversation().getPartner().getNxPartnerId() );
                 uriParams.append( "&ParticipantID=" + participantPojo.getLocalPartner().getPartnerId() );
                 uriParams.append( "&ConversationID="
                         + messageContext.getMessagePojo().getConversation().getConversationId() );
@@ -168,7 +176,7 @@ public class HttpSenderService extends AbstractService implements SenderAware {
                 uri.setQuery( uriParams.toString() );
                 method.setURI( uri );
                 LOG.debug( "URI: " + uri );
-                method.setRequestEntity( new StringRequestEntity( new String( (byte[])messageContext.getData() ) ) );
+                method.setRequestEntity( new StringRequestEntity( new String( (byte[]) messageContext.getData() ) ) );
             } else {
                 ContentType contentType = new ContentType( "multipart/related" );
                 contentType.setParameter( "type", "text/xml" );
@@ -176,8 +184,7 @@ public class HttpSenderService extends AbstractService implements SenderAware {
                 contentType.setParameter( "start", messageContext.getMessagePojo().getMessageId()
                         + messageContext.getMessagePojo().getTRP().getProtocol() + "-Header" );
 
-                LOG.debug( "HTTP Message:\n" + new String( (byte[])messageContext.getData() ) );
-                RequestEntity requestEntity = new ByteArrayRequestEntity( (byte[])messageContext.getData(),
+                RequestEntity requestEntity = new ByteArrayRequestEntity( (byte[]) messageContext.getData(),
                         "Content-Type:" + contentType.toString() );
                 method.setRequestEntity( requestEntity );
 
@@ -226,8 +233,9 @@ public class HttpSenderService extends AbstractService implements SenderAware {
      * @see org.nexuse2e.Manageable#teardown()
      */
     public void teardown() {
+
         super.teardown();
-        
+
         transportSender = null;
     } // teardown
 

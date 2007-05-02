@@ -98,7 +98,7 @@ public class HttpReceiverService extends AbstractControllerService implements Re
 
         } catch ( Exception e ) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            // e.printStackTrace();
             response.sendError( 500, "NEXUSe2e - Processing error: " + e );
         }
 

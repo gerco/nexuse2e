@@ -32,6 +32,7 @@ import java.util.StringTokenizer;
 import javax.activation.FileTypeMap;
 import javax.activation.MimetypesFileTypeMap;
 
+import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.ParameterDescriptor;
@@ -45,13 +46,13 @@ import org.nexuse2e.pojo.MessagePayloadPojo;
  */
 public class FileSystemLoadPipelet extends AbstractOutboundBackendPipelet {
 
-    
+    private static Logger LOG = Logger.getLogger( FileSystemLoadPipelet.class );
+
     /**
      * Default constructor.
      */
     public FileSystemLoadPipelet() {
 
-        
         parameterMap.put( "directory", new ParameterDescriptor( ParameterType.STRING, "Directory", "Target directory",
                 "/nexus/dump" ) );
         parameterMap.put( "password", new ParameterDescriptor( ParameterType.PASSWORD, "Password", "Secure password",
@@ -76,8 +77,7 @@ public class FileSystemLoadPipelet extends AbstractOutboundBackendPipelet {
      * @see org.nexuse2e.backend.pipelets.AbstractOutboundBackendPipelet#processPayloadAvailable(org.nexuse2e.messaging.MessageContext)
      */
     @Override
-    public MessageContext processPayloadAvailable( MessageContext messageContext )
-            throws NexusException {
+    public MessageContext processPayloadAvailable( MessageContext messageContext ) throws NexusException {
 
         return messageContext;
     } // processPayloadAvailable
@@ -86,8 +86,7 @@ public class FileSystemLoadPipelet extends AbstractOutboundBackendPipelet {
      * @see org.nexuse2e.backend.pipelets.AbstractOutboundBackendPipelet#processPrimaryKeyAvailable(org.nexuse2e.messaging.MessageContext)
      */
     @Override
-    public MessageContext processPrimaryKeyAvailable( MessageContext messageContext )
-            throws NexusException {
+    public MessageContext processPrimaryKeyAvailable( MessageContext messageContext ) throws NexusException {
 
         byte[] documentBuffer = null; // The binary data buffer that will hold the document
         String newPrimaryKey = (String) messageContext.getData(); // Cast primary key to correct type
@@ -103,6 +102,8 @@ public class FileSystemLoadPipelet extends AbstractOutboundBackendPipelet {
 
         for ( int i = 0; i < count; i++ ) {
             fileName = ( (String) tokens.nextElement() ).trim();
+
+            LOG.debug( "File to send: '" + fileName + "'" );
 
             // Only execute if a file name was specified
             if ( ( fileName != null ) && ( fileName.length() != 0 ) ) {
@@ -140,7 +141,8 @@ public class FileSystemLoadPipelet extends AbstractOutboundBackendPipelet {
                     bufferedInputStream.close();
 
                 } catch ( IOException ioEx ) { // Handle exceptions related to the file I/O
-                    //System.err.println( "FileConnector - composeDocument: IOException: " + ioEx );
+                    ioEx.printStackTrace();
+                    LOG.error( "IOException: " + ioEx );
                     throw new NexusException( ioEx.getMessage() ); // Pass exception to NEXUSe2e engine using correct exception type
                 } // try/catch
 
@@ -153,10 +155,9 @@ public class FileSystemLoadPipelet extends AbstractOutboundBackendPipelet {
             String mimeType = mimetypesFileTypeMap.getContentType( fileName );
 
             // Prepare the Payload and set the MIME content type
-            MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo( messageContext.getMessagePojo(),
-                    i, mimeType, Engine.getInstance().getIdGenerator(
-                            org.nexuse2e.Constants.ID_GENERATOR_MESSAGE_PAYLOAD ).getId(), documentBuffer, new Date(),
-                    new Date(), 1 );
+            MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo( messageContext.getMessagePojo(), i,
+                    mimeType, Engine.getInstance().getIdGenerator( org.nexuse2e.Constants.ID_GENERATOR_MESSAGE_PAYLOAD )
+                            .getId(), documentBuffer, new Date(), new Date(), 1 );
             messagePayloads.add( messagePayloadPojo );
 
         } // for
@@ -176,24 +177,24 @@ public class FileSystemLoadPipelet extends AbstractOutboundBackendPipelet {
     public void activate() {
 
         // TODO Auto-generated method stub
-        
+
     }
 
     public void deactivate() {
 
         // TODO Auto-generated method stub
-        
+
     }
 
     public void initialize() {
 
         // TODO Auto-generated method stub
-        
+
     }
 
     public void teardown() {
 
         // TODO Auto-generated method stub
-        
+
     }
 } // FileSystemLoadPipelet

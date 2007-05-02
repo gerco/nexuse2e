@@ -34,12 +34,12 @@
             </column>
         </property>
         <property name="conversationId" type="string">
-            <column name="conversation_id" length="64" not-null="true">
+            <column name="conversation_id" length="96" not-null="true">
                 <comment></comment>
             </column>
         </property>
         <property name="messageId" type="string">
-            <column name="message_id" length="64" not-null="true">
+            <column name="message_id" length="96" not-null="true">
                 <comment></comment>
             </column>
         </property>
