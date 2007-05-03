@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Runlevel;
@@ -31,6 +32,8 @@ import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 
 abstract public class AbstractPipelet implements Pipelet {
+
+    private static Logger                      LOG                  = Logger.getLogger( AbstractPipelet.class );
 
     protected Map<String, Object>              parameters   = new HashMap<String, Object>();
     protected Map<String, ParameterDescriptor> parameterMap = new LinkedHashMap<String, ParameterDescriptor>();
@@ -53,6 +56,8 @@ abstract public class AbstractPipelet implements Pipelet {
     }
 
     public void initialize( EngineConfiguration config ) {
+        
+        LOG.trace( "Initializing " + getClass() );
 
         status = BeanStatus.INITIALIZED;
     }

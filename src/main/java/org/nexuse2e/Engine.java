@@ -271,21 +271,8 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                 if ( bean.getStatus().getValue() < BeanStatus.INITIALIZED.getValue() ) {
                     LOG.trace( "Initializing bean: " + bean.getClass().getName() );
                     bean.initialize( currentConfiguration );
-                } else {
+                } else if ( !( bean instanceof org.nexuse2e.logging.LogAppender ) ) {
                     LOG.error( "Bean already initialized: " + bean.getClass().getName() );
-                }
-            }
-            // initialize TransportSender and TransportReceiver if they are configured by Spring
-            for ( Object o : getApplicationContext().getBeansOfType( TransportSender.class ).values() ) {
-                TransportSender ts = (TransportSender) o;
-                if ( ts.getStatus().getValue() < BeanStatus.INITIALIZED.getValue() ) {
-                    ts.initialize( currentConfiguration );
-                }
-            }
-            for ( Object o : getApplicationContext().getBeansOfType( TransportReceiver.class ).values() ) {
-                TransportReceiver tr = (TransportReceiver) o;
-                if ( tr.getStatus().getValue() < BeanStatus.INITIALIZED.getValue() ) {
-                    tr.initialize( currentConfiguration );
                 }
             }
 
@@ -735,7 +722,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
      * this method has been called.
      */
     public void shutdown() {
-        
+
         // new Exception().printStackTrace();
 
         deactivate();
@@ -933,21 +920,19 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
         this.engineController = engineController;
     }
 
-    
     /**
      * @return the timestampPattern
      */
     public String getTimestampPattern() {
-    
+
         return timestampPattern;
     }
 
-    
     /**
      * @param timestampPattern the timestampPattern to set
      */
     public void setTimestampPattern( String timestampPattern ) {
-    
+
         this.timestampPattern = timestampPattern;
     }
 

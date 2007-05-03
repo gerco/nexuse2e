@@ -59,7 +59,7 @@ public class DatabaseLogger extends AppenderSkeleton implements LogAppender {
 
         parameters = new HashMap<String, Object>();
         parameterMap = new LinkedHashMap<String, ParameterDescriptor>();
-
+        status = BeanStatus.INITIALIZED;
     }
 
     @SuppressWarnings("unchecked")
@@ -94,7 +94,7 @@ public class DatabaseLogger extends AppenderSkeleton implements LogAppender {
 
     @Override
     protected void append( LoggingEvent loggingevent ) {
-        
+
         //        loggingevent.get
         if ( status != BeanStatus.ACTIVATED ) {
             return;
@@ -204,7 +204,6 @@ public class DatabaseLogger extends AppenderSkeleton implements LogAppender {
     public void initialize( EngineConfiguration config ) {
 
         status = BeanStatus.INITIALIZED;
-
     }
 
     /* (non-Javadoc)

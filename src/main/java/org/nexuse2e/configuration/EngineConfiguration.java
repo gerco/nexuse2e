@@ -1040,9 +1040,6 @@ public class EngineConfiguration {
                             // TransportSender
                             frontendPipeline.setPipelineEndpoint( pipelet );
                             ConfigurationUtil.configurePipelet( pipelet, pipeletPojo.getPipeletParams() );
-                            staticBeanContainer.getManagableBeans()
-                                    .put( "TransportSender" + frontendPipeline.getKey().toString(),
-                                            (TransportSender) pipelet );
                         } else {
                             forwardPipelets[i++] = pipelet;
                         }

@@ -317,7 +317,8 @@ public class FrontendActionSerializer implements Manageable {
                         FrontendActionSerializer.this.backendInboundDispatcher.processMessage( messageContext );
 
                         messagePojo.setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_SENT );
-                        if ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND ) {
+                        if ( ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND )
+                                || ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_IDLE ) ) {
                             if ( conversationPojo.getCurrentAction().isEnd() ) {
                                 conversationPojo.setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_COMPLETED );
                             } else {

@@ -97,7 +97,7 @@ public class NEXUSe2eRMIServer implements InitializingBean {
             try {
                 registry = LocateRegistry.createRegistry( portNo );
             } catch ( Exception rEx ) {
-                LOG.error( "RMI: Registry already exists." );
+                LOG.warn( "RMI: Registry already exists." );
                 registry = null;
             } // try
 

@@ -96,7 +96,7 @@ public class TransportSender extends AbstractPipelet {
             ( (SenderAware) service ).setTransportSender( this );
         }
         this.service = service;
-        status = BeanStatus.INITIALIZED;
+        super.initialize( config );
     }
 
     /* (non-Javadoc)
