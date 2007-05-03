@@ -53,8 +53,6 @@ import org.nexuse2e.integration.NEXUSe2eInterfaceImpl;
 import org.nexuse2e.messaging.TimestampFormatter;
 import org.nexuse2e.messaging.ebxml.EBXMLTimestampFormatter;
 import org.nexuse2e.service.Service;
-import org.nexuse2e.transport.TransportReceiver;
-import org.nexuse2e.transport.TransportSender;
 import org.nexuse2e.util.CertificateUtil;
 import org.nexuse2e.util.XMLUtil;
 import org.springframework.beans.BeansException;

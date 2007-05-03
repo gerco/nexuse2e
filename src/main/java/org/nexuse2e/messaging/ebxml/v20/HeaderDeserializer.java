@@ -49,8 +49,7 @@ import org.nexuse2e.pojo.MessagePojo;
  */
 public class HeaderDeserializer extends AbstractPipelet {
 
-    private static Logger       LOG = Logger.getLogger( HeaderDeserializer.class );
-
+    private static Logger LOG = Logger.getLogger( HeaderDeserializer.class );
 
     /**
      * Default constructor.
@@ -62,8 +61,8 @@ public class HeaderDeserializer extends AbstractPipelet {
     /* (non-Javadoc)
      * @see org.nexuse2e.messaging.HeaderDeserializer#processMessage(com.tamgroup.nexus.e2e.persistence.pojo.MessagePojo)
      */
-    public MessageContext processMessage( MessageContext messageContext )
-            throws IllegalArgumentException, IllegalStateException {
+    public MessageContext processMessage( MessageContext messageContext ) throws IllegalArgumentException,
+            IllegalStateException {
 
         LOG.trace( "enter EbXMLV20HeaderDeserializer.processMessageImpl" );
 
@@ -79,16 +78,16 @@ public class HeaderDeserializer extends AbstractPipelet {
             LOG.trace( "Header:" + new String( messagePojo.getHeaderData() ) );
             MessageFactory messageFactory = MessageFactory.newInstance();
             /*
-            for ( int i = 0; i < messagePojo.getHeaderData().length; i++ ) {
-                byte theByte = messagePojo.getHeaderData()[i];
-                System.out.print( theByte + " " );
-                if ( i % 20 == 0 ) {
-                    System.out.println();
-                }
-            }
-            LOG.debug( "###################### Start \n'" + new String( messagePojo.getHeaderData() )
-                    + "'\n###################### End" );
-            */
+             for ( int i = 0; i < messagePojo.getHeaderData().length; i++ ) {
+             byte theByte = messagePojo.getHeaderData()[i];
+             System.out.print( theByte + " " );
+             if ( i % 20 == 0 ) {
+             System.out.println();
+             }
+             }
+             LOG.debug( "###################### Start \n'" + new String( messagePojo.getHeaderData() )
+             + "'\n###################### End" );
+             */
             ByteArrayInputStream bais = new ByteArrayInputStream( messagePojo.getHeaderData() );
             SOAPMessage soapMessage = messageFactory.createMessage( null, bais );
             SOAPPart part = soapMessage.getSOAPPart();
@@ -214,7 +213,8 @@ public class HeaderDeserializer extends AbstractPipelet {
                                 String fromIdType = innerElement.getAttributeValue( soapEnvelope.createName( "type",
                                         Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE ) );
                                 LOG.trace( "FromIDType:" + fromIdType );
-                                messagePojo.getCustomParameters().put(Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_FROMIDTYPE,
+                                messagePojo.getCustomParameters().put(
+                                        Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_FROMIDTYPE,
                                         fromIdType );
                                 fromId = innerElement.getValue();
                                 // Cut off 'uri:'in case there was no type information
@@ -239,7 +239,9 @@ public class HeaderDeserializer extends AbstractPipelet {
                                 String toIdType = innerElement.getAttributeValue( soapEnvelope.createName( "type",
                                         Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE ) );
                                 LOG.trace( "ToIDType:" + toIdType );
-                                messagePojo.getCustomParameters().put(Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_TOIDTYPE, toIdType );
+                                messagePojo.getCustomParameters().put(
+                                        Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_TOIDTYPE,
+                                        toIdType );
 
                                 String to = innerElement.getValue();
                                 // Cut off 'uri:'in case there was no type information
@@ -248,7 +250,8 @@ public class HeaderDeserializer extends AbstractPipelet {
                                     to = to.substring( lastColon + 1 );
                                 }
                                 LOG.trace( "To:" + to );
-                                messagePojo.getCustomParameters().put(Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_TO, to );
+                                messagePojo.getCustomParameters().put(
+                                        Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_TO, to );
                             }
                         } else {
                             throw new NexusException( "No from party found in ebXML 2.0 message!" );
@@ -263,7 +266,8 @@ public class HeaderDeserializer extends AbstractPipelet {
                     } else if ( localName.equals( "Service" ) ) {
                         String service = element.getValue();
                         LOG.trace( "Service(? dummy, uri: required, but not saved in database):" + service );
-                        messagePojo.getCustomParameters().put(Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_SERVICE, service );
+                        messagePojo.getCustomParameters().put(
+                                Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_SERVICE, service );
                     } else if ( localName.equals( "Action" ) ) {
                         actionId = element.getValue();
                         LOG.trace( "Action:" + actionId );
@@ -303,7 +307,8 @@ public class HeaderDeserializer extends AbstractPipelet {
                     conversationId, actionId, fromId, choreographyId );
         } catch ( NexusException ex ) {
             LOG.error( "Error creating message: " + ex );
-            throw ex;
+            LOG.error( "Header received:\n" + new String( messagePojo.getHeaderData() ) );
+            // throw ex;
         }
 
     } // unmarshallMessageHeader
@@ -346,7 +351,7 @@ public class HeaderDeserializer extends AbstractPipelet {
             SOAPElement element = null;
             Node node = null;
             // SOAPElement innerElement = null;
-            Iterator innerElements = null;
+            // Iterator innerElements = null;
             Iterator ackElements = acknowledgement.getChildElements();
             while ( ackElements.hasNext() ) {
                 node = (Node) ackElements.next();
@@ -402,5 +407,5 @@ public class HeaderDeserializer extends AbstractPipelet {
         messagePojo.setType( org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ERROR );
         LOG.trace( "leave EbXMLV20HeaderDeserializer.unmarshallErrorList" );
     } // unmarshallErrorList
-   
+
 }

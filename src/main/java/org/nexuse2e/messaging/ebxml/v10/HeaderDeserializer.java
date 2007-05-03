@@ -310,6 +310,7 @@ public class HeaderDeserializer extends AbstractPipelet {
                     conversationId, actionId, fromId, choreographyId );
         } catch ( NexusException ex ) {
             LOG.error( "Error creating message: " + ex );
+            LOG.error( "Header received:\n" + new String( messagePojo.getHeaderData() ) );
             throw ex;
         }
 
@@ -353,7 +354,7 @@ public class HeaderDeserializer extends AbstractPipelet {
             SOAPElement element = null;
             Node node = null;
             // SOAPElement innerElement = null;
-            Iterator innerElements = null;
+            // Iterator innerElements = null;
             Iterator ackElements = acknowledgement.getChildElements();
             while ( ackElements.hasNext() ) {
                 node = (Node) ackElements.next();

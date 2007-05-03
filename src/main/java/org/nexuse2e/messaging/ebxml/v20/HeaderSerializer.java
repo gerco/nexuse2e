@@ -135,12 +135,12 @@ public class HeaderSerializer extends AbstractPipelet {
                     Constants.EBXML_NAMESPACE ), Constants.EBXMLVERSION );
 
             // TO & FROM -----------------------------------------------------------
-            String from = messagePojo.getCustomParameters().get(Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_FROM );
+            String from = messagePojo.getParticipant().getLocalPartner().getPartnerId();
             if ( from == null ) {
                 //TODO: for testing..
                 from = "dummyfrom";
             }
-            String fromIdType = messagePojo.getCustomParameters().get(Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_FROMIDTYPE );
+            String fromIdType = messagePojo.getParticipant().getLocalPartner().getPartnerIdType();;
             if ( fromIdType == null ) {
                 //              TODO: for testing..
                 fromIdType = "dummyFromType";
@@ -172,10 +172,12 @@ public class HeaderSerializer extends AbstractPipelet {
             }
             soapElement = soapFactory.createElement( "Service", Constants.EBXML_NAMESPACE_PREFIX,
                     Constants.EBXML_NAMESPACE );
+            /*
             if ( service != null && service.length() > 0 ) {
                 soapElement.addAttribute( soapFactory.createName( "type", Constants.EBXML_NAMESPACE_PREFIX,
                         Constants.EBXML_NAMESPACE ), service );
             }
+            */
 
             String serviceVal = new String();
             if ( !( service.startsWith( "uri:" ) || service.startsWith( "urn:" ) ) ) {
@@ -440,7 +442,7 @@ public class HeaderSerializer extends AbstractPipelet {
         }
 
         if ( type != null && type.length() != 0 ) {
-            soapEl.addAttribute( soapFactory.createName( "xlink:type" ), type );
+            soapEl.addAttribute( soapFactory.createName( "xlink:type" ), "simple" ); // hard coded according to spec, p.23, section 3.2.1
         }
 
         parent.addChildElement( soapEl );
@@ -479,9 +481,9 @@ public class HeaderSerializer extends AbstractPipelet {
                 Constants.EBXML_NAMESPACE );
 
         if ( type != null && !type.equals( "" ) ) {
-            partyId.addAttribute( soapFactory.createName( "type" ), type );
+            // partyId.addAttribute( soapFactory.createName( "type" ), type );
             // partyId.addAttribute( soapFactory.createName( "eb:type" ), type );
-            // partyId.addAttribute( soapFactory.createName( "type", Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE ), type );
+            partyId.addAttribute( soapFactory.createName( "type", Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE ), type );
             party = value;
         } else { // as per ebXML 1.0 spec, if no type attr, value is a uri
             if ( ( value.startsWith( Constants.URI_ID ) == false ) && ( value.indexOf( ":" ) == -1 ) ) {

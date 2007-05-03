@@ -270,6 +270,10 @@ public class TransactionServiceImpl implements TransactionService {
         return initializeMessage( messagePojo, messageId, conversationId, actionId, partnerId, choreographyId );
     } // getNewMessage
 
+    /* (non-Javadoc)
+     * @see org.nexuse2e.controller.TransactionService#getActiveMessages()
+     */
+    @SuppressWarnings("unchecked")
     public List<MessagePojo> getActiveMessages() throws NexusException {
 
         TransactionDAO transactionDao;
@@ -412,7 +416,7 @@ public class TransactionServiceImpl implements TransactionService {
      */
     public void storeTransaction( ConversationPojo conversationPojo, MessagePojo messagePojo ) throws NexusException {
 
-        LOG.debug( "storeTransaction: " + conversationPojo + " - " + messagePojo );
+        LOG.debug( "storeTransaction: " + conversationPojo.getConversationId() + " - " + messagePojo.getMessageId() );
 
         TransactionDAO transactionDao;
         try {
@@ -433,7 +437,7 @@ public class TransactionServiceImpl implements TransactionService {
      */
     public void updateTransaction( ConversationPojo conversationPojo ) throws NexusException {
 
-        LOG.debug( "updateTransaction: " + conversationPojo );
+        LOG.debug( "updateTransaction: " + conversationPojo.getConversationId() );
 
         TransactionDAO transactionDao;
         try {
@@ -454,7 +458,7 @@ public class TransactionServiceImpl implements TransactionService {
      */
     public void updateMessage( MessagePojo messagePojo ) throws NexusException {
 
-        LOG.debug( "updateMessage: " + messagePojo );
+        LOG.debug( "updateMessage: " + messagePojo.getMessageId() );
 
         TransactionDAO transactionDao;
         try {
@@ -475,7 +479,7 @@ public class TransactionServiceImpl implements TransactionService {
      */
     public void updateConversation( ConversationPojo conversationPojo ) throws NexusException {
 
-        LOG.debug( "updateMessage: " + conversationPojo );
+        LOG.debug( "updateConversation: " + conversationPojo.getConversationId() );
 
         TransactionDAO transactionDao;
         try {

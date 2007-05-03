@@ -68,6 +68,7 @@ public class HttpReceiverService extends AbstractControllerService implements Re
     /* (non-Javadoc)
      * @see org.springframework.web.servlet.mvc.Controller#handleRequest(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
+    @SuppressWarnings("unchecked")
     public ModelAndView handleRequest( HttpServletRequest request, HttpServletResponse response ) throws Exception {
 
         try {

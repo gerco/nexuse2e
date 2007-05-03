@@ -33,11 +33,11 @@
                 <td class="NEXUSValue">
                   <html:select onchange="javascript: scriptScope.disableLinks();" styleClass="fixedsize" property="severity">
                       <html:option value=""/>
-                      <html:option value="3">Debug</html:option>
-                      <html:option value="0">Error</html:option>
-                      <html:option value="1">Info</html:option>
-                      <html:option value="-1">System</html:option>
-                      <html:option value="2">Verbose</html:option>
+                      <html:option value="<%=org.apache.log4j.Level.ERROR.toInt()+"" %>">Error</html:option>
+                      <html:option value="<%=org.apache.log4j.Level.WARN.toInt()+"" %>">Warn</html:option>
+                      <html:option value="<%=org.apache.log4j.Level.INFO.toInt()+"" %>">Info</html:option>
+                      <html:option value="<%=org.apache.log4j.Level.DEBUG.toInt()+"" %>">Debug</html:option>
+                      <html:option value="<%=org.apache.log4j.Level.TRACE.toInt()+"" %>">Trace</html:option>
                  </html:select>
                 </td>
             </tr>

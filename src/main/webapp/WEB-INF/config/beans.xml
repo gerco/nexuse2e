@@ -25,8 +25,8 @@
   <!-- Engine  -->
   <bean id="engine" class="org.nexuse2e.Engine">
     <property name="baseConfigurationProviderClass" value="${configuration.base.class}" />
-    <property name="cacertsPath" value="/Volumes/nexus" />
-    <property name="certificatePath" value="/Volumes/nexus" />
+    <property name="cacertsPath" value="${certificate.keystorePath.ca}" />
+    <property name="certificatePath" value="${certificate.keystorePath.server}" />
     <property name="timestampPattern" value="${database.timestamp.pattern}" />
   </bean>
 
