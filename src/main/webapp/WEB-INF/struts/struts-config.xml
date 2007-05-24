@@ -42,6 +42,10 @@
     
     <form-bean name="messageSubmissionForm" type="org.nexuse2e.ui.form.MessageSubmissionForm"/>
     <form-bean name="provisioningSubmissionForm" type="org.nexuse2e.ui.form.ProvisioningSubmissionForm"/>
+    
+    <form-bean name="databasePurgeForm" type="org.nexuse2e.ui.form.DatabasePurgeForm"/>
+    
+    
     <!-- 
     <form-bean name="mailSettingsForm" type="org.nexuse2e.ui.form.MailSettingsForm"/>
     <form-bean name="transportForm" type="org.nexuse2e.ui.form.TransportForm"/>
@@ -471,9 +475,14 @@
       <forward name="error" path="/StagingExportCertificate.do"/>
     </action>
 
-    <action path="/Reporting" type="org.nexuse2e.ui.action.NoOpAction">
+<!-- 
+    <action path="/Reporting" name="reportingPropertiesForm" type="org.nexuse2e.ui.action.reporting.ReportingForwardAction">
       <forward name="success" path="/WEB-INF/pages/reporting.jsp"/>
     </action>
+	<action path="/Reporting" type="org.nexuse2e.ui.action.NoOpAction">
+      <forward name="success" path="/WEB-INF/pages/reporting.jsp"/>
+    </action>
+ -->
 
     <action path="/ProcessConversationReport" name="reportingPropertiesForm" type="org.nexuse2e.ui.action.reporting.ProcessConversationReportAction" scope="session">
       <forward name="success" path="/WEB-INF/pages/reporting/transaction_report.jsp"/>
@@ -495,13 +504,25 @@
     <action path="/ReportingForward" name="reportingPropertiesForm" type="org.nexuse2e.ui.action.reporting.ReportingForwardAction">
       <forward name="conversation" path="/ProcessConversationReport.do"/>
       <forward name="engine" path="/ProcessEngineLog.do"/>
-      <forward name="error" path="/Reporting.do"/>
+      <forward name="view" path="/WEB-INF/pages/reporting.jsp"/>
+      <forward name="error" path="/WEB-INF/pages/reporting.jsp"/>
+      <forward name="save" path="/WEB-INF/pages/reporting.jsp"/>
     </action>
     
     <action path="/ModifyMessage" name="reportingPropertiesForm" type="org.nexuse2e.ui.action.reporting.ModifyMessageAction">
       <forward name="success" path="/ProcessConversationReport.do"/>
     </action>
 
+<!-- 
+	<action path="/ReportingSaveConfigFields" name="reportingPropertiesForm" type="org.nexuse2e.ui.action.reporting.SaveConfigFieldsAction">
+      <forward name="success" path="/Reporting.do"/>
+    </action>
+     -->
+    
+    <action path="/DatabasePurge" name="databasePurgeForm" type="org.nexuse2e.ui.action.tools.DatabasePurgeAction">
+      <forward name="success" path="/WEB-INF/pages/tools/database_purge.jsp"/>
+    </action>
+    
     <!-- 
       <forward name="save" path="/ReportingSaveConfigFields.do"/>
     
@@ -516,9 +537,6 @@
     </action>
     <action path="/ServerCertificateSaveToDisk" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.ServerCertSaveToDiskAction">
       <forward name="success" path="/ServerCertificateView.do"/>
-    </action>
-    <action path="/ReportingSaveConfigFields" name="reportingPropertiesForm" type="org.nexuse2e.ui.action.reporting.SaveConfigFieldsAction">
-      <forward name="success" path="/Reporting.do"/>
     </action>
     <action path="/RequestImportBackup" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.RequestImportBackupAction">
       <forward name="success" path="/WEB-INF/pages/communications/request_import_backup.jsp"/>
