@@ -164,6 +164,9 @@
         <nxs:page target="ProvisioningSubmission.do" label="Provisioning" icon="images/tree/ssl.gif">
           <nxs:command target="ProvisioningSubmission.do" label="Execute" icon="images/tree/TreeDot.gif"/>
         </nxs:page>
+        <nxs:page target="DatabasePurge.do?type=select" label="Database Purge" icon="images/delete.gif">
+          <nxs:command target="DatabasePurge.do?type=select" label="Execute" icon="images/tree/TreeDot.gif"/>
+        </nxs:page>
       </nxs:page>
       <nxs:page target="CollaborationPartners.do?type=2" label="Collaboration Partners" icon="images/tree/collaborativepartners.gif">
         <nxs:command target="CollaborationPartnerAdd.do?type=2" label="Add Collaboration Partner" icon="images/tree/TreeDot.gif"/>
@@ -205,7 +208,7 @@
           </nxs:page>
         </nxs:page>
       </nxs:page>
-      <nxs:page target="Reporting.do" label="Reporting" icon="images/tree/reports.gif">
+      <nxs:page target="ReportingForward.do?command=view" label="Reporting" icon="images/tree/reports.gif">
         <nxs:page target="ReportingForward.do?command=transaction&amp;noReset=true" label="Transaction Reporting" icon="images/tree/TreeDot.gif">
           <nxs:command target="ProcessConversationReport.do?noReset=true" label="Process Conversation Report" icon="images/tree/TreeDot.gif"/> 
         </nxs:page>
