@@ -20,7 +20,7 @@
 
         <table class="NEXUS_TABLE" width="100%">
             <tr>
-                <td><a href="Reporting.do" class="NEXUSScreenPathLink">Reporting</a></td>
+                <td><nexus:crumbs styleClass="NEXUSScreenPathLink">Reporting</nexus:crumbs></td>
             </tr>
             <tr>
                 <td class="NEXUSScreenName">Engine Logging</td>
@@ -40,17 +40,11 @@
                       <html:option value="<%=org.apache.log4j.Level.TRACE.toInt()+"" %>">Trace</html:option>
                  </html:select>
                 </td>
-            </tr>
-            
-            <tr>
                 <td class="NEXUSValue">Message Text <html:checkbox onclick="javascript: scriptScope.disableLinks();" name="reportingPropertiesForm" property="messageTextEnabled"/></td>
                 <td class="NEXUSValue">
                   <html:text onkeydown="javascript: scriptScope.disableLinks();" styleClass="fixedsize" property="messageText"></html:text>
                 </td>
-                <td class="NEXUSValue">&nbsp;</td>                  
-                <td class="NEXUSValue">&nbsp;</td>
             </tr>
-            
             
             <tr>
                 <td class="NEXUSValue">Start Date <html:checkbox name="reportingPropertiesForm" property="startEnabled"/></td>
