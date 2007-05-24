@@ -31,6 +31,7 @@ import org.nexuse2e.Constants;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ConversationPojo;
+import org.nexuse2e.pojo.LogPojo;
 import org.nexuse2e.pojo.MessagePojo;
 import org.nexuse2e.pojo.PartnerPojo;
 
@@ -194,10 +195,10 @@ public class TransactionDAO extends BasicDAO {
      * @throws NexusException
      */
     public List getConversationsForReport( String status, int nxChoreographyId, int nxPartnerId, String conversationId,
-            Date start, Date end, int itemsPerPage, int page, int field, boolean ascending ) throws NexusException {
+            Date start, Date end, int itemsPerPage, int page, int field, boolean ascending, Session session, Transaction transaction ) throws NexusException {
 
         return getListThroughSessionFindByPageNo( getConversationsForReportHQL( status, nxChoreographyId, nxPartnerId,
-                conversationId, start, end, field, ascending, false ), itemsPerPage, page );
+                conversationId, start, end, field, ascending, false ), itemsPerPage, page, session, transaction );
     }
 
     /**
@@ -714,5 +715,15 @@ public class TransactionDAO extends BasicDAO {
                 + choreography.getNxChoreographyId() + " and message.conversation.partner.nxPartnerId="
                 + partner.getNxPartnerId() + getSortString( "message", field, ascending );
         return getListThroughSessionFind( query.toString(), session, transaction );
+    }
+
+    /**
+     * @param logEntry
+     * @param session
+     * @param transaction
+     */
+    public void deleteLogEntry( LogPojo logEntry, Session session, Transaction transaction ) throws NexusException {
+
+        deleteRecord( logEntry, session, transaction );
     }
 }

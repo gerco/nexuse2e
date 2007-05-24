@@ -1417,9 +1417,7 @@ public class ConfigurationAccessService {
             if ( descriptor != null ) {
                 isUpdated = false;
                 for ( GenericParamPojo value : values ) {
-                    if ( ( value.getTag() == null && tag == null )
-                            || ( value.getTag() != null && value.getTag().equals( tag ) )
-                            && value.getParamName().equals( name ) ) {
+                    if ( (( value.getTag() == null && tag == null ) || ( value.getTag() != null && value.getTag().equals( tag ) )) && value.getParamName().equals( name ) ) {
                         resultMap.put( value.getParamName(), getParameterValue( descriptor, value.getValue() ) );
                         isUpdated = true;
                     }

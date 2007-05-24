@@ -56,66 +56,15 @@ public class ProcessEngineLogAction extends NexusE2EAction {
             HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
+        
         List<ReportEngineEntryForm> logItems = new Vector<ReportEngineEntryForm>();
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
         ActionForward error = actionMapping.findForward( ACTION_FORWARD_FAILURE );
-
+        try {
         ReportingPropertiesForm form = (ReportingPropertiesForm) actionForm;
 
-        form.setEngineColSeverity( true );
-        form.setEngineColIssued( true );
-        form.setEngineColDescription( true );
-        /*
-         ConfigFieldDAO cfDao = new ConfigFieldDAO();
 
-         HashMap configFieldMap = new HashMap<K, V>();
-
-         List configFields = cfDao.getConfigFieldsByChoreographyIdAndComponentId( "#ENGINE#", "Reporting" );
-
-         for ( Iterator<E> iter = configFields.iterator(); iter.hasNext(); ) {
-         ConfigFieldPojo configFieldPojo = (ConfigFieldPojo) iter.next();
-         configFieldMap.put( configFieldPojo.getConfigFieldKey().getName(), configFieldPojo );
-         }
-
-         ConfigFieldPojo field = (ConfigFieldPojo) configFieldMap.get( "engineColSeverity" );
-
-         // field = cfDao.getConfigFieldByChoreographyIdComponentIdAndName( "#ENGINE#", "Reporting", "engineColSeverity" );
-
-         if ( field != null ) {
-         form.setEngineColSeverity( Boolean.valueOf( field.getValue() ).booleanValue() );
-         }
-
-         field = (ConfigFieldPojo) configFieldMap.get( "engineColIssued" );
-         // field = cfDao.getConfigFieldByChoreographyIdComponentIdAndName( "#ENGINE#", "Reporting", "engineColIssued" );
-         if ( field != null ) {
-         form.setEngineColIssued( Boolean.valueOf( field.getValue() ).booleanValue() );
-         }
-
-         field = (ConfigFieldPojo) configFieldMap.get( "engineColDescription" );
-         // field = cfDao.getConfigFieldByChoreographyIdComponentIdAndName( "#ENGINE#", "Reporting", "engineColDescription" );
-         if ( field != null ) {
-         form.setEngineColDescription( Boolean.valueOf( field.getValue() ).booleanValue() );
-         }
-
-         field = (ConfigFieldPojo) configFieldMap.get( "engineColOrigin" );
-         // field = cfDao.getConfigFieldByChoreographyIdComponentIdAndName( "#ENGINE#", "Reporting", "engineColOrigin" );
-         if ( field != null ) {
-         form.setEngineColOrigin( Boolean.valueOf( field.getValue() ).booleanValue() );
-         }
-
-         field = (ConfigFieldPojo) configFieldMap.get( "engineColClassName" );
-         // field = cfDao.getConfigFieldByChoreographyIdComponentIdAndName( "#ENGINE#", "Reporting", "engineColClassName" );
-         if ( field != null ) {
-         form.setEngineColClassName( Boolean.valueOf( field.getValue() ).booleanValue() );
-         }
-
-         field = (ConfigFieldPojo) configFieldMap.get( "engineColmethodName" );
-         // field = cfDao.getConfigFieldByChoreographyIdComponentIdAndName( "#ENGINE#", "Reporting", "engineColmethodName" );
-         if ( field != null ) {
-         form.setEngineColmethodName( Boolean.valueOf( field.getValue() ).booleanValue() );
-         }
-         */
 
         String dir = form.getCommand();
         String refresh = request.getParameter( "refresh" );
@@ -164,7 +113,7 @@ public class ProcessEngineLogAction extends NexusE2EAction {
             int pos = form.getStartCount();
             if ( pos == 0 || !dir.equals( "engine" ) ) {
                 reportMessages = Engine.getInstance().getTransactionService().getLogEntriesForReport( severity,
-                        messageText, startDate, endDate, form.getPageSize(), 0, LogDAO.SORT_CREATED, false );
+                        messageText, startDate, endDate, form.getPageSize(), 0, LogDAO.SORT_CREATED, false, null,null );
 
                 if ( items > 0 ) {
                     form.setStartCount( 1 );
@@ -182,7 +131,7 @@ public class ProcessEngineLogAction extends NexusE2EAction {
             } else {
                 int page = pos / form.getPageSize();
                 reportMessages = Engine.getInstance().getTransactionService().getLogEntriesForReport( severity,
-                        messageText, startDate, endDate, form.getPageSize(), page, LogDAO.SORT_CREATED, false );
+                        messageText, startDate, endDate, form.getPageSize(), page, LogDAO.SORT_CREATED, false , null,null);
 
                 if ( form.getStartCount() + form.getPageSize() > items ) {
                     form.setEndCount( items );
@@ -196,13 +145,13 @@ public class ProcessEngineLogAction extends NexusE2EAction {
             int pos = form.getStartCount();
             if ( pos < form.getPageSize() ) {
                 reportMessages = Engine.getInstance().getTransactionService().getLogEntriesForReport( severity,
-                        messageText, startDate, endDate, form.getPageSize(), 0, LogDAO.SORT_CREATED, false );
+                        messageText, startDate, endDate, form.getPageSize(), 0, LogDAO.SORT_CREATED, false , null,null);
                 form.setStartCount( 1 );
                 form.setEndCount( form.getPageSize() );
             } else {
                 reportMessages = Engine.getInstance().getTransactionService().getLogEntriesForReport( severity,
                         messageText, startDate, endDate, form.getPageSize(), ( pos / form.getPageSize() ) - 1,
-                        LogDAO.SORT_CREATED, false );
+                        LogDAO.SORT_CREATED, false , null,null);
                 form.setStartCount( pos - form.getPageSize() );
                 form.setEndCount( form.getStartCount() + form.getPageSize() - 1 );
             }
@@ -212,13 +161,13 @@ public class ProcessEngineLogAction extends NexusE2EAction {
             if ( pos + 2 * form.getPageSize() >= items ) {
                 reportMessages = Engine.getInstance().getTransactionService().getLogEntriesForReport( severity,
                         messageText, startDate, endDate, form.getPageSize(), pos / form.getPageSize() + 1,
-                        LogDAO.SORT_CREATED, false );
+                        LogDAO.SORT_CREATED, false , null,null);
                 form.setStartCount( form.getStartCount() + form.getPageSize() );
                 form.setEndCount( items );
             } else {
                 int page = pos / form.getPageSize();
                 reportMessages = Engine.getInstance().getTransactionService().getLogEntriesForReport( severity,
-                        messageText, startDate, endDate, form.getPageSize(), page + 1, LogDAO.SORT_CREATED, false );
+                        messageText, startDate, endDate, form.getPageSize(), page + 1, LogDAO.SORT_CREATED, false, null,null );
                 form.setStartCount( form.getStartCount() + form.getPageSize() );
                 form.setEndCount( form.getStartCount() + form.getPageSize() - 1 );
             }
@@ -226,22 +175,24 @@ public class ProcessEngineLogAction extends NexusE2EAction {
         } else if ( dir.equals( "last" ) ) {
             reportMessages = Engine.getInstance().getTransactionService().getLogEntriesForReport( severity,
                     messageText, startDate, endDate, form.getPageSize(), items / form.getPageSize(),
-                    LogDAO.SORT_CREATED, false );
+                    LogDAO.SORT_CREATED, false , null,null);
             form.setStartCount( items / form.getPageSize() * form.getPageSize() + 1 );
             form.setEndCount( items );
         }
 
-        if ( reportMessages != null ) {
+        
+            if ( reportMessages != null ) {
 
-            Iterator<LogPojo> i = reportMessages.iterator();
+                Iterator<LogPojo> i = reportMessages.iterator();
 
-            while ( i.hasNext() ) {
-                ReportEngineEntryForm entry = new ReportEngineEntryForm();
-                entry.setEnginePorperties( i.next() );
-                logItems.add( entry );
+                while ( i.hasNext() ) {
+                    ReportEngineEntryForm entry = new ReportEngineEntryForm();
+                    entry.setEnginePorperties( i.next() );
+                    logItems.add( entry );
+                }
+
             }
-
-        }
+        
 
         if ( form.getStartCount() > 1 ) {
             form.setFirstActive( true );
@@ -261,6 +212,15 @@ public class ProcessEngineLogAction extends NexusE2EAction {
 
         request.setAttribute( ATTRIBUTE_COLLECTION, logItems );
 
+        
+        } catch ( Exception e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }catch ( Error e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
         return success;
     } // executeNexusE2EAction
 

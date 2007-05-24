@@ -137,7 +137,8 @@ public class TransactionServiceImpl implements TransactionService {
      * @see org.nexuse2e.controller.TransactionService#getConversationsForReport(java.lang.String, int, int, java.lang.String, java.util.Date, java.util.Date, int, int, int, boolean)
      */
     public List getConversationsForReport( String status, int nxChoreographyId, int nxPartnerId, String conversationId,
-            Date start, Date end, int itemsPerPage, int page, int field, boolean ascending ) throws NexusException {
+            Date start, Date end, int itemsPerPage, int page, int field, boolean ascending, Session session,
+            Transaction transaction ) throws NexusException {
 
         TransactionDAO transactionDao;
         try {
@@ -146,7 +147,7 @@ public class TransactionServiceImpl implements TransactionService {
             throw new NexusException( e );
         }
         return transactionDao.getConversationsForReport( status, nxChoreographyId, nxPartnerId, conversationId, start,
-                end, itemsPerPage, page, field, ascending );
+                end, itemsPerPage, page, field, ascending, session, transaction );
 
     }
 
@@ -756,7 +757,7 @@ public class TransactionServiceImpl implements TransactionService {
      * @see org.nexuse2e.controller.TransactionService#getLogEntriesForReport(java.lang.String, java.lang.String, java.util.Date, java.util.Date, int, int, int, boolean)
      */
     public List<LogPojo> getLogEntriesForReport( String severity, String messageText, Date start, Date end,
-            int itemsPerPage, int page, int field, boolean ascending ) throws NexusException {
+            int itemsPerPage, int page, int field, boolean ascending, Session session, Transaction transaction ) throws NexusException {
 
         LogDAO logDao;
         try {
@@ -768,37 +769,55 @@ public class TransactionServiceImpl implements TransactionService {
             e.printStackTrace();
             throw e;
         }
-        return logDao.getLogEntriesForReport( severity, messageText, start, end, itemsPerPage, page, field, ascending );
+        return logDao.getLogEntriesForReport( severity, messageText, start, end, itemsPerPage, page, field, ascending, session, transaction );
     }
 
+    /* (non-Javadoc)
+     * @see org.nexuse2e.Manageable#activate()
+     */
     public void activate() {
 
         LOG.debug( "Activating..." );
         status = Constants.BeanStatus.ACTIVATED;
     }
 
+    /* (non-Javadoc)
+     * @see org.nexuse2e.Manageable#deactivate()
+     */
     public void deactivate() {
 
         LOG.debug( "Deactivating..." );
         status = Constants.BeanStatus.INITIALIZED;
     }
 
+    /* (non-Javadoc)
+     * @see org.nexuse2e.Manageable#getActivationRunlevel()
+     */
     public Runlevel getActivationRunlevel() {
 
         return Runlevel.CORE;
     }
 
+    /* (non-Javadoc)
+     * @see org.nexuse2e.Manageable#getStatus()
+     */
     public BeanStatus getStatus() {
 
         return status;
     }
 
+    /* (non-Javadoc)
+     * @see org.nexuse2e.Manageable#initialize(org.nexuse2e.configuration.EngineConfiguration)
+     */
     public void initialize( EngineConfiguration config ) {
 
         LOG.debug( "Initializing..." );
         status = Constants.BeanStatus.INITIALIZED;
     }
 
+    /* (non-Javadoc)
+     * @see org.nexuse2e.Manageable#teardown()
+     */
     public void teardown() {
 
         LOG.debug( "Tearing down..." );
@@ -807,6 +826,51 @@ public class TransactionServiceImpl implements TransactionService {
             deregisterProcessingMessage( key );
         }
         status = Constants.BeanStatus.INSTANTIATED;
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.controller.TransactionService#getDBSession()
+     */
+    public Session getDBSession() throws NexusException {
+
+        TransactionDAO transactionDao;
+        try {
+            transactionDao = (TransactionDAO) Engine.getInstance().getDao( "transactionDao" );
+        } catch ( Exception e ) {
+            throw new NexusException( e );
+        }
+        return transactionDao.getDBSession();
+
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.controller.TransactionService#releaseDBSession(org.hibernate.Session)
+     */
+    public void releaseDBSession(Session session) throws NexusException{
+
+        TransactionDAO transactionDao;
+        try {
+            transactionDao = (TransactionDAO) Engine.getInstance().getDao( "transactionDao" );
+        } catch ( Exception e ) {
+            throw new NexusException( e );
+        }
+        transactionDao.releaseDBSession( session);
+    }
+
+    public void deleteLogEntry( LogPojo logEntry, Session session, Transaction transaction ) throws NexusException {
+
+        TransactionDAO transactionDao;
+        try {
+            transactionDao = (TransactionDAO) Engine.getInstance().getDao( "transactionDao" );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            throw new NexusException( e );
+        } catch ( Error e ) {
+            e.printStackTrace();
+            throw e;
+        }
+        transactionDao.deleteLogEntry( logEntry, session, transaction );
+        
     }
 
 } // TransactionService

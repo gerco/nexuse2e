@@ -19,8 +19,10 @@
  */
 package org.nexuse2e.ui.action.reporting;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
@@ -62,6 +64,7 @@ public class ReportingForwardAction extends NexusE2EAction {
         ActionForward engine = actionMapping.findForward( "engine" );
         ActionForward conversation = actionMapping.findForward( "conversation" );
         ActionForward save = actionMapping.findForward( "save" );
+        ActionForward view = actionMapping.findForward( "view" );
         ActionForward error = actionMapping.findForward( ACTION_FORWARD_FAILURE );
 
         ReportingPropertiesForm form = (ReportingPropertiesForm) actionForm;
@@ -70,7 +73,7 @@ public class ReportingForwardAction extends NexusE2EAction {
             LOG.trace( "----- form: " + form );
             form.setCommand( type );
         }
-
+//        System.out.println("---------------- Reporting Forward:"+form.getCommand());
         form.setStartCount( 0 );
         form.setEndCount( 0 );
 
@@ -98,24 +101,74 @@ public class ReportingForwardAction extends NexusE2EAction {
                 choreographyIds.addElement( choreography.getName() );
             }
             form.setChoreographyIds( choreographyIds );
-
+            
+            
+            Map<String,Object> values = new HashMap<String, Object>();
+            values = Engine.getInstance().getActiveConfigurationAccessService().getGenericParameters(  "log_display_configuration", null, ReportingPropertiesForm.getParameterMap() );
+            fillForm( values, form );
+            
             return conversation;
         } else if ( form.getCommand() != null && form.getCommand().equals( "engine" ) ) {
-            //            ChoreographyDAO cDao = new ChoreographyDAO();
-            //            List choreographies = cDao.getChoreographies();
-            //            Vector chorIds = new Vector();
-            //            chorIds.addElement( new String( CertificateDAO.ENGINE_ID ) );
-            //            Iterator i = choreographies.iterator();
-            //            while ( i.hasNext() ) {
-            //                ChoreographyPojo cPojo = (ChoreographyPojo) i.next();
-            //                chorIds.addElement( cPojo.getChoreographyId() );
-            //            }
-            //            form.setOriginIds( chorIds );
-            //
+           
+            Map<String,Object> values = new HashMap<String, Object>();
+            values = Engine.getInstance().getActiveConfigurationAccessService().getGenericParameters(  "log_display_configuration", null, ReportingPropertiesForm.getParameterMap() );
+            fillForm( values, form );
+            
+            
             return engine;
 
         } else if ( form.getCommand() != null && form.getCommand().equals( "saveFields" ) ) {
+            
+            
+//            System.out.println("form.severity: "+form.isEngineColSeverity());
+//            System.out.println("form.className: "+form.isEngineColClassName());
+            
+            Map<String,Object> values = new HashMap<String, Object>();
+            
+            values.put( ReportingPropertiesForm.PARAM_NAME_ENGCOL_SEVERITY, Boolean.valueOf( form.isEngineColSeverity() ) );
+            values.put( ReportingPropertiesForm.PARAM_NAME_ENGCOL_CLASSNAME, Boolean.valueOf( form.isEngineColClassName() ) );
+            values.put( ReportingPropertiesForm.PARAM_NAME_ENGCOL_DESCRIPTION, Boolean.valueOf( form.isEngineColDescription() ) );
+            values.put( ReportingPropertiesForm.PARAM_NAME_ENGCOL_ISSUEDDATE, Boolean.valueOf( form.isEngineColIssued() ) );
+            values.put( ReportingPropertiesForm.PARAM_NAME_ENGCOL_METHODNAME, Boolean.valueOf( form.isEngineColmethodName() ) );
+            values.put( ReportingPropertiesForm.PARAM_NAME_ENGCOL_ORIGIN, Boolean.valueOf( form.isEngineColOrigin() ) );
+            
+            
+            values.put( ReportingPropertiesForm.PARAM_NAME_CONVCOL_ACTION, Boolean.valueOf( form.isConvColAction() ) );
+            values.put( ReportingPropertiesForm.PARAM_NAME_CONVCOL_CHOREOGRAPHYID, Boolean.valueOf( form.isConvColChorId() ) );
+            values.put( ReportingPropertiesForm.PARAM_NAME_CONVCOL_CONVID, Boolean.valueOf( form.isConvColConId() ) );
+            values.put( ReportingPropertiesForm.PARAM_NAME_CONVCOL_CREATED, Boolean.valueOf( form.isConvColCreated() ) );
+            values.put( ReportingPropertiesForm.PARAM_NAME_CONVCOL_PARTICIPANTID, Boolean.valueOf( form.isConvColPartId() ) );
+            values.put( ReportingPropertiesForm.PARAM_NAME_CONVCOL_SELECT, Boolean.valueOf( form.isConvColSelect() ) );
+            values.put( ReportingPropertiesForm.PARAM_NAME_CONVCOL_STATUS, Boolean.valueOf( form.isConvColStatus() ) );
+            values.put( ReportingPropertiesForm.PARAM_NAME_CONVCOL_TURNAROUND, Boolean.valueOf( form.isConvColTurnaround() ) );
+            
+            
+            values.put( ReportingPropertiesForm.PARAM_NAME_MSGCOL_ACTION, Boolean.valueOf( form.isMessColAction() ) );
+            values.put( ReportingPropertiesForm.PARAM_NAME_MSGCOL_CREATED, Boolean.valueOf( form.isMessColCreated() ) );
+            values.put( ReportingPropertiesForm.PARAM_NAME_MSGCOL_MSGID, Boolean.valueOf( form.isMessColMessageId() ) );
+            values.put( ReportingPropertiesForm.PARAM_NAME_MSGCOL_PARTICIPANTID, Boolean.valueOf( form.isMessColParticipantId() ) );
+            values.put( ReportingPropertiesForm.PARAM_NAME_MSGCOL_SELECT, Boolean.valueOf( form.isMessColSelect() ) );
+            values.put( ReportingPropertiesForm.PARAM_NAME_MSGCOL_STATUS, Boolean.valueOf( form.isMessColStatus() ) );
+            values.put( ReportingPropertiesForm.PARAM_NAME_MSGCOL_TURNAROUND, Boolean.valueOf( form.isMessColTurnaround() ) );
+            values.put( ReportingPropertiesForm.PARAM_NAME_MSGCOL_TYPE, Boolean.valueOf( form.isMessColType() ) );
+            
+            
+            values.put( ReportingPropertiesForm.PARAM_NAME_TIMEZONE, form.getTimezone() );
+            values.put( ReportingPropertiesForm.PARAM_NAME_ROWCOUNT, ""+form.getPageSize() );
+            
+            Engine.getInstance().getActiveConfigurationAccessService().setGenericParameters( "log_display_configuration", null, values, ReportingPropertiesForm.getParameterMap(), true );
+            form.setCommand( "" );
             return save;
+        } else if ( form.getCommand() != null && form.getCommand().equals( "view" ) ) {
+            Map<String,Object> values = Engine.getInstance().getActiveConfigurationAccessService().getGenericParameters( "log_display_configuration", null, ReportingPropertiesForm.getParameterMap() );
+            
+//            System.out.println("Severity: "+values.get( ReportingPropertiesForm.PARAM_NAME_ENGCOL_SEVERITY ));            
+//            System.out.println("ClassName: "+values.get( ReportingPropertiesForm.PARAM_NAME_ENGCOL_CLASSNAME ));            
+            
+            fillForm(values,form);
+          
+            
+            return view;
         } else {
             LOG.error( "Invalid actionparameter=>" + form.getCommand() + "<" );
             ActionMessage errorMessage = new ActionMessage( "generic.error", "Invalid actionparameter=>"
@@ -125,6 +178,143 @@ public class ReportingForwardAction extends NexusE2EAction {
             return error;
         }
 
+    }
+
+    /**
+     * @param values
+     * @param form
+     */
+    private void fillForm( Map<String, Object> values, ReportingPropertiesForm form ) {
+
+        form.setEngineColSeverity( getBooleanValue(values,ReportingPropertiesForm.PARAM_NAME_ENGCOL_SEVERITY, true));
+        form.setEngineColClassName( getBooleanValue(values,ReportingPropertiesForm.PARAM_NAME_ENGCOL_CLASSNAME, true));
+        form.setEngineColDescription( getBooleanValue(values,ReportingPropertiesForm.PARAM_NAME_ENGCOL_DESCRIPTION, true));
+        form.setEngineColIssued( getBooleanValue(values,ReportingPropertiesForm.PARAM_NAME_ENGCOL_ISSUEDDATE, true));
+        form.setEngineColmethodName( getBooleanValue(values,ReportingPropertiesForm.PARAM_NAME_ENGCOL_METHODNAME, true));
+        form.setEngineColOrigin( getBooleanValue(values,ReportingPropertiesForm.PARAM_NAME_ENGCOL_ORIGIN, true));
+        
+        form.setConvColAction( getBooleanValue(values,ReportingPropertiesForm.PARAM_NAME_CONVCOL_ACTION, true));
+        form.setConvColChorId( getBooleanValue(values,ReportingPropertiesForm.PARAM_NAME_CONVCOL_CHOREOGRAPHYID, true));
+        form.setConvColConId( getBooleanValue(values,ReportingPropertiesForm.PARAM_NAME_CONVCOL_CONVID, true));
+        form.setConvColCreated( getBooleanValue(values,ReportingPropertiesForm.PARAM_NAME_CONVCOL_CREATED, true));
+        form.setConvColPartId( getBooleanValue(values,ReportingPropertiesForm.PARAM_NAME_CONVCOL_PARTICIPANTID, true));
+        form.setConvColSelect( getBooleanValue(values,ReportingPropertiesForm.PARAM_NAME_CONVCOL_SELECT, true));
+        form.setConvColStatus( getBooleanValue(values,ReportingPropertiesForm.PARAM_NAME_CONVCOL_STATUS, true));
+        form.setConvColTurnaround( getBooleanValue(values,ReportingPropertiesForm.PARAM_NAME_CONVCOL_TURNAROUND, true));
+        
+        form.setMessColAction( getBooleanValue(values,ReportingPropertiesForm.PARAM_NAME_MSGCOL_ACTION, true));
+        form.setMessColCreated( getBooleanValue(values,ReportingPropertiesForm.PARAM_NAME_MSGCOL_CREATED, true));
+        form.setMessColMessageId( getBooleanValue(values,ReportingPropertiesForm.PARAM_NAME_MSGCOL_MSGID, true));
+        form.setMessColParticipantId( getBooleanValue(values,ReportingPropertiesForm.PARAM_NAME_MSGCOL_PARTICIPANTID, true));
+        form.setMessColSelect( getBooleanValue(values,ReportingPropertiesForm.PARAM_NAME_MSGCOL_SELECT, true));
+        form.setMessColStatus( getBooleanValue(values,ReportingPropertiesForm.PARAM_NAME_MSGCOL_STATUS, true));
+        form.setMessColTurnaround( getBooleanValue(values,ReportingPropertiesForm.PARAM_NAME_MSGCOL_TURNAROUND, true));
+        form.setMessColType( getBooleanValue(values,ReportingPropertiesForm.PARAM_NAME_MSGCOL_TYPE, true));
+        
+        
+        form.setTimezone( getStringValue(values,ReportingPropertiesForm.PARAM_NAME_TIMEZONE, ""));
+        form.setPageSize( getIntValue(values,ReportingPropertiesForm.PARAM_NAME_ROWCOUNT, 20));
+        
+    }
+
+    /**
+     * @param values
+     * @param label
+     * @param defaultValue
+     * @return
+     */
+    private int getIntValue( Map<String, Object> values, String label, int defaultValue ) {
+        int returnvalue = defaultValue;
+        if(values != null && label != null) {
+            Object value = values.get( label );
+            if(value instanceof String) {
+                try {
+                    returnvalue = Integer.parseInt( (String)value);
+                } catch ( NumberFormatException e ) {
+                    LOG.error( "Generic parameter "+label+" is not a parsable integer value: "+value);
+                }
+            } else {
+                if(value == null) {
+                    LOG.error( "Generic parameter "+label+", no value found, using default value: "+defaultValue );
+                } else  {
+                    LOG.error( "Generic parameter "+label+" is instance of "+value.getClass().getName()+" but Boolean was expected!" );
+                }
+            }
+            
+        } else {
+            if(values == null) {
+                LOG.debug("Generic Parameters must not be null!");
+            }
+            if(label == null) {
+                LOG.debug( "Generic Parameter Label must not be null" );
+            }
+        }
+        
+        return returnvalue;
+    }
+    
+    /**
+     * @param values
+     * @param label
+     * @param defaultValue
+     * @return
+     */
+    private String getStringValue( Map<String, Object> values, String label, String defaultValue ) {
+        String returnvalue = defaultValue;
+        if(values != null && label != null) {
+            Object value = values.get( label );
+            if(value instanceof String) {
+                returnvalue = (String)value;
+            } else {
+                if(value == null) {
+                    LOG.error( "Generic parameter "+label+", no value found, using default value: "+defaultValue );
+                } else  {
+                    LOG.error( "Generic parameter "+label+" is instance of "+value.getClass().getName()+" but Boolean was expected!" );
+                }
+            }
+            
+        } else {
+            if(values == null) {
+                LOG.debug("Generic Parameters must not be null!");
+            }
+            if(label == null) {
+                LOG.debug( "Generic Parameter Label must not be null" );
+            }
+        }
+        
+        return returnvalue;
+    }
+    /**
+     * @param values
+     * @param label
+     * @param defaultValue
+     * @return
+     */
+    private boolean getBooleanValue( Map<String, Object> values, String label, boolean defaultValue ) {
+
+        boolean returnvalue = defaultValue;
+        if(values != null && label != null) {
+            Object value = values.get( label );
+            if(value instanceof Boolean) {
+                returnvalue = ((Boolean)value).booleanValue();
+            } else {
+                if(value == null) {
+                    LOG.error( "Generic parameter "+label+", no value found, using default value: "+defaultValue );
+                } else  {
+                    LOG.error( "Generic parameter "+label+" is instance of "+value.getClass().getName()+" but Boolean was expected!" );
+                }
+            }
+            
+        } else {
+            if(values == null) {
+                LOG.debug("Generic Parameters must not be null!");
+            }
+            if(label == null) {
+                LOG.debug( "Generic Parameter Label must not be null" );
+            }
+        }
+        
+        return returnvalue;
     }
 
 }

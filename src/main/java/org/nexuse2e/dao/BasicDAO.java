@@ -558,7 +558,7 @@ public class BasicDAO extends HibernateDaoSupport {
         boolean extTransactionFlag = true;
 
         try {
-            if ( ( fromIndex >= 0 ) && ( maximumResults != 0 ) ) {
+            if ( ( fromIndex >= 0 ) && ( maximumResults >= 0 ) ) {
 
                 if ( session == null ) {
                     session = getDBSession();
@@ -571,7 +571,9 @@ public class BasicDAO extends HibernateDaoSupport {
                     }
                     Query hqlQuery = session.createQuery( query );
                     hqlQuery.setFirstResult( fromIndex );
-                    hqlQuery.setMaxResults( maximumResults );
+                    if(maximumResults > 0) {
+                        hqlQuery.setMaxResults( maximumResults );
+                    }
                     entries = hqlQuery.list();
                     if ( !extTransactionFlag ) {
                         transaction.commit();

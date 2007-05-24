@@ -155,12 +155,12 @@ public class LogDAO extends BasicDAO {
      * @throws PersistenceException
      */
     public List<LogPojo> getLogEntriesForReport( String severity, String messageText, Date start, Date end,
-            int itemsPerPage, int page, int field, boolean ascending ) throws NexusException {
+            int itemsPerPage, int page, int field, boolean ascending, Session session, Transaction transaction ) throws NexusException {
 
         // LOG.trace( "page:" + page );
         // LOG.trace( "pagesize:" + itemsPerPage );
         return getListThroughSessionFindByPageNo( getLogEntriesForReportHQL( severity, messageText, start, end, field,
-                ascending ), itemsPerPage, page, null, null );
+                ascending ), itemsPerPage, page, session, transaction );
     }
 
     /**

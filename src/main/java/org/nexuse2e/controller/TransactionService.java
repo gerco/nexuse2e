@@ -86,7 +86,7 @@ public interface TransactionService extends Manageable {
      * @throws NexusException
      */
     public abstract List getConversationsForReport( String status, int nxChoreographyId, int nxPartnerId,
-            String conversationId, Date start, Date end, int itemsPerPage, int page, int field, boolean ascending )
+            String conversationId, Date start, Date end, int itemsPerPage, int page, int field, boolean ascending, Session session, Transaction transaction )
             throws NexusException;
 
     /**
@@ -335,6 +335,19 @@ public interface TransactionService extends Manageable {
     public abstract void deleteConversation( ConversationPojo conversation, Session session, Transaction transaction )
     throws NexusException;
 
+    
+    /**
+     * @param logEntry
+     * @param session
+     * @param transaction
+     * @throws NexusException
+     */
+    public abstract void deleteLogEntry( LogPojo logEntry, Session session, Transaction transaction )
+    throws NexusException;
+
+    
+    
+    
     /**
      * @param choreography
      * @param partner
@@ -391,5 +404,22 @@ public interface TransactionService extends Manageable {
      * @throws PersistenceException
      */
     public abstract List<LogPojo> getLogEntriesForReport( String severity, String messageText, Date start, Date end,
-            int itemsPerPage, int page, int field, boolean ascending ) throws NexusException;
+            int itemsPerPage, int page, int field, boolean ascending, Session session, Transaction transaction ) throws NexusException;
+    
+    
+    /**
+     * @return
+     * @throws NexusException
+     */
+    public abstract Session getDBSession()  throws NexusException;
+    
+    
+    /**
+     * @param session
+     * @throws NexusException
+     */
+    public abstract void releaseDBSession(Session session)  throws NexusException;
+    
+    
+    
 } // TransactionService

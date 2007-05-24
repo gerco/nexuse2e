@@ -81,12 +81,12 @@ public class ProcessConversationReportAction extends NexusE2EAction {
 
         String searchFor = form.getSearchFor();
 
-        form.setConvColSelect( true );
-        form.setConvColAction( true );
-        form.setConvColChorId( true );
-        form.setConvColStatus( true );
-        form.setConvColPartId( true );
-        form.setConvColCreated( true );
+//        form.setConvColSelect( true );
+//        form.setConvColAction( true );
+//        form.setConvColChorId( true );
+//        form.setConvColStatus( true );
+//        form.setConvColPartId( true );
+//        form.setConvColCreated( true );
 
         if ( searchFor != null && searchFor.equals( "message" ) && dir != null && dir.equals( "requeue" ) ) {
             //            for ( int i = 0; i < form.getSelectedResults().length; i++ ) {
@@ -358,7 +358,7 @@ public class ProcessConversationReportAction extends NexusE2EAction {
 
                     conversations = Engine.getInstance().getTransactionService().getConversationsForReport( status,
                             nxChoreographyId, nxPartnerId, conversationId, getStartDate( form ), getEndDate( form ),
-                            form.getPageSize(), 0, TransactionDAO.SORT_CREATED, false );
+                            form.getPageSize(), 0, TransactionDAO.SORT_CREATED, false,null,null );
                     //LOG.trace("nxpartnerid: "+conversations.get( 0 ).getPartner().getNxPartnerId());
                     if ( items > 0 ) {
                         form.setStartCount( 1 );
@@ -376,7 +376,7 @@ public class ProcessConversationReportAction extends NexusE2EAction {
 
                     conversations = Engine.getInstance().getTransactionService().getConversationsForReport( status,
                             nxChoreographyId, nxPartnerId, conversationId, getStartDate( form ), getEndDate( form ),
-                            form.getPageSize(), page, TransactionDAO.SORT_CREATED, false );
+                            form.getPageSize(), page, TransactionDAO.SORT_CREATED, false,null,null );
 
                     if ( form.getStartCount() + form.getPageSize() > items ) {
                         form.setEndCount( items );
@@ -390,7 +390,7 @@ public class ProcessConversationReportAction extends NexusE2EAction {
 
                     conversations = Engine.getInstance().getTransactionService().getConversationsForReport( status,
                             nxChoreographyId, nxPartnerId, conversationId, getStartDate( form ), getEndDate( form ),
-                            form.getPageSize(), 0, TransactionDAO.SORT_CREATED, false );
+                            form.getPageSize(), 0, TransactionDAO.SORT_CREATED, false,null,null );
 
                     form.setStartCount( 1 );
                     form.setEndCount( form.getPageSize() );
@@ -398,7 +398,7 @@ public class ProcessConversationReportAction extends NexusE2EAction {
 
                     conversations = Engine.getInstance().getTransactionService().getConversationsForReport( status,
                             nxChoreographyId, nxPartnerId, conversationId, getStartDate( form ), getEndDate( form ),
-                            form.getPageSize(), ( pos / form.getPageSize() ) - 1, TransactionDAO.SORT_CREATED, false );
+                            form.getPageSize(), ( pos / form.getPageSize() ) - 1, TransactionDAO.SORT_CREATED, false ,null,null);
 
                     form.setStartCount( pos - form.getPageSize() );
                     form.setEndCount( form.getStartCount() + form.getPageSize() - 1 );
@@ -409,7 +409,7 @@ public class ProcessConversationReportAction extends NexusE2EAction {
 
                     conversations = Engine.getInstance().getTransactionService().getConversationsForReport( status,
                             nxChoreographyId, nxPartnerId, conversationId, getStartDate( form ), getEndDate( form ),
-                            form.getPageSize(), pos / form.getPageSize() + 1, TransactionDAO.SORT_CREATED, false );
+                            form.getPageSize(), pos / form.getPageSize() + 1, TransactionDAO.SORT_CREATED, false,null,null );
 
                     form.setStartCount( form.getStartCount() + form.getPageSize() );
                     form.setEndCount( items );
@@ -419,7 +419,7 @@ public class ProcessConversationReportAction extends NexusE2EAction {
 
                     conversations = Engine.getInstance().getTransactionService().getConversationsForReport( status,
                             nxChoreographyId, nxPartnerId, conversationId, getStartDate( form ), getEndDate( form ),
-                            form.getPageSize(), page + 1, TransactionDAO.SORT_CREATED, false );
+                            form.getPageSize(), page + 1, TransactionDAO.SORT_CREATED, false ,null,null);
 
                     form.setStartCount( form.getStartCount() + form.getPageSize() );
                     form.setEndCount( form.getStartCount() + form.getPageSize() - 1 );
@@ -428,7 +428,7 @@ public class ProcessConversationReportAction extends NexusE2EAction {
 
                 conversations = Engine.getInstance().getTransactionService().getConversationsForReport( status,
                         nxChoreographyId, nxPartnerId, conversationId, getStartDate( form ), getEndDate( form ),
-                        form.getPageSize(), items / form.getPageSize(), TransactionDAO.SORT_CREATED, false );
+                        form.getPageSize(), items / form.getPageSize(), TransactionDAO.SORT_CREATED, false,null,null );
 
                 form.setStartCount( items / form.getPageSize() * form.getPageSize() + 1 );
                 form.setEndCount( items );

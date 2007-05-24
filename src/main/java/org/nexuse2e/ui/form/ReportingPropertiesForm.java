@@ -20,12 +20,17 @@
 package org.nexuse2e.ui.form;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMapping;
+import org.nexuse2e.configuration.ParameterDescriptor;
+import org.nexuse2e.configuration.Constants.ParameterType;
 
 /**
  * @author guido.esch
@@ -35,74 +40,105 @@ import org.apache.struts.action.ActionMapping;
  */
 public class ReportingPropertiesForm extends ActionForm {
 
+    public static String                            PARAM_NAME_ENGCOL_SEVERITY        = "engineColSeverity";
+    public static String                            PARAM_NAME_ENGCOL_ISSUEDDATE      = "engineColIssueDate";
+    public static String                            PARAM_NAME_ENGCOL_DESCRIPTION     = "engineColDescription";
+    public static String                            PARAM_NAME_ENGCOL_ORIGIN          = "engineColOrigin";
+    public static String                            PARAM_NAME_ENGCOL_CLASSNAME       = "engineColClassName";
+    public static String                            PARAM_NAME_ENGCOL_METHODNAME      = "engineColMethodName";
+
+    public static String                            PARAM_NAME_MSGCOL_SELECT          = "msgColSelect";
+    public static String                            PARAM_NAME_MSGCOL_MSGID           = "msgColMsgId";
+    public static String                            PARAM_NAME_MSGCOL_PARTICIPANTID   = "msgColParticipantId";
+    public static String                            PARAM_NAME_MSGCOL_STATUS          = "msgColStatus";
+    public static String                            PARAM_NAME_MSGCOL_TYPE            = "msgColType";
+    public static String                            PARAM_NAME_MSGCOL_ACTION          = "msgColAction";
+    public static String                            PARAM_NAME_MSGCOL_CREATED         = "msgColCreated";
+    public static String                            PARAM_NAME_MSGCOL_TURNAROUND      = "msgColTurnaround";
+
+    public static String                            PARAM_NAME_CONVCOL_SELECT         = "convColSelect";
+    public static String                            PARAM_NAME_CONVCOL_CONVID         = "convColConvId";
+    public static String                            PARAM_NAME_CONVCOL_PARTICIPANTID  = "convColParticipantId";
+    public static String                            PARAM_NAME_CONVCOL_CHOREOGRAPHYID = "convColChoreographyId";
+    public static String                            PARAM_NAME_CONVCOL_ACTION         = "convColAction";
+    public static String                            PARAM_NAME_CONVCOL_CREATED        = "convColCreated";
+    public static String                            PARAM_NAME_CONVCOL_TURNAROUND     = "convColTurnaround";
+    public static String                            PARAM_NAME_CONVCOL_STATUS         = "convColStatus";
+
+    public static String                            PARAM_NAME_TIMEZONE               = "timezone";
+    public static String                            PARAM_NAME_ROWCOUNT               = "rowcount";
+
+    private static Map<String, ParameterDescriptor> parameterMap                      = null;
+
     /**
      * 
      */
-    private static final long serialVersionUID     = 3017346285374318341L;
-    private String            status               = null;
-    private String            choreographyId       = null;
-    private Vector            participantIds       = null;
-    private Vector            choreographyIds      = null;
-    private Vector            originIds            = null;
-    private String            conversationId       = null;
-    private String            startYear            = null;
-    private String            startMonth           = null;
-    private String            startDay             = null;
-    private String            startHour            = null;
-    private String            startMin             = null;
-    private String            endYear              = null;
-    private String            endMonth             = null;
-    private String            endDay               = null;
-    private String            endHour              = null;
-    private String            endMin               = null;
-    private boolean           startEnabled         = true;
-    private boolean           endEnabled           = true;
-    private boolean           conversationEnabled  = false;
-    private boolean           messageEnabled       = false;
-    private boolean           messageTextEnabled   = false;
-    private boolean           outbound             = false;
-    private String            searchFor            = null;
-    private String            messageId            = null;
-    private boolean           nextActive           = false;
-    private boolean           lastActive           = false;
-    private boolean           firstActive          = false;
-    private boolean           prevActive           = false;
-    private int               startCount           = 0;
-    private int               endCount             = 0;
-    private int               allItemsCount        = 0;
-    private int               pageSize             = 20;
-    private String            command              = null;
-    private String[]          selected             = new String[0];
-    private String            participantId        = null;
-    private String            origin               = null;
-    private String            severity             = null;
-    private String            messageText          = null;
-    private String            timezone             = null;
+    private static final long                       serialVersionUID                  = 3017346285374318341L;
+    private String                                  action                            = null;
+    private String                                  status                            = null;
+    private String                                  choreographyId                    = null;
+    private Vector                                  participantIds                    = null;
+    private Vector                                  choreographyIds                   = null;
+    private Vector                                  originIds                         = null;
+    private String                                  conversationId                    = null;
+    private String                                  startYear                         = null;
+    private String                                  startMonth                        = null;
+    private String                                  startDay                          = null;
+    private String                                  startHour                         = null;
+    private String                                  startMin                          = null;
+    private String                                  endYear                           = null;
+    private String                                  endMonth                          = null;
+    private String                                  endDay                            = null;
+    private String                                  endHour                           = null;
+    private String                                  endMin                            = null;
+    private boolean                                 startEnabled                      = true;
+    private boolean                                 endEnabled                        = true;
+    private boolean                                 conversationEnabled               = false;
+    private boolean                                 messageEnabled                    = false;
+    private boolean                                 messageTextEnabled                = false;
+    private boolean                                 outbound                          = false;
+    private String                                  searchFor                         = null;
+    private String                                  messageId                         = null;
+    private boolean                                 nextActive                        = false;
+    private boolean                                 lastActive                        = false;
+    private boolean                                 firstActive                       = false;
+    private boolean                                 prevActive                        = false;
+    private int                                     startCount                        = 0;
+    private int                                     endCount                          = 0;
+    private int                                     allItemsCount                     = 0;
+    private int                                     pageSize                          = 20;
+    private String                                  command                           = null;
+    private String[]                                selected                          = new String[0];
+    private String                                  participantId                     = null;
+    private String                                  origin                            = null;
+    private String                                  severity                          = null;
+    private String                                  messageText                       = null;
+    private String                                  timezone                          = null;
 
-    private boolean           convColSelect        = false;
-    private boolean           convColChorId        = false;
-    private boolean           convColConId         = false;
-    private boolean           convColPartId        = false;
-    private boolean           convColStatus        = false;
-    private boolean           convColAction        = false;
-    private boolean           convColCreated       = false;
-    private boolean           convColTurnaround    = false;
+    private boolean                                 convColSelect                     = false;
+    private boolean                                 convColChorId                     = false;
+    private boolean                                 convColConId                      = false;
+    private boolean                                 convColPartId                     = false;
+    private boolean                                 convColStatus                     = false;
+    private boolean                                 convColAction                     = false;
+    private boolean                                 convColCreated                    = false;
+    private boolean                                 convColTurnaround                 = false;
 
-    private boolean           messColSelect        = false;
-    private boolean           messColMessageId     = false;
-    private boolean           messColParticipantId = false;
-    private boolean           messColStatus        = false;
-    private boolean           messColType          = false;
-    private boolean           messColAction        = false;
-    private boolean           messColCreated       = false;
-    private boolean           messColTurnaround    = false;
+    private boolean                                 messColSelect                     = false;
+    private boolean                                 messColMessageId                  = false;
+    private boolean                                 messColParticipantId              = false;
+    private boolean                                 messColStatus                     = false;
+    private boolean                                 messColType                       = false;
+    private boolean                                 messColAction                     = false;
+    private boolean                                 messColCreated                    = false;
+    private boolean                                 messColTurnaround                 = false;
 
-    private boolean           engineColSeverity    = false;
-    private boolean           engineColIssued      = false;
-    private boolean           engineColDescription = false;
-    private boolean           engineColOrigin      = false;
-    private boolean           engineColClassName   = false;
-    private boolean           engineColmethodName  = false;
+    private boolean                                 engineColSeverity                 = false;
+    private boolean                                 engineColIssued                   = false;
+    private boolean                                 engineColDescription              = false;
+    private boolean                                 engineColOrigin                   = false;
+    private boolean                                 engineColClassName                = false;
+    private boolean                                 engineColmethodName               = false;
 
     /**
      * 
@@ -127,30 +163,30 @@ public class ReportingPropertiesForm extends ActionForm {
 
         setSearchFor( "conversation" );
 
-        setConvColSelect( true );
-        setConvColChorId( true );
-        setConvColConId( true );
-        setConvColPartId( true );
-        setConvColStatus( true );
-        setConvColAction( true );
-        setConvColCreated( true );
-        setConvColTurnaround( false );
-
-        setMessColSelect( true );
-        setMessColMessageId( true );
-        setMessColParticipantId( true );
-        setMessColStatus( true );
-        setMessColType( true );
-        setMessColAction( true );
-        setMessColCreated( true );
-        setMessColTurnaround( false );
-
-        setEngineColSeverity( true );
-        setEngineColIssued( true );
-        setEngineColDescription( true );
-        setEngineColOrigin( true );
-        setEngineColClassName( false );
-        setEngineColmethodName( false );
+//        setConvColSelect( true );
+//        setConvColChorId( true );
+//        setConvColConId( true );
+//        setConvColPartId( true );
+//        setConvColStatus( true );
+//        setConvColAction( true );
+//        setConvColCreated( true );
+//        setConvColTurnaround( false );
+//
+//        setMessColSelect( true );
+//        setMessColMessageId( true );
+//        setMessColParticipantId( true );
+//        setMessColStatus( true );
+//        setMessColType( true );
+//        setMessColAction( true );
+//        setMessColCreated( true );
+//        setMessColTurnaround( false );
+//
+//        setEngineColSeverity( true );
+//        setEngineColIssued( true );
+//        setEngineColDescription( true );
+//        setEngineColOrigin( true );
+//        setEngineColClassName( false );
+//        setEngineColmethodName( false );
 
         Date start = new Date();
         Date end = new Date();
@@ -192,12 +228,15 @@ public class ReportingPropertiesForm extends ActionForm {
     public void reset( ActionMapping actionMapping, HttpServletRequest request ) {
 
         //        LOG.trace( "path:" + arg0.getPath() );
-        if ( request.getParameter( "noReset" ) != null ) {
+        String noReset = request.getParameter( "noReset" );
+        if ( noReset != null && noReset.equals( "true" ) ) {
+            System.out.println( "no reset" );
             return;
         }
         if ( actionMapping.getPath().equals( "/ReportingForward" )
                 || actionMapping.getPath().equals( "/ProcessConversationReport" )
                 || actionMapping.getPath().equals( "/ProcessEngineLog" ) ) {
+            System.out.println( "reseting....." );
             setStartEnabled( false );
             setEndEnabled( false );
             setConversationEnabled( false );
@@ -228,6 +267,8 @@ public class ReportingPropertiesForm extends ActionForm {
             setEngineColOrigin( false );
             setEngineColClassName( false );
             setEngineColmethodName( false );
+        } else {
+            System.out.println( "nothing done...." );
         }
     }
 
@@ -871,15 +912,99 @@ public class ReportingPropertiesForm extends ActionForm {
         this.timezone = timezone;
     }
 
-    
     public boolean isOutbound() {
-    
+
         return outbound;
     }
 
-    
     public void setOutbound( boolean outbound ) {
-    
+
         this.outbound = outbound;
+    }
+
+    /**
+     * @return the action
+     */
+    public String getAction() {
+
+        return action;
+    }
+
+    /**
+     * @param action the action to set
+     */
+    public void setAction( String action ) {
+
+        this.action = action;
+    }
+
+    /**
+     * @return the parameterMap
+     */
+    public static Map<String, ParameterDescriptor> getParameterMap() {
+
+        if ( parameterMap == null ) {
+            parameterMap = new LinkedHashMap<String, ParameterDescriptor>();
+            parameterMap.put( PARAM_NAME_ENGCOL_SEVERITY, new ParameterDescriptor( ParameterType.BOOLEAN,
+                    "Log Column Severity", "Should Engine Log Column Severity be displayed", true ) );
+            parameterMap.put( PARAM_NAME_ENGCOL_CLASSNAME, new ParameterDescriptor( ParameterType.BOOLEAN,
+                    "Log Column Classname", "Should Engine Log Column Class Name be displayed", false ) );
+            parameterMap.put( PARAM_NAME_ENGCOL_ISSUEDDATE, new ParameterDescriptor( ParameterType.BOOLEAN,
+                    "Log Column Issue Date", "Should Engine Log Column Issues Date be displayed", true ) );
+            parameterMap.put( PARAM_NAME_ENGCOL_DESCRIPTION, new ParameterDescriptor( ParameterType.BOOLEAN,
+                    "Log Column Description", "Should Engine Log Column Description be displayed", true ) );
+            parameterMap.put( PARAM_NAME_ENGCOL_ORIGIN, new ParameterDescriptor( ParameterType.BOOLEAN,
+                    "Log Column Origin", "Should Engine Log Origin be displayed", false ) );
+            parameterMap.put( PARAM_NAME_ENGCOL_METHODNAME, new ParameterDescriptor( ParameterType.BOOLEAN,
+                    "Log Column Methodname", "Should Engine Log Method Name be displayed", false ) );
+
+            parameterMap.put( PARAM_NAME_MSGCOL_SELECT, new ParameterDescriptor( ParameterType.BOOLEAN,
+                    "Log Column select", "Should Message Log Method Name be displayed", false ) );
+            parameterMap.put( PARAM_NAME_MSGCOL_MSGID, new ParameterDescriptor( ParameterType.BOOLEAN,
+                    "Log Column Message Id", "Should Message Log MessageId be displayed", true ) );
+            parameterMap.put( PARAM_NAME_MSGCOL_PARTICIPANTID, new ParameterDescriptor( ParameterType.BOOLEAN,
+                    "Log Column Participant Id", "Should Message ParticipantId Name be displayed", true ) );
+            parameterMap.put( PARAM_NAME_MSGCOL_STATUS, new ParameterDescriptor( ParameterType.BOOLEAN,
+                    "Log Column Status", "Should Message Log Status be displayed", true ) );
+            parameterMap.put( PARAM_NAME_MSGCOL_TYPE, new ParameterDescriptor( ParameterType.BOOLEAN,
+                    "Log Column Type", "Should Message Log Type be displayed", true ) );
+            parameterMap.put( PARAM_NAME_MSGCOL_ACTION, new ParameterDescriptor( ParameterType.BOOLEAN,
+                    "Log Column Action", "Should Message Log Action be displayed", true ) );
+            parameterMap.put( PARAM_NAME_MSGCOL_CREATED, new ParameterDescriptor( ParameterType.BOOLEAN,
+                    "Log Column Created", "Should Message Log Created Date be displayed", true ) );
+            parameterMap.put( PARAM_NAME_MSGCOL_TURNAROUND, new ParameterDescriptor( ParameterType.BOOLEAN,
+                    "Log Column Turnaround", "Should Message Log Turnaround Time be displayed", false ) );
+
+            parameterMap.put( PARAM_NAME_CONVCOL_SELECT, new ParameterDescriptor( ParameterType.BOOLEAN,
+                    "Log Column Select", "Should Conversation Log Select Time be displayed", false ) );
+            parameterMap.put( PARAM_NAME_CONVCOL_CONVID, new ParameterDescriptor( ParameterType.BOOLEAN,
+                    "Log Column ConversationId", "Should Conversation Log Conversation Id be displayed", true ) );
+            parameterMap.put( PARAM_NAME_CONVCOL_PARTICIPANTID, new ParameterDescriptor( ParameterType.BOOLEAN,
+                    "Log Column ParticipantId", "Should Conversation Log Participant Id be displayed", true ) );
+            parameterMap.put( PARAM_NAME_CONVCOL_CHOREOGRAPHYID, new ParameterDescriptor( ParameterType.BOOLEAN,
+                    "Log Column ChoreographyId", "Should Conversation Log Choreography Id be displayed", true ) );
+            parameterMap.put( PARAM_NAME_CONVCOL_ACTION, new ParameterDescriptor( ParameterType.BOOLEAN,
+                    "Log Column ActionId", "Should Conversation Log Action Id be displayed", true ) );
+            parameterMap.put( PARAM_NAME_CONVCOL_CREATED, new ParameterDescriptor( ParameterType.BOOLEAN,
+                    "Log Column Created", "Should Conversation Log Created Date be displayed", true ) );
+            parameterMap.put( PARAM_NAME_CONVCOL_TURNAROUND, new ParameterDescriptor( ParameterType.BOOLEAN,
+                    "Log Column Turnaround", "Should Conversation Log Turnaround Time be displayed", false ) );
+            parameterMap.put( PARAM_NAME_CONVCOL_STATUS, new ParameterDescriptor( ParameterType.BOOLEAN,
+                    "Log Column Status", "Should Conversation Log Status be displayed", true ) );
+            
+            parameterMap.put( PARAM_NAME_TIMEZONE, new ParameterDescriptor( ParameterType.STRING,
+                    "Log Timezone", "", "" ) );
+            parameterMap.put( PARAM_NAME_ROWCOUNT, new ParameterDescriptor( ParameterType.STRING,
+                    "Log Row count", "No of rows displayed on one reporting page", "20" ) );
+        }
+        return parameterMap;
+    }
+
+    /**
+     * @param parameterMap the parameterMap to set
+     */
+    public static void setParameterMap( Map<String, ParameterDescriptor> parameterMap ) {
+
+        ReportingPropertiesForm.parameterMap = parameterMap;
     }
 }
