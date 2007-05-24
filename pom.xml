@@ -649,6 +649,7 @@
               <goal>run</goal>
             </goals>
           </execution>
+          <!-- 
           <execution>
             <id>compile</id>
             <phase>compile</phase>
@@ -663,6 +664,7 @@
               <goal>run</goal>
             </goals>
           </execution>
+           -->
         </executions>
         <!--  
           <artifactId>maven-antrun-plugin</artifactId>
