@@ -100,7 +100,8 @@ public class NotifierAddAction extends NexusE2EAction {
             }
         }
 
-        request.setAttribute( ATTRIBUTE_COLLECTION, components );
+        // request.setAttribute( ATTRIBUTE_COLLECTION, components );
+        request.setAttribute( ATTRIBUTE_COLLECTION, Engine.getInstance().getActiveConfigurationAccessService().getServices() );
 
         return success;
     } // executeNexusE2EAction

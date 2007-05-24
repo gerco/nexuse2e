@@ -435,4 +435,4 @@ public class SmtpSender extends AbstractService implements SenderAware {
         transportSender = null;
     } // teardown
 
-} // sendMessage}
+} // SmtpSender

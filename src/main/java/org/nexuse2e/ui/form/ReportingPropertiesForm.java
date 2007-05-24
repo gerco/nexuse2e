@@ -230,13 +230,13 @@ public class ReportingPropertiesForm extends ActionForm {
         //        LOG.trace( "path:" + arg0.getPath() );
         String noReset = request.getParameter( "noReset" );
         if ( noReset != null && noReset.equals( "true" ) ) {
-            System.out.println( "no reset" );
+            // System.out.println( "no reset" );
             return;
         }
         if ( actionMapping.getPath().equals( "/ReportingForward" )
                 || actionMapping.getPath().equals( "/ProcessConversationReport" )
                 || actionMapping.getPath().equals( "/ProcessEngineLog" ) ) {
-            System.out.println( "reseting....." );
+            // System.out.println( "reseting....." );
             setStartEnabled( false );
             setEndEnabled( false );
             setConversationEnabled( false );

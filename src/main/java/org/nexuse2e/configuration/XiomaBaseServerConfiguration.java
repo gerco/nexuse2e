@@ -100,8 +100,11 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             LoggerPojo dbRootLogger = new LoggerPojo( dbLoggerComponentPojo, new Date(), new Date(), 1,
                     "DB Root Logger", true, "group_mail,group_core,group_outbound,group_inbound," );
             dbRootLogger.setThreshold( Level.ERROR_INT );
-
             loggers.add( dbRootLogger );
+
+            ComponentPojo emailLoggerComponentPojo = new ComponentPojo( new Date(), new Date(), 1, ComponentType.LOGGER
+                    .getValue(), "EmailLogger", "org.nexuse2e.logging.EmailLogger", "Email Logger" );
+
 
             PipelinePojo fileSaveInboundPipelinePojo = new PipelinePojo();
             PipelinePojo fileLoadOutboundPipelinePojo = new PipelinePojo();
@@ -588,6 +591,7 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             components.add( smtpSenderComponent );
             components.add( pop3ReceiverComponent );
             components.add( dbLoggerComponentPojo );
+            components.add( emailLoggerComponentPojo );
             components.add( schedulingServiceComponent );
 
             backendPipelineTemplates.add( fileSaveInboundPipelinePojo );

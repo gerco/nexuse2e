@@ -113,6 +113,8 @@ public class NotifierViewAction extends NexusE2EAction {
             loggerForm.setFilterJavaPackagePattern( filterBuffer.toString() );
         }
 
+        request.setAttribute( ATTRIBUTE_COLLECTION, Engine.getInstance().getActiveConfigurationAccessService().getServices() );
+
         loggerForm.getLogFilterValues().clear();
         loggerForm.setLogFilterValues( tempFilterValues );
 

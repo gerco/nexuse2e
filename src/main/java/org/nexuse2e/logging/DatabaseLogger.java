@@ -59,7 +59,7 @@ public class DatabaseLogger extends AppenderSkeleton implements LogAppender {
 
         parameters = new HashMap<String, Object>();
         parameterMap = new LinkedHashMap<String, ParameterDescriptor>();
-        status = BeanStatus.INITIALIZED;
+        status = BeanStatus.INSTANTIATED;
     }
 
     @SuppressWarnings("unchecked")
