@@ -31,6 +31,7 @@ import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ComponentPojo;
 import org.nexuse2e.pojo.ConnectionPojo;
 import org.nexuse2e.pojo.LoggerPojo;
+import org.nexuse2e.pojo.MappingPojo;
 import org.nexuse2e.pojo.ParticipantPojo;
 import org.nexuse2e.pojo.PartnerPojo;
 import org.nexuse2e.pojo.PipeletPojo;
@@ -50,10 +51,10 @@ public class XiomaBaseClientConfiguration extends XiomaBaseServerConfiguration {
             List<PartnerPojo> partners, List<PipelinePojo> backendPipelineTemplates,
             List<PipelinePojo> frontendPipelineTemplates, List<ServicePojo> services,
             List<CertificatePojo> caCertificates, List<TRPPojo> trps, List<UserPojo> users, List<RolePojo> roles,
-            List<LoggerPojo> loggers ) throws InstantiationException {
+            List<LoggerPojo> loggers, List<MappingPojo> mappings ) throws InstantiationException {
 
         super.createBaseConfiguration( components, choreographies, partners, backendPipelineTemplates,
-                frontendPipelineTemplates, services, caCertificates, trps, users, roles, loggers );
+                frontendPipelineTemplates, services, caCertificates, trps, users, roles, loggers, mappings );
 
         if ( partners != null && partners.size() > 0 ) {
             PartnerPojo partner = null;

@@ -41,7 +41,7 @@
             </column>
         </property>
         <property name="value" type="string">
-            <column name="param_value" length="64" not-null="true">
+            <column name="param_value" length="1024" not-null="false">
                 <comment></comment>
             </column>
         </property>

@@ -99,8 +99,9 @@ public class RequestSaveCertAction extends NexusE2EAction {
 
             X509Principal certSubject = CertificateUtil.getMissingCertificateSubjectDNFromKeyStore(
                     (PKCS10CertificationRequest) result[CertificateUtil.POS_REQUEST], certificateKey );
-            // if ( cDao.isCertificateCNMatchingMissingCN( data, certSubject ) ) {
-            if ( CertificateUtil.isCertificateMatchingMissingSubjectDN( data, certSubject ) ) {
+            LOG.debug( "certSubject: " + certSubject );
+            if ( CertificateUtil.isCertificateCNMatchingMissingCN( data, certSubject ) ) {
+            //if ( CertificateUtil.isCertificateMatchingMissingSubjectDN( data, certSubject ) ) {
                 //CertificatePojo requestPojo = Engine.getInstance().getConfigAccessService().getFirstCertificateByType( Constants.CERTIFICATE_TYPE_REQUEST, true );
 
                 LOG.trace( "certificatePojo: " + certificateKey );

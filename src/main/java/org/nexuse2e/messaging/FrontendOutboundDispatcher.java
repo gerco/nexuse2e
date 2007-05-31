@@ -231,7 +231,9 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
 
                     LOG.debug( "Message sent." );
                 } catch ( Throwable e ) {
-                    e.printStackTrace();
+                    if ( LOG.isTraceEnabled() ) {
+                        e.printStackTrace();
+                    }
                     LOG.error( "Error sending message: " + e );
                 }
             } else {

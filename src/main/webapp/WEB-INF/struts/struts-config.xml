@@ -538,6 +538,7 @@
     <action path="/ServerCertificateSaveToDisk" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.ServerCertSaveToDiskAction">
       <forward name="success" path="/ServerCertificateView.do"/>
     </action>
+    -->
     <action path="/RequestImportBackup" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.RequestImportBackupAction">
       <forward name="success" path="/WEB-INF/pages/communications/request_import_backup.jsp"/>
     </action>
@@ -545,7 +546,6 @@
       <forward name="success" path="/RequestOverview.do"/>
       <forward name="error" path="/WEB-INF/pages/communications/request_import_backup.jsp"/>
     </action>
-    -->
     
     <action path="/Components" type="org.nexuse2e.ui.action.ComponentsAction">
       <forward name="success" path="/WEB-INF/pages/components.jsp"/>

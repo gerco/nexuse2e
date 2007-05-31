@@ -30,6 +30,7 @@ import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ComponentPojo;
 import org.nexuse2e.pojo.GenericParamPojo;
 import org.nexuse2e.pojo.LoggerPojo;
+import org.nexuse2e.pojo.MappingPojo;
 import org.nexuse2e.pojo.PartnerPojo;
 import org.nexuse2e.pojo.PipelinePojo;
 import org.nexuse2e.pojo.RolePojo;
@@ -532,7 +533,7 @@ public class ConfigDAO extends BasicDAO {
         saveRecord( user, session, transaction );
 
     }
-    
+
     /**
      * Deletes a user.
      * @param user The user to delete.
@@ -581,7 +582,7 @@ public class ConfigDAO extends BasicDAO {
         saveRecord( role, session, transaction );
 
     }
-    
+
     /**
      * Deletes a role.
      * @param role The role to delete.
@@ -595,11 +596,7 @@ public class ConfigDAO extends BasicDAO {
             deleteRecord( role, session, transaction );
         }
     }
-    
-    
-    
-    
-    
+
     /**
      * @param session
      * @param transaction
@@ -607,7 +604,8 @@ public class ConfigDAO extends BasicDAO {
      * @throws NexusException
      */
     @SuppressWarnings("unchecked")
-    public List<GenericParamPojo> getGenericParameters( Session session, Transaction transaction ) throws NexusException {
+    public List<GenericParamPojo> getGenericParameters( Session session, Transaction transaction )
+            throws NexusException {
 
         StringBuffer query = new StringBuffer( "from GenericParamPojo" );
 
@@ -620,7 +618,8 @@ public class ConfigDAO extends BasicDAO {
      * @param transaction
      * @throws NexusException
      */
-    public void updateGenericParameter( GenericParamPojo param, Session session, Transaction transaction ) throws NexusException {
+    public void updateGenericParameter( GenericParamPojo param, Session session, Transaction transaction )
+            throws NexusException {
 
         updateRecord( param, session, transaction );
 
@@ -632,13 +631,13 @@ public class ConfigDAO extends BasicDAO {
      * @param transaction
      * @throws NexusException
      */
-    public void saveGenericParameter( GenericParamPojo param, Session session, Transaction transaction ) throws NexusException {
+    public void saveGenericParameter( GenericParamPojo param, Session session, Transaction transaction )
+            throws NexusException {
 
         saveRecord( param, session, transaction );
 
     }
-    
-    
+
     /**
      * Deletes a parameter.
      * @param param The parameter to delete.
@@ -646,13 +645,64 @@ public class ConfigDAO extends BasicDAO {
      * @param transaction The transaction, or <code>null</code>.
      * @throws NexusException
      */
-    public void deleteGemericParameter( GenericParamPojo param, Session session, Transaction transaction ) throws NexusException {
+    public void deleteGemericParameter( GenericParamPojo param, Session session, Transaction transaction )
+            throws NexusException {
 
         if ( param != null ) {
             deleteRecord( param, session, transaction );
         }
     }
-   
-    
-    
+
+    /**
+     * @param session
+     * @param transaction
+     * @return
+     * @throws NexusException
+     */
+    @SuppressWarnings("unchecked")
+    public List<MappingPojo> getMappings( Session session, Transaction transaction ) throws NexusException {
+
+        StringBuffer query = new StringBuffer( "from MappingPojo" );
+
+        return getListThroughSessionFind( query.toString(), session, transaction );
+    }
+
+    /**
+     * @param param
+     * @param session
+     * @param transaction
+     * @throws NexusException
+     */
+    public void updateMapping( MappingPojo mapping, Session session, Transaction transaction ) throws NexusException {
+
+        updateRecord( mapping, session, transaction );
+
+    }
+
+    /**
+     * @param param
+     * @param session
+     * @param transaction
+     * @throws NexusException
+     */
+    public void saveMapping( MappingPojo mapping, Session session, Transaction transaction ) throws NexusException {
+
+        saveRecord( mapping, session, transaction );
+
+    }
+
+    /**
+     * Deletes a mapping.
+     * @param param The parameter to delete.
+     * @param session The hibernate session.
+     * @param transaction The transaction, or <code>null</code>.
+     * @throws NexusException
+     */
+    public void deleteMapping( MappingPojo mapping, Session session, Transaction transaction ) throws NexusException {
+
+        if ( mapping != null ) {
+            deleteRecord( mapping, session, transaction );
+        }
+    }
+
 } // CommunicationPartnerDAO

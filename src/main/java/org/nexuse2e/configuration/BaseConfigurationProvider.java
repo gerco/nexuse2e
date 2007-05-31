@@ -25,6 +25,7 @@ import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ComponentPojo;
 import org.nexuse2e.pojo.LoggerPojo;
+import org.nexuse2e.pojo.MappingPojo;
 import org.nexuse2e.pojo.PartnerPojo;
 import org.nexuse2e.pojo.PipelinePojo;
 import org.nexuse2e.pojo.RolePojo;
@@ -61,6 +62,6 @@ public interface BaseConfigurationProvider {
             List<PartnerPojo> partners, List<PipelinePojo> backendPipelineTemplates,
             List<PipelinePojo> frontendPipelineTemplates, List<ServicePojo> services,
             List<CertificatePojo> caCertificates, List<TRPPojo> trps, List<UserPojo> users, List<RolePojo> roles,
-            List<LoggerPojo> loggers ) throws InstantiationException;
+            List<LoggerPojo> loggers, List<MappingPojo> mappings ) throws InstantiationException;
 
 } // BaseConfigurationProvider

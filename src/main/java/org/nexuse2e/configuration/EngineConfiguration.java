@@ -55,6 +55,7 @@ import org.nexuse2e.pojo.ComponentPojo;
 import org.nexuse2e.pojo.ConversationPojo;
 import org.nexuse2e.pojo.GenericParamPojo;
 import org.nexuse2e.pojo.LoggerPojo;
+import org.nexuse2e.pojo.MappingPojo;
 import org.nexuse2e.pojo.PartnerPojo;
 import org.nexuse2e.pojo.PipeletPojo;
 import org.nexuse2e.pojo.PipelinePojo;
@@ -138,6 +139,8 @@ public class EngineConfiguration {
 
     private List<RolePojo>                              roles                     = null;
 
+    private List<MappingPojo>                           mappings                  = null;
+
     private HashMap<String, List<GenericParamPojo>>     genericParameters         = new HashMap<String, List<GenericParamPojo>>();
 
     BaseConfigurationProvider                           baseConfigurationProvider = null;
@@ -183,10 +186,11 @@ public class EngineConfiguration {
             certificates = new ArrayList<CertificatePojo>();
             users = new ArrayList<UserPojo>();
             roles = new ArrayList<RolePojo>();
+            mappings = new ArrayList<MappingPojo>();
 
             baseConfigurationProvider.createBaseConfiguration( components, choreographies, partners,
                     backendPipelineTemplates, frontendPipelineTemplates, services, certificates, trps, users, roles,
-                    loggers );
+                    loggers, mappings );
             try {
                 saveConfigurationToDB();
                 LOG.info( "Base configurations saved to database." );
@@ -1672,6 +1676,16 @@ public class EngineConfiguration {
     public void setGenericParameters( HashMap<String, List<GenericParamPojo>> genericParameters ) {
 
         this.genericParameters = genericParameters;
+    }
+
+    public List<MappingPojo> getMappings() {
+
+        return mappings;
+    }
+
+    public void setMappings( List<MappingPojo> mappings ) {
+
+        this.mappings = mappings;
     }
 
 }
