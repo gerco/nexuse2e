@@ -34,6 +34,7 @@ public class Record {
     private List<RecordEntry> entries;
     private String recordID;
     private String value;
+    private String conversationClass;
     private boolean active;
 
     /**
@@ -161,5 +162,23 @@ public class Record {
     public void setActive( boolean active ) {
 
         this.active = active;
+    }
+
+    
+    /**
+     * @return the conversationClass
+     */
+    public String getConversationClass() {
+    
+        return conversationClass;
+    }
+
+    
+    /**
+     * @param conversationClass the conversationClass to set
+     */
+    public void setConversationClass( String conversationClass ) {
+    
+        this.conversationClass = conversationClass;
     }
 }

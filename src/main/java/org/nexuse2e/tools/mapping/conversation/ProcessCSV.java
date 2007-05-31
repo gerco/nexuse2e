@@ -285,6 +285,10 @@ public class ProcessCSV {
             System.out.println( "no block found for:" + m.getBlockID() ); //$NON-NLS-1$
             return;
         }
+        if ( b.getBlockEntries() == null ) {
+            System.out.println( "no block entries found for:" + m.getBlockID() ); //$NON-NLS-1$
+            return;
+        }
         Iterator i = b.getBlockEntries().iterator();
         while ( i.hasNext() ) {
             XMLBlockEntry entry = (XMLBlockEntry) i.next();
@@ -365,9 +369,13 @@ public class ProcessCSV {
 
                     //                    }
                     else {
-                        System.out.println( "only file/static/internal is supported!" ); //$NON-NLS-1$
+                        System.out.println( "only file/static is supported!" ); //$NON-NLS-1$
                         value = "invalid"; //$NON-NLS-1$
                     }
+                    
+                    // modify
+                    
+                    
                     if ( isAttr ) {
                         String attrString = entry.getNode().substring( entry.getNode().indexOf( '@' ) + 1,
                                 entry.getNode().length() );

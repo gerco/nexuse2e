@@ -19,15 +19,19 @@
  */
 package org.nexuse2e.tools.mapping.input;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.apache.commons.lang.StringUtils;
 import org.nexuse2e.tools.mapping.csv.Record;
 import org.nexuse2e.tools.mapping.csv.RecordContainer;
 import org.nexuse2e.tools.mapping.csv.RecordEntry;
-
+import org.nexuse2e.tools.mapping.csv.RecordEntry.Align;
+import org.nexuse2e.tools.mapping.csv.RecordEntry.Trim;
 
 /**
  * @author guido.esch
@@ -44,16 +48,16 @@ public class CSVLine {
     /**
      * Comment for <code>ref</code>
      */
-    public Object  ref;
+    public Object         ref;
     /**
      * Comment for <code>columns</code>
      */
-    public List<String> columns  = new ArrayList<String>();
-    private String id;
-    private String source;
-    private String separator;
-    private Record desc;
-    private int    siblingSequence;
+    public List<String>   columns  = new ArrayList<String>();
+    private String        id;
+    private String        source;
+    private String        separator;
+    private Record        desc;
+    private int           siblingSequence;
 
     public CSVLine() {
 
@@ -77,7 +81,7 @@ public class CSVLine {
 
         boolean lineDescFound = false;
         Record r = null;
-        for (Iterator<Record> iter = container.getRecords().values().iterator(); iter.hasNext(); ) {
+        for ( Iterator<Record> iter = container.getRecords().values().iterator(); iter.hasNext(); ) {
             r = iter.next();
             if ( r.getRecordValue().length() <= line.length() ) {
                 if ( line.startsWith( r.getRecordValue() ) ) {
@@ -103,11 +107,11 @@ public class CSVLine {
         this.desc = desc;
         separator = null;
         boolean first = true;
-        for (RecordEntry er : desc.getEntries()) {
+        for ( RecordEntry er : desc.getEntries() ) {
             if ( line.length() >= er.getPosition() + er.getLength() ) {
                 String value = line.substring( er.getPosition(), er.getPosition() + er.getLength() );
                 columns.add( value.trim() );
-                if (first) {
+                if ( first ) {
                     setId( value );
                 }
             }
@@ -236,12 +240,22 @@ public class CSVLine {
     public String toString() {
 
         StringBuffer buffer = new StringBuffer();
-
-        if ( getSeparator() != null && getDesc() == null ) {
+        
+        if ( getSeparator() != null  ) { //&& getDesc() == null
             for ( int i = 0; i < columns.size(); i++ ) {
-                String value = (String)columns.get( i );
-                value = value.replace('\n',' ');
-                value = value.replace('\r',' ');
+                String value = (String) columns.get( i );
+                RecordEntry entry = (RecordEntry) desc.getEntries().get( i );
+                value = CallExternalModifier( value, entry );
+                
+                if ( entry.getTrim() != Trim.FALSE ) {
+                    value = value.trim();
+                }
+                else {
+                    value = value.replace( '\n', ' ' );
+                    value = value.replace( '\r', ' ' );
+                    value = value.replace( '\t', ' ' );
+                }
+                
                 buffer.append( value );
                 buffer.append( getSeparator() );
             }
@@ -254,7 +268,7 @@ public class CSVLine {
                 }
             }
         }
-        if ( getSeparator() == null && getDesc() != null ) {
+        if ( getSeparator() == null  ) { //&& getDesc() != null
             for ( int i = 0; i < columns.size(); i++ ) {
                 System.out.println( "columns.size()" + columns.size() );
                 String colVal = (String) columns.get( i );
@@ -262,12 +276,27 @@ public class CSVLine {
 
                 RecordEntry entry = (RecordEntry) desc.getEntries().get( i );
 
+                colVal = CallExternalModifier( colVal, entry );
+
+                if ( entry.getTrim() != Trim.FALSE ) {
+                    colVal = colVal.trim();
+                } else {
+                    colVal = colVal.replace( '\n', entry.getFiller().charAt( 0 ) );
+                    colVal = colVal.replace( '\r', entry.getFiller().charAt( 0 ) );
+                    colVal = colVal.replace( '\t', entry.getFiller().charAt( 0 ) );
+                }
                 if ( colVal.length() > entry.getLength() ) {
                     colVal = colVal.substring( 0, entry.getLength() );
                 } else {
-                    StringBuffer dump = new StringBuffer( colVal );
+                    StringBuffer dump = new StringBuffer();
+                    if ( entry.getAlign() == Align.LEFT ) {
+                        dump.append( colVal );
+                    }
                     for ( int ii = 0; ii < entry.getLength() - colVal.length(); ii++ ) {
-                        dump.append( " " );
+                        dump.append( entry.getFiller() );
+                    }
+                    if ( entry.getAlign() == Align.RIGHT ) {
+                        dump.append( colVal );
                     }
                     colVal = dump.toString();
                 }
@@ -284,6 +313,61 @@ public class CSVLine {
             }
         }
         return buffer.toString();
+    }
+
+    /**
+     * @param colVal
+     * @param entry
+     * @return
+     */
+    private String CallExternalModifier( String colVal, RecordEntry entry ) {
+
+        if ( !StringUtils.isEmpty( entry.getMethod() ) ) {
+            if ( !StringUtils.isEmpty( desc.getConversationClass() ) ) {
+                try {
+                    Class c = Class.forName( desc.getConversationClass() );
+                    Object o = c.newInstance();
+                    Class[] args = new Class[2];
+                    args[0] = String.class;
+                    args[1] = RecordEntry.class;
+                    Method m;
+                    try {
+                        m = c.getMethod( entry.getMethod(), args );
+                        Object[] argsObjects = new Object[2];
+                        argsObjects[0] = colVal;
+                        argsObjects[1] = entry;
+                        colVal = (String)m.invoke( o, argsObjects );
+                    } catch ( NoSuchMethodException e ) {
+                        args = new Class[1];
+                        args[0] = String.class;
+                        try {
+                            m = c.getMethod( entry.getMethod(), args );
+                            Object[] argsObjects = new Object[1];
+                            argsObjects[0] = colVal;
+                            colVal = (String)m.invoke( o, argsObjects );
+                        } catch ( NoSuchMethodException e1 ) {
+                            e1.printStackTrace();
+                        }    
+                    }
+                    
+                } catch ( InstantiationException e ) {
+                    e.printStackTrace();
+                } catch ( IllegalAccessException e ) {
+                    e.printStackTrace();
+                } catch ( ClassNotFoundException e ) {
+                    e.printStackTrace();
+                } catch ( SecurityException e ) {
+                    e.printStackTrace();
+                } catch ( IllegalArgumentException e ) {
+                    e.printStackTrace();
+                } catch ( InvocationTargetException e ) {
+                    e.printStackTrace();
+                }
+
+            }
+
+        }
+        return colVal;
     }
 
     /**
@@ -348,26 +432,32 @@ public class CSVLine {
 
         this.desc = desc;
     }
+
     public int getSiblingSequence() {
 
         return siblingSequence;
     }
+
     public void setSiblingSequence( int siblingSequence ) {
 
         this.siblingSequence = siblingSequence;
     }
+
     public List<CSVLine> getChildren() {
 
         return children;
     }
+
     public void setChildren( List<CSVLine> children ) {
 
         this.children = children;
     }
+
     public Object getRef() {
 
         return ref;
     }
+
     public void setRef( Object ref ) {
 
         this.ref = ref;

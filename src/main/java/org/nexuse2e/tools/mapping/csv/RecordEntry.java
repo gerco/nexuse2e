@@ -27,11 +27,23 @@ package org.nexuse2e.tools.mapping.csv;
  */
 public class RecordEntry {
 
+    public static enum Align {
+        LEFT, RIGHT;
+    }
+
+    public static enum Trim {
+        WHITESPACES, TRUE, FALSE;
+    }
+
     private String entryID;
     private String sourceID;
     private int    type;
     private int    position;
     private int    length;
+    private String method;
+    private String filler;
+    private Trim   trim = Trim.FALSE;
+    private Align  align = Align.LEFT;
 
     /**
      * @return id
@@ -131,5 +143,69 @@ public class RecordEntry {
         buffer.append( length );
 
         return buffer.toString();
+    }
+
+    /**
+     * @return the align
+     */
+    public Align getAlign() {
+
+        return align;
+    }
+
+    /**
+     * @param align the align to set
+     */
+    public void setAlign( Align align ) {
+
+        this.align = align;
+    }
+
+    /**
+     * @return the filler
+     */
+    public String getFiller() {
+
+        return filler;
+    }
+
+    /**
+     * @param filler the filler to set
+     */
+    public void setFiller( String filler ) {
+
+        this.filler = filler;
+    }
+
+    /**
+     * @return the method
+     */
+    public String getMethod() {
+
+        return method;
+    }
+
+    /**
+     * @param method the method to set
+     */
+    public void setMethod( String method ) {
+
+        this.method = method;
+    }
+
+    /**
+     * @return the trim
+     */
+    public Trim getTrim() {
+
+        return trim;
+    }
+
+    /**
+     * @param trim the trim to set
+     */
+    public void setTrim( Trim trim ) {
+
+        this.trim = trim;
     }
 }

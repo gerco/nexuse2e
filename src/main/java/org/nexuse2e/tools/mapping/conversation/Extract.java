@@ -143,8 +143,8 @@ public class Extract {
                     PrintWriter pw = new PrintWriter( fos );
 
                     pw.println( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" ); //$NON-NLS-1$
-                    pw.println( "<blocks version=\"1.0\" id=\"\" siblingsequence=\"0\">" ); //$NON-NLS-1$
-                    pw.println( "  <block id=\"root\">" ); //$NON-NLS-1$
+                    pw.println( "<blocks version=\"1.0\" id=\"\">" ); //$NON-NLS-1$
+                    pw.println( "  <block id=\"root\" siblingsequence=\"0\" conversationclass=\"\">" ); //$NON-NLS-1$
                     appendNodes( root, pw, "/" ); //$NON-NLS-1$
                     pw.println( "  </block>" ); //$NON-NLS-1$
                     pw.println( "</blocks>" ); //$NON-NLS-1$
@@ -161,20 +161,22 @@ public class Extract {
                 //                                new LogMessage(
                 //                                        LogMessage.ERROR,
                 //                                        "Processing", e.getClass().getName(), this, "extract", 146, e.getLocalizedMessage(), e ) ); //$NON-NLS-1$
+                System.out.println("Error: "+e.getLocalizedMessage());
+                e.printStackTrace();
             }
         }
     }
 
     private void appendNodes( Node node, PrintWriter pw, String prefix ) {
 
-        pw.println( "    <xpath id=\"\" position=\"" + prefix + "\" node=\"" + node.getNodeName() + "\"/>" ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        pw.println( "    <xpath id=\"\" position=\"" + prefix + "\" node=\"" + node.getNodeName() + "\" trim=\"false\" filler=\"\" align=\"\" method=\"\" length=\"-1\"/>" ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         NamedNodeMap nnm = node.getAttributes();
         if ( nnm != null ) {
             for ( int i = 0; i < nnm.getLength(); i++ ) {
                 Node attrib = nnm.item( i );
                 pw.println( "    <xpath id=\"" + prefix + "_" + node.getNodeName() + "_" + attrib.getNodeName() //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                         + "\" position=\"" + prefix + "\" node=\"" + node.getNodeName() + "/@" + attrib.getNodeName() //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                        + "\"/>" ); //$NON-NLS-1$
+                        + "\" trim=\"false\" filler=\"\" align=\"\" method=\"\" length=\"-1\"/>" ); //$NON-NLS-1$
             }
         }
         NodeList children = node.getChildNodes();
@@ -183,7 +185,7 @@ public class Extract {
             if ( temp.getNodeType() == Node.TEXT_NODE && !temp.getNodeValue().trim().equals( "" ) ) { //$NON-NLS-1$
 
                 pw.println( "    <xpath id=\"" + prefix + "_" + node.getNodeName() + "_#text\" position=\"" + prefix //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                        + "\" node=\"" + node.getNodeName() + "/text()\"/>" ); //$NON-NLS-1$ //$NON-NLS-2$
+                        + "\" node=\"" + node.getNodeName() + "/text()\" trim=\"false\" filler=\"\" align=\"\" method=\"\" length=\"-1\"/>" ); //$NON-NLS-1$ //$NON-NLS-2$
                 break;
             }
         }

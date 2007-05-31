@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.codehaus.xfire.util.Base64;
 import org.nexuse2e.Engine;
@@ -38,6 +39,7 @@ import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.ProtectedFileAccessForm;
 import org.nexuse2e.util.CertificateUtil;
+import org.nexuse2e.util.EncryptionUtil;
 
 /**
  * @author guido.esch
@@ -66,24 +68,36 @@ public class CACertFinishExportAction extends NexusE2EAction {
                 path = form.getCertficatePath();
             }
 
-            List<CertificatePojo> certs = Engine.getInstance().getActiveConfigurationAccessService().getCertificates(
-                    Constants.CERTIFICATE_TYPE_CACERT_METADATA, null );
-            if ( certs == null || certs.size() > 1 ) {
-                return error;
+            CertificatePojo cPojo = Engine.getInstance().getActiveConfigurationAccessService()
+            .getFirstCertificateByType( Constants.CERTIFICATE_TYPE_CACERT_METADATA, true );
+            String password = "changeit";
+            if ( cPojo == null ) {
+                System.out.println( "metadata not found!" );
+            } else {
+                password = EncryptionUtil.decryptString( cPojo.getPassword() );
             }
-            String password = certs.get( 0 ).getPassword();
 
-            File certFile = new File( path );
-            FileOutputStream fos = new FileOutputStream( certFile );
+            try {
+                File certFile = new File( path );
+                FileOutputStream fos = new FileOutputStream( certFile );
 
-            List<CertificatePojo> caCertificates = Engine.getInstance().getActiveConfigurationAccessService().getCertificates(
-                    Constants.CERTIFICATE_TYPE_CA, null );
+                List<CertificatePojo> caCertificates = Engine.getInstance().getActiveConfigurationAccessService().getCertificates(
+                        Constants.CERTIFICATE_TYPE_CA, null );
 
-            KeyStore jks = CertificateUtil.generateKeyStoreFromPojos( caCertificates );
+                KeyStore jks = CertificateUtil.generateKeyStoreFromPojos( caCertificates );
 
-            jks.store( fos, new String( Base64.decode( password ) ).toCharArray() );
-            fos.flush();
-            fos.close();
+                jks.store( fos, new String( password ).toCharArray() );
+                fos.flush();
+                fos.close();
+            } catch ( Exception e ) {
+                
+                ActionMessage errorMessage = new ActionMessage( "generic.error", e.getMessage() );
+                errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
+            }catch ( Error e ) {
+                
+                ActionMessage errorMessage = new ActionMessage( "generic.error", e.getMessage() );
+                errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
+            }
         }
         if ( !errors.isEmpty() ) {
             return error;

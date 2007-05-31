@@ -132,10 +132,10 @@ public class MapBuilder extends DefaultHandler {
                     + "\">\n" );
 
             flatfileBuffer.append( "\t<record id=\"" + currentBlockName + "\" value=\"" + currentBlockName
-                    + "\" active=\"true\">\n" );
+                    + "\" active=\"true\" conversationclass=\"\">\n" );
             flatfileBuffer.append( "\t\t<fields>\n" );
             flatfileBuffer
-                    .append( "\t\t\t<field id=\"RecordIdentifier\" sourceid=\"\" type=\"relative\" pos=\"0\" length=\"-1\"/>\n" );
+                    .append( "\t\t\t<field id=\"RecordIdentifier\" sourceid=\"\" type=\"relative\" pos=\"0\" length=\"-1\" trim=\"false\" filler=\"\" align=\"\" method=\"\"/>\n" );
             positionCount = 1;
         } else if ( localName.equals( ELEMENT_XPATH ) ) {
             String id = attributes.getValue( ATTRIBUTE_ID );
@@ -156,7 +156,7 @@ public class MapBuilder extends DefaultHandler {
                     mappingBuffer.append( "\t\t<mapping xpathid=\"" + id + "\" value=\"file/" + name + "\" />\n" );
 
                     flatfileBuffer.append( "\t\t\t<field id=\"" + name + "\" sourceid=\"\" type=\"relative\" pos=\""
-                            + positionCount++ + "\" length=\"-1\"/>\n" );
+                            + positionCount++ + "\" length=\"-1\" trim=\"false\" filler=\"\" align=\"\" method=\"\"/>\n" );
                 }
             }
         }

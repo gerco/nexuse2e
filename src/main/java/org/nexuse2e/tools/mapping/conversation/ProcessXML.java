@@ -258,7 +258,7 @@ public class ProcessXML {
             Iterator blockI = blocks.iterator();
             while ( blockI.hasNext() ) {
                 XMLBlock b = (XMLBlock) blockI.next();
-                if ( b.getBlockEntries().size() == 0 ) {
+                if ( b.getBlockEntries() == null || b.getBlockEntries().size() == 0 ) {
                     continue;
                 }
                 XMLBlockEntry be = b.getBlockEntries().get( 0 );
@@ -415,7 +415,7 @@ public class ProcessXML {
                                             line.setDesc( r );
                                         } else {
                                             line.setSeparator( reader.getFirstContainer().getSeparator() );
-                                            line.setDesc( null );
+                                            line.setDesc( r );
                                         }
                                         line.setId( r.getRecordValue() );
                                         line.addColumn( r.getRecordValue(), 0 );

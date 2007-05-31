@@ -56,6 +56,25 @@ public class Constants {
     public static final String POSTFIX_FRONTEND_PIPELINE  = "-Frontend-Pipeline";
     
     /**
+     * the possible types for mapping value pairs
+     *
+     */
+    public static enum MappingType {
+        STRING(1), INT(2), BOOLEAN(3) ;
+        private int value;
+
+        MappingType( int value ) {
+
+            this.value = value;
+        }
+
+        public int getValue() {
+
+            return value;
+        }
+    }
+    
+    /**
      * The possible states of a bean that implements the <code>Manageable</code> interface.
      * @see org.nexuse2e.Manageable
      */

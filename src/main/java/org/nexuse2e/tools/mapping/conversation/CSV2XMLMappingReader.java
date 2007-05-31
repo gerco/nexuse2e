@@ -30,16 +30,17 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
-
+import org.apache.commons.lang.StringUtils;
 import org.nexuse2e.tools.mapping.csv.Record;
 import org.nexuse2e.tools.mapping.csv.RecordContainer;
 import org.nexuse2e.tools.mapping.csv.RecordEntry;
+import org.nexuse2e.tools.mapping.csv.RecordEntry.Align;
+import org.nexuse2e.tools.mapping.csv.RecordEntry.Trim;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
-
 
 /**
  * @author guido.esch
@@ -52,51 +53,67 @@ public class CSV2XMLMappingReader {
     /**
      * Comment for <code>RECORDS</code>
      */
-    public static String    RECORDS        = "records";      //$NON-NLS-1$
+    public static String                 RECORDS        = "records";                             //$NON-NLS-1$
     /**
      * Comment for <code>RECORD</code>
      */
-    public static String    RECORD         = "record";       //$NON-NLS-1$
+    public static String                 RECORD         = "record";                              //$NON-NLS-1$
     /**
      * Comment for <code>FIELDS</code>
      */
-    public static String    FIELDS         = "fields";       //$NON-NLS-1$
+    public static String                 FIELDS         = "fields";                              //$NON-NLS-1$
     /**
      * Comment for <code>FIELD</code>
      */
-    public static String    FIELD          = "field";        //$NON-NLS-1$
+    public static String                 FIELD          = "field";                               //$NON-NLS-1$
     /**
      * Comment for <code>FIELDID</code>
      */
-    public static String    FIELDID        = "id";           //$NON-NLS-1$
+    public static String                 FIELDID        = "id";                                  //$NON-NLS-1$
     /**
      * Comment for <code>SOURCEID</code>
      */
-    public static String    SOURCEID       = "sourceid";     //$NON-NLS-1$
+    public static String                 SOURCEID       = "sourceid";                            //$NON-NLS-1$
     /**
      * Comment for <code>TYPE</code>
      */
-    public static String    TYPE           = "type";         //$NON-NLS-1$
+    public static String                 TYPE           = "type";                                //$NON-NLS-1$
     /**
      * Comment for <code>POS</code>
      */
-    public static String    POS            = "pos";          //$NON-NLS-1$
+    public static String                 POS            = "pos";                                 //$NON-NLS-1$
     /**
      * Comment for <code>LENGTH</code>
      */
-    public static String    LENGTH         = "length";       //$NON-NLS-1$
+    public static String                 LENGTH         = "length";                              //$NON-NLS-1$
+    /**
+     * 
+     */
+    public static String                 TRIM           = "trim";                              //$NON-NLS-1$
+    /**
+     * 
+     */
+    public static String                 ALIGN          = "align";                              //$NON-NLS-1$
+    /**
+     * 
+     */
+    public static String                 FILLER         = "filler";                              //$NON-NLS-1$
+    /**
+     * 
+     */
+    public static String                 METHOD         = "method";                              //$NON-NLS-1$
 
     /**
      * Comment for <code>ABSOLUTEID</code>
      */
-    public static int       ABSOLUTEID     = 0;
+    public static int                    ABSOLUTEID     = 0;
     /**
      * Comment for <code>RELATIVEID</code>
      */
-    public static int       RELATIVEID     = 1;
+    public static int                    RELATIVEID     = 1;
 
-    private Map<String,RecordContainer> containers     = new HashMap<String,RecordContainer>();
-    private RecordContainer firstContainer = null;
+    private Map<String, RecordContainer> containers     = new HashMap<String, RecordContainer>();
+    private RecordContainer              firstContainer = null;
 
     /**
      * @param file
@@ -114,9 +131,8 @@ public class CSV2XMLMappingReader {
                 Document document = documentBuilder.parse( input );
 
                 XPath xpath = XPathFactory.newInstance().newXPath();
-                Node root = (Node) xpath.evaluate("/" + RECORDS , document, XPathConstants.NODE);
-                
-                
+                Node root = (Node) xpath.evaluate( "/" + RECORDS, document, XPathConstants.NODE );
+
                 NamedNodeMap attribs = root.getAttributes();
                 Node attr = attribs.getNamedItem( "id" ); //$NON-NLS-1$
                 String nodeValue = null;
@@ -138,9 +154,9 @@ public class CSV2XMLMappingReader {
                 container.setSeparator( nodeValue );
 
                 xpath = XPathFactory.newInstance().newXPath();
-                NodeList records = (NodeList) xpath.evaluate("/" + RECORDS + "/" + RECORD , document, XPathConstants.NODESET);
-                
-                
+                NodeList records = (NodeList) xpath.evaluate( "/" + RECORDS + "/" + RECORD, document,
+                        XPathConstants.NODESET );
+
                 for ( int i = 0; i < records.getLength(); i++ ) {
                     Node recordNode = records.item( i );
                     container.addRecord( parseRecord( recordNode ) );
@@ -151,12 +167,14 @@ public class CSV2XMLMappingReader {
             }
         } catch ( Exception e ) {
 
-//            Plugin
-//                    .getDefault()
-//                    .log(
-//                            new LogMessage(
-//                                    LogMessage.ERROR,
-//                                    "Processing", e.getClass().getName(), this, "parseMappingFile", 144, e.getLocalizedMessage(), e ) ); //$NON-NLS-1$
+            //            Plugin
+            //                    .getDefault()
+            //                    .log(
+            //                            new LogMessage(
+            //                                    LogMessage.ERROR,
+            //                                    "Processing", e.getClass().getName(), this, "parseMappingFile", 144, e.getLocalizedMessage(), e ) ); //$NON-NLS-1$
+            System.out.println( "Error: " + e.getLocalizedMessage() );
+            e.printStackTrace();
         }
 
     }
@@ -198,6 +216,13 @@ public class CSV2XMLMappingReader {
         if ( attr != null ) {
             nodeValue = attr.getNodeValue();
             record.setRecordID( nodeValue );
+        }
+        attr = attribs.getNamedItem( "conversationclass" ); //$NON-NLS-1$
+        if ( attr != null ) {
+            nodeValue = attr.getNodeValue();
+            if(!StringUtils.isEmpty( nodeValue )) {
+                record.setConversationClass( nodeValue );
+            }
         }
 
         try {
@@ -252,6 +277,52 @@ public class CSV2XMLMappingReader {
                     }
                     entry.setLength( value );
                 }
+                attr = attribs.getNamedItem( FILLER );
+                if ( attr != null ) {
+                    nodeValue = attr.getNodeValue();
+                    if(!StringUtils.isEmpty( nodeValue)) {
+                        entry.setFiller( nodeValue.substring( 0,1 ) );
+                    } else {
+                        entry.setFiller(" ");
+                    }
+                } else {
+                    entry.setFiller(" ");
+                }
+                attr = attribs.getNamedItem( METHOD );
+                if ( attr != null ) {
+                    nodeValue = attr.getNodeValue();
+                    if(nodeValue != null&& record.getConversationClass() != null) {
+                        
+                        entry.setMethod( nodeValue.trim() );
+                    }
+                }
+                attr = attribs.getNamedItem( ALIGN );
+                if ( attr != null ) {
+                    nodeValue = attr.getNodeValue();
+                    if(!StringUtils.isEmpty(nodeValue)) {
+                        if(nodeValue.trim().toLowerCase().equals( "left" )) {
+                            entry.setAlign( Align.LEFT );    
+                        } else if(nodeValue.trim().toLowerCase().equals( "right" )) {
+                            entry.setAlign( Align.RIGHT );    
+                        }
+                        
+                    }
+                }
+                attr = attribs.getNamedItem( TRIM );
+                if ( attr != null ) {
+                    nodeValue = attr.getNodeValue();
+                    if(!StringUtils.isEmpty(nodeValue)) {
+                        if(nodeValue.trim().toLowerCase().equals( "false" )) {
+                            entry.setTrim( Trim.FALSE );    
+                        } else if(nodeValue.trim().toLowerCase().equals( "true" )) {
+                            entry.setTrim( Trim.TRUE );        
+                        } else if(nodeValue.trim().toLowerCase().equals( "whitespaces" )) {
+                            entry.setTrim( Trim.WHITESPACES );        
+                        }
+                        
+                    }
+                }
+
             }
 
         } catch ( Exception e ) {
@@ -261,6 +332,8 @@ public class CSV2XMLMappingReader {
 //                            new LogMessage(
 //                                    LogMessage.ERROR,
 //                                    "Processing", e.getClass().getName(), this, "parseRecord", 145, e.getLocalizedMessage(), e ) ); //$NON-NLS-1$
+            System.out.println("Error: "+e.getLocalizedMessage());
+            e.printStackTrace();
         }
 
         return record;
@@ -281,7 +354,7 @@ public class CSV2XMLMappingReader {
     public RecordContainer getContainerByID( String containerID ) {
 
         if ( containers == null ) {
-            containers = new HashMap<String,RecordContainer>();
+            containers = new HashMap<String, RecordContainer>();
             return null;
         }
         return (RecordContainer) containers.get( containerID );
@@ -290,7 +363,7 @@ public class CSV2XMLMappingReader {
     /**
      * @return containers
      */
-    public Map<String,RecordContainer> getContainers() {
+    public Map<String, RecordContainer> getContainers() {
 
         return containers;
     }
@@ -298,7 +371,7 @@ public class CSV2XMLMappingReader {
     /**
      * @param containers
      */
-    public void setContainers( Map<String,RecordContainer> containers ) {
+    public void setContainers( Map<String, RecordContainer> containers ) {
 
         this.containers = containers;
     }

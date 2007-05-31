@@ -237,7 +237,7 @@ public class ReportingForwardAction extends NexusE2EAction {
                 if(value == null) {
                     LOG.error( "Generic parameter "+label+", no value found, using default value: "+defaultValue );
                 } else  {
-                    LOG.error( "Generic parameter "+label+" is instance of "+value.getClass().getName()+" but Boolean was expected!" );
+                    LOG.error( "Generic parameter "+label+" is instance of "+value.getClass().getName()+" but Int was expected!" );
                 }
             }
             
@@ -267,9 +267,9 @@ public class ReportingForwardAction extends NexusE2EAction {
                 returnvalue = (String)value;
             } else {
                 if(value == null) {
-                    LOG.error( "Generic parameter "+label+", no value found, using default value: "+defaultValue );
+                    LOG.warn( "Generic parameter "+label+", no value found, using default value: "+defaultValue );
                 } else  {
-                    LOG.error( "Generic parameter "+label+" is instance of "+value.getClass().getName()+" but Boolean was expected!" );
+                    LOG.error( "Generic parameter "+label+" is instance of "+value.getClass().getName()+" but String was expected!" );
                 }
             }
             
