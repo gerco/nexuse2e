@@ -142,17 +142,18 @@ public class FlatFileMappingPipelet extends AbstractPipelet {
                 String contentString = new String( messagePayloadPojo.getPayloadData() );
                 ProcessXML processXML = new ProcessXML();
                 String result = processXML.processXML( mfe, contentString );
-                
+
                 if ( LOG.isTraceEnabled() ) {
                     LOG.trace( "...................." );
                     LOG.trace( result );
                     LOG.trace( "...................." );
                 }
-                
+
                 messagePayloadPojo.setPayloadData( result.getBytes() );
             }
         } catch ( Exception e ) {
             e.printStackTrace();
+            throw new NexusException( "Error mapping payload: " + e );
         }
         return null;
     }
