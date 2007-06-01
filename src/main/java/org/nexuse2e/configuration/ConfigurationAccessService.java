@@ -47,6 +47,7 @@ import org.nexuse2e.pojo.ComponentPojo;
 import org.nexuse2e.pojo.ConnectionPojo;
 import org.nexuse2e.pojo.GenericParamPojo;
 import org.nexuse2e.pojo.LoggerPojo;
+import org.nexuse2e.pojo.MappingPojo;
 import org.nexuse2e.pojo.ParticipantPojo;
 import org.nexuse2e.pojo.PartnerPojo;
 import org.nexuse2e.pojo.PipelinePojo;
@@ -1377,6 +1378,93 @@ public class ConfigurationAccessService {
     }
 
     /**
+     * @param comparator
+     * @return
+     */
+    public List<MappingPojo> getMappings( Comparator<MappingPojo> comparator ) {
+
+        if ( engineConfig == null ) {
+            return null;
+        }
+        List<MappingPojo> mappings = engineConfig.getMappings();
+        if ( comparator != null ) {
+            Collections.sort( mappings, comparator );
+        }
+        return mappings;
+    }
+    
+    /**
+     * @param nxMappingId
+     * @return
+     */
+    public MappingPojo getMappingByNxMappingId( int nxMappingId ) {
+
+        for ( MappingPojo mapping : engineConfig.getMappings() ) {
+            if ( nxMappingId == mapping.getNxMappingId() ) {
+                return mapping;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @param category
+     * @param left
+     * @param key
+     * @return
+     */
+    public MappingPojo getMappingByCategoryDirectionAndKey( String category, boolean left, String key ) {
+
+        if ( category != null && key != null ) {
+            for ( MappingPojo mapping : engineConfig.getMappings() ) {
+                if ( category.equals( mapping.getCategory() ) ) {
+                    String tempKey = left ? mapping.getLeftValue() : mapping.getRightValue();
+                    if(tempKey.equals( key )) {
+                        return mapping;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    
+    /**
+     * @param mapping
+     */
+    public void updateMapping( MappingPojo mapping ) {
+
+        try {
+            MappingPojo oldMapping = getMappingByNxMappingId( mapping.getNxMappingId() );
+            if ( oldMapping != null ) {
+                getMappings( null ).remove( oldMapping );
+            }
+            getMappings( null ).add( mapping );
+
+            applyConfiguration();
+        } catch ( NexusException e ) {
+            e.printStackTrace();
+        }
+    }
+
+    
+    /**
+     * @param mapping
+     */
+    public void deleteMapping( MappingPojo mapping ) {
+
+        try {
+            MappingPojo oldMapping = getMappingByNxMappingId( mapping.getNxMappingId() );
+            if ( oldMapping != null ) {
+                getMappings( null ).remove( oldMapping );
+            }
+            applyConfiguration();
+        } catch ( NexusException e ) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Applies the current configuration and updates the engine.
      * @throws NexusException if the configuration update failed.
      */
@@ -1417,7 +1505,9 @@ public class ConfigurationAccessService {
             if ( descriptor != null ) {
                 isUpdated = false;
                 for ( GenericParamPojo value : values ) {
-                    if ( (( value.getTag() == null && tag == null ) || ( value.getTag() != null && value.getTag().equals( tag ) )) && value.getParamName().equals( name ) ) {
+                    if ( ( ( value.getTag() == null && tag == null ) || ( value.getTag() != null && value.getTag()
+                            .equals( tag ) ) )
+                            && value.getParamName().equals( name ) ) {
                         resultMap.put( value.getParamName(), getParameterValue( descriptor, value.getValue() ) );
                         isUpdated = true;
                     }
@@ -1433,7 +1523,6 @@ public class ConfigurationAccessService {
         return resultMap;
     }
 
-    
     /**
      * @param category
      * @param tag
@@ -1444,7 +1533,7 @@ public class ConfigurationAccessService {
      * @throws NexusException Thrown on various database problems.
      */
     public void setGenericParameters( String category, String tag, Map<String, Object> values,
-            Map<String, ParameterDescriptor> descriptors, boolean persistToDB ) throws NexusException  {
+            Map<String, ParameterDescriptor> descriptors, boolean persistToDB ) throws NexusException {
 
         if ( StringUtils.isEmpty( category ) ) {
             return;
@@ -1504,8 +1593,8 @@ public class ConfigurationAccessService {
         }
 
         if ( persistToDB ) {
-                applyConfiguration();
-            
+            applyConfiguration();
+
         }
 
     }

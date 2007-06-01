@@ -477,6 +477,9 @@ public class EngineConfiguration {
             List<RolePojo> roles = configDao.getRoles( session, null );
             setRoles( roles );
 
+            List<MappingPojo> mappings = configDao.getMappings( session, null );
+            setMappings( mappings );
+
             setGenericParameters( new HashMap<String, List<GenericParamPojo>>() );
             List<GenericParamPojo> tempParams = configDao.getGenericParameters( session, null );
             if ( tempParams != null && tempParams.size() > 0 ) {
@@ -881,6 +884,34 @@ public class EngineConfiguration {
                 }
             }
         }
+        
+        
+        
+        List<MappingPojo> obsoleteMappingEntries = getObsoleteEntries( mappings, current
+                .getMappings( null ) );
+        for ( MappingPojo pojo : obsoleteMappingEntries ) {
+            configDao.deleteMapping( pojo, session, transaction );
+        }
+        obsoleteMappingEntries.clear();
+
+        if ( mappings != null && mappings.size() > 0 ) {
+
+            for ( MappingPojo pojo : mappings ) {
+                LOG.debug( "Mapping: " + pojo.getNxMappingId() + " - " + pojo.getCategory()+" - "+pojo.getLeftValue()+" - "+pojo.getRightValue() );
+                if ( pojo.getNxMappingId() != 0 ) {
+                    pojo.setModifiedDate( new Date() );
+                    configDao.updateMapping( pojo, session, transaction );
+                } else {
+                    pojo.setCreatedDate( new Date() );
+                    pojo.setModifiedDate( new Date() );
+                    configDao.saveMapping( pojo, session, transaction );
+                }
+            }
+        }
+        
+        
+        
+        
 
         transaction.commit();
         configDao.releaseDBSession( session );

@@ -91,11 +91,11 @@ public class CACertFinishExportAction extends NexusE2EAction {
                 fos.close();
             } catch ( Exception e ) {
                 
-                ActionMessage errorMessage = new ActionMessage( "generic.error", e.getMessage() );
+                ActionMessage errorMessage = new ActionMessage( "generic.error", e );
                 errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
             }catch ( Error e ) {
                 
-                ActionMessage errorMessage = new ActionMessage( "generic.error", e.getMessage() );
+                ActionMessage errorMessage = new ActionMessage( "generic.error", e );
                 errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
             }
         }
