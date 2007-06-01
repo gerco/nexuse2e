@@ -24,6 +24,19 @@
       <rtexprvalue>true</rtexprvalue>
     </attribute>
   </tag>
+  
+  <tag>
+    <name>errors</name>
+    <tag-class>org.nexuse2e.ui.taglib.Errors</tag-class>
+    <description>creates an error output for a given ActionMessage list if available in page.</description>
+    <attribute>
+      <name>styleClass</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    
+  </tag>
+  
   <!-- to display linked pages in the correct DOJO ContentPane widget -->
   <tag>
     <name>link</name>
