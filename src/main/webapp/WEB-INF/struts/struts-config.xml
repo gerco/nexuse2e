@@ -44,6 +44,7 @@
     <form-bean name="provisioningSubmissionForm" type="org.nexuse2e.ui.form.ProvisioningSubmissionForm"/>
     
     <form-bean name="databasePurgeForm" type="org.nexuse2e.ui.form.DatabasePurgeForm"/>
+    <form-bean name="mappingMaintenanceForm" type="org.nexuse2e.ui.form.MappingMaintenanceForm"/>
     
     
     <!-- 
@@ -521,6 +522,10 @@
     
     <action path="/DatabasePurge" name="databasePurgeForm" type="org.nexuse2e.ui.action.tools.DatabasePurgeAction">
       <forward name="success" path="/WEB-INF/pages/tools/database_purge.jsp"/>
+    </action>
+    
+    <action path="/MappingMaintenance" name="mappingMaintenanceForm" type="org.nexuse2e.ui.action.tools.MappingMaintenanceAction">
+      <forward name="success" path="/WEB-INF/pages/tools/mapping_maintenance.jsp"/>
     </action>
     
     <!-- 
