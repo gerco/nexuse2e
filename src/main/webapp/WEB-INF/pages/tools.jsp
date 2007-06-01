@@ -34,6 +34,23 @@
 		<td class="NEXUSNameNoWidth"><nexus:link styleClass="NexusLink"
 			href="ProvisioningSubmission.do">Partner Provisioning</nexus:link></td>
 	</tr>
+	<tr>
+		<td class="NEXUSIcon"><nexus:link styleClass="NexusLink"
+			href="DatabasePurge.do?type=select">
+			<img border="0" src="images/delete.gif">
+		</nexus:link></td>
+		<td class="NEXUSNameNoWidth"><nexus:link styleClass="NexusLink"
+			href="DatabasePurge.do?type=select">Database Purge</nexus:link></td>
+	</tr>
+	<tr>
+		<td class="NEXUSIcon"><nexus:link styleClass="NexusLink"
+			href="MappingMaintenance.do">
+			<img border="0" src="images/tree/collaborativepartners.gif">
+		</nexus:link></td>
+		<td class="NEXUSNameNoWidth"><nexus:link styleClass="NexusLink"
+			href="MappingMaintenance.do">Mapping Maintenance</nexus:link></td>
+	</tr>
+
 
 
 </table>

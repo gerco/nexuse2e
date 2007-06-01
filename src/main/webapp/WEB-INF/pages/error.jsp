@@ -3,6 +3,7 @@
 <%@ taglib uri="/tags/struts-nested" prefix="nested" %>
 <%@ taglib uri="/tags/struts-tiles" prefix="tiles" %>
 <%@ taglib uri="/tags/struts-logic" prefix="logic" %>
+<%@ taglib uri="/tags/nexus" prefix="nexus"%>
 
 <logic:notEmpty name="redirectUrl">
     <logic:notEmpty name="redirectTimeout">    
@@ -19,5 +20,5 @@
 		</table>  
 
 <logic:messagesPresent> 
-<div class="NexusError"><html:errors/></div>
+<div class="NexusError"><nexus:errors/></div>
 </logic:messagesPresent>
