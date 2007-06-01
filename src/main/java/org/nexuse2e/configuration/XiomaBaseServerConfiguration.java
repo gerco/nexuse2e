@@ -94,6 +94,15 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             ComponentPojo outboundComponentPojo = new ComponentPojo( new Date(), new Date(), 1, ComponentType.PIPELET
                     .getValue(), "FileSystemLoadPipelet", "org.nexuse2e.backend.pipelets.FileSystemLoadPipelet",
                     "FileSystemLoadPipelet" );
+            ComponentPojo xmlDataMappingPipeletComponentPojo = new ComponentPojo( new Date(), new Date(), 1,
+                    ComponentType.PIPELET.getValue(), "XMLDataMappingPipelet",
+                    "org.nexuse2e.backend.pipelets.XMLDataMappingPipelet", "XML Data Mapping Pipelet" );
+            ComponentPojo xsltPipeletComponentPojo = new ComponentPojo( new Date(), new Date(), 1,
+                    ComponentType.PIPELET.getValue(), "XSLTPipelet", "org.nexuse2e.backend.pipelets.XSLTPipelet",
+                    "XSLT Transformation Pipelet" );
+            ComponentPojo directoryScannerServiceComponentPojo = new ComponentPojo( new Date(), new Date(), 1,
+                    ComponentType.SERVICE.getValue(), "DirectoryScannerService",
+                    "org.nexuse2e.service.DirectoryScannerService", "Directory Scanner Service" );
 
             ComponentPojo dbLoggerComponentPojo = new ComponentPojo( new Date(), new Date(), 1, ComponentType.LOGGER
                     .getValue(), "DBLogger", "org.nexuse2e.logging.DatabaseLogger", "Database Root Logger" );
@@ -105,7 +114,6 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
 
             ComponentPojo emailLoggerComponentPojo = new ComponentPojo( new Date(), new Date(), 1, ComponentType.LOGGER
                     .getValue(), "EmailLogger", "org.nexuse2e.logging.EmailLogger", "Email Logger" );
-
 
             PipelinePojo fileSaveInboundPipelinePojo = new PipelinePojo();
             PipelinePojo fileLoadOutboundPipelinePojo = new PipelinePojo();
@@ -223,12 +231,12 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
 
             List<PipeletParamPojo> params = null;
             PipeletParamPojo param = null;
-            
+
             /* --------------------------------------------------------------
              * ebXML 1.0
              * --------------------------------------------------------------
              */
-            
+
             // HTTP
             PipelinePojo ebXML10InboundPipelinePojo = new PipelinePojo();
             PipelinePojo ebXML10OutboundPipelinePojo = new PipelinePojo();
@@ -239,12 +247,12 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             ebxml10HTTPTransportReceiverPipeletPojo.setFrontend( true );
             ebxml10HTTPTransportReceiverPipeletPojo.setPosition( 0 );
             params = new ArrayList<PipeletParamPojo>();
-            param = new PipeletParamPojo( ebxml10HTTPTransportReceiverPipeletPojo, new Date(),
-                    new Date(), 1, "service", "HttpReceiverService_ebXML_1.0" );
+            param = new PipeletParamPojo( ebxml10HTTPTransportReceiverPipeletPojo, new Date(), new Date(), 1,
+                    "service", "HttpReceiverService_ebXML_1.0" );
             params.add( param );
             ebxml10HTTPTransportReceiverPipeletPojo.setPipeletParams( params );
-            PipeletPojo ebxml10HttpUnpackerPipeletPojo = new PipeletPojo( ebXML10InboundPipelinePojo, ebxmlHttpUnpacker,
-                    new Date(), new Date(), 1, 0, "ebxmlHttpUnpacker", "ebxmlHttpUnpacker", null );
+            PipeletPojo ebxml10HttpUnpackerPipeletPojo = new PipeletPojo( ebXML10InboundPipelinePojo,
+                    ebxmlHttpUnpacker, new Date(), new Date(), 1, 0, "ebxmlHttpUnpacker", "ebxmlHttpUnpacker", null );
             ebxml10HttpUnpackerPipeletPojo.setFrontend( true );
             ebxml10HttpUnpackerPipeletPojo.setPosition( 1 );
             PipeletPojo ebxml10DeserializerPipeletPojo = new PipeletPojo( ebXML10InboundPipelinePojo,
@@ -314,7 +322,7 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
              * ebXML 2.0
              * --------------------------------------------------------------
              */
-            
+
             // HTTP
             PipelinePojo ebXML20InboundPipelinePojo = new PipelinePojo();
             PipelinePojo ebXML20OutboundPipelinePojo = new PipelinePojo();
@@ -325,8 +333,8 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             ebxmlHTTPTransportReceiverPipeletPojo.setFrontend( true );
             ebxmlHTTPTransportReceiverPipeletPojo.setPosition( 0 );
             params = new ArrayList<PipeletParamPojo>();
-            param = new PipeletParamPojo( ebxmlHTTPTransportReceiverPipeletPojo, new Date(),
-                    new Date(), 1, "service", "HttpReceiverService" );
+            param = new PipeletParamPojo( ebxmlHTTPTransportReceiverPipeletPojo, new Date(), new Date(), 1, "service",
+                    "HttpReceiverService" );
             params.add( param );
             ebxmlHTTPTransportReceiverPipeletPojo.setPipeletParams( params );
             PipeletPojo ebxmlHttpUnpackerPipeletPojo = new PipeletPojo( ebXML20InboundPipelinePojo, ebxmlHttpUnpacker,
@@ -485,17 +493,16 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             partnerPojo.getConnections().add( httpConnectionPojo );
 
             /*
-            ConnectionPojo mailConnectionPojo = new ConnectionPojo( ebXML2MailTRPPojo, partnerPojo, 30000, 3000, true,
-                    true, false, 0, 3, new Date(), new Date(), 1, "test@dummy", "Xioma Mail" );
-                    */
+             ConnectionPojo mailConnectionPojo = new ConnectionPojo( ebXML2MailTRPPojo, partnerPojo, 30000, 3000, true,
+             true, false, 0, 3, new Date(), new Date(), 1, "test@dummy", "Xioma Mail" );
+             */
             // partnerPojo.getConnections().add( mailConnectionPojo );
-
             ParticipantPojo httpParticipantPojo = new ParticipantPojo( partnerPojo, httpChoreographyPojo,
                     localPartnerPojo, httpConnectionPojo, new Date(), new Date(), 1, "XiomaHttp" );
             /*
-            ParticipantPojo mailParticipantPojo = new ParticipantPojo( partnerPojo, httpChoreographyPojo,
-                    localPartnerPojo, mailConnectionPojo, new Date(), new Date(), 1, "XiomaMail" );
-                    */
+             ParticipantPojo mailParticipantPojo = new ParticipantPojo( partnerPojo, httpChoreographyPojo,
+             localPartnerPojo, mailConnectionPojo, new Date(), new Date(), 1, "XiomaMail" );
+             */
 
             ActionPojo sendFileActionPojo = new ActionPojo( httpChoreographyPojo, new Date(), new Date(), 1, true,
                     true, fileSaveInboundPipelinePojo, fileLoadOutboundPipelinePojo, "SendFile" );
@@ -512,7 +519,7 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
 
             List<ServiceParamPojo> serviceParams = null;
             ServiceParamPojo serviceParam = null;
-            
+
             ServicePojo httpSenderService10 = new ServicePojo( httpSenderComponent, new Date(), new Date(), 1, 0,
                     "HttpSenderService_ebXML_1.0", "A sender service for HTTP", new ArrayList<ServiceParamPojo>() );
             httpSenderService10.setAutostart( true );
@@ -524,7 +531,7 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
                     "ebxml10" );
             serviceParams.add( serviceParam );
             httpReceiverService10.setServiceParams( serviceParams );
-            
+
             ServicePojo httpSenderService20 = new ServicePojo( httpSenderComponent, new Date(), new Date(), 1, 0,
                     "HttpSenderService", "The default sender service for HTTP", new ArrayList<ServiceParamPojo>() );
             httpSenderService20.setAutostart( true );
@@ -544,7 +551,7 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
                     "ebxml20" );
             serviceParams.add( serviceParam );
             httpReceiverService20.setServiceParams( serviceParams );
-            
+
             ServicePojo httpPlainReceiverService = new ServicePojo( httpReceiverComponent, new Date(), new Date(), 1,
                     0, "HttpPlainReceiverService", "The default receiver service for HTTPPlain",
                     new ArrayList<ServiceParamPojo>() );
@@ -559,8 +566,9 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
                     "Pop3ReceiverService", "The default receiver service for POP3", new ArrayList<ServiceParamPojo>() );
             pop3ReceiverService.setAutostart( true );
 
-            ComponentPojo schedulingServiceComponent = new ComponentPojo( new Date(), new Date(), 1, ComponentType.SERVICE
-                    .getValue(), "SchedulingService", SchedulingServiceImpl.class.getName(), "The scheduling service" );
+            ComponentPojo schedulingServiceComponent = new ComponentPojo( new Date(), new Date(), 1,
+                    ComponentType.SERVICE.getValue(), "SchedulingService", SchedulingServiceImpl.class.getName(),
+                    "The scheduling service" );
             ServicePojo schedulingService = new ServicePojo( schedulingServiceComponent, new Date(), new Date(), 1, 0,
                     "SchedulingService", "A service for schduling tasks", new ArrayList<ServiceParamPojo>() );
             schedulingService.setAutostart( true );
@@ -594,6 +602,9 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             components.add( dbLoggerComponentPojo );
             components.add( emailLoggerComponentPojo );
             components.add( schedulingServiceComponent );
+            components.add( xmlDataMappingPipeletComponentPojo );
+            components.add( xsltPipeletComponentPojo );
+            components.add( directoryScannerServiceComponentPojo );
 
             backendPipelineTemplates.add( fileSaveInboundPipelinePojo );
             backendPipelineTemplates.add( fileLoadOutboundPipelinePojo );
@@ -613,11 +624,10 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
 
             // create invisible system user
             Date now = new Date();
-            UserPojo systemUser = new UserPojo( "system", "System", "User", "system", now, now, 1, true,
-                    false );
+            UserPojo systemUser = new UserPojo( "system", "System", "User", "system", now, now, 1, true, false );
             // create visible admin user
-            UserPojo adminUser = new UserPojo( "admin", "Administrator", "User", "0DPiKuNIrrVmD8IUCuw1hQxNqZc=", now, now, 1,
-                    true, true );
+            UserPojo adminUser = new UserPojo( "admin", "Administrator", "User", "0DPiKuNIrrVmD8IUCuw1hQxNqZc=", now,
+                    now, 1, true, true );
 
             // create administrator role with wildcard access
             RolePojo adminRole = new RolePojo( "Admin", now, now, 1 );

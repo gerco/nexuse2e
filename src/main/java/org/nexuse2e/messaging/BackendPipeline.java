@@ -32,13 +32,12 @@ import org.nexuse2e.NexusException;
  */
 public class BackendPipeline extends AbstractPipeline implements ActionSpecific {
 
-    private static Logger     LOG              = Logger.getLogger( BackendPipeline.class );
+    private static Logger     LOG = Logger.getLogger( BackendPipeline.class );
 
-    
     /**
      * The key identifying this pipeline
      */
-    private ActionSpecificKey key              = null;
+    private ActionSpecificKey key = null;
 
     // private int               nxPipelineId     = 0;
     // private String            name             = null;
@@ -46,8 +45,8 @@ public class BackendPipeline extends AbstractPipeline implements ActionSpecific 
     /* (non-Javadoc)
      * @see org.nexuse2e.messaging.Pipeline#processMessage(org.nexuse2e.messaging.MessageContext)
      */
-    public MessageContext processMessage( MessageContext messageContext )
-            throws IllegalArgumentException, IllegalStateException, NexusException {
+    public MessageContext processMessage( MessageContext messageContext ) throws IllegalArgumentException,
+            IllegalStateException, NexusException {
 
         LOG.debug( "BackendPipeline.processMessage..." );
 
@@ -72,6 +71,11 @@ public class BackendPipeline extends AbstractPipeline implements ActionSpecific 
                     MessageProcessor backendPipelet = forwardPipelets[i];
 
                     messageContext = backendPipelet.processMessage( messageContext );
+                    if ( messageContext == null ) {
+                        LOG
+                                .warn( "Pipelet " + backendPipelet.getClass()
+                                        + " did not return a MessageContext instance!" );
+                    }
                 }
             } else {
                 LOG.error( "No pipelets found." );
@@ -79,6 +83,9 @@ public class BackendPipeline extends AbstractPipeline implements ActionSpecific 
             pipelineEndpoint.processMessage( messageContext );
 
         } catch ( Exception e ) {
+            if ( LOG.isTraceEnabled() ) {
+                e.printStackTrace();
+            }
             LOG.error( "Error processing backend pipeline: " + e );
             throw new NexusException( "Error processing backend pipeline: " + e );
         }

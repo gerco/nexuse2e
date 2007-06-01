@@ -20,35 +20,22 @@
 
 package org.nexuse2e.tools.mapping.xmldata;
 
-
 /**
  * @author mbreilmann
  *
  */
 public class MappingDefinition {
+
     String  xpath        = null;
-    String  staticValue  = null;
-    boolean useLeftValue = false;
-
-    public String getStaticValue() {
-
-        return staticValue;
-    }
-
-    public void setStaticValue( String staticValue ) {
-
-        this.staticValue = staticValue;
-    }
-
-    public boolean isUseLeftValue() {
-
-        return useLeftValue;
-    }
-
-    public void setUseLeftValue( boolean useLeftValue ) {
-
-        this.useLeftValue = useLeftValue;
-    }
+    String  value        = null;
+    String  fillerSource = null;
+    boolean alignSource  = false;
+    boolean trimSource   = false;
+    int     lengthSource = 0;
+    String  fillerTarget = null;
+    boolean alignTarget  = false;
+    boolean trimTarget   = false;
+    int     lengthTarget = 0;
 
     public String getXpath() {
 
@@ -58,6 +45,114 @@ public class MappingDefinition {
     public void setXpath( String xpathValue ) {
 
         this.xpath = xpathValue;
+    }
+
+    
+    public boolean isAlignSource() {
+    
+        return alignSource;
+    }
+
+    
+    public void setAlignSource( boolean alignSource ) {
+    
+        this.alignSource = alignSource;
+    }
+
+    
+    public boolean isAlignTarget() {
+    
+        return alignTarget;
+    }
+
+    
+    public void setAlignTarget( boolean alignTarget ) {
+    
+        this.alignTarget = alignTarget;
+    }
+
+    
+    public String getFillerSource() {
+    
+        return fillerSource;
+    }
+
+    
+    public void setFillerSource( String fillerSource ) {
+    
+        this.fillerSource = fillerSource;
+    }
+
+    
+    public String getFillerTarget() {
+    
+        return fillerTarget;
+    }
+
+    
+    public void setFillerTarget( String fillerTarget ) {
+    
+        this.fillerTarget = fillerTarget;
+    }
+
+    
+    public int getLengthSource() {
+    
+        return lengthSource;
+    }
+
+    
+    public void setLengthSource( int lengthSource ) {
+    
+        this.lengthSource = lengthSource;
+    }
+
+    
+    public int getLengthTarget() {
+    
+        return lengthTarget;
+    }
+
+    
+    public void setLengthTarget( int lengthTarget ) {
+    
+        this.lengthTarget = lengthTarget;
+    }
+
+    
+    public boolean isTrimSource() {
+    
+        return trimSource;
+    }
+
+    
+    public void setTrimSource( boolean trimSource ) {
+    
+        this.trimSource = trimSource;
+    }
+
+    
+    public boolean isTrimTarget() {
+    
+        return trimTarget;
+    }
+
+    
+    public void setTrimTarget( boolean trimTarget ) {
+    
+        this.trimTarget = trimTarget;
+    }
+
+    
+    public String getValue() {
+    
+        return value;
+    }
+
+    
+    public void setValue( String value ) {
+    
+        this.value = value;
     }
 
 }

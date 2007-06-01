@@ -66,6 +66,9 @@ public class XMLDataMappingPipelet extends AbstractPipelet {
 
     public static final String CONFIG_FILE        = "config_file";
 
+    public static final String COMMAND_MAP_LEFT   = "$map_left";
+    public static final String COMMAND_MAP_RIGHT  = "$map_right";
+
     private String             configFileName     = null;
     private MappingDefinitions mappingDefinitions = null;
 
@@ -153,9 +156,13 @@ public class XMLDataMappingPipelet extends AbstractPipelet {
             throw new NexusException( "No configuration file specified - no mapping possible." );
         }// if
 
-        return null;
+        return messageContext;
     }
 
+    /**
+     * @param document
+     * @return
+     */
     private Document processMappings( Document document ) {
 
         Document result = null;
@@ -169,9 +176,10 @@ public class XMLDataMappingPipelet extends AbstractPipelet {
                 Node node = (Node) xPath.evaluate( mappingDefinition.getXpath(), document, XPathConstants.NODE );
                 if ( node != null ) {
                     if ( node instanceof Element ) {
-                        ( (Element) node ).setTextContent( mappingDefinition.getStaticValue() );
+                        ( (Element) node ).setTextContent( mapData( ( (Element) node ).getTextContent(),
+                                mappingDefinition ) );
                     } else if ( node instanceof Attr ) {
-                        ( (Attr) node ).setNodeValue( mappingDefinition.getStaticValue() );
+                        ( (Attr) node ).setNodeValue( mapData( ( (Attr) node ).getNodeValue(), mappingDefinition ) );
                     } else {
                         LOG.error( "Node type not recognized: " + node.getClass() );
                     }
@@ -188,6 +196,32 @@ public class XMLDataMappingPipelet extends AbstractPipelet {
         return result;
     }
 
+    /**
+     * @param sourceValue
+     * @param mappingDefinition
+     * @return
+     */
+    private String mapData( String sourceValue, MappingDefinition mappingDefinition ) {
+        String result = null;
+        
+        String newValue = mappingDefinition.getValue();
+        
+        if (newValue.startsWith( COMMAND_MAP_LEFT ) ) {
+            LOG.trace( "Using mapping table left value..." );
+        } else if (newValue.startsWith( COMMAND_MAP_RIGHT )) {
+            LOG.trace( "Using mapping table right value..." );
+        } else {
+            LOG.trace( "Using static value..." );
+            result = mappingDefinition.getValue();
+        }
+
+        return result;
+    }
+
+    /**
+     * @param configFileName
+     * @return
+     */
     private MappingDefinitions readConfiguration( String configFileName ) {
 
         MappingDefinitions mappingDefinitions = null;
@@ -213,6 +247,9 @@ public class XMLDataMappingPipelet extends AbstractPipelet {
         return mappingDefinitions;
     }
 
+    /**
+     * @param args
+     */
     public static void main( String args[] ) {
 
         if ( args.length != 2 ) {
@@ -231,7 +268,7 @@ public class XMLDataMappingPipelet extends AbstractPipelet {
             Document document = builder.parse( args[0] );
 
             document = xmlDataMappingPipelet.processMappings( document );
-            
+
             // Serialize result
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             TransformerFactory transformerFactory = TransformerFactory.newInstance();

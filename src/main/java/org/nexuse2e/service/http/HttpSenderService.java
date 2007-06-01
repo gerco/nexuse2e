@@ -111,14 +111,14 @@ public class HttpSenderService extends AbstractService implements SenderAware {
                         LOG.trace( "localcert.name: " + participant.getLocalCertificate().getName() );
                     }
                 }
-                
+
                 if ( participant.getLocalCertificate() == null ) {
                     LOG.error( "No local certificate selected for using SSL with partner "
                             + participant.getPartner().getName() );
                     throw new NexusException( "No local certificate selected for using SSL with partner "
                             + participant.getPartner().getName() );
                 }
-                
+
                 CertificatePojo localCert = Engine.getInstance().getActiveConfigurationAccessService()
                         .getCertificateByNxCertificateId( Constants.CERTIFICATE_TYPE_LOCAL,
                                 participant.getLocalCertificate().getNxCertificateId() );
@@ -151,7 +151,7 @@ public class HttpSenderService extends AbstractService implements SenderAware {
             method = new PostMethod( receiverURL.getPath() );
             method.setFollowRedirects( false );
             method.getParams().setSoTimeout( timeout );
-            LOG.debug( "Created new NexusHttpConnection with timeout: " + timeout + ", SSL: "
+            LOG.trace( "Created new NexusHttpConnection with timeout: " + timeout + ", SSL: "
                     + participant.getConnection().isSecure() );
         } catch ( Exception e ) {
             e.printStackTrace();
@@ -161,7 +161,9 @@ public class HttpSenderService extends AbstractService implements SenderAware {
         try {
             String httpReply = null;
 
-            LOG.debug( "HTTP Message Data:\n" + new String( (byte[]) messageContext.getData() ) );
+            if ( LOG.isTraceEnabled() ) {
+                LOG.trace( "HTTP Message Data:\n" + new String( (byte[]) messageContext.getData() ) );
+            }
 
             // Support for HTTP plain
             TRPPojo trpPojo = messageContext.getMessagePojo().getTRP();

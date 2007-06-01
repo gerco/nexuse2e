@@ -29,6 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
@@ -38,14 +39,15 @@ import org.nexuse2e.pojo.MessagePayloadPojo;
 
 public class FileSystemSavePipelet extends AbstractPipelet {
 
-    public static final String               DIRECTORY_PARAM_NAME = "directory";
+    private static Logger      LOG                  = Logger.getLogger( FileSystemSavePipelet.class );
 
-    
+    public static final String DIRECTORY_PARAM_NAME = "directory";
+
     /**
      * Default constructor.
      */
     public FileSystemSavePipelet() {
-    
+
         parameterMap.put( DIRECTORY_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "Save directory",
                 "Path to directory where to store files", "" ) );
     }
@@ -55,9 +57,14 @@ public class FileSystemSavePipelet extends AbstractPipelet {
      */
     public MessageContext processMessage( MessageContext messageContext )
             throws NexusException {
+        String targetDirectory = (String) getParameter( DIRECTORY_PARAM_NAME );
+        if ( (targetDirectory == null) || (targetDirectory.length() == 0) ) {
+            LOG.error( "Output directory not defined, can not store inbound message!" );
+            throw new NexusException( "Output directory not defined, can not store inbound message!" );
+        }
 
         try {
-            writePayloadToUniqueFile( (String) getParameter( DIRECTORY_PARAM_NAME ), messageContext );
+            writePayloadToUniqueFile( targetDirectory, messageContext );
         } catch ( FileNotFoundException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -95,9 +102,8 @@ public class FileSystemSavePipelet extends AbstractPipelet {
      * @param payload the contents of the message
      * returns the full name of the file written.
      */
-    public String writePayloadToUniqueFile( String destinationDirectory,
-            MessageContext messageContext, boolean includeSender ) throws FileNotFoundException,
-            IOException {
+    public String writePayloadToUniqueFile( String destinationDirectory, MessageContext messageContext,
+            boolean includeSender ) throws FileNotFoundException, IOException {
 
         String retVal = null;
         boolean success = false;
@@ -129,8 +135,8 @@ public class FileSystemSavePipelet extends AbstractPipelet {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    private String writePayload( String destinationDirectory, MessageContext messageContext,
-            boolean includeSender ) throws FileNotFoundException, IOException {
+    private String writePayload( String destinationDirectory, MessageContext messageContext, boolean includeSender )
+            throws FileNotFoundException, IOException {
 
         File destDirFile = new File( destinationDirectory );
         StringBuffer fileName = new StringBuffer();
@@ -162,9 +168,11 @@ public class FileSystemSavePipelet extends AbstractPipelet {
             fileOutputStream.write( payload.getPayloadData() );
             fileOutputStream.flush();
             fileOutputStream.close();
+            
+            LOG.trace( "Wrote output file: " + fileName.toString() );
         }
 
         return fileName.toString();
     }
-    
+
 } // FileSystemSavePipelet

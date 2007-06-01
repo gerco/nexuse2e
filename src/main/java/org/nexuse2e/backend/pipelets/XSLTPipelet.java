@@ -117,7 +117,7 @@ public class XSLTPipelet extends AbstractPipelet {
             throw new NexusException( "No XSLT stylesheet configured - no transformation possible." );
         }// if
 
-        return null;
+        return messageContext;
     }
 
     private byte[] transformXML( StreamSource xmlSource, StreamSource xsltSource ) throws NexusException {
