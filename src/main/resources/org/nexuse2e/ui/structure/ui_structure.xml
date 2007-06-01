@@ -167,6 +167,9 @@
         <nxs:page target="DatabasePurge.do?type=select" label="Database Purge" icon="images/delete.gif">
           <nxs:command target="DatabasePurge.do?type=select" label="Execute" icon="images/tree/TreeDot.gif"/>
         </nxs:page>
+        <nxs:page target="MappingMaintenance.do" label="Mapping Maintenance" icon="images/tree/collaborativepartners.gif">
+          <nxs:command target="DatabasePurge.do" label="Execute" icon="images/tree/TreeDot.gif"/>
+        </nxs:page>
       </nxs:page>
       <nxs:page target="CollaborationPartners.do?type=2" label="Collaboration Partners" icon="images/tree/collaborativepartners.gif">
         <nxs:command target="CollaborationPartnerAdd.do?type=2" label="Add Collaboration Partner" icon="images/tree/TreeDot.gif"/>
