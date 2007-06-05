@@ -461,7 +461,7 @@ public class ConfigurationAccessService {
                 Object tempObject = Class.forName( componentPojo.getClassName() ).newInstance();
                 if ( tempObject instanceof Pipelet ) {
                     pipelet = (Pipelet) tempObject;
-                    LOG.debug( "Pipelet " + componentPojo.getClassName() + " - is frontend: "
+                    LOG.trace( "Pipelet " + componentPojo.getClassName() + " - is frontend: "
                             + pipelet.isFrontendPipelet() );
                     if ( pipelet.isFrontendPipelet() == frontend ) {
                         filteredList.add( componentPojo );

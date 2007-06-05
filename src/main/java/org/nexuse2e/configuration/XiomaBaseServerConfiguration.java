@@ -100,6 +100,9 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             ComponentPojo xsltPipeletComponentPojo = new ComponentPojo( new Date(), new Date(), 1,
                     ComponentType.PIPELET.getValue(), "XSLTPipelet", "org.nexuse2e.backend.pipelets.XSLTPipelet",
                     "XSLT Transformation Pipelet" );
+            ComponentPojo httpIntegrationPipeletComponentPojo = new ComponentPojo( new Date(), new Date(), 1,
+                    ComponentType.PIPELET.getValue(), "HTTPIntegrationPipelet",
+                    "org.nexuse2e.backend.pipelets.HTTPIntegrationPipelet", "HTTP Integration Pipelet" );
             ComponentPojo directoryScannerServiceComponentPojo = new ComponentPojo( new Date(), new Date(), 1,
                     ComponentType.SERVICE.getValue(), "DirectoryScannerService",
                     "org.nexuse2e.service.DirectoryScannerService", "Directory Scanner Service" );
@@ -604,6 +607,7 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             components.add( schedulingServiceComponent );
             components.add( xmlDataMappingPipeletComponentPojo );
             components.add( xsltPipeletComponentPojo );
+            components.add( httpIntegrationPipeletComponentPojo );
             components.add( directoryScannerServiceComponentPojo );
 
             backendPipelineTemplates.add( fileSaveInboundPipelinePojo );
