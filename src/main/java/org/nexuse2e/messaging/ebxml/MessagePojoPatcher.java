@@ -35,7 +35,7 @@ public class MessagePojoPatcher extends AbstractPipelet {
      * Default constructor.
      */
     public MessagePojoPatcher() {
-
+        frontendPipelet = true;
     }
 
     public MessageContext processMessage( MessageContext messageContext )

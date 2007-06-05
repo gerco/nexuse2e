@@ -19,6 +19,7 @@
  */
 package org.nexuse2e.ui.action.serverconfig;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -59,9 +60,11 @@ public class NotifierAddAction extends NexusE2EAction {
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
         ActionForward error = actionMapping.findForward( ACTION_FORWARD_FAILURE );
 
+        List<LoggerPojo> loggers = null;
         LoggerForm loggerForm = (LoggerForm) actionForm;
         if ( loggerForm.getName() != null && loggerForm.getName().trim().length() > 0 ) {
-            LogAppender logger = Engine.getInstance().getActiveConfigurationAccessService().getLogger( loggerForm.getName() );
+            LogAppender logger = Engine.getInstance().getActiveConfigurationAccessService().getLogger(
+                    loggerForm.getName() );
             if ( logger != null ) {
                 loggerForm.setName( "" );
             }
@@ -100,8 +103,7 @@ public class NotifierAddAction extends NexusE2EAction {
             }
         }
 
-        // request.setAttribute( ATTRIBUTE_COLLECTION, components );
-        request.setAttribute( ATTRIBUTE_COLLECTION, Engine.getInstance().getActiveConfigurationAccessService().getServices() );
+        request.setAttribute( ATTRIBUTE_COLLECTION, components );;
 
         return success;
     } // executeNexusE2EAction

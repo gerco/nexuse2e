@@ -77,7 +77,7 @@ public class MimeMessageUnpackager extends AbstractPipelet {
      * Default constructor.
      */
     public MimeMessageUnpackager() {
-
+        frontendPipelet = true;
     }
 
     public MessageContext processMessage( MessageContext messageContext )

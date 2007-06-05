@@ -56,6 +56,7 @@ public class TransportSender extends AbstractPipelet {
         
         parameterMap.put( SERVICE_PARAM_NAME, new ParameterDescriptor( ParameterType.SERVICE, "Service",
                 "The name of the service that shall be used by the sender", "" ) );
+        frontendPipelet = true;
         status = BeanStatus.INSTANTIATED;
     }
 

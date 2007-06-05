@@ -40,6 +40,7 @@ import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.backend.BackendPipelineDispatcher;
 import org.nexuse2e.configuration.Constants.ComponentType;
 import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.messaging.Pipelet;
 import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
@@ -445,6 +446,36 @@ public class ConfigurationAccessService {
         if ( comparator != null ) {
             Collections.sort( filteredList, comparator );
         }
+        return filteredList;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<ComponentPojo> getPipelets( boolean frontend ) throws NexusException {
+
+        Pipelet pipelet = null;
+        List<ComponentPojo> components = getComponents( ComponentType.PIPELET, Constants.COMPONENTCOMPARATOR );
+        List<ComponentPojo> filteredList = new ArrayList<ComponentPojo>();
+        for ( Iterator iter = components.iterator(); iter.hasNext(); ) {
+            ComponentPojo componentPojo = (ComponentPojo) iter.next();
+            try {
+                Object tempObject = Class.forName( componentPojo.getClassName() ).newInstance();
+                if ( tempObject instanceof Pipelet ) {
+                    pipelet = (Pipelet) tempObject;
+                    LOG.debug( "Pipelet " + componentPojo.getClassName() + " - is frontend: "
+                            + pipelet.isFrontendPipelet() );
+                    if ( pipelet.isFrontendPipelet() == frontend ) {
+                        filteredList.add( componentPojo );
+                    }
+                }
+            } catch ( InstantiationException e ) {
+                LOG.error( "Problem instantiating class: " + componentPojo.getClassName() );
+            } catch ( IllegalAccessException e ) {
+                LOG.error( "Problem instantiating/accessing class: " + componentPojo.getClassName() );
+            } catch ( ClassNotFoundException e ) {
+                LOG.error( "Could not find class: " + componentPojo.getClassName() );
+            }
+        }
+
         return filteredList;
     }
 
@@ -1392,7 +1423,7 @@ public class ConfigurationAccessService {
         }
         return mappings;
     }
-    
+
     /**
      * @param nxMappingId
      * @return
@@ -1419,7 +1450,7 @@ public class ConfigurationAccessService {
             for ( MappingPojo mapping : engineConfig.getMappings() ) {
                 if ( category.equals( mapping.getCategory() ) ) {
                     String tempKey = left ? mapping.getLeftValue() : mapping.getRightValue();
-                    if(tempKey.equals( key )) {
+                    if ( tempKey.equals( key ) ) {
                         return mapping;
                     }
                 }
@@ -1428,7 +1459,6 @@ public class ConfigurationAccessService {
         return null;
     }
 
-    
     /**
      * @param mapping
      */
@@ -1447,7 +1477,6 @@ public class ConfigurationAccessService {
         }
     }
 
-    
     /**
      * @param mapping
      */

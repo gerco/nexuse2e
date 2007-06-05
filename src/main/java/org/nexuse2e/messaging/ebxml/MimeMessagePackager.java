@@ -46,6 +46,7 @@ public class MimeMessagePackager extends AbstractPipelet {
     public MimeMessagePackager() {
 
         parameters = new HashMap<String, Object>();
+        frontendPipelet = true;
     }
 
     public MessageContext processMessage( MessageContext messageContext )

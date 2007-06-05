@@ -39,7 +39,7 @@ public class HTTPPlainMessagePacker extends AbstractPipelet {
      * Default constructor.
      */
     public HTTPPlainMessagePacker() {
-
+        frontendPipelet = true;
     }
 
     /* (non-Javadoc)

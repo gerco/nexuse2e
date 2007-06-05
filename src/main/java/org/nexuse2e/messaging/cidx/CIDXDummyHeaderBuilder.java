@@ -47,7 +47,7 @@ public class CIDXDummyHeaderBuilder extends AbstractPipelet {
      * Default constructor.
      */
     public CIDXDummyHeaderBuilder() {
-
+        frontendPipelet = true;
     }
 
     public MessageContext processMessage( MessageContext messageContext )

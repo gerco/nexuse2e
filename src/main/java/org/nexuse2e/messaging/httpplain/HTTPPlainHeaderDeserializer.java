@@ -40,7 +40,7 @@ public class HTTPPlainHeaderDeserializer extends AbstractPipelet {
      * Default constructor.
      */
     public HTTPPlainHeaderDeserializer() {
-
+        frontendPipelet = true;
     }
 
     /* (non-Javadoc)

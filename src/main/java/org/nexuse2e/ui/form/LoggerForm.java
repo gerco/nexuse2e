@@ -19,6 +19,7 @@
  */
 package org.nexuse2e.ui.form;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
@@ -30,6 +31,7 @@ import org.apache.struts.action.ActionMapping;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.logging.LogAppender;
+import org.nexuse2e.pojo.ComponentPojo;
 import org.nexuse2e.pojo.LoggerParamPojo;
 import org.nexuse2e.pojo.LoggerPojo;
 
@@ -61,13 +63,14 @@ public class LoggerForm extends ActionForm {
     private HashMap<String, String>        pipeletParamValues       = new HashMap<String, String>();
     private List<LoggerParamPojo>          parameters               = new Vector<LoggerParamPojo>();
     private List<String>                   groupNames               = new Vector<String>();
+    private List<ComponentPojo>            availableTemplates       = new ArrayList<ComponentPojo>();
 
     private String                         filterJavaPackagePattern = "";
     private String                         componentName;
 
     private LoggerPojo                     logger                   = null;
 
-    private LogAppender                         loggerInstance           = null;
+    private LogAppender                    loggerInstance           = null;
 
     /* (non-Javadoc)
      * @see org.apache.struts.action.ActionForm#reset(org.apache.struts.action.ActionMapping, javax.servlet.http.HttpServletRequest)
@@ -115,7 +118,7 @@ public class LoggerForm extends ActionForm {
     public void createParameterMapFromPojos() {
 
         pipeletParamValues = new HashMap<String, String>();
-        for (LoggerParamPojo param : getParameters()) {
+        for ( LoggerParamPojo param : getParameters() ) {
             pipeletParamValues.put( param.getParamName(), param.getValue() );
         }
 
@@ -128,14 +131,14 @@ public class LoggerForm extends ActionForm {
         }
         for ( LoggerParamPojo param : getParameters() ) {
             ParameterDescriptor pd = loggerInstance.getParameterMap().get( param.getParamName() );
-            if (pd != null) {
+            if ( pd != null ) {
                 String value = pipeletParamValues.get( param.getParamName() );
-                if (pd.getParameterType() == ParameterType.BOOLEAN) {
-                    if ("on".equalsIgnoreCase( value )) {
+                if ( pd.getParameterType() == ParameterType.BOOLEAN ) {
+                    if ( "on".equalsIgnoreCase( value ) ) {
                         value = Boolean.TRUE.toString();
                     }
                 }
-                if (value == null) {
+                if ( value == null ) {
                     value = Boolean.FALSE.toString();
                 }
                 param.setValue( value );
@@ -487,6 +490,18 @@ public class LoggerForm extends ActionForm {
     public void setLoggerInstance( LogAppender loggerInstance ) {
 
         this.loggerInstance = loggerInstance;
+    }
+
+    
+    public List<ComponentPojo> getAvailableTemplates() {
+    
+        return availableTemplates;
+    }
+
+    
+    public void setAvailableTemplates( List<ComponentPojo> availableTemplates ) {
+    
+        this.availableTemplates = availableTemplates;
     }
 
 } // NotifierForm

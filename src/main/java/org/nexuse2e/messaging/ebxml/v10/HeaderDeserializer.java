@@ -55,7 +55,7 @@ public class HeaderDeserializer extends AbstractPipelet {
      * Default constructor.
      */
     public HeaderDeserializer() {
-
+        frontendPipelet = true;
     }
 
     /* (non-Javadoc)

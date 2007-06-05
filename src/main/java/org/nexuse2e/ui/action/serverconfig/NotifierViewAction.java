@@ -32,7 +32,10 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.ConfigurationUtil;
+import org.nexuse2e.configuration.Constants;
+import org.nexuse2e.configuration.Constants.ComponentType;
 import org.nexuse2e.logging.LogAppender;
+import org.nexuse2e.pojo.ComponentPojo;
 import org.nexuse2e.pojo.LoggerParamPojo;
 import org.nexuse2e.pojo.LoggerPojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
@@ -113,7 +116,9 @@ public class NotifierViewAction extends NexusE2EAction {
             loggerForm.setFilterJavaPackagePattern( filterBuffer.toString() );
         }
 
-        request.setAttribute( ATTRIBUTE_COLLECTION, Engine.getInstance().getActiveConfigurationAccessService().getServices() );
+        List<ComponentPojo> components = Engine.getInstance().getActiveConfigurationAccessService().getComponents(
+                ComponentType.LOGGER, Constants.COMPONENTCOMPARATOR );
+        request.setAttribute( ATTRIBUTE_COLLECTION, components );;
 
         loggerForm.getLogFilterValues().clear();
         loggerForm.setLogFilterValues( tempFilterValues );

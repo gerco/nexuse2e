@@ -50,6 +50,7 @@ public class HTTPMessagePackager extends AbstractPipelet {
     public HTTPMessagePackager() {
 
         parameters = new HashMap<String, Object>();
+        frontendPipelet = true;
     }
 
     /* (non-Javadoc)

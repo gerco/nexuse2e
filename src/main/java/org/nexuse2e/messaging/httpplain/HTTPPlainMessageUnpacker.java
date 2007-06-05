@@ -41,7 +41,7 @@ public class HTTPPlainMessageUnpacker extends AbstractPipelet {
      * Default constructor.
      */
     public HTTPPlainMessageUnpacker() {
-
+        frontendPipelet = true;
     }
 
     /* (non-Javadoc)

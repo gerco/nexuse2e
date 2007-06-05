@@ -59,6 +59,7 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
     public HTTPMessageUnpackager() {
 
         parameters = new HashMap<String, Object>();
+        frontendPipelet = true;
     }
 
     /* (non-Javadoc)

@@ -19,6 +19,8 @@
  */
 package org.nexuse2e.ui.action.pipelines;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -68,14 +70,13 @@ public class PipelineViewAction extends NexusE2EAction {
         String keepData = (String) request.getAttribute( "keepData" );
         LOG.trace( "attrib: " + keepData );
 
-        PipelinePojo pipeline = Engine.getInstance().getActiveConfigurationAccessService().getPipelinePojoByNxPipelineId(
-                form.getNxPipelineId() );
+        PipelinePojo pipeline = Engine.getInstance().getActiveConfigurationAccessService()
+                .getPipelinePojoByNxPipelineId( form.getNxPipelineId() );
         if ( ( pipeline != null ) && ( keepData == null || !keepData.equals( "true" ) ) ) {
             form.setProperties( pipeline );
         }
 
-        List<ComponentPojo> components = Engine.getInstance().getActiveConfigurationAccessService().getComponents(
-                ComponentType.PIPELET, Constants.COMPONENTCOMPARATOR );
+        List<ComponentPojo> components = Engine.getInstance().getActiveConfigurationAccessService().getPipelets( pipeline.isFrontend() );
         form.setAvailableTemplates( components );
 
         //request.getSession().setAttribute( Crumbs.CURRENT_LOCATION, Crumbs.PIPELINE_VIEW + "_" + form.getNxPipelineId() );

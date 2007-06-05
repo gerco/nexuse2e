@@ -63,13 +63,13 @@ public class NotifierListAction extends NexusE2EAction {
             loggers = Engine.getInstance().getActiveConfigurationAccessService().getLoggers();
         }
 
-        List<LoggerForm> LoggerList = new ArrayList<LoggerForm>();
+        List<LoggerForm> loggerList = new ArrayList<LoggerForm>();
         for ( LoggerPojo logger : loggers ) {
             LoggerForm tempNotifierForm = new LoggerForm();
             tempNotifierForm.setProperties( logger );
-            LoggerList.add( tempNotifierForm );
+            loggerList.add( tempNotifierForm );
         }
-        request.setAttribute( ATTRIBUTE_COLLECTION, LoggerList );
+        request.setAttribute( ATTRIBUTE_COLLECTION, loggerList );
 
         if ( !errors.isEmpty() ) {
             actionForward = actionMapping.findForward( ACTION_FORWARD_FAILURE );

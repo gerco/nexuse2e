@@ -54,7 +54,7 @@ public class HeaderSerializer extends AbstractPipelet {
      * Default constructor.
      */
     public HeaderSerializer() {
-
+        frontendPipelet = true;
     }
 
     /**
