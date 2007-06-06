@@ -80,7 +80,7 @@ public class BackendPipeline extends AbstractPipeline implements ActionSpecific 
             } else {
                 LOG.error( "No pipelets found." );
             }
-            pipelineEndpoint.processMessage( messageContext );
+            messageContext = pipelineEndpoint.processMessage( messageContext );
 
         } catch ( Exception e ) {
             if ( LOG.isTraceEnabled() ) {

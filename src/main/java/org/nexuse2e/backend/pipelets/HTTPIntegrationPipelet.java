@@ -33,6 +33,7 @@ import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.log4j.Logger;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.backend.pipelets.helper.RequestResponseData;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.messaging.AbstractPipelet;
@@ -46,20 +47,20 @@ import org.nexuse2e.pojo.MessagePojo;
  */
 public class HTTPIntegrationPipelet extends AbstractPipelet {
 
-    private static Logger                    LOG           = Logger.getLogger( HTTPIntegrationPipelet.class );
+    private static Logger      LOG           = Logger.getLogger( HTTPIntegrationPipelet.class );
 
-    public static final String               URL           = "URL";
-    public static final String               SEND_AS_PARAM = "SendAsParameters";
-    public static final String               DEBUG         = "Debug";
-    public static final String               DEFAULT_URL   = "http://localhost:8080/NEXUSe2e/integration/http";
-    public static final String               USER          = "User";
-    public static final String               PASSWORD      = "Password";
-   
+    public static final String URL           = "URL";
+    public static final String SEND_AS_PARAM = "SendAsParameters";
+    public static final String DEBUG         = "Debug";
+    public static final String DEFAULT_URL   = "http://localhost:8080/NEXUSe2e/integration/http";
+    public static final String USER          = "User";
+    public static final String PASSWORD      = "Password";
+
     /**
      * Default constructor.
      */
     public HTTPIntegrationPipelet() {
-   
+
         parameterMap.put( URL, new ParameterDescriptor( ParameterType.STRING, "URL of legacy system",
                 "The URL that inbound messages are forwarded to.", DEFAULT_URL ) );
         parameterMap.put( SEND_AS_PARAM, new ParameterDescriptor( ParameterType.BOOLEAN, "Send content URL-encoded",
@@ -73,8 +74,8 @@ public class HTTPIntegrationPipelet extends AbstractPipelet {
     /* (non-Javadoc)
      * @see org.nexuse2e.messaging.Pipelet#processMessage(org.nexuse2e.messaging.MessageContext)
      */
-    public MessageContext processMessage( MessageContext messageContext )
-            throws IllegalArgumentException, IllegalStateException, NexusException {
+    public MessageContext processMessage( MessageContext messageContext ) throws IllegalArgumentException,
+            IllegalStateException, NexusException {
 
         boolean debug = false;
         String debugString = getParameter( DEBUG );
@@ -150,8 +151,20 @@ public class HTTPIntegrationPipelet extends AbstractPipelet {
 
             // Execute request
             try {
+                if ( LOG.isTraceEnabled() ) {
+                    LOG.trace( "Payload:\n--- PAYLOAD START ---\n" + documentString + "\n---  PAYLOAD END  ---" );
+                }
+
                 int result = httpclient.executeMethod( post );
-                LOG.debug( "Response status code: " + result + "(" + post.getResponseBodyAsString() + ")" );
+
+                // Store response in data field of context
+                messageContext.setData( new RequestResponseData( result, post.getResponseBodyAsString(), documentString ) );
+
+                LOG.debug( "Response status code: " + result );
+                if ( LOG.isTraceEnabled() ) {
+                    LOG.trace( "Response:\n--- RESPONSE START ---\n"
+                            + ( (RequestResponseData) messageContext.getData() ).getResponseString() + "\n---  RESPONSE END  ---" );
+                }
             } catch ( Exception ex ) {
                 LOG.error( "Error posting inbound message body to '" + getParameter( URL ) + "': " + ex );
                 ex.printStackTrace();
@@ -162,8 +175,7 @@ public class HTTPIntegrationPipelet extends AbstractPipelet {
         }
 
         LOG.debug( "Done!" );
-        // return null to indicate no reply is needed
-        return null;
+        return messageContext;
     }
-    
+
 } // HTTPIntegrationPipelet

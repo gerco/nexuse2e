@@ -23,8 +23,10 @@ package org.nexuse2e.backend.pipelets;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -34,6 +36,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.log4j.Logger;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
+import org.nexuse2e.backend.pipelets.helper.RequestResponseData;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
@@ -97,13 +100,19 @@ public class XSLTPipelet extends AbstractPipelet {
     public MessageContext processMessage( MessageContext messageContext ) throws IllegalArgumentException,
             IllegalStateException, NexusException {
 
+        Map<?, ?> map = null;
+
+        if ( ( messageContext.getData() == null ) && ( messageContext.getData() instanceof RequestResponseData )
+                && ( ( (RequestResponseData) messageContext.getData() ).getParameters() != null ) ) {
+            map = ( (RequestResponseData) messageContext.getData() ).getParameters();
+        }
         if ( xsltStreamSource != null ) {
             List<MessagePayloadPojo> payloads = messageContext.getMessagePojo().getMessagePayloads();
             for ( Iterator iter = payloads.iterator(); iter.hasNext(); ) {
                 MessagePayloadPojo messagePayloadPojo = (MessagePayloadPojo) iter.next();
                 ByteArrayInputStream bais = new ByteArrayInputStream( messagePayloadPojo.getPayloadData() );
 
-                messagePayloadPojo.setPayloadData( transformXML( new StreamSource( bais ), xsltStreamSource ) );
+                messagePayloadPojo.setPayloadData( transformXML( new StreamSource( bais ), xsltStreamSource, map ) );
 
                 if ( LOG.isTraceEnabled() ) {
                     LOG.trace( "...................." );
@@ -120,7 +129,7 @@ public class XSLTPipelet extends AbstractPipelet {
         return messageContext;
     }
 
-    private byte[] transformXML( StreamSource xmlSource, StreamSource xsltSource ) throws NexusException {
+    private byte[] transformXML( StreamSource xmlSource, StreamSource xsltSource, Map<?, ?> map ) throws NexusException {
 
         byte[] result = null;
         try {
@@ -128,6 +137,12 @@ public class XSLTPipelet extends AbstractPipelet {
 
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer( xsltSource );
+            if ( map != null ) {
+                for ( Iterator iter = map.keySet().iterator(); iter.hasNext(); ) {
+                    String key = (String) iter.next();
+                    transformer.setParameter( key.replace( '/', '_' ), map.get( key ) );
+                }
+            }
             transformer.transform( xmlSource, new StreamResult( baos ) );
 
             result = baos.toByteArray();
@@ -149,9 +164,13 @@ public class XSLTPipelet extends AbstractPipelet {
         }
         StreamSource xmlSource = new StreamSource( new File( args[0] ) );
         StreamSource xsltSource = new StreamSource( new File( args[1] ) );
+        
+        Map<String, String> map = new HashMap<String, String>();
+        map.put( "/dXML/Order/OrderNumber", "479855385423" );
+        map.put( "/dXML/Order/ReleaseNumber", "H89550x" );
 
         try {
-            byte[] result = new XSLTPipelet().transformXML( xmlSource, xsltSource );
+            byte[] result = new XSLTPipelet().transformXML( xmlSource, xsltSource, map );
             System.out.println( "Result:\n" + new String( result ) );
         } catch ( NexusException e ) {
             // TODO Auto-generated catch block
