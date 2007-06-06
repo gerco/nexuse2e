@@ -38,10 +38,9 @@ public class MappingMaintenanceForm extends ActionForm {
     private String leftValue;
     private String rightValue;
     private String category;
-    private String leftType;
-    private String rightType;
+    private int leftType;
+    private int rightType;
     private List<String> typenames;
-    private List<String> typeids;
     
     /**
      * @return the category
@@ -62,7 +61,7 @@ public class MappingMaintenanceForm extends ActionForm {
     /**
      * @return the leftType
      */
-    public String getLeftType() {
+    public int getLeftType() {
     
         return leftType;
     }
@@ -70,7 +69,7 @@ public class MappingMaintenanceForm extends ActionForm {
     /**
      * @param leftType the leftType to set
      */
-    public void setLeftType( String leftType ) {
+    public void setLeftType( int leftType ) {
     
         this.leftType = leftType;
     }
@@ -94,7 +93,7 @@ public class MappingMaintenanceForm extends ActionForm {
     /**
      * @return the rightType
      */
-    public String getRightType() {
+    public int getRightType() {
     
         return rightType;
     }
@@ -102,7 +101,7 @@ public class MappingMaintenanceForm extends ActionForm {
     /**
      * @param rightType the rightType to set
      */
-    public void setRightType( String rightType ) {
+    public void setRightType( int rightType ) {
     
         this.rightType = rightType;
     }
@@ -123,25 +122,7 @@ public class MappingMaintenanceForm extends ActionForm {
         this.rightValue = rightValue;
     }
 
-    
-    /**
-     * @return the typeids
-     */
-    public List<String> getTypeids() {
-    
-        return typeids;
-    }
-
-    
-    /**
-     * @param typeids the typeids to set
-     */
-    public void setTypeids( List<String> typeids ) {
-    
-        this.typeids = typeids;
-    }
-
-    
+        
     /**
      * @return the typenames
      */

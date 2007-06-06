@@ -57,21 +57,11 @@ public class Constants {
     
     /**
      * the possible types for mapping value pairs
-     *
+     * Do not change the order of this Enumeration
      */
     public static enum MappingType {
-        STRING(1), INT(2), BOOLEAN(3) ;
-        private int value;
-
-        MappingType( int value ) {
-
-            this.value = value;
-        }
-
-        public int getValue() {
-
-            return value;
-        }
+        STRING, INT, BOOLEAN ;
+        
     }
     
     /**

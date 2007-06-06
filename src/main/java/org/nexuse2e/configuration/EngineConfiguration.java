@@ -1709,11 +1709,36 @@ public class EngineConfiguration {
         this.genericParameters = genericParameters;
     }
 
+    /**
+     * @param mapping
+     * @throws NexusException
+     */
+    public void deleteMappingInDB( MappingPojo mapping ) throws NexusException {
+
+        if ( mapping != null ) {
+            ConfigDAO configDao = null;
+            try {
+                configDao = (ConfigDAO) Engine.getInstance().getDao( "configDao" );
+            } catch ( Exception e ) {
+                NexusException ie = new NexusException( e );
+                ie.setStackTrace( e.getStackTrace() );
+                throw ie;
+            }
+            configDao.deleteMapping( mapping, null, null );
+        }
+    }
+    
+    /**
+     * @return
+     */
     public List<MappingPojo> getMappings() {
 
         return mappings;
     }
 
+    /**
+     * @param mappings
+     */
     public void setMappings( List<MappingPojo> mappings ) {
 
         this.mappings = mappings;

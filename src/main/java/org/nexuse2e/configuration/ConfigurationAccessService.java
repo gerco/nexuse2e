@@ -1487,6 +1487,7 @@ public class ConfigurationAccessService {
             if ( oldMapping != null ) {
                 getMappings( null ).remove( oldMapping );
             }
+            engineConfig.deleteMappingInDB( mapping );
             applyConfiguration();
         } catch ( NexusException e ) {
             e.printStackTrace();

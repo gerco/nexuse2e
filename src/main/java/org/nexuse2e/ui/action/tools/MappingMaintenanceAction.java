@@ -19,21 +19,23 @@
  */
 package org.nexuse2e.ui.action.tools;
 
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
+import org.nexuse2e.Engine;
+import org.nexuse2e.Constants.MappingType;
 import org.nexuse2e.pojo.MappingPojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.MappingMaintenanceForm;
-import org.nexuse2e.ui.form.ProtectedFileAccessForm;
 
 
 public class MappingMaintenanceAction extends NexusE2EAction {
@@ -45,51 +47,88 @@ public class MappingMaintenanceAction extends NexusE2EAction {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
         MappingMaintenanceForm form = (MappingMaintenanceForm) actionForm;
+
+        System.out.println( "form.submitaction: " + form.getSubmitaction() );
+        System.out.println( "form.nxMappingId: " + form.getNxMappingId() );
+        System.out.println( "form.category: " + form.getCategory() );
+        System.out.println( "form.leftType: " + form.getLeftType() );
+        System.out.println( "form.leftValue: " + form.getLeftValue() );
+        System.out.println( "form.rightType: " + form.getRightType() );
+        System.out.println( "form.rightValue: " + form.getRightValue() );
+
+        String action = form.getSubmitaction();
+
+        System.out.println("values:"+MappingType.values());
         
-        System.out.println("form.submitaction: "+form.getSubmitaction());
-        System.out.println("form.nxMappingId: "+form.getNxMappingId());
-        System.out.println("form.category: "+form.getCategory());
-        System.out.println("form.leftType: "+form.getLeftType());
-        System.out.println("form.leftValue: "+form.getLeftValue());
-        System.out.println("form.rightType: "+form.getRightType());
-        System.out.println("form.rightValue: "+form.getRightValue());
+        if ( !StringUtils.isEmpty( action ) && action.equals( "add" ) ) {
+            if ( !StringUtils.isEmpty( form.getCategory() ) ) {
+                MappingPojo mapping = new MappingPojo();
+
+                mapping.setCategory( form.getCategory() );
+                mapping.setLeftType( form.getLeftType() );
+                mapping.setRightType( form.getRightType() );
+                
+                mapping.setLeftValue( form.getLeftValue() );
+                mapping.setRightValue( form.getRightValue() );
+
+                Engine.getInstance().getActiveConfigurationAccessService().updateMapping( mapping );
+            }
+
+        } else if ( !StringUtils.isEmpty( action ) && action.equals( "update" ) ) {
+            if ( !StringUtils.isEmpty( form.getCategory() ) ) {
+                int nxId = 0;
+                try {
+                    nxId = Integer.parseInt( form.getNxMappingId() );
+                } catch ( Exception e ) {
+                    e.printStackTrace();
+                }
+                if ( nxId != 0 ) {
+                    MappingPojo mapping = Engine.getInstance().getActiveConfigurationAccessService()
+                            .getMappingByNxMappingId( nxId );
+                    
+                    if ( mapping != null ) {
+                        mapping.setCategory( form.getCategory() );
+                        mapping.setLeftType( form.getLeftType() );
+                        mapping.setRightType( form.getRightType() );
+
+                        mapping.setLeftValue( form.getLeftValue() );
+                        mapping.setRightValue( form.getRightValue() );
+
+                        Engine.getInstance().getActiveConfigurationAccessService().updateMapping( mapping );
+                    }
+                }
+            }
+        } else if ( !StringUtils.isEmpty( action ) && action.equals( "delete" ) ) {
+            if ( !StringUtils.isEmpty( form.getCategory() ) ) {
+                int nxId = 0;
+                try {
+                    nxId = Integer.parseInt( form.getNxMappingId() );
+                } catch ( Exception e ) {
+                    e.printStackTrace();
+                }
+                if ( nxId != 0 ) {
+                    MappingPojo mapping = Engine.getInstance().getActiveConfigurationAccessService()
+                            .getMappingByNxMappingId( nxId );
+                    if ( mapping != null ) { 
+                        Engine.getInstance().getActiveConfigurationAccessService().deleteMapping( mapping );
+                    }
+                }
+            }
+        }
+        List<MappingPojo> mappings = Engine.getInstance().getActiveConfigurationAccessService().getMappings( null );
+
         
-        List<MappingPojo> mappings = new ArrayList<MappingPojo>();
-        
-        MappingPojo mapping = new MappingPojo();
-        mapping.setNxMappingId( 1 );
-        mapping.setCategory( "abcd" );
-        mapping.setLeftType( 1 );
-        mapping.setLeftValue( "aaaaa" );
-        mapping.setRightType( 1 );
-        mapping.setRightValue( "bbbb" );
-        mappings.add( mapping );
-        
-        mapping = new MappingPojo();
-        mapping.setNxMappingId( 2 );
-        mapping.setCategory( "abcd" );
-        mapping.setLeftType( 1 );
-        mapping.setLeftValue( "bbbb" );
-        mapping.setRightType( 1 );
-        mapping.setRightValue( "cccc" );
-        mappings.add( mapping );
-        
+
         request.setAttribute( ATTRIBUTE_COLLECTION, mappings );
-        
+
         List<String> typenames = new Vector<String>();
-        typenames.add( "Integer" );
-        typenames.add( "String" );
-        typenames.add( "Boolean" );
+        for ( MappingType type : MappingType.values() ) {
+            typenames.add( ""+type );
+        }
         
-        
-        List<String> typeids = new Vector<String>();
-        typeids.add( "1" );
-        typeids.add( "2" );
-        typeids.add( "3" );
-        
-        form.setTypeids( typeids );
+
         form.setTypenames( typenames );
-        
+
         return success;
     }
 
