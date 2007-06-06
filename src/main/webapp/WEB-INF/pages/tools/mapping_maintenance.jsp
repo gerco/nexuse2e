@@ -4,9 +4,9 @@
 <%@ taglib uri="/tags/struts-nested" prefix="nested"%>
 <%@ taglib uri="/tags/struts-tiles" prefix="tiles"%>
 <%@ taglib uri="/tags/struts-logic" prefix="logic"%>
-<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="/tags/struts-html-el" prefix="html-el"%>
-
+<%@ page import="org.nexuse2e.Constants.MappingType" %>
 <nexus:helpBar />
 
 <center>
@@ -41,28 +41,36 @@
 			<tr>
 				<td class="NEXUSName"><input type="text" size="20" name="htmlnewcategory"/></td>
 				<td  class="NEXUSName">
-				<select name="leftType">
+				<select name="htmlnewleftType">
 					<logic:iterate id="type" name="mappingMaintenanceForm" property="typenames">
 						<option value="${type}">${type}</option>
 					</logic:iterate>
 				</select>
 				
 				</td>
-				<td class="NEXUSName"><input type="text" size="20" name="leftValue"/></td>
+				<td class="NEXUSName"><input type="text" size="20" name="htmlnewleftValue"/></td>
 				<td class="NEXUSName"></td>
 				
 				<td  class="NEXUSName">
-				<select name="rightType">
+				<select name="htmlnewrightType">
 					<logic:iterate id="type" name="mappingMaintenanceForm" property="typenames">
 						<option value="${type}">${type}</option>
 					</logic:iterate>
 				</select>
 				
 				</td>
-				<td class="NEXUSName"><input type="text" size="20" name="rightValue"/></td>
+				<td class="NEXUSName"><input type="text" size="20" name="htmlnewrightValue"/></td>
 				<td class="NEXUSName">
+				
 				<nexus:submit
-					onClick="document.forms[0].submitaction.value='add';">
+					onClick="document.forms[0].submitaction.value='add'; 
+							document.forms[0].nxMappingId.value='${mapping.nxMappingId}';
+							document.forms[0].category.value=document.getElementsByName('htmlnewcategory${counter}')[0].value;
+							document.forms[0].leftType.value=document.getElementsByName('htmlnewleftType${counter}')[0].value;
+							document.forms[0].leftValue.value=document.getElementsByName('htmlnewleftValue${counter}')[0].value;
+							document.forms[0].rightType.value=document.getElementsByName('htmlnewrightType${counter}')[0].value;
+							document.forms[0].rightValue.value=document.getElementsByName('htmlnewrightValue${counter}')[0].value;
+							">
 					<img src="images/submit.gif" class="button" alt="Configure" id="addMapping"><span dojoType="tooltip" connectId="addMapping" toggle="explode">Add Mapping Entry</span>
 				</nexus:submit>
 				</td>
@@ -76,8 +84,16 @@
 				<td class="NEXUSName"><input type="text" size="20" name="htmlcategory${counter}" value="${mapping.category}"/></td>
 				<td  class="NEXUSName">
 				<select name="htmlleftType${counter}" value="${mapping.leftType}">
-					<logic:iterate id="type" name="mappingMaintenanceForm" property="typenames">
-						<option value="${type}">${type}</option>
+					<logic:iterate indexId="count" id="type" name="mappingMaintenanceForm" property="typenames">
+						<c:choose>
+							<c:when test="${count == mapping.leftType}">
+								<option selected="selected" value="${count}">${type}</option>
+							</c:when>
+							<c:otherwise>
+								<option value="${count}">${type}</option>
+							</c:otherwise>
+						</c:choose>
+						
 					</logic:iterate>
 				</select>
 				
@@ -87,11 +103,17 @@
 				
 				<td  class="NEXUSName">
 				<select name="htmlrightType${counter}" value="${mapping.rightType}">
-					<logic:iterate id="type" name="mappingMaintenanceForm" property="typenames">
-						<option value="${type}">${type}</option>
+					<logic:iterate indexId="count" id="type" name="mappingMaintenanceForm" property="typenames">
+					<c:choose>
+					<c:when test="${count == mapping.rightType}">
+						<option selected="selected" value="${count}">${type}</option>
+					</c:when>
+					<c:otherwise>
+						<option value="${count}">${type}</option>
+					</c:otherwise>
+					</c:choose>
 					</logic:iterate>
 				</select>
-				
 				</td>
 				<td class="NEXUSName"><input type="text" size="20" name="htmlrightValue${counter}" value="${mapping.rightValue}"/></td>
 				<td class="NEXUSName">
@@ -107,7 +129,14 @@
 					<img src="images/delete.gif" class="button" alt="Delete" id="deleteMapping"><span dojoType="tooltip" connectId="deleteMapping" toggle="explode">Delete Mapping Entry</span>
 				</nexus:submit> 
 				<nexus:submit
-					onClick="document.forms[0].submitaction.value='update';">
+					onClick="document.forms[0].submitaction.value='update';
+							document.forms[0].nxMappingId.value='${mapping.nxMappingId}';
+							document.forms[0].category.value=document.getElementsByName('htmlcategory${counter}')[0].value;
+							document.forms[0].leftType.value=document.getElementsByName('htmlleftType${counter}')[0].value;
+							document.forms[0].leftValue.value=document.getElementsByName('htmlleftValue${counter}')[0].value;
+							document.forms[0].rightType.value=document.getElementsByName('htmlrightType${counter}')[0].value;
+							document.forms[0].rightValue.value=document.getElementsByName('htmlrightValue${counter}')[0].value;
+					">
 					<img src="images/submit.gif" class="button" alt="Configure" id="updateMapping"><span dojoType="tooltip" connectId="updateMapping" toggle="explode">Update Mapping Entry</span>
 				</nexus:submit>
 				</td>
