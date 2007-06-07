@@ -157,10 +157,10 @@ public class XMLDataMappingPipelet extends AbstractPipelet {
                     
                     messagePayloadPojo.setPayloadData( baos.toByteArray() );
 
-                    if ( LOG.isDebugEnabled() ) {
-                        LOG.debug( "...................." );
-                        LOG.debug( new String( messagePayloadPojo.getPayloadData() ) );
-                        LOG.debug( "...................." );
+                    if ( LOG.isTraceEnabled() ) {
+                        LOG.trace( "...................." );
+                        LOG.trace( new String( messagePayloadPojo.getPayloadData() ) );
+                        LOG.trace( "...................." );
                     }
                 }
             } catch ( Exception e ) {
