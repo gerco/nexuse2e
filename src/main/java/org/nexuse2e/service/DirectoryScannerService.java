@@ -26,10 +26,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -40,6 +38,7 @@ import org.nexuse2e.backend.BackendPipelineDispatcher;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.tools.mapping.xmldata.MappingDefinition;
 
 /**
  * @author mbreilmann
@@ -60,6 +59,7 @@ public class DirectoryScannerService extends AbstractService implements Schedule
     public static final String        PARTNER                     = "partner";
     public final static String        INTERVAL                    = "interval";
     public final static String        FILTER                      = "filter";
+    public static final String        MAPPING_SERVICE             = "mapping_service";
 
     private SchedulingService         schedulingService           = null;
     // Directory to scan.
@@ -73,6 +73,8 @@ public class DirectoryScannerService extends AbstractService implements Schedule
     private String                    choreographyId              = null;
     private String                    actionId                    = null;
     private FilenameFilter            filenameFilter              = null;
+
+    private DataConversionService     mappingService              = null;
 
     private BackendPipelineDispatcher backendPipelineDispatcher;
 
@@ -98,6 +100,9 @@ public class DirectoryScannerService extends AbstractService implements Schedule
                 "The partner to send the message.", "" ) );
         parameterMap.put( FILTER, new ParameterDescriptor( ParameterType.STRING, "Extension",
                 "File extension to limit processing to.", "" ) );
+
+        parameterMap.put( MAPPING_SERVICE, new ParameterDescriptor( ParameterType.SERVICE, "Mapping Service",
+                "The Mapping and Conversion Service.", null ) );
     }
 
     /* (non-Javadoc)
@@ -177,6 +182,18 @@ public class DirectoryScannerService extends AbstractService implements Schedule
         String backupDirectoryValue = getParameter( BACKUP_DIRECTORY );
         if ( ( backupDirectoryValue != null ) && ( backupDirectoryValue.length() != 0 ) ) {
             backupDirectory = backupDirectoryValue;
+        }
+
+        String serviceName = getParameter( MAPPING_SERVICE );
+        if ( !StringUtils.isEmpty( serviceName ) ) {
+            Service service = Engine.getInstance().getActiveConfigurationAccessService().getService( serviceName );
+            if ( service != null && service instanceof DataConversionService ) {
+                mappingService = (DataConversionService) service;
+            } else {
+                LOG.error( "the selected serviceName: " + serviceName + " references no valid Data Conversion Service" );
+            }
+        } else {
+            LOG.warn( "no mapping service configured!" );
         }
 
         if ( !StringUtils.isEmpty( schedulingServiceName ) ) {
@@ -324,30 +341,41 @@ public class DirectoryScannerService extends AbstractService implements Schedule
                  }
                  */
 
-                String fileName = new File( newFile ).getName();
-                String pathName = newFile;
+                Map<String, String> variables = new HashMap<String, String>();
+                variables.put( "$filename", new File( newFile ).getName() );
+                variables.put( "$pathname", newFile );
 
                 String tempPartnerId = partnerId;
-                if ( partnerId.startsWith( "$filename" ) ) {
-                    tempPartnerId = parseFileName( partnerId.substring( 10, ( partnerId.length() - 1 ) ), fileName );
-                } else if ( partnerId.startsWith( "$pathname" ) ) {
-                    tempPartnerId = parseFileName( partnerId.substring( 10, ( partnerId.length() - 1 ) ), pathName );
+                if ( partnerId.startsWith( "${" ) ) {
+                    if ( mappingService == null ) {
+                        LOG.error( "no valid Mapping service configured. Mapping and conversion features are not available!" );
+                    } else {
+                        MappingDefinition mappingDef = new MappingDefinition();
+                        mappingDef.setCommand( partnerId );
+                        tempPartnerId = mappingService.processConversion( null, mappingDef, variables );
+                    }
                 }
 
                 String tempChoreographyId = choreographyId;
-                if ( choreographyId.startsWith( "$filename" ) ) {
-                    tempChoreographyId = parseFileName(
-                            choreographyId.substring( 10, ( choreographyId.length() - 1 ) ), fileName );
-                } else if ( choreographyId.startsWith( "$pathname" ) ) {
-                    tempChoreographyId = parseFileName(
-                            choreographyId.substring( 10, ( choreographyId.length() - 1 ) ), pathName );
+                if ( choreographyId.startsWith( "${" ) ) {
+                    if ( mappingService == null ) {
+                        LOG.error( "no valid Mapping service configured. Mapping and conversion features are not available!" );
+                    } else {
+                        MappingDefinition mappingDef = new MappingDefinition();
+                        mappingDef.setCommand( choreographyId );
+                        tempChoreographyId = mappingService.processConversion( null, mappingDef, variables );
+                    }
                 }
 
                 String tempActionId = actionId;
-                if ( actionId.startsWith( "$filename" ) ) {
-                    tempActionId = parseFileName( actionId.substring( 10, ( actionId.length() - 1 ) ), fileName );
-                } else if ( actionId.startsWith( "$pathname" ) ) {
-                    tempActionId = parseFileName( actionId.substring( 10, ( actionId.length() - 1 ) ), pathName );
+                if ( actionId.startsWith( "${" ) ) {
+                    if ( mappingService == null ) {
+                        LOG.error( "no valid Mapping service configured. Mapping and conversion features are not available!" );
+                    } else {
+                        MappingDefinition mappingDef = new MappingDefinition();
+                        mappingDef.setCommand( actionId );
+                        tempActionId = mappingService.processConversion( null, mappingDef, variables );
+                    }
                 }
 
                 backendPipelineDispatcher.processMessage( tempPartnerId, tempChoreographyId, tempActionId, null, null,
@@ -402,51 +430,6 @@ public class DirectoryScannerService extends AbstractService implements Schedule
                 LOG.error( "File " + newFileName + " backup failed." );
             }
         }
-    }
-
-    private String parseFileName( String patternString, String fileName ) {
-
-        String result = null;
-        LOG.trace( "pattern : " + patternString );
-        LOG.trace( "fileName: " + fileName );
-        if ( patternString.startsWith( "substring" ) ) {
-            patternString = patternString.substring( 10, ( patternString.length() - 1 ) );
-            LOG.trace( "substring : " + patternString );
-            StringTokenizer st = new StringTokenizer( patternString, "," );
-            if ( st.countTokens() != 2 ) {
-                LOG
-                        .error( "Wrong definition of substring statement, expected start and end position: "
-                                + patternString );
-                return result;
-            }
-
-            String start = st.nextToken();
-            String end = st.nextToken();
-
-            try {
-                result = fileName.substring( Integer.parseInt( start ), Integer.parseInt( end ) );
-            } catch ( Exception e ) {
-                LOG.error( "Error parsing file name: " + e );
-            }
-
-        } else if ( patternString.startsWith( "regex" ) ) {
-
-            if ( patternString.length() != 0 ) {
-                Pattern pattern = Pattern.compile( patternString );
-
-                Matcher matcher = pattern.matcher( fileName );
-
-                if ( matcher.find() ) {
-
-                    result = matcher.group();
-                    LOG.trace( "Found match: " + result + " - " + matcher.start() + " - " + matcher.end() );
-                } else {
-                    LOG.error( "No match found: " + patternString + " - " + fileName );
-                }
-            }
-        }
-
-        return result;
     }
 
     private class FilenameExtensionFilter implements FilenameFilter {

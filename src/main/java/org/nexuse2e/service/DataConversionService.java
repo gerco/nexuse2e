@@ -24,6 +24,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -44,6 +45,8 @@ public class DataConversionService extends AbstractService {
     public final static String MAPPINGTABLE_RIGHT2LEFT = "right";
     public final static String DATEFORMAT              = "dateformat";
     public final static String STATIC                  = "static";
+    public final static String SUBSTRING               = "substring";
+    public final static String REGEX                   = "regex";
 
     @Override
     public void fillParameterMap( Map<String, ParameterDescriptor> parameterMap ) {
@@ -52,8 +55,8 @@ public class DataConversionService extends AbstractService {
 
     @Override
     public Runlevel getActivationRunlevel() {
-
-        return Runlevel.OUTBOUND_PIPELINES;
+        
+        return Runlevel.CORE;
     }
 
     /**
@@ -63,8 +66,26 @@ public class DataConversionService extends AbstractService {
      */
     public String processConversion( String value, MappingDefinition definition ) {
 
-        String command = definition.getCommand();
+        return processConversion( value, definition, null );
+    }
 
+    /**
+     * @param value
+     * @param definition
+     * @param aditionalValues
+     * @return
+     */
+    public String processConversion( String value, MappingDefinition definition, Map<String, String> aditionalValues ) {
+
+        String command = definition.getCommand();
+        
+        if ( aditionalValues == null ) {
+            aditionalValues = new HashMap<String, String>();
+        }
+        if(value != null) {
+            aditionalValues.put( "$value", value );
+        }
+        
         Pattern pattern = Pattern.compile( "[a-z]+" );
         Matcher matcher = pattern.matcher( command );
 
@@ -75,7 +96,7 @@ public class DataConversionService extends AbstractService {
 
             LOG.debug( "command(" + endIndex + "): " + commandName );
 
-            pattern = Pattern.compile( "[a-zA-Z0-9\\'\\,\\:\\$\\.\\\\\\-\\_\\. ]+" );
+            pattern = Pattern.compile( "[a-zA-Z0-9\\'\\,\\:\\$\\.\\\\\\-\\_\\. \\@\\[\\]\\+]+" );
             matcher = pattern.matcher( command );
             ArrayList<String> paramList = null;
             if ( matcher.find( endIndex ) ) {
@@ -83,7 +104,7 @@ public class DataConversionService extends AbstractService {
                 String params = matcher.group();
                 LOG.debug( "parameterlist:" + params );
 
-                pattern = Pattern.compile( "((\\'([a-zA-Z0-9\\,\\:\\-\\_\\. ]|\\\\')+\\')|(\\$[a-zA-Z0-9\\_]+))+" );
+                pattern = Pattern.compile( "((\\'([a-zA-Z0-9\\,\\:\\-\\_\\. \\@\\[\\]\\+]|\\\\')+\\')|(\\$[a-zA-Z0-9\\_]+))+" );
                 matcher = pattern.matcher( params );
                 while ( matcher.find() ) {
                     String param = matcher.group();
@@ -95,7 +116,7 @@ public class DataConversionService extends AbstractService {
             if ( paramList != null && paramList.size() > 0 ) {
                 paramArray = paramList.toArray( new String[paramList.size()] );
             }
-            return dispatchCommand( value, commandName, paramArray, definition );
+            return dispatchCommand( commandName, paramArray, definition, aditionalValues );
         }
 
         return null;
@@ -108,23 +129,32 @@ public class DataConversionService extends AbstractService {
      * @param definition
      * @return
      */
-    public String dispatchCommand( String value, String name, String[] params, MappingDefinition definition ) {
+    public String dispatchCommand( String name, String[] params, MappingDefinition definition,
+            Map<String, String> aditionalValues ) {
 
-        if ( name == null || value == null ) {
+        if ( name == null ) {
             return null;
         }
         if ( name.equals( MAPPINGTABLE_LEFT2RIGHT ) ) {
             LOG.debug( "dispatching: Left2right" );
-            return processDBMapping( definition.getCategory(), true, value, params );
+            return processDBMapping( definition.getCategory(), true, params, aditionalValues );
         } else if ( name.equals( MAPPINGTABLE_RIGHT2LEFT ) ) {
             LOG.debug( "dispatching: right2left" );
-            return processDBMapping( definition.getCategory(), false, value, params );
+            return processDBMapping( definition.getCategory(), false, params, aditionalValues );
         } else if ( name.equals( DATEFORMAT ) ) {
             LOG.debug( "dispatching: dateformat" );
-            return processDateFormat( value, params, definition );
+            return processDateFormat( params, definition, aditionalValues );
         } else if ( name.equals( STATIC ) ) {
             LOG.debug( "dispatching: static" );
-            return processStatic( value, params, definition );
+            return processStatic( params, definition, aditionalValues );
+        } else if ( name.equals( SUBSTRING ) ) {
+            LOG.debug( "dispatching: substring" );
+            return processSubstring( params, definition, aditionalValues );
+        } else if ( name.equals( REGEX ) ) {
+            LOG.debug( "dispatching: regex" );
+            return processRegex( params, definition, aditionalValues );
+        } else {
+            LOG.error( "Method: " + name + " is not a valid conversion method!" );
         }
 
         return null;
@@ -134,14 +164,114 @@ public class DataConversionService extends AbstractService {
      * @param value
      * @param params
      * @param definition
+     * @param aditionalValues
      * @return
      */
-    private String processStatic( String value, String[] params, MappingDefinition definition ) {
+    private String processRegex( String[] params, MappingDefinition definition, Map<String, String> aditionalValues ) {
 
-        if ( value == null ) {
-            LOG.error( "value must not be null!" );
+        if ( params == null || params.length < 1 ) {
+            LOG.error( "static requires at least 1 parameter: regex['the_static_value']" );
             return null;
         }
+        if ( params == null || params.length < 2 ) {
+            LOG.error( "static requires at least 2 parameter: regex[@value,'regular_expression']" );
+            return null;
+        }
+        String value = null;
+        try {
+            if ( isVariable( params[0] ) ) {
+                value = substitute( params[0], aditionalValues );
+            } else {
+                value = stripParameter( params[0] );
+            }
+            String exp = stripParameter( params[1] );
+            
+            if ( !StringUtils.isEmpty( exp ) ) {
+                Pattern pattern = Pattern.compile( exp );
+
+                Matcher matcher = pattern.matcher( value );
+
+                if ( matcher.find() ) {
+                    
+                    String result = matcher.group();
+                    LOG.trace( "Found match: " + result + " - " + matcher.start() + " - " + matcher.end() );
+                    return result;
+                } else {
+                    LOG.error( "No match found: " + exp + " - " + value );
+                }
+            }
+            
+        } catch ( ParseException e ) {
+            LOG.error( "Error while parsing parameters: " + e );
+        }
+
+        return null;
+    }
+
+    /**
+     * @param value
+     * @param params
+     * @param definition
+     * @param aditionalValues
+     * @return
+     */
+    private String processSubstring( String[] params, MappingDefinition definition, Map<String, String> aditionalValues ) {
+
+        if ( params == null || params.length < 3 ) {
+            LOG.error( "static requires at least 3 parameter: substring[@value,'startIndex','endIndex']" );
+            return null;
+        }
+
+        try {
+            String value = null;
+            if ( isVariable( params[0] ) ) {
+                value = substitute( params[0], aditionalValues );
+                if(StringUtils.isEmpty( value )) {
+                    LOG.error( "unable to substitute variable: "+params[0] );
+                    return null;
+                }
+            } else {
+                value = stripParameter( params[0] );
+            }
+            params[1] = stripParameter( params[1] );
+            params[2] = stripParameter( params[2] );
+            try {
+                int startIndex = Integer.parseInt( params[1] );
+                int endIndex = Integer.parseInt( params[2] );
+                if ( endIndex > value.length() || endIndex < 0 ) {
+                    LOG.error( "invalid endIndex: " + endIndex );
+                    return null;
+                }
+                if ( startIndex > value.length() || startIndex < 0 ) {
+                    LOG.error( "invalid startIndex: " + startIndex );
+                    return null;
+                }
+                if ( endIndex < startIndex ) {
+                    LOG.error( "endIndex(" + endIndex + ") < startIndex(" + startIndex + ")!" );
+                }
+                return value.substring( startIndex, endIndex );
+
+            } catch ( NumberFormatException e ) {
+                LOG.error( "Invalid Numberformat for start or end" );
+                return null;
+            }
+
+        } catch ( ParseException e ) {
+            LOG.error( "Error while parsing parameters: " + e );
+        }
+
+        return null;
+    }
+
+    /**
+     * @param value
+     * @param params
+     * @param definition
+     * @param aditionalValues
+     * @return
+     */
+    private String processStatic( String[] params, MappingDefinition definition, Map<String, String> aditionalValues ) {
+
         if ( params == null || params.length < 1 ) {
             LOG.error( "static requires at least 1 parameter: static['the_static_value']" );
             return null;
@@ -153,24 +283,22 @@ public class DataConversionService extends AbstractService {
      * @param category
      * @param left
      * @param value
+     * @param aditionalValues
      * @return
      */
-    private String processDBMapping( String category, boolean left, String value, String[] params ) {
+    private String processDBMapping( String category, boolean left, String[] params, Map<String, String> aditionalValues ) {
 
         if ( category == null ) {
             LOG.error( "category must not be empty!" );
             return null;
         }
-        if ( value == null ) {
-            LOG.error( "value must not be null" );
-            return null;
-        }
+
         MappingPojo pojo = Engine.getInstance().getActiveConfigurationAccessService()
-                .getMappingByCategoryDirectionAndKey( category, left, value );
+                .getMappingByCategoryDirectionAndKey( category, left, aditionalValues.get( "@value" ) );
         if ( pojo != null ) {
             return left ? pojo.getRightValue() : pojo.getLeftValue();
         } else {
-            LOG.error( "no mapping entry found for " + value + " and category " + category );
+            LOG.error( "no mapping entry found for " + aditionalValues.get( "@value" ) + " and category " + category );
         }
         return null;
     }
@@ -179,13 +307,10 @@ public class DataConversionService extends AbstractService {
      * @param value
      * @param params
      * @param definition
+     * @param aditionalValues
      */
-    private String processDateFormat( String value, String[] params, MappingDefinition definition ) {
+    private String processDateFormat( String[] params, MappingDefinition definition, Map<String, String> aditionalValues ) {
 
-        if ( value == null ) {
-            LOG.error( "value must not be null!" );
-            return null;
-        }
         if ( params == null || params.length < 2 ) {
             LOG.error( "dateformat requires at least 2 parameters: dateformat['sourceformat','targetformat']" );
             return null;
@@ -199,7 +324,7 @@ public class DataConversionService extends AbstractService {
                 }
             } else {
                 SimpleDateFormat sourceFormat = new SimpleDateFormat( stripParameter( params[0] ) );
-                date = sourceFormat.parse( value.trim() );
+                date = sourceFormat.parse( aditionalValues.get( "@value" ).trim() );
             }
             SimpleDateFormat targetFormat = new SimpleDateFormat( stripParameter( params[1] ) );
             return targetFormat.format( date );
@@ -246,9 +371,25 @@ public class DataConversionService extends AbstractService {
         } else if ( param.startsWith( "$" ) ) {
 
         } else {
-            LOG.debug( "Parameter: "+param+ "is not valid" );
+            LOG.debug( "Parameter: " + param + "is not valid" );
         }
         return null;
+    }
+
+    /**
+     * @param param
+     * @param aditionalValues
+     * @return
+     */
+    private String substitute( String param, Map<String, String> aditionalValues ) throws ParseException {
+
+        if ( StringUtils.isEmpty( param ) ) {
+            throw new ParseException( "Parameter must not be empty!", 0 );
+        }
+        if ( !param.startsWith( "$" ) ) {
+            throw new ParseException( "replaceable variables must start with @", 0 );
+        }
+        return aditionalValues.get( param );
     }
 
 }
