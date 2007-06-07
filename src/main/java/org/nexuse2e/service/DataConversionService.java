@@ -174,7 +174,7 @@ public class DataConversionService extends AbstractService {
             return null;
         }
         if ( params == null || params.length < 2 ) {
-            LOG.error( "static requires at least 2 parameter: regex[@value,'regular_expression']" );
+            LOG.error( "static requires at least 2 parameter: regex[$value,'regular_expression']" );
             return null;
         }
         String value = null;
@@ -218,7 +218,7 @@ public class DataConversionService extends AbstractService {
     private String processSubstring( String[] params, MappingDefinition definition, Map<String, String> aditionalValues ) {
 
         if ( params == null || params.length < 3 ) {
-            LOG.error( "static requires at least 3 parameter: substring[@value,'startIndex','endIndex']" );
+            LOG.error( "static requires at least 3 parameter: substring[$value,'startIndex','endIndex']" );
             return null;
         }
 
@@ -294,11 +294,11 @@ public class DataConversionService extends AbstractService {
         }
 
         MappingPojo pojo = Engine.getInstance().getActiveConfigurationAccessService()
-                .getMappingByCategoryDirectionAndKey( category, left, aditionalValues.get( "@value" ) );
+                .getMappingByCategoryDirectionAndKey( category, left, aditionalValues.get( "$value" ) );
         if ( pojo != null ) {
             return left ? pojo.getRightValue() : pojo.getLeftValue();
         } else {
-            LOG.error( "no mapping entry found for " + aditionalValues.get( "@value" ) + " and category " + category );
+            LOG.error( "no mapping entry found for " + aditionalValues.get( "$value" ) + " and category " + category );
         }
         return null;
     }
@@ -324,7 +324,7 @@ public class DataConversionService extends AbstractService {
                 }
             } else {
                 SimpleDateFormat sourceFormat = new SimpleDateFormat( stripParameter( params[0] ) );
-                date = sourceFormat.parse( aditionalValues.get( "@value" ).trim() );
+                date = sourceFormat.parse( aditionalValues.get( "$value" ).trim() );
             }
             SimpleDateFormat targetFormat = new SimpleDateFormat( stripParameter( params[1] ) );
             return targetFormat.format( date );
@@ -387,7 +387,7 @@ public class DataConversionService extends AbstractService {
             throw new ParseException( "Parameter must not be empty!", 0 );
         }
         if ( !param.startsWith( "$" ) ) {
-            throw new ParseException( "replaceable variables must start with @", 0 );
+            throw new ParseException( "replaceable variables must start with $", 0 );
         }
         return aditionalValues.get( param );
     }
