@@ -27,7 +27,8 @@ package org.nexuse2e.tools.mapping.xmldata;
 public class MappingDefinition {
 
     String  xpath        = null;
-    String  value        = null;
+    String  category     = null;
+    String  command      = null;
     String  fillerSource = null;
     boolean alignSource  = false;
     boolean trimSource   = false;
@@ -47,112 +48,112 @@ public class MappingDefinition {
         this.xpath = xpathValue;
     }
 
-    
     public boolean isAlignSource() {
-    
+
         return alignSource;
     }
 
-    
     public void setAlignSource( boolean alignSource ) {
-    
+
         this.alignSource = alignSource;
     }
 
-    
     public boolean isAlignTarget() {
-    
+
         return alignTarget;
     }
 
-    
     public void setAlignTarget( boolean alignTarget ) {
-    
+
         this.alignTarget = alignTarget;
     }
 
-    
     public String getFillerSource() {
-    
+
         return fillerSource;
     }
 
-    
     public void setFillerSource( String fillerSource ) {
-    
+
         this.fillerSource = fillerSource;
     }
 
-    
     public String getFillerTarget() {
-    
+
         return fillerTarget;
     }
 
-    
     public void setFillerTarget( String fillerTarget ) {
-    
+
         this.fillerTarget = fillerTarget;
     }
 
-    
     public int getLengthSource() {
-    
+
         return lengthSource;
     }
 
-    
     public void setLengthSource( int lengthSource ) {
-    
+
         this.lengthSource = lengthSource;
     }
 
-    
     public int getLengthTarget() {
-    
+
         return lengthTarget;
     }
 
-    
     public void setLengthTarget( int lengthTarget ) {
-    
+
         this.lengthTarget = lengthTarget;
     }
 
-    
     public boolean isTrimSource() {
-    
+
         return trimSource;
     }
 
-    
     public void setTrimSource( boolean trimSource ) {
-    
+
         this.trimSource = trimSource;
     }
 
-    
     public boolean isTrimTarget() {
-    
+
         return trimTarget;
     }
 
-    
     public void setTrimTarget( boolean trimTarget ) {
-    
+
         this.trimTarget = trimTarget;
     }
 
-    
-    public String getValue() {
-    
-        return value;
+    public String getCommand() {
+
+        return command;
+    }
+
+    public void setCommand( String value ) {
+
+        this.command = value;
     }
 
     
-    public void setValue( String value ) {
+    /**
+     * @return the category
+     */
+    public String getCategory() {
     
-        this.value = value;
+        return category;
+    }
+
+    
+    /**
+     * @param category the category to set
+     */
+    public void setCategory( String category ) {
+    
+        this.category = category;
     }
 
 }

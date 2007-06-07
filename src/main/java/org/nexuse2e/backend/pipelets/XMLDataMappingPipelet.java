@@ -39,7 +39,9 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.digester.Digester;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.configuration.EngineConfiguration;
@@ -48,6 +50,8 @@ import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.MessagePayloadPojo;
+import org.nexuse2e.service.DataConversionService;
+import org.nexuse2e.service.Service;
 import org.nexuse2e.tools.mapping.xmldata.MappingDefinition;
 import org.nexuse2e.tools.mapping.xmldata.MappingDefinitions;
 import org.w3c.dom.Attr;
@@ -65,11 +69,13 @@ public class XMLDataMappingPipelet extends AbstractPipelet {
     private static Logger      LOG                = Logger.getLogger( XSLTPipelet.class );
 
     public static final String CONFIG_FILE        = "config_file";
+    public static final String MAPPING_SERVICE    = "mapping_service";
 
     public static final String COMMAND_MAP_LEFT   = "$map_left";
     public static final String COMMAND_MAP_RIGHT  = "$map_right";
 
     private String             configFileName     = null;
+    private DataConversionService mappingService  = null;
     private MappingDefinitions mappingDefinitions = null;
 
     /**
@@ -79,6 +85,8 @@ public class XMLDataMappingPipelet extends AbstractPipelet {
 
         parameterMap.put( CONFIG_FILE, new ParameterDescriptor( ParameterType.STRING, "Configuration Path",
                 "Path to configuration file", "" ) );
+        parameterMap.put( MAPPING_SERVICE, new ParameterDescriptor( ParameterType.SERVICE, "Data Mapping Service",
+                "The Data Mapping and Conversion Service", null ) );
     }
 
     /* (non-Javadoc)
@@ -89,6 +97,15 @@ public class XMLDataMappingPipelet extends AbstractPipelet {
 
         File testFile = null;
 
+        String mappingServiceName = getParameter( MAPPING_SERVICE );
+        if(!StringUtils.isEmpty( mappingServiceName )) {
+            
+            Service service = Engine.getInstance().getActiveConfigurationAccessService().getService( mappingServiceName );
+            if(service != null && service instanceof DataConversionService) {
+                this.mappingService = (DataConversionService)service;
+            }
+        }
+        
         String configFileNameValue = getParameter( CONFIG_FILE );
         if ( ( configFileNameValue != null ) && ( configFileNameValue.length() != 0 ) ) {
             configFileName = configFileNameValue;
@@ -137,16 +154,17 @@ public class XMLDataMappingPipelet extends AbstractPipelet {
                     TransformerFactory transformerFactory = TransformerFactory.newInstance();
                     Transformer transformer = transformerFactory.newTransformer();
                     transformer.transform( new DOMSource( document ), new StreamResult( baos ) );
-
+                    
                     messagePayloadPojo.setPayloadData( baos.toByteArray() );
 
-                    if ( LOG.isTraceEnabled() ) {
-                        LOG.trace( "...................." );
-                        LOG.trace( new String( messagePayloadPojo.getPayloadData() ) );
-                        LOG.trace( "...................." );
+                    if ( LOG.isDebugEnabled() ) {
+                        LOG.debug( "...................." );
+                        LOG.debug( new String( messagePayloadPojo.getPayloadData() ) );
+                        LOG.debug( "...................." );
                     }
                 }
             } catch ( Exception e ) {
+                e.printStackTrace();
                 LOG.error( "Error processing XML payload: " + e );
                 throw new NexusException( "Error processing XML payload: " + e );
             }
@@ -172,14 +190,20 @@ public class XMLDataMappingPipelet extends AbstractPipelet {
         try {
             for ( Iterator iter = mappingDefinitions.getMappingDefinitions().iterator(); iter.hasNext(); ) {
                 MappingDefinition mappingDefinition = (MappingDefinition) iter.next();
-
+                
+                LOG.debug( "def.Category: "+mappingDefinition.getCategory());
+                LOG.debug( "def.Command: "+mappingDefinition.getCommand());
+                LOG.debug( "def.XPath: "+mappingDefinition.getXpath());
+                
                 Node node = (Node) xPath.evaluate( mappingDefinition.getXpath(), document, XPathConstants.NODE );
                 if ( node != null ) {
                     if ( node instanceof Element ) {
                         ( (Element) node ).setTextContent( mapData( ( (Element) node ).getTextContent(),
                                 mappingDefinition ) );
                     } else if ( node instanceof Attr ) {
-                        ( (Attr) node ).setNodeValue( mapData( ( (Attr) node ).getNodeValue(), mappingDefinition ) );
+                        String nodeValue = ( (Attr) node ).getNodeValue();
+                        String resultValue = mapData(nodeValue, mappingDefinition );
+                        ( (Attr) node ).setNodeValue( resultValue );
                     } else {
                         LOG.error( "Node type not recognized: " + node.getClass() );
                     }
@@ -204,16 +228,19 @@ public class XMLDataMappingPipelet extends AbstractPipelet {
     private String mapData( String sourceValue, MappingDefinition mappingDefinition ) {
         String result = null;
         
-        String newValue = mappingDefinition.getValue();
         
-        if (newValue.startsWith( COMMAND_MAP_LEFT ) ) {
-            LOG.trace( "Using mapping table left value..." );
-        } else if (newValue.startsWith( COMMAND_MAP_RIGHT )) {
-            LOG.trace( "Using mapping table right value..." );
+        if(mappingService != null) {
+            LOG.debug( "calling mappingservice" );
+            String targetValue = mappingService.processConversion( sourceValue, mappingDefinition );
+            if(!StringUtils.isEmpty( targetValue )) {
+                return targetValue;
+            } else {
+                return "";
+            }
         } else {
-            LOG.trace( "Using static value..." );
-            result = mappingDefinition.getValue();
+            LOG.error( "Data Mapping Service must be configured!" );
         }
+        
 
         return result;
     }

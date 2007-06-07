@@ -1447,14 +1447,19 @@ public class ConfigurationAccessService {
     public MappingPojo getMappingByCategoryDirectionAndKey( String category, boolean left, String key ) {
 
         if ( category != null && key != null ) {
-            for ( MappingPojo mapping : engineConfig.getMappings() ) {
-                if ( category.equals( mapping.getCategory() ) ) {
-                    String tempKey = left ? mapping.getLeftValue() : mapping.getRightValue();
-                    if ( tempKey.equals( key ) ) {
-                        return mapping;
+            if(engineConfig != null && engineConfig.getMappings() != null ) {
+                for ( MappingPojo mapping : engineConfig.getMappings() ) {
+                    if ( category.equals( mapping.getCategory() ) ) {
+                        String tempKey = left ? mapping.getLeftValue() : mapping.getRightValue();
+                        if ( tempKey.equals( key ) ) {
+                            return mapping;
+                        }
                     }
-                }
+                }    
+            } else {
+                LOG.error( "engine config is not initalized! No mapping available" );
             }
+            
         }
         return null;
     }
