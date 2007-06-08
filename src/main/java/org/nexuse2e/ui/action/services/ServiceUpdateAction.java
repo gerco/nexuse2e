@@ -116,6 +116,8 @@ public class ServiceUpdateAction extends NexusE2EAction {
                 request.setAttribute( REFRESH_TREE, "true" );
             }
 
+            originalService.setAutostart( form.isAutostart() );
+            
             form.fillPojosFromParameterMap();
             List<ServiceParamPojo> list = form.getParameters();
             for ( ServiceParamPojo param : list ) {

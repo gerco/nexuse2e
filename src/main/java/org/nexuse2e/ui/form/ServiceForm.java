@@ -50,6 +50,8 @@ public class ServiceForm extends ActionForm {
     private String                  componentName       = null;
     private int                     position            = 0;
 
+    private boolean                 autostart           = false;
+    
     private String                  submitted           = "false";
     private HashMap<String, String> logFilterValues     = null;
     private HashMap<String, String> pipeletParamValues  = new HashMap<String, String>();
@@ -72,6 +74,8 @@ public class ServiceForm extends ActionForm {
         if ( pipeletParamValues != null ) {
             pipeletParamValues.clear();
         }
+        autostart = false;
+        
     } // reset
 
     /**
@@ -87,6 +91,7 @@ public class ServiceForm extends ActionForm {
             nxComponentId = service.getComponent().getNxComponentId();
             componentName = service.getComponent().getName();
         }
+        autostart = service.isAutostart();
     }
 
     /**
@@ -334,6 +339,24 @@ public class ServiceForm extends ActionForm {
     public void setServiceInstance( Service serviceInstance ) {
 
         this.serviceInstance = serviceInstance;
+    }
+
+    
+    /**
+     * @return the autostart
+     */
+    public boolean isAutostart() {
+    
+        return autostart;
+    }
+
+    
+    /**
+     * @param autostart the autostart to set
+     */
+    public void setAutostart( boolean autostart ) {
+    
+        this.autostart = autostart;
     }
 
 } // NotifierForm
