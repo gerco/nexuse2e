@@ -55,12 +55,18 @@ public class XML2ParameterMapPipelet extends AbstractPipelet {
 
     public static final String USE_DATA_FIELD = "useDataField";
 
+    public static final String PATH_SEPARATOR = "pathSeparator";
+
     private boolean            useDataField   = true;
+
+    private String             pathSeparator  = "/";
 
     public XML2ParameterMapPipelet() {
 
-        parameterMap.put( USE_DATA_FIELD, new ParameterDescriptor( ParameterType.STRING, "Use Data Field",
-                "Use the MessageContext Data Field to retrieve XML.", "" ) );
+        parameterMap.put( USE_DATA_FIELD, new ParameterDescriptor( ParameterType.BOOLEAN, "Use Data Field",
+                "Use the MessageContext Data Field to retrieve XML.", Boolean.TRUE ) );
+        parameterMap.put( PATH_SEPARATOR, new ParameterDescriptor( ParameterType.STRING, "Path Separator",
+                "Separator character between element names.", "/" ) );
     }
 
     /* (non-Javadoc)
@@ -74,7 +80,12 @@ public class XML2ParameterMapPipelet extends AbstractPipelet {
             useDataField = useDataFieldValue.booleanValue();
         }
 
+        String pathSeparatorValue = getParameter( PATH_SEPARATOR );
+        if ( pathSeparatorValue != null ) {
+            pathSeparator = pathSeparatorValue.trim();
+        }
         LOG.trace( "useDataField  : " + useDataField );
+        LOG.trace( "pathSeparator : " + pathSeparator );
 
         super.initialize( config );
     }
@@ -96,9 +107,9 @@ public class XML2ParameterMapPipelet extends AbstractPipelet {
         requestResponseData = (RequestResponseData) messageContext.getData();
 
         InputSource inputSource = new InputSource( new StringReader( requestResponseData.getResponseString() ) );
-        
+
         Map map = flattenXML( inputSource );
-        
+
         requestResponseData.setParameters( map );
 
         return messageContext;
@@ -112,7 +123,7 @@ public class XML2ParameterMapPipelet extends AbstractPipelet {
         try {
             SAXParser saxParser = saxParserFactory.newSAXParser();
 
-            DefaultHandler genericHandler = new GenericHandler( map );
+            DefaultHandler genericHandler = new GenericHandler( map, pathSeparator );
 
             saxParser.parse( xmlSource, genericHandler );
         } catch ( ParserConfigurationException e ) {
@@ -130,37 +141,44 @@ public class XML2ParameterMapPipelet extends AbstractPipelet {
             throw new NexusException( e );
         }
 
+        for ( Iterator iter = map.keySet().iterator(); iter.hasNext(); ) {
+            String key = (String) iter.next();
+            LOG.trace( key + " - " + map.get( key ) );
+        }
+
         return map;
     }
 
     private class GenericHandler extends DefaultHandler {
 
-        private Map<String, String> map   = null;
-        private Stack<String>       stack = new Stack<String>();
-        private StringBuffer        value = new StringBuffer();
+        private Map<String, String> map           = null;
+        private Stack<String>       stack         = new Stack<String>();
+        private StringBuffer        value         = new StringBuffer();
+        private String              pathSeparator = "/";
 
-        protected GenericHandler( Map<String, String> map ) {
+        protected GenericHandler( Map<String, String> map, String pathSeparator ) {
 
             this.map = map;
+            this.pathSeparator = pathSeparator;
         }
 
         public void startElement( String uri, String localName, String qName, Attributes attributes )
                 throws SAXException {
 
-            LOG.trace( "startElement: '" + uri + "' - '" + localName + "' - '" + qName + "'" );
+            // LOG.trace( "startElement: '" + uri + "' - '" + localName + "' - '" + qName + "'" );
             stack.push( qName );
         }
 
         public void endElement( String uri, String localName, String qName ) throws SAXException {
 
-            LOG.trace( "endElement: '" + localName + "'" );
+            // LOG.trace( "endElement: '" + localName + "'" );
             StringBuffer path = new StringBuffer();
 
             for ( Iterator iter = stack.iterator(); iter.hasNext(); ) {
                 String element = (String) iter.next();
-                path.append( "/" + element );
+                path.append( pathSeparator + element );
             }
-            LOG.trace( "path: " + path );
+            // LOG.trace( "path: " + path );
 
             String tempValue = value.toString();
 
@@ -177,7 +195,7 @@ public class XML2ParameterMapPipelet extends AbstractPipelet {
 
             value.append( new String( ch, start, length ).trim() );
 
-            LOG.trace( "String: " + value );
+            // LOG.trace( "String: " + value );
         }
 
     }

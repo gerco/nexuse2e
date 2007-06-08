@@ -21,10 +21,10 @@
 package org.nexuse2e.backend.pipelets;
 
 import org.apache.log4j.Logger;
-import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
-import org.nexuse2e.backend.BackendPipelineDispatcher;
 import org.nexuse2e.backend.pipelets.helper.RequestResponseData;
+import org.nexuse2e.backend.pipelets.helper.ResponseSender;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.messaging.MessageContext;
@@ -35,18 +35,43 @@ import org.nexuse2e.messaging.MessageContext;
  */
 public class HTTPResponseIntegrationPipelet extends HTTPIntegrationPipelet {
 
-    private static Logger      LOG    = Logger.getLogger( HTTPIntegrationPipelet.class );
+    private static Logger      LOG               = Logger.getLogger( HTTPIntegrationPipelet.class );
 
-    public static final String ACTION = "action";
-    public static final String DELAY  = "delay";
+    public static final String ACTION_PARAM_NAME = "action";
+    public static final String DELAY_PARAM_NAME  = "delay";
+
+    private int                delay             = 1000;
+    private String             action            = null;
 
     public HTTPResponseIntegrationPipelet() {
 
         super();
-        parameterMap.put( ACTION, new ParameterDescriptor( ParameterType.STRING, "Action",
+        parameterMap.put( ACTION_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "Action",
                 "Action to trigger for outbound message.", "" ) );
-        parameterMap.put( DELAY, new ParameterDescriptor( ParameterType.STRING, "Delay",
+        parameterMap.put( DELAY_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "Delay",
                 "Delay in milliseconds before outbound message is sent.", "1000" ) );
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.messaging.AbstractPipelet#initialize(org.nexuse2e.configuration.EngineConfiguration)
+     */
+    @Override
+    public void initialize( EngineConfiguration config ) {
+
+        String actionValue = getParameter( ACTION_PARAM_NAME );
+        if ( actionValue == null ) {
+            LOG.error( "Parameter action has not been defined!" );
+            return;
+        } else {
+            action = actionValue;
+        }
+        String delayString = getParameter( DELAY_PARAM_NAME );
+        delay = 1000;
+        if ( ( delayString != null ) && ( delayString.length() != 0 ) ) {
+            delay = Integer.parseInt( delayString );
+        }
+
+        super.initialize( config );
     }
 
     /* (non-Javadoc)
@@ -57,15 +82,9 @@ public class HTTPResponseIntegrationPipelet extends HTTPIntegrationPipelet {
 
         RequestResponseData requestResponseData = null;
 
-        String action = getParameter( ACTION );
         if ( action == null ) {
             LOG.error( "Parameter action has not been defined!" );
             return messageContext;
-        }
-        String delayString = getParameter( DELAY );
-        int delay = 1000;
-        if ( ( delayString != null ) && ( delayString.length() != 0 ) ) {
-            delay = Integer.parseInt( delayString );
         }
 
         // Execute the HTTP call first
@@ -86,55 +105,5 @@ public class HTTPResponseIntegrationPipelet extends HTTPIntegrationPipelet {
         LOG.debug( "Done!" );
         return messageContext;
     }
-
-    private class ResponseSender implements Runnable {
-
-        private String              choreography        = null;
-        private String              partner             = null;
-        private String              conversation        = null;
-        private String              action              = null;
-        private RequestResponseData requestResponseData = null;
-        private int                 delay               = 0;
-
-        private ResponseSender( String choreography, String partner, String conversation, String action,
-                RequestResponseData httpResponse, int delay ) {
-
-            this.choreography = choreography;
-            this.partner = partner;
-            this.conversation = conversation;
-            this.action = action;
-            this.requestResponseData = httpResponse;
-            this.delay = delay;
-        }
-
-        public void run() {
-
-            BackendPipelineDispatcher backendPipelineDispatcher = Engine.getInstance().getCurrentConfiguration()
-                    .getStaticBeanContainer().getBackendPipelineDispatcher();
-            try {
-                try {
-                    LOG.debug( "Waiting " + delay + " milliseconds..." );
-                    synchronized ( this ) {
-                        this.wait( delay );
-                    }
-                } catch ( InterruptedException e ) {
-                    LOG.warn( "Interrupted while waiting for response message submission: " + e );
-                }
-                if ( LOG.isTraceEnabled() ) {
-                    LOG.trace( "Result code: " + requestResponseData.getResponseCode() );
-                    LOG.trace( "Original   :\n--- PAYLOAD START ---\n" + requestResponseData.getRequestString()
-                            + "\n---  PAYLOAD END  ---" );
-                    LOG.trace( "Response   :\n--- RESPONSE START ---\n" + requestResponseData.getResponseString()
-                            + "\n---  RESPONSE END  ---" );
-                }
-
-                backendPipelineDispatcher.processMessage( partner, choreography, action, conversation, null,
-                        requestResponseData, requestResponseData.getResponseString().getBytes() );
-            } catch ( NexusException e ) {
-                LOG.error( "Error submitting response message for HTTP integration: " + e );
-            }
-
-        }
-    } // ResponseSender
 
 } // HTTPResponseIntegrationPipelet

@@ -19,37 +19,192 @@
  */
 package org.nexuse2e.backend.pipelets;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Iterator;
+
 import org.apache.log4j.Logger;
-import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
-import org.nexuse2e.backend.BackendPipelineDispatcher;
+import org.nexuse2e.Constants.BeanStatus;
+import org.nexuse2e.backend.pipelets.helper.RequestResponseData;
+import org.nexuse2e.backend.pipelets.helper.ResponseSender;
+import org.nexuse2e.configuration.EngineConfiguration;
+import org.nexuse2e.configuration.ParameterDescriptor;
+import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
+import org.nexuse2e.pojo.MessagePayloadPojo;
 
 public class TestReplyEndpointPipelet extends AbstractPipelet {
 
-    private static Logger       LOG = Logger.getLogger( TestReplyEndpointPipelet.class );
-    
+    private static Logger      LOG                  = Logger.getLogger( TestReplyEndpointPipelet.class );
+
+    public static final String FILE_NAME_PARAM_NAME = "fileName";
+    public static final String DIRECTORY_PARAM_NAME = "directory";
+    public static final String ACTION_PARAM_NAME    = "action";
+    public static final String DELAY_PARAM_NAME     = "delay";
+
+    private int                delay                = 1000;
+    private String             action               = null;
+    private String             fileName             = null;
+    private String             directory            = null;
+    private String             fileContent          = null;
+
     /**
      * Default constructor.
      */
     public TestReplyEndpointPipelet() {
 
+        super();
+        parameterMap.put( FILE_NAME_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "File Name",
+                "File to return as a response (optional).", "" ) );
+        parameterMap.put( DIRECTORY_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "Directory",
+                "Inbound directory to stare payloads.", "" ) );
+        parameterMap.put( ACTION_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "Action",
+                "Action to trigger for outbound message.", "" ) );
+        parameterMap.put( DELAY_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "Delay",
+                "Delay in milliseconds before outbound message is sent.", "1000" ) );
     }
 
-    public MessageContext processMessage( MessageContext messageContext )
-            throws NexusException {
+    /* (non-Javadoc)
+     * @see org.nexuse2e.messaging.AbstractPipelet#initialize(org.nexuse2e.configuration.EngineConfiguration)
+     */
+    @Override
+    public void initialize( EngineConfiguration config ) {
+
+        String actionValue = getParameter( ACTION_PARAM_NAME );
+        if ( actionValue == null ) {
+            LOG.error( "No value for setting 'action' provided!" );
+            return;
+        } else {
+            action = actionValue;
+        }
+
+        File testFile = null;
+
+        String fileNameValue = getParameter( FILE_NAME_PARAM_NAME );
+        if ( ( fileNameValue != null ) && ( fileNameValue.length() != 0 ) ) {
+            fileName = fileNameValue;
+            testFile = new File( fileName );
+            if ( !testFile.exists() ) {
+                status = BeanStatus.ERROR;
+                LOG.error( "Response file does not exist!" );
+                return;
+            }
+
+            fileContent = loadFile( testFile );
+
+        } else {
+            status = BeanStatus.ERROR;
+            LOG.info( "No value for setting 'fileName' provided!" );
+        }
+
+        String directoyValue = getParameter( DIRECTORY_PARAM_NAME );
+        if ( ( directoyValue != null ) && ( directoyValue.length() != 0 ) ) {
+            directory = directoyValue;
+            testFile = new File( directory );
+            if ( !testFile.exists() || !testFile.isDirectory() ) {
+                status = BeanStatus.ERROR;
+                LOG.error( "Directory does not exist: " + testFile.getAbsolutePath() );
+                return;
+            }
+
+        } else {
+            status = BeanStatus.ERROR;
+            LOG.error( "No value for setting 'directory' provided!" );
+            return;
+        }
+
+        String delayString = getParameter( DELAY_PARAM_NAME );
+        delay = 1000;
+        if ( ( delayString != null ) && ( delayString.length() != 0 ) ) {
+            delay = Integer.parseInt( delayString );
+        }
+
+        super.initialize( config );
+    }
+
+    public MessageContext processMessage( MessageContext messageContext ) throws NexusException {
 
         LOG.debug( "Entered TestReplyEndpointPipelet.processMessage..." );
+        RequestResponseData requestResponseData = null;
 
-        BackendPipelineDispatcher backendPipelineDispatcher = (BackendPipelineDispatcher) Engine.getInstance()
-                .getBeanFactory().getBean( "backendPipelineDispatcher" );
-        backendPipelineDispatcher.processMessage( messageContext.getPartner().getPartnerId(),
-                messageContext.getChoreography().getName(), messageContext.getMessagePojo()
-                        .getAction().getName(), null,
-                messageContext.getMessagePojo().getMessageId(), null,
-                null, "<Test />".getBytes() );
-        return null;
+        for ( Iterator iter = messageContext.getMessagePojo().getMessagePayloads().iterator(); iter.hasNext(); ) {
+            MessagePayloadPojo messagePayloadPojo = (MessagePayloadPojo) iter.next();
+
+            if ( ( directory != null ) && ( directory.length() != 0 ) ) {
+                try {
+                    new FileSystemSavePipelet().writePayloadToUniqueFile( directory, messageContext, true );
+                } catch ( Exception e ) {
+                    e.printStackTrace();
+                    throw new NexusException( e );
+                }
+            }
+
+            if ( ( fileContent != null ) && ( fileContent.length() != 0 ) ) {
+                requestResponseData = new RequestResponseData( 0, fileContent, new String( messagePayloadPojo
+                        .getPayloadData() ) );
+            } else {
+                requestResponseData = new RequestResponseData( 0, new String( messagePayloadPojo.getPayloadData() ),
+                        new String( messagePayloadPojo.getPayloadData() ) );
+            }
+
+            // Trigger new response message
+            new Thread( new ResponseSender( messageContext.getChoreography().getName(), messageContext.getPartner()
+                    .getPartnerId(), messageContext.getConversation().getConversationId(), action, requestResponseData,
+                    delay ) ).start();
+        }
+        LOG.debug( "Done!" );
+
+        return messageContext;
     }
-   
+
+    private String loadFile( File file ) {
+
+        String result = null;
+
+        try {
+
+            // Open the file to read one line at a time
+            FileInputStream fis = null;
+
+            // Workaround: Some filesystem need two tries to successfully
+            // get a file, expecially remote (network) file shares.
+            try {
+                fis = new FileInputStream( file );
+            } catch ( Exception ex ) {
+            }
+
+            if ( fis == null ) {
+                fis = new FileInputStream( fileName );
+            }
+            BufferedInputStream bufferedInputStream = new BufferedInputStream( fis );
+
+            // Determine the size of the file
+            int fileSize = bufferedInputStream.available();
+
+            long memory = Runtime.getRuntime().freeMemory();
+            if ( fileSize >= memory ) {
+                LOG.error( "Not Enough memory to transfer data of " + fileSize / 1024 + " Kbytes. Available memory is "
+                        + memory / 1024 + " Kbytes" );
+            }
+
+            byte[] documentBuffer = new byte[fileSize]; // Create a buffer that will hold the data from the file
+
+            bufferedInputStream.read( documentBuffer, 0, fileSize ); // Read the file content into the buffer
+            bufferedInputStream.close();
+
+            result = new String( documentBuffer );
+
+        } catch ( IOException ioEx ) { // Handle exceptions related to the file I/O
+            ioEx.printStackTrace();
+            LOG.error( "IOException: " + ioEx );
+        } // try/catch
+
+        return result;
+    }
+
 }

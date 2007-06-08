@@ -77,7 +77,7 @@ public class XSLTPipelet extends AbstractPipelet {
             testFile = new File( xsltFileName );
             if ( !testFile.exists() ) {
                 status = BeanStatus.ERROR;
-                LOG.error( "XSLT file does not exist!" );
+                LOG.error( "XSLT file does not exist: " + testFile.getAbsolutePath() );
                 return;
             }
 
