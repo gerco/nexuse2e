@@ -54,7 +54,10 @@
 				<bean:write name="serviceForm" property="componentName" />
 			</logic:notEqual></td>
 		</tr>
-
+		<tr>
+			<td class="NEXUSName">Autostart</td>
+			<td colspan="3" class="NEXUSValue"><html:checkbox property="autostart"/></td>
+		</tr>
 	</table>
 
 	<table class="NEXUS_BUTTON_TABLE">
