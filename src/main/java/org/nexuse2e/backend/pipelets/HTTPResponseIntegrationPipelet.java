@@ -20,6 +20,9 @@
 
 package org.nexuse2e.backend.pipelets;
 
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.backend.pipelets.helper.RequestResponseData;
@@ -28,6 +31,7 @@ import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.messaging.MessageContext;
+import org.nexuse2e.pojo.MessagePayloadPojo;
 
 /**
  * @author mbreilmann
@@ -35,13 +39,15 @@ import org.nexuse2e.messaging.MessageContext;
  */
 public class HTTPResponseIntegrationPipelet extends HTTPIntegrationPipelet {
 
-    private static Logger      LOG               = Logger.getLogger( HTTPIntegrationPipelet.class );
+    private static Logger      LOG                             = Logger.getLogger( HTTPIntegrationPipelet.class );
 
-    public static final String ACTION_PARAM_NAME = "action";
-    public static final String DELAY_PARAM_NAME  = "delay";
+    public static final String ACTION_PARAM_NAME               = "action";
+    public static final String DELAY_PARAM_NAME                = "delay";
+    public static final String USE_ORIGINAL_MESSAGE_PARAM_NAME = "useOriginalMessage";
 
-    private int                delay             = 1000;
-    private String             action            = null;
+    private int                delay                           = 1000;
+    private String             action                          = null;
+    private boolean            useOriginalMessage              = true;
 
     public HTTPResponseIntegrationPipelet() {
 
@@ -50,6 +56,8 @@ public class HTTPResponseIntegrationPipelet extends HTTPIntegrationPipelet {
                 "Action to trigger for outbound message.", "" ) );
         parameterMap.put( DELAY_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "Delay",
                 "Delay in milliseconds before outbound message is sent.", "1000" ) );
+        parameterMap.put( USE_ORIGINAL_MESSAGE_PARAM_NAME, new ParameterDescriptor( ParameterType.BOOLEAN,
+                "Use Original Message", "Use Original Message to retrieve XML.", Boolean.TRUE ) );
     }
 
     /* (non-Javadoc)
@@ -69,6 +77,10 @@ public class HTTPResponseIntegrationPipelet extends HTTPIntegrationPipelet {
         delay = 1000;
         if ( ( delayString != null ) && ( delayString.length() != 0 ) ) {
             delay = Integer.parseInt( delayString );
+        }
+        Boolean useOriginalMessageValue = getParameter( USE_ORIGINAL_MESSAGE_PARAM_NAME );
+        if ( useOriginalMessageValue != null ) {
+            useOriginalMessage = useOriginalMessageValue.booleanValue();
         }
 
         super.initialize( config );
@@ -97,6 +109,18 @@ public class HTTPResponseIntegrationPipelet extends HTTPIntegrationPipelet {
         }
         requestResponseData = (RequestResponseData) messageContext.getData();
 
+        if ( useOriginalMessage ) {
+
+            List<MessagePayloadPojo> messagePayloadPojos = messageContext.getOriginalMessagePojo().getMessagePayloads();
+            Iterator<MessagePayloadPojo> iterator = messagePayloadPojos.iterator();
+            if ( iterator.hasNext() ) {
+                MessagePayloadPojo payload = iterator.next();
+                if ( ( payload != null ) && ( payload.getPayloadData() != null ) ) {
+                    requestResponseData.setRequestString( new String( payload.getPayloadData() ) );
+                }
+            }
+        }
+
         // Trigger new response message
         new Thread( new ResponseSender( messageContext.getChoreography().getName(), messageContext.getPartner()
                 .getPartnerId(), messageContext.getConversation().getConversationId(), action, requestResponseData,
@@ -105,5 +129,4 @@ public class HTTPResponseIntegrationPipelet extends HTTPIntegrationPipelet {
         LOG.debug( "Done!" );
         return messageContext;
     }
-
 } // HTTPResponseIntegrationPipelet

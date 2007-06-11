@@ -50,7 +50,9 @@ public class ChoreographyActionForm extends ActionForm {
     private Vector             followupActions           = new Vector();
     private int                backendInboundPipelineId  = 0;
     private int                backendOutboundPipelineId = 0;
+    private int                statusUpdatePipelineId    = 0;
 
+    private List<PipelinePojo> statusUpdatePipelines     = new Vector<PipelinePojo>();
     private List<PipelinePojo> backendInboundPipelines   = new Vector<PipelinePojo>();
     private List<PipelinePojo> backendOutboundPipelines  = new Vector<PipelinePojo>();
     private String[]           followups                 = new String[0];
@@ -70,6 +72,7 @@ public class ChoreographyActionForm extends ActionForm {
         setFollowups( new String[0] );
         setBackendInboundPipelineId( 0 );
         setBackendOutboundPipelineId( 0 );
+        setStatusUpdatePipelineId( 0 );
     }
 
     public void cleanSettings() {
@@ -80,6 +83,7 @@ public class ChoreographyActionForm extends ActionForm {
         setTerminationAction( false );
         setBackendInboundPipelineId( 0 );
         setBackendOutboundPipelineId( 0 );
+        setStatusUpdatePipelineId( 0 );
     }
 
     public void setProperties( ActionPojo action ) {
@@ -96,6 +100,9 @@ public class ChoreographyActionForm extends ActionForm {
         if ( action.getOutboundPipeline() != null ) {
             setBackendOutboundPipelineId( action.getOutboundPipeline().getNxPipelineId() );
         }
+        if ( action.getStatusUpdatePipeline() != null ) {
+            setStatusUpdatePipelineId( action.getStatusUpdatePipeline().getNxPipelineId() );
+        }
     }
 
     public ActionPojo getProperties( ActionPojo action ) {
@@ -103,10 +110,14 @@ public class ChoreographyActionForm extends ActionForm {
         action.setName( getActionId() );
         action.setStart( isStartAction() );
         action.setEnd( isTerminationAction() );
-        action.setInboundPipeline( Engine.getInstance().getActiveConfigurationAccessService().getPipelinePojoByNxPipelineId(
-                getBackendInboundPipelineId() ) );
-        action.setOutboundPipeline( Engine.getInstance().getActiveConfigurationAccessService().getPipelinePojoByNxPipelineId(
-                getBackendOutboundPipelineId() ) );
+        action.setInboundPipeline( Engine.getInstance().getActiveConfigurationAccessService()
+                .getPipelinePojoByNxPipelineId( getBackendInboundPipelineId() ) );
+        action.setOutboundPipeline( Engine.getInstance().getActiveConfigurationAccessService()
+                .getPipelinePojoByNxPipelineId( getBackendOutboundPipelineId() ) );
+        if ( getStatusUpdatePipelineId() != 0 ) {
+            action.setStatusUpdatePipeline( Engine.getInstance().getActiveConfigurationAccessService()
+                    .getPipelinePojoByNxPipelineId( getStatusUpdatePipelineId() ) );
+        }
 
         return action;
     }
@@ -253,5 +264,27 @@ public class ChoreographyActionForm extends ActionForm {
     public void setNxChoreographyId( int nxChoreographyId ) {
 
         this.nxChoreographyId = nxChoreographyId;
+    }
+
+    public int getStatusUpdatePipelineId() {
+
+        return statusUpdatePipelineId;
+    }
+
+    public void setStatusUpdatePipelineId( int statusUpdatePipelineId ) {
+
+        this.statusUpdatePipelineId = statusUpdatePipelineId;
+    }
+
+    
+    public List<PipelinePojo> getStatusUpdatePipelines() {
+    
+        return statusUpdatePipelines;
+    }
+
+    
+    public void setStatusUpdatePipelines( List<PipelinePojo> statusUpdatePipelines ) {
+    
+        this.statusUpdatePipelines = statusUpdatePipelines;
     }
 }

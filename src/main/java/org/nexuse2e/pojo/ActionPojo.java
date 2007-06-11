@@ -43,6 +43,7 @@ public class ActionPojo implements java.io.Serializable {
     private boolean                 end;
     private PipelinePojo            inboundPipeline;
     private PipelinePojo            outboundPipeline;
+    private PipelinePojo            statusUpdatePipeline;
     private String                  name;
     private Set<FollowUpActionPojo> followUpActions  = new HashSet<FollowUpActionPojo>( 0 );
     private Set<FollowUpActionPojo> followedActions  = new HashSet<FollowUpActionPojo>( 0 );
@@ -237,6 +238,18 @@ public class ActionPojo implements java.io.Serializable {
         }
 
         return nxActionId;
+    }
+
+    
+    public PipelinePojo getStatusUpdatePipeline() {
+    
+        return statusUpdatePipeline;
+    }
+
+    
+    public void setStatusUpdatePipeline( PipelinePojo statusUpdatePipeline ) {
+    
+        this.statusUpdatePipeline = statusUpdatePipeline;
     }
 
 }

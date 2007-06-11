@@ -75,6 +75,7 @@ public class FrontendPipeline extends AbstractPipeline implements ProtocolSpecif
 
         if ( messageContext.getMessagePojo() == null ) {
             messageContext.setMessagePojo( new MessagePojo() );
+            messageContext.setOriginalMessagePojo( messageContext.getMessagePojo() );
         }
 
         for ( int i = 0; i < forwardPipelets.length; i++ ) {

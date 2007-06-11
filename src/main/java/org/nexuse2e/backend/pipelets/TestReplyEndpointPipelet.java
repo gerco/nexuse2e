@@ -22,9 +22,9 @@ package org.nexuse2e.backend.pipelets;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.nexuse2e.NexusException;
@@ -40,18 +40,20 @@ import org.nexuse2e.pojo.MessagePayloadPojo;
 
 public class TestReplyEndpointPipelet extends AbstractPipelet {
 
-    private static Logger      LOG                  = Logger.getLogger( TestReplyEndpointPipelet.class );
+    private static Logger      LOG                             = Logger.getLogger( TestReplyEndpointPipelet.class );
 
-    public static final String FILE_NAME_PARAM_NAME = "fileName";
-    public static final String DIRECTORY_PARAM_NAME = "directory";
-    public static final String ACTION_PARAM_NAME    = "action";
-    public static final String DELAY_PARAM_NAME     = "delay";
+    public static final String FILE_NAME_PARAM_NAME            = "fileName";
+    public static final String DIRECTORY_PARAM_NAME            = "directory";
+    public static final String ACTION_PARAM_NAME               = "action";
+    public static final String DELAY_PARAM_NAME                = "delay";
+    public static final String USE_ORIGINAL_MESSAGE_PARAM_NAME = "useOriginalMessage";
 
-    private int                delay                = 1000;
-    private String             action               = null;
-    private String             fileName             = null;
-    private String             directory            = null;
-    private String             fileContent          = null;
+    private int                delay                           = 1000;
+    private String             action                          = null;
+    private String             fileName                        = null;
+    private String             directory                       = null;
+    private String             fileContent                     = null;
+    private boolean            useOriginalMessage              = true;
 
     /**
      * Default constructor.
@@ -67,6 +69,8 @@ public class TestReplyEndpointPipelet extends AbstractPipelet {
                 "Action to trigger for outbound message.", "" ) );
         parameterMap.put( DELAY_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "Delay",
                 "Delay in milliseconds before outbound message is sent.", "1000" ) );
+        parameterMap.put( USE_ORIGINAL_MESSAGE_PARAM_NAME, new ParameterDescriptor( ParameterType.BOOLEAN,
+                "Use Original Message", "Use Original Message to retrieve XML.", Boolean.TRUE ) );
     }
 
     /* (non-Javadoc)
@@ -124,6 +128,10 @@ public class TestReplyEndpointPipelet extends AbstractPipelet {
             delay = Integer.parseInt( delayString );
         }
 
+        Boolean useOriginalMessageValue = getParameter( USE_ORIGINAL_MESSAGE_PARAM_NAME );
+        if ( useOriginalMessageValue != null ) {
+            useOriginalMessage = useOriginalMessageValue.booleanValue();
+        }
         super.initialize( config );
     }
 
@@ -131,6 +139,7 @@ public class TestReplyEndpointPipelet extends AbstractPipelet {
 
         LOG.debug( "Entered TestReplyEndpointPipelet.processMessage..." );
         RequestResponseData requestResponseData = null;
+        String requestString = null;
 
         for ( Iterator iter = messageContext.getMessagePojo().getMessagePayloads().iterator(); iter.hasNext(); ) {
             MessagePayloadPojo messagePayloadPojo = (MessagePayloadPojo) iter.next();
@@ -144,18 +153,33 @@ public class TestReplyEndpointPipelet extends AbstractPipelet {
                 }
             }
 
-            if ( ( fileContent != null ) && ( fileContent.length() != 0 ) ) {
-                requestResponseData = new RequestResponseData( 0, fileContent, new String( messagePayloadPojo
-                        .getPayloadData() ) );
-            } else {
-                requestResponseData = new RequestResponseData( 0, new String( messagePayloadPojo.getPayloadData() ),
-                        new String( messagePayloadPojo.getPayloadData() ) );
-            }
+            if ( ( messagePayloadPojo != null ) && ( messagePayloadPojo.getPayloadData() != null ) ) {
+                if ( useOriginalMessage ) {
+                    List<MessagePayloadPojo> messagePayloadPojos = messageContext.getOriginalMessagePojo()
+                            .getMessagePayloads();
+                    Iterator<MessagePayloadPojo> iterator = messagePayloadPojos.iterator();
+                    if ( iterator.hasNext() ) {
+                        MessagePayloadPojo payload = iterator.next();
+                        if ( ( payload != null ) && ( payload.getPayloadData() != null ) ) {
+                            requestString = new String( payload.getPayloadData() );
+                        }
+                    }
+                } else {
+                    requestString = new String( messagePayloadPojo.getPayloadData() );
+                }
 
-            // Trigger new response message
-            new Thread( new ResponseSender( messageContext.getChoreography().getName(), messageContext.getPartner()
-                    .getPartnerId(), messageContext.getConversation().getConversationId(), action, requestResponseData,
-                    delay ) ).start();
+                if ( ( fileContent != null ) && ( fileContent.length() != 0 ) ) {
+                    requestResponseData = new RequestResponseData( 0, fileContent, requestString );
+                } else {
+                    requestResponseData = new RequestResponseData( 0,
+                            new String( messagePayloadPojo.getPayloadData() ), requestString );
+                }
+
+                // Trigger new response message
+                new Thread( new ResponseSender( messageContext.getChoreography().getName(), messageContext.getPartner()
+                        .getPartnerId(), messageContext.getConversation().getConversationId(), action,
+                        requestResponseData, delay ) ).start();
+            }
         }
         LOG.debug( "Done!" );
 

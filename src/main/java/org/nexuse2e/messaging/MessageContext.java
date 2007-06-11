@@ -35,6 +35,7 @@ import org.nexuse2e.pojo.PartnerPojo;
 public class MessageContext {
 
     private MessagePojo         messagePojo         = null;
+    private MessagePojo         originalMessagePojo = null;
     private Object              data                = null;
     private ProtocolSpecificKey protocolSpecificKey = null;
     private ActionSpecificKey   actionSpecificKey   = null;
@@ -185,8 +186,19 @@ public class MessageContext {
         clone.setConversation( this.getConversation() );
         clone.setData( this.getData() );
         clone.setMessagePojo( this.getMessagePojo() );
+        clone.setOriginalMessagePojo( this.getOriginalMessagePojo() );
         clone.setParticipant( this.getParticipant() );
         clone.setProtocolSpecificKey( this.getProtocolSpecificKey() );
         return clone;
+    }
+
+    public MessagePojo getOriginalMessagePojo() {
+
+        return originalMessagePojo;
+    }
+
+    public void setOriginalMessagePojo( MessagePojo originalMessagePojo ) {
+
+        this.originalMessagePojo = originalMessagePojo;
     }
 } // MessageContext

@@ -73,6 +73,7 @@ public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
             LOG.fatal( "Unable to create AcknowldegeMessageId for message: " + currentMessageId );
             e.printStackTrace();
             messageContext.setMessagePojo( null );
+            messageContext.setOriginalMessagePojo( null );
             return messageContext;
         }
         acknowledgment.setMessageId( messageId );

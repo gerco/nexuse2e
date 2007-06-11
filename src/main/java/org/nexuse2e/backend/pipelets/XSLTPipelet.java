@@ -102,7 +102,7 @@ public class XSLTPipelet extends AbstractPipelet {
 
         Map<?, ?> map = null;
 
-        if ( ( messageContext.getData() == null ) && ( messageContext.getData() instanceof RequestResponseData )
+        if ( ( messageContext.getData() != null ) && ( messageContext.getData() instanceof RequestResponseData )
                 && ( ( (RequestResponseData) messageContext.getData() ).getParameters() != null ) ) {
             map = ( (RequestResponseData) messageContext.getData() ).getParameters();
         }
@@ -138,9 +138,13 @@ public class XSLTPipelet extends AbstractPipelet {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer( xsltSource );
             if ( map != null ) {
-                for ( Iterator iter = map.keySet().iterator(); iter.hasNext(); ) {
-                    String key = (String) iter.next();
-                    transformer.setParameter( key.replace( '/', '_' ), map.get( key ) );
+                LOG.debug( "Using provided XSLT parameters..." );
+                if ( LOG.isTraceEnabled() ) {
+                    for ( Iterator iter = map.keySet().iterator(); iter.hasNext(); ) {
+                        String key = (String) iter.next();
+                        transformer.setParameter( key, map.get( key ) );
+                        LOG.trace( "XSLT param: " + key + " - " + map.get( key ) );
+                    }
                 }
             }
             transformer.transform( xmlSource, new StreamResult( baos ) );
@@ -164,7 +168,7 @@ public class XSLTPipelet extends AbstractPipelet {
         }
         StreamSource xmlSource = new StreamSource( new File( args[0] ) );
         StreamSource xsltSource = new StreamSource( new File( args[1] ) );
-        
+
         Map<String, String> map = new HashMap<String, String>();
         map.put( "/dXML/Order/OrderNumber", "479855385423" );
         map.put( "/dXML/Order/ReleaseNumber", "H89550x" );

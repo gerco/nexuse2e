@@ -60,11 +60,10 @@ public class ActionCreateAction extends NexusE2EAction {
         try {
 
             ChoreographyActionForm form = (ChoreographyActionForm) actionForm;
-            String choreographyId = form.getChoreographyId();
             ActionPojo action = new ActionPojo();
 
             ChoreographyPojo choreography = Engine.getInstance().getActiveConfigurationAccessService()
-                    .getChoreographyByChoreographyId( choreographyId );
+                    .getChoreographyByNxChoreographyId( form.getNxChoreographyId() );
             action.setChoreography( choreography );
             form.getProperties( action );
             choreography.getActions().add( action );

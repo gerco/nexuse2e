@@ -61,6 +61,9 @@ public class ActionAddAction extends NexusE2EAction {
         form.setBackendInboundPipelines( Engine.getInstance().getActiveConfigurationAccessService().getBackendPipelinePojos(
                 Constants.PIPELINE_TYPE_INBOUND, null ) );
 
+        form.setStatusUpdatePipelines( Engine.getInstance().getActiveConfigurationAccessService().getBackendPipelinePojos(
+                Constants.PIPELINE_TYPE_INBOUND, null ) );
+
         form.setBackendOutboundPipelines( Engine.getInstance().getActiveConfigurationAccessService().getBackendPipelinePojos(
                 Constants.PIPELINE_TYPE_OUTBOUND, null ) );
 

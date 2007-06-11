@@ -118,6 +118,43 @@ public class MessagePojo implements java.io.Serializable {
         this.messageLabels = messageLabels;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+
+        MessagePojo clonedMessagePojo = new MessagePojo();
+
+        clonedMessagePojo.setAction( action );
+        clonedMessagePojo.setConversation( conversation );
+        clonedMessagePojo.setCreatedDate( createdDate );
+        clonedMessagePojo.setCustomParameters( customParameters );
+        clonedMessagePojo.setEndDate( endDate );
+        clonedMessagePojo.setErrors( errors );
+        clonedMessagePojo.setExpirationDate( expirationDate );
+        clonedMessagePojo.setHeaderData( headerData.clone() );
+        clonedMessagePojo.setMessageId( messageId );
+        clonedMessagePojo.setMessageLabels( messageLabels );
+        List<MessagePayloadPojo> clonedMessagePayloads = new ArrayList<MessagePayloadPojo>();
+        for ( MessagePayloadPojo messagePayload : messagePayloads ) {
+            MessagePayloadPojo clonedMessagePayload = (MessagePayloadPojo)messagePayload.clone();
+            clonedMessagePayload.setMessage( clonedMessagePojo );
+            clonedMessagePayloads.add( clonedMessagePayload );
+        }
+        clonedMessagePojo.setMessagePayloads( clonedMessagePayloads );
+        clonedMessagePojo.setModifiedDate( modifiedDate );
+        clonedMessagePojo.setModifiedNxUserId( modifiedNxUserId );
+        clonedMessagePojo.setOutbound( outbound );
+        clonedMessagePojo.setReferencedMessage( referencedMessage );
+        clonedMessagePojo.setRetries( retries );
+        clonedMessagePojo.setStatus( status );
+        clonedMessagePojo.setTRP( TRP );
+        clonedMessagePojo.setType( type );
+
+        return clonedMessagePojo;
+    } // clone
+
     /**
      * Convenience method to retrieve the participant for this message.
      * @return The participant if it was found

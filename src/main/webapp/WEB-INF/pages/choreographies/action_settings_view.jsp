@@ -60,6 +60,17 @@
 				</html:select> 
 			</td>
 		</tr>
+		<tr>
+			<td class="NEXUSName">Status Update Pipeline</td>
+			<td class="NEXUSValue">
+				<html:select property="statusUpdatePipelineId">
+					<html-el:option value="0">None</html-el:option>
+					<logic:iterate name="choreographyActionForm" property="statusUpdatePipelines" id="inbound">
+						<html-el:option value="${inbound.nxPipelineId}">${inbound.name}</html-el:option>
+					</logic:iterate>
+				</html:select> 
+			</td>
+		</tr>
 
 	</table>
 	<table class="NEXUS_TABLE" width="100%">

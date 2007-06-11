@@ -29,6 +29,7 @@ import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Runlevel;
 import org.nexuse2e.configuration.EngineConfiguration;
+import org.nexuse2e.pojo.MessagePojo;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
@@ -63,6 +64,13 @@ public class BackendInboundDispatcher implements InitializingBean, Manageable {
             BackendPipeline backendInboundPipeline = backendInboundPipelines.get( actionSpecificKey );
             if ( backendInboundPipeline != null ) {
                 LOG.debug( "Found pipeline: " + backendInboundPipeline + " - " + actionSpecificKey );
+                
+                // Clone MessagePojo so that Pipelets in the Pipeline can modify the message/payloads
+                try {
+                    messageContext.setMessagePojo( (MessagePojo)messageContext.getMessagePojo().clone() );
+                } catch ( CloneNotSupportedException e ) {
+                    throw new NexusException( "Error cloning original MessagePojo!" );
+                }
 
                 backendInboundPipeline.processMessage( messageContext );
             } else {

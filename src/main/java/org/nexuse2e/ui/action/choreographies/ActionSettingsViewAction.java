@@ -124,9 +124,11 @@ public class ActionSettingsViewAction extends NexusE2EAction {
 
         form.setBackendInboundPipelines( Engine.getInstance().getActiveConfigurationAccessService().getBackendPipelinePojos(
                 Constants.PIPELINE_TYPE_INBOUND, Constants.PIPELINECOMPARATOR ) );
+        form.setStatusUpdatePipelines( Engine.getInstance().getActiveConfigurationAccessService().getBackendPipelinePojos(
+                Constants.PIPELINE_TYPE_INBOUND, Constants.PIPELINECOMPARATOR ) );
         form.setBackendOutboundPipelines( Engine.getInstance().getActiveConfigurationAccessService().getBackendPipelinePojos(
                 Constants.PIPELINE_TYPE_OUTBOUND, Constants.PIPELINECOMPARATOR ) );
-
+        
         //request.getSession().setAttribute( Crumbs.CURRENT_LOCATION, Crumbs.ACTION+"_"+choreographyId+"_"+actionId );
 
         return success;

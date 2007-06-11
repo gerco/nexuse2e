@@ -78,6 +78,7 @@ public class HttpReceiverService extends AbstractControllerService implements Re
 
             messageContext.setData( getContentFromRequest( request ) );
             messageContext.setMessagePojo( new MessagePojo() );
+            messageContext.setOriginalMessagePojo( messageContext.getMessagePojo() );
             messageContext.getMessagePojo().setCustomParameters( new HashMap<String, String>() );
             Enumeration<String> headerNames = request.getHeaderNames();
             while ( headerNames.hasMoreElements() ) {

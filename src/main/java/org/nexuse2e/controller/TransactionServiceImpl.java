@@ -399,6 +399,7 @@ public class TransactionServiceImpl implements TransactionService {
             messageContext.setProtocolSpecificKey( new ProtocolSpecificKey( messagePojo.getTRP().getProtocol(),
                     messagePojo.getTRP().getVersion(), messagePojo.getTRP().getTransport() ) );
             messageContext.setMessagePojo( messagePojo );
+            messageContext.setOriginalMessagePojo( messagePojo );
             String senderId = messagePojo.getParticipant().getLocalPartner().getPartnerId();
             String senderIdType = messagePojo.getParticipant().getLocalPartner().getPartnerIdType();
 

@@ -67,6 +67,27 @@ public class MessagePayloadPojo implements java.io.Serializable {
         this.modifiedNxUserId = modifiedNxUserId;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+
+        MessagePayloadPojo clonedMessagePayloadPojo = new MessagePayloadPojo();
+
+        clonedMessagePayloadPojo.setContentId( contentId );
+        clonedMessagePayloadPojo.setCreatedDate( createdDate );
+        clonedMessagePayloadPojo.setMessage( message );
+        clonedMessagePayloadPojo.setMimeType( mimeType );
+        clonedMessagePayloadPojo.setModifiedDate( modifiedDate );
+        clonedMessagePayloadPojo.setModifiedNxUserId( modifiedNxUserId );
+        clonedMessagePayloadPojo.setNxMessagePayloadId( nxMessagePayloadId );
+        clonedMessagePayloadPojo.setPayloadData( payloadData.clone() );
+        clonedMessagePayloadPojo.setSequenceNumber( sequenceNumber );
+
+        return clonedMessagePayloadPojo;
+    }
+
     // Property accessors
     public int getNxMessagePayloadId() {
 
