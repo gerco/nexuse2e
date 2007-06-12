@@ -40,10 +40,8 @@ import org.nexuse2e.ui.form.CollaborationPartnerForm;
  */
 public class PartnerCreateAction extends NexusE2EAction {
 
-    private static final String VERSIONSTRING = "$Id: PartnerCreateAction.java 925 2005-08-02 16:50:24Z guido.esch $";
-
-    private static String       URL           = "partner.error.url";
-    private static String       TIMEOUT       = "partner.error.timeout";
+    private static String URL     = "partner.error.url";
+    private static String TIMEOUT = "partner.error.timeout";
 
     /* (non-Javadoc)
      * @see com.tamgroup.nexus.e2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages)
@@ -68,6 +66,17 @@ public class PartnerCreateAction extends NexusE2EAction {
         PartnerPojo partner = new PartnerPojo();
         form.getProperties( partner );
         partner.setNxPartnerId( 0 );
+
+        PartnerPojo tempPartnerPojo = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByPartnerId(
+                partner.getPartnerId() );
+        if ( tempPartnerPojo != null ) {
+            ActionMessage errorMessage = new ActionMessage( "generic.error", "Partner ID already exists: "
+                    + form.getPartnerId() );
+            errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
+            addRedirect( request, URL, TIMEOUT );
+            return error;
+        }
+
         Engine.getInstance().getActiveConfigurationAccessService().getPartners( 0, null ).add( partner );
         Engine.getInstance().getActiveConfigurationAccessService().updatePartner( partner );
 
