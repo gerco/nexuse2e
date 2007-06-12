@@ -37,11 +37,6 @@ import org.nexuse2e.ui.form.CollaborationPartnerForm;
  */
 public class PartnerAddAction extends NexusE2EAction {
 
-    private static final String VERSIONSTRING = "$Id: PartnerAddAction.java 1298 2006-08-04 13:14:37Z guido.esch $";
-
-    private static String       URL           = "partner.error.url";
-    private static String       TIMEOUT       = "partner.error.timeout";
-
     /* (non-Javadoc)
      * @see com.tamgroup.nexus.e2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages)
      */
@@ -51,7 +46,7 @@ public class PartnerAddAction extends NexusE2EAction {
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
-        ActionForward error = actionMapping.findForward( ACTION_FORWARD_FAILURE );
+        // ActionForward error = actionMapping.findForward( ACTION_FORWARD_FAILURE );
 
         String type = request.getParameter( "type" );
         CollaborationPartnerForm form = (CollaborationPartnerForm) actionForm;

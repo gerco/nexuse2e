@@ -39,10 +39,8 @@ import org.nexuse2e.ui.form.CollaborationPartnerForm;
  */
 public class PartnerInfoUpdateAction extends NexusE2EAction {
 
-    private static final String VERSIONSTRING = "$Id: PartnerInfoUpdateAction.java 925 2005-08-02 16:50:24Z guido.esch $";
-
-    private static String       URL           = "partner.error.url";
-    private static String       TIMEOUT       = "partner.error.timeout";
+    private static String URL     = "partner.error.url";
+    private static String TIMEOUT = "partner.error.timeout";
 
     /* (non-Javadoc)
      * @see com.tamgroup.nexus.e2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages)
@@ -60,11 +58,23 @@ public class PartnerInfoUpdateAction extends NexusE2EAction {
         int nxPartnerId = form.getNxPartnerId();
 
         try {
-            PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByNxPartnerId( nxPartnerId );
+            PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByNxPartnerId(
+                    nxPartnerId );
             if ( partner == null ) {
                 LOG.trace( "Error, partner not found for id: " + nxPartnerId );
             }
             form.getProperties( partner );
+
+            PartnerPojo tempPartnerPojo = Engine.getInstance().getActiveConfigurationAccessService()
+                    .getPartnerByPartnerId( partner.getPartnerId() );
+            if ( ( tempPartnerPojo != null ) && ( partner.getNxPartnerId() != tempPartnerPojo.getNxPartnerId() ) ) {
+                ActionMessage errorMessage = new ActionMessage( "generic.error", "Partner ID already exists: "
+                        + form.getPartnerId() );
+                errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
+                addRedirect( request, URL, TIMEOUT );
+                return error;
+            }
+
             Engine.getInstance().getActiveConfigurationAccessService().updatePartner( partner );
         } catch ( NexusException e ) {
             ActionMessage errorMessage = new ActionMessage( "generic.error", e.getMessage() );
