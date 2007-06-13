@@ -10,8 +10,6 @@
 <nexus:helpBar helpDoc="documentation/Action.htm" />
 
 <html:form action="ActionCreate">
-	<html:hidden property="choreographyId" />
-
 	<table class="NEXUS_TABLE" width="100%">
 		<tr>
 			<td><nexus:crumbs /></td>

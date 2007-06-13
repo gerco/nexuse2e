@@ -211,6 +211,7 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                         }
 
                         // Send message
+                        messageContext.getMessagePojo().setRetries( retryCount - 1 );
                         messageContext = pipeline.processMessage( messageContext );
 
                         if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
@@ -247,6 +248,13 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
 
                     LOG.debug( "Message sent." );
                 } catch ( Throwable e ) {
+                    // Persist retry count changes
+                    try {
+                        Engine.getInstance().getTransactionService().updateMessage( messagePojo );
+                    } catch ( NexusException e1 ) {
+                        LOG.error( "Error saving message: " + e1 );
+                    }
+
                     if ( LOG.isTraceEnabled() ) {
                         e.printStackTrace();
                     }

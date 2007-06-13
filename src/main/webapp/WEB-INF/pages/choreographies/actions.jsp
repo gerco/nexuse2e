@@ -43,7 +43,7 @@
     <table class="NEXUS_BUTTON_TABLE" width="100%">
         <tr>
             <td>&nbsp;</td>
-            <td class="BUTTON_RIGHT"><nexus:link href="ActionAdd.do?choreographyId=${choreographyForm.choreographyName}" styleClass="NexusHeaderLink">
+            <td class="BUTTON_RIGHT"><nexus:link href="ActionAdd.do?nxChoreographyId=${nxChoreographyId}" styleClass="NexusHeaderLink">
               <img src="images/tree/plus.gif" border="0" alt=""></nexus:link></td>
             <td class="NexusHeaderLink">Add Action</td>
         </tr>

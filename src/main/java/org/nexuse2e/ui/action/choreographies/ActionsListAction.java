@@ -96,6 +96,7 @@ public class ActionsListAction extends NexusE2EAction {
         //request.getSession().setAttribute( Crumbs.CURRENT_LOCATION, Crumbs.ACTIONS+"_"+choreographyId );
 
         request.setAttribute( ATTRIBUTE_COLLECTION, actions );
+        request.setAttribute( "nxChoreographyId", nxChoreographyId );
         return success;
 
     } // executeNexusE2EAction

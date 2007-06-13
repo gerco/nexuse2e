@@ -64,6 +64,12 @@ public class ActionCreateAction extends NexusE2EAction {
 
             ChoreographyPojo choreography = Engine.getInstance().getActiveConfigurationAccessService()
                     .getChoreographyByNxChoreographyId( form.getNxChoreographyId() );
+            if ( choreography == null ) {
+                ActionMessage errorMessage = new ActionMessage( "generic.error", "Choreography not found!" );
+                errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
+                addRedirect( request, URL, TIMEOUT );
+                return error;
+            }
             action.setChoreography( choreography );
             form.getProperties( action );
             choreography.getActions().add( action );
