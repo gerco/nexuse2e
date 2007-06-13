@@ -137,8 +137,21 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                         + messagePojo.getConversation().getPartner().getPartnerId() ) );
             }
         }
-        
-//        LOG.info( "Received message from " + participant.getDescription() + " for " + choreography.getName() + "/" + action.getName() );
+
+        String msgType = null;
+        switch ( messagePojo.getType() ) {
+            case Constants.INT_MESSAGE_TYPE_ACK:
+                msgType = "ack";
+                break;
+            case Constants.INT_MESSAGE_TYPE_ERROR:
+                msgType = "error";
+                break;
+            default:
+                msgType = "normal";
+        }
+
+        LOG.info( "Received  " + msgType + " message (" + messagePojo.getMessageId() + ") from " + participant.getPartner().getPartnerId() + " for "
+                + choreography.getName() + "/" + action.getName() );
 
         if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
 
@@ -169,8 +182,8 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                                     }
                                 }
 
-                                responseMessageContext = synchronousReplies.get( messageContext
-                                        .getMessagePojo().getMessageId() );
+                                responseMessageContext = synchronousReplies.get( messageContext.getMessagePojo()
+                                        .getMessageId() );
                             }
                             LOG.debug( "Found reply: " + responseMessageContext );
                         }

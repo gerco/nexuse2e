@@ -322,7 +322,7 @@ public class BackendActionSerializer extends AbstractPipelet {
                     nex.printStackTrace();
                     LOG.error( "InboundQueueListener.run detected an exception: " + nex );
                 } catch ( InterruptedException ex ) {
-                    BackendActionSerializer.LOG.warn( "Interrupted while listening on queue " );
+                    BackendActionSerializer.LOG.debug( "Interrupted while listening on queue " );
                 }
             }
             BackendActionSerializer.LOG.info( "Stopped InboundQueueListener "

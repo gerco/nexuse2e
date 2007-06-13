@@ -357,7 +357,7 @@ public class FrontendActionSerializer implements Manageable {
                         }
                     }
                 } catch ( InterruptedException ex ) {
-                    FrontendActionSerializer.LOG.warn( "Interrupted while listening on queue " );
+                    FrontendActionSerializer.LOG.debug( "Interrupted while listening on queue " );
                 }
             } // while
             FrontendActionSerializer.LOG.info( "Stopped InboundQueueListener "

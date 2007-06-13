@@ -69,9 +69,25 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
             interval = participantPojo.getConnection().getMessageInterval();
         }
 
-        LOG.debug( "Waiting " + interval + " seconds until message resend." );
+        String msgType = null;
+        switch ( messageContext.getMessagePojo().getType() ) {
+            case Constants.INT_MESSAGE_TYPE_ACK:
+                msgType = "ack";
+                break;
+            case Constants.INT_MESSAGE_TYPE_ERROR:
+                msgType = "error";
+                break;
+            default:
+                msgType = "normal";
+        }
+
+        LOG.info( "Sending " + msgType + " message (" + messageContext.getMessagePojo().getMessageId() + ") to "
+                + participantPojo.getPartner().getPartnerId() + " for " + messageContext.getChoreography().getName()
+                + "/" + messageContext.getMessagePojo().getAction().getName() );
 
         ScheduledFuture<?> handle = scheduler.scheduleAtFixedRate( messageSender, 0, interval, TimeUnit.SECONDS );
+        LOG.debug( "Waiting " + interval + " seconds until message resend..." );
+
         Engine.getInstance().getTransactionService().registerProcessingMessage(
                 messageContext.getMessagePojo().getMessageId(), handle, scheduler );
 
