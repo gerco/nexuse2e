@@ -21,13 +21,14 @@ package org.nexuse2e.tools.mapping.conversation;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Iterator;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -42,7 +43,6 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
-
 import org.nexuse2e.tools.mapping.CSVMappingFileEntry;
 import org.nexuse2e.tools.mapping.csv.Record;
 import org.nexuse2e.tools.mapping.csv.RecordContainer;
@@ -149,7 +149,10 @@ public class ProcessCSV {
 
         try {
             ProcessCSV process = new ProcessCSV();
-            String out = process.process( mfe, new File( contentPath ) );
+            
+            FileInputStream fis = new FileInputStream(new File( contentPath ));
+            String out = process.process( mfe, fis );
+            fis.close();
             System.out.println( "...................." );
             System.out.println( out );
             System.out.println( "...................." );
@@ -158,12 +161,14 @@ public class ProcessCSV {
         }
     }
 
+    
+    
     /**
      * @param mfe
      * @param content
      * @return result
      */
-    public String process( CSVMappingFileEntry mfe, File content ) {
+    public String process( CSVMappingFileEntry mfe, InputStream content ) {
 
         File testFile = new File( mfe.getCsvmappings() );
         if ( !testFile.exists() ) {

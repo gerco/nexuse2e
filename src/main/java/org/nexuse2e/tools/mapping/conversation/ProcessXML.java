@@ -19,9 +19,10 @@
  */
 package org.nexuse2e.tools.mapping.conversation;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.StringReader;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -33,7 +34,6 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -63,8 +63,6 @@ import org.xml.sax.InputSource;
 /**
  * @author guido.esch
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public class ProcessXML {
 
@@ -157,7 +155,8 @@ public class ProcessXML {
             fis.close();
             String contentString = new String( dataArray );
             ProcessXML process = new ProcessXML();
-            System.out.println( process.processXML( mfe, contentString ) );
+            ByteArrayInputStream bias = new ByteArrayInputStream(contentString.getBytes());
+            System.out.println( process.processXML( mfe, bias ) );
         } catch ( Exception e ) {
             e.printStackTrace();
         }
@@ -168,7 +167,7 @@ public class ProcessXML {
      * @param content
      * @return result
      */
-    public String processXML( CSVMappingFileEntry mfe, String content ) {
+    public String processXML( CSVMappingFileEntry mfe, InputStream content ) {
 
         File testFile = new File( mfe.getCsvmappings() );
         if ( !testFile.exists() ) {
@@ -220,8 +219,8 @@ public class ProcessXML {
         }
         CSVLine rootLine = null;
         try {
-            StringReader sr = new StringReader( content );
-            InputSource input = new InputSource( sr );
+            
+            InputSource input = new InputSource( content );
 
             document = documentBuilder.parse( input );
             Map<String, XMLBlock> blocksHT = blockReader.getFirstContainer().getBlocks();
@@ -303,6 +302,10 @@ public class ProcessXML {
         return ""; //$NON-NLS-1$
     }
 
+    /**
+     * @param lines
+     * @return
+     */
     private CSVLine sortCSVLines( List<CSVLine> lines ) {
 
         Map<Object, CSVLine> refs = new HashMap<Object, CSVLine>();
@@ -352,6 +355,9 @@ public class ProcessXML {
         }
     }
 
+    /**
+     * @param block
+     */
     private void cleanBlock( XMLBlock block ) {
 
         List<XMLBlockEntry> blockentries = block.getBlockEntries();
@@ -376,6 +382,12 @@ public class ProcessXML {
         }
     }
 
+    /**
+     * @param root
+     * @param block
+     * @param refNode
+     * @return
+     */
     private CSVLine processBlock( Node root, XMLBlock block, Node refNode ) {
 
         CSVLine line = new CSVLine();
@@ -471,6 +483,11 @@ public class ProcessXML {
 
     }
 
+    /**
+     * @param node
+     * @param refNode
+     * @return
+     */
     private boolean isValidNode( Node node, Node refNode ) {
 
         if ( node == refNode ) {
@@ -489,6 +506,10 @@ public class ProcessXML {
         return true;
     }
 
+    /**
+     * @param block
+     * @return
+     */
     private boolean isRootBlock( XMLBlock block ) {
 
         List<XMLBlockEntry> entries = block.getBlockEntries();

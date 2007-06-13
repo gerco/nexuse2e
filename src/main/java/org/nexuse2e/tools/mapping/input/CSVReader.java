@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 
 
@@ -44,19 +45,10 @@ public class CSVReader {
      * @param source
      * @param separator
      */
-    public void readCSV( ProcessCSV parent, File source, RecordContainer records ) {
+    public void readCSV( ProcessCSV parent, InputStream source, RecordContainer records ) {
 
-        //        File inputFile = new File( "testData/input.csv" );
-        FileInputStream fis;
-        try {
-            fis = new FileInputStream( source );
-        } catch ( FileNotFoundException e ) {
-//            Plugin.getDefault().log(
-//                    new LogMessage( LogMessage.ERROR,
-//                            "Processing", e.getClass().getName(), this, "readCSV", 168, e.getLocalizedMessage(), e ) ); //$NON-NLS-1$
-            return;
-        }
-        InputStreamReader isr = new InputStreamReader( fis );
+     
+        InputStreamReader isr = new InputStreamReader( source );
         BufferedReader br = new BufferedReader( isr );
         String line = ""; //$NON-NLS-1$
         while ( line != null ) {

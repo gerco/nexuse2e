@@ -22,8 +22,10 @@ package org.nexuse2e.ui.action.communications;
 import java.io.ByteArrayInputStream;
 import java.security.KeyStore;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -78,6 +80,8 @@ public class CACertSaveKeyStoreAction extends NexusE2EAction {
             KeyStore jks = KeyStore.getInstance( "JKS" );
             jks.load( bais, pwd.toCharArray() );
             Enumeration e = jks.aliases();
+            List<CertificatePojo> certs = new ArrayList<CertificatePojo>();
+            
             while ( e.hasMoreElements() ) {
                 String alias = (String) e.nextElement();
                 X509Certificate cert = (X509Certificate) jks.getCertificate( alias );
@@ -92,12 +96,13 @@ public class CACertSaveKeyStoreAction extends NexusE2EAction {
                     certPojo.setCreatedDate( new Date() );
                     certPojo.setModifiedDate( new Date() );
                     LOG.debug( "importing certificate: " + certPojo.getName() );
-                    Engine.getInstance().getActiveConfigurationAccessService().updateCertificate( certPojo );
-
+//                    Engine.getInstance().getActiveConfigurationAccessService().updateCertificate( certPojo );
+                    certs.add( certPojo );
                 } else {
                     LOG.info( "Alias: " + alias + " already imported" );
                 }
             }
+            Engine.getInstance().getActiveConfigurationAccessService().updateCertificates( certs );
 
         } catch ( Exception e ) {
             ActionMessage errorMessage = new ActionMessage( "generic.error", e.getMessage() );

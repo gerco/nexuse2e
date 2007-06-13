@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Level;
 import org.nexuse2e.configuration.Constants.ComponentType;
 import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.CertificatePojo;
@@ -107,9 +108,20 @@ public class XiomaBaseClientConfiguration extends XiomaBaseServerConfiguration {
             ComponentPojo csv2xmlComponentPojo = new ComponentPojo( new Date(), new Date(), 1, ComponentType.PIPELET
                     .getValue(), "CSV2XMLConverterPipelet", "org.nexuse2e.client.scanner.CSV2XMLConverterPipelet",
                     "CSV2XMLConverterPipelet" );
+            
+            ComponentPojo uiLoggerComponentPojo = new ComponentPojo( new Date(), new Date(), 1, ComponentType.LOGGER
+                    .getValue(), "DBLogger", "org.nexuse2e.client.ClientUILogger", "Client UI Logger" );
+
+            LoggerPojo clientUILogger = new LoggerPojo( uiLoggerComponentPojo, new Date(), new Date(), 1,
+                    "Client UI Logger", true, "group_core,group_database,group_backend,group_frontend,group_ui" );
+            clientUILogger.setThreshold( Level.WARN_INT );
+            loggers.add( clientUILogger );
+            
+            
             components.add( xml2csvComponentPojo );
             components.add( csv2xmlComponentPojo );
-
+            components.add( uiLoggerComponentPojo );
+            
             PipelinePojo clientInboundPipelinePojo = new PipelinePojo();
             PipelinePojo clientOutboundPipelinePojo = new PipelinePojo();
 

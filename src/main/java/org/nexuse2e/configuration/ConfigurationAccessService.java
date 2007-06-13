@@ -1691,4 +1691,24 @@ public class ConfigurationAccessService {
         }
     }
 
+    /**
+     * @param certs
+     * @throws NexusException 
+     */
+    public void updateCertificates( List<CertificatePojo> certs ) throws NexusException {
+
+        
+        for ( CertificatePojo certificate : certs ) {
+            CertificatePojo oldCertificate = getCertificateByNxCertificateId( Constants.CERTIFICATE_TYPE_ALL, certificate
+                    .getNxCertificateId() );
+            if ( oldCertificate != null ) {
+                getCertificates( Constants.CERTIFICATE_TYPE_ALL, null );
+            }
+
+            getCertificates( Constants.CERTIFICATE_TYPE_ALL, null ).add( certificate );
+        }
+        applyConfiguration();
+        
+    }
+
 }

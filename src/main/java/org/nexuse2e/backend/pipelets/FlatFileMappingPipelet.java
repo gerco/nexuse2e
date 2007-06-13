@@ -20,6 +20,7 @@
 
 package org.nexuse2e.backend.pipelets;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.Iterator;
 import java.util.List;
@@ -141,7 +142,8 @@ public class FlatFileMappingPipelet extends AbstractPipelet {
                 MessagePayloadPojo messagePayloadPojo = (MessagePayloadPojo) iter.next();
                 String contentString = new String( messagePayloadPojo.getPayloadData() );
                 ProcessXML processXML = new ProcessXML();
-                String result = processXML.processXML( mfe, contentString );
+                ByteArrayInputStream bias = new ByteArrayInputStream(contentString.getBytes());
+                String result = processXML.processXML( mfe, bias );
 
                 if ( LOG.isTraceEnabled() ) {
                     LOG.trace( "...................." );
