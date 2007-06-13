@@ -58,9 +58,10 @@ import org.nexuse2e.util.EncryptionUtil;
  */
 public class StagingStoreExportedAction extends NexusE2EAction {
 
-    private static String URL             = "staging.error.url";
-    private static String TIMEOUT         = "staging.error.timeout";
-    private int           PEM_LINE_LENGTH = 64;
+    private static String URL     = "staging.error.url";
+    private static String TIMEOUT = "staging.error.timeout";
+
+    // private int           PEM_LINE_LENGTH = 64;
 
     /* (non-Javadoc)
      * @see com.tamgroup.nexus.e2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages)
@@ -76,7 +77,7 @@ public class StagingStoreExportedAction extends NexusE2EAction {
         ProtectedFileAccessForm form = (ProtectedFileAccessForm) actionForm;
 
         // request.setAttribute( "redirect", "true" );
-        
+
         int status = form.getStatus();
         int format = form.getFormat();
         int content = form.getContent();
@@ -94,8 +95,8 @@ public class StagingStoreExportedAction extends NexusE2EAction {
                 return error;
             }
             try {
-                CertificatePojo cPojo = Engine.getInstance().getActiveConfigurationAccessService().getCertificateByNxCertificateId(
-                        Constants.CERTIFICATE_TYPE_ALL, nxCertificateId );
+                CertificatePojo cPojo = Engine.getInstance().getActiveConfigurationAccessService()
+                        .getCertificateByNxCertificateId( Constants.CERTIFICATE_TYPE_ALL, nxCertificateId );
                 if ( cPojo == null ) {
                     ActionMessage errorMessage = new ActionMessage( "generic.error", "no certificate found!" );
                     errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
@@ -131,7 +132,7 @@ public class StagingStoreExportedAction extends NexusE2EAction {
                     fos.write( data );
                     fos.flush();
                     fos.close();
-                // ZIP
+                    // ZIP
                 } else if ( content == 2 ) {
                     FileOutputStream fos = new FileOutputStream( destFile );
                     ZipOutputStream zos = new ZipOutputStream( fos );
@@ -193,7 +194,7 @@ public class StagingStoreExportedAction extends NexusE2EAction {
                     fos.flush();
                     fos.close();
 
-                // PKCS 12 - full
+                    // PKCS 12 - full
                 } else if ( content == 3 ) {
                     FileOutputStream fos = new FileOutputStream( destFile );
                     fos.write( cPojo.getBinaryData() );

@@ -39,9 +39,6 @@ import org.nexuse2e.ui.form.ChoreographyActionForm;
  */
 public class ActionAddAction extends NexusE2EAction {
 
-    private static String URL     = "choreographies.error.url";
-    private static String TIMEOUT = "choreographies.error.timeout";
-
     /* (non-Javadoc)
      * @see com.tamgroup.nexus.e2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages, org.apache.struts.action.ActionMessages)
      */
@@ -51,21 +48,20 @@ public class ActionAddAction extends NexusE2EAction {
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
-        ActionForward error = actionMapping.findForward( ACTION_FORWARD_FAILURE );
 
         ChoreographyActionForm form = (ChoreographyActionForm) actionForm;
         String choreographyId = form.getChoreographyId();
         form.cleanSettings();
         form.setChoreographyId( choreographyId );
 
-        form.setBackendInboundPipelines( Engine.getInstance().getActiveConfigurationAccessService().getBackendPipelinePojos(
-                Constants.PIPELINE_TYPE_INBOUND, null ) );
+        form.setBackendInboundPipelines( Engine.getInstance().getActiveConfigurationAccessService()
+                .getBackendPipelinePojos( Constants.PIPELINE_TYPE_INBOUND, null ) );
 
-        form.setStatusUpdatePipelines( Engine.getInstance().getActiveConfigurationAccessService().getBackendPipelinePojos(
-                Constants.PIPELINE_TYPE_INBOUND, null ) );
+        form.setStatusUpdatePipelines( Engine.getInstance().getActiveConfigurationAccessService()
+                .getBackendPipelinePojos( Constants.PIPELINE_TYPE_INBOUND, null ) );
 
-        form.setBackendOutboundPipelines( Engine.getInstance().getActiveConfigurationAccessService().getBackendPipelinePojos(
-                Constants.PIPELINE_TYPE_OUTBOUND, null ) );
+        form.setBackendOutboundPipelines( Engine.getInstance().getActiveConfigurationAccessService()
+                .getBackendPipelinePojos( Constants.PIPELINE_TYPE_OUTBOUND, null ) );
 
         //request.getSession().setAttribute( Crumbs.CURRENT_LOCATION, Crumbs.ADD_ACTION + "_" + choreographyId );
 

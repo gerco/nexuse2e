@@ -46,8 +46,6 @@ import org.nexuse2e.ui.form.LoggerForm;
  */
 public class NotifierUpdateAction extends NexusE2EAction {
 
-    //private static final String VERSIONSTRING = "$Id: NotifierViewAction.java 879 2005-07-21 14:17:36Z markus.breilmann $";
-
     private static String URL     = "notifier.error.url";
     private static String TIMEOUT = "notifier.error.timeout";
 
@@ -137,17 +135,17 @@ public class NotifierUpdateAction extends NexusE2EAction {
             }
 
             if ( !originalLogger.getName().equals( form.getName() ) ) {
-                Engine.getInstance().getActiveConfigurationAccessService().renameLogger( originalLogger.getName(), form.getName() );
+                Engine.getInstance().getActiveConfigurationAccessService().renameLogger( originalLogger.getName(),
+                        form.getName() );
                 originalLogger.setName( form.getName() );
             }
             originalLogger.setLoggerParams( list );
 
             originalLogger.setThreshold( form.getThreshold() );
-            
+
             Engine.getInstance().getActiveConfigurationAccessService().updateLogger( originalLogger );
-            form
-                    .setLoggerInstance( Engine.getInstance().getActiveConfigurationAccessService().getLogger(
-                            originalLogger.getName() ) );
+            form.setLoggerInstance( Engine.getInstance().getActiveConfigurationAccessService().getLogger(
+                    originalLogger.getName() ) );
 
             return update;
         }

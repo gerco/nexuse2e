@@ -35,9 +35,6 @@ import org.nexuse2e.ui.form.ProtectedFileAccessForm;
  */
 public class StagingImportCertificateAction extends NexusE2EAction {
 
-    private static String URL     = "staging.error.url";
-    private static String TIMEOUT = "staging.error.timeout";
-
     /* (non-Javadoc)
      * @see com.tamgroup.nexus.e2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages)
      */
@@ -47,7 +44,6 @@ public class StagingImportCertificateAction extends NexusE2EAction {
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
-        ActionForward error = actionMapping.findForward( ACTION_FORWARD_FAILURE );
 
         ProtectedFileAccessForm form = (ProtectedFileAccessForm) actionForm;
         form.reset( actionMapping, request );

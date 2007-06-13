@@ -44,8 +44,6 @@ import org.nexuse2e.ui.form.ComponentForm;
  */
 public class ComponentCreateAction extends NexusE2EAction {
 
-    //private static final String VERSIONSTRING = "$Id: PartnerCreateAction.java 925 2005-08-02 16:50:24Z guido.esch $";
-
     private static String URL     = "partner.error.url";
     private static String TIMEOUT = "partner.error.timeout";
 
@@ -90,7 +88,8 @@ public class ComponentCreateAction extends NexusE2EAction {
             return error;
         }
 
-        Engine.getInstance().getActiveConfigurationAccessService().getComponents( ComponentType.ALL, null ).add( component );
+        Engine.getInstance().getActiveConfigurationAccessService().getComponents( ComponentType.ALL, null ).add(
+                component );
         Engine.getInstance().getActiveConfigurationAccessService().updateComponent( component );
 
         request.setAttribute( REFRESH_TREE, "true" );

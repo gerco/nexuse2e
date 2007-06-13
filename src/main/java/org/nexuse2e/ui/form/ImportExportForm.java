@@ -38,21 +38,19 @@ public class ImportExportForm extends ActionForm {
     /**
      * 
      */
-    private static final long   serialVersionUID         = -7760013405323559900L;
+    private static final long serialVersionUID         = -7760013405323559900L;
 
-    private static final String VERSIONSTRING            = "$Id: ImportExportForm.java 930 2005-08-03 14:25:46Z markus.breilmann $";
-
-    private List                choreographyList         = null;
-    private String[]            choreographies           = null;
-    private String              choreographyImportPath   = null;
-    private FormFile            choreographyImportFile   = null;
-    private List                partnerList              = null;
-    private String[]            partners                 = null;
-    private String              partnerImportPath        = null;
-    private FormFile            partnerImportFile        = null;
-    private boolean             includeParticipants      = false;
-    private boolean             includeComponents        = false;
-    private boolean             exportSettingsOnShutdown = false;
+    private List              choreographyList         = null;
+    private String[]          choreographies           = null;
+    private String            choreographyImportPath   = null;
+    private FormFile          choreographyImportFile   = null;
+    private List              partnerList              = null;
+    private String[]          partners                 = null;
+    private String            partnerImportPath        = null;
+    private FormFile          partnerImportFile        = null;
+    private boolean           includeParticipants      = false;
+    private boolean           includeComponents        = false;
+    private boolean           exportSettingsOnShutdown = false;
 
     /* (non-Javadoc)
      * @see org.apache.struts.action.ActionForm#reset(org.apache.struts.action.ActionMapping, javax.servlet.http.HttpServletRequest)

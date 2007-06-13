@@ -20,7 +20,6 @@
 package org.nexuse2e.ui.action.partners;
 
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
@@ -47,10 +46,8 @@ import org.nexuse2e.ui.form.CollaborationPartnerForm;
  */
 public class PartnerInfoViewAction extends NexusE2EAction {
 
-    private static final String VERSIONSTRING = "$Id: PartnerInfoViewAction.java 879 2005-07-21 14:17:36Z markus.breilmann $";
-
-    private static String       URL           = "partner.error.url";
-    private static String       TIMEOUT       = "partner.error.timeout";
+    private static String URL     = "partner.error.url";
+    private static String TIMEOUT = "partner.error.timeout";
 
     /* (non-Javadoc)
      * @see com.tamgroup.nexus.e2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages)
@@ -68,8 +65,8 @@ public class PartnerInfoViewAction extends NexusE2EAction {
         int nxPartnerId = form.getNxPartnerId();
 
         try {
-            PartnerPojo partnerPojo = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByNxPartnerId(
-                    nxPartnerId );
+            PartnerPojo partnerPojo = Engine.getInstance().getActiveConfigurationAccessService()
+                    .getPartnerByNxPartnerId( nxPartnerId );
 
             if ( partnerPojo != null ) {
                 form.setProperties( partnerPojo );

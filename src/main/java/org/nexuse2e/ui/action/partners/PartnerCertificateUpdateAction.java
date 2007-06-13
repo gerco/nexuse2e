@@ -48,10 +48,8 @@ import org.nexuse2e.util.EncryptionUtil;
  */
 public class PartnerCertificateUpdateAction extends NexusE2EAction {
 
-    private static final String VERSIONSTRING = "$Id: PartnerCertificateUpdateAction.java 1024 2006-02-14 11:27:45Z markus.breilmann $";
-
-    private static String       URL           = "partner.error.url";
-    private static String       TIMEOUT       = "partner.error.timeout";
+    private static String URL     = "partner.error.url";
+    private static String TIMEOUT = "partner.error.timeout";
 
     /* (non-Javadoc)
      * @see com.tamgroup.nexus.e2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages)
@@ -71,9 +69,10 @@ public class PartnerCertificateUpdateAction extends NexusE2EAction {
 
         CertificatePojo cert;
         try {
-            PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByNxPartnerId( nxPartnerId );
-            cert = Engine.getInstance().getActiveConfigurationAccessService().getCertificateFromPartnerByNxCertificateId( partner,
-                    nxCertificateId );
+            PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByNxPartnerId(
+                    nxPartnerId );
+            cert = Engine.getInstance().getActiveConfigurationAccessService()
+                    .getCertificateFromPartnerByNxCertificateId( partner, nxCertificateId );
         } catch ( NexusException e ) {
             ActionMessage errorMessage = new ActionMessage( "generic.error", e.getMessage() );
             errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );

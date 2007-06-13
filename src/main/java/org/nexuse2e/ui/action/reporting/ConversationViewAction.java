@@ -46,10 +46,8 @@ import org.nexuse2e.ui.form.ReportMessageEntryForm;
  */
 public class ConversationViewAction extends NexusE2EAction {
 
-    private static final String VERSIONSTRING = "$Id: ConversationViewAction.java 879 2005-07-21 14:17:36Z markus.breilmann $";
-
-    private static String       URL           = "reporting.error.url";
-    private static String       TIMEOUT       = "reporting.error.timeout";
+    private static String URL     = "reporting.error.url";
+    private static String TIMEOUT = "reporting.error.timeout";
 
     /* (non-Javadoc)
      * @see com.tamgroup.nexus.e2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages)

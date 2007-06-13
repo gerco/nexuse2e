@@ -40,12 +40,7 @@ import org.nexuse2e.ui.form.PartnerConnectionForm;
  */
 public class PartnerConnectionAddAction extends NexusE2EAction {
 
-    private static final String VERSIONSTRING = "$Id: PartnerConnectionAddAction.java 925 2005-08-02 16:50:24Z guido.esch $";
-
-    private static Logger       LOG           = Logger.getLogger( PartnerConnectionAddAction.class );
-
-    private static String       URL           = "partner.error.url";
-    private static String       TIMEOUT       = "partner.error.timeout";
+    private static Logger LOG = Logger.getLogger( PartnerConnectionAddAction.class );
 
     /* (non-Javadoc)
      * @see com.tamgroup.nexus.e2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages)
@@ -56,7 +51,6 @@ public class PartnerConnectionAddAction extends NexusE2EAction {
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
-        ActionForward error = actionMapping.findForward( ACTION_FORWARD_FAILURE );
 
         PartnerConnectionForm form = (PartnerConnectionForm) actionForm;
         form.cleanSettings();
@@ -69,7 +63,8 @@ public class PartnerConnectionAddAction extends NexusE2EAction {
 
         LOG.trace( "form.partnerId: " + form.getPartnerId() );
 
-        PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByPartnerId( form.getPartnerId() );
+        PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByPartnerId(
+                form.getPartnerId() );
         form.setCertificates( partner.getCertificates() );
         form.setTrps( Engine.getInstance().getActiveConfigurationAccessService().getTrps() );
 

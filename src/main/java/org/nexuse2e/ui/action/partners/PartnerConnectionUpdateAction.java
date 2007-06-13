@@ -42,10 +42,8 @@ import org.nexuse2e.ui.form.PartnerConnectionForm;
  */
 public class PartnerConnectionUpdateAction extends NexusE2EAction {
 
-    private static final String VERSIONSTRING = "$Id: PartnerConnectionUpdateAction.java 925 2005-08-02 16:50:24Z guido.esch $";
-
-    private static String       URL           = "partner.error.url";
-    private static String       TIMEOUT       = "partner.error.timeout";
+    private static String URL     = "partner.error.url";
+    private static String TIMEOUT = "partner.error.timeout";
 
     /* (non-Javadoc)
      * @see com.tamgroup.nexus.e2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages)
@@ -73,8 +71,8 @@ public class PartnerConnectionUpdateAction extends NexusE2EAction {
         try {
             PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByNxPartnerId(
                     form.getNxPartnerId() );
-            connection = Engine.getInstance().getActiveConfigurationAccessService().getConnectionFromPartnerByNxConnectionId(
-                    partner, form.getNxConnectionId() );
+            connection = Engine.getInstance().getActiveConfigurationAccessService()
+                    .getConnectionFromPartnerByNxConnectionId( partner, form.getNxConnectionId() );
             form.setProperties( connection );
             form.setCertificates( partner.getCertificates() );
             if ( connection.getCertificate() != null ) {

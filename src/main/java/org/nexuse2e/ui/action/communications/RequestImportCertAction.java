@@ -43,9 +43,6 @@ import org.nexuse2e.util.CertificateUtil;
  */
 public class RequestImportCertAction extends NexusE2EAction {
 
-    private static String URL     = "request.error.url";
-    private static String TIMEOUT = "request.error.timeout";
-
     /* (non-Javadoc)
      * @see com.tamgroup.nexus.e2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages)
      */
@@ -55,15 +52,14 @@ public class RequestImportCertAction extends NexusE2EAction {
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
-        ActionForward error = actionMapping.findForward( ACTION_FORWARD_FAILURE );
         ProtectedFileAccessForm form = (ProtectedFileAccessForm) actionForm;
 
-        CertificatePojo certificateRequest = Engine.getInstance().getActiveConfigurationAccessService().getFirstCertificateByType(
-                Constants.CERTIFICATE_TYPE_REQUEST, true );
+        CertificatePojo certificateRequest = Engine.getInstance().getActiveConfigurationAccessService()
+                .getFirstCertificateByType( Constants.CERTIFICATE_TYPE_REQUEST, true );
         Object[] result = CertificateUtil.getLocalCertificateRequestFromPojo( certificateRequest );
 
-        CertificatePojo certificateKey = Engine.getInstance().getActiveConfigurationAccessService().getCertificateByName(
-                Constants.CERTIFICATE_TYPE_PRIVATE_KEY, certificateRequest.getName() );
+        CertificatePojo certificateKey = Engine.getInstance().getActiveConfigurationAccessService()
+                .getCertificateByName( Constants.CERTIFICATE_TYPE_PRIVATE_KEY, certificateRequest.getName() );
 
         X509Principal certSubject = CertificateUtil.getMissingCertificateSubjectDNFromKeyStore(
                 (PKCS10CertificationRequest) result[CertificateUtil.POS_REQUEST], certificateKey );

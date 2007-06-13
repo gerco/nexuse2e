@@ -32,17 +32,15 @@ public class ProvisioningSubmissionForm extends ActionForm {
     /**
      * 
      */
-    private static final long   serialVersionUID = -8630672244641905149L;
+    private static final long serialVersionUID = -8630672244641905149L;
 
-    private static final String VERSIONSTRING    = "$Id:$";
+    private String            choreographyId   = null;
 
-    private String              choreographyId   = null;
+    private String            receiver         = null;
 
-    private String              receiver         = null;
+    private List              choreographies   = null;
 
-    private List                choreographies   = null;
-
-    private List                receivers        = null;
+    private List              receivers        = null;
 
     /**
 

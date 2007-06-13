@@ -40,11 +40,6 @@ import org.nexuse2e.ui.form.PipelineForm;
  */
 public class PipelineCreateAction extends NexusE2EAction {
 
-    private static final String VERSIONSTRING = "$Id: PartnerCreateAction.java 925 2005-08-02 16:50:24Z guido.esch $";
-
-    private static String       URL           = "partner.error.url";
-    private static String       TIMEOUT       = "partner.error.timeout";
-
     /* (non-Javadoc)
      * @see com.tamgroup.nexus.e2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages)
      */
@@ -54,7 +49,6 @@ public class PipelineCreateAction extends NexusE2EAction {
             throws Exception {
 
         ActionForward success = null;
-        ActionForward error = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
 
         PipelineForm form = (PipelineForm) actionForm;
         if ( form.isFrontend() ) {

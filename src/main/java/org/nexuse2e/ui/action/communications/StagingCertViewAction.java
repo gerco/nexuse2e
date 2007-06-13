@@ -51,10 +51,8 @@ import org.nexuse2e.util.EncryptionUtil;
  */
 public class StagingCertViewAction extends NexusE2EAction {
 
-    private static final String VERSIONSTRING = "$Id: StagingCertViewAction.java 1013 2006-01-16 12:14:35Z markus.breilmann $";
-
-    private static String       URL           = "staging.error.url";
-    private static String       TIMEOUT       = "staging.error.timeout";
+    private static String URL     = "staging.error.url";
+    private static String TIMEOUT = "staging.error.timeout";
 
     /* (non-Javadoc)
      * @see com.tamgroup.nexus.e2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages)
@@ -80,8 +78,8 @@ public class StagingCertViewAction extends NexusE2EAction {
             List<CertificatePropertiesForm> certificateParts = new ArrayList<CertificatePropertiesForm>();
             List<PartnerPojo> localPartners = new ArrayList<PartnerPojo>();
 
-            CertificatePojo cPojo = Engine.getInstance().getActiveConfigurationAccessService().getCertificateByNxCertificateId(
-                    Constants.CERTIFICATE_TYPE_ALL, nxCertificateId );
+            CertificatePojo cPojo = Engine.getInstance().getActiveConfigurationAccessService()
+                    .getCertificateByNxCertificateId( Constants.CERTIFICATE_TYPE_ALL, nxCertificateId );
 
             KeyStore jks = KeyStore.getInstance( CertificateUtil.DEFAULT_KEY_STORE,
                     CertificateUtil.DEFAULT_JCE_PROVIDER );

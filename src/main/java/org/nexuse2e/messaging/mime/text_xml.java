@@ -29,7 +29,6 @@ import com.sun.mail.handlers.text_plain;
  */
 public class text_xml extends text_plain {
 
-    private static final String         VERSIONSTRING        = "$Id: text_xml.java 550 2005-03-08 14:37:00Z markus.breilmann $";
     private static ActivationDataFlavor activationDataFlavor = new ActivationDataFlavor( java.lang.String.class,
                                                                      "text/xml", "XML String" );
 

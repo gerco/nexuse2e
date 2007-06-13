@@ -43,10 +43,8 @@ import org.nexuse2e.ui.form.PartnerCertificateForm;
  */
 public class PartnerCertificateSaveAction extends NexusE2EAction {
 
-    private static final String VERSIONSTRING = "$Id: PartnerCertificateSaveAction.java 925 2005-08-02 16:50:24Z guido.esch $";
-
-    private static String       URL           = "partner.error.url";
-    private static String       TIMEOUT       = "partner.error.timeout";
+    private static String URL     = "partner.error.url";
+    private static String TIMEOUT = "partner.error.timeout";
 
     /* (non-Javadoc)
      * @see com.tamgroup.nexus.e2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages)
@@ -67,7 +65,8 @@ public class PartnerCertificateSaveAction extends NexusE2EAction {
         try {
             LOG.debug( "nxCertficateId: " + nxCertificateId );
             LOG.debug( "PartnerId: " + partnerId );
-            PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByPartnerId( partnerId );
+            PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByPartnerId(
+                    partnerId );
             CertificatePojo cPojo = Engine.getInstance().getActiveConfigurationAccessService()
                     .getCertificateFromPartnerByNxCertificateId( partner, nxCertificateId );
 

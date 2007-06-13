@@ -43,9 +43,7 @@ public class CertificatesAction extends NexusE2EAction {
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
-        ActionForward error = actionMapping.findForward( ACTION_FORWARD_FAILURE );
 
-        //request.getSession().setAttribute( Crumbs.CURRENT_LOCATION, Crumbs.CERTIFICATES );
         return success;
     }
 

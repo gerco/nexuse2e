@@ -45,8 +45,6 @@ import org.nexuse2e.ui.form.PipelineForm;
  */
 public class PipeletParamsUpdateAction extends NexusE2EAction {
 
-    //private static final String VERSIONSTRING = "$Id: ShowPartnerInfosAction.java 879 2005-07-21 14:17:36Z markus.breilmann $";
-
     /* (non-Javadoc)
      * @see com.tamgroup.nexus.e2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages)
      */
@@ -124,8 +122,8 @@ public class PipeletParamsUpdateAction extends NexusE2EAction {
         }
 
         if ( action.equals( "update" ) ) {
-            PipelinePojo pipelinePojo = Engine.getInstance().getActiveConfigurationAccessService().getPipelinePojoByNxPipelineId(
-                    form.getNxPipelineId() );
+            PipelinePojo pipelinePojo = Engine.getInstance().getActiveConfigurationAccessService()
+                    .getPipelinePojoByNxPipelineId( form.getNxPipelineId() );
             PipeletPojo pipeletPojo = null;
             if ( form.getCurrentPipelet().getNxPipeletId() == null
                     || form.getCurrentPipelet().getNxPipeletId().intValue() == 0 ) {
@@ -157,8 +155,8 @@ public class PipeletParamsUpdateAction extends NexusE2EAction {
                     Engine.getInstance().getActiveConfigurationAccessService().updatePipeline( pipelinePojo );
 
                     // update form
-                    form.setProperties( Engine.getInstance().getActiveConfigurationAccessService().getPipelinePojoByNxPipelineId(
-                            form.getNxPipelineId() ) );
+                    form.setProperties( Engine.getInstance().getActiveConfigurationAccessService()
+                            .getPipelinePojoByNxPipelineId( form.getNxPipelineId() ) );
                 }
             }
         }

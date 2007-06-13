@@ -779,8 +779,7 @@ public class CertificateUtil {
             try {
                 x509Certificate = getX509Certificate( certBytes );
 
-                LOG.debug( "getCertificateCN( x509Certificate, true ):"
-                        + getCertificateCN( x509Certificate, true ) );
+                LOG.debug( "getCertificateCN( x509Certificate, true ):" + getCertificateCN( x509Certificate, true ) );
 
                 X509Principal x509Principal = getPrincipalFromCertificate( x509Certificate, true );
 
@@ -918,11 +917,8 @@ public class CertificateUtil {
             Certificate[] tempCerts = getAllX509Certificate( keyStore );
             KeyStore newKs = KeyStore.getInstance( "PKCS12", "BC" );
             newKs.load( null, null );
-            newKs.setKeyEntry( "nexuscert", pk, password.toCharArray(), tempCerts );
+            newKs.setKeyEntry( DEFAULT_CERT_ALIAS, pk, password.toCharArray(), tempCerts );
             keyStore = newKs;
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            keyStore.store( baos, password.toCharArray() );
-            byte[] certData = baos.toByteArray();
 
             Enumeration e = keyStore.aliases();
             if ( !e.hasMoreElements() ) {
@@ -935,7 +931,14 @@ public class CertificateUtil {
                 CertificatePojo certificatePojo = new CertificatePojo();
                 certificatePojo.setType( type );
                 certificatePojo.setName( dn );
+
+                keyStore.setKeyEntry( dn, pk, password.toCharArray(), tempCerts );
+                keyStore.deleteEntry( DEFAULT_CERT_ALIAS );
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                keyStore.store( baos, password.toCharArray() );
+                byte[] certData = baos.toByteArray();
                 certificatePojo.setBinaryData( certData );
+
                 certificatePojo.setPassword( EncryptionUtil.encryptString( password ) );
                 certificatePojo.setCreatedDate( new Date() );
                 certificatePojo.setModifiedDate( new Date() );

@@ -38,12 +38,7 @@ import org.nexuse2e.ui.form.ProvisioningSubmissionForm;
  */
 public class ProvisioningSubmissionAction extends NexusE2EAction {
 
-    private static final String VERSIONSTRING     = "$Id:$";
-
-    private static final String MSG_KEY_SUBMITTED = "provisioningsubmission.submitted";
-    private static final String MSG_KEY_ERROR     = "provisioningsubmission.error";
-
-    private static Logger       LOG               = Logger.getLogger( ProvisioningSubmissionAction.class );
+    // private static Logger LOG = Logger.getLogger( ProvisioningSubmissionAction.class );
 
     /* (non-Javadoc)
      * @see org.nexuse2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages, org.apache.struts.action.ActionMessages)
@@ -57,9 +52,6 @@ public class ProvisioningSubmissionAction extends NexusE2EAction {
         ArrayList receiverList = new ArrayList();
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
-        ActionForward error = actionMapping.findForward( ACTION_FORWARD_FAILURE );
-
-        LOG.debug( VERSIONSTRING );
 
         ProvisioningSubmissionForm form = (ProvisioningSubmissionForm) actionForm;
 

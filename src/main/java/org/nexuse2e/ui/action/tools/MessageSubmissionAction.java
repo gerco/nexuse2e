@@ -53,8 +53,6 @@ public class MessageSubmissionAction extends NexusE2EAction {
 
     private static Logger       LOG                        = Logger.getLogger( MessageSubmissionAction.class );
 
-    private static final String VERSIONSTRING              = "$Id: MessageSubmissionAction.java 982 2005-09-06 13:25:16Z markus.breilmann $";
-
     private static final String MSG_KEY_SUBMITTED          = "messagesubmission.submitted";
     private static final String MSG_KEY_ERROR              = "messagesubmission.error";
     private static final String MSG_KEY_ERROR_URL          = "messagesubmission.error.url";
@@ -72,7 +70,6 @@ public class MessageSubmissionAction extends NexusE2EAction {
 
         ArrayList list = new ArrayList();
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
-        ActionForward error = actionMapping.findForward( ACTION_FORWARD_FAILURE );
         MessageSubmissionForm form = (MessageSubmissionForm) actionForm;
         BackendPipelineDispatcher backendPipelineDispatcher;
 
@@ -81,7 +78,8 @@ public class MessageSubmissionAction extends NexusE2EAction {
         //request.getSession().setAttribute( Crumbs.CURRENT_LOCATION, Crumbs.MESSAGE_SUBMISSION );
 
         // Set current list of choroegraphies
-        List<ChoreographyPojo> choreographyList = Engine.getInstance().getActiveConfigurationAccessService().getChoreographies();
+        List<ChoreographyPojo> choreographyList = Engine.getInstance().getActiveConfigurationAccessService()
+                .getChoreographies();
         Iterator<ChoreographyPojo> choreographyIterator = choreographyList.iterator();
         while ( choreographyIterator.hasNext() ) {
             list.add( choreographyIterator.next().getName() );

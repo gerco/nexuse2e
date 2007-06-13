@@ -21,7 +21,6 @@ package org.nexuse2e.ui.action.choreographies;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;

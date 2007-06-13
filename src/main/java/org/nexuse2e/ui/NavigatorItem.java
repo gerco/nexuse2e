@@ -29,21 +29,16 @@ import java.util.Iterator;
  */
 public class NavigatorItem {
 
-    /**
-     * The internal Subversion version information of this class (used for logging)
-     */
-    private static final String VERSIONSTRING = "$Id: NavigatorItem.java 916 2005-08-02 12:39:23Z markus.breilmann $";
-
-    private String              name          = null;
-    private String              link          = null;
-    private String              image         = null;
-    private String              label         = null;
-    private NavigatorItem       parent        = null;
-    private String              onClick       = null;
-    private ArrayList           children      = new ArrayList();
-    private boolean             inError       = false;
-    private boolean             shownInTree   = true;
-    private String              id            = null;
+    private String        name        = null;
+    private String        link        = null;
+    private String        image       = null;
+    private String        label       = null;
+    private NavigatorItem parent      = null;
+    private String        onClick     = null;
+    private ArrayList     children    = new ArrayList();
+    private boolean       inError     = false;
+    private boolean       shownInTree = true;
+    private String        id          = null;
 
     public NavigatorItem( NavigatorItem parent, String name, String link, String image, String label ) {
 

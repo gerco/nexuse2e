@@ -79,8 +79,6 @@ public class StagingPromoteCertificateAction extends NexusE2EAction {
             return error;
         }
 
-        boolean engineAvailable = false;
-
         PartnerPojo localPartner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByNxPartnerId(
                 form.getLocalNxPartnerId() );
 
@@ -92,8 +90,8 @@ public class StagingPromoteCertificateAction extends NexusE2EAction {
             return error;
         }
 
-        CertificatePojo stagedCert = Engine.getInstance().getActiveConfigurationAccessService().getCertificateByNxCertificateId(
-                Constants.CERTIFICATE_TYPE_STAGING, seqNo );
+        CertificatePojo stagedCert = Engine.getInstance().getActiveConfigurationAccessService()
+                .getCertificateByNxCertificateId( Constants.CERTIFICATE_TYPE_STAGING, seqNo );
 
         if ( stagedCert == null ) {
             ActionMessage errorMessage = new ActionMessage( "generic.error",

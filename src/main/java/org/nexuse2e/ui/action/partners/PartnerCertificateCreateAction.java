@@ -44,10 +44,8 @@ import org.nexuse2e.util.CertificateUtil;
  */
 public class PartnerCertificateCreateAction extends NexusE2EAction {
 
-    private static final String VERSIONSTRING = "$Id: PartnerCertificateCreateAction.java 1024 2006-02-14 11:27:45Z markus.breilmann $";
-
-    private static String       URL           = "partner.error.url";
-    private static String       TIMEOUT       = "partner.error.timeout";
+    private static String URL     = "partner.error.url";
+    private static String TIMEOUT = "partner.error.timeout";
 
     /* (non-Javadoc)
      * @see com.tamgroup.nexus.e2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages)
@@ -97,7 +95,8 @@ public class PartnerCertificateCreateAction extends NexusE2EAction {
             return error;
         }
 
-        PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByPartnerId( partnerId );
+        PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByPartnerId(
+                partnerId );
 
         CertificatePojo cPojo = new CertificatePojo();
         cPojo.setType( Constants.CERTIFICATE_TYPE_PARTNER );
@@ -110,7 +109,8 @@ public class PartnerCertificateCreateAction extends NexusE2EAction {
         cPojo.setPartner( partner );
 
         partner.getCertificates().add( cPojo );
-        Engine.getInstance().getActiveConfigurationAccessService().getCertificates( Constants.CERTIFICATE_TYPE_ALL, null ).add( cPojo );
+        Engine.getInstance().getActiveConfigurationAccessService().getCertificates( Constants.CERTIFICATE_TYPE_ALL,
+                null ).add( cPojo );
         Engine.getInstance().getActiveConfigurationAccessService().updatePartner( partner );
 
         /*

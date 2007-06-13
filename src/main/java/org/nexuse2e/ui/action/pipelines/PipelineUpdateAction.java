@@ -50,8 +50,6 @@ import org.nexuse2e.ui.form.PipelineForm;
  */
 public class PipelineUpdateAction extends NexusE2EAction {
 
-    //private static final String VERSIONSTRING = "$Id: PartnerInfoUpdateAction.java 925 2005-08-02 16:50:24Z guido.esch $";
-
     private static String URL     = "partner.error.url";
     private static String TIMEOUT = "partner.error.timeout";
 
@@ -79,8 +77,8 @@ public class PipelineUpdateAction extends NexusE2EAction {
         int actionNxId = form.getActionNxId();
         LOG.trace( "actionNxId: " + actionNxId );
 
-        PipelinePojo pipeline = Engine.getInstance().getActiveConfigurationAccessService().getPipelinePojoByNxPipelineId(
-                form.getNxPipelineId() );
+        PipelinePojo pipeline = Engine.getInstance().getActiveConfigurationAccessService()
+                .getPipelinePojoByNxPipelineId( form.getNxPipelineId() );
 
         if ( pipeline == null ) {
             ActionMessage errorMessage = new ActionMessage( "generic.error", "No pipeline found for id: "
@@ -91,8 +89,8 @@ public class PipelineUpdateAction extends NexusE2EAction {
         }
 
         if ( action.equals( "add" ) ) {
-            ComponentPojo component = Engine.getInstance().getActiveConfigurationAccessService().getComponentByNxComponentId(
-                    actionNxId );
+            ComponentPojo component = Engine.getInstance().getActiveConfigurationAccessService()
+                    .getComponentByNxComponentId( actionNxId );
             if ( component != null ) {
                 PipeletPojo pipelet = new PipeletPojo();
                 pipelet.setComponent( component );
@@ -106,7 +104,7 @@ public class PipelineUpdateAction extends NexusE2EAction {
                 try {
                     Object newComponent = Class.forName( component.getClassName() ).newInstance();
                     LOG.trace( "object:" + newComponent.getClass().getName() );
-                    if ( (newComponent instanceof Pipelet) || (newComponent instanceof TransportReceiver) ) {
+                    if ( ( newComponent instanceof Pipelet ) || ( newComponent instanceof TransportReceiver ) ) {
                         pipelet.getPipeletParams().addAll(
                                 ConfigurationUtil.getConfiguration( (Configurable) newComponent, pipelet ) );
                     } else {

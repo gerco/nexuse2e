@@ -43,10 +43,8 @@ import org.nexuse2e.ui.form.ComponentForm;
  */
 public class ComponentUpdateAction extends NexusE2EAction {
 
-    private static final String VERSIONSTRING = "$Id: PartnerInfoUpdateAction.java 925 2005-08-02 16:50:24Z guido.esch $";
-
-    private static String       URL           = "partner.error.url";
-    private static String       TIMEOUT       = "partner.error.timeout";
+    private static String URL     = "partner.error.url";
+    private static String TIMEOUT = "partner.error.timeout";
 
     /* (non-Javadoc)
      * @see com.tamgroup.nexus.e2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages)
@@ -62,8 +60,8 @@ public class ComponentUpdateAction extends NexusE2EAction {
         ComponentForm form = (ComponentForm) actionForm;
 
         try {
-            ComponentPojo component = Engine.getInstance().getActiveConfigurationAccessService().getComponentByNxComponentId(
-                    form.getNxComponentId() );
+            ComponentPojo component = Engine.getInstance().getActiveConfigurationAccessService()
+                    .getComponentByNxComponentId( form.getNxComponentId() );
             if ( component == null ) {
                 LOG.error( "Error, partner not found for id: " + form.getNxComponentId() );
             }

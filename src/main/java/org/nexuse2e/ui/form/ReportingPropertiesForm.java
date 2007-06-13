@@ -20,7 +20,6 @@
 package org.nexuse2e.ui.form;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Vector;
@@ -163,30 +162,30 @@ public class ReportingPropertiesForm extends ActionForm {
 
         setSearchFor( "conversation" );
 
-//        setConvColSelect( true );
-//        setConvColChorId( true );
-//        setConvColConId( true );
-//        setConvColPartId( true );
-//        setConvColStatus( true );
-//        setConvColAction( true );
-//        setConvColCreated( true );
-//        setConvColTurnaround( false );
-//
-//        setMessColSelect( true );
-//        setMessColMessageId( true );
-//        setMessColParticipantId( true );
-//        setMessColStatus( true );
-//        setMessColType( true );
-//        setMessColAction( true );
-//        setMessColCreated( true );
-//        setMessColTurnaround( false );
-//
-//        setEngineColSeverity( true );
-//        setEngineColIssued( true );
-//        setEngineColDescription( true );
-//        setEngineColOrigin( true );
-//        setEngineColClassName( false );
-//        setEngineColmethodName( false );
+        //        setConvColSelect( true );
+        //        setConvColChorId( true );
+        //        setConvColConId( true );
+        //        setConvColPartId( true );
+        //        setConvColStatus( true );
+        //        setConvColAction( true );
+        //        setConvColCreated( true );
+        //        setConvColTurnaround( false );
+        //
+        //        setMessColSelect( true );
+        //        setMessColMessageId( true );
+        //        setMessColParticipantId( true );
+        //        setMessColStatus( true );
+        //        setMessColType( true );
+        //        setMessColAction( true );
+        //        setMessColCreated( true );
+        //        setMessColTurnaround( false );
+        //
+        //        setEngineColSeverity( true );
+        //        setEngineColIssued( true );
+        //        setEngineColDescription( true );
+        //        setEngineColOrigin( true );
+        //        setEngineColClassName( false );
+        //        setEngineColmethodName( false );
 
         Date start = new Date();
         Date end = new Date();
@@ -991,11 +990,11 @@ public class ReportingPropertiesForm extends ActionForm {
                     "Log Column Turnaround", "Should Conversation Log Turnaround Time be displayed", false ) );
             parameterMap.put( PARAM_NAME_CONVCOL_STATUS, new ParameterDescriptor( ParameterType.BOOLEAN,
                     "Log Column Status", "Should Conversation Log Status be displayed", true ) );
-            
-            parameterMap.put( PARAM_NAME_TIMEZONE, new ParameterDescriptor( ParameterType.STRING,
-                    "Log Timezone", "", "" ) );
-            parameterMap.put( PARAM_NAME_ROWCOUNT, new ParameterDescriptor( ParameterType.STRING,
-                    "Log Row count", "No of rows displayed on one reporting page", "20" ) );
+
+            parameterMap.put( PARAM_NAME_TIMEZONE, new ParameterDescriptor( ParameterType.STRING, "Log Timezone", "",
+                    "" ) );
+            parameterMap.put( PARAM_NAME_ROWCOUNT, new ParameterDescriptor( ParameterType.STRING, "Log Row count",
+                    "No of rows displayed on one reporting page", "20" ) );
         }
         return parameterMap;
     }

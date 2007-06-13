@@ -88,6 +88,7 @@ public class PartnerConnectionForm extends ActionForm {
         con.setSynchronousTimeout( getSynchronousTimeout() );
         con.setRetries( getRetries() );
         con.setName( getName() );
+        con.setCertificate( null );
         for ( CertificatePojo certificatePojo : certificates ) {
             if ( nxCertificateId == certificatePojo.getNxCertificateId() ) {
                 con.setCertificate( certificatePojo );

@@ -50,9 +50,6 @@ import org.nexuse2e.util.EncryptionUtil;
  */
 public class StagingListAction extends NexusE2EAction {
 
-    private static String URL     = "staging.error.url";
-    private static String TIMEOUT = "staging.error.timeout";
-
     /* (non-Javadoc)
      * @see com.tamgroup.nexus.e2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages)
      */
@@ -62,7 +59,6 @@ public class StagingListAction extends NexusE2EAction {
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
-        ActionForward error = actionMapping.findForward( ACTION_FORWARD_FAILURE );
         CertificatePropertiesForm form = null;
         Certificate[] certsArray = null;
 

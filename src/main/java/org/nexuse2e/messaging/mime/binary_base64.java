@@ -36,9 +36,7 @@ import org.codehaus.xfire.util.Base64;
  */
 public class binary_base64 implements DataContentHandler {
 
-    private static final String         VERSIONSTRING = "$Id: binary_base64.java 550 2005-03-08 14:37:00Z markus.breilmann $";
-    private static ActivationDataFlavor myDF          = new ActivationDataFlavor( byte[].class, "application/pdf",
-                                                              "Binary Data" );
+    private static ActivationDataFlavor myDF = new ActivationDataFlavor( byte[].class, "application/pdf", "Binary Data" );
 
     protected ActivationDataFlavor getDF() {
 

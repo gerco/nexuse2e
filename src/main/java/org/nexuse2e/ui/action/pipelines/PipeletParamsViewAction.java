@@ -41,8 +41,6 @@ import org.nexuse2e.ui.form.PipelineForm;
  */
 public class PipeletParamsViewAction extends NexusE2EAction {
 
-    //private static final String VERSIONSTRING = "$Id: ShowPartnerInfosAction.java 879 2005-07-21 14:17:36Z markus.breilmann $";
-
     /* (non-Javadoc)
      * @see com.tamgroup.nexus.e2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages)
      */
@@ -82,7 +80,8 @@ public class PipeletParamsViewAction extends NexusE2EAction {
         form.setParameters( ConfigurationUtil.getConfiguration( configurable, pipeletPojo ) );
         form.createParameterMapFromPojos();
 
-        request.setAttribute( ATTRIBUTE_COLLECTION, Engine.getInstance().getActiveConfigurationAccessService().getServices() );
+        request.setAttribute( ATTRIBUTE_COLLECTION, Engine.getInstance().getActiveConfigurationAccessService()
+                .getServices() );
 
         return success;
     }

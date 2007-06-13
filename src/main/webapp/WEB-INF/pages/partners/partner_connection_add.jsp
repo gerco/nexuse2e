@@ -45,6 +45,7 @@
             <td class="NEXUSName">Certificate</td>
             <td class="NEXUSValue">
                 <html:select property="nxCertificateId">
+                	<html:option value="0">- none -</html:option>
                   	<logic:iterate id="certificate" property="certificates" name="partnerConnectionForm">
                   		<html-el:option value="${certificate.nxCertificateId}">${certificate.name}</html-el:option>
 					</logic:iterate>

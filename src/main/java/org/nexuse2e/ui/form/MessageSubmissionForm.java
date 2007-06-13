@@ -35,23 +35,21 @@ public class MessageSubmissionForm extends ActionForm {
     /**
      * 
      */
-    private static final long   serialVersionUID = 9066165869803142603L;
+    private static final long serialVersionUID = 9066165869803142603L;
 
-    private static final String VERSIONSTRING    = "$Id:$";
+    private String            choreographyId   = null;
+    private String            actionId         = null;
+    private int               receiver         = 0;
+    private String            primaryKey       = null;
+    private String            conversationId   = null;
+    private int               repeat           = 1;
+    private FormFile          payloadFile1     = null;
+    private FormFile          payloadFile2     = null;
+    private FormFile          payloadFile3     = null;
 
-    private String              choreographyId   = null;
-    private String              actionId         = null;
-    private int                 receiver         = 0;
-    private String              primaryKey       = null;
-    private String              conversationId   = null;
-    private int                 repeat           = 1;
-    private FormFile            payloadFile1     = null;
-    private FormFile            payloadFile2     = null;
-    private FormFile            payloadFile3     = null;
-
-    private List                choreographies   = null;
-    private List                actions          = null;
-    private List                receivers        = null;
+    private List              choreographies   = null;
+    private List              actions          = null;
+    private List              receivers        = null;
 
     /**
      * @return Returns the actionId.

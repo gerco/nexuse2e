@@ -19,8 +19,6 @@
  */
 package org.nexuse2e.ui.action.pipelines;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,8 +30,6 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.Engine;
-import org.nexuse2e.configuration.Constants;
-import org.nexuse2e.configuration.Constants.ComponentType;
 import org.nexuse2e.pojo.ComponentPojo;
 import org.nexuse2e.pojo.PipelinePojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
@@ -47,12 +43,7 @@ import org.nexuse2e.ui.form.PipelineForm;
  */
 public class PipelineViewAction extends NexusE2EAction {
 
-    private static final String VERSIONSTRING = "$Id: ShowPartnerInfosAction.java 879 2005-07-21 14:17:36Z markus.breilmann $";
-
-    private static Logger       LOG           = Logger.getLogger( PipelineViewAction.class );
-
-    private static String       URL           = "partner.error.url";
-    private static String       TIMEOUT       = "partner.error.timeout";
+    private static Logger LOG = Logger.getLogger( PipelineViewAction.class );
 
     /* (non-Javadoc)
      * @see com.tamgroup.nexus.e2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages)
@@ -63,7 +54,6 @@ public class PipelineViewAction extends NexusE2EAction {
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
-        ActionForward error = actionMapping.findForward( ACTION_FORWARD_FAILURE );
 
         PipelineForm form = (PipelineForm) actionForm;
 
@@ -76,7 +66,8 @@ public class PipelineViewAction extends NexusE2EAction {
             form.setProperties( pipeline );
         }
 
-        List<ComponentPojo> components = Engine.getInstance().getActiveConfigurationAccessService().getPipelets( pipeline.isFrontend() );
+        List<ComponentPojo> components = Engine.getInstance().getActiveConfigurationAccessService().getPipelets(
+                pipeline.isFrontend() );
         form.setAvailableTemplates( components );
 
         //request.getSession().setAttribute( Crumbs.CURRENT_LOCATION, Crumbs.PIPELINE_VIEW + "_" + form.getNxPipelineId() );

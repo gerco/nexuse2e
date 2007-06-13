@@ -42,12 +42,6 @@ import org.nexuse2e.ui.form.ReportingPropertiesForm;
 
 public class ProcessEngineLogAction extends NexusE2EAction {
 
-    private static final String VERSIONSTRING = "$Id: ProcessEngineLogAction.java 967 2005-08-26 13:24:08Z markus.breilmann $";
-
-    private static String       URL           = "reporting.error.url";
-
-    private static String       TIMEOUT       = "reporting.error.timeout";
-
     /* (non-Javadoc)
      * @see org.nexuse2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages, org.apache.struts.action.ActionMessages)
      */
@@ -56,131 +50,130 @@ public class ProcessEngineLogAction extends NexusE2EAction {
             HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
-        
         List<ReportEngineEntryForm> logItems = new Vector<ReportEngineEntryForm>();
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
-        ActionForward error = actionMapping.findForward( ACTION_FORWARD_FAILURE );
         try {
-        ReportingPropertiesForm form = (ReportingPropertiesForm) actionForm;
+            ReportingPropertiesForm form = (ReportingPropertiesForm) actionForm;
 
+            String dir = form.getCommand();
+            String refresh = request.getParameter( "refresh" );
+            if ( refresh != null ) {
+                dir = "engine";
+            }
 
+            String severity = null;
+            if ( form.getSeverity() != null && !form.getSeverity().equals( "" ) ) {
+                severity = form.getSeverity();
+            }
 
-        String dir = form.getCommand();
-        String refresh = request.getParameter( "refresh" );
-        if ( refresh != null ) {
-            dir = "engine";
-        }
+            String messageText = null;
+            boolean messageTextActive = form.isMessageTextEnabled();
+            if ( messageTextActive && form.getMessageText() != null && !form.getMessageText().equals( "" ) ) {
+                messageText = form.getMessageText();
+            }
 
-        String severity = null;
-        if ( form.getSeverity() != null && !form.getSeverity().equals( "" ) ) {
-            severity = form.getSeverity();
-        }
+            boolean startActive = form.isStartEnabled();
+            boolean endActive = form.isEndEnabled();
 
-        String messageText = null;
-        boolean messageTextActive = form.isMessageTextEnabled();
-        if ( messageTextActive && form.getMessageText() != null && !form.getMessageText().equals( "" ) ) {
-            messageText = form.getMessageText();
-        }
+            Date startDate = null;
+            if ( startActive ) {
+                startDate = getStartDate( form );
+            }
+            Date endDate = null;
+            if ( endActive ) {
+                endDate = getEndDate( form );
+            }
 
-        boolean startActive = form.isStartEnabled();
-        boolean endActive = form.isEndEnabled();
+            int items = 0;
 
-        Date startDate = null;
-        if ( startActive ) {
-            startDate = getStartDate( form );
-        }
-        Date endDate = null;
-        if ( endActive ) {
-            endDate = getEndDate( form );
-        }
+            items = Engine.getInstance().getTransactionService().getLogEntriesForReportCount( severity, messageText,
+                    startDate, endDate, LogDAO.SORT_CREATED, false );
 
-        int items = 0;
+            // LOG.trace( "items: " + items );
+            // LOG.trace( "test: " + lDao.getLog().size() );
 
-        items = Engine.getInstance().getTransactionService().getLogEntriesForReportCount( severity, messageText,
-                startDate, endDate, LogDAO.SORT_CREATED, false );
+            form.setAllItemsCount( items );
+            List<LogPojo> reportMessages = null;
 
-        // LOG.trace( "items: " + items );
-        // LOG.trace( "test: " + lDao.getLog().size() );
+            // LOG.trace( "dir:" + dir );
+            // LOG.trace( "test:" + form );
 
-        form.setAllItemsCount( items );
-        List<LogPojo> reportMessages = null;
+            if ( dir == null || dir.equals( "" ) || dir.equals( "first" ) || dir.equals( "engine" ) ) {
+                int pos = form.getStartCount();
+                if ( pos == 0 || !dir.equals( "engine" ) ) {
+                    reportMessages = Engine.getInstance().getTransactionService().getLogEntriesForReport( severity,
+                            messageText, startDate, endDate, form.getPageSize(), 0, LogDAO.SORT_CREATED, false, null,
+                            null );
 
-        // LOG.trace( "dir:" + dir );
-        // LOG.trace( "test:" + form );
+                    if ( items > 0 ) {
+                        form.setStartCount( 1 );
+                    } else {
+                        form.setStartCount( 0 );
+                        form.setEndCount( 0 );
+                    }
 
-        if ( dir == null || dir.equals( "" ) || dir.equals( "first" ) || dir.equals( "engine" ) ) {
-            int pos = form.getStartCount();
-            if ( pos == 0 || !dir.equals( "engine" ) ) {
-                reportMessages = Engine.getInstance().getTransactionService().getLogEntriesForReport( severity,
-                        messageText, startDate, endDate, form.getPageSize(), 0, LogDAO.SORT_CREATED, false, null,null );
+                    if ( items > form.getPageSize() ) {
+                        form.setEndCount( form.getPageSize() );
+                    } else {
+                        form.setEndCount( items );
+                    }
 
-                if ( items > 0 ) {
-                    form.setStartCount( 1 );
                 } else {
-                    form.setStartCount( 0 );
-                    form.setEndCount( 0 );
+                    int page = pos / form.getPageSize();
+                    reportMessages = Engine.getInstance().getTransactionService().getLogEntriesForReport( severity,
+                            messageText, startDate, endDate, form.getPageSize(), page, LogDAO.SORT_CREATED, false,
+                            null, null );
+
+                    if ( form.getStartCount() + form.getPageSize() > items ) {
+                        form.setEndCount( items );
+                    } else {
+                        form.setEndCount( form.getStartCount() + form.getPageSize() - 1 );
+                    }
+
                 }
 
-                if ( items > form.getPageSize() ) {
+            } else if ( dir.equals( "back" ) ) {
+                int pos = form.getStartCount();
+                if ( pos < form.getPageSize() ) {
+                    reportMessages = Engine.getInstance().getTransactionService().getLogEntriesForReport( severity,
+                            messageText, startDate, endDate, form.getPageSize(), 0, LogDAO.SORT_CREATED, false, null,
+                            null );
+                    form.setStartCount( 1 );
                     form.setEndCount( form.getPageSize() );
                 } else {
-                    form.setEndCount( items );
-                }
-
-            } else {
-                int page = pos / form.getPageSize();
-                reportMessages = Engine.getInstance().getTransactionService().getLogEntriesForReport( severity,
-                        messageText, startDate, endDate, form.getPageSize(), page, LogDAO.SORT_CREATED, false , null,null);
-
-                if ( form.getStartCount() + form.getPageSize() > items ) {
-                    form.setEndCount( items );
-                } else {
+                    reportMessages = Engine.getInstance().getTransactionService().getLogEntriesForReport( severity,
+                            messageText, startDate, endDate, form.getPageSize(), ( pos / form.getPageSize() ) - 1,
+                            LogDAO.SORT_CREATED, false, null, null );
+                    form.setStartCount( pos - form.getPageSize() );
                     form.setEndCount( form.getStartCount() + form.getPageSize() - 1 );
                 }
 
-            }
+            } else if ( dir.equals( "next" ) ) {
+                int pos = form.getStartCount();
+                if ( pos + 2 * form.getPageSize() >= items ) {
+                    reportMessages = Engine.getInstance().getTransactionService().getLogEntriesForReport( severity,
+                            messageText, startDate, endDate, form.getPageSize(), pos / form.getPageSize() + 1,
+                            LogDAO.SORT_CREATED, false, null, null );
+                    form.setStartCount( form.getStartCount() + form.getPageSize() );
+                    form.setEndCount( items );
+                } else {
+                    int page = pos / form.getPageSize();
+                    reportMessages = Engine.getInstance().getTransactionService().getLogEntriesForReport( severity,
+                            messageText, startDate, endDate, form.getPageSize(), page + 1, LogDAO.SORT_CREATED, false,
+                            null, null );
+                    form.setStartCount( form.getStartCount() + form.getPageSize() );
+                    form.setEndCount( form.getStartCount() + form.getPageSize() - 1 );
+                }
 
-        } else if ( dir.equals( "back" ) ) {
-            int pos = form.getStartCount();
-            if ( pos < form.getPageSize() ) {
+            } else if ( dir.equals( "last" ) ) {
                 reportMessages = Engine.getInstance().getTransactionService().getLogEntriesForReport( severity,
-                        messageText, startDate, endDate, form.getPageSize(), 0, LogDAO.SORT_CREATED, false , null,null);
-                form.setStartCount( 1 );
-                form.setEndCount( form.getPageSize() );
-            } else {
-                reportMessages = Engine.getInstance().getTransactionService().getLogEntriesForReport( severity,
-                        messageText, startDate, endDate, form.getPageSize(), ( pos / form.getPageSize() ) - 1,
-                        LogDAO.SORT_CREATED, false , null,null);
-                form.setStartCount( pos - form.getPageSize() );
-                form.setEndCount( form.getStartCount() + form.getPageSize() - 1 );
-            }
-
-        } else if ( dir.equals( "next" ) ) {
-            int pos = form.getStartCount();
-            if ( pos + 2 * form.getPageSize() >= items ) {
-                reportMessages = Engine.getInstance().getTransactionService().getLogEntriesForReport( severity,
-                        messageText, startDate, endDate, form.getPageSize(), pos / form.getPageSize() + 1,
-                        LogDAO.SORT_CREATED, false , null,null);
-                form.setStartCount( form.getStartCount() + form.getPageSize() );
+                        messageText, startDate, endDate, form.getPageSize(), items / form.getPageSize(),
+                        LogDAO.SORT_CREATED, false, null, null );
+                form.setStartCount( items / form.getPageSize() * form.getPageSize() + 1 );
                 form.setEndCount( items );
-            } else {
-                int page = pos / form.getPageSize();
-                reportMessages = Engine.getInstance().getTransactionService().getLogEntriesForReport( severity,
-                        messageText, startDate, endDate, form.getPageSize(), page + 1, LogDAO.SORT_CREATED, false, null,null );
-                form.setStartCount( form.getStartCount() + form.getPageSize() );
-                form.setEndCount( form.getStartCount() + form.getPageSize() - 1 );
             }
 
-        } else if ( dir.equals( "last" ) ) {
-            reportMessages = Engine.getInstance().getTransactionService().getLogEntriesForReport( severity,
-                    messageText, startDate, endDate, form.getPageSize(), items / form.getPageSize(),
-                    LogDAO.SORT_CREATED, false , null,null);
-            form.setStartCount( items / form.getPageSize() * form.getPageSize() + 1 );
-            form.setEndCount( items );
-        }
-
-        
             if ( reportMessages != null ) {
 
                 Iterator<LogPojo> i = reportMessages.iterator();
@@ -192,35 +185,33 @@ public class ProcessEngineLogAction extends NexusE2EAction {
                 }
 
             }
-        
 
-        if ( form.getStartCount() > 1 ) {
-            form.setFirstActive( true );
-            form.setPrevActive( true );
-        } else {
-            form.setFirstActive( false );
-            form.setPrevActive( false );
-        }
+            if ( form.getStartCount() > 1 ) {
+                form.setFirstActive( true );
+                form.setPrevActive( true );
+            } else {
+                form.setFirstActive( false );
+                form.setPrevActive( false );
+            }
 
-        if ( items > form.getEndCount() ) {
-            form.setNextActive( true );
-            form.setLastActive( true );
-        } else {
-            form.setNextActive( false );
-            form.setLastActive( false );
-        }
+            if ( items > form.getEndCount() ) {
+                form.setNextActive( true );
+                form.setLastActive( true );
+            } else {
+                form.setNextActive( false );
+                form.setLastActive( false );
+            }
 
-        request.setAttribute( ATTRIBUTE_COLLECTION, logItems );
+            request.setAttribute( ATTRIBUTE_COLLECTION, logItems );
 
-        
         } catch ( Exception e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        }catch ( Error e ) {
+        } catch ( Error e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        
+
         return success;
     } // executeNexusE2EAction
 

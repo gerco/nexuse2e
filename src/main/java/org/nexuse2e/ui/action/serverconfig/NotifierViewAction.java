@@ -49,8 +49,6 @@ import org.nexuse2e.ui.form.LoggerForm;
  */
 public class NotifierViewAction extends NexusE2EAction {
 
-    //private static final String VERSIONSTRING = "$Id: NotifierViewAction.java 879 2005-07-21 14:17:36Z markus.breilmann $";
-
     /* (non-Javadoc)
      * @see com.tamgroup.nexus.e2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages)
      */
@@ -67,7 +65,8 @@ public class NotifierViewAction extends NexusE2EAction {
                 loggerForm.getNxLoggerId() );
 
         loggerForm.setProperties( loggerPojo );
-        LogAppender logger = Engine.getInstance().getActiveConfigurationAccessService().getLogger( loggerPojo.getName() );
+        LogAppender logger = Engine.getInstance().getActiveConfigurationAccessService()
+                .getLogger( loggerPojo.getName() );
         for ( LoggerParamPojo loggerParam : loggerPojo.getLoggerParams() ) {
             loggerParam.setParameterDescriptor( logger.getParameterMap().get( loggerParam.getParamName() ) );
         }
@@ -78,10 +77,10 @@ public class NotifierViewAction extends NexusE2EAction {
 
         // Filtergroup Fake
 
-//        String[] groups = new String[] { "core", "inbound", "outbound", "mail", "http"};
+        //        String[] groups = new String[] { "core", "inbound", "outbound", "mail", "http"};
 
         HashMap<String, List<String>> logCategories = Engine.getInstance().getCurrentConfiguration().getLogCategories();
-        
+
         loggerForm.getGroupNames().clear();
         HashMap<String, String> tempFilterValues = new HashMap<String, String>();
         HashMap<String, String> enabledFilterValues = new HashMap<String, String>();
@@ -91,7 +90,7 @@ public class NotifierViewAction extends NexusE2EAction {
         }
 
         loggerForm.setThreshold( loggerPojo.getThreshold() );
-        
+
         for ( String group : logCategories.keySet() ) {
 
             String value = enabledFilterValues.get( "group_" + group );
@@ -118,7 +117,8 @@ public class NotifierViewAction extends NexusE2EAction {
 
         List<ComponentPojo> components = Engine.getInstance().getActiveConfigurationAccessService().getComponents(
                 ComponentType.LOGGER, Constants.COMPONENTCOMPARATOR );
-        request.setAttribute( ATTRIBUTE_COLLECTION, components );;
+        request.setAttribute( ATTRIBUTE_COLLECTION, components );
+        ;
 
         loggerForm.getLogFilterValues().clear();
         loggerForm.setLogFilterValues( tempFilterValues );

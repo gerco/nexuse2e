@@ -20,15 +20,11 @@
 package org.nexuse2e.ui.taglib;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Iterator;
 
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspWriter;
-import javax.servlet.jsp.tagext.TagSupport;
 
-import org.apache.commons.lang.RandomStringUtils;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.apache.struts.taglib.TagUtils;
@@ -86,15 +82,15 @@ public class Errors extends ErrorsTag {
             }
             message = TagUtils.getInstance().message( pageContext, bundle, locale, report.getKey(), report.getValues() );
             for ( Object param : report.getValues() ) {
-                if(param instanceof Exception){
-                    Exception e = (Exception)param;
+                if ( param instanceof Exception ) {
+                    Exception e = (Exception) param;
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    PrintStream ps = new PrintStream(baos);
-                    e.printStackTrace(ps);
+                    PrintStream ps = new PrintStream( baos );
+                    e.printStackTrace( ps );
                     stacktraces.append( "<!--\n" );
-                    stacktraces.append( new String(baos.toByteArray()) );
+                    stacktraces.append( new String( baos.toByteArray() ) );
                     stacktraces.append( "-->\n" );
-                    
+
                 }
             }
             if ( message != null ) {

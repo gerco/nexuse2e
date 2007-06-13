@@ -41,9 +41,6 @@ import org.nexuse2e.ui.action.NexusE2EAction;
  */
 public class RequestDeleteRequest extends NexusE2EAction {
 
-    private static String URL     = "request.error.url";
-    private static String TIMEOUT = "request.error.timeout";
-
     /* (non-Javadoc)
      * @see com.tamgroup.nexus.e2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages)
      */
@@ -61,7 +58,8 @@ public class RequestDeleteRequest extends NexusE2EAction {
             return error;
         }
         CertificatePojo cert = requests.get( 0 );
-        Engine.getInstance().getActiveConfigurationAccessService().deleteCertificate( Constants.CERTIFICATE_TYPE_ALL, cert );
+        Engine.getInstance().getActiveConfigurationAccessService().deleteCertificate( Constants.CERTIFICATE_TYPE_ALL,
+                cert );
         return success;
     }
 
