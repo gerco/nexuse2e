@@ -22,6 +22,7 @@ package org.nexuse2e.messaging;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
@@ -115,7 +116,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
         String actionId = messagePojo.getAction().getName();
         ActionPojo action = Engine.getInstance().getActiveConfigurationAccessService()
                 .getActionFromChoreographyByActionId( choreography, actionId );
-        if ( action == null ) {
+        if ( ( action == null ) && ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) ) {
             errorFlag = true;
             errorMessages.add( new ErrorDescriptor( "No matching action found in configuration: "
                     + messagePojo.getAction().getName() ) );
@@ -138,6 +139,15 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
             }
         }
 
+        if ( errorFlag ) {
+            LOG.error( "Error processing inbound message:" );
+            for ( Iterator iter = errorMessages.iterator(); iter.hasNext(); ) {
+                ErrorDescriptor errorDescriptor = (ErrorDescriptor) iter.next();
+                LOG.error( "Error - " + errorDescriptor.getDescription() );
+            }
+            return null;
+        }
+
         String msgType = null;
         switch ( messagePojo.getType() ) {
             case Constants.INT_MESSAGE_TYPE_ACK:
@@ -150,8 +160,15 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                 msgType = "normal";
         }
 
-        LOG.info( "Received  " + msgType + " message (" + messagePojo.getMessageId() + ") from " + participant.getPartner().getPartnerId() + " for "
-                + choreography.getName() + "/" + action.getName() );
+        if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
+            LOG.info( "Received  " + msgType + " message (" + messagePojo.getMessageId() + ") from "
+                    + participant.getPartner().getPartnerId() + " for " + choreography.getName() + "/"
+                    + action.getName() );
+        } else {
+            LOG.info( "Received  " + msgType + " message (" + messagePojo.getMessageId() + ") from "
+                    + messagePojo.getParticipant().getPartner().getPartnerId() + " for " + choreography.getName() + "/"
+                    + messagePojo.getConversation().getCurrentAction().getName() );
+        }
 
         if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
 

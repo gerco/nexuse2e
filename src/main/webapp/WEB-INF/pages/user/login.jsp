@@ -40,6 +40,10 @@
 			href="#" onClick="document.forms['loginForm'].submit();"
 			class="button"><img src="images/submit.gif" class="button">Log
 		in</a></td>
+	</tr>
+</table>
+<table class="NEXUS_BUTTON_TABLE" style="width:300px;">
+	<tr>
 		<td>${NEXUSe2e_version}</td>
 	</tr>
 </table>
