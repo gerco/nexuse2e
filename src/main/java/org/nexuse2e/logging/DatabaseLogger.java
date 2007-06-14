@@ -51,6 +51,7 @@ public class DatabaseLogger extends AppenderSkeleton implements LogAppender {
     private List<Logger>                     loggers      = new ArrayList<Logger>();
     private BeanStatus                       status       = BeanStatus.UNDEFINED;
     private int                              logThreshold = 0;
+    private LogDAO                           logDao       = null;
 
     /**
      * Default constructor.
@@ -136,13 +137,15 @@ public class DatabaseLogger extends AppenderSkeleton implements LogAppender {
             pojo.setConversationId( "unknown" );
             pojo.setMessageId( "unknown" );
 
-            LogDAO logDao = null;
-            try {
-                logDao = (LogDAO) Engine.getInstance().getDao( "logDao" );
-            } catch ( Exception e ) {
-                NexusException ie = new NexusException( e );
-                ie.setStackTrace( e.getStackTrace() );
-                throw ie;
+            // LogDAO logDao = null;
+            if ( logDao == null ) {
+                try {
+                    logDao = (LogDAO) Engine.getInstance().getDao( "logDao" );
+                } catch ( Exception e ) {
+                    NexusException ie = new NexusException( e );
+                    ie.setStackTrace( e.getStackTrace() );
+                    throw ie;
+                }
             }
             logDao.saveLog( pojo, null, null );
         } catch ( Exception ex ) {
