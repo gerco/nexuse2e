@@ -38,15 +38,17 @@ public class Constants extends org.nexuse2e.Constants {
     public static int PARTNER_TYPE_LOCAL               = 1;
     public static int PARTNER_TYPE_PARTNER             = 2;
 
+    // to be done
+    
     public static int CERTIFICATE_TYPE_ALL             = 0;
-    public static int CERTIFICATE_TYPE_LOCAL           = 1;
-    public static int CERTIFICATE_TYPE_PARTNER         = 2;
-    public static int CERTIFICATE_TYPE_CA              = 3;
-    public static int CERTIFICATE_TYPE_REQUEST         = 4;
-    public static int CERTIFICATE_TYPE_PRIVATE_KEY     = 5;
-    public static int CERTIFICATE_TYPE_CACERT_METADATA = 6;
-    public static int CERTIFICATE_TYPE_CERT_PART       = 7;
-    public static int CERTIFICATE_TYPE_STAGING         = 8;
+    public static int CERTIFICATE_TYPE_LOCAL           = 1; // server identities, complete p12, private, public and ca chain.
+    public static int CERTIFICATE_TYPE_PARTNER         = 2; // x509 cert
+    public static int CERTIFICATE_TYPE_CA              = 3; // ca certs and intermediate
+    public static int CERTIFICATE_TYPE_REQUEST         = 4; // pkcs10 request (one per time) 
+    public static int CERTIFICATE_TYPE_PRIVATE_KEY     = 5; // private key, matching pkcs10
+    public static int CERTIFICATE_TYPE_CACERT_METADATA = 6; // password cakeystore
+    public static int CERTIFICATE_TYPE_CERT_PART       = 7; // not finished p12, containing private key and ca signed certificate
+    public static int CERTIFICATE_TYPE_STAGING         = 8; // complete p12, ready for promote
     /**
      * Used to store incomplete Certificate chain parts in rcp client
      */
