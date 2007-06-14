@@ -59,7 +59,7 @@
   function getCrumbs() {
   	var selectedNode = getSelectedTreeNode();
   	if(selectedNode) {
-	  	var crumbString = '<a href="javascript: getMenuTreeSelector().select({source: getTreeNode(\'' + selectedNode.widgetId + '\')});">' + selectedNode.title + '</a>';
+	  	var crumbString = '<a href="javascript: getMenuTreeSelector().deselect(); getMenuTreeSelector().select({source: getTreeNode(\'' + selectedNode.widgetId + '\')});">' + selectedNode.title + '</a>';
 	    while(selectedNode.parent.title != null) {
 	    	selectedNode = selectedNode.parent;
 	    	crumbString = '<a href="javascript: getMenuTreeSelector().select({source: getTreeNode(\'' + selectedNode.widgetId + '\')});">' + selectedNode.title + '</a>' + ' &gt ' + crumbString;

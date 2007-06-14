@@ -28,7 +28,7 @@ The newly created project will show a lot of errors and problems
 that we will be fixed with the following steps.
 
 2.3 
-Clost the project in Eclipse and replace the file .classpath in the 
+Close the project in Eclipse and replace the file .classpath in the 
 root directory of your project with the one from the dev subdirectory.
 Reopen the project in Eclipse.
 or

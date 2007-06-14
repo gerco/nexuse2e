@@ -1,1 +1,2 @@
 Please download SAAJ 1.3 from http://java.sun.com/webservices/saaj/index.jsp
+and copy the library to this folder (<project_root>/lib).
