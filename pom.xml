@@ -593,7 +593,7 @@
           <archiveClasses>true</archiveClasses>
           <warName>NEXUSe2e</warName>
           <warSourceExcludes>
-            **/ant-1.5.jar,**/antlr-2.7.2.jar,**/bcprov-jdk15-133.jar,**/cglib-2.1.jar,**/jsp*,**/servlet-api*,**/javax.xml.bind-jaxb-api-2.0.jar,**/xml-apis*,**/xalan-2.6.0.jar,WEB-INF/classes/tldCache.ser,WEB-INF/classes/org/**,WEB-INF/config/database/derby/**,/WEB-INF/config/bean.properties,/WEB-INF/config/database.properties
+            **/spring*2.0.0.jar,**/ant-1.5.jar,**/antlr-2.7.2.jar,**/bcprov-jdk15-133.jar,**/cglib-2.1.jar,**/jsp*,**/servlet-api*,**/javax.xml.bind-jaxb-api-2.0.jar,**/xml-apis*,**/xalan-2.6.0.jar,WEB-INF/classes/tldCache.ser,WEB-INF/classes/org/**,WEB-INF/config/database/derby/**,/WEB-INF/config/bean.properties,/WEB-INF/config/database.properties
           </warSourceExcludes>
           <webResources>
             <resource>
