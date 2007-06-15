@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
@@ -758,7 +759,8 @@ public class TransactionServiceImpl implements TransactionService {
      * @see org.nexuse2e.controller.TransactionService#getLogEntriesForReport(java.lang.String, java.lang.String, java.util.Date, java.util.Date, int, int, int, boolean)
      */
     public List<LogPojo> getLogEntriesForReport( String severity, String messageText, Date start, Date end,
-            int itemsPerPage, int page, int field, boolean ascending, Session session, Transaction transaction ) throws NexusException {
+            int itemsPerPage, int page, int field, boolean ascending, Session session, Transaction transaction )
+            throws NexusException {
 
         LogDAO logDao;
         try {
@@ -770,7 +772,8 @@ public class TransactionServiceImpl implements TransactionService {
             e.printStackTrace();
             throw e;
         }
-        return logDao.getLogEntriesForReport( severity, messageText, start, end, itemsPerPage, page, field, ascending, session, transaction );
+        return logDao.getLogEntriesForReport( severity, messageText, start, end, itemsPerPage, page, field, ascending,
+                session, transaction );
     }
 
     /* (non-Javadoc)
@@ -819,13 +822,16 @@ public class TransactionServiceImpl implements TransactionService {
     /* (non-Javadoc)
      * @see org.nexuse2e.Manageable#teardown()
      */
+    @SuppressWarnings("unchecked")
     public void teardown() {
 
         LOG.debug( "Tearing down..." );
 
-        for ( String key : processingMessages.keySet() ) {
+        Set<String> keys = ( (HashMap<String, ScheduledFuture>) processingMessages.clone() ).keySet();
+        for ( String key : keys ) {
             deregisterProcessingMessage( key );
         }
+
         status = Constants.BeanStatus.INSTANTIATED;
     }
 
@@ -847,7 +853,7 @@ public class TransactionServiceImpl implements TransactionService {
     /* (non-Javadoc)
      * @see org.nexuse2e.controller.TransactionService#releaseDBSession(org.hibernate.Session)
      */
-    public void releaseDBSession(Session session) throws NexusException{
+    public void releaseDBSession( Session session ) throws NexusException {
 
         TransactionDAO transactionDao;
         try {
@@ -855,7 +861,7 @@ public class TransactionServiceImpl implements TransactionService {
         } catch ( Exception e ) {
             throw new NexusException( e );
         }
-        transactionDao.releaseDBSession( session);
+        transactionDao.releaseDBSession( session );
     }
 
     public void deleteLogEntry( LogPojo logEntry, Session session, Transaction transaction ) throws NexusException {
@@ -871,7 +877,7 @@ public class TransactionServiceImpl implements TransactionService {
             throw e;
         }
         transactionDao.deleteLogEntry( logEntry, session, transaction );
-        
+
     }
 
 } // TransactionService
