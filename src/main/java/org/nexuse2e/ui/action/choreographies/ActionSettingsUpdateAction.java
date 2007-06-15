@@ -111,6 +111,8 @@ public class ActionSettingsUpdateAction extends NexusE2EAction {
                     }
                 }
                 if ( !exists ) {
+                    followUp.getFollowUpAction().getFollowedActions().remove( followUp );
+                    // followUp.setAction( null );
                     followI.remove();
                 }
             }
