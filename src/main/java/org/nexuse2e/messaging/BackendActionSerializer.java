@@ -29,6 +29,7 @@ import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Runlevel;
 import org.nexuse2e.configuration.EngineConfiguration;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.pojo.ConversationPojo;
 import org.nexuse2e.pojo.MessagePojo;
 
@@ -84,7 +85,8 @@ public class BackendActionSerializer extends AbstractPipelet {
                 conversationPojo = stateMachineExecutor.validateTransition( messageContext );
             } catch ( NexusException e ) {
                 e.printStackTrace();
-                LOG.error( "Not a valid action: " + messageContext.getMessagePojo().getAction() );
+                LOG.error( new LogMessage( "Not a valid action: " + messageContext.getMessagePojo().getAction(),
+                        messageContext.getMessagePojo() ) );
                 throw e;
             }
 
@@ -98,12 +100,14 @@ public class BackendActionSerializer extends AbstractPipelet {
                 queueMessage( messageContext, conversationPojo, true );
             } catch ( Exception e ) {
                 e.printStackTrace();
-                LOG.error( "OutboundQueueListener.run detected an exception when storing message status: " + e );
+                LOG.error( new LogMessage(
+                        "OutboundQueueListener.run detected an exception when storing message status: " + e,
+                        messageContext.getMessagePojo() ) );
             }
 
         } else {
-            LOG.error( "Received message for BackendActionSerializer (" + choreographyId
-                    + ") which hasn't been properly started!" );
+            LOG.error( new LogMessage( "Received message for BackendActionSerializer (" + choreographyId
+                    + ") which hasn't been properly started!", messageContext.getMessagePojo() ) );
         }
 
         return messageContext;
@@ -150,13 +154,14 @@ public class BackendActionSerializer extends AbstractPipelet {
      * @throws NexusException
      */
     public void requeueMessage( MessageContext messageContext ) throws NexusException {
+
         if ( messageContext == null ) {
             LOG.error( "No MessageContext supplied!" );
             throw new NexusException( "No MessageContext supplied!" );
         }
-        queueMessage( messageContext, messageContext.getConversation(), false );        
+        queueMessage( messageContext, messageContext.getConversation(), false );
     } // requeueMessage
-    
+
     /**
      * @param choreographyId
      * @param participantId
@@ -175,8 +180,10 @@ public class BackendActionSerializer extends AbstractPipelet {
         if ( messageContext != null ) {
             queueMessage( messageContext, messageContext.getConversation(), false );
         } else {
-            LOG.error( "Message: " + messageId + " could not be found in database, cancelled requeueing!" );
-            throw new NexusException( "Message: " + messageId + " could not be found in database, cancelled requeueing!" );
+            LOG.error( new LogMessage( "Message: " + messageId
+                    + " could not be found in database, cancelled requeueing!", conversationId, messageId ) );
+            throw new NexusException( "Message: " + messageId
+                    + " could not be found in database, cancelled requeueing!" );
         }
     } // requeueMessage
 

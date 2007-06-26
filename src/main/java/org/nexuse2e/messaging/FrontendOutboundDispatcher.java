@@ -30,6 +30,7 @@ import org.nexuse2e.NexusException;
 import org.nexuse2e.ProtocolSpecificKey;
 import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Runlevel;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.pojo.ConversationPojo;
 import org.nexuse2e.pojo.MessagePojo;
 import org.nexuse2e.pojo.ParticipantPojo;
@@ -81,12 +82,14 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                 msgType = "normal";
         }
 
-        LOG.info( "Sending " + msgType + " message (" + messageContext.getMessagePojo().getMessageId() + ") to "
-                + participantPojo.getPartner().getPartnerId() + " for " + messageContext.getChoreography().getName()
-                + "/" + messageContext.getMessagePojo().getAction().getName() );
+        LOG.info( new LogMessage( "Sending " + msgType + " message (" + messageContext.getMessagePojo().getMessageId()
+                + ") to " + participantPojo.getPartner().getPartnerId() + " for "
+                + messageContext.getChoreography().getName() + "/"
+                + messageContext.getMessagePojo().getAction().getName(), messageContext.getMessagePojo() ) );
 
         ScheduledFuture<?> handle = scheduler.scheduleAtFixedRate( messageSender, 0, interval, TimeUnit.SECONDS );
-        LOG.debug( "Waiting " + interval + " seconds until message resend..." );
+        LOG.debug( new LogMessage( "Waiting " + interval + " seconds until message resend...", messageContext
+                .getMessagePojo() ) );
 
         Engine.getInstance().getTransactionService().registerProcessingMessage(
                 messageContext.getMessagePojo().getMessageId(), handle, scheduler );
@@ -201,7 +204,7 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
             ConversationPojo conversationPojo = messagePojo.getConversation();
 
             if ( retryCount <= retries ) {
-                LOG.debug( "Sending message..." );
+                LOG.debug( new LogMessage( "Sending message...", messagePojo ) );
                 try {
                     retryCount++;
                     synchronized ( conversationPojo ) {
@@ -219,8 +222,9 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                                     || ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_AWAITING_ACK ) ) {
                                 conversationPojo.setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_AWAITING_ACK );
                             } else {
-                                LOG.error( "Unexpected conversation state after sending normal message: "
-                                        + conversationPojo.getStatus() );
+                                LOG.error( new LogMessage(
+                                        "Unexpected conversation state after sending normal message: "
+                                                + conversationPojo.getStatus(), messagePojo ) );
                             }
                         } else {
                             Engine.getInstance().getTransactionService().deregisterProcessingMessage(
@@ -237,8 +241,8 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                                     conversationPojo.setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_IDLE );
                                 }
                             } else {
-                                LOG.error( "Unexpected conversation state after sending ack message: "
-                                        + conversationPojo.getStatus() );
+                                LOG.error( new LogMessage( "Unexpected conversation state after sending ack message: "
+                                        + conversationPojo.getStatus(), messagePojo ) );
                             }
                         }
 
@@ -246,22 +250,22 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                         Engine.getInstance().getTransactionService().updateTransaction( conversationPojo );
                     } // synchronized
 
-                    LOG.debug( "Message sent." );
+                    LOG.debug( new LogMessage( "Message sent.", messagePojo ) );
                 } catch ( Throwable e ) {
                     // Persist retry count changes
                     try {
                         Engine.getInstance().getTransactionService().updateMessage( messagePojo );
                     } catch ( NexusException e1 ) {
-                        LOG.error( "Error saving message: " + e1 );
+                        LOG.error( new LogMessage( "Error saving message: " + e1, messagePojo ) );
                     }
 
                     if ( LOG.isTraceEnabled() ) {
                         e.printStackTrace();
                     }
-                    LOG.error( "Error sending message: " + e );
+                    LOG.error( new LogMessage( "Error sending message: " + e, messagePojo ) );
                 }
             } else {
-                LOG.debug( "Max number of retries reached!" );
+                LOG.debug( new LogMessage( "Max number of retries reached!", messagePojo ) );
                 cancelRetrying();
             }
         } // run
@@ -279,7 +283,8 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                 try {
                     Engine.getInstance().getTransactionService().updateTransaction( messagePojo.getConversation() );
                 } catch ( NexusException e ) {
-                    LOG.error( "Error updating conversation/message on failed atempt message!" );
+                    LOG.error( new LogMessage( "Error updating conversation/message on failed atempt message!",
+                            messagePojo ) );
                     e.printStackTrace();
                 }
                 Engine.getInstance().getTransactionService().deregisterProcessingMessage(

@@ -17,18 +17,19 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.nexuse2e.integration;
 
-public class Constants extends org.nexuse2e.Constants {
+package org.nexuse2e.messaging.httpplain;
 
-    public static final String PARAM_CHOREOGRAPY_ID         = "choreography";
-    public static final String PARAM_CONVERSATION_ID        = "conversation";
-    public static final String PARAM_MESSAGE_ID             = "message";
-    public static final String PARAM_MESSAGE_TIMESTAMP      = "messageTimestamp";
-    public static final String PARAM_CONVERSATION_TIMESTAMP = "conversationTimestamp";
-    public static final String PARAM_PARTNER_ID             = "partner";
-    public static final String PARAM_ACTION_ID              = "action";
-    public static final String PARAM_SENDER_ID              = "sender";
-    public static final String PARAM_CONTENT                = "content";
+/**
+ * @author mbreilmann
+ *
+ */
+public class Constants extends org.nexuse2e.messaging.Constants {
 
-} // Constants
+    public static final String PARAM_CHOREOGRAPY_ID  = "ChoreographyID";
+    public static final String PARAM_CONVERSATION_ID = "ConversationID";
+    public static final String PARAM_MESSAGE_ID      = "MessageID";
+    public static final String PARAM_PARTNER_ID      = "ParticipantID";
+    public static final String PARAM_ACTION_ID       = "ActionID";
+
+}

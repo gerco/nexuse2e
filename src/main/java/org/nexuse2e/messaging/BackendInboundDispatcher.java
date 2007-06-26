@@ -29,6 +29,7 @@ import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Runlevel;
 import org.nexuse2e.configuration.EngineConfiguration;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.pojo.MessagePojo;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -52,22 +53,21 @@ public class BackendInboundDispatcher implements InitializingBean, Manageable {
      * @return 
      * @throws NexusException
      */
-    public MessageContext processMessage( MessageContext messageContext )
-            throws NexusException {
+    public MessageContext processMessage( MessageContext messageContext ) throws NexusException {
 
         LOG.debug( "BackendInboundDispatcher.processMessage..." );
 
         if ( backendInboundPipelines != null ) {
-            ActionSpecificKey actionSpecificKey = new ActionSpecificKey( messageContext.getMessagePojo()
-                    .getAction().getName(), messageContext.getMessagePojo().getConversation()
-                    .getChoreography().getName() );
+            ActionSpecificKey actionSpecificKey = new ActionSpecificKey( messageContext.getMessagePojo().getAction()
+                    .getName(), messageContext.getMessagePojo().getConversation().getChoreography().getName() );
             BackendPipeline backendInboundPipeline = backendInboundPipelines.get( actionSpecificKey );
             if ( backendInboundPipeline != null ) {
-                LOG.debug( "Found pipeline: " + backendInboundPipeline + " - " + actionSpecificKey );
-                
+                LOG.debug( new LogMessage( "Found pipeline: " + backendInboundPipeline + " - " + actionSpecificKey,
+                        messageContext.getMessagePojo() ) );
+
                 // Clone MessagePojo so that Pipelets in the Pipeline can modify the message/payloads
                 try {
-                    messageContext.setMessagePojo( (MessagePojo)messageContext.getMessagePojo().clone() );
+                    messageContext.setMessagePojo( (MessagePojo) messageContext.getMessagePojo().clone() );
                 } catch ( CloneNotSupportedException e ) {
                     throw new NexusException( "Error cloning original MessagePojo!" );
                 }
@@ -76,8 +76,8 @@ public class BackendInboundDispatcher implements InitializingBean, Manageable {
             } else {
                 throw new NexusException( "No backend inbound pipeline found for message: "
                         + messageContext.getMessagePojo().getMessageId() + " ("
-                        + messageContext.getMessagePojo().getConversation().getChoreography().getName()
-                        + " - " + messageContext.getMessagePojo().getAction() + ")" );
+                        + messageContext.getMessagePojo().getConversation().getChoreography().getName() + " - "
+                        + messageContext.getMessagePojo().getAction() + ")" );
             }
         } else {
             throw new NexusException( "No backend inbound pipelines configured!" );
@@ -99,7 +99,7 @@ public class BackendInboundDispatcher implements InitializingBean, Manageable {
      * @see org.nexuse2e.Manageable#initialize(org.nexuse2e.configuration.EngineConfiguration)
      */
     public void initialize( EngineConfiguration config ) {
-        
+
         LOG.debug( "Initializing..." );
 
         backendInboundPipelines = config.getBackendInboundPipelines();

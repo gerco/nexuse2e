@@ -39,9 +39,21 @@ public class HTTPIntegrationController implements Controller {
     public ModelAndView handleRequest( HttpServletRequest request, HttpServletResponse response ) throws Exception {
 
         String choreographyId = request.getParameter( Constants.PARAM_CHOREOGRAPY_ID );
+        if ( ( choreographyId == null ) || ( choreographyId.length() == 0 ) ) {
+            choreographyId = request.getParameter( org.nexuse2e.messaging.httpplain.Constants.PARAM_CHOREOGRAPY_ID );
+        }
         String conversationId = request.getParameter( Constants.PARAM_CONVERSATION_ID );
-        String actionId = request.getParameter( Constants.PARAM_ACTION );
+        if ( ( conversationId == null ) || ( conversationId.length() == 0 ) ) {
+            conversationId = request.getParameter( org.nexuse2e.messaging.httpplain.Constants.PARAM_CONVERSATION_ID );
+        }
+        String actionId = request.getParameter( Constants.PARAM_ACTION_ID );
+        if ( ( actionId == null ) || ( actionId.length() == 0 ) ) {
+            actionId = request.getParameter( org.nexuse2e.messaging.httpplain.Constants.PARAM_ACTION_ID );
+        }
         String partnerId = request.getParameter( Constants.PARAM_PARTNER_ID );
+        if ( ( partnerId == null ) || ( partnerId.length() == 0 ) ) {
+            partnerId = request.getParameter( org.nexuse2e.messaging.httpplain.Constants.PARAM_PARTNER_ID );
+        }
         String content = request.getParameter( Constants.PARAM_CONTENT );
         StringBuffer contentBuffer = new StringBuffer();
 

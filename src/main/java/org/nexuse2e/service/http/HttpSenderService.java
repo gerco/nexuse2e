@@ -41,6 +41,7 @@ import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.Runlevel;
 import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.configuration.ParameterDescriptor;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
@@ -210,11 +211,12 @@ public class HttpSenderService extends AbstractService implements SenderAware {
             method.releaseConnection();
 
         } catch ( ConnectTimeoutException e ) {
-            LOG.error( "Message submission failed, connection timeout for URL: "
-                    + messageContext.getParticipant().getConnection().getUri() + " - " + e );
+            LOG.error( new LogMessage( "Message submission failed, connection timeout for URL: "
+                    + messageContext.getParticipant().getConnection().getUri() + " - " + e, messageContext
+                    .getMessagePojo() ) );
             throw new NexusException( "Message submission failed, connection timeout for URL: " + e );
         } catch ( Exception ex ) {
-            LOG.error( "Message submission failed: " + ex );
+            LOG.error( new LogMessage( "Message submission failed: " + ex, messageContext.getMessagePojo() ) );
             throw new NexusException( "Message submission failed: " + ex );
         }
     }

@@ -17,18 +17,24 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.nexuse2e.integration;
 
-public class Constants extends org.nexuse2e.Constants {
+package org.nexuse2e.logging;
 
-    public static final String PARAM_CHOREOGRAPY_ID         = "choreography";
-    public static final String PARAM_CONVERSATION_ID        = "conversation";
-    public static final String PARAM_MESSAGE_ID             = "message";
-    public static final String PARAM_MESSAGE_TIMESTAMP      = "messageTimestamp";
-    public static final String PARAM_CONVERSATION_TIMESTAMP = "conversationTimestamp";
-    public static final String PARAM_PARTNER_ID             = "partner";
-    public static final String PARAM_ACTION_ID              = "action";
-    public static final String PARAM_SENDER_ID              = "sender";
-    public static final String PARAM_CONTENT                = "content";
+import org.apache.log4j.or.ObjectRenderer;
 
-} // Constants
+
+/**
+ * @author mbreilmann
+ *
+ */
+public class LogMessageRenderer implements ObjectRenderer {
+
+    /* (non-Javadoc)
+     * @see org.apache.log4j.or.ObjectRenderer#doRender(java.lang.Object)
+     */
+    public String doRender( Object message ) {
+
+        return message.toString();
+    }
+
+} // LogMessageRenderer

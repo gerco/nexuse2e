@@ -34,6 +34,7 @@ import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Runlevel;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.ebxml.v20.HeaderDeserializer;
 import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
@@ -91,11 +92,12 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
             messagePojo.getConversation().setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_PROCESSING );
         }
 
-        LOG.debug( "MessageType:" + messagePojo.getType() );
+        LOG.debug( new LogMessage( "MessageType:" + messagePojo.getType(), messagePojo.getConversation()
+                .getConversationId(), messagePojo.getMessageId() ) );
 
         ProtocolAdapter protocolAdapter = getProtocolAdapterByKey( messageContext.getProtocolSpecificKey() );
         if ( protocolAdapter == null ) {
-            LOG.error( "No protocol implementation found for key: " + messageContext.getProtocolSpecificKey() );
+            LOG.error( new LogMessage( "No protocol implementation found for key: " + messageContext.getProtocolSpecificKey(), messagePojo ) );
             return null;
         }
         LOG.trace( "ProtocolAdapter found for incoming message" );
@@ -105,7 +107,8 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
             LOG.trace( "matching choreography found" );
         } catch ( NexusException e ) {
             e.printStackTrace();
-            LOG.error( "No matching choreography found: " + messagePojo.getConversation().getChoreography().getName() );
+            LOG.error( new LogMessage( "No matching choreography found: "
+                    + messagePojo.getConversation().getChoreography().getName(), messagePojo ) );
             responseMessageContext = protocolAdapter.createErrorAcknowledgement(
                     Constants.ErrorMessageReasonCode.CHOREOGRAPHY_NOT_FOUND, null, messageContext, null );
             errorFlag = true;
@@ -129,8 +132,8 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                 LOG.trace( "matching participant found" );
             } catch ( NexusException e ) {
                 e.printStackTrace();
-                LOG.error( "No matching participant found: "
-                        + messagePojo.getConversation().getPartner().getPartnerId() );
+                LOG.error( new LogMessage( "No matching participant found: "
+                        + messagePojo.getConversation().getPartner().getPartnerId(), messagePojo ) );
                 responseMessageContext = protocolAdapter.createErrorAcknowledgement(
                         Constants.ErrorMessageReasonCode.PARTICIPANT_NOT_FOUND, choreography, messageContext, null );
                 errorFlag = true;
@@ -140,10 +143,10 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
         }
 
         if ( errorFlag ) {
-            LOG.error( "Error processing inbound message:" );
+            LOG.error( new LogMessage( "Error processing inbound message.", messagePojo ) );
             for ( Iterator iter = errorMessages.iterator(); iter.hasNext(); ) {
                 ErrorDescriptor errorDescriptor = (ErrorDescriptor) iter.next();
-                LOG.error( "Error - " + errorDescriptor.getDescription() );
+                LOG.error( new LogMessage( "Error - " + errorDescriptor.getDescription(), messagePojo ) );
             }
             return null;
         }
@@ -161,13 +164,13 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
         }
 
         if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
-            LOG.info( "Received  " + msgType + " message (" + messagePojo.getMessageId() + ") from "
+            LOG.info( new LogMessage( "Received  " + msgType + " message (" + messagePojo.getMessageId() + ") from "
                     + participant.getPartner().getPartnerId() + " for " + choreography.getName() + "/"
-                    + action.getName() );
+                    + action.getName(), messagePojo ) );
         } else {
-            LOG.info( "Received  " + msgType + " message (" + messagePojo.getMessageId() + ") from "
+            LOG.info( new LogMessage( "Received  " + msgType + " message (" + messagePojo.getMessageId() + ") from "
                     + messagePojo.getParticipant().getPartner().getPartnerId() + " for " + choreography.getName() + "/"
-                    + messagePojo.getConversation().getCurrentAction().getName() );
+                    + messagePojo.getConversation().getCurrentAction().getName(), messagePojo ) );
         }
 
         if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
@@ -185,7 +188,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
 
                         // Block for synchronous processing
                         if ( participant.getConnection().isSynchronous() ) {
-                            LOG.debug( "Found synchronous connection setting." );
+                            LOG.debug( new LogMessage( "Found synchronous connection setting.", messagePojo ) );
                             Engine.getInstance().getTransactionService().addSynchronousRequest(
                                     messagePojo.getMessageId() );
                             while ( responseMessageContext == null ) {
@@ -207,14 +210,14 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                     } catch ( CloneNotSupportedException e ) {
                         e.printStackTrace();
                     } catch ( NexusException e ) {
-                        LOG.error( "Error processing message: " + messagePojo.getMessageId() + " ("
+                        LOG.error( new LogMessage( "Error processing message: " + messagePojo.getMessageId() + " ("
                                 + messagePojo.getConversation().getChoreography().getName() + "/"
-                                + messagePojo.getConversation().getPartner().getPartnerId() + ") - " + e );
+                                + messagePojo.getConversation().getPartner().getPartnerId() + ") - " + e, messagePojo ) );
                         errorFlag = true;
                     }
                 } else {
-                    LOG.error( "No FrontendActionSerializer found: "
-                            + messagePojo.getConversation().getChoreography().getName() );
+                    LOG.error( new LogMessage( "No FrontendActionSerializer found: "
+                            + messagePojo.getConversation().getChoreography().getName(), messagePojo ) );
                     errorFlag = true;
                 }
             }
@@ -238,7 +241,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
             }
 
             if ( responseMessageContext == null ) {
-                LOG.error( "No dispatcheable return message created" );
+                LOG.error( new LogMessage( "No dispatcheable return message created", messagePojo ) );
                 return null;
             }
 
@@ -250,7 +253,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                     backendOutboundDispatcher.processMessage( responseMessageContext );
                     return null;
                 } catch ( NexusException e ) {
-                    LOG.error( "unable to process Acknowledgement:" + e.getMessage() );
+                    LOG.error(  new LogMessage( "Unable to process Acknowledgement:" + e.getMessage(), messagePojo ) );
                 }
             }
         } else if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_ACK ) {
@@ -279,23 +282,23 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                             Engine.getInstance().getTransactionService().deregisterProcessingMessage(
                                     referencedMessagePojo.getMessageId() );
                         } catch ( NexusException e ) {
-                            LOG.error( "Error updating status for acknowleged message (message ID: "
-                                    + referencedMessagePojo.getMessageId() + ")" );
+                            LOG.error( new LogMessage( "Error updating status for acknowleged message (message ID: "
+                                    + referencedMessagePojo.getMessageId() + ")", messagePojo ) );
                             e.printStackTrace();
                         }
                     } else {
-                        LOG.warn( "Received ACK when it was not expected - ID of acknowleged message: "
-                                + referencedMessagePojo.getMessageId() );
+                        LOG.warn( new LogMessage( "Received ACK when it was not expected - ID of acknowleged message: "
+                                + referencedMessagePojo.getMessageId(), messagePojo ) );
                     }
                 } // synchronized
             } else {
-                LOG.error( "Error using referenced message on acknowledgment (ack message ID: "
-                        + messagePojo.getMessageId() + ")" );
+                LOG.error( new LogMessage( "Error using referenced message on acknowledgment (ack message ID: "
+                        + messagePojo.getMessageId() + ")", messagePojo ) );
             }
         } else if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_ERROR ) {
             LOG.trace( "Error detected" );
         } else {
-            LOG.error( "Message of unknown type received: " + messagePojo.getType() );
+            LOG.error( new LogMessage( "Message of unknown type received: " + messagePojo.getType(), messagePojo ) );
         }
 
         return responseMessageContext;

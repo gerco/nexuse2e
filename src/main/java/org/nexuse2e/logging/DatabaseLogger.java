@@ -105,7 +105,12 @@ public class DatabaseLogger extends AppenderSkeleton implements LogAppender {
             return;
         }
 
-        String description = loggingevent.getMessage().toString();
+        String description = "";
+        if ( loggingevent.getMessage() instanceof LogMessage ) {
+            description = ( (LogMessage) loggingevent.getMessage() ).getDescription();
+        } else {
+            description = loggingevent.getMessage().toString();
+        }
 
         if ( ( description != null ) && ( description.length() > 255 ) ) {
             description = description.substring( 0, 254 );
@@ -134,8 +139,13 @@ public class DatabaseLogger extends AppenderSkeleton implements LogAppender {
             pojo.setEventId( 0 );
             pojo.setSeverity( loggingevent.getLevel().toInt() );
             pojo.setDescription( description );
-            pojo.setConversationId( "unknown" );
-            pojo.setMessageId( "unknown" );
+            if ( loggingevent.getMessage() instanceof LogMessage ) {
+                pojo.setConversationId( ( (LogMessage) loggingevent.getMessage() ).getConversationId() );
+                pojo.setMessageId( ( (LogMessage) loggingevent.getMessage() ).getMessageId() );
+            } else {
+                pojo.setConversationId( "unknown" );
+                pojo.setMessageId( "unknown" );
+            }
 
             // LogDAO logDao = null;
             if ( logDao == null ) {

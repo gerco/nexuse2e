@@ -121,7 +121,7 @@ public class HTTPIntegrationPipelet extends AbstractPipelet {
                         .getParticipant().getLocalPartner().getPartnerId() );
                 data[6] = new NameValuePair( org.nexuse2e.integration.Constants.PARAM_SENDER_ID, messagePojo
                         .getConversation().getPartner().getPartnerId() );
-                data[7] = new NameValuePair( org.nexuse2e.integration.Constants.PARAM_ACTION, messagePojo.getAction()
+                data[7] = new NameValuePair( org.nexuse2e.integration.Constants.PARAM_ACTION_ID, messagePojo.getAction()
                         .getName() );
                 data[8] = new NameValuePair( org.nexuse2e.integration.Constants.PARAM_CONTENT, documentString );
                 post.setRequestBody( data );

@@ -52,7 +52,7 @@ public class XSLTPipelet extends AbstractPipelet {
 
     private static Logger      LOG              = Logger.getLogger( XSLTPipelet.class );
 
-    public static final String XSLT_FILE        = "xslt_file";
+    public static final String XSLT_FILE        = "xsltFile";
 
     private String             xsltFileName     = null;
     private StreamSource       xsltStreamSource = null;

@@ -34,20 +34,21 @@ import org.nexuse2e.pojo.MessagePojo;
  */
 public class HTTPPlainHeaderDeserializer extends AbstractPipelet {
 
-    private static Logger       LOG = Logger.getLogger( HTTPPlainHeaderDeserializer.class );
+    private static Logger LOG = Logger.getLogger( HTTPPlainHeaderDeserializer.class );
 
     /**
      * Default constructor.
      */
     public HTTPPlainHeaderDeserializer() {
+
         frontendPipelet = true;
     }
 
     /* (non-Javadoc)
      * @see org.nexuse2e.messaging.MessageUnpackager#processMessage(com.tamgroup.nexus.e2e.persistence.pojo.MessagePojo, byte[])
      */
-    public MessageContext processMessage( MessageContext messageContext )
-            throws IllegalArgumentException, IllegalStateException, NexusException {
+    public MessageContext processMessage( MessageContext messageContext ) throws IllegalArgumentException,
+            IllegalStateException, NexusException {
 
         Object object = messageContext.getData();
         if ( !( object instanceof HttpServletRequest ) ) {
@@ -57,13 +58,13 @@ public class HTTPPlainHeaderDeserializer extends AbstractPipelet {
         HttpServletRequest request = (HttpServletRequest) object;
 
         // required params from post.
-        String choreographyId = request.getParameter( "ChoreographyID" );
-        String participantId = request.getParameter( "ParticipantID" );
-        String actionId = request.getParameter( "ActionID" );
+        String choreographyId = request.getParameter( Constants.PARAM_CHOREOGRAPY_ID );
+        String participantId = request.getParameter( Constants.PARAM_PARTNER_ID );
+        String actionId = request.getParameter( Constants.PARAM_ACTION_ID );
 
         // optional params, if they don't exist, new ones will be generated.
-        String conversationId = request.getParameter( "ConversationID" );
-        String messageId = request.getParameter( "MessageID" );
+        String conversationId = request.getParameter( Constants.PARAM_CONVERSATION_ID );
+        String messageId = request.getParameter( Constants.PARAM_MESSAGE_ID );
 
         //Verify params, if required one do not exist, reject post.
         if ( choreographyId == null || actionId == null || participantId == null ) {
@@ -89,6 +90,5 @@ public class HTTPPlainHeaderDeserializer extends AbstractPipelet {
 
         return messageContext;
     } // processMessage
-    
 
 } // HTTPPlainHeaderDeserializer

@@ -30,6 +30,7 @@ import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Runlevel;
 import org.nexuse2e.configuration.EngineConfiguration;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.pojo.ConversationPojo;
 import org.nexuse2e.pojo.MessagePojo;
 
@@ -85,7 +86,8 @@ public class FrontendActionSerializer implements Manageable {
                 conversationPojo = stateMachineExecutor.validateTransition( messageContext );
             } catch ( NexusException e ) {
                 e.printStackTrace();
-                LOG.error( "Not a valid action: " + messageContext.getMessagePojo().getAction() );
+                LOG.error( new LogMessage( "Not a valid action: " + messageContext.getMessagePojo().getAction(),
+                        messageContext.getMessagePojo() ) );
                 throw e;
             }
 
@@ -101,8 +103,8 @@ public class FrontendActionSerializer implements Manageable {
                 throw new NexusException( "Error storing new conversation/message state: " + e );
             }
         } else {
-            LOG.error( "Received message for FrontendActionSerializer (" + choreographyId
-                    + ") which hasn't been properly started!" );
+            LOG.error( new LogMessage( "Received message for FrontendActionSerializer (" + choreographyId
+                    + ") which hasn't been properly started!", messageContext.getMessagePojo() ) );
         }
 
         return messageContext;
@@ -149,8 +151,8 @@ public class FrontendActionSerializer implements Manageable {
     public void requeueMessage( String choreographyId, String participantId, String conversationId, String messageId )
             throws NexusException {
 
-        LOG.debug( "Requeueing message " + messageId + " for choreography " + choreographyId + ", participant "
-                + participantId + ", conversation " + conversationId );
+        LOG.debug( new LogMessage( "Requeueing message " + messageId + " for choreography " + choreographyId
+                + ", participant " + participantId + ", conversation " + conversationId, conversationId, messageId ) );
 
         MessageContext messageContext = Engine.getInstance().getTransactionService().getMessageContext( messageId );
 
@@ -325,7 +327,8 @@ public class FrontendActionSerializer implements Manageable {
                             conversationPojo
                                     .setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_BACKEND_SENT_SENDING_ACK );
                         } else {
-                            LOG.error( "Unexpected conversation state detected: " + conversationPojo.getStatus() );
+                            LOG.error( new LogMessage( "Unexpected conversation state detected: "
+                                    + conversationPojo.getStatus(), messagePojo ) );
                         }
 
                         // Persist the message
@@ -333,9 +336,9 @@ public class FrontendActionSerializer implements Manageable {
                             Engine.getInstance().getTransactionService().updateTransaction( conversationPojo );
                         } catch ( Exception e ) {
                             e.printStackTrace();
-                            LOG
-                                    .error( "InboundQueueListener.run detected an exception when storing message ack status: "
-                                            + e );
+                            LOG.error( new LogMessage(
+                                    "InboundQueueListener.run detected an exception when storing message ack status: "
+                                            + e, messagePojo ) );
                         }
                     } // synchronized
                 } catch ( NexusException nex ) {
@@ -351,17 +354,17 @@ public class FrontendActionSerializer implements Manageable {
                                     messagePojo.getConversation() );
                         } catch ( Exception e ) {
                             e.printStackTrace();
-                            LOG
-                                    .error( "InboundQueueListener.run detected an exception when storing message error status: "
-                                            + e );
+                            LOG.error( new LogMessage(
+                                    "InboundQueueListener.run detected an exception when storing message error status: "
+                                            + e, messagePojo ) );
                         }
                     }
                 } catch ( InterruptedException ex ) {
-                    FrontendActionSerializer.LOG.debug( "Interrupted while listening on queue " );
+                    LOG.debug( new LogMessage( "Interrupted while listening on queue ", messagePojo ) );
                 }
             } // while
-            FrontendActionSerializer.LOG.info( "Stopped InboundQueueListener "
-                    + FrontendActionSerializer.this.choreographyId );
+            LOG.info( new LogMessage( "Stopped InboundQueueListener " + FrontendActionSerializer.this.choreographyId,
+                    messagePojo ) );
             stopRequested = false;
         } // run
 

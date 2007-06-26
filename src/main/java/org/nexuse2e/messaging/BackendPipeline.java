@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 import org.nexuse2e.ActionSpecific;
 import org.nexuse2e.ActionSpecificKey;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.logging.LogMessage;
 
 /**
  * A <code>Pipeline</code> handling the processing of messages in the NEXUSe2e backend. 
@@ -72,13 +73,12 @@ public class BackendPipeline extends AbstractPipeline implements ActionSpecific 
 
                     messageContext = backendPipelet.processMessage( messageContext );
                     if ( messageContext == null ) {
-                        LOG
-                                .warn( "Pipelet " + backendPipelet.getClass()
-                                        + " did not return a MessageContext instance!" );
+                        LOG.warn( new LogMessage( "Pipelet " + backendPipelet.getClass()
+                                + " did not return a MessageContext instance!", messageContext.getMessagePojo() ) );
                     }
                 }
             } else {
-                LOG.error( "No pipelets found." );
+                LOG.error( new LogMessage( "No pipelets found.", messageContext.getMessagePojo() ) );
             }
             messageContext = pipelineEndpoint.processMessage( messageContext );
 
@@ -86,7 +86,7 @@ public class BackendPipeline extends AbstractPipeline implements ActionSpecific 
             if ( LOG.isTraceEnabled() ) {
                 e.printStackTrace();
             }
-            LOG.error( "Error processing backend pipeline: " + e );
+            LOG.error( new LogMessage( "Error processing backend pipeline: " + e, messageContext.getMessagePojo() ) );
             throw new NexusException( "Error processing backend pipeline: " + e );
         }
 
