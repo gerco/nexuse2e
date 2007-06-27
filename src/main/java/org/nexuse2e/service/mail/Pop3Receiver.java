@@ -205,8 +205,8 @@ public class Pop3Receiver extends AbstractService implements ReceiverAware, Runn
                     messageContext.setData( msgs[msgNum] );
                     transportReceiver.processInboundData( messageContext );
                 } catch ( Exception e ) {
-                    LOG.error( "Error processing email message: " + e );
-                    e.printStackTrace();
+                    LOG.warn( "Error processing email message: " + e );
+                    // e.printStackTrace();
                 }
                 msgs[msgNum].setFlag( Flags.Flag.DELETED, true );
             }
