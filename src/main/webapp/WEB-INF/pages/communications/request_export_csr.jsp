@@ -53,7 +53,7 @@
             </tr>
          </table>
          <html:form action="RequestSaveCSRFile.do" method="POST">         
-    
+	     <html:hidden name="protectedFileAccessForm" property="nxCertificateId"/>
          <table class="NEXUS_TABLE" width="100%">
             <tr>            
             <td colspan="2" class="NEXUSSection">CSR Format</td>            

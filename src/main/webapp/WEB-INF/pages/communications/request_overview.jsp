@@ -10,7 +10,12 @@
 
 <logic:equal name="type" value="csr">
 	<script type="text/javascript">
-window.open('DataSaveAs?type=request&format=<bean:write name="format"/>','Save as...')
+window.open('DataSaveAs?type=request&format=<bean:write name="format"/>&nxCertificateId=<bean:write name="nxCertificateId"/>','Save as...')
+</script>
+</logic:equal>
+<logic:equal name="type" value="privatepem">
+	<script type="text/javascript">
+window.open('DataSaveAs?type=privatepem','Save as...')
 </script>
 </logic:equal>
 

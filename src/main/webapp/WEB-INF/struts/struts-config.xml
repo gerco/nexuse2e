@@ -46,6 +46,8 @@
     <form-bean name="databasePurgeForm" type="org.nexuse2e.ui.form.DatabasePurgeForm"/>
     <form-bean name="mappingMaintenanceForm" type="org.nexuse2e.ui.form.MappingMaintenanceForm"/>
     
+    <form-bean name="certificateChainImportForm" type="org.nexuse2e.ui.form.CertificateChainImportForm"/>
+    
     
     <!-- 
     <form-bean name="mailSettingsForm" type="org.nexuse2e.ui.form.MailSettingsForm"/>
@@ -428,10 +430,19 @@
       <forward name="success" path="/WEB-INF/pages/communications/request_show_csr.jsp"/>
       <forward name="error" path="/WEB-INF/pages/error.jsp"/>
     </action>
-    <action path="/RequestSaveCert" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.RequestSaveCertAction">
+    
+    <action path="/RequestVerifyCertChainCert" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.RequestVerifyCertChainAction">
       <forward name="incomplete" path="/RequestImportCert.do"/>
-      <forward name="complete" path="/RequestOverview.do"/>
+      <forward name="complete" path="/RequestImportCertChain.do"/>
     </action>
+    <action path="/RequestImportCertChain" name="certificateChainImportForm" type="org.nexuse2e.ui.action.communications.RequestImportCertChainAction">
+      <forward name="accept" path="/WEB-INF/pages/communications/request_import_certificate_chain.jsp"/>
+      <forward name="done" path="/RequestOverview.do"/>
+      <forward name="error" path="/RequestOverview.do"/>
+    </action>
+    
+    
+    
     <action path="/RequestSaveCSRFile" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.RequestSaveCSRFileAction">
       <forward name="success" path="/RequestOverview.do"/>
       <forward name="error" path="/WEB-INF/pages/communications/request_export_csr.jsp"/>

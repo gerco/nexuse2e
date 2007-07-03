@@ -17,18 +17,16 @@
 	</tr>
 </table>
 
-<html:form action="RequestSaveCert.do" method="POST"
+<html:form action="RequestVerifyCertChainCert.do" method="POST"
 	enctype="multipart/form-data">
 	<table class="NEXUS_TABLE" width="100%">
 		<tr>
-			<td colspan="2" class="NEXUSSection">Import Certificate to
-			complete your Request. Next required Subject: <bean:write
+			<td colspan="2" class="NEXUSSection">Select import directory: <bean:write
 				name="protectedFileAccessForm" property="alias" /></td>
 		</tr>
 		<tr>
-			<td class="NEXUSName">Certificate Filename</td>
-			<td class="NEXUSValue"><html:file property="certficate"
-				size="60" /></td>
+			<td class="NEXUSName">Path</td>
+			<td class="NEXUSValue"><html:file property="certficate" size="60" /></td>
 		</tr>
 	</table>
 	<center><logic:messagesPresent>
