@@ -37,13 +37,10 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -68,7 +65,7 @@ import org.codehaus.xfire.util.Base64;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.pojo.CertificatePojo;
-import org.xioma.nexuse2e.x509.TempCertUtils;
+
 
 /**
  * Utility class to work with certificates (mostly instances of <code>X509Certificate</code>).
