@@ -60,9 +60,8 @@ public class RequestShowCSRAction extends NexusE2EAction {
         try {
             CertificatePojo certificate = Engine.getInstance().getActiveConfigurationAccessService().getFirstCertificateByType(
                     Constants.CERTIFICATE_TYPE_REQUEST, true );
-            Object[] csr = CertificateUtil.getLocalCertificateRequestFromPojo( certificate );
-            PKCS10CertificationRequest certRequest = (PKCS10CertificationRequest) csr[CertificateUtil.POS_REQUEST];
-            String pemCSR = (String) csr[CertificateUtil.POS_PEM];
+            PKCS10CertificationRequest certRequest = CertificateUtil.getPKCS10Request( certificate );
+            String pemCSR = CertificateUtil.getPemData( certRequest );
             if ( certRequest == null ) {
                 ActionMessage errorMessage = new ActionMessage( "generic.error", "no request object avilable!" );
                 errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );

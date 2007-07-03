@@ -75,10 +75,8 @@ public class RequestExportCSRAction extends NexusE2EAction {
             return error;
         }
 
-        Object[] csr = CertificateUtil.getLocalCertificateRequestFromPojo( certificates.get( 0 ) );
-        PKCS10CertificationRequest certRequest = (PKCS10CertificationRequest) csr[CertificateUtil.POS_REQUEST];
+        PKCS10CertificationRequest certRequest = CertificateUtil.getPKCS10Request( certificates.get( 0 ) );
         System.out.println( "certRequest: " + certRequest.getCertificationRequestInfo().getSubject() );
-        String pemCSR = (String) csr[CertificateUtil.POS_PEM];
         if ( certRequest == null ) {
             ActionMessage errorMessage = new ActionMessage( "generic.error", "no request object avilable!" );
             errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
@@ -88,7 +86,6 @@ public class RequestExportCSRAction extends NexusE2EAction {
         String subject = certRequest.getCertificationRequestInfo().getSubject().toString();
         certRequestForm.setRequestProperties( subject );
         request.setAttribute( "request", certRequestForm );
-        //request.getSession().setAttribute( Crumbs.CURRENT_LOCATION, Crumbs.REQUEST_EXPORT_CSR );
         return success;
     }
 

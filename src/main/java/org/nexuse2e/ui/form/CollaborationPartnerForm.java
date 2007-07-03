@@ -30,6 +30,7 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionForm;
+import org.bouncycastle.asn1.x509.X509Name;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.pojo.CertificatePojo;
@@ -118,9 +119,9 @@ public class CollaborationPartnerForm extends ActionForm {
                     throw new NexusException( "X509Certificate is null" );
                 }
 
-                setCommonName( CertificateUtil.getCertificateCN( x509, true ) );
-                setOrganisation( CertificateUtil.getCertificateO( x509, true ) );
-                setIssuer( CertificateUtil.getCertificateO( x509, false ) );
+                setCommonName( CertificateUtil.getSubject( x509, X509Name.CN ) );
+                setOrganisation( CertificateUtil.getSubject( x509, X509Name.O ) );
+                setIssuer( CertificateUtil.getIssuer( x509, X509Name.O ) );
 
                 String valid = "Okay";
                 try {

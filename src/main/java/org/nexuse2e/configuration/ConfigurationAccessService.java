@@ -1165,6 +1165,25 @@ public class ConfigurationAccessService {
     }
 
     /**
+     * @param certificates
+     * @throws NexusException
+     */
+    public void deleteCertificates( List<CertificatePojo> certificates ) throws NexusException {
+
+        for ( CertificatePojo pojo : certificates ) {
+            CertificatePojo oldCertificate = getCertificateByNxCertificateId( Constants.CERTIFICATE_TYPE_ALL, pojo.getNxCertificateId() );
+            if ( oldCertificate != null ) {
+                getCertificates( Constants.CERTIFICATE_TYPE_ALL, null ).remove( oldCertificate );
+            }
+            engineConfig.deleteCertificateInDB( pojo );
+        }
+        
+        applyConfiguration();
+    }
+
+    
+
+    /**
      * @param certificate
      */
     public void updateCertificate( CertificatePojo certificate ) throws NexusException {

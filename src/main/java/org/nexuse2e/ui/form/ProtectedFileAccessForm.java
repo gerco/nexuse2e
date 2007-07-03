@@ -53,7 +53,7 @@ public class ProtectedFileAccessForm extends ActionForm {
     int                       content          = 0;
     String                    id               = null;
     boolean                   preserve         = false;
-    private int               nxCertificateId  = 0;
+    int                       nxCertificateId  = 0;
 
     @Override
     public void reset( ActionMapping mapping, HttpServletRequest request ) {

@@ -92,7 +92,7 @@ public class RequestSavePKCS12FileAction extends NexusE2EAction {
                 return error;
             }
         } else {
-            request.setAttribute( "type", "pkcs12" );
+            request.setAttribute( "type", "privatepem" );
         }
 
         return success;

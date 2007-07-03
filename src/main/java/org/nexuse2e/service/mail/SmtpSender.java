@@ -233,15 +233,14 @@ public class SmtpSender extends AbstractService implements SenderAware {
                 ParticipantPojo participant = messagePipelineParameter.getParticipant();
                 CertificatePojo certPojo = participant.getConnection().getCertificate();
 
-                List<CertificatePojo> certificates = Engine.getInstance().getActiveConfigurationAccessService().getCertificates(
-                        Constants.CERTIFICATE_TYPE_LOCAL, null );
+                List<CertificatePojo> certificates = Engine.getInstance().getActiveConfigurationAccessService()
+                        .getCertificates( Constants.CERTIFICATE_TYPE_LOCAL, null );
                 if ( !certificates.isEmpty() ) {
                     CertificatePojo localCert = certificates.iterator().next();
-                    KeyStore privateKeyChain = CertificateUtil.getPKCS12KeyStoreFromByteArray( localCert
-                            .getBinaryData(), EncryptionUtil.decryptString( localCert.getPassword() ) );
-                    privateKey = CertificateUtil.getPrivateKey( privateKeyChain );
-                    //X509Certificate serverCertX509 = CertificateUtil.getX509Certificate( localCert.getBinaryData() );
-                    Certificate[] localCertChain = CertificateUtil.getLocalCertificateChain( localCert );
+                    KeyStore privateKeyChain = CertificateUtil.getPKCS12KeyStore( localCert );
+                    privateKey = (PrivateKey) CertificateUtil.getPrivateKey( privateKeyChain );
+
+                    Certificate[] localCertChain = CertificateUtil.getCertificateChain( privateKeyChain );
                     X509Certificate serverCertX509 = (X509Certificate) localCertChain[0];
 
                     if ( ( certPojo != null ) && ( serverCertX509 != null ) && ( privateKey != null ) ) {
@@ -341,8 +340,7 @@ public class SmtpSender extends AbstractService implements SenderAware {
         return mimeMessage;
     }
 
-    public void sendMessage( MessageContext messagePipelineParameter, boolean useSSL )
-            throws MessagingException {
+    public void sendMessage( MessageContext messagePipelineParameter, boolean useSSL ) throws MessagingException {
 
         Session session = null;
         Transport transport = null;
@@ -425,13 +423,14 @@ public class SmtpSender extends AbstractService implements SenderAware {
             transport.sendMessage( message, addresses );
         }
     }
-    
+
     /* (non-Javadoc)
      * @see org.nexuse2e.Manageable#teardown()
      */
     public void teardown() {
+
         super.teardown();
-        
+
         transportSender = null;
     } // teardown
 

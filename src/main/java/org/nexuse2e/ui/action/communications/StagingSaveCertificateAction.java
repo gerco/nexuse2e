@@ -78,7 +78,7 @@ public class StagingSaveCertificateAction extends NexusE2EAction {
         }
 
         try {
-            CertificatePojo certificate = CertificateUtil.createPojoFromKeystore( Constants.CERTIFICATE_TYPE_STAGING,
+            CertificatePojo certificate = CertificateUtil.createPojoFromPKCS12( Constants.CERTIFICATE_TYPE_STAGING,
                     jks, form.getPassword() );
             Engine.getInstance().getActiveConfigurationAccessService().updateCertificate( certificate );
         } catch ( Exception e ) {

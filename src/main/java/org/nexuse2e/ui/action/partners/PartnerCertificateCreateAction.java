@@ -87,7 +87,7 @@ public class PartnerCertificateCreateAction extends NexusE2EAction {
         try {
             // only for validation. 
             CertificateUtil.getX509Certificate( data );
-        } catch ( NexusException e ) {
+        } catch ( Exception e ) {
             ActionMessage errorMessage = new ActionMessage( "generic.error", "Unable to unpack Certificate File ("
                     + fileName + ")!" );
             errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );

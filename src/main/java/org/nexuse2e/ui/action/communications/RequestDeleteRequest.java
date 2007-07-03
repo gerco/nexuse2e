@@ -54,12 +54,17 @@ public class RequestDeleteRequest extends NexusE2EAction {
 
         List<CertificatePojo> requests = Engine.getInstance().getActiveConfigurationAccessService().getCertificates(
                 Constants.CERTIFICATE_TYPE_REQUEST, null );
-        if ( requests == null || requests.size() > 1 ) {
+        if ( requests == null  ) {
             return error;
         }
-        CertificatePojo cert = requests.get( 0 );
-        Engine.getInstance().getActiveConfigurationAccessService().deleteCertificate( Constants.CERTIFICATE_TYPE_ALL,
-                cert );
+        if(requests.size() > 1 ) {
+            LOG.error( "there is more than one request in database!" );
+        }
+        List<CertificatePojo> privateKeys = Engine.getInstance().getActiveConfigurationAccessService().getCertificates(
+                Constants.CERTIFICATE_TYPE_PRIVATE_KEY, null );
+        
+        requests.addAll( privateKeys );
+        Engine.getInstance().getActiveConfigurationAccessService().deleteCertificates( requests );
         return success;
     }
 

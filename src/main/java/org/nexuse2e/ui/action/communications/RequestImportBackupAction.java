@@ -40,6 +40,7 @@ public class RequestImportBackupAction extends NexusE2EAction {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
 
+        
         return success;
     }
 

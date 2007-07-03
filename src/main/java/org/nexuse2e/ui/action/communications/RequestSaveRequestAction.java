@@ -20,9 +20,24 @@
 package org.nexuse2e.ui.action.communications;
 
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyStore;
+import java.security.SecureRandom;
 import java.security.cert.Certificate;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,7 +47,11 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
+import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.jce.PKCS10CertificationRequest;
+import org.bouncycastle.openssl.PEMReader;
+import org.bouncycastle.openssl.PEMWriter;
+import org.bouncycastle.openssl.PasswordFinder;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.Constants;
@@ -41,6 +60,9 @@ import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.CertificateRequestForm;
 import org.nexuse2e.util.CertificateUtil;
 import org.nexuse2e.util.EncryptionUtil;
+
+import sun.security.pkcs.PKCS8Key;
+import sun.security.x509.AlgorithmId;
 
 /**
  * @author gesch
@@ -69,7 +91,7 @@ public class RequestSaveRequestAction extends NexusE2EAction {
         String l = form.getLocation();
         String s = form.getState();
         String c = form.getCountryCode();
-        //String e = form.getEmail();
+        String e = form.getEmail();
         String pwd = form.getPassword();
         String vpwd = form.getVerifyPWD();
         if ( pwd == null || pwd.length() == 0 || !pwd.equals( vpwd ) ) {
@@ -77,53 +99,110 @@ public class RequestSaveRequestAction extends NexusE2EAction {
             addRedirect( request, URL, TIMEOUT );
             return error;
         }
-        Object[] csr = CertificateUtil.generatePKCS10CertificateRequest( cn, o, ou, l, c, s, null );
-        if ( csr[CertificateUtil.POS_PEM] != null ) {
-            //            certDao.saveLocalCertificateRequestAndPrivateKey(
-            //                    (PKCS10CertificationRequest) csr[CertificateTools.POS_REQUEST],
-            //                    (KeyPair) csr[CertificateTools.POS_KEYS], (Certificate) csr[CertificateTools.POS_CERT], pwd );
+
+        try {
+            KeyPair keyPair = CertificateUtil.generateKeyPair();
+
+            PKCS10CertificationRequest pkcs10Request = CertificateUtil.generatePKCS10CertificateRequest( keyPair, cn,
+                    o, ou, l, c, s, e );
 
             boolean result = false;
-            Certificate[] certs = { (Certificate) csr[CertificateUtil.POS_CERT]};
-            try {
 
-                // Request
-                CertificatePojo certificate = new CertificatePojo();
-                certificate.setBinaryData( ( (PKCS10CertificationRequest) csr[CertificateUtil.POS_REQUEST] )
-                        .getEncoded() );
-                certificate.setType( Constants.CERTIFICATE_TYPE_REQUEST );
-                certificate.setName( ( (PKCS10CertificationRequest) csr[CertificateUtil.POS_REQUEST] )
-                        .getCertificationRequestInfo().getSubject().toString() );
-                certificate.setPassword( EncryptionUtil.encryptString( pwd ) );
+            // Request
+            CertificatePojo certificate = CertificateUtil.createPojoFromPKCS10( pkcs10Request );
+//            certificate.setBinaryData( pkcs10Request.getEncoded() );
+//            certificate.setType( Constants.CERTIFICATE_TYPE_REQUEST );
+//            certificate.setName( pkcs10Request.getCertificationRequestInfo().getSubject().toString() );
+//            certificate.setPassword( EncryptionUtil.encryptString( pwd ) );
 
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                KeyStore keyStore = KeyStore.getInstance( CertificateUtil.DEFAULT_KEY_STORE,
-                        CertificateUtil.DEFAULT_JCE_PROVIDER );
-                keyStore.load( null, null );
-                keyStore.setKeyEntry( CertificateUtil.DEFAULT_CERT_ALIAS, ( (KeyPair) csr[CertificateUtil.POS_KEYS] )
-                        .getPrivate(), pwd.toCharArray(), certs );
-                keyStore.store( baos, pwd.toCharArray() );
-                baos.close();
-                CertificatePojo pkcs12 = new CertificatePojo();
-                pkcs12.setType( Constants.CERTIFICATE_TYPE_PRIVATE_KEY );
+//            ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-                pkcs12.setBinaryData( baos.toByteArray() );
-                pkcs12.setName( certificate.getName() );
-                pkcs12.setPassword( EncryptionUtil.encryptString( pwd ) );
+            // read public key DER file
 
-                Engine.getInstance().getActiveConfigurationAccessService().updateCertificate( certificate );
-                Engine.getInstance().getActiveConfigurationAccessService().updateCertificate( pkcs12 );
+            //            File cakey = new File( "/Users/gesch/Desktop/testcertdata/ca.key" );
 
-                result = true;
-            } catch ( NexusException e1 ) {
-                e1.printStackTrace();
+            // read private key DER file
+            //            DataInputStream dis = new DataInputStream( new FileInputStream( cakey ) );
+            //            byte[] privKeyBytes = new byte[(int) cakey.length()];
+            //            dis.read( privKeyBytes );
+            //            dis.close();
+
+            //            PasswordFinder pw = new PasswordFinder() {
+            //
+            //                public char[] getPassword() {
+            //
+            //                    return "nexus".toCharArray();
+            //                };
+            //            };
+            //            PEMReader reader = new PEMReader( new StringReader( new String( privKeyBytes ) ), pw );
+            //            Object ob = reader.readObject();
+            //            System.out.println("ob: "+ob.getClass().getName());
+            //            KeyPair kp = (KeyPair)ob;
+            //            System.out.println("priv:" +kp.getPrivate());
+            //            System.out.println("pub: "+ kp.getPublic());
+
+//            StringWriter sw = new StringWriter();
+//            PEMWriter writer = new PEMWriter( sw, Constants.DEFAULT_JCE_PROVIDER );
+//
+//            SecureRandom sr = new SecureRandom();
+//            writer.writeObject( keyPair.getPrivate(), "DES-EDE3-CBC", pwd.toCharArray(), sr );
+//            writer.flush();
+//            sw.flush();
+//            sw.close();
+//            System.out.println( "PEM: " + sw.getBuffer().toString() );
+
+            //            KeyStore keyStore = KeyStore.getInstance( CertificateUtil.DEFAULT_KEY_STORE,
+            //                    CertificateUtil.DEFAULT_JCE_PROVIDER );
+            //            keyStore.load( null, null );
+            //            keyStore.setKeyEntry( CertificateUtil.DEFAULT_CERT_ALIAS, ( (KeyPair) csr[CertificateUtil.POS_KEYS] )
+            //                    .getPrivate(), pwd.toCharArray(), certs );
+            //            keyStore.store( baos, pwd.toCharArray() );
+            //            baos.close();
+            CertificatePojo privateKeyPojo = CertificateUtil.createPojoFromKeyPair( keyPair, certificate.getName(), pwd );
+//            privateKeyPojo.setType( Constants.CERTIFICATE_TYPE_PRIVATE_KEY );
+//
+//            privateKeyPojo.setBinaryData( sw.getBuffer().toString().getBytes() );
+//            privateKeyPojo.setName( certificate.getName() );
+//            privateKeyPojo.setPassword( EncryptionUtil.encryptString( pwd ) );
+            
+            List<CertificatePojo> certs = new ArrayList<CertificatePojo>();
+            certs.add( certificate );
+            certs.add( privateKeyPojo );
+            
+            File certbackup = new File(Engine.getNexusE2ERoot(),"backup");
+            if(!certbackup.exists()) {
+                certbackup.mkdirs();
             }
-
-        } else {
-            ActionMessage errormessage = new ActionMessage( "generic.error", "invalid request information" );
-            errors.add( ActionMessages.GLOBAL_MESSAGE, errormessage );
-            addRedirect( request, URL, TIMEOUT );
-            return error;
+            SimpleDateFormat sdf = new SimpleDateFormat("yyMMddHHmmss");
+            String date = sdf.format( new Date() );
+            
+            File currentDir = new File(certbackup,"requestCreate_"+date);
+            if(!currentDir.exists()) {
+                currentDir.mkdirs();
+            }
+            File privKeyFile = new File(currentDir,"privKey.pem");
+            FileOutputStream fos = new FileOutputStream(privKeyFile);
+            fos.write( privateKeyPojo.getBinaryData() );
+            fos.flush();
+            fos.close();
+            
+            
+            File requestFile = new File(currentDir,"request.pem");           
+            fos = new FileOutputStream(requestFile);
+            fos.write( CertificateUtil.getPemData( pkcs10Request ).getBytes() );
+            fos.flush();
+            fos.close();
+            
+            
+            Engine.getInstance().getActiveConfigurationAccessService().updateCertificates( certs );
+            
+            
+            
+            
+            
+            result = true;
+        } catch ( Exception ex ) {
+            ex.printStackTrace();
         }
 
         return success;

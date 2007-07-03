@@ -128,17 +128,14 @@ public class MimeMessageUnpackager extends AbstractPipelet {
                         org.nexuse2e.configuration.Constants.CERTIFICATE_TYPE_LOCAL, null );
                 if ( certificates.size() > 0 ) {
                     CertificatePojo localCert = certificates.iterator().next();
-                    Certificate[] localCertChain = CertificateUtil.getLocalCertificateChain( localCert );
-                    X509Certificate serverCertX509 = (X509Certificate) localCertChain[0];
-                    // X509Certificate serverCertX509 = CertificateUtil.getX509Certificate( localCert.getBinaryData() );
+                    KeyStore certStore = CertificateUtil.getPKCS12KeyStore( localCert );
+                    X509Certificate serverCertX509 = CertificateUtil.getHeadCertificate( certStore );
                     if ( serverCertX509 != null ) {
                         recipientId = new RecipientId();
                         recipientId.setSerialNumber( serverCertX509.getSerialNumber() );
                         recipientId.setIssuer( serverCertX509.getIssuerX500Principal().getEncoded() );
                     }
-                    KeyStore privateKeyChain = CertificateUtil.getPKCS12KeyStoreFromByteArray( localCert
-                            .getBinaryData(), EncryptionUtil.decryptString( localCert.getPassword() ) );
-                    privateKey = CertificateUtil.getPrivateKey( privateKeyChain );
+                    privateKey = CertificateUtil.getPrivateKey( certStore );
                 }
 
                 List<MessagePayloadPojo> payloads = new ArrayList<MessagePayloadPojo>();

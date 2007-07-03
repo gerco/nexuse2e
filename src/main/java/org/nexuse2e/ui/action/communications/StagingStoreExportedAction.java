@@ -41,6 +41,7 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
+import org.bouncycastle.asn1.x509.X509Name;
 import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.crypto.digests.MD5Digest;
 import org.bouncycastle.util.encoders.Hex;
@@ -124,7 +125,7 @@ public class StagingStoreExportedAction extends NexusE2EAction {
                     X509Certificate cert = (X509Certificate) certs[0];
                     byte[] data = null;
                     if ( format == ProtectedFileAccessForm.PEM ) {
-                        data = CertificateUtil.getPemData( cert );
+                        data = CertificateUtil.getPemData( cert ).getBytes();
                     } else if ( format == ProtectedFileAccessForm.DER ) {
                         data = cert.getEncoded();
                     }
@@ -148,9 +149,9 @@ public class StagingStoreExportedAction extends NexusE2EAction {
 
                     for ( int i = 0; i < certs.length; i++ ) {
                         String certName = CertificateUtil
-                                .createCertificateIdFromCertificate( (X509Certificate) certs[i] );
-                        String cn = CertificateUtil.getCertificateCN( (X509Certificate) certs[i], true );
-                        String o = CertificateUtil.getCertificateO( (X509Certificate) certs[i], true );
+                                .createCertificateId( (X509Certificate) certs[i] );
+                        String cn = CertificateUtil.getSubject( (X509Certificate) certs[i], X509Name.CN );
+                        String o = CertificateUtil.getSubject( (X509Certificate) certs[i], X509Name.O );
                         String fingerprint = "NA";
                         byte[] resBuf;
                         try {
@@ -177,7 +178,7 @@ public class StagingStoreExportedAction extends NexusE2EAction {
 
                         byte[] data = new byte[0];
                         if ( format == ProtectedFileAccessForm.PEM ) {
-                            data = CertificateUtil.getPemData( (X509Certificate) certs[i] );
+                            data = CertificateUtil.getPemData( (X509Certificate) certs[i] ).getBytes();
                         } else {
                             data = certs[i].getEncoded();
                         }

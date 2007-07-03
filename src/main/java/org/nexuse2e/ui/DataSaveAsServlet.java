@@ -21,9 +21,11 @@ package org.nexuse2e.ui;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
@@ -40,8 +42,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.bouncycastle.asn1.x509.X509Name;
 import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.crypto.digests.MD5Digest;
+import org.bouncycastle.jce.PKCS10CertificationRequest;
 import org.bouncycastle.util.encoders.Hex;
 import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.Constants;
@@ -206,7 +210,7 @@ public class DataSaveAsServlet extends HttpServlet {
                     if ( content == 1 ) {
                         X509Certificate cert = (X509Certificate) certs[0];
                         if ( format == ProtectedFileAccessForm.PEM ) {
-                            data = CertificateUtil.getPemData( cert );
+                            data = CertificateUtil.getPemData( cert ).getBytes();
                         } else if ( format == ProtectedFileAccessForm.DER ) {
                             data = cert.getEncoded();
                         }
@@ -225,10 +229,9 @@ public class DataSaveAsServlet extends HttpServlet {
                         PrintWriter pw = new PrintWriter( indexStream );
 
                         for ( int i = 0; i < certs.length; i++ ) {
-                            String certName = CertificateUtil
-                                    .createCertificateIdFromCertificate( (X509Certificate) certs[i] );
-                            String cn = CertificateUtil.getCertificateCN( (X509Certificate) certs[i], true );
-                            String o = CertificateUtil.getCertificateO( (X509Certificate) certs[i], true );
+                            String certName = CertificateUtil.createCertificateId( (X509Certificate) certs[i] );
+                            String cn = CertificateUtil.getSubject( (X509Certificate) certs[i], X509Name.CN );
+                            String o = CertificateUtil.getSubject( (X509Certificate) certs[i], X509Name.O );
                             String fingerprint = "NA";
                             byte[] resBuf;
                             try {
@@ -255,7 +258,7 @@ public class DataSaveAsServlet extends HttpServlet {
                             }
 
                             if ( format == ProtectedFileAccessForm.PEM ) {
-                                data = CertificateUtil.getPemData( (X509Certificate) certs[i] );
+                                data = CertificateUtil.getPemData( (X509Certificate) certs[i] ).getBytes();
                             } else {
                                 data = certs[i].getEncoded();
                             }
@@ -284,9 +287,46 @@ public class DataSaveAsServlet extends HttpServlet {
                 OutputStream os = res.getOutputStream();
                 os.write( data );
                 os.flush();
+            } else if ( request.getParameter( "type" ).equals( "privatepem" ) ) {
+                LOG.debug( "exporting private pem structure " );
+
+                CertificatePojo requestPojo = Engine.getInstance().getActiveConfigurationAccessService()
+                        .getFirstCertificateByType( Constants.CERTIFICATE_TYPE_REQUEST, true );
+                if ( requestPojo == null ) {
+                    LOG.error( "no request found in database" );
+                    return;
+                }
+                CertificatePojo privKeyPojo = Engine.getInstance().getActiveConfigurationAccessService()
+                        .getFirstCertificateByType( Constants.CERTIFICATE_TYPE_PRIVATE_KEY, true );
+                if ( privKeyPojo == null ) {
+                    LOG.error( "no request found in database" );
+                    return;
+                }
+                StringBuffer sb = new StringBuffer();
+
+                KeyPair keyPair = CertificateUtil.getKeyPair( privKeyPojo );
+                PKCS10CertificationRequest pkcs10Request = CertificateUtil.getPKCS10Request( requestPojo );
+                sb.append( CertificateUtil.getPemData( pkcs10Request ) );
+                sb.append( "\n" );
+                sb.append( CertificateUtil.getPemData( keyPair, EncryptionUtil
+                        .decryptString( privKeyPojo.getPassword() ) ) );
+                
+                byte[] data = new byte[0];
+                res.setHeader( "Content-Disposition", "attachment; filename=\"private_data.pem\"" );
+                data = sb.toString().getBytes();
+                res.setContentType( contentType );
+                res.setContentLength( data.length );
+                OutputStream os = res.getOutputStream();
+                os.write( data );
+                os.flush();
+
             } else if ( request.getParameter( "type" ).equals( "request" ) ) {
                 String format = request.getParameter( "format" );
-                int nxCertificateId = Integer.parseInt( request.getParameter( "nxCertificateId" ) );
+                String nxCertIdString = request.getParameter( "nxCertificateId" );
+                System.out.println( "NXParam: " + request.getParameter( "nxCertificateId" ) );
+                System.out.println( "NXAttrib: " + request.getAttribute( "nxCertificateId" ) );
+
+                int nxCertificateId = Integer.parseInt( nxCertIdString );
                 System.out.println( "format:" + format );
                 System.out.println( "nxCertificateId" + nxCertificateId );
                 if ( nxCertificateId < 1 ) {
@@ -296,14 +336,14 @@ public class DataSaveAsServlet extends HttpServlet {
                 CertificatePojo certificate = Engine.getInstance().getActiveConfigurationAccessService()
                         .getCertificateByNxCertificateId( Constants.CERTIFICATE_TYPE_ALL, nxCertificateId );
 
-                Object[] csr = CertificateUtil.getLocalCertificateRequestFromPojo( certificate );
+                PKCS10CertificationRequest pkcs10request = CertificateUtil.getPKCS10Request( certificate );
                 byte[] data = new byte[0];
                 if ( format.toLowerCase().equals( "pem" ) ) {
                     res.setHeader( "Content-Disposition", "attachment; filename=\"CertficateRequest.pem\"" );
-                    data = ( (String) csr[CertificateUtil.POS_PEM] ).getBytes();
+                    data = ( (String) CertificateUtil.getPemData( pkcs10request ) ).getBytes();
                 } else {
                     res.setHeader( "Content-Disposition", "attachment; filename=\"CertficateRequest.der\"" );
-                    data = (byte[]) csr[CertificateUtil.POS_DER];
+                    data = pkcs10request.getEncoded();
                 }
 
                 res.setContentType( contentType );

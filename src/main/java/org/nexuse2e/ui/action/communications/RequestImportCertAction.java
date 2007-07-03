@@ -56,16 +56,15 @@ public class RequestImportCertAction extends NexusE2EAction {
 
         CertificatePojo certificateRequest = Engine.getInstance().getActiveConfigurationAccessService()
                 .getFirstCertificateByType( Constants.CERTIFICATE_TYPE_REQUEST, true );
-        Object[] result = CertificateUtil.getLocalCertificateRequestFromPojo( certificateRequest );
+        PKCS10CertificationRequest pkcs10request = CertificateUtil.getPKCS10Request( certificateRequest );
 
         CertificatePojo certificateKey = Engine.getInstance().getActiveConfigurationAccessService()
                 .getCertificateByName( Constants.CERTIFICATE_TYPE_PRIVATE_KEY, certificateRequest.getName() );
 
-        X509Principal certSubject = CertificateUtil.getMissingCertificateSubjectDNFromKeyStore(
-                (PKCS10CertificationRequest) result[CertificateUtil.POS_REQUEST], certificateKey );
+//        X509Principal certSubject = CertificateUtil.getMissingCertificateSubjectDNFromKeyStore(pkcs10request, certificateKey );
 
         //TODO what happens, if certificate import is done?
-        form.setAlias( certSubject.getName().toString() );
+//        form.setAlias( certSubject.getName().toString() );
 
         //request.getSession().setAttribute( Crumbs.CURRENT_LOCATION, Crumbs.REQUEST_IMPORT_CERT );
 

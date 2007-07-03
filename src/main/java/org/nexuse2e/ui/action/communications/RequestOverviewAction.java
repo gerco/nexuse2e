@@ -58,43 +58,35 @@ public class RequestOverviewAction extends NexusE2EAction {
         if ( certificateRequest == null ) {
             LOG.error( "no certificate request found in database" );
         } else {
-            certificateKey = Engine.getInstance().getActiveConfigurationAccessService().getCertificateByName(
-                    Constants.CERTIFICATE_TYPE_PRIVATE_KEY, certificateRequest.getName() );
+            certificateKey = Engine.getInstance().getActiveConfigurationAccessService().getFirstCertificateByType(
+                    Constants.CERTIFICATE_TYPE_PRIVATE_KEY, true );
         }
-        Object[] result = CertificateUtil.getLocalCertificateRequestFromPojo( certificateRequest );
-        if ( result == null ) {
-            LOG.error( "unable to create RequestObject Array )" );
+        form.setCreateRequest( true );
+        form.setImportCert( false );
+        form.setShowRequest( false );
+        form.setDeleteRequest( true );
+        if(certificateRequest != null && certificateKey != null) {
+            try {
+                CertificateUtil.getPKCS10Request( certificateRequest );
+                form.setCreateRequest( false );
+                form.setImportCert( true );
+                form.setShowRequest( true );
+            } catch ( IllegalArgumentException e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
-
-        if ( result[0] == null ) {
-            form.setCreateRequest( true );
-        } else {
-            form.setCreateRequest( false );
+        if(certificateRequest == null && certificateKey == null) {
+            form.setDeleteRequest( false );
         }
-
+        
         form.setImportBackup( true );
-
-        if ( result[0] != null
-                && CertificateUtil.getMissingCertificateSubjectDNFromKeyStore( (PKCS10CertificationRequest) result[0],
-                        certificateKey ) != null ) {
-            form.setImportCert( true );
-        } else {
-            form.setImportCert( false );
-        }
-        if ( result[0] != null ) {
-            form.setShowRequest( true );
-        } else {
-            form.setShowRequest( false );
-        }
+       
         form.setExportPKCS12( true );
 
         form.setExportRequest( true );
 
-        if ( result[0] != null ) {
-            form.setDeleteRequest( true );
-        } else {
-            form.setDeleteRequest( false );
-        }
+        
         //request.getSession().setAttribute( Crumbs.CURRENT_LOCATION, Crumbs.REQUEST_OVERVIEW );
 
         return success;

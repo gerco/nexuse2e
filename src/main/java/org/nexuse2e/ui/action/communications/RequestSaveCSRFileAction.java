@@ -30,6 +30,7 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
+import org.bouncycastle.jce.PKCS10CertificationRequest;
 import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.pojo.CertificatePojo;
@@ -68,13 +69,13 @@ public class RequestSaveCSRFileAction extends NexusE2EAction {
 
             CertificatePojo certificateRequest = Engine.getInstance().getActiveConfigurationAccessService()
                     .getFirstCertificateByType( Constants.CERTIFICATE_TYPE_REQUEST, true );
-            Object[] csr = CertificateUtil.getLocalCertificateRequestFromPojo( certificateRequest );
+            PKCS10CertificationRequest csr = CertificateUtil.getPKCS10Request( certificateRequest );
             byte[] data = new byte[0];
             if ( form.getFormat() == ProtectedFileAccessForm.PEM ) {
-                String pemCSR = (String) csr[CertificateUtil.POS_PEM];
+                String pemCSR = CertificateUtil.getPemData( csr );
                 data = pemCSR.getBytes();
             } else if ( form.getFormat() == ProtectedFileAccessForm.DER ) {
-                data = (byte[]) csr[CertificateUtil.POS_DER];
+                data = (byte[]) CertificateUtil.getDERData( csr );
             } else {
                 fos.flush();
                 fos.close();
@@ -92,7 +93,9 @@ public class RequestSaveCSRFileAction extends NexusE2EAction {
             CertificatePojo certificateRequest = Engine.getInstance().getActiveConfigurationAccessService()
                     .getFirstCertificateByType( Constants.CERTIFICATE_TYPE_REQUEST, true );
 
-            request.setAttribute( "nxCertificateId", certificateRequest.getNxCertificateId() );
+            System.out.println("nxCertId: "+certificateRequest.getNxCertificateId());
+            request.setAttribute( "nxCertificateId", ""+certificateRequest.getNxCertificateId() );
+//            form.setNxCertificateId( certificateRequest.getNxCertificateId() );
             if ( form.getFormat() == 1 ) {
                 request.setAttribute( "format", "pem" );
             } else if ( form.getFormat() == 2 ) {

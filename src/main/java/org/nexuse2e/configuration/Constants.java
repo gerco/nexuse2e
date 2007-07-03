@@ -34,26 +34,36 @@ import org.nexuse2e.pojo.UserPojo;
  */
 public class Constants extends org.nexuse2e.Constants {
 
-    public static int PARTNER_TYPE_ALL                 = 0;
-    public static int PARTNER_TYPE_LOCAL               = 1;
-    public static int PARTNER_TYPE_PARTNER             = 2;
+    public static int          PARTNER_TYPE_ALL                    = 0;
+    public static int          PARTNER_TYPE_LOCAL                  = 1;
+    public static int          PARTNER_TYPE_PARTNER                = 2;
 
     // to be done
-    
-    public static int CERTIFICATE_TYPE_ALL             = 0;
-    public static int CERTIFICATE_TYPE_LOCAL           = 1; // server identities, complete p12, private, public and ca chain.
-    public static int CERTIFICATE_TYPE_PARTNER         = 2; // x509 cert
-    public static int CERTIFICATE_TYPE_CA              = 3; // ca certs and intermediate
-    public static int CERTIFICATE_TYPE_REQUEST         = 4; // pkcs10 request (one per time) 
-    public static int CERTIFICATE_TYPE_PRIVATE_KEY     = 5; // private key, matching pkcs10
-    public static int CERTIFICATE_TYPE_CACERT_METADATA = 6; // password cakeystore
-    public static int CERTIFICATE_TYPE_CERT_PART       = 7; // not finished p12, containing private key and ca signed certificate
-    public static int CERTIFICATE_TYPE_STAGING         = 8; // complete p12, ready for promote
+
+    public static int          CERTIFICATE_TYPE_ALL                = 0;
+    public static int          CERTIFICATE_TYPE_LOCAL              = 1;            // server identities, complete p12, private, public and ca chain.
+    public static int          CERTIFICATE_TYPE_PARTNER            = 2;            // x509 cert
+    public static int          CERTIFICATE_TYPE_CA                 = 3;            // ca certs and intermediate
+    public static int          CERTIFICATE_TYPE_REQUEST            = 4;            // pkcs10 request (one per time) 
+    public static int          CERTIFICATE_TYPE_PRIVATE_KEY        = 5;            // private key, matching pkcs10
+    public static int          CERTIFICATE_TYPE_CACERT_METADATA    = 6;            // password cakeystore
+    public static int          CERTIFICATE_TYPE_CERT_PART          = 7;            // not finished p12, containing private key and ca signed certificate
+    public static int          CERTIFICATE_TYPE_STAGING            = 8;            // complete p12, ready for promote
+
+    // Security settings 
+
+    public static final int    DEFAULT_RSA_KEY_LENGTH              = 1024;
+    public static final String DEFAULT_DIGITAL_SIGNATURE_ALGORITHM = "SHA1withRSA";
+    public static final String DEFAULT_KEY_ALGORITHM               = "RSA";
+    public static final String DEFAULT_CERT_TYPE                   = "X.509";
+    public static final String DEFAULT_KEY_STORE                   = "PKCS12";
+    public static final String DEFAULT_JCE_PROVIDER                = "BC";
+    public static final String DEFAULT_CERT_ALIAS                  = "nexuscert";
+
     /**
      * Used to store incomplete Certificate chain parts in rcp client
      */
-    public static int CERTIFICATE_TYPE_CLIENT_CERT     = 9;
-
+    //    public static int CERTIFICATE_TYPE_CLIENT_CERT     = 9;
     public static enum ComponentType {
         ALL(0), PIPELET(1), LOGGER(2), SERVICE(3);
 
@@ -76,8 +86,8 @@ public class Constants extends org.nexuse2e.Constants {
 
     public static enum ParameterType {
         UNKNOWN(0, Object.class), STRING(1, String.class), PASSWORD(2, String.class), ENUMERATION(3,
-                EnumerationParameter.class), LIST(4, ListParameter.class), BOOLEAN(5, Boolean.class), SERVICE(
-                6, String.class);
+                EnumerationParameter.class), LIST(4, ListParameter.class), BOOLEAN(5, Boolean.class), SERVICE(6,
+                String.class);
 
         private final int   value;
         private final Class type;

@@ -25,9 +25,7 @@ import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 
 import org.apache.struts.action.ActionForm;
-import org.bouncycastle.crypto.Digest;
-import org.bouncycastle.crypto.digests.MD5Digest;
-import org.bouncycastle.util.encoders.Hex;
+import org.bouncycastle.asn1.x509.X509Name;
 import org.nexuse2e.util.CertificateUtil;
 
 /**
@@ -61,17 +59,20 @@ public class CertificatePropertiesForm extends ActionForm {
     private String            created          = null;
     private String            issuerCN         = null;
 
+    private X509Certificate   cert             = null;
+
     private int               nxCertificateId  = 0;
 
     public void setCertificateProperties( X509Certificate x509 ) {
 
-        setCommonName( CertificateUtil.getCertificateCN( x509, true ) );
-        setCountry( CertificateUtil.getCertificateC( x509, true ) );
-        setOrganisation( CertificateUtil.getCertificateO( x509, true ) );
-        setOrganisationUnit( CertificateUtil.getCertificateOU( x509, true ) );
-        setEmail( CertificateUtil.getCertificateE( x509, true ) );
-        setState( CertificateUtil.getCertificateST( x509, true ) );
-        setLocation( CertificateUtil.getCertificateL( x509, true ) );
+        setCert( x509 );
+        setCommonName( CertificateUtil.getSubject( x509, X509Name.CN ) );
+        setCountry( CertificateUtil.getSubject( x509, X509Name.C ) );
+        setOrganisation( CertificateUtil.getSubject( x509, X509Name.O ) );
+        setOrganisationUnit( CertificateUtil.getSubject( x509, X509Name.OU ) );
+        setEmail( CertificateUtil.getSubject( x509, X509Name.E ) );
+        setState( CertificateUtil.getSubject( x509, X509Name.ST ) );
+        setLocation( CertificateUtil.getSubject( x509, X509Name.L ) );
         setNotAfter( "" + x509.getNotAfter() );
         setNotBefore( "" + x509.getNotBefore() );
         String valid = "Okay";
@@ -89,12 +90,7 @@ public class CertificatePropertiesForm extends ActionForm {
 
         byte[] resBuf;
         try {
-            Digest digest = new MD5Digest();
-            resBuf = new byte[digest.getDigestSize()];
-            digest.update( x509.getEncoded(), 0, x509.getEncoded().length );
-
-            digest.doFinal( resBuf, 0 );
-            setFingerprint( new String( Hex.encode( resBuf ) ) );
+            setFingerprint( CertificateUtil.getMD5Fingerprint( x509 ) );
         } catch ( CertificateEncodingException e1 ) {
             setFingerprint( "not available" );
         }
@@ -285,5 +281,23 @@ public class CertificatePropertiesForm extends ActionForm {
     public void setNxCertificateId( int nxCertificateId ) {
 
         this.nxCertificateId = nxCertificateId;
+    }
+
+    
+    /**
+     * @return the cert
+     */
+    public X509Certificate getCert() {
+    
+        return cert;
+    }
+
+    
+    /**
+     * @param cert the cert to set
+     */
+    public void setCert( X509Certificate cert ) {
+    
+        this.cert = cert;
     }
 }

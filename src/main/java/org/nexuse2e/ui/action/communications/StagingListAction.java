@@ -36,6 +36,7 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
+import org.bouncycastle.asn1.x509.X509Name;
 import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.pojo.CertificatePojo;
@@ -92,8 +93,7 @@ public class StagingListAction extends NexusE2EAction {
                             Date date = certificate.getCreatedDate();
                             SimpleDateFormat databaseDateFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
                             form.setCreated( databaseDateFormat.format( date ) );
-                            String issuerCN = CertificateUtil.getCertificateCN(
-                                    (X509Certificate) certsArray[certsArray.length - 1], true );
+                            String issuerCN = CertificateUtil.getIssuer( (X509Certificate) certsArray[certsArray.length - 1],X509Name.CN );
                             form.setIssuerCN( issuerCN );
                             certs.addElement( form );
 

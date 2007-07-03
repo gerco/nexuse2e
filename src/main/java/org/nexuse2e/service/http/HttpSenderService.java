@@ -133,8 +133,7 @@ public class HttpSenderService extends AbstractService implements SenderAware {
                             + participant.getPartner().getName() );
                 }
 
-                KeyStore privateKeyChain = CertificateUtil.getPKCS12KeyStoreFromByteArray( localCert.getBinaryData(),
-                        EncryptionUtil.decryptString( localCert.getPassword() ) );
+                KeyStore privateKeyChain = CertificateUtil.getPKCS12KeyStore( localCert );
 
                 myhttps = new Protocol( "https", (ProtocolSocketFactory) new CertSSLProtocolSocketFactory(
                         privateKeyChain, EncryptionUtil.decryptString( localCert.getPassword() ), Engine.getInstance()

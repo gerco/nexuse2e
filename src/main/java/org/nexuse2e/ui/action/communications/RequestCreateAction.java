@@ -19,13 +19,19 @@
  */
 package org.nexuse2e.ui.action.communications;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
+import org.nexuse2e.Engine;
+import org.nexuse2e.configuration.Constants;
+import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.CertificateRequestForm;
 
@@ -47,12 +53,27 @@ public class RequestCreateAction extends NexusE2EAction {
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
+        ActionForward error = actionMapping.findForward( ACTION_FORWARD_FAILURE );
         CertificateRequestForm form = (CertificateRequestForm) actionForm;
 
         form.reset( actionMapping, request );
 
-        //request.getSession().setAttribute( Crumbs.CURRENT_LOCATION, Crumbs.REQUEST_CREATE );
-
+        List<CertificatePojo> list = Engine.getInstance().getActiveConfigurationAccessService().getCertificates(
+                Constants.CERTIFICATE_TYPE_PRIVATE_KEY, null );
+        if ( list != null && list.size() > 0 ) {
+            ActionMessage errorMessage = new ActionMessage( "generic.error",
+                    "There are already one or more private keys in database" );
+            errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
+            return error;
+        }
+        list = Engine.getInstance().getActiveConfigurationAccessService().getCertificates(
+                Constants.CERTIFICATE_TYPE_REQUEST, null );
+        if ( list != null && list.size() > 0 ) {
+            ActionMessage errorMessage = new ActionMessage( "generic.error",
+                    "There are already one or more requests in database" );
+            errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
+            return error;
+        }
         return success;
     }
 
