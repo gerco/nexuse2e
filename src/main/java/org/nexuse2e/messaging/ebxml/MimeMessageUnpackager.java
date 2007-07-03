@@ -25,7 +25,6 @@ import java.security.Key;
 import java.security.KeyStore;
 import java.security.NoSuchProviderException;
 import java.security.cert.CertStore;
-import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -60,7 +59,6 @@ import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.pojo.MessagePayloadPojo;
 import org.nexuse2e.pojo.MessagePojo;
 import org.nexuse2e.util.CertificateUtil;
-import org.nexuse2e.util.EncryptionUtil;
 
 /**
  * This <code>Pipelet</code> prepares an MIME message from a MIME message receiver

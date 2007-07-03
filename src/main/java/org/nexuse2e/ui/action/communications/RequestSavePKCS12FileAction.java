@@ -19,10 +19,9 @@
  */
 package org.nexuse2e.ui.action.communications;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.security.KeyStore;
+import java.security.KeyPair;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,11 +31,13 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
+import org.bouncycastle.jce.PKCS10CertificationRequest;
 import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.ProtectedFileAccessForm;
+import org.nexuse2e.util.CertificateUtil;
 import org.nexuse2e.util.EncryptionUtil;
 
 /**
@@ -67,22 +68,36 @@ public class RequestSavePKCS12FileAction extends NexusE2EAction {
 
             try {
                 LOG.debug( "path:" + form.getCertficatePath() );
-                KeyStore keyStore = KeyStore.getInstance( "PKCS12", "BC" );
 
-                CertificatePojo cPojo = Engine.getInstance().getActiveConfigurationAccessService().getFirstCertificateByType(
-                        Constants.CERTIFICATE_TYPE_PRIVATE_KEY, true );
-                if ( cPojo == null ) {
-                    ActionMessage errorMessage = new ActionMessage( "generic.error", "no private certificate found!" );
-                    errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
-                    addRedirect( request, URL, TIMEOUT );
+                
+                CertificatePojo requestPojo = Engine.getInstance().getActiveConfigurationAccessService()
+                        .getFirstCertificateByType( Constants.CERTIFICATE_TYPE_REQUEST, true );
+                if ( requestPojo == null ) {
+                    LOG.error( "no request found in database" );
                     return error;
                 }
-                ByteArrayInputStream bais = new ByteArrayInputStream( cPojo.getBinaryData() );
-                String pwd = EncryptionUtil.decryptString( cPojo.getPassword() );
-                keyStore.load( bais, pwd.toCharArray() );
+                CertificatePojo privKeyPojo = Engine.getInstance().getActiveConfigurationAccessService()
+                        .getFirstCertificateByType( Constants.CERTIFICATE_TYPE_PRIVATE_KEY, true );
+                if ( privKeyPojo == null ) {
+                    LOG.error( "no request found in database" );
+                    return error;
+                }
+                StringBuffer sb = new StringBuffer();
+
+                KeyPair keyPair = CertificateUtil.getKeyPair( privKeyPojo );
+                PKCS10CertificationRequest pkcs10Request = CertificateUtil.getPKCS10Request( requestPojo );
+                sb.append( CertificateUtil.getPemData( pkcs10Request ) );
+                sb.append( "\n" );
+                sb.append( CertificateUtil.getPemData( keyPair, EncryptionUtil
+                        .decryptString( privKeyPojo.getPassword() ) ) );
+
                 File certFile = new File( form.getCertficatePath() );
                 FileOutputStream fos = new FileOutputStream( certFile );
-                keyStore.store( fos, pwd.toCharArray() );
+                fos.write( sb.toString().getBytes() );
+                fos.flush();
+                fos.close();
+                
+                
             } catch ( Exception e ) {
                 e.printStackTrace();
                 ActionMessage errorMessage = new ActionMessage( "generic.error", "can't save keysore: "

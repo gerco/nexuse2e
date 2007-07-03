@@ -19,21 +19,9 @@
  */
 package org.nexuse2e.ui.action.communications;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.security.KeyFactory;
 import java.security.KeyPair;
-import java.security.KeyStore;
-import java.security.SecureRandom;
-import java.security.cert.Certificate;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,22 +35,12 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.jce.PKCS10CertificationRequest;
-import org.bouncycastle.openssl.PEMReader;
-import org.bouncycastle.openssl.PEMWriter;
-import org.bouncycastle.openssl.PasswordFinder;
 import org.nexuse2e.Engine;
-import org.nexuse2e.NexusException;
-import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.CertificateRequestForm;
 import org.nexuse2e.util.CertificateUtil;
-import org.nexuse2e.util.EncryptionUtil;
-
-import sun.security.pkcs.PKCS8Key;
-import sun.security.x509.AlgorithmId;
 
 /**
  * @author gesch
@@ -106,8 +84,7 @@ public class RequestSaveRequestAction extends NexusE2EAction {
             PKCS10CertificationRequest pkcs10Request = CertificateUtil.generatePKCS10CertificateRequest( keyPair, cn,
                     o, ou, l, c, s, e );
 
-            boolean result = false;
-
+            
             // Request
             CertificatePojo certificate = CertificateUtil.createPojoFromPKCS10( pkcs10Request );
 //            certificate.setBinaryData( pkcs10Request.getEncoded() );
@@ -200,7 +177,7 @@ public class RequestSaveRequestAction extends NexusE2EAction {
             
             
             
-            result = true;
+            
         } catch ( Exception ex ) {
             ex.printStackTrace();
         }
