@@ -126,7 +126,7 @@
             <nxs:command target="RequestDelete.do" label="Delete Request" icon="images/tree/TreeDot.gif"/>
             <nxs:command target="RequestSaveRequest.do" label="Save Request" icon="images/tree/TreeDot.gif"/>
             <nxs:command target="RequestSavePKCS12File" label="Export Temporary KeyStructure" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="RequestSaveCert.do" label="Save Certificate" icon="images/tree/TreeDot.gif"/>
+            <nxs:command target="RequestVerifyCertChainCert.do" label="Save Certificate" icon="images/tree/TreeDot.gif"/>
             <nxs:command target="RequestSaveCSRFile.do" label="Save CSR File" icon="images/tree/TreeDot.gif"/>
           </nxs:page>
           <nxs:page target="StagingList.do" label="Certificate Staging" icon="images/tree/ssl.gif">
