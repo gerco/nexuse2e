@@ -29,8 +29,8 @@ import org.nexuse2e.pojo.MessagePojo;
 public class LogMessage {
 
     private String description    = null;
-    private String conversationId = null;
-    private String messageId      = null;
+    private String conversationId = "unknown";
+    private String messageId      = "unknown";
 
     public LogMessage( String description ) {
 

@@ -122,9 +122,12 @@ public class Pop3Receiver extends AbstractService implements ReceiverAware, Runn
     @Override
     public void stop() {
 
-        if ( thread != null ) {
-            thread.interrupt();
-            thread = null;
+        if ( getStatus() == BeanStatus.STARTED ) {
+            if ( thread != null ) {
+                thread.interrupt();
+                thread = null;
+            }
+            super.stop();
         }
     }
 
@@ -270,7 +273,7 @@ public class Pop3Receiver extends AbstractService implements ReceiverAware, Runn
 
                 // Get new messages
                 Boolean autopoll = getParameter( AUTOPOLL_PARAM_NAME );
-                if (autopoll.booleanValue()) {
+                if ( autopoll.booleanValue() ) {
                     poll();
                 }
             }
@@ -300,8 +303,9 @@ public class Pop3Receiver extends AbstractService implements ReceiverAware, Runn
      * @see org.nexuse2e.Manageable#teardown()
      */
     public void teardown() {
+
         super.teardown();
-        
+
         transportReceiver = null;
     } // teardown
 

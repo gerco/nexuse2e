@@ -131,7 +131,7 @@ public class DatabaseLogger extends AppenderSkeleton implements LogAppender {
             }
 
             //TODO get machine id ?
-            pojo.setLogId( "nexus" );
+            pojo.setLogId( java.net.InetAddress.getLocalHost().getHostName() );
 
             pojo.setCreatedDate( new Date() );
             pojo.setClassName( normalizedClassName );
@@ -139,12 +139,16 @@ public class DatabaseLogger extends AppenderSkeleton implements LogAppender {
             pojo.setEventId( 0 );
             pojo.setSeverity( loggingevent.getLevel().toInt() );
             pojo.setDescription( description );
+            pojo.setConversationId( "unknown" );
+            pojo.setMessageId( "unknown" );
             if ( loggingevent.getMessage() instanceof LogMessage ) {
-                pojo.setConversationId( ( (LogMessage) loggingevent.getMessage() ).getConversationId() );
-                pojo.setMessageId( ( (LogMessage) loggingevent.getMessage() ).getMessageId() );
-            } else {
-                pojo.setConversationId( "unknown" );
-                pojo.setMessageId( "unknown" );
+                LogMessage logMessage = (LogMessage) loggingevent.getMessage();
+                if ( logMessage.getConversationId() != null ) {
+                    pojo.setConversationId( logMessage.getConversationId() );
+                }
+                if ( logMessage.getMessageId() != null ) {
+                    pojo.setMessageId( logMessage.getMessageId() );
+                }
             }
 
             // LogDAO logDao = null;
