@@ -146,7 +146,7 @@ public class RequestSaveRequestAction extends NexusE2EAction {
             certs.add( certificate );
             certs.add( privateKeyPojo );
             
-            File certbackup = new File(Engine.getNexusE2ERoot(),"backup");
+            File certbackup = new File(Engine.getInstance().getNexusE2ERoot(),"backup");
             if(!certbackup.exists()) {
                 certbackup.mkdirs();
             }

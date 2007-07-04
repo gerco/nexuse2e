@@ -193,7 +193,7 @@ abstract public class AbstractPipeline implements Pipeline {
     /* (non-Javadoc)
      * @see org.nexuse2e.Manageable#initialize(org.nexuse2e.configuration.EngineConfiguration)
      */
-    public void initialize( EngineConfiguration config ) {
+    public void initialize( EngineConfiguration config ) throws InstantiationException {
 
         if ( forwardPipelets != null ) {
             for ( int i = 0; i < forwardPipelets.length; i++ ) {

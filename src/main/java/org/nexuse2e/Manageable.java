@@ -52,7 +52,7 @@ public interface Manageable {
     /**
      * Initializes this <code>Manageable</code>.
      */
-    public void initialize( EngineConfiguration config );
+    public void initialize( EngineConfiguration config ) throws InstantiationException;
 
     /**
      * Cleans up this <code>Manageable</code> component freeing any resources.

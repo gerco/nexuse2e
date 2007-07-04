@@ -17,27 +17,23 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
 package org.nexuse2e.configuration;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Level;
 import org.nexuse2e.configuration.Constants.ComponentType;
-import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ComponentPojo;
-import org.nexuse2e.pojo.ConnectionPojo;
 import org.nexuse2e.pojo.GrantPojo;
 import org.nexuse2e.pojo.LoggerPojo;
 import org.nexuse2e.pojo.MappingPojo;
-import org.nexuse2e.pojo.ParticipantPojo;
 import org.nexuse2e.pojo.PartnerPojo;
 import org.nexuse2e.pojo.PipeletParamPojo;
 import org.nexuse2e.pojo.PipeletPojo;
@@ -53,20 +49,22 @@ import org.nexuse2e.service.http.HttpSenderService;
 import org.nexuse2e.service.mail.Pop3Receiver;
 import org.nexuse2e.service.mail.SmtpSender;
 
+
 /**
  * @author mbreilmann
  *
  */
-public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
+public class MinimalServerConfigurationProvider implements BaseConfigurationProvider {
 
     /* (non-Javadoc)
-     * @see org.nexuse2e.configuration.BaseConfigurationProvider#createBaseConfiguration(java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, java.util.List)
+     * @see org.nexuse2e.configuration.BaseConfigurationProvider#createBaseConfiguration(java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, java.util.List)
      */
     public void createBaseConfiguration( List<ComponentPojo> components, List<ChoreographyPojo> choreographies,
             List<PartnerPojo> partners, List<PipelinePojo> backendPipelineTemplates,
             List<PipelinePojo> frontendPipelineTemplates, List<ServicePojo> services,
             List<CertificatePojo> caCertificates, List<TRPPojo> trps, List<UserPojo> users, List<RolePojo> roles,
             List<LoggerPojo> loggers, List<MappingPojo> mappings ) throws InstantiationException {
+
 
         try {
 
@@ -481,34 +479,9 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             frontendPipelineTemplates.add( ebXML20POP3InboundPipelinePojo );
             frontendPipelineTemplates.add( ebXML20SMTPOutboundPipelinePojo );
 
-            ChoreographyPojo httpChoreographyPojo = new ChoreographyPojo();
-
-            PartnerPojo partnerPojo = new PartnerPojo( Constants.PARTNER_TYPE_PARTNER, new Date(), new Date(), 1,
-                    "Xioma", "Custom" );
-            partnerPojo.setName( "Xioma" );
             PartnerPojo localPartnerPojo = new PartnerPojo( Constants.PARTNER_TYPE_LOCAL, new Date(), new Date(), 1,
                     "Localhost", "Custom" );
             localPartnerPojo.setName( "Localhost" );
-
-            ConnectionPojo httpConnectionPojo = new ConnectionPojo( ebXML2HttpTRPPojo, partnerPojo, 30000, 3000, true,
-                    true, false, 0, 3, new Date(), new Date(), 1, "http://localhost:8080/NEXUSe2e/handler/ebxml20",
-                    "Xioma HTTP" );
-            partnerPojo.getConnections().add( httpConnectionPojo );
-
-            /*
-             ConnectionPojo mailConnectionPojo = new ConnectionPojo( ebXML2MailTRPPojo, partnerPojo, 30000, 3000, true,
-             true, false, 0, 3, new Date(), new Date(), 1, "test@dummy", "Xioma Mail" );
-             */
-            // partnerPojo.getConnections().add( mailConnectionPojo );
-            ParticipantPojo httpParticipantPojo = new ParticipantPojo( partnerPojo, httpChoreographyPojo,
-                    localPartnerPojo, httpConnectionPojo, new Date(), new Date(), 1, "XiomaHttp" );
-            /*
-             ParticipantPojo mailParticipantPojo = new ParticipantPojo( partnerPojo, httpChoreographyPojo,
-             localPartnerPojo, mailConnectionPojo, new Date(), new Date(), 1, "XiomaMail" );
-             */
-
-            ActionPojo sendFileActionPojo = new ActionPojo( httpChoreographyPojo, new Date(), new Date(), 1, true,
-                    true, fileSaveInboundPipelinePojo, fileLoadOutboundPipelinePojo, "SendFile" );
 
             // Sender and Receiver components/services
             ComponentPojo httpSenderComponent = new ComponentPojo( new Date(), new Date(), 1, ComponentType.SERVICE
@@ -576,26 +549,9 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
                     "SchedulingService", "A service for schduling tasks", new ArrayList<ServiceParamPojo>() );
             schedulingService.setAutostart( true );
 
-            List<ParticipantPojo> httpParticipants = new ArrayList<ParticipantPojo>();
-            Set<ActionPojo> httpActions = new HashSet<ActionPojo>();
-
-            httpParticipants.add( httpParticipantPojo );
-            // httpParticipants.add( mailParticipantPojo );
-            httpActions.add( sendFileActionPojo );
-
-            httpChoreographyPojo.setName( "GenericFile" );
-            httpChoreographyPojo.setDescription( "GenericFile" );
-            httpChoreographyPojo.setModifiedDate( new Date() );
-            httpChoreographyPojo.setModifiedNxUserId( 1 );
-            httpChoreographyPojo.setCreatedDate( new Date() );
-            httpChoreographyPojo.setParticipants( httpParticipants );
-            httpChoreographyPojo.setActions( httpActions );
-            partnerPojo.setParticipants( httpParticipants );
-
             partners.add( localPartnerPojo );
-            partners.add( partnerPojo );
+
             // LOG.trace( "partner.con.size: " + partnerPojo.getConnections().size() );
-            choreographies.add( httpChoreographyPojo );
             components.add( inboundComponentPojo );
             components.add( outboundComponentPojo );
             components.add( httpSenderComponent );
@@ -653,6 +609,6 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             throw new InstantiationException( "Error creating X-ioma base system configuration - " + e.getMessage() );
         } // try/catch
 
-    } // createBaseConfiguration
+    }
 
-} // XiomaBaseServerConfiguration
+}

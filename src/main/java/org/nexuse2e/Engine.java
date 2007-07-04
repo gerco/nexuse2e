@@ -99,7 +99,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
 
     private String                           cacertsPath                    = null;
     private String                           certificatePath                = null;
-    private static String                    nexusE2ERoot                   = null;
+    private String                           nexusE2ERoot                   = null;
 
     private Map<Object, EngineConfiguration> configurations                 = new HashMap<Object, EngineConfiguration>();
 
@@ -149,7 +149,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     /**
      * Initialize the engine
      */
-    public void initialize( EngineConfiguration config ) {
+    public void initialize( EngineConfiguration config ) throws InstantiationException {
 
         /*
          String[] names = getWebApplicationContext().getBeanDefinitionNames();
@@ -184,7 +184,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                     }
                     nexusE2ERoot = webAppPath;
                 }
-            } catch ( IllegalStateException isex ) { // Not in a WebApplicationContext
+            } catch ( IllegalStateException isex ) {
                 if ( nexusE2ERoot == null ) {
                     throw new IllegalStateException(
                             "nexusE2ERoot must be set if not running in a WebApplicationContext" );
@@ -193,7 +193,11 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
 
             LOG.debug( "NEXUSe2e root directory: " + nexusE2ERoot );
 
-            initializeMime();
+            try {
+                initializeMime();
+            } catch ( NexusException nEx ) {
+                LOG.error( "No MIME mappings found: " + nEx );
+            }
 
             // Set Derby home directory to determine where the DB will be created
             if ( System.getProperty( "derby.system.home" ) == null ) {
@@ -275,14 +279,15 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
             }
 
         } catch ( RuntimeException rex ) {
+            LOG.error( "Error initializing Engine: " + rex );
             rex.printStackTrace();
-            throw rex;
+            throw new InstantiationException( rex.getMessage() );
         } catch ( Exception e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error( "Error initializing Engine: " + e );
+            throw new InstantiationException( e.getMessage() );
         } catch ( Error e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error( "Error initializing Engine: " + e );
+            throw new InstantiationException( e.getMessage() );
         }
 
         LOG.debug( "Engine initialized." );
@@ -560,8 +565,12 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
             LOG.debug( "Initialize Engine" );
             // LOG.debug( "1partners: " + newConfiguration.getPartners().size() );
             // LOG.debug( "2partners: " + this.currentConfiguration.getPartners().size() );
-            initialize( newConfiguration );
-            activate();
+            try {
+                initialize( newConfiguration );
+                activate();
+            } catch ( InstantiationException e ) {
+                LOG.error( "Error setting new configuartion: " + e );
+            }
         } else {
             this.currentConfiguration = newConfiguration;
         }
@@ -879,7 +888,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     /**
      * @return
      */
-    public static String getNexusE2ERoot() {
+    public String getNexusE2ERoot() {
 
         return nexusE2ERoot;
     }
@@ -887,7 +896,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     /**
      * @param webApplicationRoot
      */
-    public static void setNexusE2ERoot( String webApplicationRoot ) {
+    public void setNexusE2ERoot( String webApplicationRoot ) {
 
         nexusE2ERoot = webApplicationRoot;
     }

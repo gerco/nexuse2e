@@ -59,13 +59,13 @@
     <dependency>
       <groupId>bouncycastle</groupId>
       <artifactId>bcprov-jdk15</artifactId>
-      <version>135</version>
+      <version>137</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>bouncycastle</groupId>
       <artifactId>bcmail-jdk15</artifactId>
-      <version>135</version>
+      <version>137</version>
       <scope>compile</scope>
     </dependency>
     <!-- <dependency>
@@ -167,6 +167,12 @@
       <groupId>commons-pool</groupId>
       <artifactId>commons-pool</artifactId>
       <version>1.3</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-vfs</groupId>
+      <artifactId>commons-vfs</artifactId>
+      <version>1.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -595,7 +601,7 @@
           <archiveClasses>true</archiveClasses>
           <warName>NEXUSe2e</warName>
           <warSourceExcludes>
-            **/spring*2.0.0.jar,**/ant-1.5.jar,**/antlr-2.7.2.jar,**/bcprov-jdk15-133.jar,**/cglib-2.1.jar,**/jsp*,**/servlet-api*,**/javax.xml.bind-jaxb-api-2.0.jar,**/xml-apis*,**/xalan-2.6.0.jar,WEB-INF/classes/tldCache.ser,WEB-INF/classes/org/**,WEB-INF/config/database/derby/**,/WEB-INF/config/bean.properties,/WEB-INF/config/database.properties
+            **/spring*2.0.0.jar,**/ant-1.5.jar,**/antlr-2.7.2.jar,**/*-jdk15-133.jar,**/*-jdk15-135.jar,**/cglib-2.1.jar,**/jsp*,**/servlet-api*,**/javax.xml.bind-jaxb-api-2.0.jar,**/xml-apis*,**/xalan-2.6.0.jar,WEB-INF/classes/tldCache.ser,WEB-INF/classes/org/**,WEB-INF/config/database/derby/**,/WEB-INF/config/bean.properties,/WEB-INF/config/database.properties
           </warSourceExcludes>
           <webResources>
             <resource>

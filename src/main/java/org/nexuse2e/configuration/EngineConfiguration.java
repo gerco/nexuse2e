@@ -66,7 +66,6 @@ import org.nexuse2e.pojo.UserPojo;
 import org.nexuse2e.service.AbstractControllerService;
 import org.nexuse2e.service.Service;
 import org.nexuse2e.transport.TransportReceiver;
-import org.nexuse2e.transport.TransportSender;
 import org.nexuse2e.ui.structure.impl.CachedXmlStructureServer;
 import org.springframework.context.support.ApplicationObjectSupport;
 
@@ -956,7 +955,7 @@ public class EngineConfiguration {
         frontendActionSerializers = new HashMap<String, FrontendActionSerializer>();
         backendActionSerializers = new HashMap<String, BackendActionSerializer>();
 
-        Iterator choreographiesI = getChoreographies().iterator();
+        Iterator<ChoreographyPojo> choreographiesI = getChoreographies().iterator();
         while ( choreographiesI.hasNext() ) {
             ChoreographyPojo choreography = (ChoreographyPojo) choreographiesI.next();
 
