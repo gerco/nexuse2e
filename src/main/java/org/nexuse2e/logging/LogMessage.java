@@ -20,14 +20,18 @@
 
 package org.nexuse2e.logging;
 
+import java.io.Serializable;
+
 import org.nexuse2e.pojo.MessagePojo;
 
 /**
  * @author mbreilmann
  *
  */
-public class LogMessage {
+public class LogMessage implements Serializable {
 
+    private static final long serialVersionUID = 7284169389821283301L;
+    
     private String description    = null;
     private String conversationId = "unknown";
     private String messageId      = "unknown";
