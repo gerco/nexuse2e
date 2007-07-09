@@ -19,6 +19,8 @@
  */
 package org.nexuse2e.configuration;
 
+import java.io.Serializable;
+
 import org.nexuse2e.configuration.Constants.ParameterType;
 
 /**
@@ -27,7 +29,7 @@ import org.nexuse2e.configuration.Constants.ParameterType;
  * 
  * @author jonas.reese
  */
-public class ParameterDescriptor {
+public class ParameterDescriptor implements Serializable {
 
     private ParameterType parameterType;
     private String        label;
@@ -56,8 +58,8 @@ public class ParameterDescriptor {
         this.description = description;
         this.defaultValue = defaultValue;
         if ( defaultValue != null && !parameterType.getType().isInstance( defaultValue ) ) {
-            throw new ClassCastException( "defaultValue for parameter: "+label+", type " + parameterType + " must be instanceof "
-                    + parameterType.getType() );
+            throw new ClassCastException( "defaultValue for parameter: " + label + ", type " + parameterType
+                    + " must be instanceof " + parameterType.getType() );
         }
     }
 
