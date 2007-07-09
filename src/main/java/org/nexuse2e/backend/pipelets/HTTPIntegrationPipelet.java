@@ -67,7 +67,7 @@ public class HTTPIntegrationPipelet extends AbstractPipelet {
                 "Send the content as a URL-encoded HTTP parameter.", Boolean.TRUE ) );
         parameterMap.put( USER, new ParameterDescriptor( ParameterType.STRING, "User name",
                 "User name required for legacy system (optional).", "" ) );
-        parameterMap.put( PASSWORD, new ParameterDescriptor( ParameterType.STRING, "Password",
+        parameterMap.put( PASSWORD, new ParameterDescriptor( ParameterType.PASSWORD, "Password",
                 "Password required for legacy system (optional).", "" ) );
     }
 

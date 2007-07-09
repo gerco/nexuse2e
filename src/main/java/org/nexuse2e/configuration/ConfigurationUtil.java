@@ -33,6 +33,7 @@ import org.nexuse2e.pojo.PipeletParamPojo;
 import org.nexuse2e.pojo.PipeletPojo;
 import org.nexuse2e.pojo.ServiceParamPojo;
 import org.nexuse2e.pojo.ServicePojo;
+import org.nexuse2e.util.EncryptionUtil;
 
 /**
  * This utility class provides functionality that helps to
@@ -70,6 +71,27 @@ public class ConfigurationUtil {
         }
     }
 
+    public static String getParameterStringValue( PipeletParamPojo param ) {
+
+        switch ( param.getParameterDescriptor().getParameterType() ) {
+            case PASSWORD:
+                return EncryptionUtil.decryptString( param.getValue() );
+            default:
+                return param.getValue();
+        }
+    }
+
+    public static void setParameterStringValue( PipeletParamPojo param, String value ) {
+
+        switch ( param.getParameterDescriptor().getParameterType() ) {
+            case PASSWORD:
+                param.setValue( EncryptionUtil.encryptString( value ) );
+                break;
+            default:
+                param.setValue( value );
+        }
+    }
+
     // pojo-independent helper method for a single configuration parameter
     private static void configure( Configurable configurable, Map<String, ParameterDescriptor> map, String key,
             String value, String label ) {
@@ -79,7 +101,7 @@ public class ConfigurationUtil {
             // handle ENUMERATION types later
             if ( pd.getParameterType() == ParameterType.LIST ) {
                 ListParameter dropdown = pd.getDefaultValue();
-                if (!dropdown.setSelectedValue( value )) {
+                if ( !dropdown.setSelectedValue( value ) ) {
                     dropdown.setSelectedIndex( 0 );
                 }
                 configurable.setParameter( key, dropdown );
@@ -111,8 +133,12 @@ public class ConfigurationUtil {
         }
         Map<String, ParameterDescriptor> map = configurable.getParameterMap();
         for ( PipeletParamPojo pojo : pojos ) {
+            ParameterDescriptor parameterDescriptor = map.get( pojo.getParamName() );
+            if ( parameterDescriptor != null ) {
+                pojo.setParameterDescriptor( parameterDescriptor );
+            }
             String key = pojo.getParamName();
-            String value = pojo.getValue();
+            String value = getParameterStringValue( pojo ); // pojo.getValue()
             String label = pojo.getLabel();
             configure( configurable, map, key, value, label );
         }
@@ -214,16 +240,16 @@ public class ConfigurationUtil {
                 if ( pd.getParameterType() == ParameterType.LIST ) {
                     ListParameter dropdown = configurable.getParameter( key );
                     if ( dropdown != null ) {
-                        pipeletParam.setValue( dropdown.getSelectedValue() );
+                        setParameterStringValue( pipeletParam, dropdown.getSelectedValue() );// pipeletParam.setValue( dropdown.getSelectedValue() );
                     }
                 } else if ( pd.getParameterType() == ParameterType.ENUMERATION ) {
                     // TODO: implement this
                 } else {
                     Object value = configurable.getParameter( key );
                     if ( value == null ) {
-                        pipeletParam.setValue( toString( pd.getDefaultValue() ) );
+                        setParameterStringValue( pipeletParam, toString( pd.getDefaultValue() ) );// pipeletParam.setValue( toString( pd.getDefaultValue() ) );
                     } else {
-                        pipeletParam.setValue( toString( value ) );
+                        setParameterStringValue( pipeletParam, toString( value ) );// pipeletParam.setValue( toString( value ) );
                     }
                 }
                 result.add( pipeletParam );

@@ -32,6 +32,7 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMapping;
 import org.nexuse2e.Configurable;
 import org.nexuse2e.Engine;
+import org.nexuse2e.configuration.ConfigurationUtil;
 import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
@@ -67,7 +68,7 @@ public class PipelineForm extends ActionForm {
 
     private boolean                 frontend           = false;
     private PipeletPojo             currentPipelet     = null;
-    private Configurable            configurable    = null;
+    private Configurable            configurable       = null;
 
     private HashMap<String, String> pipeletParamValues = null;
     /**
@@ -174,7 +175,7 @@ public class PipelineForm extends ActionForm {
 
         pipeletParamValues = new HashMap<String, String>();
         for ( PipeletParamPojo param : getParameters() ) {
-            pipeletParamValues.put( param.getParamName(), param.getValue() );
+            pipeletParamValues.put( param.getParamName(), ConfigurationUtil.getParameterStringValue( param ) );
         }
     }
 
@@ -186,17 +187,17 @@ public class PipelineForm extends ActionForm {
         if ( getParameters() != null ) {
             for ( PipeletParamPojo param : getParameters() ) {
                 ParameterDescriptor pd = configurable.getParameterMap().get( param.getParamName() );
-                if (pd != null) {
+                if ( pd != null ) {
                     String value = pipeletParamValues.get( param.getParamName() );
-                    if (pd.getParameterType() == ParameterType.BOOLEAN) {
-                        if ("on".equalsIgnoreCase( value )) {
+                    if ( pd.getParameterType() == ParameterType.BOOLEAN ) {
+                        if ( "on".equalsIgnoreCase( value ) ) {
                             value = Boolean.TRUE.toString();
                         }
                     }
-                    if (value == null) {
+                    if ( value == null ) {
                         value = Boolean.FALSE.toString();
                     }
-                    param.setValue( value );
+                    ConfigurationUtil.setParameterStringValue( param, value );
                 }
             }
         }
@@ -221,7 +222,7 @@ public class PipelineForm extends ActionForm {
         setDescription( null );
         setDirection( -1 );
         setPipelets( null );
-        
+
     }
 
     /**
