@@ -31,11 +31,13 @@ import org.nexuse2e.configuration.Constants.ParameterType;
  */
 public class ParameterDescriptor implements Serializable {
 
-    private ParameterType parameterType;
-    private String        label;
-    private boolean       required = true;
-    private String        description;
-    private Object        defaultValue;
+    private static final long serialVersionUID = 125531871459686485L;
+
+    private ParameterType     parameterType;
+    private String            label;
+    private boolean           required         = true;
+    private String            description;
+    private Object            defaultValue;
 
     /**
      * Constructs a new <code>ParameterDescriptor</code>.
