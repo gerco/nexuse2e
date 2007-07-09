@@ -29,7 +29,7 @@ import org.nexuse2e.configuration.Constants;
  */
 public class CertificatePojo implements java.io.Serializable {
 
-    Logger                    LOG              = Logger.getLogger( CertificatePojo.class );
+//    Logger                    LOG              = Logger.getLogger( CertificatePojo.class );
 
     /**
      * 
@@ -243,7 +243,7 @@ public class CertificatePojo implements java.io.Serializable {
      */
     public boolean isPKCS12() {
 
-        if ( getType() == Constants.CERTIFICATE_TYPE_CERT_PART || getType() == Constants.CERTIFICATE_TYPE_STAGING
+        if (  getType() == Constants.CERTIFICATE_TYPE_STAGING
                 || getType() == Constants.CERTIFICATE_TYPE_LOCAL ) {
             return true;
         }

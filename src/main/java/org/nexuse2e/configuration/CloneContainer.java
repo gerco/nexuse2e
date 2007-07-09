@@ -67,6 +67,25 @@ public class CloneContainer implements Serializable {
             return null;
         }
         try {
+            for ( LoggerPojo logger : loggers ) {
+                System.out.println("logger: "+logger.getName());
+                
+            }
+//            trps.clear();
+//            choreographies.clear();
+
+//            certificates.clear();
+//            partners.clear();
+            
+//            frontendPipelineTemplates.clear();
+//            backendPipelineTemplates.clear();
+//            components.clear();
+//            loggers.clear();
+//            services.clear();
+//            users.clear();
+//            roles.clear();
+            
+            
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             ObjectOutputStream out = new ObjectOutputStream( bos );
             out.writeObject( this );

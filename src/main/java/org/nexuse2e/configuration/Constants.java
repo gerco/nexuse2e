@@ -34,6 +34,9 @@ import org.nexuse2e.pojo.UserPojo;
  */
 public class Constants extends org.nexuse2e.Constants {
 
+    public static int          CERTIFICATE_FORMAT_PEM              = 1;
+    public static int          CERTIFICATE_FORMAT_DER              = 2;
+
     public static int          PARTNER_TYPE_ALL                    = 0;
     public static int          PARTNER_TYPE_LOCAL                  = 1;
     public static int          PARTNER_TYPE_PARTNER                = 2;
@@ -47,6 +50,7 @@ public class Constants extends org.nexuse2e.Constants {
     public static int          CERTIFICATE_TYPE_REQUEST            = 4;            // pkcs10 request (one per time) 
     public static int          CERTIFICATE_TYPE_PRIVATE_KEY        = 5;            // private key, matching pkcs10
     public static int          CERTIFICATE_TYPE_CACERT_METADATA    = 6;            // password cakeystore
+    @Deprecated
     public static int          CERTIFICATE_TYPE_CERT_PART          = 7;            // not finished p12, containing private key and ca signed certificate
     public static int          CERTIFICATE_TYPE_STAGING            = 8;            // complete p12, ready for promote
 

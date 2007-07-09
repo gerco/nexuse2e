@@ -121,6 +121,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
      */
     public Engine() {
 
+        LOG.trace( "creating engine instance" );
         if ( instance == null ) {
             instance = this;
         }

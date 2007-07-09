@@ -24,6 +24,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.math.BigInteger;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -32,17 +34,30 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.SecureRandom;
+import java.security.cert.CertPathBuilder;
+import java.security.cert.CertPathBuilderException;
+import java.security.cert.CertStore;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
+import java.security.cert.CollectionCertStoreParameters;
+import java.security.cert.PKIXBuilderParameters;
+import java.security.cert.PKIXCertPathBuilderResult;
+import java.security.cert.TrustAnchor;
+import java.security.cert.X509CertSelector;
 import java.security.cert.X509Certificate;
+import java.security.interfaces.RSAPublicKey;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -65,7 +80,7 @@ import org.codehaus.xfire.util.Base64;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.pojo.CertificatePojo;
-
+import org.xioma.nexuse2e.x509.TempCertUtils;
 
 /**
  * Utility class to work with certificates (mostly instances of <code>X509Certificate</code>).
@@ -113,50 +128,56 @@ public class CertificateUtil {
         return returnPrivateKey;
     }
 
-//    /**
-//     * @param data
-//     * @param password
-//     * @return
-//     * @throws IllegalArgumentException
-//     */
-//    public static Key getPrivateKey( byte[] data, String password ) throws IllegalArgumentException {
-//
-//        return getPrivateKey( getPKCS12KeyStore( data, password ) );
-//    }
-//
-//    /**
-//     * @param pojo
-//     * @return
-//     * @throws IllegalArgumentException
-//     */
-//    public static Key getPrivateKey( CertificatePojo pojo ) throws IllegalArgumentException {
-//
-//        if ( !pojo.isPKCS12() ) {
-//            throw new IllegalArgumentException( "pojo doesn't contain pkcs12 keystore" );
-//        }
-//        return getPrivateKey( pojo.getBinaryData(), EncryptionUtil.decryptString( pojo.getPassword() ) );
-//    }
+    //    /**
+    //     * @param data
+    //     * @param password
+    //     * @return
+    //     * @throws IllegalArgumentException
+    //     */
+    //    public static Key getPrivateKey( byte[] data, String password ) throws IllegalArgumentException {
+    //
+    //        return getPrivateKey( getPKCS12KeyStore( data, password ) );
+    //    }
+    //
+    //    /**
+    //     * @param pojo
+    //     * @return
+    //     * @throws IllegalArgumentException
+    //     */
+    //    public static Key getPrivateKey( CertificatePojo pojo ) throws IllegalArgumentException {
+    //
+    //        if ( !pojo.isPKCS12() ) {
+    //            throw new IllegalArgumentException( "pojo doesn't contain pkcs12 keystore" );
+    //        }
+    //        return getPrivateKey( pojo.getBinaryData(), EncryptionUtil.decryptString( pojo.getPassword() ) );
+    //    }
 
     /**
      * @param privateKeyPojo
      * @return
      */
-    public static KeyPair getKeyPair( final CertificatePojo privateKeyPojo) {
-        StringReader sr = new StringReader(new String(privateKeyPojo.getBinaryData()));
-        PEMReader pemReader = new PEMReader(sr,new PasswordFinder(){
+    public static KeyPair getKeyPair( final CertificatePojo privateKeyPojo ) {
+
+        if ( privateKeyPojo == null ) {
+            return null;
+        }
+        StringReader sr = new StringReader( new String( privateKeyPojo.getBinaryData() ) );
+        PEMReader pemReader = new PEMReader( sr, new PasswordFinder() {
+
             public char[] getPassword() {
-                return EncryptionUtil.decryptString( privateKeyPojo.getPassword()).toCharArray();
+
+                return EncryptionUtil.decryptString( privateKeyPojo.getPassword() ).toCharArray();
             }
-        });
+        } );
         try {
-            KeyPair kp = (KeyPair)pemReader.readObject();
+            KeyPair kp = (KeyPair) pemReader.readObject();
             return kp;
         } catch ( IOException e ) {
-            LOG.error( "Error while reading Private Key from Pojo: " +e);
+            LOG.error( "Error while reading Private Key from Pojo: " + e );
         }
         return null;
     }
-    
+
     /**
      * @param pojo
      * @return
@@ -164,6 +185,9 @@ public class CertificateUtil {
      */
     public static X509Certificate getX509Certificate( CertificatePojo pojo ) throws IllegalArgumentException {
 
+        if ( pojo == null ) {
+            throw new IllegalArgumentException( "Pojo must not null!" );
+        }
         if ( !pojo.isX509() ) {
             throw new IllegalArgumentException( "Pojo contains no X509" );
         }
@@ -580,7 +604,8 @@ public class CertificateUtil {
      * @param password
      * @return
      */
-    public static String getPemData( KeyPair privateKey, String password) {
+    public static String getPemData( KeyPair privateKey, String password ) {
+
         StringWriter sw = new StringWriter();
         PEMWriter writer = new PEMWriter( sw, Constants.DEFAULT_JCE_PROVIDER );
         try {
@@ -590,13 +615,12 @@ public class CertificateUtil {
             sw.flush();
             sw.close();
         } catch ( IOException e ) {
-            LOG.error( "error while creating PrivateKey Pojo: "+e );
+            LOG.error( "error while creating PrivateKey Pojo: " + e );
             return null;
         }
         return sw.getBuffer().toString();
     }
-    
-    
+
     /**
      * @param x509Certificate
      * @return
@@ -663,8 +687,7 @@ public class CertificateUtil {
      * @param pojo
      * @return
      */
-    static public PKCS10CertificationRequest getPKCS10Request( CertificatePojo pojo )
-            throws IllegalArgumentException {
+    static public PKCS10CertificationRequest getPKCS10Request( CertificatePojo pojo ) throws IllegalArgumentException {
 
         if ( pojo == null || !pojo.isPKCS10() || pojo.getBinaryData() == null || pojo.getBinaryData().length == 0 ) {
             throw new IllegalArgumentException( "Pojo doesn't contain a PKCS10" );
@@ -890,7 +913,7 @@ public class CertificateUtil {
         privateKeyPojo.setBinaryData( getPemData( keyPair, password ).getBytes() );
         privateKeyPojo.setName( name );
         privateKeyPojo.setPassword( EncryptionUtil.encryptString( password ) );
-        
+
         return privateKeyPojo;
     }
 
@@ -898,16 +921,64 @@ public class CertificateUtil {
      * @param request
      * @return
      */
-    public static CertificatePojo createPojoFromPKCS10(PKCS10CertificationRequest request) {
+    public static CertificatePojo createPojoFromPKCS10( PKCS10CertificationRequest request ) {
+
         CertificatePojo requestPojo = new CertificatePojo();
-        
+
         requestPojo.setBinaryData( request.getEncoded() );
         requestPojo.setType( Constants.CERTIFICATE_TYPE_REQUEST );
         requestPojo.setName( request.getCertificationRequestInfo().getSubject().toString() );
         return requestPojo;
     }
-    
-    
+
+    public static PKIXCertPathBuilderResult getCertificateChain( X509Certificate head, List<X509Certificate> certs,
+            List<X509Certificate> trustedCerts ) {
+
+        BigInteger requestModulus = ( (RSAPublicKey) head.getPublicKey() ).getModulus();
+        BigInteger requestExponent = ( (RSAPublicKey) head.getPublicKey() ).getPublicExponent();
+
+        List list = new ArrayList();
+        Set<TrustAnchor> trust = new HashSet<TrustAnchor>();
+        for ( X509Certificate trustedCert : trustedCerts ) {
+            trust.add( new TrustAnchor( trustedCert, null ) );
+        }
+
+        for ( X509Certificate cert : certs ) {
+            list.add( cert );
+            BigInteger modulus = ( (RSAPublicKey) cert.getPublicKey() ).getModulus();
+            BigInteger exponent = ( (RSAPublicKey) cert.getPublicKey() ).getPublicExponent();
+
+            if ( modulus.equals( requestModulus ) && exponent.equals( requestExponent ) ) {
+                //headcert
+            } else {
+                trust.add( new TrustAnchor( cert, null ) );
+            }
+        }
+
+        try {
+            CollectionCertStoreParameters ccsp = new CollectionCertStoreParameters( list );
+            CertStore store = CertStore.getInstance( "Collection", ccsp, Constants.DEFAULT_JCE_PROVIDER );
+
+            CertPathBuilder cpb = CertPathBuilder.getInstance( "PKIX", Constants.DEFAULT_JCE_PROVIDER );
+            X509CertSelector targetConstraints = new X509CertSelector();
+
+            targetConstraints.setCertificate( head );
+
+            PKIXBuilderParameters params = new PKIXBuilderParameters( trust, targetConstraints );
+            params.setRevocationEnabled( false );
+            params.addCertStore( store );
+            params.setDate( new Date() );
+            try {
+                return (PKIXCertPathBuilderResult) cpb.build( params );
+            } catch ( CertPathBuilderException e ) {
+                LOG.error( "Error while building cert chain: " + e );
+            }
+        } catch ( Exception e ) {
+            LOG.error( "creating Certificate Chain: " + e );
+        }
+        return null;
+    }
+
     /**
      * @param cert
      * @return
@@ -941,5 +1012,117 @@ public class CertificateUtil {
         return new String( Hex.encode( resBuf ) );
 
     }
+
+    /**
+     * @param certChain
+     * @return
+     */
+    public static boolean isCertChainComplete( Object[] certChain ) {
+
+        if ( certChain != null && certChain.length > 0 ) {
+            X509Certificate x509Certificate = (X509Certificate) certChain[certChain.length - 1];
+            X509Principal subject = getPrincipalFromCertificate( x509Certificate, true );
+            X509Principal issuer = getPrincipalFromCertificate( x509Certificate, false );
+            return subject.equals( issuer );
+        }
+
+        return false;
+    } // isCertChainComplete
+
+    public static Certificate[] getCertificateChain(CertificatePojo certificate, List<X509Certificate> certificates) {
+        byte[] partnerCertBytes = null;
+        X509Certificate partnerCert = null;
+        if(certificate != null) {
+            partnerCertBytes = certificate.getBinaryData();
+            if ( partnerCertBytes != null ) {
+                partnerCert = getX509Certificate( partnerCertBytes );
+                return getCertificateChain( partnerCert, certificates );
+            }
+        }
+        
+        return null;
+    }
+
+    /**
+     * @param certificate
+     * @param certificates
+     * @return
+     */
+    public static Certificate[] getCertificateChain( X509Certificate head, List<X509Certificate> certificates ) {
+
+        Certificate[] certs = null;
+
+        try {
+           
+            X509Principal subject = getPrincipalFromCertificate( head, true );
+
+            HashMap certHashMap = getX509CertificateHashMap( certificates );
+
+            certHashMap.put( subject, head );
+            ArrayList certsList = getCertChainDN( certHashMap, subject );
+            // log.debug("getPartnerCertificateChain: count: " + certsList.size());
+            certs = new Certificate[certsList.size()];
+            int pos = 0;
+            for ( Iterator iter = certsList.iterator(); iter.hasNext(); ) {
+                X509Certificate cert = (X509Certificate) iter.next();
+                certs[pos++] = cert;
+            }
+
+        } catch ( Exception ex ) {
+            ex.printStackTrace();
+        }
+
+        return certs;
+    }
+
+    /**
+     * @return
+     */
+    public static HashMap<X509Principal, X509Certificate> getX509CertificateHashMap(
+            List<X509Certificate> certificateParts ) throws NexusException {
+
+        HashMap<X509Principal, X509Certificate> hashMap = new HashMap<X509Principal, X509Certificate>();
+
+        if ( certificateParts != null ) {
+
+            for ( X509Certificate x509Certificate : certificateParts ) {
+
+                
+                // String id = certificatePojo.getCertificateId();
+                X509Principal id = getPrincipalFromCertificate( x509Certificate, true );
+
+                hashMap.put( id, x509Certificate );
+            }
+        }
+        return hashMap;
+    }
+
+    /**
+     * @param certificateHashMap
+     * @param subject
+     * @return
+     */
+    private static ArrayList<X509Certificate> getCertChainDN( HashMap certificateHashMap, X509Principal subject ) {
+
+        ArrayList<X509Certificate> certChain = new ArrayList<X509Certificate>();
+        X509Principal issuer = null;
+        try {
+            X509Certificate x509Certificate = (X509Certificate) certificateHashMap.get( subject );
+            while ( !subject.equals( issuer ) && ( x509Certificate != null ) ) {
+                issuer = getPrincipalFromCertificate( x509Certificate, false );
+                subject = getPrincipalFromCertificate( x509Certificate, true );
+                // log.debug( "add entry:" + subject );
+                certChain.add( x509Certificate );
+
+                // log.debug( "Found cert:" + subject + " - " + issuer );
+
+                x509Certificate = (X509Certificate) certificateHashMap.get( issuer );
+            }
+        } catch ( Exception e ) {
+            e.printStackTrace();
+        }
+
+        return certChain;
+    } // getCertChainDN
 
 }

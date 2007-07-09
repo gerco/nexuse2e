@@ -25,23 +25,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
-import java.security.cert.CertPathBuilder;
-import java.security.cert.CertPathBuilderException;
-import java.security.cert.CertStore;
 import java.security.cert.Certificate;
-import java.security.cert.CollectionCertStoreParameters;
-import java.security.cert.PKIXBuilderParameters;
 import java.security.cert.PKIXCertPathBuilderResult;
-import java.security.cert.TrustAnchor;
-import java.security.cert.X509CertSelector;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
@@ -154,35 +144,27 @@ public class RequestVerifyCertChainAction extends NexusE2EAction {
 
         if ( certs.size() > 0 ) {
 
-            List list = new ArrayList();
-            Set<TrustAnchor> trust = new HashSet<TrustAnchor>();
+            
 
             List<CertificatePojo> cacertPojo = Engine.getInstance().getActiveConfigurationAccessService()
                     .getCertificates( Constants.CERTIFICATE_TYPE_CA, null );
+            
             List<X509Certificate> cacerts = new ArrayList<X509Certificate>();
+            
             for ( CertificatePojo pojo : cacertPojo ) {
                 X509Certificate caCert = CertificateUtil.getX509Certificate( pojo );
                 cacerts.add( caCert );
-                trust.add( new TrustAnchor( caCert, null ) );
+                
             }
+            
             X509Certificate headcert = null;
             for ( X509Certificate cert : certs ) {
-                list.add( cert );
+
                 BigInteger modulus = ( (RSAPublicKey) cert.getPublicKey() ).getModulus();
                 BigInteger exponent = ( (RSAPublicKey) cert.getPublicKey() ).getPublicExponent();
 
-                System.out.println( "request: " );
-                System.out.println( "modulus: " + modulus );
-                System.out.println( "exponent: " + exponent );
-
-                System.out.println( "cert: " );
-                System.out.println( "modulus: " + requestModulus );
-                System.out.println( "exponent: " + requestExponent );
-
                 if ( modulus.equals( requestModulus ) && exponent.equals( requestExponent ) ) {
                     headcert = cert;
-                } else {
-                    trust.add( new TrustAnchor( cert, null ) );
                 }
             }
 
@@ -194,32 +176,10 @@ public class RequestVerifyCertChainAction extends NexusE2EAction {
                 return incomplete;
             }
 
-            CollectionCertStoreParameters ccsp = new CollectionCertStoreParameters( list );
-            CertStore store = CertStore.getInstance( "Collection", ccsp, Constants.DEFAULT_JCE_PROVIDER );
-
-            CertPathBuilder cpb = CertPathBuilder.getInstance( "PKIX", Constants.DEFAULT_JCE_PROVIDER );
-            X509CertSelector targetConstraints = new X509CertSelector();
-
-            targetConstraints.setCertificate( headcert );
-
-            PKIXBuilderParameters params = new PKIXBuilderParameters( trust, targetConstraints );
-            params.setRevocationEnabled( false );
-            params.addCertStore( store );
-            params.setDate( new Date() );
-            PKIXCertPathBuilderResult result;
-            try {
-                result = (PKIXCertPathBuilderResult) cpb.build( params );
-            } catch ( CertPathBuilderException e ) {
-                e.printStackTrace();
-                System.out.println( "Error: " + e.getCause() );
-                content.close();
-                zip.delete();
-                fs.delete();
-                return incomplete;
-            }
-
             Vector<CertificatePropertiesForm> caImports = new Vector<CertificatePropertiesForm>();
-
+            PKIXCertPathBuilderResult result = CertificateUtil.getCertificateChain( headcert, certs, cacerts );
+            
+            
             X509Certificate root = result.getTrustAnchor().getTrustedCert();
             CertificatePropertiesForm rootCertForm = new CertificatePropertiesForm();
             rootCertForm.setCertificateProperties( root );
