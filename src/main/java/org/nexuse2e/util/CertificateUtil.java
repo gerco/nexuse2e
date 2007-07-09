@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.math.BigInteger;
-import java.security.InvalidAlgorithmParameterException;
 import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -80,7 +79,6 @@ import org.codehaus.xfire.util.Base64;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.pojo.CertificatePojo;
-import org.xioma.nexuse2e.x509.TempCertUtils;
 
 /**
  * Utility class to work with certificates (mostly instances of <code>X509Certificate</code>).
