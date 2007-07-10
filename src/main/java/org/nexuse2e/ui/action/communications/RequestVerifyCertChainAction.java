@@ -19,30 +19,22 @@
  */
 package org.nexuse2e.ui.action.communications;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.math.BigInteger;
 import java.security.cert.Certificate;
 import java.security.cert.PKIXCertPathBuilderResult;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.vfs.FileContent;
-import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSystemException;
-import org.apache.commons.vfs.FileSystemManager;
-import org.apache.commons.vfs.FileType;
-import org.apache.commons.vfs.VFS;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -75,71 +67,73 @@ public class RequestVerifyCertChainAction extends NexusE2EAction {
             HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
-        System.out.println( "execute..." );
         ActionForward complete = actionMapping.findForward( "complete" );
         ActionForward incomplete = actionMapping.findForward( "incomplete" );
 
         ProtectedFileAccessForm form = (ProtectedFileAccessForm) actionForm;
+        ByteArrayInputStream bais = new ByteArrayInputStream(form.getCertficate().getFileData());
+        BigInteger requestModulus;
+        BigInteger requestExponent;
+        List<X509Certificate> certs;
+        try {
+            ZipInputStream zip = new ZipInputStream(bais);
+            
 
-        FileSystemManager fsManager = VFS.getManager();
 
-        //        FileObject fs = fsManager.createVirtualFileSystem( "ram:///certstore.zip" );
-        FileObject fs = fsManager.resolveFile( "ram:///certstore.zip" );
+            List<CertificatePojo> requestPojos = Engine.getInstance().getActiveConfigurationAccessService()
+                    .getCertificates( Constants.CERTIFICATE_TYPE_REQUEST, null );
+            if ( requestPojos == null || requestPojos.size() == 0 ) {
 
-        //        fs.createFile();
+                LOG.debug( "no request found in database!" );
+                return incomplete;
 
-        FileContent content = fs.getContent();
-        OutputStream os = content.getOutputStream();
-        System.out.println( ":::::::::::::::::::::::::::Filename: " + form.getCertficate().getFileName() );
-        System.out.println( ":::::::::::::::::::::::::::Filesize: " + form.getCertficate().getFileSize() );
-        os.write( form.getCertficate().getFileData() );
+            }
+            if ( requestPojos.size() > 1 ) {
+                LOG.warn( "there is more than one request in database, using first one!" );
+            }
+            CertificatePojo requestPojo = requestPojos.get( 0 );
 
-        os.flush();
-        os.close();
-        fs.close();
+            PKCS10CertificationRequest pkcs10req = CertificateUtil.getPKCS10Request( requestPojo );
 
-        FileObject zip = fsManager.resolveFile( "zip:ram:///certstore.zip" );
-        //        FileObject zip = fs;
+            RSAPublicKey pub = (RSAPublicKey) pkcs10req.getPublicKey();
 
-        //        for ( int i = 0; i < zip.getChildren().length; i++ ) {
-        //
-        //            FileObject file = zip.getChildren()[i];
-        //
-        //            InputStream fis = file.getContent().getInputStream();
-        //
-        //            fis.close();
-        //
-        //        }
+            requestModulus = pub.getModulus();
+            requestExponent = pub.getPublicExponent();
 
-        List<CertificatePojo> requestPojos = Engine.getInstance().getActiveConfigurationAccessService()
-                .getCertificates( Constants.CERTIFICATE_TYPE_REQUEST, null );
-        if ( requestPojos == null || requestPojos.size() == 0 ) {
-
-            LOG.debug( "no request found in database!" );
+            certs = new ArrayList<X509Certificate>();
+//        System.out.println( "FileCount: " + zip.getChildren().length );
+            ZipEntry entry = null;
+            while((entry = zip.getNextEntry()) != null) {
+                
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                
+                byte[] buf = new byte[1024];
+                int len;
+                while((len = zip.read(buf)) > 0) {
+                    baos.write(buf, 0, len);
+                }
+                
+                byte [] data = baos.toByteArray();
+                zip.closeEntry();
+                
+//            List<X509Certificate> tempcerts = getCertificates( file );
+//          certs.addAll( tempcerts );
+                X509Certificate  cert= CertificateUtil.getX509Certificate( data );
+                if(cert != null) {
+                    certs.add( cert );
+                }
+            }
+        } catch ( Exception e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
             return incomplete;
-
         }
-        if ( requestPojos.size() > 1 ) {
-            LOG.warn( "there is more than one request in database, using first one!" );
-        }
-        CertificatePojo requestPojo = requestPojos.get( 0 );
-
-        PKCS10CertificationRequest pkcs10req = CertificateUtil.getPKCS10Request( requestPojo );
-
-        RSAPublicKey pub = (RSAPublicKey) pkcs10req.getPublicKey();
-
-        BigInteger requestModulus = pub.getModulus();
-        BigInteger requestExponent = pub.getPublicExponent();
-
-        List<X509Certificate> certs = new ArrayList<X509Certificate>();
-        System.out.println( "FileCount: " + zip.getChildren().length );
-        for ( int i = 0; i < zip.getChildren().length; i++ ) {
-
-            FileObject file = zip.getChildren()[i];
-            System.out.println( "file: " + file );
-            List<X509Certificate> tempcerts = getCertificates( file );
-            file.close();
-            certs.addAll( tempcerts );
+        if( certs.size() == 0) { // no zipfile?
+            X509Certificate cert = CertificateUtil.getX509Certificate( form.getCertficate().getFileData());
+            if(cert != null) {
+                certs.add( cert );
+            }
+            
         }
 
         if ( certs.size() > 0 ) {
@@ -170,9 +164,9 @@ public class RequestVerifyCertChainAction extends NexusE2EAction {
 
             if ( headcert == null ) {
                 LOG.error( "no matching headcertificate found for request!" );
-                content.close();
-                zip.delete();
-                fs.delete();
+//                content.close();
+//                zip.delete();
+//                fs.delete();
                 return incomplete;
             }
 
@@ -216,102 +210,102 @@ public class RequestVerifyCertChainAction extends NexusE2EAction {
 
         }
         System.out.println( "done, deleting vfs" );
-        content.close();
-        System.out.println( "zip: " + zip.isContentOpen() );
-        System.out.println( "delete: " + zip.delete() );
-        fs.delete();
+//        content.close();
+//        System.out.println( "zip: " + zip.isContentOpen() );
+//        System.out.println( "delete: " + zip.delete() );
+//        fs.delete();
 
         return complete;
 
     }
 
-    /**
-     * @param file
-     * @return
-     */
-    private List<X509Certificate> getCertificates( FileObject file ) {
+//    /**
+//     * @param file
+//     * @return
+//     */
+//    private List<X509Certificate> getCertificates( FileObject file ) {
+//
+//        List<X509Certificate> certs = new ArrayList<X509Certificate>();
+//        try {
+//            if ( file.getType().equals( FileType.FOLDER ) ) {
+//                for ( int i = 0; i < file.getChildren().length; i++ ) {
+//
+//                    FileObject tempfile = file.getChildren()[i];
+//                    List<X509Certificate> tempcerts = getCertificates( tempfile );
+//                    certs.addAll( tempcerts );
+//                    tempfile.close();
+//                }
+//
+//                return certs;
+//            }
+//        } catch ( FileSystemException e2 ) {
+//            LOG.error( "Error while accessing fileType: " + e2 );
+//        }
+//
+//        byte[] bytes = null;
+//        try {
+//            InputStream fis = file.getContent().getInputStream();
+//            bytes = getCertificateBytes( fis );
+//
+//            fis.read( bytes );
+//            fis.close();
+//        } catch ( Exception e ) {
+//            e.printStackTrace();
+//            return certs;
+//        }
+//
+//        try {
+//            Collection tempCerts = CertificateUtil.getX509Certificates( bytes );
+//            for ( Object object : tempCerts ) {
+//                if ( object instanceof X509Certificate ) {
+//                    LOG.debug( "adding certificate: " + ( (X509Certificate) object ).toString() );
+//                    certs.add( (X509Certificate) object );
+//                }
+//            }
+//        } catch ( Exception e ) {
+//            LOG.warn( "unable to open file " + file + " using getCertificates: " + e );
+//            try {
+//                X509Certificate cert = CertificateUtil.getX509Certificate( bytes );
+//                certs.add( cert );
+//            } catch ( IllegalArgumentException e1 ) {
+//                LOG.warn( "file: " + file + " is no valid certificate" );
+//            }
+//
+//        }
+//        return certs;
+//    }
 
-        List<X509Certificate> certs = new ArrayList<X509Certificate>();
-        try {
-            if ( file.getType().equals( FileType.FOLDER ) ) {
-                for ( int i = 0; i < file.getChildren().length; i++ ) {
-
-                    FileObject tempfile = file.getChildren()[i];
-                    List<X509Certificate> tempcerts = getCertificates( tempfile );
-                    certs.addAll( tempcerts );
-                    tempfile.close();
-                }
-
-                return certs;
-            }
-        } catch ( FileSystemException e2 ) {
-            LOG.error( "Error while accessing fileType: " + e2 );
-        }
-
-        byte[] bytes = null;
-        try {
-            InputStream fis = file.getContent().getInputStream();
-            bytes = getCertificateBytes( fis );
-
-            fis.read( bytes );
-            fis.close();
-        } catch ( Exception e ) {
-            e.printStackTrace();
-            return certs;
-        }
-
-        try {
-            Collection tempCerts = CertificateUtil.getX509Certificates( bytes );
-            for ( Object object : tempCerts ) {
-                if ( object instanceof X509Certificate ) {
-                    LOG.debug( "adding certificate: " + ( (X509Certificate) object ).toString() );
-                    certs.add( (X509Certificate) object );
-                }
-            }
-        } catch ( Exception e ) {
-            LOG.warn( "unable to open file " + file + " using getCertificates: " + e );
-            try {
-                X509Certificate cert = CertificateUtil.getX509Certificate( bytes );
-                certs.add( cert );
-            } catch ( IllegalArgumentException e1 ) {
-                LOG.warn( "file: " + file + " is no valid certificate" );
-            }
-
-        }
-        return certs;
-    }
-
-    /**
-     * TODO: file size testing
-     * 
-     * @param is
-     * @return
-     */
-    private byte[] getCertificateBytes( InputStream is ) throws IllegalArgumentException {
-
-        if ( is == null ) {
-            return null;
-        }
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-            byte[] imageData = new byte[BUFFERSIZE];
-            int size;
-            while ( ( size = is.read( imageData, 0, BUFFERSIZE ) ) != -1 ) {
-                baos.write( imageData, 0, size );
-                if ( size > MAX_CERTFILE_SIZE ) {
-                    throw new IllegalArgumentException( "File seems to be larger than MAX_CERTFILE_SIZE:"
-                            + MAX_CERTFILE_SIZE );
-                }
-            }
-            return baos.toByteArray();
-
-        } catch ( FileNotFoundException e ) {
-            e.printStackTrace();
-        } catch ( IOException e ) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+//    /**
+//     * TODO: file size testing
+//     * 
+//     * @param is
+//     * @return
+//     */
+//    private byte[] getCertificateBytes( InputStream is ) throws IllegalArgumentException {
+//
+//        if ( is == null ) {
+//            return null;
+//        }
+//        try {
+//            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//
+//            byte[] imageData = new byte[BUFFERSIZE];
+//            int size;
+//            while ( ( size = is.read( imageData, 0, BUFFERSIZE ) ) != -1 ) {
+//                baos.write( imageData, 0, size );
+//                if ( size > MAX_CERTFILE_SIZE ) {
+//                    throw new IllegalArgumentException( "File seems to be larger than MAX_CERTFILE_SIZE:"
+//                            + MAX_CERTFILE_SIZE );
+//                }
+//            }
+//            return baos.toByteArray();
+//
+//        } catch ( FileNotFoundException e ) {
+//            e.printStackTrace();
+//        } catch ( IOException e ) {
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
 
 }
