@@ -19,6 +19,7 @@
  */
 package org.nexuse2e.ui.action.communications;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -62,15 +63,22 @@ public class CACertSavePWD extends NexusE2EAction {
             List<CertificatePojo> certificates = Engine.getInstance().getActiveConfigurationAccessService().getCertificates(
                     Constants.CERTIFICATE_TYPE_CACERT_METADATA, null );
 
-            if ( certificates == null || certificates.size() > 1 ) {
-                return error;
-            }
-
+            
             String pwd = form.getPassword();
             String vpwd = form.getVerifyPwd();
             if ( pwd.equals( vpwd ) ) {
                 String encPwd = EncryptionUtil.encryptString( pwd );
-                CertificatePojo certificate = certificates.get( 0 );
+                CertificatePojo certificate = null;
+                if(certificates != null && certificates.size() > 0) {
+                    certificate = certificates.get( 0 );
+                } else {
+                    certificate = new CertificatePojo();
+                    certificate.setType( Constants.CERTIFICATE_TYPE_CACERT_METADATA );
+                    certificate.setCreatedDate( new Date() );
+                    certificate.setModifiedDate( new Date() );
+                    certificate.setName( "CaKeyStoreData" );
+                }
+                
                 certificate.setPassword( encPwd );
                 certificate.setBinaryData( new byte[0] );
                 Engine.getInstance().getActiveConfigurationAccessService().updateCertificate( certificate );
