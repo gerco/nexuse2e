@@ -106,7 +106,7 @@ public class RequestImportCertChainAction extends NexusE2EAction {
                 }
 
                 KeyPair kp = CertificateUtil.getKeyPair( privKeyPojo );
-                keyStore.setKeyEntry( CertificateUtil.DEFAULT_CERT_ALIAS, kp.getPrivate(), EncryptionUtil
+                keyStore.setKeyEntry( CertificateUtil.createCertificateId( (X509Certificate)certs[0] ), kp.getPrivate(), EncryptionUtil
                         .decryptString( privKeyPojo.getPassword() ).toCharArray(), certs );
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 keyStore.store( baos, EncryptionUtil.decryptString( privKeyPojo.getPassword() ).toCharArray() );

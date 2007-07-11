@@ -62,7 +62,7 @@ public class Constants extends org.nexuse2e.Constants {
     public static final String DEFAULT_CERT_TYPE                   = "X.509";
     public static final String DEFAULT_KEY_STORE                   = "PKCS12";
     public static final String DEFAULT_JCE_PROVIDER                = "BC";
-    public static final String DEFAULT_CERT_ALIAS                  = "nexuscert";
+
 
     /**
      * Used to store incomplete Certificate chain parts in rcp client

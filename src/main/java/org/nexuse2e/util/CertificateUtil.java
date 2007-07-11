@@ -97,7 +97,7 @@ public class CertificateUtil {
     public static final String DEFAULT_KEY_STORE                   = "PKCS12";
     public static final String DEFAULT_JCE_PROVIDER                = "BC";
     private static final int   PEM_LINE_LENGTH                     = 64;
-    public static final String DEFAULT_CERT_ALIAS                  = "nexuscert";
+
 
     /**
      * @param keyStore
@@ -929,6 +929,32 @@ public class CertificateUtil {
         return requestPojo;
     }
 
+    /**
+     * @param certificate
+     * @param type
+     * @return
+     */
+    public static CertificatePojo createPojoFromX509(X509Certificate certificate, int type) {
+        
+        CertificatePojo certPojo = new CertificatePojo();
+
+        try {
+            certPojo.setBinaryData( certificate.getEncoded() );
+            certPojo.setType( type );
+            certPojo.setName( createCertificateId( certificate ) );
+            certPojo.setCreatedDate( new Date() );
+            certPojo.setModifiedDate( new Date() );
+            return certPojo;
+        } catch ( CertificateEncodingException e ) {
+            LOG.error( "error while creating certificate pojo: "+e );
+            
+        }
+     
+        return null;
+        
+    }
+    
+    
     public static PKIXCertPathBuilderResult getCertificateChain( X509Certificate head, List<X509Certificate> certs,
             List<X509Certificate> trustedCerts ) {
 

@@ -40,6 +40,7 @@ import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.ProtectedFileAccessForm;
+import org.nexuse2e.util.EncryptionUtil;
 
 /**
  * @author guido.esch
@@ -96,12 +97,28 @@ public class CACertSaveKeyStoreAction extends NexusE2EAction {
                     certPojo.setCreatedDate( new Date() );
                     certPojo.setModifiedDate( new Date() );
                     LOG.debug( "importing certificate: " + certPojo.getName() );
-//                    Engine.getInstance().getActiveConfigurationAccessService().updateCertificate( certPojo );
+
                     certs.add( certPojo );
                 } else {
                     LOG.info( "Alias: " + alias + " already imported" );
                 }
             }
+            
+            // setting password pojo
+            
+            List<CertificatePojo> metaPojos = Engine.getInstance().getActiveConfigurationAccessService().getCertificates( Constants.CERTIFICATE_TYPE_CACERT_METADATA, null );
+            
+            if ( metaPojos == null || metaPojos.size() == 0 ) {
+                CertificatePojo certPojo = new CertificatePojo();
+                certPojo.setType( Constants.CERTIFICATE_TYPE_CA );
+                certPojo.setName( "CaKeyStoreData" );
+                certPojo.setPassword( EncryptionUtil.encryptString( pwd ) );
+                certPojo.setCreatedDate( new Date() );
+                certPojo.setModifiedDate( new Date() );
+                
+                certs.add( certPojo );
+            }
+            
             Engine.getInstance().getActiveConfigurationAccessService().updateCertificates( certs );
 
         } catch ( Exception e ) {
