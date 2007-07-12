@@ -51,7 +51,7 @@ import org.nexuse2e.transport.TransportReceiver;
  */
 public class Pop3Receiver extends AbstractService implements ReceiverAware, Runnable {
 
-    private static Logger      LOG                      = Logger.getLogger( SmtpSender.class );
+    private static Logger      LOG                      = Logger.getLogger( Pop3Receiver.class );
 
     public static final String HOST_PARAM_NAME          = "host";
     public static final String PORT_PARAM_NAME          = "port";

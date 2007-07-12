@@ -38,9 +38,9 @@ public interface SenderAware {
 
     /**
      * Sets the <code>TransportSender</code>.
-     * @param transportReceiver the Transport Sender to set
+     * @param transportSender the Transport Sender to set
      */
-    public void setTransportSender( TransportSender transportReceiver );
+    public void setTransportSender( TransportSender transportSender );
 
     /**
      * Sends a message.
