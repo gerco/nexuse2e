@@ -189,7 +189,7 @@
 					<tr>
 						<td class="NEXUSValue">${parameter.label}</td>
 						<td class="NEXUSValue"><nexus:select name="<%= key %>">
-							<nexus:options collection="collection" value="${parameter.value}"
+							<nexus:options collection="service_collection" value="${parameter.value}"
 								property="name" labelProperty="name" />
 						</nexus:select></td>
 						<td class="NEXUSValue">${parameter.parameterDescriptor.description}</td>

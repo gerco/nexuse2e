@@ -74,6 +74,9 @@ public class NotifierAddAction extends NexusE2EAction {
         List<ComponentPojo> components = Engine.getInstance().getActiveConfigurationAccessService().getComponents(
                 ComponentType.LOGGER, Constants.COMPONENTCOMPARATOR );
 
+        List<ComponentPojo> services = Engine.getInstance().getActiveConfigurationAccessService().getComponents(
+                ComponentType.SERVICE, Constants.COMPONENTCOMPARATOR );
+
         if ( components == null || components.size() == 0 ) {
             LOG.trace( "no logger components found" );
             ActionMessage errorMessage = new ActionMessage( "generic.error", "No logger components configured" );
@@ -103,7 +106,7 @@ public class NotifierAddAction extends NexusE2EAction {
         }
 
         request.setAttribute( ATTRIBUTE_COLLECTION, components );
-        ;
+        request.setAttribute( ATTRIBUTE_SERVICE_COLLECTION, Engine.getInstance().getActiveConfigurationAccessService().getServices( ) );
 
         return success;
     } // executeNexusE2EAction

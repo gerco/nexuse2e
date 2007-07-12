@@ -99,6 +99,7 @@ public class ServiceAddAction extends NexusE2EAction {
         }
         request.setAttribute( REFRESH_TREE, "true" );
         request.setAttribute( ATTRIBUTE_COLLECTION, components );
+        request.setAttribute( ATTRIBUTE_SERVICE_COLLECTION, Engine.getInstance().getActiveConfigurationAccessService().getServices( ) );
 
         return success;
     }

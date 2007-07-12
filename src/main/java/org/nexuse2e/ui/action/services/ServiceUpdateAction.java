@@ -68,6 +68,7 @@ public class ServiceUpdateAction extends NexusE2EAction {
             return error;
         }
         request.setAttribute( ATTRIBUTE_COLLECTION, components );
+        request.setAttribute( ATTRIBUTE_SERVICE_COLLECTION, Engine.getInstance().getActiveConfigurationAccessService().getServices( ) );
 
         ServicePojo originalService = Engine.getInstance().getActiveConfigurationAccessService().getServicePojoByNxServiceId(
                 form.getNxServiceId() );

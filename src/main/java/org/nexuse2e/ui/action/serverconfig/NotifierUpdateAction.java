@@ -73,6 +73,7 @@ public class NotifierUpdateAction extends NexusE2EAction {
             return error;
         }
         request.setAttribute( ATTRIBUTE_COLLECTION, components );
+        request.setAttribute( ATTRIBUTE_SERVICE_COLLECTION, Engine.getInstance().getActiveConfigurationAccessService().getServices( ) );
 
         LoggerPojo originalLogger = Engine.getInstance().getActiveConfigurationAccessService().getLoggerByNxLoggerId(
                 form.getNxLoggerId() );

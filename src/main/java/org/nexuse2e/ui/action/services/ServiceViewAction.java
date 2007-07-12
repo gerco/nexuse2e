@@ -61,7 +61,7 @@ public class ServiceViewAction extends NexusE2EAction {
         serviceForm.createParameterMapFromPojos();
         serviceForm.setServiceInstance( service );
         
-        request.setAttribute( ATTRIBUTE_COLLECTION, Engine.getInstance().getActiveConfigurationAccessService().getServices( ) );
+        request.setAttribute( ATTRIBUTE_SERVICE_COLLECTION, Engine.getInstance().getActiveConfigurationAccessService().getServices( ) );
 
         return success;
     }

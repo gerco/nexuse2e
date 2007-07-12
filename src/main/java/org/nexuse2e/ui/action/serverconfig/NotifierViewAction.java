@@ -118,7 +118,7 @@ public class NotifierViewAction extends NexusE2EAction {
         List<ComponentPojo> components = Engine.getInstance().getActiveConfigurationAccessService().getComponents(
                 ComponentType.LOGGER, Constants.COMPONENTCOMPARATOR );
         request.setAttribute( ATTRIBUTE_COLLECTION, components );
-        ;
+        request.setAttribute( ATTRIBUTE_SERVICE_COLLECTION, Engine.getInstance().getActiveConfigurationAccessService().getServices( ) );
 
         loggerForm.getLogFilterValues().clear();
         loggerForm.setLogFilterValues( tempFilterValues );

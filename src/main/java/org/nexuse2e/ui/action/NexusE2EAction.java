@@ -45,33 +45,35 @@ import org.nexuse2e.ui.security.AccessController;
  */
 public abstract class NexusE2EAction extends Action {
 
-    protected static Logger       LOG                    = Logger.getLogger( NexusE2EAction.class );
+    protected static Logger       LOG                          = Logger.getLogger( NexusE2EAction.class );
 
     // Action forwards
-    public final static String    ACTION_FORWARD_SUCCESS = "success";
-    public final static String    ACTION_FORWARD_FAILURE = "error";
-    public final static String    ACTION_FORWARD_LOGIN   = "login";
-    public final static String    ACTION_FORWARD_ACCESS_DENIED  = "accessDenied";
+    public final static String    ACTION_FORWARD_SUCCESS       = "success";
+    public final static String    ACTION_FORWARD_FAILURE       = "error";
+    public final static String    ACTION_FORWARD_LOGIN         = "login";
+    public final static String    ACTION_FORWARD_ACCESS_DENIED = "accessDenied";
 
     // Attributes for JSPs
-    public static final String    ATTRIBUTE_TREE_NODES   = "treeNodes";
-    public static final String    ATTRIBUTE_WEB_APP_PATH = "webAppPath";
-    public static final String    ATTRIBUTE_USER         = "nxUser";
+    public static final String    ATTRIBUTE_TREE_NODES         = "treeNodes";
+    public static final String    ATTRIBUTE_WEB_APP_PATH       = "webAppPath";
+    public static final String    ATTRIBUTE_USER               = "nxUser";
 
-    public static final String    ATTRIBUTE_COLLECTION   = "collection";
+    public static final String    ATTRIBUTE_COLLECTION         = "collection";
 
-    public static final String    REFRESH_TREE           = "refreshTree";
+    public static final String    ATTRIBUTE_SERVICE_COLLECTION = "service_collection";
 
-    public static final String    MESSAGES               = "nexus_messages";
+    public static final String    REFRESH_TREE                 = "refreshTree";
 
-    public static final String    NEXUSE2E_VERSION       = "NEXUSe2e_version";
-    public static final String    JAVA_VERSION           = "java_version";
-    public static final String    JAVA_HOME              = "java_home";
-    public static final String    JAVA_CLASSPATH         = "java_classpath";
+    public static final String    MESSAGES                     = "nexus_messages";
 
-    protected static final String SUBMIT_BUTTON          = "Submit";
+    public static final String    NEXUSE2E_VERSION             = "NEXUSe2e_version";
+    public static final String    JAVA_VERSION                 = "java_version";
+    public static final String    JAVA_HOME                    = "java_home";
+    public static final String    JAVA_CLASSPATH               = "java_classpath";
 
-    public static final String    MSG_KEY_GENERIC_ERROR  = "generic.error";
+    protected static final String SUBMIT_BUTTON                = "Submit";
+
+    public static final String    MSG_KEY_GENERIC_ERROR        = "generic.error";
 
     /* (non-Javadoc)
      * @see org.apache.struts.action.Action#execute(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
@@ -106,8 +108,7 @@ public abstract class NexusE2EAction extends Action {
             if ( AccessController.hasAccess( user, request ) ) {
                 // execute action
                 actionForward = executeNexusE2EAction( actionMapping, actionForm, request, response, errors, messages );
-            }
-            else {
+            } else {
                 errors.add( ActionMessages.GLOBAL_MESSAGE, new ActionMessage( "access.denied" ) );
                 actionForward = actionMapping.findForward( ACTION_FORWARD_ACCESS_DENIED );
             }
