@@ -399,6 +399,12 @@
       </dependency>
     -->
     <dependency>
+      <groupId>org.apache.incubator</groupId>
+      <artifactId>ftpserver</artifactId>
+      <version>0.1</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>org.apache.struts</groupId>
       <artifactId>struts-core</artifactId>
       <version>1.3.5</version>
