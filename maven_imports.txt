@@ -14,8 +14,8 @@
 # the file name specified by the "-Dfile" parameter, rename the according file in the "lib" folder.
 #
 # 3. Afterwards execute the following Maven commands (in the project root).
-mvn install:install-file -DgroupId=bouncycastle -DartifactId=bcprov-jdk15 -Dversion=135 -Dpackaging=jar -Dfile=lib/bcprov-jdk15-135.jar
-mvn install:install-file -DgroupId=bouncycastle -DartifactId=bcmail-jdk15 -Dversion=135 -Dpackaging=jar -Dfile=lib/bcmail-jdk15-135.jar
+mvn install:install-file -DgroupId=bouncycastle -DartifactId=bcprov-jdk15 -Dversion=137 -Dpackaging=jar -Dfile=lib/bcprov-jdk15-137.jar
+mvn install:install-file -DgroupId=bouncycastle -DartifactId=bcmail-jdk15 -Dversion=137 -Dpackaging=jar -Dfile=lib/bcmail-jdk15-137.jar
 mvn install:install-file -DgroupId=json.org -DartifactId=json -Dversion=1.0 -Dpackaging=jar -Dfile=lib/json-1.0.jar
 mvn install:install-file -DgroupId=javamail -DartifactId=javamail -Dversion=1.4 -Dpackaging=jar -Dfile=lib/mail.jar
 mvn install:install-file -DgroupId=javax.transaction -DartifactId=jta -Dversion=1.0.1B -Dpackaging=jar -Dfile=lib/jta-1_0_1B-classes.zip
