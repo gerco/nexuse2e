@@ -111,7 +111,7 @@ public class ListParameter {
      */
     public String getSelectedValue() {
 
-        if ( selectedIndex > list.size() || selectedIndex < 0 ) {
+        if ( selectedIndex >= list.size() || selectedIndex < 0 ) {
             return null;
         }
         return list.get( selectedIndex ).value;
