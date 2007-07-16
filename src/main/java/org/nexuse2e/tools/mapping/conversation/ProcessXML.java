@@ -156,7 +156,7 @@ public class ProcessXML {
             String contentString = new String( dataArray );
             ProcessXML process = new ProcessXML();
             ByteArrayInputStream bias = new ByteArrayInputStream(contentString.getBytes());
-            System.out.println( process.processXML( mfe, bias ) );
+            System.out.println( process.process( mfe, bias ) );
         } catch ( Exception e ) {
             e.printStackTrace();
         }
@@ -167,7 +167,7 @@ public class ProcessXML {
      * @param content
      * @return result
      */
-    public String processXML( CSVMappingFileEntry mfe, InputStream content ) {
+    public String process( CSVMappingFileEntry mfe, InputStream content ) {
 
         File testFile = new File( mfe.getCsvmappings() );
         if ( !testFile.exists() ) {

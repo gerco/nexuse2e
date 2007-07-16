@@ -200,6 +200,15 @@ public class XML2ParameterMapPipelet extends AbstractPipelet {
 
     }
 
+    /* (non-Javadoc)
+     * @see org.nexuse2e.messaging.AbstractPipelet#teardown()
+     */
+    @Override
+    public void teardown() {
+
+        super.teardown();
+    }
+
     public static void main( String args[] ) {
 
         if ( args.length != 1 ) {

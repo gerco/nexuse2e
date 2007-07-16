@@ -35,6 +35,7 @@ import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.MessagePayloadPojo;
 import org.nexuse2e.tools.mapping.CSVMappingFileEntry;
+import org.nexuse2e.tools.mapping.conversation.ProcessCSV;
 import org.nexuse2e.tools.mapping.conversation.ProcessXML;
 
 /**
@@ -48,10 +49,12 @@ public class FlatFileMappingPipelet extends AbstractPipelet {
     public static final String XML_BLOCK_FILE  = "xmlBlockFile";
     public static final String FLAT_BLOCK_FILE = "flatBlockFile";
     public static final String MAPPING_FILE    = "mappingFile";
+    public static final String XML_INPUT       = "xmlInput";
 
     private String             xmlBlockFile    = null;
     private String             flatBlockFile   = null;
     private String             mappingFile     = null;
+    private boolean            isXMLInput      = true;
 
     public FlatFileMappingPipelet() {
 
@@ -61,6 +64,8 @@ public class FlatFileMappingPipelet extends AbstractPipelet {
                 "Flat File Block Definition File", "Path to flat file block definition file.", "" ) );
         parameterMap.put( MAPPING_FILE, new ParameterDescriptor( ParameterType.STRING, "Mapping File",
                 "Path to mapping file.", "" ) );
+        parameterMap.put( XML_INPUT, new ParameterDescriptor( ParameterType.BOOLEAN, "XML Input",
+                "Input is in XML format.", Boolean.TRUE ) );
     }
 
     /* (non-Javadoc)
@@ -116,6 +121,11 @@ public class FlatFileMappingPipelet extends AbstractPipelet {
             return;
         }
 
+        Boolean xmlInputValue = getParameter( XML_INPUT );
+        if ( xmlInputValue != null ) {
+            isXMLInput = xmlInputValue.booleanValue();
+        }
+        
         LOG.trace( "xmlBlockFile : " + xmlBlockFile );
         LOG.trace( "flatBlockFile: " + flatBlockFile );
         LOG.trace( "mappingFile  : " + mappingFile );
@@ -130,6 +140,7 @@ public class FlatFileMappingPipelet extends AbstractPipelet {
     public MessageContext processMessage( MessageContext messageContext ) throws IllegalArgumentException,
             IllegalStateException, NexusException {
 
+        String result = null;
         CSVMappingFileEntry mfe = new CSVMappingFileEntry();
         mfe.setCsvmappings( flatBlockFile );
         mfe.setXmlblocks( xmlBlockFile );
@@ -141,9 +152,15 @@ public class FlatFileMappingPipelet extends AbstractPipelet {
             for ( Iterator iter = payloads.iterator(); iter.hasNext(); ) {
                 MessagePayloadPojo messagePayloadPojo = (MessagePayloadPojo) iter.next();
                 String contentString = new String( messagePayloadPojo.getPayloadData() );
-                ProcessXML processXML = new ProcessXML();
-                ByteArrayInputStream bias = new ByteArrayInputStream(contentString.getBytes());
-                String result = processXML.processXML( mfe, bias );
+                ByteArrayInputStream bias = new ByteArrayInputStream( contentString.getBytes() );
+
+                if ( isXMLInput ) {
+                    ProcessXML processXML = new ProcessXML();
+                    result = processXML.process( mfe, bias );
+                } else {
+                    ProcessCSV processCSV = new ProcessCSV();
+                    result = processCSV.process( mfe, bias );
+                }
 
                 if ( LOG.isTraceEnabled() ) {
                     LOG.trace( "...................." );
@@ -157,6 +174,16 @@ public class FlatFileMappingPipelet extends AbstractPipelet {
             e.printStackTrace();
             throw new NexusException( "Error mapping payload: " + e );
         }
-        return null;
+        return messageContext;
     }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.messaging.AbstractPipelet#teardown()
+     */
+    @Override
+    public void teardown() {
+
+        super.teardown();
+    }
+
 } // FlatFileMappingPipelet

@@ -149,8 +149,8 @@ public class ProcessCSV {
 
         try {
             ProcessCSV process = new ProcessCSV();
-            
-            FileInputStream fis = new FileInputStream(new File( contentPath ));
+
+            FileInputStream fis = new FileInputStream( new File( contentPath ) );
             String out = process.process( mfe, fis );
             fis.close();
             System.out.println( "...................." );
@@ -161,8 +161,6 @@ public class ProcessCSV {
         }
     }
 
-    
-    
     /**
      * @param mfe
      * @param content
@@ -176,7 +174,7 @@ public class ProcessCSV {
             //                    new LogMessage( LogMessage.ERROR,
             //                            "Processing", "Error", this, "process", 149, "mappingfile: " + testFile //$NON-NLS-1$ //$NON-NLS-2$
             //                                    + " doesn't exist, processing canceled!!", null ) ); //$NON-NLS-1$
-            System.out.println("mappingfile: " + testFile + " doesn't exist, processing canceled!!");
+            System.out.println( "mappingfile: " + testFile + " doesn't exist, processing canceled!!" );
             return null;
         }
         testFile = new File( mfe.getMapping() );
@@ -185,7 +183,7 @@ public class ProcessCSV {
             //                    new LogMessage( LogMessage.ERROR,
             //                            "Processing", "Error", this, "process", 150, "mappingfile: " + testFile //$NON-NLS-1$ //$NON-NLS-2$
             //                                    + " doesn't exist, processing canceled!!", null ) ); //$NON-NLS-1$
-            System.out.println("mappingfile: " + testFile + " doesn't exist, processing canceled!!");
+            System.out.println( "mappingfile: " + testFile + " doesn't exist, processing canceled!!" );
             return null;
         }
         testFile = new File( mfe.getXmlblocks() );
@@ -194,7 +192,7 @@ public class ProcessCSV {
             //                    new LogMessage( LogMessage.ERROR,
             //                            "Processing", "Error", this, "process", 151, "mappingfile: " + testFile //$NON-NLS-1$ //$NON-NLS-2$
             //                                    + " doesn't exist, processing canceled!!", null ) ); //$NON-NLS-1$
-            System.out.println("mappingfile: " + testFile + " doesn't exist, processing canceled!!");
+            System.out.println( "mappingfile: " + testFile + " doesn't exist, processing canceled!!" );
             return null;
         }
 
@@ -215,7 +213,7 @@ public class ProcessCSV {
             //            Plugin.getDefault().log(
             //                    new LogMessage( LogMessage.ERROR,
             //                            "Processing", "Error", this, "process", 152, "Can't process Message!", e ) ); //$NON-NLS-1$ //$NON-NLS-2$
-            System.out.println("Can't process Message: "+e.getLocalizedMessage());
+            System.out.println( "Can't process Message: " + e.getLocalizedMessage() );
             e.printStackTrace();
             return null;
         }
@@ -227,7 +225,7 @@ public class ProcessCSV {
         if ( rc == null ) {
             //            Plugin.getDefault().log( new LogMessage( LogMessage.ERROR, "Processing", "Error", this, "process", 153, //$NON-NLS-1$
             //                    "Can't process Message! (Mapping not Found!)", null ) ); //$NON-NLS-1$
-            System.out.println("Can't process Message! (Mapping not Found!)");
+            System.out.println( "Can't process Message! (Mapping not Found!)" );
             return null;
         }
         input.readCSV( this, content, rc );
@@ -245,7 +243,7 @@ public class ProcessCSV {
             //            Plugin.getDefault().log(
             //                    new LogMessage( LogMessage.ERROR,
             //                            "Processing", "Error", this, "process", 154, "Can't process Message!", e1 ) ); //$NON-NLS-1$ //$NON-NLS-2$
-            System.out.println("Can't process Message: "+e1.getLocalizedMessage());
+            System.out.println( "Can't process Message: " + e1.getLocalizedMessage() );
             e1.printStackTrace();
             return null;
         }
@@ -377,10 +375,9 @@ public class ProcessCSV {
                         System.out.println( "only file/static is supported!" ); //$NON-NLS-1$
                         value = "invalid"; //$NON-NLS-1$
                     }
-                    
+
                     // modify
-                    
-                    
+
                     if ( isAttr ) {
                         String attrString = entry.getNode().substring( entry.getNode().indexOf( '@' ) + 1,
                                 entry.getNode().length() );
@@ -399,7 +396,7 @@ public class ProcessCSV {
                     //                                    new LogMessage(
                     //                                            LogMessage.ERROR,
                     //                                            "Processing", e.getClass().getName(), this, "processLine", 157, e.getLocalizedMessage(), e ) ); //$NON-NLS-1$
-                    System.out.println("Error: "+e.getLocalizedMessage());
+                    System.out.println( "Error: " + e.getLocalizedMessage() );
                     e.printStackTrace();
                 }
             } else {
@@ -428,7 +425,10 @@ public class ProcessCSV {
                     //                                    new LogMessage(
                     //                                            LogMessage.ERROR,
                     //                                            "Processing", e.getClass().getName(), this, "processLine", 158, e.getLocalizedMessage(), e ) ); //$NON-NLS-1$
-                    System.out.println("Error: "+e.getLocalizedMessage());
+                    System.out.println( "Error: " + e.getLocalizedMessage() );
+                } catch ( Exception e ) {
+                    System.out.println( "Error: " + e.getLocalizedMessage() );
+                    System.out.println( "Node: " + entry.getNode() );
                 }
             }
         }

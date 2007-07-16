@@ -274,6 +274,15 @@ public class XMLDataMappingPipelet extends AbstractPipelet {
         return mappingDefinitions;
     }
 
+    /* (non-Javadoc)
+     * @see org.nexuse2e.messaging.AbstractPipelet#teardown()
+     */
+    @Override
+    public void teardown() {
+
+        super.teardown();
+    }
+
     /**
      * @param args
      */

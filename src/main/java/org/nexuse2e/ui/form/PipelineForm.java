@@ -210,6 +210,12 @@ public class PipelineForm extends ActionForm {
     @Override
     public void reset( ActionMapping mapping, HttpServletRequest request ) {
 
+        for ( PipeletParamPojo pipeletParamPojo : parameters ) {
+            if ( pipeletParamPojo.getParameterDescriptor().getParameterType() == ParameterType.BOOLEAN ) {
+                pipeletParamPojo.setValue( null );
+            }
+        }
+        pipeletParamValues = new HashMap<String, String>();
     }
 
     /**
