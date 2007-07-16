@@ -48,6 +48,8 @@ import org.nexuse2e.pojo.ServicePojo;
 import org.nexuse2e.pojo.TRPPojo;
 import org.nexuse2e.pojo.UserPojo;
 import org.nexuse2e.service.SchedulingServiceImpl;
+import org.nexuse2e.service.ftp.FtpReceiverService;
+import org.nexuse2e.service.ftp.FtpSenderService;
 import org.nexuse2e.service.http.HttpReceiverService;
 import org.nexuse2e.service.http.HttpSenderService;
 import org.nexuse2e.service.mail.Pop3Receiver;
@@ -519,6 +521,10 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
                     .getValue(), "SmtpSender", SmtpSender.class.getName(), "The sender service for SMTP" );
             ComponentPojo pop3ReceiverComponent = new ComponentPojo( new Date(), new Date(), 1, ComponentType.SERVICE
                     .getValue(), "Pop3Receiver", Pop3Receiver.class.getName(), "The receiver service for POP3" );
+            ComponentPojo ftpSenderComponent = new ComponentPojo( new Date(), new Date(), 1, ComponentType.SERVICE
+                    .getValue(), "FtpSender", FtpSenderService.class.getName(), "The sender service for FTP" );
+            ComponentPojo ftpReceiverComponent = new ComponentPojo( new Date(), new Date(), 1, ComponentType.SERVICE
+                    .getValue(), "FtpReceiver", FtpReceiverService.class.getName(), "The receiver service for FTP" );
 
             List<ServiceParamPojo> serviceParams = null;
             ServiceParamPojo serviceParam = null;
@@ -568,13 +574,21 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             ServicePojo pop3ReceiverService = new ServicePojo( pop3ReceiverComponent, new Date(), new Date(), 1, 0,
                     "Pop3ReceiverService", "The default receiver service for POP3", new ArrayList<ServiceParamPojo>() );
             pop3ReceiverService.setAutostart( false );
-
+            
             ComponentPojo schedulingServiceComponent = new ComponentPojo( new Date(), new Date(), 1,
                     ComponentType.SERVICE.getValue(), "SchedulingService", SchedulingServiceImpl.class.getName(),
                     "The scheduling service" );
             ServicePojo schedulingService = new ServicePojo( schedulingServiceComponent, new Date(), new Date(), 1, 0,
                     "SchedulingService", "A service for schduling tasks", new ArrayList<ServiceParamPojo>() );
             schedulingService.setAutostart( true );
+
+            ServicePojo ftpReceiverService = new ServicePojo( ftpReceiverComponent, new Date(), new Date(), 1, 0,
+                    "FtpReceiverService", "The default receiver service for FTP", new ArrayList<ServiceParamPojo>() );
+            ftpReceiverService.setAutostart( false );
+
+            ServicePojo ftpSenderService = new ServicePojo( ftpSenderComponent, new Date(), new Date(), 1, 0,
+                    "FtpSenderService", "The default sender service for FTP", new ArrayList<ServiceParamPojo>() );
+            ftpSenderService.setAutostart( false );
 
             List<ParticipantPojo> httpParticipants = new ArrayList<ParticipantPojo>();
             Set<ActionPojo> httpActions = new HashSet<ActionPojo>();
@@ -602,6 +616,8 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             components.add( httpReceiverComponent );
             components.add( smtpSenderComponent );
             components.add( pop3ReceiverComponent );
+            components.add( ftpSenderComponent );
+            components.add( ftpReceiverComponent );
             components.add( dbLoggerComponentPojo );
             components.add( emailLoggerComponentPojo );
             components.add( schedulingServiceComponent );
@@ -621,6 +637,8 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             services.add( smtpSenderService );
             services.add( pop3ReceiverService );
             services.add( schedulingService );
+            services.add( ftpReceiverService );
+            services.add( ftpSenderService );
 
             /*
              * User configuration
