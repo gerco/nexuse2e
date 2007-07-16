@@ -29,10 +29,12 @@ import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.SecureRandom;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.CertPathBuilder;
 import java.security.cert.CertPathBuilderException;
 import java.security.cert.CertStore;
@@ -58,6 +60,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 
 import org.apache.log4j.Logger;
 import org.bouncycastle.asn1.DERBMPString;
@@ -961,7 +968,7 @@ public class CertificateUtil {
         BigInteger requestModulus = ( (RSAPublicKey) head.getPublicKey() ).getModulus();
         BigInteger requestExponent = ( (RSAPublicKey) head.getPublicKey() ).getPublicExponent();
 
-        List list = new ArrayList();
+        List<X509Certificate> list = new ArrayList<X509Certificate>();
         Set<TrustAnchor> trust = new HashSet<TrustAnchor>();
         for ( X509Certificate trustedCert : trustedCerts ) {
             trust.add( new TrustAnchor( trustedCert, null ) );
@@ -1080,7 +1087,7 @@ public class CertificateUtil {
            
             X509Principal subject = getPrincipalFromCertificate( head, true );
 
-            HashMap certHashMap = getX509CertificateHashMap( certificates );
+            HashMap<X509Principal, X509Certificate>  certHashMap = getX509CertificateHashMap( certificates );
 
             certHashMap.put( subject, head );
             ArrayList certsList = getCertChainDN( certHashMap, subject );
@@ -1148,5 +1155,53 @@ public class CertificateUtil {
 
         return certChain;
     } // getCertChainDN
+    
+    
+    /**
+     * Creates the <code>KeyManager</code>s for the given keystore and encryption password.
+     * @param keystore
+     * @param password
+     * @return
+     * @throws KeyStoreException
+     * @throws NoSuchAlgorithmException
+     * @throws UnrecoverableKeyException
+     */
+    public static KeyManager[] createKeyManagers( final KeyStore keystore, final String password )
+    throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
 
+        if ( keystore == null ) {
+            throw new IllegalArgumentException( "Keystore may not be null" );
+        }
+
+        KeyManager[] managers = new KeyManager[1];
+        managers[0] = new NexusKeyManager( keystore, password );
+        return managers;
+    }
+    
+    /**
+     * Creates the <code>TrustManager</code>s for the given trusted keystore.
+     * @param keystore The keystore.
+     * @return An array of <code>TrustManager</code> objects.
+     * @throws KeyStoreException
+     * @throws NoSuchAlgorithmException
+     */
+    public static TrustManager[] createTrustManagers( final KeyStore keystore )
+    throws KeyStoreException, NoSuchAlgorithmException {
+    
+        if ( keystore == null ) {
+            throw new IllegalArgumentException( "Keystore may not be null" );
+        }
+        LOG.debug( "Initializing trust manager" );
+        TrustManagerFactory tmfactory = TrustManagerFactory.getInstance( TrustManagerFactory.getDefaultAlgorithm() );
+        tmfactory.init( keystore );
+        TrustManager[] trustmanagers = tmfactory.getTrustManagers();
+        for ( int i = 0; i < trustmanagers.length; i++ ) {
+            if ( trustmanagers[i] instanceof X509TrustManager ) {
+                trustmanagers[i] = new AuthSSLX509TrustManager(
+                        (X509TrustManager)
+                        trustmanagers[i], keystore );
+            }
+        }
+        return trustmanagers;
+    }
 }

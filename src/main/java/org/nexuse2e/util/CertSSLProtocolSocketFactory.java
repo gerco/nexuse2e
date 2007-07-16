@@ -28,23 +28,18 @@ import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
-import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.httpclient.ConnectTimeoutException;
 import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.apache.commons.httpclient.protocol.ControllerThreadSocketFactory;
 import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
 import org.apache.log4j.Logger;
-import org.nexuse2e.Engine;
-import org.nexuse2e.NexusException;
 
 /**
  * @author gesch
@@ -85,57 +80,18 @@ public class CertSSLProtocolSocketFactory implements SecureProtocolSocketFactory
         this.truststorePassword = truststorePassword;
     }
 
-    private static KeyStore createKeyStore( final InputStream store, final String password ) throws KeyStoreException,
-            NoSuchAlgorithmException, CertificateException, IOException {
+//    private static KeyStore createKeyStore( final InputStream store, final String password ) throws KeyStoreException,
+//            NoSuchAlgorithmException, CertificateException, IOException {
+//
+//        if ( store == null ) {
+//            throw new IllegalArgumentException( "Keystore stream may not be null" );
+//        }
+//        LOG.debug( "Initializing key store" );
+//        KeyStore keystore = KeyStore.getInstance( "jks" );
+//        keystore.load( store, password != null ? password.toCharArray() : null );
+//        return keystore;
+//    }
 
-        if ( store == null ) {
-            throw new IllegalArgumentException( "Keystore stream may not be null" );
-        }
-        LOG.debug( "Initializing key store" );
-        KeyStore keystore = KeyStore.getInstance( "jks" );
-        keystore.load( store, password != null ? password.toCharArray() : null );
-        return keystore;
-    }
-
-    private static KeyManager[] createKeyManagers( final KeyStore keystore, final String password )
-            throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
-
-        if ( keystore == null ) {
-            throw new IllegalArgumentException( "Keystore may not be null" );
-        }
-        //        System.out.println( "Initializing key manager" );
-        //        KeyManagerFactory kmfactory = KeyManagerFactory.getInstance( KeyManagerFactory.getDefaultAlgorithm() );
-        //        kmfactory.init( keystore, password != null ? password.toCharArray() : null );
-        //        return kmfactory.getKeyManagers();
-
-        KeyManager[] managers = new KeyManager[1];
-        managers[0] = new NexusKeyManager( keystore, password );
-        return managers;
-    }
-
-    private static TrustManager[] createTrustManagers( final KeyStore keystore ) throws KeyStoreException,
-            NoSuchAlgorithmException {
-
-        if ( keystore == null ) {
-            throw new IllegalArgumentException( "Keystore may not be null" );
-        }
-        LOG.debug( "Initializing trust manager" );
-        TrustManagerFactory tmfactory = TrustManagerFactory.getInstance( TrustManagerFactory.getDefaultAlgorithm() );
-        tmfactory.init( keystore );
-        TrustManager[] trustmanagers = tmfactory.getTrustManagers();
-        for ( int i = 0; i < trustmanagers.length; i++ ) {
-            if ( trustmanagers[i] instanceof X509TrustManager ) {
-                try {
-                    trustmanagers[i] = new AuthSSLX509TrustManager( (X509TrustManager) trustmanagers[i], Engine
-                            .getInstance().getActiveConfigurationAccessService().getCacertsKeyStore() );
-                } catch ( NexusException e ) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-        }
-        return trustmanagers;
-    }
 
     private SSLContext createSSLContext() {
 
@@ -153,7 +109,7 @@ public class CertSSLProtocolSocketFactory implements SecureProtocolSocketFactory
             TrustManager[] trustmanagers = null;
             if ( keystore != null ) {
                 //                System.out.println( "creating keymanagers" );
-                keymanagers = createKeyManagers( keystore, this.keystorePassword );
+                keymanagers = CertificateUtil.createKeyManagers( keystore, this.keystorePassword );
                 //                SLOG.debug( "......................................................." );
                 //                LOG.debug( "count:" + keymanagers.length );
                 //                for ( int i = 0; i < keymanagers.length; i++ ) {
@@ -167,7 +123,7 @@ public class CertSSLProtocolSocketFactory implements SecureProtocolSocketFactory
             }
             if ( truststore != null ) {
                 //                System.out.println( "creating trustedkeymanagers" );
-                trustmanagers = createTrustManagers( truststore );
+                trustmanagers = CertificateUtil.createTrustManagers( truststore );
                 LOG.debug( "......................................................." );
 
                 LOG.debug( "count:" + trustmanagers.length );
