@@ -21,7 +21,6 @@ package org.nexuse2e.pojo;
 
 import java.util.Date;
 
-import org.apache.log4j.Logger;
 import org.nexuse2e.configuration.Constants;
 
 /**
