@@ -56,6 +56,21 @@ public class ListParameter {
         element.value = value;
         list.add( element );
     }
+    
+    /**
+     * Gets the element for the given value.
+     * @param value The value to get the element for.
+     * @return The according <code>ListElement</code>, or <code>null</code>
+     * if none exists for the given value.
+     */
+    public ListElement getElement( String value ) {
+        for (ListElement element : list) {
+            if (element.value != null && element.value.equals( value )) {
+                return element;
+            }
+        }
+        return null;
+    }
 
     /**
      * Gets an unmodifiable <code>List</code> of all dropdown values. 
