@@ -426,7 +426,7 @@ public class GenericXMLDocumentWebServiceReceiver extends AbstractController imp
                     MessageContext inboundContext = new MessageContext();
                     inboundContext.setData( baos.toByteArray() );
 
-                    MessageContext outboundContext = transportReceiver.processInboundData( inboundContext );
+                    MessageContext outboundContext = transportReceiver.processMessage( inboundContext );
 
                     List<MessagePayloadPojo> payloads = outboundContext.getMessagePojo().getMessagePayloads();
                     if ( !payloads.isEmpty() ) {

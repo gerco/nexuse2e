@@ -75,7 +75,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
     /* (non-Javadoc)
      * @see org.nexuse2e.messaging.FrontendDispatcher#processMessage(org.nexuse2e.messaging.MessageContext)
      */
-    public MessageContext processMessage( MessageContext messageContext ) {
+    public MessageContext processMessage( MessageContext messageContext ) throws NexusException {
 
         boolean errorFlag = false;
         ChoreographyPojo choreography = null;
@@ -88,7 +88,8 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
 
         LOG.trace( "Entering FrontendInboundDispatcher.processMessage..." );
 
-        if ( messagePojo.getConversation().getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_CREATED ) {
+        if ( messagePojo.getConversation() != null &&
+                messagePojo.getConversation().getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_CREATED ) {
             messagePojo.getConversation().setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_PROCESSING );
         }
 
@@ -97,8 +98,9 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
 
         ProtocolAdapter protocolAdapter = getProtocolAdapterByKey( messageContext.getProtocolSpecificKey() );
         if ( protocolAdapter == null ) {
-            LOG.error( new LogMessage( "No protocol implementation found for key: " + messageContext.getProtocolSpecificKey(), messagePojo ) );
-            return null;
+            String msg = "No protocol implementation found for key: " + messageContext.getProtocolSpecificKey();
+            LOG.error( new LogMessage( msg, messagePojo ) );
+            throw new NexusException( msg );
         }
         LOG.trace( "ProtocolAdapter found for incoming message" );
 

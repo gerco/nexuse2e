@@ -166,7 +166,7 @@ public class HttpReceiverService extends AbstractControllerService implements Re
     public MessageContext processMessage( MessageContext messageContext ) throws IllegalArgumentException,
             IllegalStateException, NexusException {
 
-        transportReceiver.processInboundData( messageContext );
+        transportReceiver.processMessage( messageContext );
         return null;
     }
 }

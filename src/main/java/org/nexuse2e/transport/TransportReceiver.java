@@ -25,9 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.nexuse2e.Configurable;
 import org.nexuse2e.Engine;
-import org.nexuse2e.Manageable;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.ProtocolSpecific;
 import org.nexuse2e.ProtocolSpecificKey;
@@ -39,6 +37,7 @@ import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.messaging.FrontendPipeline;
 import org.nexuse2e.messaging.MessageContext;
+import org.nexuse2e.messaging.Pipelet;
 import org.nexuse2e.service.ReceiverAware;
 import org.nexuse2e.service.Service;
 import org.nexuse2e.service.http.HttpReceiverService;
@@ -51,7 +50,7 @@ import org.nexuse2e.service.http.HttpReceiverService;
  * 
  * @author jonas.reese
  */
-public class TransportReceiver implements Manageable, Configurable, ProtocolSpecific {
+public class TransportReceiver implements Pipelet, ProtocolSpecific {
 
     private static final String                SERVICE_PARAM_NAME                        = "service";
 
@@ -66,7 +65,6 @@ public class TransportReceiver implements Manageable, Configurable, ProtocolSpec
     protected Map<String, Object>              parameters;
     private FrontendPipeline                   frontendPipeline                          = null;
     private BeanStatus                         status;
-    private Service                            service;
     private ProtocolSpecificKey                key;
 
     /**
@@ -104,20 +102,10 @@ public class TransportReceiver implements Manageable, Configurable, ProtocolSpec
         }
     }
 
-    /**
-     * @param data
-     * @return
-     * @throws NexusException
-     */
-    public MessageContext processInboundData( MessageContext data ) throws NexusException {
+    public MessageContext processMessage( MessageContext data ) throws NexusException {
 
         LOG.trace( "TransportReceiver processing message.." );
-//        MessageContext messageContext = new MessageContext();
         data.setProtocolSpecificKey( getKey() );
-//        messageContext.setData( data );
-
-        // Set status to processing
-        // messageContext.getMessagePojo().getConversation().setStatus( Constants.CONVERSATION_STATUS_PROCESSING );
 
         return frontendPipeline.processMessage( data );
     }
@@ -196,7 +184,6 @@ public class TransportReceiver implements Manageable, Configurable, ProtocolSpec
         }
         LOG.debug( "TransportService: " +service );
         ( (ReceiverAware) service ).setTransportReceiver( this );
-        this.service = service;
         status = BeanStatus.INITIALIZED;
     }
 
@@ -210,7 +197,6 @@ public class TransportReceiver implements Manageable, Configurable, ProtocolSpec
         parameterDescriptors = null;
         parameters = null;
         frontendPipeline = null;
-        service = null;
         key = null;
     } // teardown
 
@@ -273,5 +259,31 @@ public class TransportReceiver implements Manageable, Configurable, ProtocolSpec
     public ProtocolSpecificKey getKey() {
 
         return key;
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.messaging.Pipelet#isForwardPipelet()
+     */
+    public boolean isForwardPipelet() {
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.messaging.Pipelet#isFrontendPipelet()
+     */
+    public boolean isFrontendPipelet() {
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.messaging.Pipelet#setForwardPipelet(boolean)
+     */
+    public void setForwardPipelet( boolean isForwardPipelet ) {
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.messaging.Pipelet#setFrontendPipelet(boolean)
+     */
+    public void setFrontendPipelet( boolean isFrontendPipelet ) {
     }
 }

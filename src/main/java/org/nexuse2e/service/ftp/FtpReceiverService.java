@@ -2,6 +2,7 @@ package org.nexuse2e.service.ftp;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -32,6 +33,7 @@ import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.CertificatePojo;
+import org.nexuse2e.pojo.MessagePojo;
 import org.nexuse2e.pojo.ServicePojo;
 import org.nexuse2e.service.AbstractService;
 import org.nexuse2e.service.ReceiverAware;
@@ -221,6 +223,8 @@ public class FtpReceiverService extends AbstractService implements ReceiverAware
         this.transportReceiver = transportReceiver;
     }
 
+    private static int counter = 0;
+    
     /**
      * Process any files found.
      * @param file File found to be processed.
@@ -231,6 +235,8 @@ public class FtpReceiverService extends AbstractService implements ReceiverAware
     private static void processFile(
             File file, File errorDir, String partnerId, TransportReceiver transportReceiver ) {
 
+        counter++;
+        
         if (transportReceiver != null && file != null && file.exists() && file.length() != 0) {
             try {
                 // Open the file to read one line at a time
@@ -241,13 +247,18 @@ public class FtpReceiverService extends AbstractService implements ReceiverAware
                 MessageContext messageContext = new MessageContext();
                 messageContext.setData( fileBuffer );
                 messageContext.setCommunicationPartner( cas.getPartnerByPartnerId( partnerId ) );
-                transportReceiver.processInboundData( messageContext );
+                messageContext.setMessagePojo( new MessagePojo() );
+                messageContext.setOriginalMessagePojo( messageContext.getMessagePojo() );
+                messageContext.getMessagePojo().setCustomParameters( new HashMap<String, String>() );
+                transportReceiver.processMessage( messageContext );
                 
                 file.delete();
             } catch ( Exception ex ) {
                 LOG.error( "An error occurred while processing file " + file, ex );
                 try {
-                    FileUtils.copyFileToDirectory( file, errorDir );
+                    String postfix = "_" + System.currentTimeMillis() + "_" + counter;
+                    FileUtils.copyFile(
+                            file, new File( errorDir, file.getName() + postfix ) );
                     file.delete();
                 } catch (IOException ioex) {
                     LOG.error( "Could not copy file " + file + " to error directory " + errorDir, ioex );

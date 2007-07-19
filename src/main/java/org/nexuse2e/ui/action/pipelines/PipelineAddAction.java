@@ -26,6 +26,7 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
+import org.nexuse2e.Engine;
 import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.PipelineForm;
 
@@ -50,6 +51,7 @@ public class PipelineAddAction extends NexusE2EAction {
         PipelineForm form = (PipelineForm) actionForm;
 
         form.cleanSettings();
+        form.setTrps( Engine.getInstance().getActiveConfigurationAccessService().getTrps() );
 
         //request.getSession().setAttribute( Crumbs.CURRENT_LOCATION, Crumbs.PIPELINE_ADD );
 
