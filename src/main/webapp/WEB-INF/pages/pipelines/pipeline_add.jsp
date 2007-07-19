@@ -33,6 +33,17 @@
 					</html:select>
                 </td>
             </tr>
+		<logic:equal name="pipelineForm" property="frontend" value="true">
+			<tr>
+				<td class="NEXUSName">TRP</td>
+				<td class="NEXUSValue"><html:select property="nxTrpId">
+					<logic:iterate id="trp" property="trps" name="pipelineForm">
+						<html-el:option value="${trp.nxTRPId}">${trp.protocol}-${trp.version}-${trp.transport}</html-el:option>
+					</logic:iterate>
+				</html:select></td>
+			</tr>
+		</logic:equal>
+
             <tr>
                 <td class="NEXUSName">Description</td>
                 <td class="NEXUSValue"><html:text property="description" size="50"/></td>
