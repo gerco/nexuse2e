@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.ftpserver.FtpConfigImpl;
 import org.apache.ftpserver.FtpServer;
 import org.apache.ftpserver.config.PropertiesConfiguration;
@@ -25,12 +26,16 @@ import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Runlevel;
 import org.nexuse2e.configuration.ConfigurationAccessService;
 import org.nexuse2e.configuration.Constants;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ListParameter;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.CertificatePojo;
+import org.nexuse2e.pojo.ServicePojo;
 import org.nexuse2e.service.AbstractService;
 import org.nexuse2e.service.ReceiverAware;
+import org.nexuse2e.service.Service;
 import org.nexuse2e.transport.TransportReceiver;
 
 /**
@@ -47,7 +52,8 @@ public class FtpReceiverService extends AbstractService implements ReceiverAware
     private static Logger LOG = Logger.getLogger( FtpReceiverService.class );
     
     public static final String FTP_ROOT_PARAM_NAME = "ftpRoot";
-    public static final String SFTP_PARAM_NAME = "sftp";
+    public static final String FTP_ERROR_DIR_PARAM_NAME = "errorDir";
+    public static final String FTP_TYPE_PARAM_NAME = "ftpType";
     public static final String CLIENT_AUTH_PARAM_NAME = "clientAuthentication";
     public static final String CERTIFICATE_PARAM_NAME = "certificate";
     public static final String FTP_PORT_PARAM_NAME = "ftpPort";
@@ -55,6 +61,7 @@ public class FtpReceiverService extends AbstractService implements ReceiverAware
     
     private TransportReceiver transportReceiver;
     private FtpServer server;
+    private ListParameter certsDropdown;
 
     /* (non-Javadoc)
      * @see org.nexuse2e.service.AbstractService#fillParameterMap(java.util.Map)
@@ -63,19 +70,31 @@ public class FtpReceiverService extends AbstractService implements ReceiverAware
     public void fillParameterMap( Map<String, ParameterDescriptor> parameterMap ) {
         parameterMap.put( FTP_ROOT_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "Root directory",
                 "FTP upload root directory", new File( "" ).getAbsolutePath() ) );
-        parameterMap.put( SFTP_PARAM_NAME, new ParameterDescriptor( ParameterType.BOOLEAN, "SFTP",
-                "Enable secure FTP (encrypted data transfer)", Boolean.TRUE ) );
+        parameterMap.put( FTP_ERROR_DIR_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "Error directory",
+                "Directory where files are stored if an error occurs", new File( "" ).getAbsolutePath() ) );
+        ListParameter ftpTypeDrowdown = new ListParameter();
+        ftpTypeDrowdown.addElement( "SFTP (encrypted)", "sftp" );
+        ftpTypeDrowdown.addElement( "Plain FTP (not encrypted)", "ftp" );
+        parameterMap.put( FTP_TYPE_PARAM_NAME, new ParameterDescriptor( ParameterType.LIST,
+                "FTP type", "FTP type", ftpTypeDrowdown ) );
         parameterMap.put( CLIENT_AUTH_PARAM_NAME, new ParameterDescriptor(
                 ParameterType.BOOLEAN, "Client authentication",
                 "Require client authentication", Boolean.TRUE ) );
-        parameterMap.put( FTP_PORT_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "ftpPort",
+
+        parameterMap.put( FTP_PORT_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "FTP Port",
                 "FTP port (default is 21)", "21" ) );
-        parameterMap.put( SFTP_PORT_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "sftpPort",
+        parameterMap.put( SFTP_PORT_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "SFTP Port",
                 "SFTP port (default is 22)", "22" ) );
+        certsDropdown = new ListParameter();
+        addCertificatesToDropdown();
+        parameterMap.put( CERTIFICATE_PARAM_NAME, new ParameterDescriptor( ParameterType.LIST,
+                "Server certificate", "Use this certificate for server authentication", certsDropdown ) );
+    }
+    
+    private void addCertificatesToDropdown() {
         ConfigurationAccessService cas = Engine.getInstance().getActiveConfigurationAccessService();
         try {
             List<CertificatePojo> certs = cas.getCertificates( Constants.CERTIFICATE_TYPE_LOCAL, null );
-            ListParameter certsDropdown = new ListParameter();
             if (certs != null) {
                 for (CertificatePojo cert : certs) {
                     String label = cert.getName();
@@ -85,14 +104,21 @@ public class FtpReceiverService extends AbstractService implements ReceiverAware
                     if (cert.getDescription() != null && !"".equals( cert.getDescription() )) {
                         label += " (" + cert.getDescription() + ")";
                     }
-                    certsDropdown.addElement( label, Integer.toString( cert.getNxCertificateId() ) );
+                    String value = Integer.toString( cert.getNxCertificateId() );
+                    if (certsDropdown.getElement( value ) == null) {
+                        certsDropdown.addElement( label, value );
+                    }
                 }
             }
-            parameterMap.put( CERTIFICATE_PARAM_NAME, new ParameterDescriptor( ParameterType.LIST,
-                    "Certificate", "Use this certificate for server authentication", certsDropdown ) );
         } catch (NexusException nex) {
             LOG.error( "Could not retrieve local certificate list", nex );
         }
+    }
+    
+    @Override
+    public void initialize( EngineConfiguration configuration ) {
+        super.initialize( configuration );
+        addCertificatesToDropdown();
     }
 
     /* (non-Javadoc)
@@ -105,6 +131,20 @@ public class FtpReceiverService extends AbstractService implements ReceiverAware
 
     @Override
     public void start() {
+        
+        // find service name
+        ConfigurationAccessService cas = Engine.getInstance().getActiveConfigurationAccessService();
+        List<ServicePojo> services = cas.getServices();
+        String serviceName = null;
+        for (ServicePojo service : services) {
+            Service serviceInstance = cas.getService( service.getName() );
+            if (serviceInstance == this) {
+                // found service name
+                serviceName = service.getName();
+            }
+        }
+        LOG.info( "Found service name: " + serviceName );
+        
         if ( getStatus().getValue() < BeanStatus.STARTED.getValue() ) {
             try {
                 ListParameter certSel = getParameter( CERTIFICATE_PARAM_NAME );
@@ -116,7 +156,8 @@ public class FtpReceiverService extends AbstractService implements ReceiverAware
                 properties.setProperty( "config.user-manager.basedir", baseDir );
                 properties.setProperty( "config.socket-factory.class", NexusSslSocketFactory.class.getName() );
                 properties.setProperty( "config.socket-factory.port", (String) getParameter( FTP_PORT_PARAM_NAME ) );
-                if (((Boolean) getParameter( SFTP_PARAM_NAME )).booleanValue()) {
+                ListParameter ftpTypeSel = getParameter( FTP_TYPE_PARAM_NAME );
+                if (!"ftp".equals( ftpTypeSel.getSelectedValue())) {
                     properties.setProperty( "config.listeners.default.implicit-ssl", "true" );
 
                     properties.setProperty( "config.socket-factory.nxssl.port",
@@ -135,7 +176,11 @@ public class FtpReceiverService extends AbstractService implements ReceiverAware
                 // configure ftplet
                 properties.setProperty( "config.ftplets", "f0" );
                 properties.setProperty( "config.ftplet.f0.class", TransactionHandler.class.getName() );
-                properties.setProperty( "config.ftplet.f0.basedir", baseDir );
+                properties.setProperty( "config.ftplet.f0.serviceName", serviceName );
+                properties.setProperty( "config.ftplet.f0.errorDir",
+                        (String) getParameter( FTP_ERROR_DIR_PARAM_NAME ) );
+                properties.setProperty( "config.ftplet.f0.errorDir",
+                        (String) getParameter( FTP_ERROR_DIR_PARAM_NAME ) );
                 
 
                 // get the configuration object
@@ -147,7 +192,7 @@ public class FtpReceiverService extends AbstractService implements ReceiverAware
                 // create the server object and start it
                 server = new FtpServer( ftpConfig );
                 server.start();
-                
+
                 super.start();
                 LOG.debug( "FtpReceiver service started" );
             } catch (Exception ex) {
@@ -168,28 +213,59 @@ public class FtpReceiverService extends AbstractService implements ReceiverAware
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.nexuse2e.service.ReceiverAware#getTransportReceiver()
-     */
     public TransportReceiver getTransportReceiver() {
         return transportReceiver;
     }
 
-    /* (non-Javadoc)
-     * @see org.nexuse2e.service.ReceiverAware#setTransportReceiver(org.nexuse2e.transport.TransportReceiver)
-     */
     public void setTransportReceiver( TransportReceiver transportReceiver ) {
         this.transportReceiver = transportReceiver;
+    }
+
+    /**
+     * Process any files found.
+     * @param file File found to be processed.
+     * @param errorDir The error directory.
+     * @param partnerId The partner ID.
+     * @param transportReceiver The <code>TransportReceiver</code> to dispatch to.
+     */
+    private static void processFile(
+            File file, File errorDir, String partnerId, TransportReceiver transportReceiver ) {
+
+        if (transportReceiver != null && file != null && file.exists() && file.length() != 0) {
+            try {
+                // Open the file to read one line at a time
+                byte[] fileBuffer = FileUtils.readFileToByteArray( file );
+
+                ConfigurationAccessService cas = Engine.getInstance().getActiveConfigurationAccessService();
+                
+                MessageContext messageContext = new MessageContext();
+                messageContext.setData( fileBuffer );
+                messageContext.setCommunicationPartner( cas.getPartnerByPartnerId( partnerId ) );
+                transportReceiver.processInboundData( messageContext );
+                
+                file.delete();
+            } catch ( Exception ex ) {
+                LOG.error( "An error occurred while processing file " + file, ex );
+                try {
+                    FileUtils.copyFileToDirectory( file, errorDir );
+                    file.delete();
+                } catch (IOException ioex) {
+                    LOG.error( "Could not copy file " + file + " to error directory " + errorDir, ioex );
+                }
+            }
+        }
     }
     
     
     public static class TransactionHandler extends DefaultFtplet {
         
-        private String baseDir;
+        private File errorDir;
+        private String serviceName;
         
         @Override
         public void init( FtpConfig ftpConfig, Configuration config ) throws FtpException {
-            baseDir = config.getString( "basedir" );
+            errorDir = new File( config.getString( "errorDir"  ) );
+            serviceName = config.getString( "serviceName" );
         }
         
         @Override
@@ -215,8 +291,12 @@ public class FtpReceiverService extends AbstractService implements ReceiverAware
 
             User user = request.getUser();
             
-            File file = new File( new File( baseDir, user.getHomeDirectory() ), request.getArgument() );
+            File file = new File( user.getHomeDirectory(), request.getArgument() );
             LOG.info( "Received file " + file + " from user " + user.getName() );
+            
+            ConfigurationAccessService cas = Engine.getInstance().getActiveConfigurationAccessService();
+            FtpReceiverService service = (FtpReceiverService) cas.getService( serviceName );
+            processFile( file, errorDir, user.getName(), service.getTransportReceiver() );
             
             return FtpletEnum.RET_DEFAULT;
         }
