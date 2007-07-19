@@ -167,7 +167,7 @@ public class FtpReceiverService extends AbstractService implements ReceiverAware
                             certId == null ? "" : certId );
                     properties.setProperty( "config.socket-factory.nxssl.ssl-protocol", "TLS" );
                     properties.setProperty( "config.socket-factory.nxssl.client-authentication",
-                            getParameter( CLIENT_AUTH_PARAM_NAME ).toString() );
+                            (String) getParameter( CLIENT_AUTH_PARAM_NAME ) );
 
                     properties.setProperty( "config.listeners.default.data-connection.ssl.ssl-protocol", "TLS" );
                     properties.setProperty( "config.listeners.default.data-connection.ssl.client-authentication", "false" );
