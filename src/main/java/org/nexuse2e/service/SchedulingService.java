@@ -19,18 +19,30 @@
  */
 package org.nexuse2e.service;
 
+import org.nexuse2e.Constants.BeanStatus;
+
+/**
+ * Interface for a service that can schedule tasks at a fixed rate.
+ * 
+ * @author jonas.reese
+ */
 public interface SchedulingService extends Service {
 
     /**
-     * @param client
-     * @param millseconds
-     * @throws IllegalArgumentException
+     * Registers a <code>SchedulerClient</code> for this <code>SchedulingService</code>.
+     * It will be invoked once per given interval when the <code>SchedulingService</code>
+     * is in {@link BeanStatus#STARTED} state.
+     * @param client The client to register. Must not be <code>null</code>.
+     * @param millseconds The interval the client will be invoked in.
+     * @throws IllegalArgumentException if <code>client</code> is <code>null</code> or
+     * an illegal interval was specified.
      */
     public abstract void registerClient( SchedulerClient client, long millseconds ) throws IllegalArgumentException;
 
     /**
-     * @param client
-     * @throws IllegalArgumentException
+     * Deregisters a <code>SchedulerClient</code> from this <code>SchedulingService</code>.
+     * @param client The client that shall not be invoked any more. Must not be <code>null</code>.
+     * @throws IllegalArgumentException if <code>client</code> is <code>null</code>.
      */
     public abstract void deregisterClient( SchedulerClient client) throws IllegalArgumentException;
 }
