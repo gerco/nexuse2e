@@ -42,8 +42,8 @@ public class Magic {
         if ( entries == null ) {
             entries = new HashMap<String, MagicEntry>();
         }
-        if ( entry != null && entry.getXpathid() != null ) {
-            entries.put( entry.getXpathid(), entry );
+        if ( entry != null && entry.getXPathId() != null ) {
+            entries.put( entry.getXPathId(), entry );
         }
     }
 

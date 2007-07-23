@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.nexuse2e.tools.mapping.conversation;
+package org.nexuse2e.tools.mapping;
 
 import java.io.File;
 import java.io.FileReader;
@@ -221,7 +221,7 @@ public class CSV2XMLMappingReader {
         if ( attr != null ) {
             nodeValue = attr.getNodeValue();
             if(!StringUtils.isEmpty( nodeValue )) {
-                record.setConversationClass( nodeValue );
+                record.setConversionClass( nodeValue );
             }
         }
 
@@ -291,7 +291,7 @@ public class CSV2XMLMappingReader {
                 attr = attribs.getNamedItem( METHOD );
                 if ( attr != null ) {
                     nodeValue = attr.getNodeValue();
-                    if(nodeValue != null&& record.getConversationClass() != null) {
+                    if(nodeValue != null&& record.getConversionClass() != null) {
                         
                         entry.setMethod( nodeValue.trim() );
                     }

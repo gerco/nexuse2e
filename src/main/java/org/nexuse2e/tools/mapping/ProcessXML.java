@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.nexuse2e.tools.mapping.conversation;
+package org.nexuse2e.tools.mapping;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -46,10 +46,9 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.nexuse2e.tools.mapping.CSVMappingFileEntry;
+import org.nexuse2e.tools.mapping.csv.CSVLine;
 import org.nexuse2e.tools.mapping.csv.Record;
 import org.nexuse2e.tools.mapping.csv.RecordEntry;
-import org.nexuse2e.tools.mapping.input.CSVLine;
 import org.nexuse2e.tools.mapping.magic.Magic;
 import org.nexuse2e.tools.mapping.magic.MagicEntry;
 import org.nexuse2e.tools.mapping.xml.XMLBlock;
@@ -361,7 +360,7 @@ public class ProcessXML {
     private void cleanBlock( XMLBlock block ) {
 
         List<XMLBlockEntry> blockentries = block.getBlockEntries();
-        Magic m = magicReader.getFirstContainer().getMagicbyXMLBlockID( block.getBlockID() );
+        Magic m = magicReader.getFirstContainer().getMappingByXMLBlockId( block.getBlockID() );
         if ( m == null ) {
             block.setBlockEntries( new ArrayList<XMLBlockEntry>() );
             return;
@@ -413,7 +412,7 @@ public class ProcessXML {
                         for ( int iii = 0; iii < list.getLength(); iii++ ) {
                             Node temp = list.item( iii );
                             if ( isValidNode( temp, refNode ) ) {
-                                Magic m = magicReader.getFirstContainer().getMagicbyXMLBlockID( block.getBlockID() );
+                                Magic m = magicReader.getFirstContainer().getMappingByXMLBlockId( block.getBlockID() );
                                 if ( m != null ) {
                                     MagicEntry me = m.getEntryByXpathID( be.getEntryID() );
                                     Record r = reader.getFirstContainer().getRecordByRecordID( m.getRecordID() );
@@ -467,7 +466,7 @@ public class ProcessXML {
             }
         }
         if ( block.getBlockEntries().size() == 0 ) {
-            Magic m = magicReader.getFirstContainer().getMagicbyXMLBlockID( block.getBlockID() );
+            Magic m = magicReader.getFirstContainer().getMappingByXMLBlockId( block.getBlockID() );
             if ( m == null ) {
                 return null;
             }

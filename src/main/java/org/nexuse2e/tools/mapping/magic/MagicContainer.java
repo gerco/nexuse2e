@@ -50,7 +50,7 @@ public class MagicContainer {
      * @param blockID
      * @return magic
      */
-    public Magic getMagicbyXMLBlockID( String blockID ) {
+    public Magic getMappingByXMLBlockId( String blockID ) {
 
         if ( magicContainer == null ) {
             magicContainer = new HashMap<String, Magic>();
@@ -69,7 +69,7 @@ public class MagicContainer {
      * @param recordID
      * @return magic
      */
-    public Magic getMagicbyRecordID( String recordID ) {
+    public Magic getMappingByRecordId( String recordID ) {
 
         if ( magicContainer == null ) {
             magicContainer = new HashMap<String, Magic>();

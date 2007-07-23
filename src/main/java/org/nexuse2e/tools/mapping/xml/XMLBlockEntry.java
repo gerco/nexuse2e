@@ -19,6 +19,9 @@
  */
 package org.nexuse2e.tools.mapping.xml;
 
+import org.nexuse2e.tools.mapping.csv.RecordEntry.Align;
+import org.nexuse2e.tools.mapping.csv.RecordEntry.Trim;
+
 /**
  * @author guido.esch
  *
@@ -27,10 +30,20 @@ package org.nexuse2e.tools.mapping.xml;
  */
 public class XMLBlockEntry {
 
-    private String entryID;
-    private String position;
-    private String node;
-    
+    private String  entryID;
+    private String  position;
+    private String  nodePath;
+    private String  node;
+    private boolean attribute = false;
+    private boolean textNode  = false;
+    private String  attributeName;
+    private String  textNodeName;
+    private int     length;
+    private String  method;
+    private String  filler;
+    private Trim    trim      = Trim.FALSE;
+    private Align   align     = Align.LEFT;
+
     /**
      * @return id
      */
@@ -59,6 +72,15 @@ public class XMLBlockEntry {
      * @param node
      */
     public void setNode( String node ) {
+
+        if ( node.toLowerCase().endsWith( "text()" ) ) {
+            textNode = true;
+            nodePath = node.substring( 0, node.length() - 7 );
+        } else if ( node.indexOf( '@' ) > -1 ) {
+            attribute = true;
+            attributeName = node.substring( node.indexOf( '@' ) + 1, node.length() );
+            nodePath = node.substring( 0, node.lastIndexOf( '/' ) );
+        }
 
         this.node = node;
     }
@@ -93,5 +115,115 @@ public class XMLBlockEntry {
         buffer.append( node );
         return buffer.toString();
     }
-   
+
+    public boolean isAttribute() {
+
+        return attribute;
+    }
+
+    public void setAttribute( boolean attribute ) {
+
+        this.attribute = attribute;
+    }
+
+    public boolean isTextNode() {
+
+        return textNode;
+    }
+
+    public void setTextNode( boolean textNode ) {
+
+        this.textNode = textNode;
+    }
+
+    public String getAttributeName() {
+
+        return attributeName;
+    }
+
+    public void setAttributeName( String attributeName ) {
+
+        this.attributeName = attributeName;
+    }
+
+    public String getNodePath() {
+
+        return nodePath;
+    }
+
+    public void setNodePath( String nodePath ) {
+
+        this.nodePath = nodePath;
+    }
+
+    public String getTextNodeName() {
+
+        return textNodeName;
+    }
+
+    public void setTextNodeName( String textNodeName ) {
+
+        this.textNodeName = textNodeName;
+    }
+
+    
+    public int getLength() {
+    
+        return length;
+    }
+
+    
+    public void setLength( int length ) {
+    
+        this.length = length;
+    }
+
+    
+    public String getMethod() {
+    
+        return method;
+    }
+
+    
+    public void setMethod( String method ) {
+    
+        this.method = method;
+    }
+
+    
+    public String getFiller() {
+    
+        return filler;
+    }
+
+    
+    public void setFiller( String filler ) {
+    
+        this.filler = filler;
+    }
+
+    
+    public Trim getTrim() {
+    
+        return trim;
+    }
+
+    
+    public void setTrim( Trim trim ) {
+    
+        this.trim = trim;
+    }
+
+    
+    public Align getAlign() {
+    
+        return align;
+    }
+
+    
+    public void setAlign( Align align ) {
+    
+        this.align = align;
+    }
+
 }

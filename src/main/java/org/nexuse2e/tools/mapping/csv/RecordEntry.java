@@ -42,7 +42,7 @@ public class RecordEntry {
     private int    length;
     private String method;
     private String filler;
-    private Trim   trim = Trim.FALSE;
+    private Trim   trim  = Trim.FALSE;
     private Align  align = Align.LEFT;
 
     /**

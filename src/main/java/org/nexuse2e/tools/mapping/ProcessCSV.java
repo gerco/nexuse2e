@@ -17,13 +17,15 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.nexuse2e.tools.mapping.conversation;
+package org.nexuse2e.tools.mapping;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Iterator;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -41,14 +43,14 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.apache.log4j.Logger;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
-import org.nexuse2e.tools.mapping.CSVMappingFileEntry;
+import org.nexuse2e.NexusException;
+import org.nexuse2e.tools.mapping.csv.CSVLine;
 import org.nexuse2e.tools.mapping.csv.Record;
 import org.nexuse2e.tools.mapping.csv.RecordContainer;
 import org.nexuse2e.tools.mapping.csv.RecordEntry;
-import org.nexuse2e.tools.mapping.input.CSVLine;
-import org.nexuse2e.tools.mapping.input.CSVReader;
 import org.nexuse2e.tools.mapping.magic.Magic;
 import org.nexuse2e.tools.mapping.magic.MagicContainer;
 import org.nexuse2e.tools.mapping.magic.MagicEntry;
@@ -69,26 +71,29 @@ import org.w3c.dom.NodeList;
  */
 public class ProcessCSV {
 
+    private static Logger        LOG = Logger.getLogger( ProcessCSV.class );
+
     /**
      * Comment for <code>reader</code>
      */
-    public CSV2XMLMappingReader  reader;
+    public CSV2XMLMappingReader  flatFileDefinitionReader;
     /**
      * Comment for <code>blockReader</code>
      */
-    public XMLBLockMappingReader blockReader;
+    public XMLBLockMappingReader xmlFileDefinitionReader;
     /**
      * Comment for <code>magicReader</code>
      */
-    public MagicMappingReader    magicReader;
+    public MagicMappingReader    mappingDefinitionReader;
+
     private Document             document;
 
     public static void main( String[] args ) {
 
-        //        String xmlBlock = "d:/eclipse-SDK-3.0.1-win32/repository/mappings/test_OrderCreate_blocks.xml"; //$NON-NLS-1$
-        //        String csvMapping = "d:/eclipse-SDK-3.0.1-win32/repository/mappings/test_flat.xml"; //$NON-NLS-1$
-        //        String magic = "d:/eclipse-SDK-3.0.1-win32/repository/mappings/test_map.xml"; //$NON-NLS-1$
-        //        String contentPath = "C:/Dokumente und Einstellungen/guido.esch/Desktop/umzug/fixed.fix"; //$NON-NLS-1$
+        //        String xmlBlock = "d:/eclipse-SDK-3.0.1-win32/repository/mappings/test_OrderCreate_blocks.xml"; 
+        //        String csvMapping = "d:/eclipse-SDK-3.0.1-win32/repository/mappings/test_flat.xml"; 
+        //        String magic = "d:/eclipse-SDK-3.0.1-win32/repository/mappings/test_map.xml"; 
+        //        String contentPath = "C:/Dokumente und Einstellungen/guido.esch/Desktop/umzug/fixed.fix"; 
 
         CSVMappingFileEntry mfe = new CSVMappingFileEntry();
 
@@ -137,15 +142,15 @@ public class ProcessCSV {
             System.exit( 1 );
         }
 
-        System.out.println( "xmlBlock: " + xmlBlock );
-        System.out.println( "csvMapping: " + csvMapping );
-        System.out.println( "magic: " + magic );
-        System.out.println( "contentPath: " + contentPath );
+        LOG.error( "xmlBlock: " + xmlBlock );
+        LOG.error( "csvMapping: " + csvMapping );
+        LOG.error( "magic: " + magic );
+        LOG.error( "contentPath: " + contentPath );
 
         mfe.setCsvmappings( csvMapping );
         mfe.setXmlblocks( xmlBlock );
         mfe.setMapping( magic );
-        mfe.setId( "test-mapping" ); //$NON-NLS-1$
+        mfe.setId( "test-mapping" ); 
 
         try {
             ProcessCSV process = new ProcessCSV();
@@ -153,100 +158,113 @@ public class ProcessCSV {
             FileInputStream fis = new FileInputStream( new File( contentPath ) );
             String out = process.process( mfe, fis );
             fis.close();
-            System.out.println( "...................." );
-            System.out.println( out );
-            System.out.println( "...................." );
+            LOG.error( "...................." );
+            LOG.error( out );
+            LOG.error( "...................." );
         } catch ( Exception e ) {
             e.printStackTrace();
         }
     }
 
     /**
-     * @param mfe
+     * @param mappingFileEntry
      * @param content
      * @return result
      */
-    public String process( CSVMappingFileEntry mfe, InputStream content ) {
+    public String process( CSVMappingFileEntry mappingFileEntry, InputStream content ) throws NexusException {
+        
+        boolean detectedError = false;
 
-        File testFile = new File( mfe.getCsvmappings() );
+        long startTime = System.currentTimeMillis();
+
+        // Make sure all mapping definition files are available
+        File testFile = new File( mappingFileEntry.getCsvmappings() );
         if ( !testFile.exists() ) {
-            //            Plugin.getDefault().log(
-            //                    new LogMessage( LogMessage.ERROR,
-            //                            "Processing", "Error", this, "process", 149, "mappingfile: " + testFile //$NON-NLS-1$ //$NON-NLS-2$
-            //                                    + " doesn't exist, processing canceled!!", null ) ); //$NON-NLS-1$
-            System.out.println( "mappingfile: " + testFile + " doesn't exist, processing canceled!!" );
+            LOG.error( "mappingfile: " + testFile + " doesn't exist, processing canceled!!" );
             return null;
         }
-        testFile = new File( mfe.getMapping() );
+        testFile = new File( mappingFileEntry.getMapping() );
         if ( !testFile.exists() ) {
-            //            Plugin.getDefault().log(
-            //                    new LogMessage( LogMessage.ERROR,
-            //                            "Processing", "Error", this, "process", 150, "mappingfile: " + testFile //$NON-NLS-1$ //$NON-NLS-2$
-            //                                    + " doesn't exist, processing canceled!!", null ) ); //$NON-NLS-1$
-            System.out.println( "mappingfile: " + testFile + " doesn't exist, processing canceled!!" );
+            LOG.error( "mappingfile: " + testFile + " doesn't exist, processing canceled!!" );
             return null;
         }
-        testFile = new File( mfe.getXmlblocks() );
+        testFile = new File( mappingFileEntry.getXmlblocks() );
         if ( !testFile.exists() ) {
-            //            Plugin.getDefault().log(
-            //                    new LogMessage( LogMessage.ERROR,
-            //                            "Processing", "Error", this, "process", 151, "mappingfile: " + testFile //$NON-NLS-1$ //$NON-NLS-2$
-            //                                    + " doesn't exist, processing canceled!!", null ) ); //$NON-NLS-1$
-            System.out.println( "mappingfile: " + testFile + " doesn't exist, processing canceled!!" );
+            LOG.error( "Mapping file: " + testFile + " doesn't exist, processing canceled!!" );
             return null;
         }
 
-        reader = new CSV2XMLMappingReader();
-        reader.parseMappingFile( mfe.getCsvmappings() );
-        blockReader = new XMLBLockMappingReader();
-        blockReader.parseMappingFile( mfe.getXmlblocks() );
-        magicReader = new MagicMappingReader();
-        magicReader.parseMappingFile( mfe.getMapping() );
+        // Parse definition files
+        flatFileDefinitionReader = new CSV2XMLMappingReader();
+        flatFileDefinitionReader.parseMappingFile( mappingFileEntry.getCsvmappings() );
+        xmlFileDefinitionReader = new XMLBLockMappingReader();
+        xmlFileDefinitionReader.parseMappingFile( mappingFileEntry.getXmlblocks() );
+        mappingDefinitionReader = new MagicMappingReader();
+        mappingDefinitionReader.parseMappingFile( mappingFileEntry.getMapping() );
 
+        LOG.debug( "Time for set-up: " + ( System.currentTimeMillis() - startTime ) );
+        startTime = System.currentTimeMillis();
+
+        // Create empty output XML DOM
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         documentBuilderFactory.setNamespaceAware( true );
         DocumentBuilder documentBuilder;
         try {
             documentBuilder = documentBuilderFactory.newDocumentBuilder();
         } catch ( ParserConfigurationException e ) {
-
-            //            Plugin.getDefault().log(
-            //                    new LogMessage( LogMessage.ERROR,
-            //                            "Processing", "Error", this, "process", 152, "Can't process Message!", e ) ); //$NON-NLS-1$ //$NON-NLS-2$
-            System.out.println( "Can't process Message: " + e.getLocalizedMessage() );
+            LOG.error( "Can't process message: " + e.getLocalizedMessage() );
             e.printStackTrace();
             return null;
         }
         document = documentBuilder.newDocument();
 
-        CSVReader input = new CSVReader();
-
-        RecordContainer rc = reader.getFirstContainer();
-        if ( rc == null ) {
-            //            Plugin.getDefault().log( new LogMessage( LogMessage.ERROR, "Processing", "Error", this, "process", 153, //$NON-NLS-1$
-            //                    "Can't process Message! (Mapping not Found!)", null ) ); //$NON-NLS-1$
-            System.out.println( "Can't process Message! (Mapping not Found!)" );
+        RecordContainer recordContainer = flatFileDefinitionReader.getFirstContainer();
+        if ( recordContainer == null ) {
+            LOG.error( "Can't process message (mapping not found)!" );
             return null;
         }
-        input.readCSV( this, content, rc );
+
+        // Process input
+        InputStreamReader isr = new InputStreamReader( content );
+        BufferedReader br = new BufferedReader( isr );
+        String line = ""; 
+        while ( line != null ) {
+            try {
+                line = br.readLine();
+                if ( line != null && !line.trim().equals( "" ) ) {
+                    CSVLine newLine = new CSVLine( line, recordContainer );
+                    processLine( newLine );
+                }
+            } catch ( IOException e1 ) {
+                LOG.error( "Error processing line: " + e1.getLocalizedMessage() );
+                detectedError = true;
+            }
+        }
+        try {
+            br.close();
+            isr.close();
+        } catch ( IOException e1 ) {
+        }
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        OutputFormat of = new OutputFormat();
-        of.setIndenting( true );
-        System.out.println( "indent:" + of.getIndent() ); //$NON-NLS-1$
-        XMLSerializer ser = new XMLSerializer( baos, of );
+        OutputFormat outputFormat = new OutputFormat();
+        outputFormat.setIndenting( true );
+        LOG.debug( "Indent: " + outputFormat.getIndent() );
+        XMLSerializer ser = new XMLSerializer( baos, outputFormat );
         try {
             ser.serialize( document );
-
         } catch ( IOException e1 ) {
-
-            //            Plugin.getDefault().log(
-            //                    new LogMessage( LogMessage.ERROR,
-            //                            "Processing", "Error", this, "process", 154, "Can't process Message!", e1 ) ); //$NON-NLS-1$ //$NON-NLS-2$
-            System.out.println( "Can't process Message: " + e1.getLocalizedMessage() );
+            LOG.error( "Can't serialize XML output: " + e1.getLocalizedMessage() );
             e1.printStackTrace();
-            return null;
+            throw new NexusException( "Can't serialize XML output: " + e1.getLocalizedMessage() );
         }
+
+        LOG.debug( "Time for conversion: " + ( System.currentTimeMillis() - startTime ) );
+        
+        if ( detectedError ) {
+            throw new NexusException( "Error converting one or more lines!" );
+        }
+
         return baos.toString();
     }
 
@@ -258,62 +276,53 @@ public class ProcessCSV {
         if ( line == null || line.getId() == null ) {
             return;
         }
-        RecordContainer rc = reader.getFirstContainer();
+        RecordContainer recordContainer = flatFileDefinitionReader.getFirstContainer();
 
-        if ( rc == null ) {
-            System.out.println( "no recordContainer found" ); //$NON-NLS-1$
+        if ( recordContainer == null ) {
+            LOG.error( "no recordContainer found" ); 
             return;
         }
-        Record r = rc.getRecordByValue( line.getId() );
-        if ( r == null ) {
-            System.out.println( "no record for: " + line.getId() + " found" ); //$NON-NLS-1$ //$NON-NLS-2$
+        Record record = recordContainer.getRecordByValue( line.getId() );
+        if ( record == null ) {
+            LOG.error( "no record for: " + line.getId() + " found" );  
             return;
         }
-        if ( !r.isActive() ) {
+        if ( !record.isActive() ) {
             return;
         }
-        MagicContainer mc = magicReader.getFirstContainer();
-        Magic m = mc.getMagicbyRecordID( r.getRecordID() );
+        MagicContainer mc = mappingDefinitionReader.getFirstContainer();
+        Magic m = mc.getMappingByRecordId( record.getRecordID() );
         if ( m == null ) {
-            System.out.println( "no magic for: " + r.getRecordID() + " found" ); //$NON-NLS-1$ //$NON-NLS-2$
+            LOG.error( "no magic for: " + record.getRecordID() + " found" );  
             return;
         }
-        XMLBlockContainer bc = blockReader.getFirstContainer();
+        XMLBlockContainer bc = xmlFileDefinitionReader.getFirstContainer();
         if ( bc == null ) {
-            System.out.println( "no blockContainer for:" + m.getBlockID() + " found" ); //$NON-NLS-1$ //$NON-NLS-2$
+            LOG.error( "no blockContainer for:" + m.getBlockID() + " found" );  
             return;
         }
         XMLBlock b = bc.getXMLBLockbyBlockID( m.getBlockID() );
         if ( b == null ) {
-            System.out.println( "no block found for:" + m.getBlockID() ); //$NON-NLS-1$
+            LOG.error( "no block found for:" + m.getBlockID() ); 
             return;
         }
         if ( b.getBlockEntries() == null ) {
-            System.out.println( "no block entries found for:" + m.getBlockID() ); //$NON-NLS-1$
+            LOG.error( "no block entries found for:" + m.getBlockID() ); 
             return;
         }
-        Iterator i = b.getBlockEntries().iterator();
+        Iterator<XMLBlockEntry> i = b.getBlockEntries().iterator();
         while ( i.hasNext() ) {
-            XMLBlockEntry entry = (XMLBlockEntry) i.next();
-            if ( entry.getNode().toLowerCase().endsWith( "text()" ) || entry.getNode().indexOf( '@' ) > -1 ) { //$NON-NLS-1$
+            XMLBlockEntry entry = i.next();
+            if ( entry.isTextNode() || entry.isAttribute() ) { 
 
-                boolean isAttr = false;
-                if ( entry.getNode().indexOf( '@' ) > -1 ) {
-                    isAttr = true;
-                }
                 try {
-                    String node = entry.getNode();
-                    if ( isAttr ) {
-                        node = node.substring( 0, node.lastIndexOf( '/' ) );
-                    } else {
-                        node = node.substring( 0, node.length() - 7 );
-                    }
+                    String node = entry.getNodePath();
 
                     XPath xpath = XPathFactory.newInstance().newXPath();
                     NodeList nodes = (NodeList) xpath.evaluate( entry.getPosition(), document, XPathConstants.NODESET );
 
                     if ( nodes == null || nodes.getLength() == 0 ) {
-                        System.out.println( "pos:" + entry.getPosition() + " not found" ); //$NON-NLS-1$ //$NON-NLS-2$
+                        LOG.error( "Pos: " + entry.getPosition() + " not found" );  
                         return;
                     }
 
@@ -323,65 +332,57 @@ public class ProcessCSV {
                     nodes = (NodeList) xpath.evaluate( node, root, XPathConstants.NODESET );
 
                     if ( nodes == null ) {
-                        System.out.println( "targetnode not found" ); //$NON-NLS-1$
+                        LOG.error( "Target node not found" ); 
                         return;
                     }
 
                     Node target = nodes.item( nodes.getLength() - 1 );
                     MagicEntry me = m.getEntryByXpathID( entry.getEntryID() );
-                    String value = "static/"; //$NON-NLS-1$
+                    String value = "static/"; 
                     if ( me != null ) {
                         value = me.getValue();
                     } else {
-                        System.out.println( "entryID: " + entry.getEntryID() + " not found" ); //$NON-NLS-1$ //$NON-NLS-2$
+                        LOG.error( "entryID: " + entry.getEntryID() + " not found" );  
                     }
-                    if ( value.toLowerCase().startsWith( "file" ) ) { //$NON-NLS-1$
+                    if ( value.toLowerCase().startsWith( "file" ) ) { 
                         value = value.substring( 5 );
-                        RecordEntry e = r.getEntry( value );
+                        RecordEntry e = record.getEntry( value );
                         try {
-                            if ( !rc.getSeparator().equals( "FIXED" ) ) {
+                            if ( !recordContainer.getSeparator().equals( "FIXED" ) ) {
                                 value = line.columns.get( e.getPosition() );
                             } else {
-                                value = line.columns.get( r.getColumnNum( e ) );
+                                value = line.columns.get( record.getColumnNum( e ) );
                             }
                         } catch ( RuntimeException e1 ) {
-                            value = "invalid"; //$NON-NLS-1$
-                            //                            Plugin
-                            //                                    .getDefault()
-                            //                                    .log(
-                            //                                            new LogMessage(
-                            //                                                    LogMessage.ERROR,
-                            //                                                    "Processing", e1.getClass().getName(), this, "processLine", 155, e1.getLocalizedMessage(), e1 ) ); //$NON-NLS-1$
+                            value = "invalid"; 
                         }
-                    } else if ( value.toLowerCase().startsWith( "static" ) ) { //$NON-NLS-1$
+                    } else if ( value.toLowerCase().startsWith( "static" ) ) { 
                         value = value.substring( 7 );
                     }
-                    //                    else if ( value.toLowerCase().startsWith( "internal" ) ) { //$NON-NLS-1$
+                    //                    else if ( value.toLowerCase().startsWith( "internal" ) ) { 
                     //                        value = value.substring( 9 );
                     //                        try {
                     //                            value = Plugin.getDefault().getInternalMappingByID( value );
                     //                        } catch ( RuntimeException e1 ) {
-                    //                            value = "invalid"; //$NON-NLS-1$
+                    //                            value = "invalid"; 
                     //                            Plugin
                     //                                    .getDefault()
                     //                                    .log(
                     //                                            new LogMessage(
                     //                                                    LogMessage.ERROR,
-                    //                                                    "Processing", e1.getClass().getName(), this, "processLine", 156, e1.getLocalizedMessage(), e1 ) ); //$NON-NLS-1$
+                    //                                                    "Processing", e1.getClass().getName(), this, "processLine", 156, e1.getLocalizedMessage(), e1 ) ); 
                     //                        }
 
                     //                    }
                     else {
-                        System.out.println( "only file/static is supported!" ); //$NON-NLS-1$
-                        value = "invalid"; //$NON-NLS-1$
+                        LOG.error( "only file/static is supported!" ); 
+                        value = "invalid"; 
                     }
 
                     // modify
 
-                    if ( isAttr ) {
-                        String attrString = entry.getNode().substring( entry.getNode().indexOf( '@' ) + 1,
-                                entry.getNode().length() );
-                        Node attr = document.createAttribute( attrString );
+                    if ( entry.isAttribute() ) {
+                        Node attr = document.createAttribute( entry.getAttributeName() );
                         attr.setNodeValue( value );
                         ( (Element) target ).setAttributeNode( (Attr) attr );
                     } else {
@@ -390,13 +391,7 @@ public class ProcessCSV {
                     }
                 } catch ( XPathExpressionException e ) {
 
-                    //                    Plugin
-                    //                            .getDefault()
-                    //                            .log(
-                    //                                    new LogMessage(
-                    //                                            LogMessage.ERROR,
-                    //                                            "Processing", e.getClass().getName(), this, "processLine", 157, e.getLocalizedMessage(), e ) ); //$NON-NLS-1$
-                    System.out.println( "Error: " + e.getLocalizedMessage() );
+                    LOG.error( "Error: " + e.getLocalizedMessage() );
                     e.printStackTrace();
                 }
             } else {
@@ -406,7 +401,7 @@ public class ProcessCSV {
                     NodeList nodes = (NodeList) xpath.evaluate( entry.getPosition(), document, XPathConstants.NODESET );
 
                     if ( nodes == null || nodes.getLength() == 0 ) {
-                        System.out.println( "pos:" + entry.getPosition() + " not found" ); //$NON-NLS-1$ //$NON-NLS-2$
+                        LOG.error( "pos:" + entry.getPosition() + " not found" );  
                         return;
                     }
                     Node root = nodes.item( nodes.getLength() - 1 );
@@ -419,16 +414,10 @@ public class ProcessCSV {
 
                 } catch ( XPathExpressionException e ) {
 
-                    //                    Plugin
-                    //                            .getDefault()
-                    //                            .log(
-                    //                                    new LogMessage(
-                    //                                            LogMessage.ERROR,
-                    //                                            "Processing", e.getClass().getName(), this, "processLine", 158, e.getLocalizedMessage(), e ) ); //$NON-NLS-1$
-                    System.out.println( "Error: " + e.getLocalizedMessage() );
+                    LOG.error( "Error: " + e.getLocalizedMessage() );
                 } catch ( Exception e ) {
-                    System.out.println( "Error: " + e.getLocalizedMessage() );
-                    System.out.println( "Node: " + entry.getNode() );
+                    LOG.error( "Error: " + e.getLocalizedMessage() );
+                    LOG.error( "Node: " + entry.getNode() );
                 }
             }
         }

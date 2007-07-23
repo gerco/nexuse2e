@@ -27,7 +27,7 @@ package org.nexuse2e.tools.mapping.magic;
  */
 public class MagicEntry {
 
-    private String xpathid;
+    private String xPathId;
     private String value;
 
     /**
@@ -49,17 +49,17 @@ public class MagicEntry {
     /**
      * @return xpathid
      */
-    public String getXpathid() {
+    public String getXPathId() {
 
-        return xpathid;
+        return xPathId;
     }
 
     /**
      * @param xpathid
      */
-    public void setXpathid( String xpathid ) {
+    public void setXPathId( String xpathid ) {
 
-        this.xpathid = xpathid;
+        this.xPathId = xpathid;
     }
 
     /* (non-Javadoc)
@@ -70,7 +70,7 @@ public class MagicEntry {
         StringBuffer buffer = new StringBuffer();
 
         buffer.append( "XPathID:" ); //$NON-NLS-1$
-        buffer.append( xpathid );
+        buffer.append( xPathId );
         buffer.append( " Value:" ); //$NON-NLS-1$
         buffer.append( value );
 

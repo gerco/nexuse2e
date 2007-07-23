@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.nexuse2e.tools.mapping.input;
+package org.nexuse2e.tools.mapping.csv;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -27,9 +27,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
-import org.nexuse2e.tools.mapping.csv.Record;
-import org.nexuse2e.tools.mapping.csv.RecordContainer;
-import org.nexuse2e.tools.mapping.csv.RecordEntry;
 import org.nexuse2e.tools.mapping.csv.RecordEntry.Align;
 import org.nexuse2e.tools.mapping.csv.RecordEntry.Trim;
 
@@ -260,9 +257,9 @@ public class CSVLine {
                 buffer.append( getSeparator() );
             }
             if ( children != null ) {
-                Iterator i = children.iterator();
+                Iterator<CSVLine> i = children.iterator();
                 while ( i.hasNext() ) {
-                    CSVLine temp = (CSVLine) i.next();
+                    CSVLine temp = i.next();
                     buffer.append( "\n" ); //$NON-NLS-1$
                     buffer.append( temp );
                 }
@@ -323,9 +320,9 @@ public class CSVLine {
     private String CallExternalModifier( String colVal, RecordEntry entry ) {
 
         if ( !StringUtils.isEmpty( entry.getMethod() ) ) {
-            if ( !StringUtils.isEmpty( desc.getConversationClass() ) ) {
+            if ( !StringUtils.isEmpty( desc.getConversionClass() ) ) {
                 try {
-                    Class c = Class.forName( desc.getConversationClass() );
+                    Class c = Class.forName( desc.getConversionClass() );
                     Object o = c.newInstance();
                     Class[] args = new Class[2];
                     args[0] = String.class;

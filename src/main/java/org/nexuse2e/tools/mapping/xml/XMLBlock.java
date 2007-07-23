@@ -31,9 +31,9 @@ import java.util.List;
  */
 public class XMLBlock {
 
-    private String blockID;
+    private String              blockID;
     private List<XMLBlockEntry> blockEntries;
-    private int    siblingSequence;
+    private int                 siblingSequence;
 
     /**
      * @param entry
@@ -106,10 +106,8 @@ public class XMLBlock {
         buffer.append( "Block:" ); //$NON-NLS-1$
         buffer.append( blockID + " SiblingSequence:" + siblingSequence + "\n" ); //$NON-NLS-1$
         if ( blockEntries != null ) {
-            Iterator i = blockEntries.iterator();
-            while ( i.hasNext() ) {
-                XMLBlockEntry entry = (XMLBlockEntry) i.next();
-                buffer.append( "  " + entry ); //$NON-NLS-1$
+            for ( XMLBlockEntry xmlEntry : blockEntries ) {
+                buffer.append( "  " + xmlEntry ); //$NON-NLS-1$
                 buffer.append( "\n" ); //$NON-NLS-1$
             }
         }

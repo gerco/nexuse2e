@@ -35,8 +35,8 @@ import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.MessagePayloadPojo;
 import org.nexuse2e.tools.mapping.CSVMappingFileEntry;
-import org.nexuse2e.tools.mapping.conversation.ProcessCSV;
-import org.nexuse2e.tools.mapping.conversation.ProcessXML;
+import org.nexuse2e.tools.mapping.ProcessCSV;
+import org.nexuse2e.tools.mapping.ProcessXML;
 
 /**
  * @author mbreilmann

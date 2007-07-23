@@ -32,10 +32,10 @@ import java.util.List;
 public class Record {
 
     private List<RecordEntry> entries;
-    private String recordID;
-    private String value;
-    private String conversationClass;
-    private boolean active;
+    private String            recordID;
+    private String            value;
+    private String            conversionClass;
+    private boolean           active;
 
     /**
      * @param entry
@@ -48,30 +48,28 @@ public class Record {
         entries.add( entry );
     }
 
-    public int getColumnNum(RecordEntry entry)
-    {
-        if(!entries.contains(entry))
-        {
+    public int getColumnNum( RecordEntry entry ) {
+
+        if ( !entries.contains( entry ) ) {
             return -1;
         }
-        for(int i = 0; i < entries.size();i++)
-        {
-            if(entry == entries.get(i))
-            {
+        for ( int i = 0; i < entries.size(); i++ ) {
+            if ( entry == entries.get( i ) ) {
                 return i;
             }
         }
         return -1;
     }
+
     /**
      * @param entryID
      * @return entry
      */
     public RecordEntry getEntry( String entryID ) {
 
-        Iterator i = entries.iterator();
+        Iterator<RecordEntry> i = entries.iterator();
         while ( i.hasNext() ) {
-            RecordEntry tempEntry = (RecordEntry) i.next();
+            RecordEntry tempEntry = i.next();
             if ( tempEntry.getEntryID().equals( entryID ) ) {
                 return tempEntry;
             }
@@ -123,9 +121,9 @@ public class Record {
         buffer.append( "Record:" ); //$NON-NLS-1$
         buffer.append( recordID + "\n" ); //$NON-NLS-1$
         if ( entries != null ) {
-            Iterator i = entries.iterator();
+            Iterator<RecordEntry> i = entries.iterator();
             while ( i.hasNext() ) {
-                RecordEntry entry = (RecordEntry) i.next();
+                RecordEntry entry = i.next();
                 buffer.append( "  " + entry ); //$NON-NLS-1$
                 buffer.append( "\n" ); //$NON-NLS-1$
             }
@@ -148,7 +146,8 @@ public class Record {
     public String getRecordValue() {
 
         return value;
-    }    
+    }
+
     /**
      * @return Returns the active.
      */
@@ -156,6 +155,7 @@ public class Record {
 
         return active;
     }
+
     /**
      * @param active The active to set.
      */
@@ -164,21 +164,19 @@ public class Record {
         this.active = active;
     }
 
-    
     /**
      * @return the conversationClass
      */
-    public String getConversationClass() {
-    
-        return conversationClass;
+    public String getConversionClass() {
+
+        return conversionClass;
     }
 
-    
     /**
      * @param conversationClass the conversationClass to set
      */
-    public void setConversationClass( String conversationClass ) {
-    
-        this.conversationClass = conversationClass;
+    public void setConversionClass( String conversationClass ) {
+
+        this.conversionClass = conversationClass;
     }
 }
