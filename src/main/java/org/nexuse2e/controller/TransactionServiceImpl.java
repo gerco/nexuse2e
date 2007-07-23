@@ -70,6 +70,8 @@ public class TransactionServiceImpl implements TransactionService {
     public ConversationPojo createConversation( String choreographyId, String partnerId, String conversationId )
             throws NexusException {
 
+        ConversationPojo conversationPojo = null;
+
         ChoreographyPojo choreography = Engine.getInstance().getActiveConfigurationAccessService()
                 .getChoreographyByChoreographyId( choreographyId );
         if ( choreography == null ) {
@@ -85,12 +87,24 @@ public class TransactionServiceImpl implements TransactionService {
         if ( ( conversationId == null ) || ( conversationId.trim().length() == 0 ) ) {
             IdGenerator idGenerator = Engine.getInstance().getIdGenerator( Constants.ID_GENERATOR_CONVERSATION );
             conversationId = idGenerator.getId();
-        }
 
-        ConversationPojo conversationPojo = new ConversationPojo();
-        conversationPojo.setChoreography( choreography );
-        conversationPojo.setConversationId( conversationId );
-        conversationPojo.setPartner( partner );
+            conversationPojo = new ConversationPojo();
+            conversationPojo.setChoreography( choreography );
+            conversationPojo.setConversationId( conversationId );
+            conversationPojo.setPartner( partner );
+
+            Engine.getInstance().getTransactionService().storeTransaction( conversationPojo, null );
+        } else {
+            conversationPojo = Engine.getInstance().getTransactionService().getConversation( conversationId );
+            if ( conversationPojo == null ) {
+                conversationPojo = new ConversationPojo();
+                conversationPojo.setChoreography( choreography );
+                conversationPojo.setConversationId( conversationId );
+                conversationPojo.setPartner( partner );
+
+                Engine.getInstance().getTransactionService().storeTransaction( conversationPojo, null );
+            }
+        }
 
         return conversationPojo;
     }

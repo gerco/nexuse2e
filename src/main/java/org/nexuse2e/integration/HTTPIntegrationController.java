@@ -92,14 +92,18 @@ public class HTTPIntegrationController implements Controller {
         NEXUSe2eInterface theNEXUSe2eInterface = Engine.getInstance().getInProcessNEXUSe2eInterface();
 
         try {
+            conversationId = theNEXUSe2eInterface.sendNewStringMessage( choreographyId, partnerId, actionId,
+                    conversationId, content );
+            /*
             if ( conversationId == null || conversationId.length() == 0 ) { // Create a new conversation if none was specified
                 conversationId = theNEXUSe2eInterface.sendNewStringMessage( choreographyId, partnerId, actionId,
                         content );
                 LOG.debug( "##--> New conversation ID ( choreography '" + choreographyId + "', conversation ID '"
                         + conversationId + "')!" );
             } else {
-                theNEXUSe2eInterface.sendStringMessage( conversationId, actionId, content );
+                 theNEXUSe2eInterface.sendStringMessage( conversationId, actionId, content );
             }
+            */
 
             LOG.debug( "Message sent ( choreography '" + choreographyId + "', conversation ID '" + conversationId
                     + "')!" );
