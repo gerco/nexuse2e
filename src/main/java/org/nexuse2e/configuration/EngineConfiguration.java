@@ -921,14 +921,14 @@ public class EngineConfiguration {
      * @param oldObjects
      * @return
      */
-    private List getObsoleteEntries( List newObjects, List oldObjects ) {
+    private <T> List<T> getObsoleteEntries( List<T> newObjects, List<T> oldObjects ) {
 
-        List obsoleteObjects = new ArrayList();
+        List<T> obsoleteObjects = new ArrayList<T>();
         if ( newObjects == null ) {
-            newObjects = new ArrayList();
+            newObjects = new ArrayList<T>();
         }
         if ( oldObjects != null ) {
-            for ( Object oldPojo : oldObjects ) {
+            for ( T oldPojo : oldObjects ) {
                 if ( !newObjects.contains( oldPojo ) ) {
                     obsoleteObjects.add( oldPojo );
                 }
