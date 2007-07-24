@@ -55,7 +55,7 @@ public class DataConversionService extends AbstractService {
 
     @Override
     public Runlevel getActivationRunlevel() {
-        
+
         return Runlevel.CORE;
     }
 
@@ -77,15 +77,18 @@ public class DataConversionService extends AbstractService {
      */
     public String processConversion( String value, MappingDefinition definition, Map<String, String> aditionalValues ) {
 
+        // We return the unchanged value in case no command was found
+        String result = value;
+
         String command = definition.getCommand();
-        
+
         if ( aditionalValues == null ) {
             aditionalValues = new HashMap<String, String>();
         }
-        if(value != null) {
+        if ( value != null ) {
             aditionalValues.put( "$value", value );
         }
-        
+
         Pattern pattern = Pattern.compile( "[a-z]+" );
         Matcher matcher = pattern.matcher( command );
 
@@ -104,7 +107,8 @@ public class DataConversionService extends AbstractService {
                 String params = matcher.group();
                 LOG.debug( "parameterlist:" + params );
 
-                pattern = Pattern.compile( "((\\'([a-zA-Z0-9\\,\\:\\-\\_\\. \\@\\[\\]\\+]|\\\\')+\\')|(\\$[a-zA-Z0-9\\_]+))+" );
+                pattern = Pattern
+                        .compile( "((\\'([a-zA-Z0-9\\,\\:\\-\\_\\. \\@\\[\\]\\+]|\\\\')+\\')|(\\$[a-zA-Z0-9\\_]+))+" );
                 matcher = pattern.matcher( params );
                 while ( matcher.find() ) {
                     String param = matcher.group();
@@ -116,10 +120,15 @@ public class DataConversionService extends AbstractService {
             if ( paramList != null && paramList.size() > 0 ) {
                 paramArray = paramList.toArray( new String[paramList.size()] );
             }
-            return dispatchCommand( commandName, paramArray, definition, aditionalValues );
+            result = executeCommand( commandName, paramArray, definition, aditionalValues );
         }
 
-        return null;
+        // Process any formatting rules (length etc.)
+        if ( ( definition.getLengthTarget() != 0 ) && ( result.length() > definition.getLengthTarget() ) ) {
+            result = result.substring( 0, definition.getLengthTarget() );
+        }
+
+        return result;
     }
 
     /**
@@ -129,7 +138,7 @@ public class DataConversionService extends AbstractService {
      * @param definition
      * @return
      */
-    public String dispatchCommand( String name, String[] params, MappingDefinition definition,
+    private String executeCommand( String name, String[] params, MappingDefinition definition,
             Map<String, String> aditionalValues ) {
 
         if ( name == null ) {
@@ -185,14 +194,14 @@ public class DataConversionService extends AbstractService {
                 value = stripParameter( params[0] );
             }
             String exp = stripParameter( params[1] );
-            
+
             if ( !StringUtils.isEmpty( exp ) ) {
                 Pattern pattern = Pattern.compile( exp );
 
                 Matcher matcher = pattern.matcher( value );
 
                 if ( matcher.find() ) {
-                    
+
                     String result = matcher.group();
                     LOG.trace( "Found match: " + result + " - " + matcher.start() + " - " + matcher.end() );
                     return result;
@@ -200,7 +209,7 @@ public class DataConversionService extends AbstractService {
                     LOG.error( "No match found: " + exp + " - " + value );
                 }
             }
-            
+
         } catch ( ParseException e ) {
             LOG.error( "Error while parsing parameters: " + e );
         }
@@ -226,8 +235,8 @@ public class DataConversionService extends AbstractService {
             String value = null;
             if ( isVariable( params[0] ) ) {
                 value = substitute( params[0], aditionalValues );
-                if(StringUtils.isEmpty( value )) {
-                    LOG.error( "unable to substitute variable: "+params[0] );
+                if ( StringUtils.isEmpty( value ) ) {
+                    LOG.error( "unable to substitute variable: " + params[0] );
                     return null;
                 }
             } else {

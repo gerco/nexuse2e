@@ -22,6 +22,8 @@ package org.nexuse2e.tools.mapping.csv;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nexuse2e.NexusException;
+
 /**
  * @author guido.esch
  *
@@ -30,9 +32,11 @@ import java.util.Map;
  */
 public class RecordContainer {
 
-    private String    separator;
-    private String    containerID;
-    private Map<String,Record> records;
+    private String              separator;
+    private String              containerID;
+    private Map<String, Record> records;
+    private boolean             singleFormat = false;
+    private boolean             skipHeader   = false;
 
     /**
      * @return id
@@ -77,7 +81,7 @@ public class RecordContainer {
         }
         return (Record) records.get( recordID );
     }
-    
+
     /**
      * @param value (custom identifier)
      * @return record
@@ -88,20 +92,20 @@ public class RecordContainer {
             records = new HashMap<String, Record>();
             return null;
         }
-        for (Record r : records.values()) {
-            System.out.println("value:"+r.getRecordValue()); //$NON-NLS-1$
-            System.out.println("id:"+r.getRecordID()); //$NON-NLS-1$
-            if(r.getRecordValue().equals(value))
-            {
+        for ( Record r : records.values() ) {
+            System.out.println( "value:" + r.getRecordValue() ); //$NON-NLS-1$
+            System.out.println( "id:" + r.getRecordID() ); //$NON-NLS-1$
+            if ( r.getRecordValue().equals( value ) ) {
                 return r;
-            }	
+            }
         }
         return null;
     }
+
     /**
      * @return records
      */
-    public Map<String,Record> getRecords() {
+    public Map<String, Record> getRecords() {
 
         return records;
     }
@@ -109,9 +113,17 @@ public class RecordContainer {
     /**
      * @param records
      */
-    public void setRecords( Map<String,Record> records ) {
+    public void setRecords( Map<String, Record> records ) {
 
         this.records = records;
+    }
+
+    public Record getSingleFormatRecord() throws NexusException {
+
+        if ( records.isEmpty() || records.size() > 1 ) {
+            throw new NexusException( "Wrong number of record formats!" );
+        }
+        return records.values().iterator().next();
     }
 
     /* (non-Javadoc)
@@ -123,7 +135,7 @@ public class RecordContainer {
         buffer.append( "Container:" ); //$NON-NLS-1$
         buffer.append( containerID + "\n" ); //$NON-NLS-1$
         if ( records != null ) {
-            for (Record record : records.values()) {
+            for ( Record record : records.values() ) {
                 buffer.append( "  " + record ); //$NON-NLS-1$
                 buffer.append( "\n" ); //$NON-NLS-1$
             }
@@ -148,5 +160,27 @@ public class RecordContainer {
     public void setSeparator( String separator ) {
 
         this.separator = separator;
+    }
+
+    public boolean isSingleFormat() {
+
+        return singleFormat;
+    }
+
+    public void setSingleFormat( boolean singleFormat ) {
+
+        this.singleFormat = singleFormat;
+    }
+
+    
+    public boolean isSkipHeader() {
+    
+        return skipHeader;
+    }
+
+    
+    public void setSkipHeader( boolean skipHeader ) {
+    
+        this.skipHeader = skipHeader;
     }
 }

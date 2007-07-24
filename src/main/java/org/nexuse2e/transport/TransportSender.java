@@ -42,18 +42,17 @@ import org.nexuse2e.service.http.HttpSenderService;
  */
 public class TransportSender extends AbstractPipelet {
 
-    private static final String                SERVICE_PARAM_NAME   = "service";
+    private static final String SERVICE_PARAM_NAME = "service";
 
-    private static Logger                      LOG                  = Logger.getLogger( TransportSender.class );
+    private static Logger       LOG                = Logger.getLogger( TransportSender.class );
 
-    private Service                            service              = null;
-    
+    private Service             service            = null;
+
     /**
      * Default constructor.
      */
     public TransportSender() {
 
-        
         parameterMap.put( SERVICE_PARAM_NAME, new ParameterDescriptor( ParameterType.SERVICE, "Service",
                 "The name of the service that shall be used by the sender", "" ) );
         frontendPipelet = true;
@@ -65,8 +64,7 @@ public class TransportSender extends AbstractPipelet {
      * @return
      * @throws NexusException
      */
-    public MessageContext processMessage( MessageContext messagePipelineParameter )
-            throws NexusException {
+    public MessageContext processMessage( MessageContext messagePipelineParameter ) throws NexusException {
 
         ( (SenderAware) service ).sendMessage( messagePipelineParameter );
         return messagePipelineParameter;
@@ -75,7 +73,7 @@ public class TransportSender extends AbstractPipelet {
     /* (non-Javadoc)
      * @see org.nexuse2e.Manageable#initialize(org.nexuse2e.configuration.EngineConfiguration)
      */
-    public void initialize( EngineConfiguration config ) {
+    public void initialize( EngineConfiguration config ) throws InstantiationException {
 
         Service service = null;
         String s = getParameter( SERVICE_PARAM_NAME );
@@ -106,7 +104,7 @@ public class TransportSender extends AbstractPipelet {
     public void teardown() {
 
         LOG.debug( "Freeing resources..." );
-        service              = null;
+        service = null;
         super.teardown();
 
     } // teardown
@@ -126,7 +124,11 @@ public class TransportSender extends AbstractPipelet {
         if ( SERVICE_PARAM_NAME.equals( name ) ) {
             Object v = getParameter( name );
             if ( v == null && value != null || value == null && v != null || !( v.equals( value ) ) ) {
-                initialize( Engine.getInstance().getCurrentConfiguration() );
+                try {
+                    initialize( Engine.getInstance().getCurrentConfiguration() );
+                } catch ( InstantiationException e ) {
+                    LOG.error( "Error initializing component: " + e );
+                }
             }
         }
     }

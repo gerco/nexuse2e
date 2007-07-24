@@ -66,7 +66,7 @@ import org.xml.sax.SAXException;
  */
 public class XMLDataMappingPipelet extends AbstractPipelet {
 
-    private static Logger      LOG                = Logger.getLogger( XSLTPipelet.class );
+    private static Logger      LOG                = Logger.getLogger( XMLDataMappingPipelet.class );
 
     public static final String CONFIG_FILE        = "config_file";
     public static final String MAPPING_SERVICE    = "mapping_service";
@@ -93,7 +93,7 @@ public class XMLDataMappingPipelet extends AbstractPipelet {
      * @see org.nexuse2e.messaging.AbstractPipelet#initialize(org.nexuse2e.configuration.EngineConfiguration)
      */
     @Override
-    public void initialize( EngineConfiguration config ) {
+    public void initialize( EngineConfiguration config ) throws InstantiationException {
 
         File testFile = null;
 

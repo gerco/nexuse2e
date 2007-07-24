@@ -150,7 +150,7 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
     /* (non-Javadoc)
      * @see org.nexuse2e.Manageable#initialize()
      */
-    public void initialize() {
+    public void initialize() throws InstantiationException {
 
         initialize( Engine.getInstance().getCurrentConfiguration() );
 

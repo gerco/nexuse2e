@@ -53,55 +53,63 @@ public class CSV2XMLMappingReader {
     /**
      * Comment for <code>RECORDS</code>
      */
-    public static String                 RECORDS        = "records";                             //$NON-NLS-1$
+    public static String                 RECORDS        = "records";
     /**
      * Comment for <code>RECORD</code>
      */
-    public static String                 RECORD         = "record";                              //$NON-NLS-1$
+    public static String                 RECORD         = "record";
     /**
      * Comment for <code>FIELDS</code>
      */
-    public static String                 FIELDS         = "fields";                              //$NON-NLS-1$
+    public static String                 FIELDS         = "fields";
     /**
      * Comment for <code>FIELD</code>
      */
-    public static String                 FIELD          = "field";                               //$NON-NLS-1$
+    public static String                 FIELD          = "field";
     /**
      * Comment for <code>FIELDID</code>
      */
-    public static String                 FIELDID        = "id";                                  //$NON-NLS-1$
+    public static String                 FIELDID        = "id";
     /**
      * Comment for <code>SOURCEID</code>
      */
-    public static String                 SOURCEID       = "sourceid";                            //$NON-NLS-1$
+    public static String                 SOURCEID       = "sourceid";
     /**
      * Comment for <code>TYPE</code>
      */
-    public static String                 TYPE           = "type";                                //$NON-NLS-1$
+    public static String                 TYPE           = "type";
     /**
      * Comment for <code>POS</code>
      */
-    public static String                 POS            = "pos";                                 //$NON-NLS-1$
+    public static String                 POS            = "pos";
     /**
      * Comment for <code>LENGTH</code>
      */
-    public static String                 LENGTH         = "length";                              //$NON-NLS-1$
+    public static String                 LENGTH         = "length";
     /**
      * 
      */
-    public static String                 TRIM           = "trim";                              //$NON-NLS-1$
+    public static String                 TRIM           = "trim";
     /**
      * 
      */
-    public static String                 ALIGN          = "align";                              //$NON-NLS-1$
+    public static String                 ALIGN          = "align";
     /**
      * 
      */
-    public static String                 FILLER         = "filler";                              //$NON-NLS-1$
+    public static String                 FILLER         = "filler";
     /**
      * 
      */
-    public static String                 METHOD         = "method";                              //$NON-NLS-1$
+    public static String                 METHOD         = "method";
+    /**
+     * 
+     */
+    public static String                 SINGLE_FORMAT  = "singleFormat";
+    /**
+     * 
+     */
+    public static String                 SKIP_HEADER    = "skipHeader";
 
     /**
      * Comment for <code>ABSOLUTEID</code>
@@ -134,7 +142,7 @@ public class CSV2XMLMappingReader {
                 Node root = (Node) xpath.evaluate( "/" + RECORDS, document, XPathConstants.NODE );
 
                 NamedNodeMap attribs = root.getAttributes();
-                Node attr = attribs.getNamedItem( "id" ); //$NON-NLS-1$
+                Node attr = attribs.getNamedItem( "id" );
                 String nodeValue = null;
                 if ( attr != null ) {
                     nodeValue = attr.getNodeValue();
@@ -146,12 +154,30 @@ public class CSV2XMLMappingReader {
                 }
                 containers.put( nodeValue, container );
 
-                attr = attribs.getNamedItem( "separator" ); //$NON-NLS-1$
-                nodeValue = ","; //$NON-NLS-1$
+                attr = attribs.getNamedItem( "separator" );
+                nodeValue = ",";
                 if ( attr != null ) {
                     nodeValue = attr.getNodeValue();
                 }
                 container.setSeparator( nodeValue );
+
+                attr = attribs.getNamedItem( SINGLE_FORMAT );
+                nodeValue = ",";
+                if ( attr != null ) {
+                    nodeValue = attr.getNodeValue();
+                    if ( "true".equalsIgnoreCase( nodeValue ) ) {
+                        container.setSingleFormat( true );
+                    }
+                }
+
+                attr = attribs.getNamedItem( SKIP_HEADER );
+                nodeValue = ",";
+                if ( attr != null ) {
+                    nodeValue = attr.getNodeValue();
+                    if ( "true".equalsIgnoreCase( nodeValue ) ) {
+                        container.setSkipHeader( true );
+                    }
+                }
 
                 xpath = XPathFactory.newInstance().newXPath();
                 NodeList records = (NodeList) xpath.evaluate( "/" + RECORDS + "/" + RECORD, document,
@@ -163,16 +189,10 @@ public class CSV2XMLMappingReader {
                 }
 
             } else {
-                System.out.println( "CSV2XML MappingFile: " + mappingFile.toString() + " doesn't exist!" ); //$NON-NLS-1$ //$NON-NLS-2$
+                System.out.println( "CSV2XML MappingFile: " + mappingFile.toString() + " doesn't exist!" ); //$NON-NLS-2$
             }
         } catch ( Exception e ) {
 
-            //            Plugin
-            //                    .getDefault()
-            //                    .log(
-            //                            new LogMessage(
-            //                                    LogMessage.ERROR,
-            //                                    "Processing", e.getClass().getName(), this, "parseMappingFile", 144, e.getLocalizedMessage(), e ) ); //$NON-NLS-1$
             System.out.println( "Error: " + e.getLocalizedMessage() );
             e.printStackTrace();
         }
@@ -186,19 +206,19 @@ public class CSV2XMLMappingReader {
     public Record parseRecord( Node recordNode ) {
 
         if ( recordNode == null ) {
-            System.out.println( "bad!!?!?!?" ); //$NON-NLS-1$
+            System.out.println( "bad!!?!?!?" );
             return null;
         }
         Record record = new Record();
         NamedNodeMap attribs = recordNode.getAttributes();
-        Node attr = attribs.getNamedItem( "value" ); //$NON-NLS-1$
+        Node attr = attribs.getNamedItem( "value" );
         String nodeValue = null;
         if ( attr != null ) {
             nodeValue = attr.getNodeValue();
             record.setRecordValue( nodeValue );
         }
 
-        attr = attribs.getNamedItem( "active" ); //$NON-NLS-1$
+        attr = attribs.getNamedItem( "active" );
         nodeValue = null;
         if ( attr != null ) {
             nodeValue = attr.getNodeValue();
@@ -211,24 +231,24 @@ public class CSV2XMLMappingReader {
             record.setActive( true );
         }
 
-        attr = attribs.getNamedItem( "id" ); //$NON-NLS-1$
+        attr = attribs.getNamedItem( "id" );
         nodeValue = null;
         if ( attr != null ) {
             nodeValue = attr.getNodeValue();
             record.setRecordID( nodeValue );
         }
-        attr = attribs.getNamedItem( "conversationclass" ); //$NON-NLS-1$
+        attr = attribs.getNamedItem( "conversationclass" );
         if ( attr != null ) {
             nodeValue = attr.getNodeValue();
-            if(!StringUtils.isEmpty( nodeValue )) {
+            if ( !StringUtils.isEmpty( nodeValue ) ) {
                 record.setConversionClass( nodeValue );
             }
         }
 
         try {
             XPath xpath = XPathFactory.newInstance().newXPath();
-            NodeList fields = (NodeList) xpath.evaluate(FIELDS + "/" + FIELD , recordNode, XPathConstants.NODESET);
-            
+            NodeList fields = (NodeList) xpath.evaluate( FIELDS + "/" + FIELD, recordNode, XPathConstants.NODESET );
+
             for ( int i = 0; i < fields.getLength(); i++ ) {
                 Node field = fields.item( i );
                 RecordEntry entry = new RecordEntry();
@@ -249,7 +269,7 @@ public class CSV2XMLMappingReader {
                 attr = attribs.getNamedItem( TYPE );
                 if ( attr != null ) {
                     nodeValue = attr.getNodeValue();
-                    if ( nodeValue.equals( "absolute" ) ) { //$NON-NLS-1$
+                    if ( nodeValue.equals( "absolute" ) ) {
                         entry.setType( ABSOLUTEID );
                     } else {
                         entry.setType( RELATIVEID );
@@ -280,59 +300,53 @@ public class CSV2XMLMappingReader {
                 attr = attribs.getNamedItem( FILLER );
                 if ( attr != null ) {
                     nodeValue = attr.getNodeValue();
-                    if(!StringUtils.isEmpty( nodeValue)) {
-                        entry.setFiller( nodeValue.substring( 0,1 ) );
+                    if ( !StringUtils.isEmpty( nodeValue ) ) {
+                        entry.setFiller( nodeValue.substring( 0, 1 ) );
                     } else {
-                        entry.setFiller(" ");
+                        entry.setFiller( " " );
                     }
                 } else {
-                    entry.setFiller(" ");
+                    entry.setFiller( " " );
                 }
                 attr = attribs.getNamedItem( METHOD );
                 if ( attr != null ) {
                     nodeValue = attr.getNodeValue();
-                    if(nodeValue != null&& record.getConversionClass() != null) {
-                        
+                    if ( nodeValue != null && record.getConversionClass() != null ) {
+
                         entry.setMethod( nodeValue.trim() );
                     }
                 }
                 attr = attribs.getNamedItem( ALIGN );
                 if ( attr != null ) {
                     nodeValue = attr.getNodeValue();
-                    if(!StringUtils.isEmpty(nodeValue)) {
-                        if(nodeValue.trim().toLowerCase().equals( "left" )) {
-                            entry.setAlign( Align.LEFT );    
-                        } else if(nodeValue.trim().toLowerCase().equals( "right" )) {
-                            entry.setAlign( Align.RIGHT );    
+                    if ( !StringUtils.isEmpty( nodeValue ) ) {
+                        if ( nodeValue.trim().toLowerCase().equals( "left" ) ) {
+                            entry.setAlign( Align.LEFT );
+                        } else if ( nodeValue.trim().toLowerCase().equals( "right" ) ) {
+                            entry.setAlign( Align.RIGHT );
                         }
-                        
+
                     }
                 }
                 attr = attribs.getNamedItem( TRIM );
                 if ( attr != null ) {
                     nodeValue = attr.getNodeValue();
-                    if(!StringUtils.isEmpty(nodeValue)) {
-                        if(nodeValue.trim().toLowerCase().equals( "false" )) {
-                            entry.setTrim( Trim.FALSE );    
-                        } else if(nodeValue.trim().toLowerCase().equals( "true" )) {
-                            entry.setTrim( Trim.TRUE );        
-                        } else if(nodeValue.trim().toLowerCase().equals( "whitespaces" )) {
-                            entry.setTrim( Trim.WHITESPACES );        
+                    if ( !StringUtils.isEmpty( nodeValue ) ) {
+                        if ( nodeValue.trim().toLowerCase().equals( "false" ) ) {
+                            entry.setTrim( Trim.FALSE );
+                        } else if ( nodeValue.trim().toLowerCase().equals( "true" ) ) {
+                            entry.setTrim( Trim.TRUE );
+                        } else if ( nodeValue.trim().toLowerCase().equals( "whitespaces" ) ) {
+                            entry.setTrim( Trim.WHITESPACES );
                         }
-                        
+
                     }
                 }
 
             }
 
         } catch ( Exception e ) {
-//            Plugin
-//                    .getDefault()
-//                    .log(
-//                            new LogMessage(
-//                                    LogMessage.ERROR,
-//                                    "Processing", e.getClass().getName(), this, "parseRecord", 145, e.getLocalizedMessage(), e ) ); //$NON-NLS-1$
-            System.out.println("Error: "+e.getLocalizedMessage());
+            System.out.println( "Error: " + e.getLocalizedMessage() );
             e.printStackTrace();
         }
 

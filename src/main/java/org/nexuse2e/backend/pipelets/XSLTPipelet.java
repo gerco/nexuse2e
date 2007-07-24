@@ -67,7 +67,7 @@ public class XSLTPipelet extends AbstractPipelet {
      * @see org.nexuse2e.messaging.AbstractPipelet#initialize(org.nexuse2e.configuration.EngineConfiguration)
      */
     @Override
-    public void initialize( EngineConfiguration config ) {
+    public void initialize( EngineConfiguration config ) throws InstantiationException {
 
         File testFile = null;
 

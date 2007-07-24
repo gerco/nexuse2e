@@ -36,7 +36,7 @@ public class MappingDefinitions {
         mappingDefinitions.add( mappingDefinition );
     }
 
-    public List getMappingDefinitions() {
+    public List<MappingDefinition> getMappingDefinitions() {
 
         return mappingDefinitions;
     }

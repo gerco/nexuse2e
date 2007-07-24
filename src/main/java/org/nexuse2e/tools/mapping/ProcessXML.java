@@ -372,8 +372,8 @@ public class ProcessXML {
                 i--;
                 continue;
             }
-            MagicEntry me = m.getEntryByXpathID( entry.getEntryID() );
-            if ( me != null && !me.getValue().toLowerCase().startsWith( "file" ) ) { //$NON-NLS-1$
+            MagicEntry mappingEntry = m.getEntryByXpathID( entry.getEntryID() );
+            if ( mappingEntry != null && !mappingEntry.isFileSource() ) { //$NON-NLS-1$
                 blockentries.remove( i );
                 i--;
                 continue;
@@ -432,7 +432,8 @@ public class ProcessXML {
                                         line.addColumn( r.getRecordValue(), 0 );
                                     }
                                     if ( r != null ) {
-                                        RecordEntry re = r.getEntry( me.getValue().substring( 5 ) );
+                                        // RecordEntry re = r.getEntry( me.getValue().substring( 5 ) );
+                                        RecordEntry re = r.getEntry( me.getValue() ); // MBR: Changed 20070723 - I assume this was cutting off file/
                                         if ( re != null ) {
                                             if ( reader.getFirstContainer().getSeparator().equals( "FIXED" ) ) {
                                                 line.addColumn( temp.getNodeValue(), r.getColumnNum( re ) );

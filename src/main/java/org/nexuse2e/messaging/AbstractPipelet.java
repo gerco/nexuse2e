@@ -55,7 +55,7 @@ abstract public class AbstractPipelet implements Pipelet {
         status = BeanStatus.INITIALIZED;
     }
 
-    public void initialize( EngineConfiguration config ) {
+    public void initialize( EngineConfiguration config ) throws InstantiationException {
         
         LOG.trace( "Initializing " + getClass() );
 

@@ -77,20 +77,20 @@ public class CSVLine {
     public CSVLine( String line, RecordContainer container ) {
 
         boolean lineDescFound = false;
-        Record r = null;
+        Record record = null;
         for ( Iterator<Record> iter = container.getRecords().values().iterator(); iter.hasNext(); ) {
-            r = iter.next();
-            if ( r.getRecordValue().length() <= line.length() ) {
-                if ( line.startsWith( r.getRecordValue() ) ) {
+            record = iter.next();
+            if ( record.getRecordValue().length() <= line.length() ) {
+                if ( line.startsWith( record.getRecordValue() ) ) {
                     lineDescFound = true;
                     break;
                 }
             }
         }
-        if ( !lineDescFound || ( r != null && r.getEntries().size() > 0 && !container.getSeparator().equals( "FIXED" ) ) ) {
+        if ( !lineDescFound || ( record != null && record.getEntries().size() > 0 && !container.getSeparator().equals( "FIXED" ) ) ) {
             splitStringRelative( line, container.getSeparator() );
         } else {
-            splitStringAbsolute( line, r );
+            splitStringAbsolute( line, record );
         }
     }
 
@@ -242,7 +242,7 @@ public class CSVLine {
             for ( int i = 0; i < columns.size(); i++ ) {
                 String value = (String) columns.get( i );
                 RecordEntry entry = (RecordEntry) desc.getEntries().get( i );
-                value = CallExternalModifier( value, entry );
+                value = callExternalModifier( value, entry );
                 
                 if ( entry.getTrim() != Trim.FALSE ) {
                     value = value.trim();
@@ -273,7 +273,7 @@ public class CSVLine {
 
                 RecordEntry entry = (RecordEntry) desc.getEntries().get( i );
 
-                colVal = CallExternalModifier( colVal, entry );
+                colVal = callExternalModifier( colVal, entry );
 
                 if ( entry.getTrim() != Trim.FALSE ) {
                     colVal = colVal.trim();
@@ -317,7 +317,7 @@ public class CSVLine {
      * @param entry
      * @return
      */
-    private String CallExternalModifier( String colVal, RecordEntry entry ) {
+    private String callExternalModifier( String colVal, RecordEntry entry ) {
 
         if ( !StringUtils.isEmpty( entry.getMethod() ) ) {
             if ( !StringUtils.isEmpty( desc.getConversionClass() ) ) {

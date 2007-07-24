@@ -19,6 +19,8 @@
  */
 package org.nexuse2e.tools.mapping.magic;
 
+import org.nexuse2e.tools.mapping.csv.RecordEntry;
+
 /**
  * @author guido.esch
  *
@@ -27,8 +29,10 @@ package org.nexuse2e.tools.mapping.magic;
  */
 public class MagicEntry {
 
-    private String xPathId;
-    private String value;
+    private String  xPathId;
+    private String  value;
+    private boolean fileSource   = false;
+    private boolean staticSource = false;
 
     /**
      * @return value
@@ -43,7 +47,15 @@ public class MagicEntry {
      */
     public void setValue( String value ) {
 
-        this.value = value;
+        if ( value.toLowerCase().startsWith( "file" ) ) {
+            fileSource = true;
+            this.value = value.substring( 5 );
+        } else if ( value.toLowerCase().startsWith( "static" ) ) {
+            staticSource = true;
+            this.value = value.substring( 7 );
+        } else {
+            this.value = value;
+        }
     }
 
     /**
@@ -75,5 +87,25 @@ public class MagicEntry {
         buffer.append( value );
 
         return buffer.toString();
+    }
+
+    public boolean isFileSource() {
+
+        return fileSource;
+    }
+
+    public void setFileSource( boolean fileSource ) {
+
+        this.fileSource = fileSource;
+    }
+
+    public boolean isStaticSource() {
+
+        return staticSource;
+    }
+
+    public void setStaticSource( boolean staticSource ) {
+
+        this.staticSource = staticSource;
     }
 }

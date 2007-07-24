@@ -150,7 +150,7 @@ public class ProcessCSV {
         mfe.setCsvmappings( csvMapping );
         mfe.setXmlblocks( xmlBlock );
         mfe.setMapping( magic );
-        mfe.setId( "test-mapping" ); 
+        mfe.setId( "test-mapping" );
 
         try {
             ProcessCSV process = new ProcessCSV();
@@ -172,7 +172,7 @@ public class ProcessCSV {
      * @return result
      */
     public String process( CSVMappingFileEntry mappingFileEntry, InputStream content ) throws NexusException {
-        
+
         boolean detectedError = false;
 
         long startTime = System.currentTimeMillis();
@@ -227,7 +227,7 @@ public class ProcessCSV {
         // Process input
         InputStreamReader isr = new InputStreamReader( content );
         BufferedReader br = new BufferedReader( isr );
-        String line = ""; 
+        String line = "";
         while ( line != null ) {
             try {
                 line = br.readLine();
@@ -260,7 +260,7 @@ public class ProcessCSV {
         }
 
         LOG.debug( "Time for conversion: " + ( System.currentTimeMillis() - startTime ) );
-        
+
         if ( detectedError ) {
             throw new NexusException( "Error converting one or more lines!" );
         }
@@ -279,12 +279,12 @@ public class ProcessCSV {
         RecordContainer recordContainer = flatFileDefinitionReader.getFirstContainer();
 
         if ( recordContainer == null ) {
-            LOG.error( "no recordContainer found" ); 
+            LOG.error( "no recordContainer found" );
             return;
         }
         Record record = recordContainer.getRecordByValue( line.getId() );
         if ( record == null ) {
-            LOG.error( "no record for: " + line.getId() + " found" );  
+            LOG.error( "no record for: " + line.getId() + " found" );
             return;
         }
         if ( !record.isActive() ) {
@@ -293,36 +293,37 @@ public class ProcessCSV {
         MagicContainer mc = mappingDefinitionReader.getFirstContainer();
         Magic m = mc.getMappingByRecordId( record.getRecordID() );
         if ( m == null ) {
-            LOG.error( "no magic for: " + record.getRecordID() + " found" );  
+            LOG.error( "no magic for: " + record.getRecordID() + " found" );
             return;
         }
         XMLBlockContainer bc = xmlFileDefinitionReader.getFirstContainer();
         if ( bc == null ) {
-            LOG.error( "no blockContainer for:" + m.getBlockID() + " found" );  
+            LOG.error( "no blockContainer for:" + m.getBlockID() + " found" );
             return;
         }
         XMLBlock b = bc.getXMLBLockbyBlockID( m.getBlockID() );
         if ( b == null ) {
-            LOG.error( "no block found for:" + m.getBlockID() ); 
+            LOG.error( "no block found for:" + m.getBlockID() );
             return;
         }
         if ( b.getBlockEntries() == null ) {
-            LOG.error( "no block entries found for:" + m.getBlockID() ); 
+            LOG.error( "no block entries found for:" + m.getBlockID() );
             return;
         }
         Iterator<XMLBlockEntry> i = b.getBlockEntries().iterator();
         while ( i.hasNext() ) {
-            XMLBlockEntry entry = i.next();
-            if ( entry.isTextNode() || entry.isAttribute() ) { 
+            XMLBlockEntry xmlMappingEntry = i.next();
+            if ( xmlMappingEntry.isTextNode() || xmlMappingEntry.isAttribute() ) {
 
                 try {
-                    String node = entry.getNodePath();
+                    String node = xmlMappingEntry.getNodePath();
 
                     XPath xpath = XPathFactory.newInstance().newXPath();
-                    NodeList nodes = (NodeList) xpath.evaluate( entry.getPosition(), document, XPathConstants.NODESET );
+                    NodeList nodes = (NodeList) xpath.evaluate( xmlMappingEntry.getPosition(), document,
+                            XPathConstants.NODESET );
 
                     if ( nodes == null || nodes.getLength() == 0 ) {
-                        LOG.error( "Pos: " + entry.getPosition() + " not found" );  
+                        LOG.error( "Pos: " + xmlMappingEntry.getPosition() + " not found" );
                         return;
                     }
 
@@ -332,57 +333,41 @@ public class ProcessCSV {
                     nodes = (NodeList) xpath.evaluate( node, root, XPathConstants.NODESET );
 
                     if ( nodes == null ) {
-                        LOG.error( "Target node not found" ); 
+                        LOG.error( "Target node not found" );
                         return;
                     }
 
                     Node target = nodes.item( nodes.getLength() - 1 );
-                    MagicEntry me = m.getEntryByXpathID( entry.getEntryID() );
-                    String value = "static/"; 
-                    if ( me != null ) {
-                        value = me.getValue();
+                    MagicEntry mappingEntry = m.getEntryByXpathID( xmlMappingEntry.getEntryID() );
+                    String value = "static/";
+                    if ( mappingEntry != null ) {
+                        value = mappingEntry.getValue();
                     } else {
-                        LOG.error( "entryID: " + entry.getEntryID() + " not found" );  
+                        LOG.error( "entryID: " + xmlMappingEntry.getEntryID() + " not found" );
                     }
-                    if ( value.toLowerCase().startsWith( "file" ) ) { 
-                        value = value.substring( 5 );
-                        RecordEntry e = record.getEntry( value );
+                    if ( mappingEntry.isFileSource() ) {
+                        RecordEntry recordEntry = record.getEntry( value );
                         try {
                             if ( !recordContainer.getSeparator().equals( "FIXED" ) ) {
-                                value = line.columns.get( e.getPosition() );
+                                value = line.columns.get( recordEntry.getPosition() );
                             } else {
-                                value = line.columns.get( record.getColumnNum( e ) );
+                                value = line.columns.get( record.getColumnNum( recordEntry ) );
+                            }
+
+                            if ( xmlMappingEntry.getLength() != -1 && ( value.length() > xmlMappingEntry.getLength() ) ) {
+                                value = value.substring( 0, xmlMappingEntry.getLength() );
                             }
                         } catch ( RuntimeException e1 ) {
-                            value = "invalid"; 
+                            LOG.error( "Error converting flat file line: " + e1 );
+                            value = "error";
                         }
-                    } else if ( value.toLowerCase().startsWith( "static" ) ) { 
-                        value = value.substring( 7 );
-                    }
-                    //                    else if ( value.toLowerCase().startsWith( "internal" ) ) { 
-                    //                        value = value.substring( 9 );
-                    //                        try {
-                    //                            value = Plugin.getDefault().getInternalMappingByID( value );
-                    //                        } catch ( RuntimeException e1 ) {
-                    //                            value = "invalid"; 
-                    //                            Plugin
-                    //                                    .getDefault()
-                    //                                    .log(
-                    //                                            new LogMessage(
-                    //                                                    LogMessage.ERROR,
-                    //                                                    "Processing", e1.getClass().getName(), this, "processLine", 156, e1.getLocalizedMessage(), e1 ) ); 
-                    //                        }
-
-                    //                    }
-                    else {
-                        LOG.error( "only file/static is supported!" ); 
-                        value = "invalid"; 
+                    } else if ( !mappingEntry.isStaticSource() ) {
+                        LOG.error( "Only file/static data source is supported!" );
+                        value = "invalid";
                     }
 
-                    // modify
-
-                    if ( entry.isAttribute() ) {
-                        Node attr = document.createAttribute( entry.getAttributeName() );
+                    if ( xmlMappingEntry.isAttribute() ) {
+                        Node attr = document.createAttribute( xmlMappingEntry.getAttributeName() );
                         attr.setNodeValue( value );
                         ( (Element) target ).setAttributeNode( (Attr) attr );
                     } else {
@@ -398,18 +383,19 @@ public class ProcessCSV {
                 try {
 
                     XPath xpath = XPathFactory.newInstance().newXPath();
-                    NodeList nodes = (NodeList) xpath.evaluate( entry.getPosition(), document, XPathConstants.NODESET );
+                    NodeList nodes = (NodeList) xpath.evaluate( xmlMappingEntry.getPosition(), document,
+                            XPathConstants.NODESET );
 
                     if ( nodes == null || nodes.getLength() == 0 ) {
-                        LOG.error( "pos:" + entry.getPosition() + " not found" );  
+                        LOG.error( "pos:" + xmlMappingEntry.getPosition() + " not found" );
                         return;
                     }
                     Node root = nodes.item( nodes.getLength() - 1 );
 
                     xpath = XPathFactory.newInstance().newXPath();
-                    nodes = (NodeList) xpath.evaluate( entry.getNode(), root, XPathConstants.NODESET );
+                    nodes = (NodeList) xpath.evaluate( xmlMappingEntry.getNode(), root, XPathConstants.NODESET );
 
-                    Node temp = document.createElement( entry.getNode() );
+                    Node temp = document.createElement( xmlMappingEntry.getNode() );
                     root.appendChild( temp );
 
                 } catch ( XPathExpressionException e ) {
@@ -417,7 +403,7 @@ public class ProcessCSV {
                     LOG.error( "Error: " + e.getLocalizedMessage() );
                 } catch ( Exception e ) {
                     LOG.error( "Error: " + e.getLocalizedMessage() );
-                    LOG.error( "Node: " + entry.getNode() );
+                    LOG.error( "Node: " + xmlMappingEntry.getNode() );
                 }
             }
         }

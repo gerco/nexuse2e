@@ -42,7 +42,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-
 /**
  * @author guido.esch
  *
@@ -51,42 +50,62 @@ import org.xml.sax.SAXParseException;
  */
 public class XMLBLockMappingReader {
 
-    private Map<String,XMLBlockContainer> containers = new HashMap<String,XMLBlockContainer>();
-    private XMLBlockContainer firstContainer  = null;
+    private Map<String, XMLBlockContainer> containers      = new HashMap<String, XMLBlockContainer>();
+    private XMLBlockContainer              firstContainer  = null;
 
     /**
      * Comment for <code>BLOCKS</code>
      */
-    public static String      BLOCKS          = "blocks";         //$NON-NLS-1$
+    public static String                   BLOCKS          = "blocks";
     /**
      * Comment for <code>BLOCK</code>
      */
-    public static String      BLOCK           = "block";          //$NON-NLS-1$
+    public static String                   BLOCK           = "block";
     /**
      * Comment for <code>XPATH</code>
      */
-    public static String      XPATH           = "xpath";          //$NON-NLS-1$
+    public static String                   XPATH           = "xpath";
     /**
      * Comment for <code>ENTRYID</code>
      */
-    public static String      ENTRYID         = "id";             //$NON-NLS-1$
+    public static String                   ENTRYID         = "id";
     /**
      * Comment for <code>POS</code>
      */
-    public static String      BLOCKID         = "id";             //$NON-NLS-1$
+    public static String                   BLOCKID         = "id";
     /**
      * Comment for <code>POS</code>
      */
-    public static String      POS             = "position";       //$NON-NLS-1$
+    public static String                   POS             = "position";
     /**
      * Comment for <code>NODE</code>
      */
-    public static String      NODE            = "node";           //$NON-NLS-1$
+    public static String                   NODE            = "node";
+    /**
+     * 
+     */
+    public static String                   LENGTH          = "length";
+    /**
+     * 
+     */
+    public static String                   TRIM            = "trim";
+    /**
+     * 
+     */
+    public static String                   ALIGN           = "align";
+    /**
+     * 
+     */
+    public static String                   FILLER          = "filler";
+    /**
+     * 
+     */
+    public static String                   METHOD          = "method";
 
     /**
      * Comment for <code>SIBLINGSEQUENCE</code>
      */
-    public static String      SIBLINGSEQUENCE = "siblingsequence"; //$NON-NLS-1$
+    public static String                   SIBLINGSEQUENCE = "siblingsequence";
 
     /**
      * @param file
@@ -96,11 +115,10 @@ public class XMLBLockMappingReader {
         try {
             File mappingFile = new File( file );
             if ( mappingFile.exists() ) {
-                
+
                 FileReader fileReaderXml = new FileReader( mappingFile );
                 InputSource input = new InputSource( fileReaderXml );
-                
-                
+
                 DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
                 docBuilderFactory.setValidating( false );
                 docBuilderFactory.setNamespaceAware( true );
@@ -124,17 +142,13 @@ public class XMLBLockMappingReader {
                     }
                 } );
                 Document document = docBuilder.parse( input );
-                
-                
-                
-                
-                
+
                 XPath xpath = XPathFactory.newInstance().newXPath();
-                String expression = "/" + BLOCKS  ;
-                Node root = (Node) xpath.evaluate(expression, document, XPathConstants.NODE);
-                
+                String expression = "/" + BLOCKS;
+                Node root = (Node) xpath.evaluate( expression, document, XPathConstants.NODE );
+
                 NamedNodeMap attribs = root.getAttributes();
-                Node attr = attribs.getNamedItem( "id" ); //$NON-NLS-1$
+                Node attr = attribs.getNamedItem( "id" );
                 String nodeValue = null;
                 if ( attr != null ) {
                     nodeValue = attr.getNodeValue();
@@ -145,28 +159,28 @@ public class XMLBLockMappingReader {
                 if ( firstContainer == null ) {
                     firstContainer = container;
                 }
-                
+
                 xpath = XPathFactory.newInstance().newXPath();
-                expression = "/" + BLOCKS + "/" + BLOCK  ;
-                NodeList blocks = (NodeList) xpath.evaluate(expression, document, XPathConstants.NODESET);
-                
+                expression = "/" + BLOCKS + "/" + BLOCK;
+                NodeList blocks = (NodeList) xpath.evaluate( expression, document, XPathConstants.NODESET );
+
                 for ( int i = 0; i < blocks.getLength(); i++ ) {
                     Node recordNode = blocks.item( i );
                     container.addXMLBLock( parseBlock( recordNode ) );
                 }
-                
+
             } else {
-                System.out.println( "XML Block File: " + mappingFile.toString() + " doesn't exist!" ); //$NON-NLS-1$ //$NON-NLS-2$
+                System.out.println( "XML Block File: " + mappingFile.toString() + " doesn't exist!" ); //$NON-NLS-2$
             }
         } catch ( Exception e ) {
 
-//            Plugin
-//                    .getDefault()
-//                    .log(
-//                            new LogMessage(
-//                                    LogMessage.ERROR,
-//                                    "Processing", e.getClass().getName(), this, "parseMappingFile", 166, e.getLocalizedMessage(), e ) ); //$NON-NLS-1$
-            System.out.println("Error: "+e.getLocalizedMessage());
+            //            Plugin
+            //                    .getDefault()
+            //                    .log(
+            //                            new LogMessage(
+            //                                    LogMessage.ERROR,
+            //                                    "Processing", e.getClass().getName(), this, "parseMappingFile", 166, e.getLocalizedMessage(), e ) ); 
+            System.out.println( "Error: " + e.getLocalizedMessage() );
             e.printStackTrace();
         }
 
@@ -179,18 +193,18 @@ public class XMLBLockMappingReader {
     public XMLBlock parseBlock( Node blockNode ) {
 
         if ( blockNode == null ) {
-            // System.out.println( "bad!!?!?!?" ); //$NON-NLS-1$
+            // System.out.println( "bad!!?!?!?" ); 
             return null;
         }
         XMLBlock block = new XMLBlock();
         NamedNodeMap attribs = blockNode.getAttributes();
-        Node attr = attribs.getNamedItem( BLOCKID ); //$NON-NLS-1$
+        Node attr = attribs.getNamedItem( BLOCKID );
         String nodeValue = null;
         if ( attr != null ) {
             nodeValue = attr.getNodeValue();
             block.setBlockID( nodeValue );
         }
-        attr = attribs.getNamedItem( SIBLINGSEQUENCE ); //$NON-NLS-1$
+        attr = attribs.getNamedItem( SIBLINGSEQUENCE );
         if ( attr != null ) {
             nodeValue = attr.getNodeValue();
             try {
@@ -204,11 +218,11 @@ public class XMLBLockMappingReader {
             block.setSiblingSequence( 0 );
         }
         try {
-            
+
             XPath xpath = XPathFactory.newInstance().newXPath();
-            String expression = XPATH  ;
-            NodeList fields = (NodeList) xpath.evaluate(expression, blockNode, XPathConstants.NODESET);
-            
+            String expression = XPATH;
+            NodeList fields = (NodeList) xpath.evaluate( expression, blockNode, XPathConstants.NODESET );
+
             for ( int i = 0; i < fields.getLength(); i++ ) {
                 Node field = fields.item( i );
                 XMLBlockEntry entry = new XMLBlockEntry();
@@ -232,22 +246,16 @@ public class XMLBLockMappingReader {
                     entry.setNode( nodeValue );
                 }
 
-                attr = attribs.getNamedItem( NODE );
+                attr = attribs.getNamedItem( LENGTH );
                 if ( attr != null ) {
                     nodeValue = attr.getNodeValue();
-                    entry.setNode( nodeValue );
+                    entry.setLength( Integer.parseInt( nodeValue ) );
                 }
 
             }
 
         } catch ( Exception e ) {
-//            Plugin
-//                    .getDefault()
-//                    .log(
-//                            new LogMessage(
-//                                    LogMessage.ERROR,
-//                                    "Processing", e.getClass().getName(), this, "parseBlock", 167, e.getLocalizedMessage(), e ) ); //$NON-NLS-1$
-            System.out.println("Error: "+e.getLocalizedMessage());
+            System.out.println( "Error: " + e.getLocalizedMessage() );
             e.printStackTrace();
         }
 
@@ -269,7 +277,7 @@ public class XMLBLockMappingReader {
     public XMLBlockContainer getContainerByID( String containerID ) {
 
         if ( containers == null ) {
-            containers = new HashMap<String,XMLBlockContainer>();
+            containers = new HashMap<String, XMLBlockContainer>();
             return null;
         }
         return containers.get( containerID );
