@@ -118,6 +118,14 @@ public class MessageSubmissionAction extends NexusE2EAction {
         }
         form.setActions( actionList );
         form.setReceivers( receiverList );
+        ArrayList<String> encodings = new ArrayList<String>();
+        encodings.add( "UTF-8" );
+        encodings.add( "ISO-8859-1" );
+        encodings.add( "UTF-16" );
+        encodings.add( "UTF-16LE" );
+        encodings.add( "UTF-16BE" );
+        encodings.add( "US-ASCII" );
+        form.setEncodings( encodings );
 
         // Check whether we need to submit the message(s)
         if ( SUBMIT_BUTTON.equals( request.getParameter( SUBMIT_BUTTON ) ) ) {
@@ -149,7 +157,12 @@ public class MessageSubmissionAction extends NexusE2EAction {
             try {
                 for ( int i = 0; i < form.getRepeat(); i++ ) {
                     if ( ( payload1 != null ) && ( payload1.getFileSize() != 0 ) ) {
-                        String payloadString = new String( payload1.getFileData() );
+                        String encoding = form.getEncoding();
+                        if ( encoding == null ) {
+                            encoding = "UTF-8";
+                        }
+                        
+                        String payloadString = new String( payload1.getFileData(), encoding );
                         // LOG.trace( "Payload: " + payloadString );
                         // Conversation.sendStringMessage( choreographyId, receiver, conversationId, action, payloadString );
                         Engine.getInstance().getCurrentConfiguration().getBackendPipelineDispatcher().processMessage(

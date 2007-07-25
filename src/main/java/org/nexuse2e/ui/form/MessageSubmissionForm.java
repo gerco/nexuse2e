@@ -42,6 +42,7 @@ public class MessageSubmissionForm extends ActionForm {
     private int               receiver         = 0;
     private String            primaryKey       = null;
     private String            conversationId   = null;
+    private String            encoding         = null;
     private int               repeat           = 1;
     private FormFile          payloadFile1     = null;
     private FormFile          payloadFile2     = null;
@@ -50,6 +51,7 @@ public class MessageSubmissionForm extends ActionForm {
     private List              choreographies   = null;
     private List              actions          = null;
     private List              receivers        = null;
+    private List<String>      encodings        = null;
 
     /**
      * @return Returns the actionId.
@@ -241,5 +243,27 @@ public class MessageSubmissionForm extends ActionForm {
     public void setPayloadFile3( FormFile payloadFile3 ) {
 
         this.payloadFile3 = payloadFile3;
+    }
+
+    public List<String> getEncodings() {
+
+        return encodings;
+    }
+
+    public void setEncodings( List<String> encodings ) {
+
+        this.encodings = encodings;
+    }
+
+    
+    public String getEncoding() {
+    
+        return encoding;
+    }
+
+    
+    public void setEncoding( String encoding ) {
+    
+        this.encoding = encoding;
     }
 } // MessageSubmissionForm
