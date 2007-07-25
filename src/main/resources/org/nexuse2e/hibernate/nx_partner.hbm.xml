@@ -10,7 +10,7 @@
         </id>
         
         <property name="type" type="int">
-            <column name="type" not-null="true" sql-type="integer">
+            <column name="type" not-null="true" sql-type="integer" unique-key="ix_partner_1">
                 <comment>e.g Localpartner information or Businesspartner</comment>
             </column>
         </property>
@@ -76,7 +76,7 @@
             </column>
         </property>
         <property name="partnerId" type="string">
-            <column name="partner_id" length="64" not-null="true" unique="true">
+            <column name="partner_id" length="64" not-null="true" unique-key="ix_partner_1">
                 <comment></comment>
             </column>
         </property>

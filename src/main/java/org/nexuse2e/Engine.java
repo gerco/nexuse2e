@@ -52,6 +52,7 @@ import org.nexuse2e.integration.NEXUSe2eInterface;
 import org.nexuse2e.integration.NEXUSe2eInterfaceImpl;
 import org.nexuse2e.messaging.TimestampFormatter;
 import org.nexuse2e.messaging.ebxml.EBXMLTimestampFormatter;
+import org.nexuse2e.messaging.mime.binary_base64;
 import org.nexuse2e.service.Service;
 import org.nexuse2e.util.CertificateUtil;
 import org.nexuse2e.util.XMLUtil;
@@ -102,6 +103,12 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     private String                           nexusE2ERoot                   = null;
 
     private Map<Object, EngineConfiguration> configurations                 = new HashMap<Object, EngineConfiguration>();
+
+    /**
+     * File type mappings.
+     * Keyed by mime type, content is the extension, without the '.'.
+     */
+    private Map<String, MimeMapping>         mimeMappings                   = new HashMap<String, MimeMapping>();
 
     private String                           timestampPattern               = null;
 
@@ -340,7 +347,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                         String handlerClass = classNode.getNodeValue().trim();
 
                         commandMap.addMailcap( mimeType + ";;x-java-content-handler=" + handlerClass );
-                        // setMimeHandler( mimeType, handlerClass );
+                        setMimeHandler( mimeType, handlerClass );
                     } else {
                         LOG.error( "Missing Class element for Mime handler:  " + mimeType );
                     }
@@ -381,12 +388,10 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                         Node fileTypeNode = fileTypeNodeList.item( x );
                         String fileType = fileTypeNode.getNodeValue();
 
-                        // add the first extention found to the mimeMappings hash
-                        /*
-                         if ( x == 0 ) {
-                         addMimeMapping( mimeType, fileType );
-                         }
-                         */
+                        // add the first extension found to the mimeMappings hash
+                        if ( x == 0 ) {
+                            addMimeMapping( mimeType, fileType );
+                        }
 
                         sb.append( " " + fileType );
                     }
@@ -397,6 +402,78 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
         } catch ( XPathExpressionException tx ) {
             LOG.error( "Error retrieving mime to file type mappings.", tx );
         }
+    }
+
+    /**
+     * Inner class to wrap MIME type to handler mappings
+     */
+    class MimeMapping {
+
+        String mimeType      = null;
+        String dataHandler   = null;
+        String fileExtension = null;
+    }
+
+    /**
+     * Retrieve the file extension based on a mime type.  Returns '' when not found, hence no extension.
+     * @param mimeType
+     * @return String Extension
+     */
+
+    public String getFileExtensionFromMime( String mimeType ) {
+
+        MimeMapping tempMimeMapping = (MimeMapping) mimeMappings.get( mimeType );
+
+        if ( tempMimeMapping != null ) {
+            return tempMimeMapping.fileExtension;
+        }
+
+        return null;
+    }
+
+    /**
+     * Add a mime mapping and it's associated extension.
+     * @param mimeType
+     * @param extension
+     */
+    private void addMimeMapping( String newMimeType, String newExtension ) {
+
+        MimeMapping tempMimeMapping = new MimeMapping();
+
+        tempMimeMapping.mimeType = newMimeType;
+        tempMimeMapping.fileExtension = newExtension;
+
+        mimeMappings.put( newMimeType, tempMimeMapping );
+    }
+
+    /**
+     * Set a Mime Handler DataHandler class name.
+     * @param newMimeType
+     * @param newDataHandlerClass
+     */
+    private void setMimeHandler( String newMimeType, String newDataHandlerClass ) {
+
+        MimeMapping tempMimeMapping = (MimeMapping) mimeMappings.get( newMimeType );
+
+        if ( tempMimeMapping != null ) {
+            tempMimeMapping.dataHandler = newDataHandlerClass;
+        }
+    }
+
+    /**
+     * Used to determine if a given content type is of type Binary.
+     */
+    public boolean isBinaryType( String contentType ) {
+
+        MimeMapping tempMimeMapping = (MimeMapping) mimeMappings.get( contentType );
+
+        if ( tempMimeMapping != null ) {
+            if ( tempMimeMapping.dataHandler.equalsIgnoreCase( binary_base64.class.getName() ) ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -499,6 +576,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     /**
      * 
      */
+    @SuppressWarnings("unchecked")
     private EngineConfiguration createEngineConfiguration() throws InstantiationException {
 
         try {

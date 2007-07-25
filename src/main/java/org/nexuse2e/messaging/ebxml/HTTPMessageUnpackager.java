@@ -36,6 +36,7 @@ import javax.mail.internet.MimeMultipart;
 
 import org.apache.log4j.Logger;
 import org.codehaus.xfire.util.Base64;
+import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
@@ -65,21 +66,23 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
     /* (non-Javadoc)
      * @see org.nexuse2e.messaging.MessageUnpackager#processMessage(com.tamgroup.nexus.e2e.persistence.pojo.MessagePojo, byte[])
      */
-    public MessageContext processMessage( MessageContext messageContext )
-            throws IllegalArgumentException, IllegalStateException {
+    public MessageContext processMessage( MessageContext messageContext ) throws IllegalArgumentException,
+            IllegalStateException {
 
         MessagePojo messagePojo = messageContext.getMessagePojo();
         Object object = messageContext.getData();
         if ( !( object instanceof byte[] ) ) {
-            throw new IllegalArgumentException( "Unable to process message: raw data not of type byte[] but: "+object.getClass().getName() );
+            throw new IllegalArgumentException( "Unable to process message: raw data not of type byte[] but: "
+                    + object.getClass().getName() );
         }
 
         // strip http header information in put in mime message for decoding
         StringBuffer sb = new StringBuffer();
-        if ( messagePojo.getCustomParameters().get( Constants.PARAMETER_PREFIX_HTTP+"message-id" ) != null ) {
-            sb.append( "Message-ID: " + messagePojo.getCustomParameters().get( Constants.PARAMETER_PREFIX_HTTP+ "message-id" ) + '\n' );
+        if ( messagePojo.getCustomParameters().get( Constants.PARAMETER_PREFIX_HTTP + "message-id" ) != null ) {
+            sb.append( "Message-ID: "
+                    + messagePojo.getCustomParameters().get( Constants.PARAMETER_PREFIX_HTTP + "message-id" ) + '\n' );
         }
-        String contentType = messagePojo.getCustomParameters().get( Constants.PARAMETER_PREFIX_HTTP+"content-type" );
+        String contentType = messagePojo.getCustomParameters().get( Constants.PARAMETER_PREFIX_HTTP + "content-type" );
         sb.append( "Mime-Version: 1.0\n" );
         sb.append( "Content-type: " + contentType + "\n\n" );
 
@@ -89,17 +92,17 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
 
         try {
 
-//            byte[] packedMessage = getContentFromRequest( request, data, preBufLen );
+            //            byte[] packedMessage = getContentFromRequest( request, data, preBufLen );
 
-            int payloadLength = ((byte[])messageContext.getData()).length;
-            byte[] packedMessage = new byte[payloadLength+preBufLen];
+            int payloadLength = ( (byte[]) messageContext.getData() ).length;
+            byte[] packedMessage = new byte[payloadLength + preBufLen];
             System.arraycopy( data, 0, packedMessage, 0, preBufLen );
-            System.arraycopy( (byte[])messageContext.getData(), 0, packedMessage, preBufLen, payloadLength );
-            
+            System.arraycopy( (byte[]) messageContext.getData(), 0, packedMessage, preBufLen, payloadLength );
+
             if ( LOG.isTraceEnabled() ) {
-                LOG.trace("--------------");
-                LOG.trace(new String(packedMessage));
-                LOG.trace("--------------");
+                LOG.trace( "--------------" );
+                LOG.trace( new String( packedMessage ) );
+                LOG.trace( "--------------" );
             }
             byte[] bodyPart = null;
             List<MessagePayloadPojo> payloads = new ArrayList<MessagePayloadPojo>();
@@ -113,7 +116,7 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
             if ( msgHdr != null ) {
                 msgHdr = msgHdr.trim();
             }
-            
+
             LOG.trace( "Message Header Content Type: '" + headerMimeBodyPart.getContentType() + "'" );
             messagePojo.setHeaderData( msgHdr.getBytes() );
             messagePojo.setMessagePayloads( payloads );
@@ -123,13 +126,13 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
                 Object bodyPartContent = mimeBodyPart.getContent();
                 if ( bodyPartContent instanceof ByteArrayInputStream ) {
                     ByteArrayInputStream contentIS = (ByteArrayInputStream) bodyPartContent;
-                    if ( isBinaryType() ) {
+                    if ( isBinaryType( mimeBodyPart.getContentType() ) ) {
                         bodyPart = retrieveBinaryContent( contentIS );
                     } else {
                         bodyPart = retrieveContent( contentIS );
                     }
                 } else {
-                    if ( isBinaryType() ) {
+                    if ( isBinaryType( mimeBodyPart.getContentType() ) ) {
                         bodyPart = (byte[]) ( bodyPartContent );
                     } else {
                         bodyPart = ( (String) bodyPartContent ).getBytes();
@@ -168,8 +171,6 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
         return messageContext;
 
     } // processMessage
-
-    
 
     /**
      * dcode a mime message based on a byte array.
@@ -212,11 +213,9 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
      * Determin if this payload is a wrapper for a binary type.
      * @returns boolean
      */
-    public boolean isBinaryType() {
+    public boolean isBinaryType( String contentType ) {
 
-        // TODO
-        // return Engine.getInstance().isBinaryType( contentType );
-        return false;
+        return Engine.getInstance().isBinaryType( contentType );
     }
 
     /**
