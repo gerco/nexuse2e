@@ -22,6 +22,7 @@ package org.nexuse2e.backend.pipelets;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.digester.Digester;
@@ -30,6 +31,8 @@ import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
+import org.nexuse2e.backend.pipelets.helper.PartnerSpecificConfiguration;
+import org.nexuse2e.backend.pipelets.helper.PartnerSpecificConfigurations;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
@@ -48,27 +51,34 @@ import org.xml.sax.SAXException;
  */
 public class IntermediateDataMappingPipelet extends AbstractPipelet {
 
-    private static Logger         LOG                = Logger.getLogger( IntermediateDataMappingPipelet.class );
+    private static Logger                       LOG                           = Logger
+                                                                                      .getLogger( IntermediateDataMappingPipelet.class );
 
-    public static final String    CONFIG_FILE        = "config_file";
-    public static final String    MAPPING_SERVICE    = "mapping_service";
+    public static final String                  PARTNER_SPECIFIC              = "partnerSpecific";
+    public static final String                  CONFIG_FILE                   = "configFile";
+    public static final String                  MAPPING_SERVICE               = "mappingService";
 
-    public static final String    COMMAND_MAP_LEFT   = "$map_left";
-    public static final String    COMMAND_MAP_RIGHT  = "$map_right";
+    public static final String                  COMMAND_MAP_LEFT              = "$map_left";
+    public static final String                  COMMAND_MAP_RIGHT             = "$map_right";
 
-    private String                configFileName     = null;
-    private DataConversionService mappingService     = null;
-    private MappingDefinitions    mappingDefinitions = null;
+    private String                              configFileName                = null;
+    private DataConversionService               mappingService                = null;
+    private MappingDefinitions                  mappingDefinitions            = null;
+    private PartnerSpecificConfigurations       partnerSpecificConfigurations = null;
+    private boolean                             partnerSpecific               = false;
+    private HashMap<String, MappingDefinitions> partnerConfigurations         = null;
 
     /**
      * 
      */
     public IntermediateDataMappingPipelet() {
 
-        parameterMap.put( CONFIG_FILE, new ParameterDescriptor( ParameterType.STRING, "Configuration Path",
-                "Path to configuration file", "" ) );
         parameterMap.put( MAPPING_SERVICE, new ParameterDescriptor( ParameterType.SERVICE, "Data Mapping Service",
                 "The Data Mapping and Conversion Service", null ) );
+        parameterMap.put( CONFIG_FILE, new ParameterDescriptor( ParameterType.STRING, "Configuration Path",
+                "Path to configuration file", "" ) );
+        parameterMap.put( PARTNER_SPECIFIC, new ParameterDescriptor( ParameterType.BOOLEAN,
+                "Partner Specific Configuration", "Partner Specific Configuration", Boolean.FALSE ) );
     }
 
     /* (non-Javadoc)
@@ -89,6 +99,11 @@ public class IntermediateDataMappingPipelet extends AbstractPipelet {
             }
         }
 
+        Boolean partnerSpecificValue = getParameter( PARTNER_SPECIFIC );
+        if ( partnerSpecificValue != null ) {
+            partnerSpecific = partnerSpecificValue.booleanValue();
+        }
+
         String configFileNameValue = getParameter( CONFIG_FILE );
         if ( ( configFileNameValue != null ) && ( configFileNameValue.length() != 0 ) ) {
             configFileName = configFileNameValue;
@@ -99,7 +114,18 @@ public class IntermediateDataMappingPipelet extends AbstractPipelet {
                 throw new InstantiationException( "Configuration file does not exist!" );
             }
 
-            mappingDefinitions = readConfiguration( configFileName );
+            if ( partnerSpecific ) {
+                partnerSpecificConfigurations = readPartnerSpecificConfigurations( configFileName );
+                partnerConfigurations = new HashMap<String, MappingDefinitions>();
+                for ( PartnerSpecificConfiguration partnerSpecificConfiguration : partnerSpecificConfigurations
+                        .getPartnerSpecificConfigurations() ) {
+                    MappingDefinitions partnerMappingDefinitions = readConfiguration( partnerSpecificConfiguration
+                            .getConfigurationFile() );
+                    partnerConfigurations.put( partnerSpecificConfiguration.getPartnerId(), partnerMappingDefinitions );
+                }
+            } else {
+                mappingDefinitions = readConfiguration( configFileName );
+            }
 
         } else {
             status = BeanStatus.ERROR;
@@ -124,7 +150,8 @@ public class IntermediateDataMappingPipelet extends AbstractPipelet {
             Object records = messageContext.getData();
             if ( ( records != null ) && ( records instanceof List ) ) {
                 try {
-                    processMappings( (List<FlatFileRecord>) records );
+                    processMappings( messageContext.getMessagePojo().getParticipant().getPartner().getPartnerId(),
+                            (List<FlatFileRecord>) records );
 
                     LOG.debug( "Modified records: " + records );
                 } catch ( Exception e ) {
@@ -145,9 +172,21 @@ public class IntermediateDataMappingPipelet extends AbstractPipelet {
      * @param document
      * @return
      */
-    private List<FlatFileRecord> processMappings( List<FlatFileRecord> records ) {
+    private List<FlatFileRecord> processMappings( String partnerId, List<FlatFileRecord> records ) throws NexusException {
 
-        for ( MappingDefinition mappingDefinition : mappingDefinitions.getMappingDefinitions() ) {
+        MappingDefinitions theMappingDefinitions = null;
+
+        if ( partnerSpecific ) {
+            theMappingDefinitions = partnerConfigurations.get( partnerId );
+        } else {
+            theMappingDefinitions = mappingDefinitions;
+        }
+        
+        if ( theMappingDefinitions == null ) {
+            throw new NexusException( "No mappings found for partner: " + partnerId );
+        }
+
+        for ( MappingDefinition mappingDefinition : theMappingDefinitions.getMappingDefinitions() ) {
             LOG.debug( "def.Category: " + mappingDefinition.getCategory() );
             LOG.debug( "def.Command: " + mappingDefinition.getCommand() );
             LOG.debug( "def.XPath: " + mappingDefinition.getXpath() );
@@ -185,6 +224,36 @@ public class IntermediateDataMappingPipelet extends AbstractPipelet {
         }
 
         return result;
+    }
+
+    /**
+     * @param configFileName
+     * @return
+     */
+    private PartnerSpecificConfigurations readPartnerSpecificConfigurations( String configFileName ) {
+
+        PartnerSpecificConfigurations partnerSpecificConfigurations = null;
+        Digester digester = new Digester();
+        digester.setValidating( false );
+        digester.addObjectCreate( "PartnerSpecificConfigurations",
+                "org.nexuse2e.backend.pipelets.helper.PartnerSpecificConfigurations" );
+        digester.addSetProperties( "PartnerSpecificConfigurations" );
+        digester.addObjectCreate( "PartnerSpecificConfigurations/PartnerSpecificConfiguration",
+                "org.nexuse2e.backend.pipelets.helper.PartnerSpecificConfiguration" );
+        digester.addSetProperties( "PartnerSpecificConfigurations/PartnerSpecificConfiguration" );
+        digester.addSetNext( "PartnerSpecificConfigurations/PartnerSpecificConfiguration",
+                "addPartnerSpecificConfiguration", "org.nexuse2e.backend.pipelets.helper.PartnerSpecificConfiguration" );
+
+        try {
+            partnerSpecificConfigurations = (PartnerSpecificConfigurations) digester.parse( configFileName );
+        } catch ( IOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch ( SAXException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return partnerSpecificConfigurations;
     }
 
     /**

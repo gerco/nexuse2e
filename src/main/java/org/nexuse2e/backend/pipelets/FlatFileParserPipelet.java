@@ -22,11 +22,16 @@ package org.nexuse2e.backend.pipelets;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.digester.Digester;
 import org.apache.log4j.Logger;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
+import org.nexuse2e.backend.pipelets.helper.PartnerSpecificConfiguration;
+import org.nexuse2e.backend.pipelets.helper.PartnerSpecificConfigurations;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
@@ -35,6 +40,7 @@ import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.MessagePayloadPojo;
 import org.nexuse2e.tools.mapping.FlatFileParser;
 import org.nexuse2e.tools.mapping.FlatFileRecord;
+import org.xml.sax.SAXException;
 
 /**
  * @author mbreilmann
@@ -42,18 +48,26 @@ import org.nexuse2e.tools.mapping.FlatFileRecord;
  */
 public class FlatFileParserPipelet extends AbstractPipelet {
 
-    private static Logger      LOG                  = Logger.getLogger( FlatFileParserPipelet.class );
+    private static Logger                   LOG                           = Logger
+                                                                                  .getLogger( FlatFileParserPipelet.class );
 
-    public static final String FLAT_FILE_DEFINITION = "flatFileDefinition";
+    public static final String              FLAT_FILE_DEFINITION          = "flatFileDefinition";
+    public static final String              PARTNER_SPECIFIC              = "partnerSpecific";
 
-    private String             flatFileDefinition   = null;
+    private String                          flatFileDefinition            = null;
 
-    private FlatFileParser     flatFileParser       = null;
+    private FlatFileParser                  flatFileParser                = null;
+
+    private PartnerSpecificConfigurations   partnerSpecificConfigurations = null;
+    private boolean                         partnerSpecific               = false;
+    private HashMap<String, FlatFileParser> partnerFlatFileParsers        = null;
 
     public FlatFileParserPipelet() {
 
         parameterMap.put( FLAT_FILE_DEFINITION, new ParameterDescriptor( ParameterType.STRING,
                 "Flat File Definition File", "Path to flat file definition file.", "" ) );
+        parameterMap.put( PARTNER_SPECIFIC, new ParameterDescriptor( ParameterType.BOOLEAN,
+                "Partner Specific Configuration", "Partner Specific Configuration", Boolean.FALSE ) );
     }
 
     /* (non-Javadoc)
@@ -63,6 +77,11 @@ public class FlatFileParserPipelet extends AbstractPipelet {
     public void initialize( EngineConfiguration config ) throws InstantiationException {
 
         File testFile = null;
+
+        Boolean partnerSpecificValue = getParameter( PARTNER_SPECIFIC );
+        if ( partnerSpecificValue != null ) {
+            partnerSpecific = partnerSpecificValue.booleanValue();
+        }
 
         String flatFileDefinitionValue = getParameter( FLAT_FILE_DEFINITION );
         if ( ( flatFileDefinitionValue != null ) && ( flatFileDefinitionValue.length() != 0 ) ) {
@@ -80,12 +99,28 @@ public class FlatFileParserPipelet extends AbstractPipelet {
         }
         LOG.trace( "flatFileDefinition: " + flatFileDefinition );
 
-        flatFileParser = new FlatFileParser();
+        if ( partnerSpecific ) {
+            FlatFileParser partnerFlatFileParser = null;
+            partnerSpecificConfigurations = readPartnerSpecificConfigurations( flatFileDefinition );
+            partnerFlatFileParsers = new HashMap<String, FlatFileParser>();
 
-        try {
-            flatFileParser.init( flatFileDefinition );
-        } catch ( NexusException e ) {
-            throw new InstantiationException( e.getMessage() );
+            for ( PartnerSpecificConfiguration partnerSpecificConfiguration : partnerSpecificConfigurations
+                    .getPartnerSpecificConfigurations() ) {
+                partnerFlatFileParser = new FlatFileParser();
+                try {
+                    partnerFlatFileParser.init( partnerSpecificConfiguration.getConfigurationFile() );
+                    partnerFlatFileParsers.put( partnerSpecificConfiguration.getPartnerId(), partnerFlatFileParser );
+                } catch ( NexusException e ) {
+                    throw new InstantiationException( e.getMessage() );
+                }
+            }
+        } else {
+            flatFileParser = new FlatFileParser();
+            try {
+                flatFileParser.init( flatFileDefinition );
+            } catch ( NexusException e ) {
+                throw new InstantiationException( e.getMessage() );
+            }
         }
 
         super.initialize( config );
@@ -99,13 +134,26 @@ public class FlatFileParserPipelet extends AbstractPipelet {
             IllegalStateException, NexusException {
 
         List<FlatFileRecord> result = null;
+        FlatFileParser theFlatFileParser = null;
 
         try {
             for ( MessagePayloadPojo messagePayloadPojo : messageContext.getMessagePojo().getMessagePayloads() ) {
                 String contentString = new String( messagePayloadPojo.getPayloadData() );
                 ByteArrayInputStream bias = new ByteArrayInputStream( contentString.getBytes() );
 
-                result = flatFileParser.process( bias );
+                if ( partnerSpecific ) {
+                    theFlatFileParser = partnerFlatFileParsers.get( messageContext.getMessagePojo().getParticipant()
+                            .getPartner().getPartnerId() );
+                } else {
+                    theFlatFileParser = flatFileParser;
+                }
+
+                if ( theFlatFileParser == null ) {
+                    throw new NexusException( "No mappings found for partner: "
+                            + messageContext.getMessagePojo().getParticipant().getPartner().getPartnerId() );
+                }
+
+                result = theFlatFileParser.process( bias );
 
                 if ( LOG.isTraceEnabled() ) {
                     LOG.trace( "...................." );
@@ -120,6 +168,36 @@ public class FlatFileParserPipelet extends AbstractPipelet {
             throw new NexusException( "Error mapping payload: " + e );
         }
         return messageContext;
+    }
+
+    /**
+     * @param configFileName
+     * @return
+     */
+    private PartnerSpecificConfigurations readPartnerSpecificConfigurations( String configFileName ) {
+
+        PartnerSpecificConfigurations partnerSpecificConfigurations = null;
+        Digester digester = new Digester();
+        digester.setValidating( false );
+        digester.addObjectCreate( "PartnerSpecificConfigurations",
+                "org.nexuse2e.backend.pipelets.helper.PartnerSpecificConfigurations" );
+        digester.addSetProperties( "PartnerSpecificConfigurations" );
+        digester.addObjectCreate( "PartnerSpecificConfigurations/PartnerSpecificConfiguration",
+                "org.nexuse2e.backend.pipelets.helper.PartnerSpecificConfiguration" );
+        digester.addSetProperties( "PartnerSpecificConfigurations/PartnerSpecificConfiguration" );
+        digester.addSetNext( "PartnerSpecificConfigurations/PartnerSpecificConfiguration",
+                "addPartnerSpecificConfiguration", "org.nexuse2e.backend.pipelets.helper.PartnerSpecificConfiguration" );
+
+        try {
+            partnerSpecificConfigurations = (PartnerSpecificConfigurations) digester.parse( configFileName );
+        } catch ( IOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch ( SAXException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return partnerSpecificConfigurations;
     }
 
     /* (non-Javadoc)
