@@ -54,6 +54,8 @@ public class PartnerConnectionForm extends ActionForm {
     private int                  synchronousTimeout;
     private int                  retries;
     private String               name;
+    private String               loginName;
+    private String               password;
 
     public void cleanSettings() {
 
@@ -71,6 +73,8 @@ public class PartnerConnectionForm extends ActionForm {
         setSynchronousTimeout( 0 );
         setRetries( 0 );
         setName( null );
+        setLoginName( null );
+        setPassword( null );
         setCertificates( null );
         setTrps( null );
     }
@@ -88,6 +92,8 @@ public class PartnerConnectionForm extends ActionForm {
         con.setSynchronousTimeout( getSynchronousTimeout() );
         con.setRetries( getRetries() );
         con.setName( getName() );
+        con.setLoginName( getLoginName() );
+        con.setPassword( getPassword() );
         con.setCertificate( null );
         for ( CertificatePojo certificatePojo : certificates ) {
             if ( nxCertificateId == certificatePojo.getNxCertificateId() ) {
@@ -141,6 +147,8 @@ public class PartnerConnectionForm extends ActionForm {
         setSynchronousTimeout( con.getSynchronousTimeout() );
         setRetries( con.getRetries() );
         setName( con.getName() );
+        setLoginName( con.getLoginName() );
+        setPassword( con.getPassword() );
     }
 
     public String getPartnerId() {
@@ -377,6 +385,30 @@ public class PartnerConnectionForm extends ActionForm {
         secure = false;
         reliable = false;
         synchronous = false;
+    }
+
+    
+    public String getLoginName() {
+    
+        return loginName;
+    }
+
+    
+    public void setLoginName( String loginName ) {
+    
+        this.loginName = loginName;
+    }
+
+    
+    public String getPassword() {
+    
+        return password;
+    }
+
+    
+    public void setPassword( String password ) {
+    
+        this.password = password;
     }
 
 }

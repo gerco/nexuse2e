@@ -88,6 +88,14 @@
                 <td class="NEXUSName">Retries</td>
                 <td class="NEXUSValue"><html:text size="50" property="retries"/></td>
             </tr>
+		    <tr>
+                <td class="NEXUSName">Login Name</td>
+                <td class="NEXUSValue"><html:text size="50" property="loginName"/></td>
+            </tr>
+            <tr>
+                <td class="NEXUSName">Password</td>
+                <td class="NEXUSValue"><html:password size="50" property="password"/></td>
+            </tr>
             
         </table>
         <table class="NEXUS_BUTTON_TABLE">
