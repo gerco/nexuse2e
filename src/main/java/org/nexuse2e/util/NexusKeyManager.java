@@ -163,6 +163,18 @@ public class NexusKeyManager implements X509KeyManager {
     public String chooseServerAlias( String keyType, Principal[] issuers, Socket socket ) {
 
         LOG.debug( "entering chooseServerAlias" );
+        try {
+            Enumeration enumeration = keystore.aliases();
+            while (enumeration.hasMoreElements()) {
+                String alias = (String) enumeration.nextElement();
+                if (keystore.isKeyEntry( alias )) {
+                    return alias;
+                }
+            }
+        } catch (KeyStoreException kex) {
+            LOG.error( "Could not determine server alias", kex );
+        }
+        
         return null;
     }
 
