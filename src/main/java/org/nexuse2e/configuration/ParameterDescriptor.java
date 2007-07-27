@@ -35,9 +35,11 @@ public class ParameterDescriptor implements Serializable {
 
     private ParameterType     parameterType;
     private String            label;
-    private boolean           required         = true;
+    private boolean           required;
     private String            description;
     private Object            defaultValue;
+    
+    private Runnable          updater;
 
     /**
      * Constructs a new <code>ParameterDescriptor</code>.
@@ -59,6 +61,7 @@ public class ParameterDescriptor implements Serializable {
         this.label = label;
         this.description = description;
         this.defaultValue = defaultValue;
+        this.updater = null;
         if ( defaultValue != null && !parameterType.getType().isInstance( defaultValue ) ) {
             throw new ClassCastException( "defaultValue for parameter: " + label + ", type " + parameterType
                     + " must be instanceof " + parameterType.getType() );
@@ -79,6 +82,19 @@ public class ParameterDescriptor implements Serializable {
 
         this( parameterType, true, label, description, defaultValue );
     }
+    
+    /**
+     * Sets a <code>Runnable</code> object that will be invoked when
+     * the {@link #getDefaultValue()} method is called. This mechanism
+     * can be used to update the data structures certain parameter types,
+     * e.g. {@link ParameterType#LIST} directly before they are retrieved
+     * by a caller.
+     * @param updater The <code>Runnable</code> that shall be invoked,
+     * or <code>null</code> if no invocation shall be performed.
+     */
+    public void setUpdater( Runnable updater ) {
+        this.updater = updater;
+    }
 
     /**
      * Gets the parameter's default value.
@@ -90,6 +106,12 @@ public class ParameterDescriptor implements Serializable {
     @SuppressWarnings("unchecked")
     public <T> T getDefaultValue() {
 
+        if (this.updater != null) {
+            Runnable updater = this.updater;
+            this.updater = null;
+            updater.run();
+            this.updater = updater;
+        }
         return (T) defaultValue;
     }
 
