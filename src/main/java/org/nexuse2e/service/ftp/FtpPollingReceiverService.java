@@ -3,13 +3,28 @@ package org.nexuse2e.service.ftp;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.URL;
+import java.net.UnknownHostException;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.net.SocketFactory;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
@@ -20,7 +35,6 @@ import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Runlevel;
 import org.nexuse2e.configuration.ConfigurationAccessService;
 import org.nexuse2e.configuration.Constants;
-import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ListParameter;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
@@ -33,6 +47,8 @@ import org.nexuse2e.service.SchedulerClient;
 import org.nexuse2e.service.SchedulingService;
 import org.nexuse2e.service.Service;
 import org.nexuse2e.transport.TransportReceiver;
+import org.nexuse2e.util.CertificateUtil;
+import org.nexuse2e.util.EncryptionUtil;
 
 /**
  * This service implementation acts as an (S)FTP client and receives files by
@@ -57,7 +73,6 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
     public static final String ASCII_PARAM_NAME = "ascii";
 
     private TransportReceiver transportReceiver;
-    private ListParameter certsDropdown;
     private SchedulingService schedulingService;
     private SchedulerClient schedulerClient;
     
@@ -80,7 +95,7 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
         parameterMap.put( ERROR_DIR_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "Error directory",
                 "Directory where files are stored if an error occurs", new File( "" ).getAbsolutePath() ) );
         ListParameter ftpTypeDrowdown = new ListParameter();
-        ftpTypeDrowdown.addElement( "SFTP (encrypted)", "sftp" );
+        ftpTypeDrowdown.addElement( "FTPS (encrypted)", "ftps" );
         ftpTypeDrowdown.addElement( "Plain FTP (not encrypted)", "ftp" );
         parameterMap.put( FTP_TYPE_PARAM_NAME, new ParameterDescriptor( ParameterType.LIST,
                 "FTP type", "FTP type", ftpTypeDrowdown ) );
@@ -100,13 +115,17 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
         parameterMap.put( ASCII_PARAM_NAME, new ParameterDescriptor( ParameterType.BOOLEAN, "ASCII",
                 "Use ASCII transfer mode (otherwise transfer mode is binary)", Boolean.FALSE ) );
         
-        certsDropdown = new ListParameter();
-        addCertificatesToDropdown();
-        parameterMap.put( CERTIFICATE_PARAM_NAME, new ParameterDescriptor( ParameterType.LIST,
-                "Server certificate", "Use this certificate for server authentication", certsDropdown ) );
+        final ParameterDescriptor certsParamDesc = new ParameterDescriptor( ParameterType.LIST,
+                "Client certificate", "Use this certificate for client authentication", new ListParameter() );
+        certsParamDesc.setUpdater( new Runnable() {
+            public void run() {
+                addCertificatesToDropdown( (ListParameter) certsParamDesc.getDefaultValue() );
+            }
+        } );
+        parameterMap.put( CERTIFICATE_PARAM_NAME, certsParamDesc );
     }
     
-    private void addCertificatesToDropdown() {
+    private void addCertificatesToDropdown( ListParameter certsDropdown ) {
         ConfigurationAccessService cas = Engine.getInstance().getActiveConfigurationAccessService();
         try {
             List<CertificatePojo> certs = cas.getCertificates( Constants.CERTIFICATE_TYPE_LOCAL, null );
@@ -130,12 +149,6 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
         }
     }
 
-    @Override
-    public void initialize( EngineConfiguration configuration ) {
-        super.initialize( configuration );
-        addCertificatesToDropdown();
-    }
-    
     @Override
     public void start() {
 
@@ -211,7 +224,9 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
                 messageContext.setCommunicationPartner( cas.getPartnerByPartnerId( partnerId ) );
                 messageContext.setMessagePojo( new MessagePojo() );
                 messageContext.setOriginalMessagePojo( messageContext.getMessagePojo() );
-                messageContext.getMessagePojo().setCustomParameters( new HashMap<String, String>() );
+                Map<String, String> customParameters = new HashMap<String, String>();
+                customParameters.put( "fileName", file.getName() );
+                messageContext.getMessagePojo().setCustomParameters( customParameters );
                 transportReceiver.processMessage( messageContext );
                 
                 file.delete();
@@ -228,6 +243,25 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
             }
         }
     }
+    
+    private CertificatePojo getSelectedCertificate( String certId ) throws NexusException {
+        CertificatePojo cert;
+        ConfigurationAccessService cas = Engine.getInstance().getActiveConfigurationAccessService();
+        if (certId == null || certId.length() == 0) {
+            List<CertificatePojo> certs = cas.getCertificates( Constants.CERTIFICATE_TYPE_LOCAL, null );
+            if (certs == null || certs.isEmpty() || certs.get( 0 ) == null) {
+                throw new NexusException( "No appropriate certificate found for SFTP server authentication" );
+            }
+            cert = certs.get( 0 );
+        } else {
+            cert = cas.getCertificateByNxCertificateId( Constants.CERTIFICATE_TYPE_LOCAL, Integer.parseInt( certId ) );
+            if (cert == null) {
+                throw new NexusException( "No local certificate with ID " + certId
+                        + " could be found for SFTP server authentication" );
+            }
+        }
+        return cert;
+    }
 
     class FtpSchedulerClient implements SchedulerClient {
         public void scheduleNotify() {
@@ -241,8 +275,15 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
             FTPClient ftp = new FTPClient();
             try {
                 URL url = new URL( (String) getParameter( URL_PARAM_NAME ) );
+                int port = url.getPort() >= 0 ? url.getPort() : (ssl ? 990 : 21);
+
+                if (ssl) {
+                    ListParameter certSel = getParameter( CERTIFICATE_PARAM_NAME );
+                    String certId = certSel.getSelectedValue();
+                    getSelectedCertificate( certId );
+                    ftp.setSocketFactory( new SocketFactoryImpl( getSelectedCertificate( certId ) ) );
+                }
                 
-                int port = url.getPort() >= 0 ? url.getPort() : (ssl ? 22 : 21);
                 ftp.connect( url.getHost(), port );
                 LOG.info( "Connected to " + url.getHost() + "." );
                 
@@ -302,6 +343,133 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
                     }
                 }
             }
+        }
+    }
+    
+    class SocketFactoryImpl implements SocketFactory {
+        private KeyStore keystore;
+        private KeyStore truststore;
+        private SSLContext sslContext;
+        private CertificatePojo cert;
+
+        
+        public SocketFactoryImpl( CertificatePojo cert ) {
+            this.cert = cert;
+        }
+        
+        
+        /**
+         * Get SSL Context.
+         */
+        private SSLContext getSSLContext() throws IOException {
+            
+            // if already stored - return it
+            if (sslContext != null) {
+                return sslContext;
+            }
+
+
+            try {
+                KeyManager[] keymanagers = null;
+                TrustManager[] trustmanagers = null;
+                if (keystore != null) {
+                    keymanagers = CertificateUtil.createKeyManagers(
+                            keystore, EncryptionUtil.decryptString( cert.getPassword() ) );
+                }
+                if (truststore != null) {
+                    trustmanagers = CertificateUtil.createTrustManagers( truststore );
+                }
+                SSLContext sslcontext = SSLContext.getInstance( "TLS" );
+                sslcontext.init( keymanagers, trustmanagers, null );
+                return sslcontext;
+            } catch ( NoSuchAlgorithmException e ) {
+                LOG.error( e.getMessage(), e );
+                throw new IOException( "Unsupported algorithm exception: " + e.getMessage() );
+            } catch ( KeyStoreException e ) {
+                LOG.error( e.getMessage(), e );
+                throw new IOException( "Keystore exception: " + e.getMessage() );
+            } catch ( GeneralSecurityException e ) {
+                LOG.error( e.getMessage(), e );
+                throw new IOException( "Key management exception: " + e.getMessage() );
+            } catch ( Exception e ) {
+                LOG.error( e.getMessage(), e );
+                throw new IOException( "error reading keystore/truststore file: " + e.getMessage() );
+            }
+        }
+        
+        
+        public ServerSocket createServerSocket( int port ) throws IOException {
+            throw new UnsupportedOperationException( "createServerSocket() not implemented" );
+        }
+
+        public ServerSocket createServerSocket( int port, int backlog ) throws IOException {
+            throw new UnsupportedOperationException( "createServerSocket() not implemented" );
+        }
+
+        public ServerSocket createServerSocket(
+                int port, int backlog, InetAddress address ) throws IOException {
+            throw new UnsupportedOperationException( "createServerSocket() not implemented" );
+        }
+
+        public Socket createSocket( String host, int port ) throws UnknownHostException, IOException {
+
+            // get socket factory
+            SSLContext ctx = getSSLContext();
+            SSLSocketFactory socFactory = ctx.getSocketFactory();
+            
+            // create socket
+            SSLSocket sslSocket = (SSLSocket) socFactory.createSocket( host, port );
+            initializeSocket( sslSocket );
+            
+            return sslSocket;
+        }
+
+        public Socket createSocket( InetAddress address, int port ) throws IOException {
+
+            // get socket factory
+            SSLContext ctx = getSSLContext();
+            SSLSocketFactory socFactory = ctx.getSocketFactory();
+            
+            // create socket
+            SSLSocket sslSocket = (SSLSocket) socFactory.createSocket( address, port );
+            initializeSocket( sslSocket );
+            
+            return sslSocket;
+        }
+
+        public Socket createSocket(
+                String host, int port, InetAddress localAddr, int localPort )
+        throws UnknownHostException, IOException {
+
+            // get socket factory
+            SSLContext ctx = getSSLContext();
+            SSLSocketFactory socFactory = ctx.getSocketFactory();
+            
+            // create socket
+            SSLSocket sslSocket = (SSLSocket) socFactory.createSocket( host, port, localAddr, localPort );
+            initializeSocket( sslSocket );
+            
+            return sslSocket;
+        }
+
+        public Socket createSocket(
+                InetAddress address, int port, InetAddress localAddr, int localPort ) throws IOException {
+
+            // get socket factory
+            SSLContext ctx = getSSLContext();
+            SSLSocketFactory socFactory = ctx.getSocketFactory();
+            
+            // create socket
+            SSLSocket sslSocket = (SSLSocket) socFactory.createSocket( address, port, localAddr, localPort);
+            
+            initializeSocket( sslSocket );
+            return sslSocket;
+        }
+        
+        
+        private void initializeSocket( SSLSocket sslSocket ) {
+            String cipherSuites[] = sslSocket.getSupportedCipherSuites();
+            sslSocket.setEnabledCipherSuites( cipherSuites );
         }
     }
 }

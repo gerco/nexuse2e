@@ -27,7 +27,6 @@ import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Runlevel;
 import org.nexuse2e.configuration.ConfigurationAccessService;
 import org.nexuse2e.configuration.Constants;
-import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ListParameter;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
@@ -59,11 +58,11 @@ public class FtpReceiverService extends AbstractService implements ReceiverAware
     public static final String CLIENT_AUTH_PARAM_NAME = "clientAuthentication";
     public static final String CERTIFICATE_PARAM_NAME = "certificate";
     public static final String FTP_PORT_PARAM_NAME = "ftpPort";
-    public static final String SFTP_PORT_PARAM_NAME = "sftpPort";
+    public static final String FTPS_PORT_PARAM_NAME = "ftpsPort";
+    public static final String IMPLICIT_PARAM_NAME = "implicit";
     
     private TransportReceiver transportReceiver;
     private FtpServer server;
-    private ListParameter certsDropdown;
 
     /* (non-Javadoc)
      * @see org.nexuse2e.service.AbstractService#fillParameterMap(java.util.Map)
@@ -75,25 +74,31 @@ public class FtpReceiverService extends AbstractService implements ReceiverAware
         parameterMap.put( FTP_ERROR_DIR_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "Error directory",
                 "Directory where files are stored if an error occurs", new File( "" ).getAbsolutePath() ) );
         ListParameter ftpTypeDrowdown = new ListParameter();
-        ftpTypeDrowdown.addElement( "SFTP (encrypted)", "sftp" );
+        ftpTypeDrowdown.addElement( "FTPS (encrypted)", "ftps" );
         ftpTypeDrowdown.addElement( "Plain FTP (not encrypted)", "ftp" );
         parameterMap.put( FTP_TYPE_PARAM_NAME, new ParameterDescriptor( ParameterType.LIST,
                 "FTP type", "FTP type", ftpTypeDrowdown ) );
         parameterMap.put( CLIENT_AUTH_PARAM_NAME, new ParameterDescriptor(
                 ParameterType.BOOLEAN, "Client authentication",
                 "Require client authentication", Boolean.TRUE ) );
+        parameterMap.put( IMPLICIT_PARAM_NAME, new ParameterDescriptor( ParameterType.BOOLEAN,
+                "Implicit security", "Implicit security (default is on)", Boolean.TRUE ) );
 
         parameterMap.put( FTP_PORT_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "FTP Port",
                 "FTP port (default is 21)", "21" ) );
-        parameterMap.put( SFTP_PORT_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "SFTP Port",
-                "SFTP port (default is 22)", "22" ) );
-        certsDropdown = new ListParameter();
-        addCertificatesToDropdown();
-        parameterMap.put( CERTIFICATE_PARAM_NAME, new ParameterDescriptor( ParameterType.LIST,
-                "Server certificate", "Use this certificate for server authentication", certsDropdown ) );
+        parameterMap.put( FTPS_PORT_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "FTPS Port",
+                "FTPS port (default is 990)", "990" ) );
+        final ParameterDescriptor certsParamDesc = new ParameterDescriptor( ParameterType.LIST,
+                "Server certificate", "Use this certificate for server authentication", new ListParameter() );
+        certsParamDesc.setUpdater( new Runnable() {
+            public void run() {
+                addCertificatesToDropdown( (ListParameter) certsParamDesc.getDefaultValue() );
+            }
+        } );
+        parameterMap.put( CERTIFICATE_PARAM_NAME, certsParamDesc );
     }
     
-    private void addCertificatesToDropdown() {
+    private void addCertificatesToDropdown( ListParameter certsDropdown ) {
         ConfigurationAccessService cas = Engine.getInstance().getActiveConfigurationAccessService();
         try {
             List<CertificatePojo> certs = cas.getCertificates( Constants.CERTIFICATE_TYPE_LOCAL, null );
@@ -117,12 +122,6 @@ public class FtpReceiverService extends AbstractService implements ReceiverAware
         }
     }
     
-    @Override
-    public void initialize( EngineConfiguration configuration ) {
-        super.initialize( configuration );
-        addCertificatesToDropdown();
-    }
-
     /* (non-Javadoc)
      * @see org.nexuse2e.service.AbstractService#getActivationRunlevel()
      */
@@ -160,16 +159,17 @@ public class FtpReceiverService extends AbstractService implements ReceiverAware
                 properties.setProperty( "config.socket-factory.port", (String) getParameter( FTP_PORT_PARAM_NAME ) );
                 ListParameter ftpTypeSel = getParameter( FTP_TYPE_PARAM_NAME );
                 if (!"ftp".equals( ftpTypeSel.getSelectedValue())) {
-                    properties.setProperty( "config.listeners.default.implicit-ssl", "true" );
+                    properties.setProperty( "config.listeners.default.implicit-ssl",
+                            ((Boolean) getParameter( IMPLICIT_PARAM_NAME )).toString() );
 
                     properties.setProperty( "config.socket-factory.nxssl.port",
-                            (String) getParameter( SFTP_PORT_PARAM_NAME ) );
+                            (String) getParameter( FTPS_PORT_PARAM_NAME ) );
                     String certId = certSel.getSelectedValue();
                     properties.setProperty( "config.socket-factory.nxssl.certificate-id",
                             certId == null ? "" : certId );
                     properties.setProperty( "config.socket-factory.nxssl.ssl-protocol", "TLS" );
                     properties.setProperty( "config.socket-factory.nxssl.client-authentication",
-                            (String) getParameter( CLIENT_AUTH_PARAM_NAME ) );
+                            ((Boolean) getParameter( CLIENT_AUTH_PARAM_NAME )).toString() );
 
                     properties.setProperty( "config.listeners.default.data-connection.ssl.ssl-protocol", "TLS" );
                     properties.setProperty( "config.listeners.default.data-connection.ssl.client-authentication", "false" );
@@ -249,7 +249,9 @@ public class FtpReceiverService extends AbstractService implements ReceiverAware
                 messageContext.setCommunicationPartner( cas.getPartnerByPartnerId( partnerId ) );
                 messageContext.setMessagePojo( new MessagePojo() );
                 messageContext.setOriginalMessagePojo( messageContext.getMessagePojo() );
-                messageContext.getMessagePojo().setCustomParameters( new HashMap<String, String>() );
+                Map<String, String> customParameters = new HashMap<String, String>();
+                customParameters.put( "fileName", file.getName() );
+                messageContext.getMessagePojo().setCustomParameters( customParameters );
                 transportReceiver.processMessage( messageContext );
                 
                 file.delete();
