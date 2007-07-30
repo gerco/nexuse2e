@@ -22,3 +22,6 @@ mvn install:install-file -DgroupId=javax.transaction -DartifactId=jta -Dversion=
 mvn install:install-file -DgroupId=javax.xml -DartifactId=saaj-api -Dversion=1.3 -Dpackaging=jar -Dfile=lib/saaj-api.jar
 mvn install:install-file -DgroupId=org.nexuse2e -DartifactId=nexuse2e_legacy -Dversion=3.6.5 -Dpackaging=jar -Dfile=lib/nexuse2e_legacy.jar
 mvn install:install-file -DgroupId=org.apache.incubator -DartifactId=ftpserver -Dversion=0.1 -Dpackaging=jar -Dfile=lib/ftpserver-dev.jar
+
+# jgroups
+mvn install:install-file -DgroupId=jgroups -DartifactId=jgroups-all -Dversion=2.5.ga -Dpackaging=jar -Dfile=lib/jgroups-all.jar
