@@ -157,8 +157,14 @@ public class FtpReceiverService extends AbstractService implements ReceiverAware
                 properties.setProperty( "config.user-manager.basedir", baseDir );
                 properties.setProperty( "config.socket-factory.class", NexusSslSocketFactory.class.getName() );
                 properties.setProperty( "config.socket-factory.port", (String) getParameter( FTP_PORT_PARAM_NAME ) );
+                
+                properties.setProperty( "config.data-connection.class", NexusDataConnectionConfig.class.getName() );
+                properties.setProperty( "config.data-connection.active.enable", "true" );
+                //properties.setProperty( "config.data-connection.active.local-address", "localhost" );
+                //properties.setProperty( "config.data-connection.active.local-port", "20" );
+                
                 ListParameter ftpTypeSel = getParameter( FTP_TYPE_PARAM_NAME );
-                if (!"ftp".equals( ftpTypeSel.getSelectedValue())) {
+                if (!"ftp".equals( ftpTypeSel.getSelectedValue())) { // SSL
                     properties.setProperty( "config.listeners.default.implicit-ssl",
                             ((Boolean) getParameter( IMPLICIT_PARAM_NAME )).toString() );
 
@@ -171,8 +177,9 @@ public class FtpReceiverService extends AbstractService implements ReceiverAware
                     properties.setProperty( "config.socket-factory.nxssl.client-authentication",
                             ((Boolean) getParameter( CLIENT_AUTH_PARAM_NAME )).toString() );
 
-                    properties.setProperty( "config.listeners.default.data-connection.ssl.ssl-protocol", "TLS" );
-                    properties.setProperty( "config.listeners.default.data-connection.ssl.client-authentication", "false" );
+                    properties.setProperty( "config.data-connection.ssl.ssl-protocol", "TLS" );
+                    properties.setProperty( "config.data-connection.ssl.client-authentication",
+                            ((Boolean) getParameter( CLIENT_AUTH_PARAM_NAME )).toString() );
                 }
                 
                 // configure ftplet

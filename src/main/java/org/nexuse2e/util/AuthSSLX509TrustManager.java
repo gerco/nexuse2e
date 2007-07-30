@@ -233,7 +233,11 @@ public class AuthSSLX509TrustManager implements X509TrustManager {
              */
         }
 
-        this.defaultTrustManager.checkServerTrusted( certificates, authType );
+        try {
+            this.defaultTrustManager.checkServerTrusted( certificates, authType );
+        } catch (Exception ex) {
+            ex.getCause().printStackTrace();
+        }
 
     }
 }
