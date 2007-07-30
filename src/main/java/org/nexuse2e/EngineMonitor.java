@@ -20,36 +20,156 @@
 
 package org.nexuse2e;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import org.apache.log4j.Logger;
-import org.nexuse2e.Constants.Runlevel;
+import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.StatusSummary.Status;
+import org.nexuse2e.dao.ConfigDAO;
+import org.nexuse2e.pojo.TRPPojo;
 
 /**
  * @author gesch
  *
  */
 public class EngineMonitor {
-    
-    private static Logger                    LOG                            = Logger.getLogger( EngineMonitor.class );
-    
+
+    private static Logger               LOG = Logger.getLogger( EngineMonitor.class );
+
+    private List<EngineMonitorListener> listeners;
+    private Timer                       timer;
+
     /**
      * 
      */
-    public void init() {
+    public void start() {
+
         LOG.debug( "Engine monitor initalized" );
+        timer = new Timer();
+        TestSuite suite = new TestSuite();
+        timer.schedule( suite, 0, 10000 );
     }
+
+    /**
+     * 
+     */
+    public void stop() {
+
+        timer.cancel();
+    }
+
     /**
      * @return
      */
     public EngineStatusSummary getStatus() {
+
         return new EngineStatusSummary();
     }
-    
-    public EngineStatusSummary filloutStatusSummary(EngineStatusSummary summary) {
-        summary.setStatus( Status.ACTIVE );
-        summary.setEngineRunlevel( Runlevel.UNKNOWN );
+
+    /**
+     * @param summary
+     * @return
+     */
+    public EngineStatusSummary filloutStatusSummary( EngineStatusSummary summary ) {
+
+        if ( Engine.getInstance().getStatus() == BeanStatus.STARTED ) {
+            summary.setStatus( Status.ACTIVE );
+        } else {
+            summary.setStatus( Status.INACTIVE );
+        }
         return summary;
     }
-    
-    
+
+    /**
+     * @param listner
+     */
+    public void addListener( EngineMonitorListener listener ) {
+
+        if ( listeners == null ) {
+            listeners = new ArrayList<EngineMonitorListener>();
+        }
+        listeners.add( listener );
+    }
+
+    public void removeListener( EngineMonitorListener listener ) {
+
+        if ( listeners != null ) {
+            listeners.remove( listener );
+        }
+    }
+
+    private synchronized EngineStatusSummary probe() {
+
+        EngineStatusSummary summary = new EngineStatusSummary();
+
+        LOG.debug( "EngineMonitor probing..." );
+        ConfigDAO configDao = null;
+        try {
+            configDao = (ConfigDAO) Engine.getInstance().getDao( "configDao" );
+        } catch ( Exception e ) {
+            summary.setCause( "Error while searching configDao: " + e );
+            summary.setStatus( Status.ERROR );
+            return summary;
+        }
+        List<TRPPojo> trps = null;
+        try {
+            trps = configDao.getTrps( null, null );
+        } catch ( NexusException e ) {
+            summary.setCause( "Error while fetching testdata from database: " + e );
+            summary.setDatabaseStatus( Status.ERROR );
+            summary.setStatus( Status.ERROR );
+            return summary;
+        }
+        summary.setDatabaseStatus( Status.ACTIVE );
+        if ( trps == null || trps.size() == 0 ) {
+
+            summary.setCause( "no TRP's found in database" );
+            summary.setStatus( Status.ERROR );
+            return summary;
+        }
+        if ( Engine.getInstance().getStatus() == BeanStatus.STARTED ) {
+            summary.setStatus( Status.ACTIVE );
+        } else {
+            summary.setStatus( Status.INACTIVE );
+        }
+
+        return summary;
+    }
+
+    /**
+     * @author gesch
+     *
+     */
+    public class TestSuite extends TimerTask {
+
+        /**
+         * 
+         */
+        public TestSuite() {
+
+        }
+
+        @Override
+        public void run() {
+
+            EngineStatusSummary summary = probe();
+            if ( summary.getStatus() == Status.ERROR ) {
+                try {
+                    Engine.getInstance().changeStatus( BeanStatus.INSTANTIATED );
+                } catch ( InstantiationException e ) {
+                    LOG.error( "Error while handling error: (cause: " + summary.getCause() + "): " + e );
+                }
+            }
+            if ( listeners != null ) {
+
+                for ( EngineMonitorListener listener : listeners ) {
+                    listener.engineEvent( summary );
+                }
+            }
+        }
+
+    }
 }

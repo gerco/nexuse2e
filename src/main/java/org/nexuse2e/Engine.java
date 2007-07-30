@@ -39,7 +39,7 @@ import org.apache.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.hibernate.cfg.Configuration;
 import org.nexuse2e.Constants.BeanStatus;
-import org.nexuse2e.Constants.Runlevel;
+import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.BaseConfigurationProvider;
 import org.nexuse2e.configuration.ConfigurationAccessService;
 import org.nexuse2e.configuration.EngineConfiguration;
@@ -74,8 +74,7 @@ import org.w3c.dom.NodeList;
  *
  * @author gesch
  */
-public class Engine extends WebApplicationObjectSupport implements BeanNameAware, BeanFactoryAware, InitializingBean,
-        Manageable {
+public class Engine extends WebApplicationObjectSupport implements BeanNameAware, BeanFactoryAware, InitializingBean {
 
     private static Logger                    LOG                            = Logger.getLogger( Engine.class );
 
@@ -155,9 +154,108 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     }
 
     /**
+     * @param targetStatus
+     * @throws InstantiationException 
+     */
+     public synchronized void changeStatus( BeanStatus targetStatus ) throws InstantiationException {
+        while ( getStatus() != targetStatus ) {
+            if ( getStatus().ordinal() < targetStatus.ordinal() ) {
+                switch ( getStatus() ) {
+                    case UNDEFINED:
+                        instantiate();
+                        status = BeanStatus.INSTANTIATED;
+                        break;
+                    case INSTANTIATED:
+                        try {
+                            initialize();
+                            status = BeanStatus.INITIALIZED;
+                        } catch ( InstantiationException e ) {
+                            status = BeanStatus.ERROR;
+                            e.printStackTrace();
+                            throw e;
+                        }
+                        break;
+                    case INITIALIZED:
+                        activate();
+                        status = BeanStatus.ACTIVATED;
+                        break;
+                    case ACTIVATED:
+                        start();
+                        status = BeanStatus.STARTED;
+                        break;
+                    case STARTED:
+                        break;
+                    case ERROR:
+                        break;
+
+                    default:
+                        break;
+                }
+            } else if ( getStatus().ordinal() > targetStatus.ordinal() ) {
+                switch ( getStatus() ) {
+                    case STARTED:
+                        status = BeanStatus.ACTIVATED;
+                        stop();
+                        break;
+                    case ACTIVATED:
+                        status = BeanStatus.INITIALIZED;
+                        deactivate();
+                        break;
+                    case INITIALIZED:
+                        status = BeanStatus.INSTANTIATED;
+                        teardown();
+                        break;
+                    case INSTANTIATED:
+                        break;
+                    case UNDEFINED:
+                        break;
+                    case ERROR:
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+
+        }
+
+    }
+
+    
+    public void instantiate() throws InstantiationException {
+        
+        LOG.info( "*** NEXUSe2e Server Version: " + Version.getVersion() );
+
+        LOG.info( "*** JRE version is: " + System.getProperty( "java.version" ) );
+        LOG.info( "*** Java class path: " + System.getProperty( "java.class.path" ) );
+        LOG.info( "*** Java home: " + System.getProperty( "java.home" ) );
+
+        LOG.info( "*** This software is licensed under the GNU Lesser General Public License (LGPL), Version 2.1" );
+        
+        try {
+            if ( nexusE2ERoot == null ) {
+                ServletContext currentContext = getServletContext();
+                String webAppPath = currentContext.getRealPath( "" );
+                webAppPath = webAppPath.replace( '\\', '/' );
+                if ( !webAppPath.endsWith( "/" ) ) {
+                    webAppPath += "/";
+                }
+                nexusE2ERoot = webAppPath;
+            }
+        } catch ( IllegalStateException isex ) {
+            if ( nexusE2ERoot == null ) {
+                throw new IllegalStateException(
+                        "nexusE2ERoot must be set if not running in a WebApplicationContext" );
+            }
+        }
+
+        LOG.debug( "NEXUSe2e root directory: " + nexusE2ERoot );
+    }
+    
+    /**
      * Initialize the engine
      */
-    public void initialize( EngineConfiguration config ) throws InstantiationException {
+    public void initialize() throws InstantiationException {
 
         /*
          String[] names = getWebApplicationContext().getBeanDefinitionNames();
@@ -174,32 +272,9 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
 
             //TODO checking cluster settings and status
 
-            LOG.info( "*** NEXUSe2e Server Version: " + Version.getVersion() );
+            
 
-            LOG.info( "*** JRE version is: " + System.getProperty( "java.version" ) );
-            LOG.info( "*** Java class path: " + System.getProperty( "java.class.path" ) );
-            LOG.info( "*** Java home: " + System.getProperty( "java.home" ) );
-
-            LOG.info( "*** This software is licensed under the GNU Lesser General Public License (LGPL), Version 2.1" );
-
-            try {
-                if ( nexusE2ERoot == null ) {
-                    ServletContext currentContext = getServletContext();
-                    String webAppPath = currentContext.getRealPath( "" );
-                    webAppPath = webAppPath.replace( '\\', '/' );
-                    if ( !webAppPath.endsWith( "/" ) ) {
-                        webAppPath += "/";
-                    }
-                    nexusE2ERoot = webAppPath;
-                }
-            } catch ( IllegalStateException isex ) {
-                if ( nexusE2ERoot == null ) {
-                    throw new IllegalStateException(
-                            "nexusE2ERoot must be set if not running in a WebApplicationContext" );
-                }
-            }
-
-            LOG.debug( "NEXUSe2e root directory: " + nexusE2ERoot );
+            
 
             try {
                 initializeMime();
@@ -254,9 +329,9 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
             transactionService = new TransactionServiceImpl();
 
             // create new Config
-            if ( config == null ) {
+            if ( currentConfiguration == null ) {
                 try {
-                    config = createEngineConfiguration();
+                    currentConfiguration = createEngineConfiguration();
                 } catch ( InstantiationException e ) {
                     LOG.error( "Problem creating Engine configuration, exiting..." );
                     e.printStackTrace();
@@ -264,8 +339,6 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                     return;
                 }
             }
-
-            currentConfiguration = config;
 
             // Add transaction service to static beans so its life cylcle is managed correctly
             currentConfiguration.getStaticBeanContainer().getManagableBeans().put( Constants.TRANSACTION_SERVICE,
@@ -631,9 +704,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
         if ( this.currentConfiguration != null ) {
 
             try {
-                deactivate();
-                teardown();
-                LOG.debug( "Save configuration to DB" );
+                changeStatus( BeanStatus.INSTANTIATED );
                 newConfiguration.saveConfigurationToDB();
                 LOG.debug( "initialize new configuration" );
                 newConfiguration.init();
@@ -642,11 +713,8 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                 e.printStackTrace();
             }
             LOG.debug( "Initialize Engine" );
-            // LOG.debug( "1partners: " + newConfiguration.getPartners().size() );
-            // LOG.debug( "2partners: " + this.currentConfiguration.getPartners().size() );
             try {
-                initialize( newConfiguration );
-                activate();
+                changeStatus( BeanStatus.STARTED );
             } catch ( InstantiationException e ) {
                 LOG.error( "Error setting new configuartion: " + e );
             }
@@ -709,9 +777,46 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     /* (non-Javadoc)
      * @see org.nexuse2e.Manageable#getRunLevel()
      */
-    public Runlevel getActivationRunlevel() {
+    public Layer getActivationLayer() {
 
-        return Runlevel.CORE;
+        return Layer.CORE;
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.Manageable#start()
+     */
+    public void start() {
+
+        LOG.info( "*** NEXUSe2e Server Version: " + Version.getVersion() + " ***" );
+        LOG.debug( "Engine.start..." );
+
+        if ( currentConfiguration != null ) {
+            for ( Layer layer : Layer.values() ) {
+
+                LOG.trace( "Starting layer: " + layer );
+
+                for ( Manageable bean : currentConfiguration.getStaticBeanContainer().getManagableBeans().values() ) {
+                    if ( layer.equals( bean.getActivationLayer() ) ) {
+                        if ( bean instanceof Service ) {
+                            Service service = (Service) bean;
+                            if ( service.isAutostart() ) {
+                                service.start();
+                            }
+                        }
+
+                    }
+                }
+
+            }
+
+            // Recover any pending messages...
+            currentConfiguration.getStaticBeanContainer().getBackendOutboundDispatcher().recoverMessages();
+
+            LOG.info( "***** Nexus E2E engine started. *****" );
+        } else {
+            LOG.error( "Failed to start Engine, no configuration found!" );
+
+        }
     }
 
     /* (non-Javadoc)
@@ -723,20 +828,14 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
         LOG.debug( "Engine.activate..." );
 
         if ( currentConfiguration != null ) {
-            for ( Runlevel runLevel : Runlevel.values() ) {
+            for ( Layer layer : Layer.values() ) {
 
-                LOG.trace( "Starting run level: " + runLevel );
+                LOG.trace( "activation layer: " + layer );
 
                 for ( Manageable bean : currentConfiguration.getStaticBeanContainer().getManagableBeans().values() ) {
-                    if ( runLevel.equals( bean.getActivationRunlevel() ) ) {
+                    if ( layer.equals( bean.getActivationLayer() ) ) {
                         if ( bean.getStatus().getValue() < BeanStatus.ACTIVATED.getValue() ) {
                             bean.activate();
-                            if ( bean instanceof Service ) {
-                                Service service = (Service) bean;
-                                if ( service.isAutostart() ) {
-                                    service.start();
-                                }
-                            }
                         }
                     }
                 }
@@ -751,28 +850,50 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
             LOG.error( "Failed to start Engine, no configuration found!" );
 
         }
-    } // start
+    }
 
-    /* (non-Javadoc)
-     * @see org.nexuse2e.Manageable#deactivate()
+    /**
+     * 
+     */
+    public void stop() {
+
+        LOG.debug( "Engine.stop..." );
+
+        if ( currentConfiguration != null ) {
+            Layer[] layers = Layer.values();
+            for ( int i = layers.length - 1; i >= 0; i-- ) {
+                LOG.trace( "Stopping layer: " + layers[i] );
+                if ( currentConfiguration.getStaticBeanContainer() != null ) {
+                    for ( Manageable bean : currentConfiguration.getStaticBeanContainer().getManagableBeans().values() ) {
+                        if ( layers[i].equals( bean.getActivationLayer() ) ) {
+                            if ( bean instanceof Service ) {
+                                Service service = (Service) bean;
+                                service.stop();
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            LOG.error( "Failed to deactivate Engine, no configuration found!" );
+        }
+
+    } // deactivate
+
+    /**
+     * 
      */
     public void deactivate() {
 
         LOG.debug( "Engine.deactivate..." );
 
         if ( currentConfiguration != null ) {
-            Runlevel[] runlevels = Runlevel.values();
+            Layer[] runlevels = Layer.values();
             for ( int i = runlevels.length - 1; i >= 0; i-- ) {
-                LOG.trace( "Stopping run level: " + runlevels[i] );
+                LOG.trace( "deactivating layer: " + runlevels[i] );
                 if ( currentConfiguration.getStaticBeanContainer() != null ) {
                     for ( Manageable bean : currentConfiguration.getStaticBeanContainer().getManagableBeans().values() ) {
-                        if ( runlevels[i].equals( bean.getActivationRunlevel() ) ) {
-                            if ( bean instanceof Service ) {
-                                Service service = (Service) bean;
-                                if ( service.getStatus().getValue() > BeanStatus.ACTIVATED.getValue() ) {
-                                    service.stop();
-                                }
-                            }
+                        if ( runlevels[i].equals( bean.getActivationLayer() ) ) {
                             bean.deactivate();
                         }
                     }

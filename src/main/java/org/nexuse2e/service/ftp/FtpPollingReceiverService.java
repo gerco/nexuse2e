@@ -37,7 +37,7 @@ import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
-import org.nexuse2e.Constants.Runlevel;
+import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.ConfigurationAccessService;
 import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.configuration.ListParameter;
@@ -198,8 +198,8 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
     }
 
     @Override
-    public Runlevel getActivationRunlevel() {
-         return Runlevel.INBOUND_PIPELINES;
+    public Layer getActivationLayer() {
+         return Layer.INBOUND_PIPELINES;
     }
 
     public TransportReceiver getTransportReceiver() {

@@ -20,6 +20,7 @@
 package org.nexuse2e;
 
 import org.apache.log4j.Logger;
+import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.service.AbstractControllerService;
 
 /**
@@ -47,18 +48,22 @@ public class EngineController {
                 engineControllerStub = (EngineControllerStub) Class.forName( engineControllerStubClass ).newInstance();
                 LOG.debug( "EngineControllerStub instantiated" );
 
-                engineControllerStub.initialize();
-                engineMonitor = new EngineMonitor();
+                
                 
                 if ( engine != null ) {
                     engine.setEngineController( this );
-                    engine.initialize( null );
-
-                    engine.activate();
+                    engine.changeStatus( BeanStatus.INSTANTIATED );
                 } else {
                     LOG.error( "No Engine instance found, exiting..." );
+                    return;
                 }
-
+                
+                engineMonitor = new EngineMonitor();
+                engineMonitor.start();
+                engineControllerStub.initialize();
+                engine.changeStatus( BeanStatus.STARTED );
+                
+                
             } catch ( InstantiationException e ) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -95,6 +100,7 @@ public class EngineController {
      */
     public void shutdown() {
 
+        engineMonitor.stop();
         if ( engine != null ) {
             engine.shutdown();
         }

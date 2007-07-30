@@ -29,6 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.ParameterDescriptor;
@@ -36,6 +37,8 @@ import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.MessagePayloadPojo;
+import org.nexuse2e.util.ServerPropertiesUtil;
+import org.springframework.util.SystemPropertyUtils;
 
 public class FileSystemSavePipelet extends AbstractPipelet {
 
@@ -58,21 +61,24 @@ public class FileSystemSavePipelet extends AbstractPipelet {
     public MessageContext processMessage( MessageContext messageContext )
             throws NexusException {
         String targetDirectory = (String) getParameter( DIRECTORY_PARAM_NAME );
-        if ( (targetDirectory == null) || (targetDirectory.length() == 0) ) {
+        
+        if ( StringUtils.isEmpty( targetDirectory ) ) {
             LOG.error( "Output directory not defined, can not store inbound message!" );
             throw new NexusException( "Output directory not defined, can not store inbound message!" );
         }
-
+        targetDirectory = ServerPropertiesUtil.replaceServerProperties( targetDirectory, messageContext );
+        targetDirectory = ServerPropertiesUtil.replacePathSeparators( targetDirectory );
+        
         try {
             writePayloadToUniqueFile( targetDirectory, messageContext );
         } catch ( FileNotFoundException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            throw new NexusException( "Could not create output file!", e );
+            throw new NexusException( "Could not create output file in target directory: "+targetDirectory, e );
         } catch ( IOException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            throw new NexusException( "Could not write output file!", e );
+            throw new NexusException( "Could not create output file in target directory: "+targetDirectory, e );
         }
 
         // TODO Auto-generated method stub

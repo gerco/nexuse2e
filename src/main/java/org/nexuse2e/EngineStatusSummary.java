@@ -19,7 +19,6 @@
  */
 package org.nexuse2e;
 
-import org.nexuse2e.Constants.Runlevel;
 
 
 /**
@@ -33,11 +32,12 @@ public class EngineStatusSummary implements StatusSummary {
      */
     private static final long serialVersionUID = 5958453423169252669L;
     private Status status = Status.UNKNOWN;
-    private Runlevel engineRunlevel = Runlevel.UNKNOWN;
+    
     private Status databaseStatus = Status.UNKNOWN;
     private Status inboundStatus = Status.UNKNOWN;
     private Status outboundStatus = Status.UNKNOWN;
     
+    private String cause = null;
     
     /* (non-Javadoc)
      * @see org.nexuse2e.StatusSummary#getStatus()
@@ -72,25 +72,6 @@ public class EngineStatusSummary implements StatusSummary {
     
         this.databaseStatus = databaseStatus;
     }
-
-    
-    /**
-     * @return the engineRunlevel
-     */
-    public Runlevel getEngineRunlevel() {
-    
-        return engineRunlevel;
-    }
-
-    
-    /**
-     * @param engineRunlevel the engineRunlevel to set
-     */
-    public void setEngineRunlevel( Runlevel engineRunlevel ) {
-    
-        this.engineRunlevel = engineRunlevel;
-    }
-
     
     /**
      * @return the inboundStatus
@@ -125,6 +106,24 @@ public class EngineStatusSummary implements StatusSummary {
     public void setOutboundStatus( Status outboundStatus ) {
     
         this.outboundStatus = outboundStatus;
+    }
+
+    
+    /**
+     * @return the cause
+     */
+    public String getCause() {
+    
+        return cause;
+    }
+
+    
+    /**
+     * @param cause the cause to set
+     */
+    public void setCause( String cause ) {
+    
+        this.cause = cause;
     }
     
 }

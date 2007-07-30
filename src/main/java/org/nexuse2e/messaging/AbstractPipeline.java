@@ -21,7 +21,7 @@ package org.nexuse2e.messaging;
 
 import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
-import org.nexuse2e.Constants.Runlevel;
+import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.EngineConfiguration;
 
 abstract public class AbstractPipeline implements Pipeline {
@@ -138,12 +138,12 @@ abstract public class AbstractPipeline implements Pipeline {
     /* (non-Javadoc)
      * @see org.nexuse2e.Manageable#getActivationRunlevel()
      */
-    public Runlevel getActivationRunlevel() {
+    public Layer getActivationLayer() {
 
         if ( isOutboundPipeline() ) {
-            return Runlevel.OUTBOUND_PIPELINES;
+            return Layer.OUTBOUND_PIPELINES;
         }
-        return Runlevel.INBOUND_PIPELINES;
+        return Layer.INBOUND_PIPELINES;
     }
 
     /* (non-Javadoc)

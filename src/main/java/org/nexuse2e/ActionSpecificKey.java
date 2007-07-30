@@ -19,14 +19,20 @@
  */
 package org.nexuse2e;
 
+import java.io.Serializable;
+
 /**
  * Key identifying an entity that is specific to an action within a choreogrpahy.
  * 
  * @author gesch
  *
  */
-public class ActionSpecificKey {
+public class ActionSpecificKey  implements Serializable{
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 6647137553991695400L;
     /**
      * The unique identifier of the action.
      */

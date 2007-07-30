@@ -53,7 +53,7 @@ import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
 import org.nexuse2e.Engine;
 import org.nexuse2e.Constants.BeanStatus;
-import org.nexuse2e.Constants.Runlevel;
+import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
@@ -228,9 +228,9 @@ public class GenericXMLDocumentWebServiceReceiver extends AbstractController imp
     /* (non-Javadoc)
      * @see org.nexuse2e.Manageable#getActivationRunlevel()
      */
-    public Runlevel getActivationRunlevel() {
+    public Layer getActivationLayer() {
 
-        return Runlevel.INBOUND_PIPELINES;
+        return Layer.INBOUND_PIPELINES;
     }
 
     /* (non-Javadoc)

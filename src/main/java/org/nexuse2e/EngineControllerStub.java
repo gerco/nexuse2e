@@ -35,4 +35,6 @@ public interface EngineControllerStub {
      */
     public void initialize();
     
+    public String getMachineId();
+    
 } // EngineControllerStub

@@ -29,7 +29,7 @@ import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.ProtocolSpecificKey;
 import org.nexuse2e.Constants.BeanStatus;
-import org.nexuse2e.Constants.Runlevel;
+import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.pojo.ConversationPojo;
 import org.nexuse2e.pojo.MessagePojo;
@@ -159,9 +159,9 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
     /* (non-Javadoc)
      * @see org.nexuse2e.Manageable#getRunLevel()
      */
-    public Runlevel getActivationRunlevel() {
+    public Layer getActivationLayer() {
 
-        return Runlevel.OUTBOUND_PIPELINES;
+        return Layer.OUTBOUND_PIPELINES;
     }
 
     /* (non-Javadoc)

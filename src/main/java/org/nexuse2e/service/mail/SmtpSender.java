@@ -58,7 +58,7 @@ import org.bouncycastle.mail.smime.SMIMEEnvelopedGenerator;
 import org.bouncycastle.mail.smime.SMIMESignedGenerator;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
-import org.nexuse2e.Constants.Runlevel;
+import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
@@ -115,9 +115,9 @@ public class SmtpSender extends AbstractService implements SenderAware {
     }
 
     @Override
-    public Runlevel getActivationRunlevel() {
+    public Layer getActivationLayer() {
 
-        return Runlevel.OUTBOUND_PIPELINES;
+        return Layer.OUTBOUND_PIPELINES;
     }
 
     public TransportSender getTransportSender() {

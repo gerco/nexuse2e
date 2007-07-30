@@ -17,38 +17,17 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+
 package org.nexuse2e;
 
-import java.io.Serializable;
 
-public interface StatusSummary extends Serializable{
-
-    /**
-     * @author gesch
-     */
-    public static enum Status {
-        ERROR(-1), UNKNOWN(0), INACTIVE(1), ACTIVE(2);
-
-        private int type;
-
-        Status( int type ) {
-
-            this.type = type;
-        }
-
-        public int getValue() {
-
-            return type;
-        }
-    }
-
-    /**
-     * @return
-     */
-    public Status getStatus();
-
+/**
+ * @author gesch
+ *
+ */
+public interface EngineMonitorListener {
     /**
      * 
      */
-    public void setStatus(Status status);
+    public void engineEvent(EngineStatusSummary summary);
 }

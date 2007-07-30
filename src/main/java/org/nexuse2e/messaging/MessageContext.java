@@ -19,6 +19,8 @@
  */
 package org.nexuse2e.messaging;
 
+import java.io.Serializable;
+
 import org.nexuse2e.ActionSpecificKey;
 import org.nexuse2e.ProtocolSpecificKey;
 import org.nexuse2e.pojo.ChoreographyPojo;
@@ -32,11 +34,18 @@ import org.nexuse2e.pojo.PartnerPojo;
  *
  * @author mbreilmann
  */
-public class MessageContext {
+public class MessageContext implements Serializable {
 
+    /**
+     * 
+     */
+    private static final long   serialVersionUID    = 5184344055202810866L;
     private MessagePojo         messagePojo         = null;
     private MessagePojo         originalMessagePojo = null;
     private Object              data                = null;
+    
+    private Object              routingData         = null;
+    
     private ProtocolSpecificKey protocolSpecificKey = null;
     private ActionSpecificKey   actionSpecificKey   = null;
 
@@ -200,5 +209,23 @@ public class MessageContext {
     public void setOriginalMessagePojo( MessagePojo originalMessagePojo ) {
 
         this.originalMessagePojo = originalMessagePojo;
+    }
+
+    
+    /**
+     * @return the routingData
+     */
+    public Object getRoutingData() {
+    
+        return routingData;
+    }
+
+    
+    /**
+     * @param routingData the routingData to set
+     */
+    public void setRoutingData( Object routingData ) {
+    
+        this.routingData = routingData;
     }
 } // MessageContext

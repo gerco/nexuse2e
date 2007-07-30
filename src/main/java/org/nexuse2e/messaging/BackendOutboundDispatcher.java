@@ -29,7 +29,7 @@ import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.ProtocolSpecificKey;
 import org.nexuse2e.Constants.BeanStatus;
-import org.nexuse2e.Constants.Runlevel;
+import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.pojo.ChoreographyPojo;
@@ -224,9 +224,9 @@ public class BackendOutboundDispatcher extends StateMachineExecutor implements P
     /* (non-Javadoc)
      * @see org.nexuse2e.Manageable#getRunLevel()
      */
-    public Runlevel getActivationRunlevel() {
+    public Layer getActivationLayer() {
 
-        return Runlevel.OUTBOUND_PIPELINES;
+        return Layer.OUTBOUND_PIPELINES;
     }
 
     /* (non-Javadoc)

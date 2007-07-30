@@ -27,7 +27,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
-import org.nexuse2e.Constants.Runlevel;
+import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 
@@ -107,7 +107,7 @@ abstract public class AbstractPipelet implements Pipelet {
     /* (non-Javadoc)
      * @see org.nexuse2e.Manageable#getActivationRunlevel()
      */
-    public Runlevel getActivationRunlevel() {
+    public Layer getActivationLayer() {
 
         return null;
     }

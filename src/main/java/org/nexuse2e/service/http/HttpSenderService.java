@@ -38,7 +38,7 @@ import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
-import org.nexuse2e.Constants.Runlevel;
+import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.logging.LogMessage;
@@ -72,9 +72,9 @@ public class HttpSenderService extends AbstractService implements SenderAware {
     }
 
     @Override
-    public Runlevel getActivationRunlevel() {
+    public Layer getActivationLayer() {
 
-        return Runlevel.OUTBOUND_PIPELINES;
+        return Layer.OUTBOUND_PIPELINES;
     }
 
     public TransportSender getTransportSender() {

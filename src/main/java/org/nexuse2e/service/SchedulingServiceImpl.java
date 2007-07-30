@@ -28,7 +28,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
-import org.nexuse2e.Constants.Runlevel;
+import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.ParameterDescriptor;
 
 /**
@@ -70,9 +70,9 @@ public class SchedulingServiceImpl extends AbstractService implements Scheduling
     }
 
     @Override
-    public Runlevel getActivationRunlevel() {
+    public Layer getActivationLayer() {
 
-        return Runlevel.CORE;
+        return Layer.CORE;
     }
 
     /* (non-Javadoc)

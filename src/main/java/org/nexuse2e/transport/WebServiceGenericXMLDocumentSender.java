@@ -51,7 +51,7 @@ import org.codehaus.xfire.util.jdom.StaxBuilder;
 import org.jdom.Element;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.ProtocolSpecificKey;
-import org.nexuse2e.Constants.Runlevel;
+import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.MessagePayloadPojo;
@@ -156,9 +156,9 @@ public class WebServiceGenericXMLDocumentSender extends AbstractPipelet {
     /* (non-Javadoc)
      * @see org.nexuse2e.Manageable#getRunLevel()
      */
-    public Runlevel getActivationRunlevel() {
+    public Layer getActivationLayer() {
 
-        return Runlevel.INTERFACES;
+        return Layer.INTERFACES;
     }
 
     public ProtocolSpecificKey getKey() {

@@ -3,7 +3,7 @@ package org.nexuse2e.service.ftp;
 import java.util.Map;
 
 import org.nexuse2e.NexusException;
-import org.nexuse2e.Constants.Runlevel;
+import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.service.AbstractService;
@@ -34,8 +34,8 @@ public class FtpSenderService extends AbstractService implements SenderAware {
      * @see org.nexuse2e.service.AbstractService#getActivationRunlevel()
      */
     @Override
-    public Runlevel getActivationRunlevel() {
-        return Runlevel.OUTBOUND_PIPELINES;
+    public Layer getActivationLayer() {
+        return Layer.OUTBOUND_PIPELINES;
     }
 
     /* (non-Javadoc)

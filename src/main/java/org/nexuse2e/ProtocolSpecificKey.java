@@ -19,6 +19,8 @@
  */
 package org.nexuse2e;
 
+import java.io.Serializable;
+
 /**
  * Key identifying an entity that is specific to a protocol. A protocol is identified by
  * the identifier of
@@ -30,8 +32,12 @@ package org.nexuse2e;
  *
  * @author gesch
  */
-public class ProtocolSpecificKey {
+public class ProtocolSpecificKey implements Serializable {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -3190901328563079277L;
     private String communicationProtocolId      = null;
     private String communicationProtocolVersion = null;
     private String transportProtocolId          = null;

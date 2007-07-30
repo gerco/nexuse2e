@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.nexuse2e.NexusException;
-import org.nexuse2e.Constants.Runlevel;
+import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.messaging.MessageContext;
@@ -138,9 +138,9 @@ public class HttpReceiverService extends AbstractControllerService implements Re
      * @see org.nexuse2e.service.AbstractService#getActivationTime()
      */
     @Override
-    public Runlevel getActivationRunlevel() {
+    public Layer getActivationLayer() {
 
-        return Runlevel.INBOUND_PIPELINES;
+        return Layer.INBOUND_PIPELINES;
     }
 
     /* (non-Javadoc)

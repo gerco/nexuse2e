@@ -33,7 +33,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.Constants.BeanStatus;
-import org.nexuse2e.Constants.Runlevel;
+import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.backend.BackendPipelineDispatcher;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
@@ -109,9 +109,9 @@ public class DirectoryScannerService extends AbstractService implements Schedule
      * @see org.nexuse2e.service.AbstractService#getActivationRunlevel()
      */
     @Override
-    public Runlevel getActivationRunlevel() {
+    public Layer getActivationLayer() {
 
-        return Runlevel.OUTBOUND_PIPELINES;
+        return Layer.OUTBOUND_PIPELINES;
     }
 
     /* (non-Javadoc)

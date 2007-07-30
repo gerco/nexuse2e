@@ -20,7 +20,7 @@
 package org.nexuse2e;
 
 import org.nexuse2e.Constants.BeanStatus;
-import org.nexuse2e.Constants.Runlevel;
+import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.EngineConfiguration;
 
 /**
@@ -69,7 +69,7 @@ public interface Manageable {
      * Return the run level of this component. The component will be activated dependent
      * on the <code>Runlevel</code> returned here.
      * @return The run level of this component.
-     * @see Runlevel
+     * @see Layer
      */
-    public Runlevel getActivationRunlevel();
+    public Layer getActivationLayer();
 }

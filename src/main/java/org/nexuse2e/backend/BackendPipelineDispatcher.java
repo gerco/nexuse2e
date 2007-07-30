@@ -238,9 +238,9 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
     /* (non-Javadoc)
      * @see org.nexuse2e.Manageable#getRunLevel()
      */
-    public Constants.Runlevel getActivationRunlevel() {
+    public Constants.Layer getActivationLayer() {
 
-        return Constants.Runlevel.INTERFACES;
+        return Constants.Layer.INTERFACES;
     }
 
     /* (non-Javadoc)

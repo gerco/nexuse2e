@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
-import org.nexuse2e.Constants.Runlevel;
+import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.pojo.MappingPojo;
 import org.nexuse2e.tools.mapping.xmldata.MappingDefinition;
@@ -54,9 +54,9 @@ public class DataConversionService extends AbstractService {
     }
 
     @Override
-    public Runlevel getActivationRunlevel() {
+    public Layer getActivationLayer() {
 
-        return Runlevel.CORE;
+        return Layer.CORE;
     }
 
     /**

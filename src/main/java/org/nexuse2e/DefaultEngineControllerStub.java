@@ -20,6 +20,8 @@
 
 package org.nexuse2e;
 
+import java.net.UnknownHostException;
+
 import org.apache.log4j.Logger;
 import org.nexuse2e.service.AbstractControllerService;
 
@@ -50,5 +52,15 @@ public class DefaultEngineControllerStub implements EngineControllerStub {
      */
     public void initialize() {
         
+    }
+
+    public String getMachineId() {
+
+        try {
+            return java.net.InetAddress.getLocalHost().getHostName();
+        } catch ( UnknownHostException e ) {
+            LOG.error( "Unable to determine MachineId: "+e);
+        } 
+        return "*unknown";
     }
 } // DefaultEngineControllerStub

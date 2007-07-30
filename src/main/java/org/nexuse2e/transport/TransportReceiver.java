@@ -30,7 +30,7 @@ import org.nexuse2e.NexusException;
 import org.nexuse2e.ProtocolSpecific;
 import org.nexuse2e.ProtocolSpecificKey;
 import org.nexuse2e.Constants.BeanStatus;
-import org.nexuse2e.Constants.Runlevel;
+import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ListParameter;
 import org.nexuse2e.configuration.ParameterDescriptor;
@@ -145,9 +145,9 @@ public class TransportReceiver implements Pipelet, ProtocolSpecific {
     /* (non-Javadoc)
      * @see org.nexuse2e.Manageable#getActivationTime()
      */
-    public Runlevel getActivationRunlevel() {
+    public Layer getActivationLayer() {
 
-        return Runlevel.INTERFACES;
+        return Layer.INTERFACES;
     }
 
     /* (non-Javadoc)

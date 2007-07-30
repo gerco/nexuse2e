@@ -45,25 +45,32 @@ public class ServiceViewAction extends NexusE2EAction {
             HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
-        ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
+        ActionForward success;
+        try {
+            success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
 
-        ServiceForm serviceForm = (ServiceForm) actionForm;
+            ServiceForm serviceForm = (ServiceForm) actionForm;
 
-        ServicePojo servicePojo = Engine.getInstance().getActiveConfigurationAccessService().getServicePojoByNxServiceId(
-                serviceForm.getNxServiceId() );
+            ServicePojo servicePojo = Engine.getInstance().getActiveConfigurationAccessService().getServicePojoByNxServiceId(
+                    serviceForm.getNxServiceId() );
 
-        serviceForm.setProperties( servicePojo );
-        Service service = Engine.getInstance().getActiveConfigurationAccessService().getService( servicePojo.getName() );
-        for ( ServiceParamPojo serviceParam : servicePojo.getServiceParams() ) {
-            serviceParam.setParameterDescriptor( service.getParameterMap().get( serviceParam.getParamName() ) );
+            serviceForm.setProperties( servicePojo );
+            Service service = Engine.getInstance().getActiveConfigurationAccessService().getService( servicePojo.getName() );
+            for ( ServiceParamPojo serviceParam : servicePojo.getServiceParams() ) {
+                serviceParam.setParameterDescriptor( service.getParameterMap().get( serviceParam.getParamName() ) );
+            }
+            serviceForm.setParameters( ConfigurationUtil.getConfiguration( service, servicePojo ) );
+            serviceForm.createParameterMapFromPojos();
+            serviceForm.setServiceInstance( service );
+            
+            request.setAttribute( ATTRIBUTE_SERVICE_COLLECTION, Engine.getInstance().getActiveConfigurationAccessService().getServices( ) );
+            return success;
+            
+        } catch ( Exception e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            throw e;
         }
-        serviceForm.setParameters( ConfigurationUtil.getConfiguration( service, servicePojo ) );
-        serviceForm.createParameterMapFromPojos();
-        serviceForm.setServiceInstance( service );
-        
-        request.setAttribute( ATTRIBUTE_SERVICE_COLLECTION, Engine.getInstance().getActiveConfigurationAccessService().getServices( ) );
-
-        return success;
     }
 
 }
