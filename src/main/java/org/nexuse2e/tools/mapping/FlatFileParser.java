@@ -94,32 +94,31 @@ public class FlatFileParser {
 
         ArrayList<FlatFileRecord> result = new ArrayList<FlatFileRecord>();
         boolean detectedError = false;
+        InputStreamReader inputStreamReader = null;
+        BufferedReader bufferedReader = null;
 
         long startTime = System.currentTimeMillis();
 
         // Process input
-        InputStreamReader isr = new InputStreamReader( inputStream );
-        BufferedReader br = new BufferedReader( isr );
-        String line = "";
         try {
+            inputStreamReader = new InputStreamReader( inputStream, "ISO-8859-1" );
+            bufferedReader = new BufferedReader( inputStreamReader );
+            String line = "";
             if ( recordContainer.isSkipHeader() ) {
-                line = br.readLine();
+                line = bufferedReader.readLine();
             }
             while ( line != null ) {
-                line = br.readLine();
+                line = bufferedReader.readLine();
                 if ( line != null && !line.trim().equals( "" ) ) {
                     FlatFileRecord flatFileRecord = new FlatFileRecord( line, recordContainer );
                     result.add( flatFileRecord );
                 }
             }
+            bufferedReader.close();
+            inputStreamReader.close();
         } catch ( IOException e1 ) {
             LOG.error( "Error processing line: " + e1.getLocalizedMessage() );
             detectedError = true;
-        }
-        try {
-            br.close();
-            isr.close();
-        } catch ( IOException e1 ) {
         }
 
         if ( detectedError ) {
@@ -170,8 +169,8 @@ public class FlatFileParser {
             System.exit( 1 );
         }
 
-        LOG.error( "flatFileMapping : " + flatFileMapping );
-        LOG.error( "contentPath     : " + contentPath );
+        LOG.debug( "flatFileMapping : " + flatFileMapping );
+        LOG.debug( "contentPath     : " + contentPath );
 
         try {
             FlatFileParser flatFileParser = new FlatFileParser();
@@ -182,11 +181,11 @@ public class FlatFileParser {
             List<FlatFileRecord> out = flatFileParser.process( fileInputStream );
             fileInputStream.close();
 
-            LOG.error( "...................." );
+            LOG.debug( "...................." );
             for ( FlatFileRecord flatFileRecord : out ) {
-                LOG.error( flatFileRecord.toString() );
+                LOG.debug( flatFileRecord.toString() );
             }
-            LOG.error( "...................." );
+            LOG.debug( "...................." );
 
         } catch ( Exception e ) {
             e.printStackTrace();

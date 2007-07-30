@@ -66,7 +66,7 @@ public class HTTPPlainHeaderDeserializer extends AbstractPipelet {
         String conversationId = request.getParameter( Constants.PARAM_CONVERSATION_ID );
         String messageId = request.getParameter( Constants.PARAM_MESSAGE_ID );
 
-        //Verify params, if required one do not exist, reject post.
+        // Verify params, if required one does not exist, reject post.
         if ( choreographyId == null || actionId == null || participantId == null ) {
             LOG.error( "Received post without required parameters." );
             throw new NexusException( "Received post without required parameters." ); //invalid post, Action, choreography, and participantid parameters are required.

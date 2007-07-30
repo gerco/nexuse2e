@@ -105,7 +105,7 @@ public class EngineMonitor {
 
         EngineStatusSummary summary = new EngineStatusSummary();
 
-        LOG.debug( "EngineMonitor probing..." );
+        // LOG.debug( "EngineMonitor probing..." );
         ConfigDAO configDao = null;
         try {
             configDao = (ConfigDAO) Engine.getInstance().getDao( "configDao" );
