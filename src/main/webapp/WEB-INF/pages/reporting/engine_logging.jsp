@@ -33,11 +33,11 @@
                 <td class="NEXUSValue">
                   <html:select onchange="javascript: scriptScope.disableLinks();" styleClass="fixedsize" property="severity">
                       <html:option value=""/>
-                      <html:option value="<%=org.apache.log4j.Level.ERROR.toInt()+"" %>">Error</html:option>
-                      <html:option value="<%=org.apache.log4j.Level.WARN.toInt()+"" %>">Warn</html:option>
-                      <html:option value="<%=org.apache.log4j.Level.INFO.toInt()+"" %>">Info</html:option>
-                      <html:option value="<%=org.apache.log4j.Level.DEBUG.toInt()+"" %>">Debug</html:option>
-                      <html:option value="<%=org.apache.log4j.Level.TRACE.toInt()+"" %>">Trace</html:option>
+                      <html:option value='<%=org.apache.log4j.Level.ERROR.toInt()+"" %>'>Error</html:option>
+                      <html:option value='<%=org.apache.log4j.Level.WARN.toInt()+"" %>'>Warn</html:option>
+                      <html:option value='<%=org.apache.log4j.Level.INFO.toInt()+"" %>'>Info</html:option>
+                      <html:option value='<%=org.apache.log4j.Level.DEBUG.toInt()+"" %>'>Debug</html:option>
+                      <html:option value='<%=org.apache.log4j.Level.TRACE.toInt()+"" %>'>Trace</html:option>
                  </html:select>
                 </td>
                 <td class="NEXUSValue">Message Text <html:checkbox onclick="javascript: scriptScope.disableLinks();" name="reportingPropertiesForm" property="messageTextEnabled"/></td>
