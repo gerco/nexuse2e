@@ -88,6 +88,14 @@ public class HttpReceiverService extends AbstractControllerService implements Re
                         .put( Constants.PARAMETER_PREFIX_HTTP + key, value );
             }
 
+            Enumeration<String> requestParameters = request.getParameterNames();
+            while ( requestParameters.hasMoreElements() ) {
+                String key = requestParameters.nextElement();
+                String value = request.getParameter( key );
+                messageContext.getMessagePojo().getCustomParameters().put(
+                        Constants.PARAMETER_PREFIX_HTTP_REQUEST_PARAM + key, value );
+            }
+
             processMessage( messageContext );
 
             LOG.trace( "Processing Done" );
@@ -99,8 +107,7 @@ public class HttpReceiverService extends AbstractControllerService implements Re
             out.close();
 
         } catch ( Exception e ) {
-            // TODO Auto-generated catch block
-            // e.printStackTrace();
+            e.printStackTrace();
             response.sendError( 500, "NEXUSe2e - Processing error: " + e );
         }
 

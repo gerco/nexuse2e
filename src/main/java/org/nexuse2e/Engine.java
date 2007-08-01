@@ -705,8 +705,9 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
 
             try {
                 changeStatus( BeanStatus.INSTANTIATED );
+                LOG.debug( "Saving configuration..." );
                 newConfiguration.saveConfigurationToDB();
-                LOG.debug( "initialize new configuration" );
+                LOG.debug( "Initialize new configuration" );
                 newConfiguration.init();
                 this.currentConfiguration = newConfiguration;
             } catch ( Exception e ) {

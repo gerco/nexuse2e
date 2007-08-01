@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.nexuse2e.messaging.ErrorDescriptor;
 
 /**
@@ -131,7 +130,7 @@ public class MessagePojo implements java.io.Serializable {
         clonedMessagePojo.setEndDate( endDate );
         clonedMessagePojo.setErrors( errors );
         clonedMessagePojo.setExpirationDate( expirationDate );
-        clonedMessagePojo.setHeaderData( headerData.clone() );
+        clonedMessagePojo.setHeaderData( headerData != null ? headerData.clone() : null );
         clonedMessagePojo.setMessageId( messageId );
         clonedMessagePojo.setMessageLabels( messageLabels );
         List<MessagePayloadPojo> clonedMessagePayloads = new ArrayList<MessagePayloadPojo>();

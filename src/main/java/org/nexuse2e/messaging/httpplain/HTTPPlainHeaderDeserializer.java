@@ -19,8 +19,6 @@
  */
 package org.nexuse2e.messaging.httpplain;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
@@ -51,20 +49,23 @@ public class HTTPPlainHeaderDeserializer extends AbstractPipelet {
             IllegalStateException, NexusException {
 
         Object object = messageContext.getData();
-        if ( !( object instanceof HttpServletRequest ) ) {
-            throw new IllegalArgumentException( "Unable to process message: raw data not of type HttpServletRequest!" );
+        if ( !( object instanceof byte[] ) ) {
+            throw new IllegalArgumentException( "Unable to process message: raw data not of type byte[]!" );
         }
 
-        HttpServletRequest request = (HttpServletRequest) object;
-
         // required params from post.
-        String choreographyId = request.getParameter( Constants.PARAM_CHOREOGRAPY_ID );
-        String participantId = request.getParameter( Constants.PARAM_PARTNER_ID );
-        String actionId = request.getParameter( Constants.PARAM_ACTION_ID );
+        String choreographyId = messageContext.getMessagePojo().getCustomParameters().get(
+                Constants.PARAMETER_PREFIX_HTTP_REQUEST_PARAM + Constants.PARAM_CHOREOGRAPY_ID );
+        String participantId = messageContext.getMessagePojo().getCustomParameters().get(
+                Constants.PARAMETER_PREFIX_HTTP_REQUEST_PARAM + Constants.PARAM_PARTNER_ID );
+        String actionId = messageContext.getMessagePojo().getCustomParameters().get(
+                Constants.PARAMETER_PREFIX_HTTP_REQUEST_PARAM + Constants.PARAM_ACTION_ID );
 
         // optional params, if they don't exist, new ones will be generated.
-        String conversationId = request.getParameter( Constants.PARAM_CONVERSATION_ID );
-        String messageId = request.getParameter( Constants.PARAM_MESSAGE_ID );
+        String conversationId = messageContext.getMessagePojo().getCustomParameters().get(
+                Constants.PARAMETER_PREFIX_HTTP_REQUEST_PARAM + Constants.PARAM_CONVERSATION_ID );
+        String messageId = messageContext.getMessagePojo().getCustomParameters().get(
+                Constants.PARAMETER_PREFIX_HTTP_REQUEST_PARAM + Constants.PARAM_MESSAGE_ID );
 
         // Verify params, if required one does not exist, reject post.
         if ( choreographyId == null || actionId == null || participantId == null ) {

@@ -36,6 +36,9 @@ public class Constants extends org.nexuse2e.Constants {
 
     public static final int     DEFAULT_MESSAGE_INTERVAL       = 30;
 
+    public static final String PARAMETER_PREFIX_HTTP               = "http_";
+    public static final String PARAMETER_PREFIX_HTTP_REQUEST_PARAM = "http_request_";
+
     /**
      * Choreography was not found in Configuration. e.g. message informations are invalid, or configuration is incomplete
      */

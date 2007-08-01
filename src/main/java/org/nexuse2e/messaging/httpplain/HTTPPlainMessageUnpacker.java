@@ -19,55 +19,54 @@
  */
 package org.nexuse2e.messaging.httpplain;
 
-import java.io.IOException;
 import java.util.Date;
-
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
+import org.nexuse2e.messaging.ebxml.v20.Constants;
 import org.nexuse2e.pojo.MessagePayloadPojo;
 
 public class HTTPPlainMessageUnpacker extends AbstractPipelet {
 
-    private static Logger       LOG = Logger.getLogger( HTTPPlainMessageUnpacker.class );
+    private static Logger LOG = Logger.getLogger( HTTPPlainMessageUnpacker.class );
 
-    
     /**
      * Default constructor.
      */
     public HTTPPlainMessageUnpacker() {
+
         frontendPipelet = true;
     }
 
     /* (non-Javadoc)
      * @see org.nexuse2e.messaging.MessageUnpackager#processMessage(com.tamgroup.nexus.e2e.persistence.pojo.MessagePojo, byte[])
      */
-    public MessageContext processMessage( MessageContext messageContext )
-            throws IllegalArgumentException, IllegalStateException, NexusException {
+    public MessageContext processMessage( MessageContext messageContext ) throws IllegalArgumentException,
+            IllegalStateException, NexusException {
 
         byte[] payloadData = null;
         MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo();
 
         Object object = messageContext.getData();
-        if ( !( object instanceof HttpServletRequest ) ) {
-            LOG.error( "Unable to process message: raw data not of type HttpServletRequest!" );
-            throw new IllegalArgumentException( "Unable to process message: raw data not of type HttpServletRequest!" );
+
+        if ( !( object instanceof byte[] ) ) {
+            LOG.error( "Unable to process message: raw data not of type byte[]!" );
+            throw new IllegalArgumentException( "Unable to process message: raw data not of type byte[]!" );
         }
 
-        HttpServletRequest request = (HttpServletRequest) object;
-
         try {
-            payloadData = getContentFromRequest( request );
+            payloadData = (byte[]) object;
 
             messagePayloadPojo.setMessage( messageContext.getMessagePojo() );
             messagePayloadPojo.setPayloadData( payloadData );
-            if ( request.getContentType() != null ) {
-                messagePayloadPojo.setMimeType( request.getContentType() );
+
+            String contentType = messageContext.getMessagePojo().getCustomParameters().get(
+                    Constants.PARAMETER_PREFIX_HTTP + "content-type" );
+
+            if ( contentType != null ) {
+                messagePayloadPojo.setMimeType( contentType );
             } else {
                 messagePayloadPojo.setMimeType( "text/xml" );
             }
@@ -78,36 +77,12 @@ public class HTTPPlainMessageUnpacker extends AbstractPipelet {
             messagePayloadPojo.setContentId( "HTTPPlain_contentId" );
 
             messageContext.getMessagePojo().getMessagePayloads().add( messagePayloadPojo );
-        } catch ( IOException e ) {
+        } catch ( Exception e ) {
             LOG.error( "Error retrieving payload from HTTP POST: " + e );
             throw new NexusException( "Error retrieving payload from HTTP POST: " + e );
         }
 
         return messageContext;
-    }
-
-    /**
-     * @param request
-     * @param preBuffer
-     * @param preBufferLen
-     * @return
-     * @throws IOException
-     */
-    public byte[] getContentFromRequest( ServletRequest request ) throws IOException {
-
-        int contentLength = request.getContentLength();
-        byte bufferArray[] = new byte[contentLength];
-        ServletInputStream inputStream = request.getInputStream();
-        int offset = 0;
-        int restBytes = contentLength;
-
-        for ( int bytesRead = inputStream.readLine( bufferArray, offset, contentLength ); bytesRead != -1
-                && restBytes != 0; bytesRead = inputStream.readLine( bufferArray, offset, restBytes ) ) {
-            offset += bytesRead;
-            restBytes -= bytesRead;
-        }
-
-        return bufferArray;
     }
 
 } // HTTPPlainMessageUnpacker

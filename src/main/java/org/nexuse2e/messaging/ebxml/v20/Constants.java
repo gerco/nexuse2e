@@ -25,31 +25,30 @@ package org.nexuse2e.messaging.ebxml.v20;
  */
 public class Constants extends org.nexuse2e.messaging.ebxml.Constants {
 
-    public static final String EBXML_NAMESPACE             = "http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd";
-    public static final String EBXML_NAMESPACE_PREFIX      = "eb";
-    public static final String EBXMLVERSION                = "2.0";
-    public static final String VERSION                     = "version";
-    public static final String MUSTUNDERSTAND              = "mustUnderstand";
-    public static final String MUSTUNDERSTAND_VALUE        = "1";
+    public static final String EBXML_NAMESPACE                     = "http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd";
+    public static final String EBXML_NAMESPACE_PREFIX              = "eb";
+    public static final String EBXMLVERSION                        = "2.0";
+    public static final String VERSION                             = "version";
+    public static final String MUSTUNDERSTAND                      = "mustUnderstand";
+    public static final String MUSTUNDERSTAND_VALUE                = "1";
 
-    public static final String SOAPACTOR                   = "urn:oasis:names:tc:ebxml-msg:actor:toPartyMSH";
-    public static final String ACTOR                       = "SOAP-ENV:actor";
-    public static final String PARTY_ID                    = "PartyId";
-    public static final String TIMESTAMP_ID                = "Timestamp";
-    public static final String REFTOMESSAGE_ID             = "RefToMessageId";
-    public static final String URI_ID                      = "uri:";
-    public static final String CID_ID                      = "cid:";
-    public static final String LOCATION_ID                 = "Location";
+    public static final String SOAPACTOR                           = "urn:oasis:names:tc:ebxml-msg:actor:toPartyMSH";
+    public static final String ACTOR                               = "SOAP-ENV:actor";
+    public static final String PARTY_ID                            = "PartyId";
+    public static final String TIMESTAMP_ID                        = "Timestamp";
+    public static final String REFTOMESSAGE_ID                     = "RefToMessageId";
+    public static final String URI_ID                              = "uri:";
+    public static final String CID_ID                              = "cid:";
+    public static final String LOCATION_ID                         = "Location";
 
-    public static final String ACKREQUESTED_SIGNED         = "true";
-    public static final String ACKREQUESTED_UNSIGNED       = "false";
+    public static final String ACKREQUESTED_SIGNED                 = "true";
+    public static final String ACKREQUESTED_UNSIGNED               = "false";
 
-    public static final String PARAMETER_PREFIX_HTTP       = "http_";
-    public static final String PARAMETER_PREFIX_EBXML20    = "ebxml20_";
-    public static final String PROTOCOLSPECIFIC_FROM       = "from";
-    public static final String PROTOCOLSPECIFIC_TO         = "to";
-    public static final String PROTOCOLSPECIFIC_FROMIDTYPE = "fromIDType";
-    public static final String PROTOCOLSPECIFIC_TOIDTYPE   = "toIDType";
-    public static final String PROTOCOLSPECIFIC_SERVICE    = "service";
+    public static final String PARAMETER_PREFIX_EBXML20            = "ebxml20_";
+    public static final String PROTOCOLSPECIFIC_FROM               = "from";
+    public static final String PROTOCOLSPECIFIC_TO                 = "to";
+    public static final String PROTOCOLSPECIFIC_FROMIDTYPE         = "fromIDType";
+    public static final String PROTOCOLSPECIFIC_TOIDTYPE           = "toIDType";
+    public static final String PROTOCOLSPECIFIC_SERVICE            = "service";
 
 }
