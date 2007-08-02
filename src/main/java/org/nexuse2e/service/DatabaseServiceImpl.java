@@ -142,7 +142,7 @@ public class DatabaseServiceImpl extends AbstractService implements DatabaseServ
      * @see org.nexuse2e.service.AbstractService#initialize(org.nexuse2e.configuration.EngineConfiguration)
      */
     @Override
-    public void initialize( EngineConfiguration config ) {
+    public void initialize( EngineConfiguration config ) throws InstantiationException {
 
         // TODO Auto-generated method stub
         super.initialize( config );

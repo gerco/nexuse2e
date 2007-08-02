@@ -21,10 +21,8 @@
 package org.nexuse2e.service;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,7 +44,8 @@ import org.nexuse2e.tools.mapping.xmldata.MappingDefinition;
  */
 public class TestMessageGeneratorService extends AbstractService implements SchedulerClient {
 
-    private static Logger             LOG                         = Logger.getLogger( TestMessageGeneratorService.class );
+    private static Logger             LOG                         = Logger
+                                                                          .getLogger( TestMessageGeneratorService.class );
 
     // Time to wait after retrieving the list of files to send
     // This is to avoid timing problems when files are still being written
@@ -113,7 +112,7 @@ public class TestMessageGeneratorService extends AbstractService implements Sche
      * @see org.nexuse2e.service.AbstractService#initialize(org.nexuse2e.configuration.EngineConfiguration)
      */
     @Override
-    public void initialize( EngineConfiguration config ) {
+    public void initialize( EngineConfiguration config ) throws InstantiationException {
 
         LOG.trace( "initializing" );
         String schedulingServiceName = getParameter( SCHEDULING_SERVICE );
@@ -124,13 +123,11 @@ public class TestMessageGeneratorService extends AbstractService implements Sche
             File directoryFile = new File( directory );
             if ( !directoryFile.exists() || !directoryFile.isDirectory() ) {
                 status = BeanStatus.ERROR;
-                LOG.error( "Value for setting 'directory' does not point to a directory!" );
-                return;
+                throw new InstantiationException( "Value for setting 'directory' does not point to a directory!" );
             }
         } else {
             status = BeanStatus.ERROR;
-            LOG.error( "No value for setting 'directory' provided!" );
-            return;
+            throw new InstantiationException( "No value for setting 'directory' provided!" );
         }
 
         String intervalValue = getParameter( INTERVAL );
@@ -138,8 +135,7 @@ public class TestMessageGeneratorService extends AbstractService implements Sche
             interval = Integer.parseInt( intervalValue );
         } else {
             status = BeanStatus.ERROR;
-            LOG.error( "No value for setting 'interval' provided!" );
-            return;
+            throw new InstantiationException( "No value for setting 'interval' provided!" );
         }
 
         String choreographyValue = getParameter( CHOREOGRAPHY );
@@ -147,8 +143,7 @@ public class TestMessageGeneratorService extends AbstractService implements Sche
             choreographyId = choreographyValue;
         } else {
             status = BeanStatus.ERROR;
-            LOG.error( "No value for setting 'choreography' provided!" );
-            return;
+            throw new InstantiationException( "No value for setting 'choreography' provided!" );
         }
 
         String actionValue = getParameter( ACTION );
@@ -156,8 +151,7 @@ public class TestMessageGeneratorService extends AbstractService implements Sche
             actionId = actionValue;
         } else {
             status = BeanStatus.ERROR;
-            LOG.error( "No value for setting 'action' provided!" );
-            return;
+            throw new InstantiationException( "No value for setting 'action' provided!" );
         }
 
         String partnerValue = getParameter( PARTNER );
@@ -165,8 +159,7 @@ public class TestMessageGeneratorService extends AbstractService implements Sche
             partnerId = partnerValue;
         } else {
             status = BeanStatus.ERROR;
-            LOG.error( "No value for setting 'partner' provided!" );
-            return;
+            throw new InstantiationException( "No value for setting 'partner' provided!" );
         }
 
         String filterValue = getParameter( FILTER );
@@ -174,15 +167,14 @@ public class TestMessageGeneratorService extends AbstractService implements Sche
             filenameFilter = new FilenameExtensionFilter( filterValue );
         }
 
-       
-
         String serviceName = getParameter( MAPPING_SERVICE );
         if ( !StringUtils.isEmpty( serviceName ) ) {
             Service service = Engine.getInstance().getActiveConfigurationAccessService().getService( serviceName );
             if ( service != null && service instanceof DataConversionService ) {
                 mappingService = (DataConversionService) service;
             } else {
-                LOG.error( "the selected serviceName: " + serviceName + " references no valid Data Conversion Service" );
+                throw new InstantiationException( "the selected serviceName: " + serviceName
+                        + " references no valid Data Conversion Service" );
             }
         } else {
             LOG.warn( "no mapping service configured!" );
@@ -194,21 +186,19 @@ public class TestMessageGeneratorService extends AbstractService implements Sche
                     schedulingServiceName );
             if ( service == null ) {
                 status = BeanStatus.ERROR;
-                LOG.error( "Service not found in configuration: " + schedulingServiceName );
-                return;
+                throw new InstantiationException( "Service not found in configuration: " + schedulingServiceName );
             }
             if ( !( service instanceof SchedulingService ) ) {
                 status = BeanStatus.ERROR;
-                LOG.error( schedulingServiceName + " is instance of " + service.getClass().getName()
-                        + " but SchedulingService is required" );
-                return;
+                throw new InstantiationException( schedulingServiceName + " is instance of "
+                        + service.getClass().getName() + " but SchedulingService is required" );
             }
             schedulingService = (SchedulingService) service;
 
         } else {
             status = BeanStatus.ERROR;
-            LOG.error( "SchedulingService is not properly configured (schedulingServiceObj == null)!" );
-            return;
+            throw new InstantiationException(
+                    "SchedulingService is not properly configured (schedulingServiceObj == null)!" );
         }
 
         backendPipelineDispatcher = (BackendPipelineDispatcher) Engine.getInstance().getBeanFactory().getBean(
@@ -316,8 +306,6 @@ public class TestMessageGeneratorService extends AbstractService implements Sche
                 bufferedInputStream.read( fileBuffer, 0, fileSize ); // Read the file content into the buffer
                 bufferedInputStream.close();
 
-                
-
                 // Prepare the Payload and set the MIME content type
                 /*
                  MimetypesFileTypeMap mimetypesFileTypeMap = (MimetypesFileTypeMap) FileTypeMap.getDefaultFileTypeMap();
@@ -338,7 +326,8 @@ public class TestMessageGeneratorService extends AbstractService implements Sche
                 String tempPartnerId = partnerId;
                 if ( partnerId.startsWith( "${" ) ) {
                     if ( mappingService == null ) {
-                        LOG.error( "no valid Mapping service configured. Mapping and conversion features are not available!" );
+                        LOG
+                                .error( "no valid Mapping service configured. Mapping and conversion features are not available!" );
                     } else {
                         MappingDefinition mappingDef = new MappingDefinition();
                         mappingDef.setCommand( partnerId );
@@ -349,7 +338,8 @@ public class TestMessageGeneratorService extends AbstractService implements Sche
                 String tempChoreographyId = choreographyId;
                 if ( choreographyId.startsWith( "${" ) ) {
                     if ( mappingService == null ) {
-                        LOG.error( "no valid Mapping service configured. Mapping and conversion features are not available!" );
+                        LOG
+                                .error( "no valid Mapping service configured. Mapping and conversion features are not available!" );
                     } else {
                         MappingDefinition mappingDef = new MappingDefinition();
                         mappingDef.setCommand( choreographyId );
@@ -360,7 +350,8 @@ public class TestMessageGeneratorService extends AbstractService implements Sche
                 String tempActionId = actionId;
                 if ( actionId.startsWith( "${" ) ) {
                     if ( mappingService == null ) {
-                        LOG.error( "no valid Mapping service configured. Mapping and conversion features are not available!" );
+                        LOG
+                                .error( "no valid Mapping service configured. Mapping and conversion features are not available!" );
                     } else {
                         MappingDefinition mappingDef = new MappingDefinition();
                         mappingDef.setCommand( actionId );
@@ -370,30 +361,13 @@ public class TestMessageGeneratorService extends AbstractService implements Sche
 
                 backendPipelineDispatcher.processMessage( tempPartnerId, tempChoreographyId, tempActionId, null, null,
                         null, fileBuffer );
-                
-                
+
             } catch ( Exception ex ) {
                 LOG.error( "Exception: " + ex );
             }
         }
     }
 
-    /**
-     * Delete a file that was found by the scanner.
-     * @param killFile
-     */
-    private void deleteFile( String killFile ) {
-
-        File killFileObject = new File( killFile );
-
-        if ( killFileObject.delete() ) {
-            LOG.error( "File " + killFile + " deleted." );
-        } else {
-            LOG.error( "File " + killFile + " could not be deleted." );
-        }
-    }
-
-    
     private class FilenameExtensionFilter implements FilenameFilter {
 
         String extension = null;

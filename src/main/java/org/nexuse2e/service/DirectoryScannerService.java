@@ -118,7 +118,7 @@ public class DirectoryScannerService extends AbstractService implements Schedule
      * @see org.nexuse2e.service.AbstractService#initialize(org.nexuse2e.configuration.EngineConfiguration)
      */
     @Override
-    public void initialize( EngineConfiguration config ) {
+    public void initialize( EngineConfiguration config ) throws InstantiationException {
 
         LOG.trace( "initializing" );
         String schedulingServiceName = getParameter( SCHEDULING_SERVICE );
@@ -129,13 +129,12 @@ public class DirectoryScannerService extends AbstractService implements Schedule
             File directoryFile = new File( directory );
             if ( !directoryFile.exists() || !directoryFile.isDirectory() ) {
                 status = BeanStatus.ERROR;
+                // throw new InstantiationException( "Value for setting 'directory' does not point to a directory!" );
                 LOG.error( "Value for setting 'directory' does not point to a directory!" );
-                return;
             }
         } else {
             status = BeanStatus.ERROR;
             LOG.error( "No value for setting 'directory' provided!" );
-            return;
         }
 
         String intervalValue = getParameter( INTERVAL );
@@ -144,7 +143,6 @@ public class DirectoryScannerService extends AbstractService implements Schedule
         } else {
             status = BeanStatus.ERROR;
             LOG.error( "No value for setting 'interval' provided!" );
-            return;
         }
 
         String choreographyValue = getParameter( CHOREOGRAPHY );
@@ -153,7 +151,6 @@ public class DirectoryScannerService extends AbstractService implements Schedule
         } else {
             status = BeanStatus.ERROR;
             LOG.error( "No value for setting 'choreography' provided!" );
-            return;
         }
 
         String actionValue = getParameter( ACTION );
@@ -162,7 +159,6 @@ public class DirectoryScannerService extends AbstractService implements Schedule
         } else {
             status = BeanStatus.ERROR;
             LOG.error( "No value for setting 'action' provided!" );
-            return;
         }
 
         String partnerValue = getParameter( PARTNER );
@@ -171,7 +167,6 @@ public class DirectoryScannerService extends AbstractService implements Schedule
         } else {
             status = BeanStatus.ERROR;
             LOG.error( "No value for setting 'partner' provided!" );
-            return;
         }
 
         String filterValue = getParameter( FILTER );
@@ -190,7 +185,7 @@ public class DirectoryScannerService extends AbstractService implements Schedule
             if ( service != null && service instanceof DataConversionService ) {
                 mappingService = (DataConversionService) service;
             } else {
-                LOG.error( "the selected serviceName: " + serviceName + " references no valid Data Conversion Service" );
+                throw new InstantiationException( "the selected serviceName: " + serviceName + " references no valid Data Conversion Service" );
             }
         } else {
             LOG.warn( "no mapping service configured!" );
@@ -202,21 +197,18 @@ public class DirectoryScannerService extends AbstractService implements Schedule
                     schedulingServiceName );
             if ( service == null ) {
                 status = BeanStatus.ERROR;
-                LOG.error( "Service not found in configuration: " + schedulingServiceName );
-                return;
+                throw new InstantiationException( "Service not found in configuration: " + schedulingServiceName );
             }
             if ( !( service instanceof SchedulingService ) ) {
                 status = BeanStatus.ERROR;
-                LOG.error( schedulingServiceName + " is instance of " + service.getClass().getName()
+                throw new InstantiationException( schedulingServiceName + " is instance of " + service.getClass().getName()
                         + " but SchedulingService is required" );
-                return;
             }
             schedulingService = (SchedulingService) service;
 
         } else {
             status = BeanStatus.ERROR;
-            LOG.error( "SchedulingService is not properly configured (schedulingServiceObj == null)!" );
-            return;
+            throw new InstantiationException( "SchedulingService is not properly configured (schedulingServiceObj == null)!" );
         }
 
         backendPipelineDispatcher = (BackendPipelineDispatcher) Engine.getInstance().getBeanFactory().getBean(

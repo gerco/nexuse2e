@@ -118,7 +118,7 @@ public abstract class AbstractService implements Service {
     /* (non-Javadoc)
      * @see org.nexuse2e.Manageable#initialize(org.nexuse2e.configuration.EngineConfiguration)
      */
-    public void initialize( EngineConfiguration config ) {
+    public void initialize( EngineConfiguration config ) throws InstantiationException {
 
         status = BeanStatus.INITIALIZED;
     }

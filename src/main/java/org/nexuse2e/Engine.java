@@ -158,7 +158,9 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
      * @param targetStatus
      * @throws InstantiationException 
      */
-     public synchronized void changeStatus( BeanStatus targetStatus ) throws InstantiationException {
+    //public synchronized void changeStatus( BeanStatus targetStatus ) throws InstantiationException {
+    public void changeStatus( BeanStatus targetStatus ) throws InstantiationException {
+
         while ( getStatus() != targetStatus ) {
             if ( getStatus().ordinal() < targetStatus.ordinal() ) {
                 switch ( getStatus() ) {
@@ -222,9 +224,8 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
 
     }
 
-    
     public void instantiate() throws InstantiationException {
-        
+
         LOG.info( "*** NEXUSe2e Server Version: " + Version.getVersion() );
 
         LOG.info( "*** JRE version is: " + System.getProperty( "java.version" ) );
@@ -232,7 +233,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
         LOG.info( "*** Java home: " + System.getProperty( "java.home" ) );
 
         LOG.info( "*** This software is licensed under the GNU Lesser General Public License (LGPL), Version 2.1" );
-        
+
         try {
             if ( nexusE2ERoot == null ) {
                 ServletContext currentContext = getServletContext();
@@ -245,14 +246,13 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
             }
         } catch ( IllegalStateException isex ) {
             if ( nexusE2ERoot == null ) {
-                throw new IllegalStateException(
-                        "nexusE2ERoot must be set if not running in a WebApplicationContext" );
+                throw new IllegalStateException( "nexusE2ERoot must be set if not running in a WebApplicationContext" );
             }
         }
 
         LOG.debug( "NEXUSe2e root directory: " + nexusE2ERoot );
     }
-    
+
     /**
      * Initialize the engine
      */
@@ -272,10 +272,6 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
             // started - transports and connectors are running.
 
             //TODO checking cluster settings and status
-
-            
-
-            
 
             try {
                 initializeMime();
@@ -359,7 +355,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                     LOG.error( "Bean already initialized: " + bean.getClass().getName() );
                 }
             }
-            
+
             // update menu tree
             CachedXmlStructureServer cachedStructureServer = (CachedXmlStructureServer) Engine.getInstance()
                     .getBeanFactory().getBean( "structureService" );
@@ -715,7 +711,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                 newConfiguration.saveConfigurationToDB();
                 LOG.debug( "Initialize new configuration" );
                 newConfiguration.init();
-                this.currentConfiguration = newConfiguration;                
+                this.currentConfiguration = newConfiguration;
             } catch ( Exception e ) {
                 e.printStackTrace();
             }
