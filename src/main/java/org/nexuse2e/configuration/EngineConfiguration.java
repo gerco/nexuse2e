@@ -66,7 +66,7 @@ import org.nexuse2e.pojo.UserPojo;
 import org.nexuse2e.service.AbstractControllerService;
 import org.nexuse2e.service.Service;
 import org.nexuse2e.transport.TransportReceiver;
-import org.nexuse2e.ui.structure.impl.CachedXmlStructureServer;
+import org.nexuse2e.ui.structure.StructureException;
 import org.springframework.context.support.ApplicationObjectSupport;
 
 /**
@@ -163,7 +163,7 @@ public class EngineConfiguration {
     /**
      * @throws InstantiationException
      */
-    public void init() throws InstantiationException {
+    public void init() throws InstantiationException, StructureException {
 
         initLoggerCategories();
 
@@ -201,12 +201,6 @@ public class EngineConfiguration {
         initializeLogAppenders();
 
         createConfiguration();
-
-        // update menu tree
-        CachedXmlStructureServer cachedStructureServer = (CachedXmlStructureServer) Engine.getInstance()
-                .getBeanFactory().getBean( "structureService" );
-        cachedStructureServer.clearStructureCache();
-
     } // init
 
     private void initLoggerCategories() {

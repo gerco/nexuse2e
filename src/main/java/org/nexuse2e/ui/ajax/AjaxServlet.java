@@ -58,7 +58,7 @@ public class AjaxServlet extends HttpServlet {
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
             IOException {
 
-        //LOG.trace( getStringRepresentation( request ) );
+        LOG.debug( "PROCESSING REQUEST" );
 
         try {
             String result = null;
@@ -85,6 +85,7 @@ public class AjaxServlet extends HttpServlet {
             response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
         }
 
+        LOG.debug( "RETURNING REQUEST" );
         // super.doGet( request, response );
     }
 

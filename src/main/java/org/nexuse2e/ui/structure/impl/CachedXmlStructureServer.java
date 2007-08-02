@@ -180,6 +180,67 @@ public class CachedXmlStructureServer extends XmlStructureServer {
     }
     
     /**
+     * Removes the current spec from all caches and parses the structure specification again.
+     */
+    public void cacheSpec() {
+        synchronized ( this ) {
+            menuSkeletonCache.remove( spec );
+            menuStructureCache.remove( spec );
+            siteSkeletonCache.remove( spec );
+            siteStructureCache.remove( spec );
+            Document result = super.parseDocument();
+            docCache.put( spec, result );
+        }
+    }
+    
+    /**
+     * Pre-Caches the menu skeleton based of the currently set structure specification.
+     */
+    public void cacheMenuSkeleton() throws StructureException {
+
+        synchronized ( this ) {
+            List<StructureNode> result = super.getMenuSkeleton();
+                menuSkeletonCache.put( spec, result );
+        }
+    }
+        
+    /**
+     * Pre-Caches the menu structure based of the currently set structure specification.
+     */
+    public void cacheMenuStructure() throws StructureException {
+
+        synchronized ( this ) {
+            List<StructureNode> result = super.getMenuStructure();
+                menuStructureCache.put( spec, result );
+        }
+    }
+
+
+
+    /**
+     * Pre-Caches the site skeleton based of the currently set structure specification.
+     */
+    public void cacheSiteSkeleton() throws StructureException {
+
+        synchronized ( this ) {
+            List<StructureNode> result = super.getSiteSkeleton();
+                siteSkeletonCache.put( spec, result );
+        }
+    }
+
+
+    /**
+     * Pre-Caches the site structure based of the currently set structure specification.
+     */
+    public void cacheSiteStructure() throws StructureException {
+
+        synchronized ( this ) {
+            List<StructureNode> result = super.getSiteStructure();
+                siteStructureCache.put( spec, result );
+        }
+    }
+    
+    /**
      * Clears the cache that keeps the structure skeletons.
      */
     public void clearSkeletonCache() {

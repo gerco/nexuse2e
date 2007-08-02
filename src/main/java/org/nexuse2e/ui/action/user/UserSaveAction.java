@@ -73,7 +73,7 @@ public class UserSaveAction extends NexusE2EAction {
 
         if ( errors.isEmpty() ) {
             user.setRole( role );
-            if ( userForm.getNewPassword() != null ) {
+            if ( userForm.getNewPassword() != null && !userForm.getNewPassword().equals( userForm.getPassword() ) ) {
                 // the from validation ensures that newPassword is set for new users
                 // encrypt password
                 user.setPassword( PasswordUtil.hashPassword( userForm.getNewPassword() ) );
@@ -83,7 +83,7 @@ public class UserSaveAction extends NexusE2EAction {
             user.setLastName( userForm.getLastName() );
             user.setMiddleName( userForm.getMiddleName() );
             user.setLoginName( userForm.getLoginName() );
-            user.setPassword( userForm.getNewPassword() );
+            //user.setPassword( userForm.getNewPassword() );
             user.setActive( userForm.getActive() );
             // only system users are invisible
             user.setVisible( true );

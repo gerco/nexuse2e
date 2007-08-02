@@ -56,7 +56,6 @@ import org.nexuse2e.pojo.ServicePojo;
 import org.nexuse2e.pojo.TRPPojo;
 import org.nexuse2e.pojo.UserPojo;
 import org.nexuse2e.service.Service;
-import org.nexuse2e.ui.structure.impl.CachedXmlStructureServer;
 import org.nexuse2e.util.CertificateUtil;
 import org.nexuse2e.util.EncryptionUtil;
 
@@ -1525,11 +1524,6 @@ public class ConfigurationAccessService {
 
         // TODO: swap configurations
         Engine.getInstance().setCurrentConfiguration( engineConfig );
-        // update menu tree
-        CachedXmlStructureServer cachedStructureServer = (CachedXmlStructureServer) Engine.getInstance()
-                .getBeanFactory().getBean( "structureService" );
-        cachedStructureServer.clearStructureCache();
-
     }
 
     /**

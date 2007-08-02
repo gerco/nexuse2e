@@ -54,6 +54,7 @@ import org.nexuse2e.messaging.TimestampFormatter;
 import org.nexuse2e.messaging.ebxml.EBXMLTimestampFormatter;
 import org.nexuse2e.messaging.mime.binary_base64;
 import org.nexuse2e.service.Service;
+import org.nexuse2e.ui.structure.impl.CachedXmlStructureServer;
 import org.nexuse2e.util.CertificateUtil;
 import org.nexuse2e.util.XMLUtil;
 import org.springframework.beans.BeansException;
@@ -358,6 +359,11 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                     LOG.error( "Bean already initialized: " + bean.getClass().getName() );
                 }
             }
+            
+            // update menu tree
+            CachedXmlStructureServer cachedStructureServer = (CachedXmlStructureServer) Engine.getInstance()
+                    .getBeanFactory().getBean( "structureService" );
+            cachedStructureServer.cacheMenuStructure();
 
         } catch ( RuntimeException rex ) {
             LOG.error( "Error initializing Engine: " + rex );
@@ -709,7 +715,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                 newConfiguration.saveConfigurationToDB();
                 LOG.debug( "Initialize new configuration" );
                 newConfiguration.init();
-                this.currentConfiguration = newConfiguration;
+                this.currentConfiguration = newConfiguration;                
             } catch ( Exception e ) {
                 e.printStackTrace();
             }

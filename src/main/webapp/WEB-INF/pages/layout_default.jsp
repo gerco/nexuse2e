@@ -78,6 +78,13 @@
   }
   
   /*
+   * Returns the widget the displays the menu tree.
+   */
+  function getNavPane() {
+  	return dojo.widget.byId('navigator');
+  }
+  
+  /*
    * Returns the TreeSelector for the menu.
    */
   function getMenuTreeSelector() {
@@ -124,6 +131,12 @@
 			reloadChildren(rootNode.children);
 		}
 		//debug("... done");
+		var wrapper_layout = dojo.widget.byId('wrapper_layout');
+		var navigator = dojo.widget.byId('navigator');
+		var docpane = dojo.widget.byId('docpane');
+		navigator.refresh();
+		docpane.refresh();
+		wrapper_layout.show();		
 	}
 	
 	/*
@@ -276,10 +289,10 @@
 	<div dojoType="ContentPane" layoutAlign="top" id="header">
 		<tiles:insert attribute="header"/>
 	</div>
-	<div dojoType="ContentPane" layoutAlign="left" id="navigator">
-    <tiles:insert attribute="menu"/>
-  </div>
-	<div dojoType="ContentPane" layoutAlign="client" id="docpane" executeScripts="true" cacheContent="false">
-		<tiles:insert attribute="document"/>
+	<div dojoType="ContentPane" layoutAlign="left" style="overflow:auto;" id="navigator">
+		<tiles:insert attribute="menu"/>
 	</div>
+	<div dojoType="ContentPane" layoutAlign="client" style="overflow:true;" id="docpane" executeScripts="true" cacheContent="false">
+		<tiles:insert attribute="document"/>
+	</div>	
 </div>

@@ -60,6 +60,8 @@ public class TreeProvider implements AjaxRequestHandler {
 
     public String handleRequest( Map params ) throws JSONException {
 
+        //LOG.debug( "HANDLE REQUEST");
+        
         String result = "";
         String action = ( (String[]) params.get( "action" ) )[0];
         String data = ( (String[]) params.get( "data" ) )[0];
@@ -72,19 +74,25 @@ public class TreeProvider implements AjaxRequestHandler {
         } else {
             LOG.warn( "Invalid request parameter: action=" + action + ", data=" + data );
         }
+        
+        LOG.debug( "RETURN REQUEST");
 
         return result;
     }
 
     protected JSONArray getChildren( JSONObject data ) throws JSONException {
 
+        //LOG.debug( "GET CHILDREN");
+        
         JSONArray result = new JSONArray();
 
         BeanFactory beanFactory = Engine.getInstance().getBeanFactory();
         StructureService strSrv = (StructureService) beanFactory.getBean( BEAN_STRUCTURE_SERVICE );
         if ( strSrv != null ) {
             try {
+                //LOG.debug( "GET MENU STRUCTURE" );
                 List<StructureNode> nodes = strSrv.getMenuStructure();
+                //LOG.debug( "GOT MENU STRUCTURE" );
                 Map<String, StructureNode> nodeMap = buildNodeCatalog( nodes );
                 JSONObject parentJSONNode = data.getJSONObject( DOJO_NODE );
                 String parentId = parentJSONNode.getString( DOJO_WIDGET_ID );
@@ -112,12 +120,16 @@ public class TreeProvider implements AjaxRequestHandler {
             LOG.warn( "No StructureService instance found. Check bean factory (id=" + BEAN_STRUCTURE_SERVICE + ")!" );
         }
 
+        LOG.debug( "RETURN CHILDREN");
+        
         return result;
 
     }
 
     private JSONObject convert2DojoNode( StructureNode node, boolean ignoreCommands ) throws JSONException {
 
+        //LOG.debug( "CONVERT TO DOJO NODE");
+        
         JSONObject dojoNode = new JSONObject();
         // dojoNode.put( "index", index );
         if ( node instanceof PageNode && ( (ParentalStructureNode) node ).hasChildren() ) {
@@ -135,12 +147,16 @@ public class TreeProvider implements AjaxRequestHandler {
             }
         }
         // save in objectId whether node has dynamic children: "d" := dynamic, "s" := static 
+        //LOG.debug( "BUILD OBJECT ID" );
         dojoNode.put( "objectId", buildObjectId( node ) );
+        //LOG.debug( "OBJECT ID BUILT" );
         // save the other info
         dojoNode.put( "widgetId", node.getTarget() );
         dojoNode.put( "title", node.getLabel() );
         dojoNode.put( "childIconSrc", node.getIcon() );
 
+        //LOG.debug( "RETURN DOJO NODE" );
+        
         return dojoNode;
     }
 
@@ -152,19 +168,28 @@ public class TreeProvider implements AjaxRequestHandler {
 
     private Map<String, StructureNode> buildNodeCatalog( List<StructureNode> nodes ) {
 
+        //LOG.debug( "BUILD NODE CATALOG" );
+        
         Map<String, StructureNode> catalog = new HashMap<String, StructureNode>();
         addToMap( nodes, catalog );
+        
+        //LOG.debug( "RETURN NODE CATALOG" );
+        
         return catalog;
     }
 
     private void addToMap( List<StructureNode> nodes, Map<String, StructureNode> map ) {
 
+        //LOG.debug( "ADD TO MAP" );
+        
         for ( StructureNode currNode : nodes ) {
             map.put( currNode.getTarget(), currNode );
             if ( currNode instanceof PageNode && ( (ParentalStructureNode) currNode ).hasChildren() ) {
                 addToMap( ( (ParentalStructureNode) currNode ).getChildren(), map );
             }
         }
+        
+        //LOG.debug( "ADDED TO MAP" );
     }
 
 }
