@@ -643,7 +643,7 @@ public class BasicDAO extends HibernateDaoSupport {
                 }
                 LOG.error( "Error retrieving count!" );
                 e.printStackTrace();
-                nexusException = new NexusException( e.getMessage() );
+                nexusException = new NexusException( e );
             } finally {
                 if ( !extSessionFlag ) {
                     releaseDBSession( session );
