@@ -80,7 +80,7 @@
           
           
           <tr>
-            <td class="NEXUSValue"><html:checkbox property="convColSelect"></html:checkbox>Selction Checkbox</td>
+            <td class="NEXUSValue"><html:checkbox property="convColSelect"></html:checkbox>Selection Checkbox</td>
             <td class="NEXUSValue">
             <input type="checkbox" disabled="true" checked="checked"></input>
             <!--<html:checkbox property="convColConId"></html:checkbox>-->Conversation ID</td>
@@ -102,7 +102,7 @@
               <td colspan="3" class="NEXUSSection">Displayed Rows for Messages</td>
           </tr>
           <tr>
-            <td class="NEXUSValue"><html:checkbox property="messColSelect"></html:checkbox>Selction Checkbox</td>
+            <td class="NEXUSValue"><html:checkbox property="messColSelect"></html:checkbox>Selection Checkbox</td>
             <td class="NEXUSValue">
             <input type="checkbox" disabled="true" checked="checked"></input>
             <!--<html:checkbox property="messColMessageId"></html:checkbox>-->Message ID</td>
