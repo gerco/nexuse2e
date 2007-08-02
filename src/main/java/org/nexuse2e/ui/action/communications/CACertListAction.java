@@ -20,8 +20,8 @@
 package org.nexuse2e.ui.action.communications;
 
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -35,7 +35,6 @@ import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.CertificatePropertiesForm;
-import org.nexuse2e.ui.form.ProtectedFileAccessForm;
 import org.nexuse2e.util.CertificateUtil;
 
 /**
@@ -54,21 +53,23 @@ public class CACertListAction extends NexusE2EAction {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
         ActionForward error = actionMapping.findForward( ACTION_FORWARD_FAILURE );
-        ProtectedFileAccessForm updateCertForm = (ProtectedFileAccessForm) actionForm;
         //request.getSession().setAttribute( Crumbs.CURRENT_LOCATION, Crumbs.CA_CERTS );
 
-        Vector<CertificatePropertiesForm> certs = new Vector();
+        List<CertificatePropertiesForm> certs = new ArrayList<CertificatePropertiesForm>();
         List<CertificatePojo> certificates = Engine.getInstance().getActiveConfigurationAccessService().getCertificates(
                 Constants.CERTIFICATE_TYPE_CA, Constants.CERTIFICATECOMPARATOR );
         if ( certificates != null ) {
             for ( CertificatePojo certificate : certificates ) {
                 byte[] data = certificate.getBinaryData();
-                X509Certificate x509Certificate = CertificateUtil.getX509Certificate( data );
-                CertificatePropertiesForm form = new CertificatePropertiesForm();
-                form.setCertificateProperties( x509Certificate );
-                form.setAlias( certificate.getName() );
-                certs.addElement( form );
-
+                if (data != null) {
+                    X509Certificate x509Certificate = CertificateUtil.getX509Certificate( data );
+                    if (x509Certificate != null) {
+                        CertificatePropertiesForm form = new CertificatePropertiesForm();
+                        form.setCertificateProperties( x509Certificate );
+                        form.setAlias( certificate.getName() );
+                        certs.add( form );
+                    }
+                }
             }
         }
 
