@@ -204,22 +204,22 @@ public class LogDAO extends BasicDAO {
                 sortString = "";
                 break;
             case SORT_CREATED:
-                sortString = " order by Created_Date";
+                sortString = " order by log.createdDate";
                 break;
             case SORT_MODIFIED:
-                sortString = " order by LastModified_Date";
+                sortString = " order by log.lastModifiedDate";
                 break;
             case SORT_SEVERITY:
-                sortString = " order by Severity";
+                sortString = " order by log.severity";
                 break;
             case SORT_DESCRIPTION:
-                sortString = " order by Description";
+                sortString = " order by log.description";
                 break;
             case SORT_METHODNAME:
-                sortString = " order by MethodName";
+                sortString = " order by log.methodName";
                 break;
             case SORT_CLASSNAME:
-                sortString = " order by ClassName";
+                sortString = " order by log.className";
                 break;
         }
 
