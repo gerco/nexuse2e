@@ -89,7 +89,7 @@ public class TransactionDAO extends BasicDAO {
             int nxPartnerId, Session session, Transaction transaction ) throws NexusException {
 
         StringBuffer query = new StringBuffer( "from ConversationPojo where conversationId='" + conversationId
-                + "' and nx_partner_id=" + nxPartnerId + " and choreography.name='" + choreographyId + "'" );
+                + "' and partner.nxPartnerId=" + nxPartnerId + " and choreography.name='" + choreographyId + "'" );
 
         List<ConversationPojo> result = getListThroughSessionFind( query.toString(), session, transaction );
 
@@ -104,7 +104,7 @@ public class TransactionDAO extends BasicDAO {
     public MessagePojo getMessageByMessageId( String messageId, Session session, Transaction transaction )
             throws NexusException {
 
-        StringBuffer query = new StringBuffer( "from MessagePojo where message_Id='" + messageId + "'" );
+        StringBuffer query = new StringBuffer( "from MessagePojo where messageId='" + messageId + "'" );
 
         List<MessagePojo> result = getListThroughSessionFind( query.toString(), session, transaction );
 
