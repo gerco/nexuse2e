@@ -110,7 +110,7 @@ public class CACertSaveKeyStoreAction extends NexusE2EAction {
             
             if ( metaPojos == null || metaPojos.size() == 0 ) {
                 CertificatePojo certPojo = new CertificatePojo();
-                certPojo.setType( Constants.CERTIFICATE_TYPE_CA );
+                certPojo.setType( Constants.CERTIFICATE_TYPE_CACERT_METADATA );
                 certPojo.setName( "CaKeyStoreData" );
                 certPojo.setPassword( EncryptionUtil.encryptString( pwd ) );
                 certPojo.setCreatedDate( new Date() );
