@@ -23,6 +23,9 @@ package org.nexuse2e.backend.pipelets;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -162,10 +165,12 @@ public class XSLTPipelet extends AbstractPipelet {
 
     public static void main( String args[] ) {
 
-        if ( args.length != 2 ) {
-            System.err.println( "Wrong number of parameters. Usage: XSLTPipelet <xml file> <xslt file>" );
+        if ( args.length < 2 ) {
+            System.err.println( "Wrong number of parameters. Usage: XSLTPipelet <xml file> <xslt file> [<output file>]" );
             return;
         }
+        long start = System.currentTimeMillis();
+        
         StreamSource xmlSource = new StreamSource( new File( args[0] ) );
         StreamSource xsltSource = new StreamSource( new File( args[1] ) );
 
@@ -175,10 +180,31 @@ public class XSLTPipelet extends AbstractPipelet {
 
         try {
             byte[] result = new XSLTPipelet().transformXML( xmlSource, xsltSource, map );
-            System.out.println( "Result:\n" + new String( result ) );
+            
+            if(args.length > 2) {
+                try {
+                    File output = new File(args[2]);
+                    FileOutputStream fos = new FileOutputStream(output);
+                    fos.write( result );
+                    fos.flush();
+                    fos.close();
+                    
+                } catch ( FileNotFoundException e ) {
+                    System.out.println("Error while creating output: "+e);
+                } catch ( IOException e ) {
+                    System.out.println("Error while writing output: "+e);
+                }
+                
+            }
+            else {
+                System.out.println( "Result:\n" + new String( result ) );
+            }
         } catch ( NexusException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        long end = System.currentTimeMillis();
+        System.out.println("time: "+ (end-start));
+        
     }
 } // XSLTPipelet
