@@ -66,7 +66,7 @@ public class XMLValidationPipelet extends AbstractPipelet {
     private static Logger         LOG                          = Logger.getLogger( XMLValidationPipelet.class );
 
     public static final String    CONFIG_FILE                  = "config_file";
-    public static final String    PARTNER_SPECIFIC_CONFIG_FILE = "partner_specific_config_file";
+    public static final String    PARTNER_SPECIFIC = "partner_specific";
     public static final String    MAPPING_SERVICE              = "mapping_service";
 
     private String                configFileName               = null;
@@ -77,8 +77,8 @@ public class XMLValidationPipelet extends AbstractPipelet {
 
         parameterMap.put( CONFIG_FILE, new ParameterDescriptor( ParameterType.STRING, "Validation Definitions",
                 "Path to validation definitions file", "" ) );
-        parameterMap.put( PARTNER_SPECIFIC_CONFIG_FILE, new ParameterDescriptor( ParameterType.STRING,
-                "Partner Specific", "Path to partner specific validation configuration file", "" ) );
+        parameterMap.put( PARTNER_SPECIFIC, new ParameterDescriptor( ParameterType.BOOLEAN,
+                "Partner Specific", "use partner specific validation configuration file", Boolean.FALSE ) );
     }
 
     /* (non-Javadoc)
