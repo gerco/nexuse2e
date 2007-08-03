@@ -109,7 +109,7 @@ public class TestMessageSenderService extends AbstractService implements Schedul
      * @see org.nexuse2e.service.AbstractService#initialize(org.nexuse2e.configuration.EngineConfiguration)
      */
     @Override
-    public void initialize( EngineConfiguration config ) {
+    public void initialize( EngineConfiguration config ) throws InstantiationException {
 
         LOG.trace( "initializing" );
         String schedulingServiceName = getParameter( SCHEDULINGSERVICE );
@@ -124,21 +124,19 @@ public class TestMessageSenderService extends AbstractService implements Schedul
                     schedulingServiceName );
             if ( service == null ) {
                 status = BeanStatus.ERROR;
-                LOG.error( "Service not found in configuration: " + schedulingServiceName );
-                return;
+                throw new InstantiationException( "Service not found in configuration: " + schedulingServiceName );
             }
             if ( !( service instanceof SchedulingService ) ) {
                 status = BeanStatus.ERROR;
-                LOG.error( schedulingServiceName + " is instance of " + service.getClass().getName()
-                        + " but SchedulingService is required" );
-                return;
+                throw new InstantiationException( schedulingServiceName + " is instance of "
+                        + service.getClass().getName() + " but SchedulingService is required" );
             }
             schedulingService = (SchedulingService) service;
 
         } else {
             status = BeanStatus.ERROR;
-            LOG.error( "SchedulingService is not properly configured (schedulingServiceObj == null)!" );
-            return;
+            throw new InstantiationException(
+                    "SchedulingService is not properly configured (schedulingServiceObj == null)!" );
         }
 
         super.initialize( config );
