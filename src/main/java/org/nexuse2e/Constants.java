@@ -26,6 +26,10 @@ package org.nexuse2e;
  */
 public class Constants {
 
+    public static enum Severity {
+        INFO, WARN, ERROR;
+    }
+    
     public static String       HIBERNATESESSIONFACTORYBEANID      = "HybernateSessionFactory";
 
     // DAO bean IDs
