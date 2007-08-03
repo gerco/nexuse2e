@@ -40,6 +40,7 @@ import javax.xml.soap.SOAPPart;
 import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.Constants.Severity;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.ErrorDescriptor;
 import org.nexuse2e.messaging.MessageContext;
@@ -56,6 +57,7 @@ public class HeaderSerializer extends AbstractPipelet {
      * Default constructor.
      */
     public HeaderSerializer() {
+
         frontendPipelet = true;
     }
 
@@ -141,7 +143,8 @@ public class HeaderSerializer extends AbstractPipelet {
                 //TODO: for testing..
                 from = "dummyfrom";
             }
-            String fromIdType = messagePojo.getParticipant().getLocalPartner().getPartnerIdType();;
+            String fromIdType = messagePojo.getParticipant().getLocalPartner().getPartnerIdType();
+            ;
             if ( fromIdType == null ) {
                 //              TODO: for testing..
                 fromIdType = "dummyFromType";
@@ -416,21 +419,16 @@ public class HeaderSerializer extends AbstractPipelet {
                 Constants.EBXML_NAMESPACE ), Constants.EBXML_VERSION );
         errorListEl.addAttribute( soapFactory.createName( "id", Constants.EBXML_NAMESPACE_PREFIX,
                 Constants.EBXML_NAMESPACE ), "unknown" );
-        int severityCode = -1;
+        Severity severity = Severity.INFO;
         String highestSeverity = "nothing";
         if ( errors != null ) {
             Iterator<ErrorDescriptor> i = errors.iterator();
             while ( i.hasNext() ) {
                 ErrorDescriptor ed = i.next();
-                if ( ed.getSeverityCode() > severityCode ) {
-                    severityCode = ed.getSeverityCode();
-                    try {
-                        highestSeverity = ed.getSeverity();
-                    } catch ( NexusException e ) {
-                        // TODO whats now?
-                        e.printStackTrace();
-                        highestSeverity = "Error";
-                    }
+                if ( ed.getSeverity().ordinal() > severity.ordinal() ) {
+                    severity = ed.getSeverity();
+                    highestSeverity = ed.getSeverity().name();
+
                 }
             }
         }
@@ -445,15 +443,11 @@ public class HeaderSerializer extends AbstractPipelet {
                 SOAPElement soapEl = soapFactory.createElement( "Error", Constants.EBXML_NAMESPACE_PREFIX,
                         Constants.EBXML_NAMESPACE );
                 soapEl.addAttribute( soapFactory.createName( "errorCode", Constants.EBXML_NAMESPACE_PREFIX,
-                        Constants.EBXML_NAMESPACE ), ed.getErrorCode() );
-                String severity = "error";
-                try {
-                    severity = ed.getSeverity();
-                } catch ( NexusException e ) {
-                    LOG.error( "no severity string found for Code:" + ed.getSeverityCode() );
-                }
+                        Constants.EBXML_NAMESPACE ), "" + ed.getErrorCode() );
+                severity = ed.getSeverity();
+
                 soapEl.addAttribute( soapFactory.createName( "severity", Constants.EBXML_NAMESPACE_PREFIX,
-                        Constants.EBXML_NAMESPACE ), severity );
+                        Constants.EBXML_NAMESPACE ), severity.name() );
                 soapEl.addAttribute( soapFactory.createName( "location", Constants.EBXML_NAMESPACE_PREFIX,
                         Constants.EBXML_NAMESPACE ), ed.getLocation() );
 
@@ -539,7 +533,8 @@ public class HeaderSerializer extends AbstractPipelet {
         if ( type != null && !type.equals( "" ) ) {
             // partyId.addAttribute( soapFactory.createName( "type" ), type );
             // partyId.addAttribute( soapFactory.createName( "eb:type" ), type );
-            partyId.addAttribute( soapFactory.createName( "type", Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE ), type );
+            partyId.addAttribute( soapFactory.createName( "type", Constants.EBXML_NAMESPACE_PREFIX,
+                    Constants.EBXML_NAMESPACE ), type );
             party = value;
         } else { // as per ebXML 1.0 spec, if no type attr, value is a uri
             if ( ( value.startsWith( Constants.URI_ID ) == false ) && ( value.indexOf( ":" ) == -1 ) ) {

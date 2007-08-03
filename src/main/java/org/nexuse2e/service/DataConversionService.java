@@ -20,6 +20,7 @@
 
 package org.nexuse2e.service;
 
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.digester.RegexMatcher;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
@@ -47,6 +49,9 @@ public class DataConversionService extends AbstractService {
     public final static String STATIC                  = "static";
     public final static String SUBSTRING               = "substring";
     public final static String REGEX                   = "regex";
+    public final static String VALIDATEPATTERN         = "validatePattern";
+    public final static String VALIDATELENGTH          = "validateLength";
+    public final static String MODIFY                  = "modify";
 
     @Override
     public void fillParameterMap( Map<String, ParameterDescriptor> parameterMap ) {
@@ -89,17 +94,17 @@ public class DataConversionService extends AbstractService {
             aditionalValues.put( "$value", value );
         }
 
-        Pattern pattern = Pattern.compile( "[a-z]+" );
+        Pattern pattern = Pattern.compile( "[a-zA-Z]+" );
         Matcher matcher = pattern.matcher( command );
 
         if ( matcher.find() ) {
 
             String commandName = matcher.group();
             int endIndex = matcher.end();
-
+            System.out.println( "command(" + endIndex + "): " + commandName );
             LOG.debug( "command(" + endIndex + "): " + commandName );
 
-            pattern = Pattern.compile( "[a-zA-Z0-9\\'\\,\\:\\$\\.\\\\\\-\\_\\. \\@\\[\\]\\+]+" );
+            pattern = Pattern.compile( "[a-zA-Z0-9\\'\\,\\:\\$\\#\\.\\\\\\-\\_\\. \\@\\[\\]\\+]+" );
             matcher = pattern.matcher( command );
             ArrayList<String> paramList = null;
             if ( matcher.find( endIndex ) ) {
@@ -108,7 +113,7 @@ public class DataConversionService extends AbstractService {
                 LOG.debug( "parameterlist:" + params );
 
                 pattern = Pattern
-                        .compile( "((\\'([a-zA-Z0-9\\,\\:\\-\\_\\. \\@\\[\\]\\+]|\\\\')+\\')|(\\$[a-zA-Z0-9\\_]+))+" );
+                        .compile( "((\\'([a-zA-Z0-9\\,\\:\\-\\_\\. \\@\\#\\[\\]\\+]|\\\\')+\\')|(\\$[a-zA-Z0-9\\_]+))+" );
                 matcher = pattern.matcher( params );
                 while ( matcher.find() ) {
                     String param = matcher.group();
@@ -162,8 +167,133 @@ public class DataConversionService extends AbstractService {
         } else if ( name.equals( REGEX ) ) {
             LOG.debug( "dispatching: regex" );
             return processRegex( params, definition, aditionalValues );
+        } else if ( name.equals( VALIDATEPATTERN ) ) {
+            LOG.debug( "dispatching: validatepattern" );
+            return processValidatePattern( params, definition, aditionalValues );
+        } else if ( name.equals( VALIDATELENGTH ) ) {
+            LOG.debug( "dispatching: validatelength" );
+            return processValidateLength( params, definition, aditionalValues );
+        } else if ( name.equals( MODIFY ) ) {
+            LOG.debug( "dispatching: modify" );
+            return processModify( params, definition, aditionalValues );
         } else {
             LOG.error( "Method: " + name + " is not a valid conversion method!" );
+        }
+
+        return null;
+    }
+
+    /**
+     * @param params
+     * @param definition
+     * @param aditionalValues
+     * @return
+     */
+    private String processModify( String[] params, MappingDefinition definition, Map<String, String> aditionalValues ) {
+
+        if ( params == null || params.length < 3 ) {
+            LOG.error( "static requires at least 3 parameter: modify[$value,'aa.aa','aa,aa']" );
+            return null;
+        }
+        System.out.println( "doing..." );
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /**
+     * @param params
+     * @param definition
+     * @param aditionalValues
+     * @return
+     */
+    private String processValidateLength( String[] params, MappingDefinition definition,
+            Map<String, String> aditionalValues ) {
+
+        if ( params == null || params.length < 3 ) {
+            LOG.error( "static requires at least 3 parameter: validateLength[$value,'30','true']" );
+            return null;
+        }
+        String value = aditionalValues.get( "$value" );
+        String lengthStr = stripParameter( params[1] );
+        String emptyAllowed = stripParameter( params[2] );
+        if ( emptyAllowed.toLowerCase().equals( "true" ) ) {
+            if ( value.length() == 0 ) {
+                return value;
+            }
+        } else {
+            if ( value.length() == 0 ) {
+                return null;
+            }
+        }
+        try {
+            int length = Integer.parseInt( lengthStr );
+            if ( value.length() > length ) {
+                return value.substring( 0, length );
+            } else {
+                return value;
+            }
+        } catch ( NumberFormatException e ) {
+            LOG.debug( ">" + lengthStr + "< is not a valid value for length" );
+        }
+
+        return null;
+    }
+
+    /**
+     * @param params
+     * @param definition
+     * @param aditionalValues
+     * @return
+     */
+    private String processValidatePattern( String[] params, MappingDefinition definition,
+            Map<String, String> aditionalValues ) {
+
+        if ( params == null || params.length < 4 ) {
+            LOG.error( "static requires at least 3 parameter: validatePattern[$value,'decimal','.','true']" );
+            return null;
+        }
+
+        String value = aditionalValues.get( "$value" );
+        String pattern = stripParameter( params[1] );
+
+        if ( pattern.equals( "decimal" ) ) {
+            String delimiter = stripParameter( params[2] );
+            String emptyAllowed = stripParameter( params[3] );
+            if ( emptyAllowed.toLowerCase().equals( "true" ) ) {
+                if ( value.length() == 0 ) {
+                    return value;
+                }
+            } else {
+                if ( value.length() == 0 ) {
+                    return null;
+                }
+            }
+            Pattern p = Pattern.compile( "[0-9]+" + delimiter + "[0-9]+" );
+            Matcher matcher = p.matcher( value );
+            if ( matcher.matches() ) {
+                return value;
+            }
+        } else if ( pattern.equals( "numeric" ) ) {
+            //max length (MAX_INT)
+//            if ( value.length() > 10 ) {
+//                LOG.error( "value: " + value + " exceeds max_int" );
+//                return null;
+//            }
+            String emptyAllowed = stripParameter( params[2] );
+            if ( emptyAllowed.toLowerCase().equals( "true" ) ) {
+                if ( value.length() == 0 ) {
+                    return value;
+                }
+            } else {
+                if ( value.length() == 0 ) {
+                    return null;
+                }
+            }
+            Pattern p = Pattern.compile( "[0-9]+" );
+            Matcher matcher = p.matcher( value );
+            if ( matcher.matches() ) {
+                return value;
+            }
         }
 
         return null;

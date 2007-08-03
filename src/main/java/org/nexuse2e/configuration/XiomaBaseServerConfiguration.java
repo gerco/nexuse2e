@@ -128,6 +128,11 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             PipeletPojo fileSaveInboundPipeletPojo = new PipeletPojo( fileSaveInboundPipelinePojo,
                     inboundComponentPojo, new Date(), new Date(), 1, 0, "FileSave", "FileSave", null );
             fileSaveInboundPipeletPojo.setFrontend( false );
+            List<PipeletParamPojo> pipeletParams = new ArrayList<PipeletParamPojo>();
+            pipeletParams.add( new PipeletParamPojo( fileSaveInboundPipeletPojo,new Date(), new Date(), 1, "directory", "${nexus.server.root}/temp"  ) );
+            fileSaveInboundPipeletPojo.setPipeletParams( pipeletParams );
+            
+            
             PipeletPojo fileLoadOutboundPipeletPojo = new PipeletPojo( fileLoadOutboundPipelinePojo,
                     outboundComponentPojo, new Date(), new Date(), 1, 0, "FileLoad", "FileLoad", null );
             fileLoadOutboundPipeletPojo.setFrontend( false );

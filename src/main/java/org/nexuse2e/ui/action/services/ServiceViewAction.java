@@ -47,6 +47,7 @@ public class ServiceViewAction extends NexusE2EAction {
 
         ActionForward success;
         try {
+            System.out.println("viewing...");
             success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
 
             ServiceForm serviceForm = (ServiceForm) actionForm;
@@ -64,9 +65,14 @@ public class ServiceViewAction extends NexusE2EAction {
             serviceForm.setServiceInstance( service );
             
             request.setAttribute( ATTRIBUTE_SERVICE_COLLECTION, Engine.getInstance().getActiveConfigurationAccessService().getServices( ) );
+            System.out.println("action done...");
             return success;
             
         } catch ( Exception e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            throw e;
+        }catch ( Error e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
             throw e;

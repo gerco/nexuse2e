@@ -19,20 +19,27 @@
  */
 package org.nexuse2e.messaging;
 
-import org.nexuse2e.NexusException;
+import java.io.Serializable;
+
+import org.nexuse2e.Constants.Severity;
 
 /**
  * Helper class to procide a data structure for more descriptive error information.
  *
  * @author gesch
  */
-public class ErrorDescriptor {
+public class ErrorDescriptor implements Serializable {
 
-    private static String[] severityNames = { "Info", "Warning", "Error"};
-    private String          description   = "Unknown error occured";
-    private String          location      = "Unknown error location";
-    private String          errorCode     = "Unknown error code";
-    private int             severityCode  = -1;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -208729675952740787L;
+
+    private String            description      = "Unknown error occured";
+    private String            location         = "Unknown error location";
+    private int               errorCode;
+    private Severity          severity;
+    private Exception         cause;
 
     /**
      * Default constructor
@@ -66,22 +73,6 @@ public class ErrorDescriptor {
     }
 
     /**
-     * @return the errorCode
-     */
-    public String getErrorCode() {
-
-        return errorCode;
-    }
-
-    /**
-     * @param errorCode the errorCode to set
-     */
-    public void setErrorCode( String errorCode ) {
-
-        this.errorCode = errorCode;
-    }
-
-    /**
      * @return the location
      */
     public String getLocation() {
@@ -98,29 +89,51 @@ public class ErrorDescriptor {
     }
 
     /**
+     * @return the errorCode
+     */
+    public int getErrorCode() {
+
+        return errorCode;
+    }
+
+    /**
+     * @param errorCode the errorCode to set
+     */
+    public void setErrorCode( int errorCode ) {
+
+        this.errorCode = errorCode;
+    }
+
+    /**
      * @return the severity
      */
-    public String getSeverity() throws NexusException {
+    public Severity getSeverity() {
 
-        if ( severityCode > 1 && severityCode < 4 ) {
-            return severityNames[severityCode];
-        }
-        throw new NexusException( "no name found for severityCode:" + severityCode );
+        return severity;
     }
 
     /**
-     * @return the severityCode
+     * @param severity the severity to set
      */
-    public int getSeverityCode() {
+    public void setSeverity( Severity severity ) {
 
-        return severityCode;
+        this.severity = severity;
     }
 
     /**
-     * @param severityCode the severityCode to set
+     * @return the cause
      */
-    public void setSeverityCode( int severityCode ) {
+    public Exception getCause() {
 
-        this.severityCode = severityCode;
+        return cause;
     }
+
+    /**
+     * @param cause the cause to set
+     */
+    public void setCause( Exception cause ) {
+
+        this.cause = cause;
+    }
+
 } // ErrorDescriptor

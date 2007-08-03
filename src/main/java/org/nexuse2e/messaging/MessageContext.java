@@ -20,6 +20,7 @@
 package org.nexuse2e.messaging;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import org.nexuse2e.ActionSpecificKey;
 import org.nexuse2e.ProtocolSpecificKey;
@@ -54,6 +55,8 @@ public class MessageContext implements Serializable {
     private ParticipantPojo     participant         = null;
     private ConversationPojo    conversation        = null;
 
+    private ArrayList<ErrorDescriptor> errors       = null;
+    
     /**
      * @return the data
      */
@@ -227,5 +230,29 @@ public class MessageContext implements Serializable {
     public void setRoutingData( Object routingData ) {
     
         this.routingData = routingData;
+    }
+
+    public void addError(ErrorDescriptor error) {
+        if(errors == null) {
+            errors = new ArrayList<ErrorDescriptor>();
+        }
+        errors.add( error );
+    }
+    
+    /**
+     * @return the errors
+     */
+    public ArrayList<ErrorDescriptor> getErrors() {
+    
+        return errors;
+    }
+
+    
+    /**
+     * @param errors the errors to set
+     */
+    public void setErrors( ArrayList<ErrorDescriptor> errors ) {
+    
+        this.errors = errors;
     }
 } // MessageContext
