@@ -33,6 +33,7 @@ public class RawDataMessagePipelet extends AbstractPipelet {
     throws IllegalArgumentException, IllegalStateException, NexusException {
         MessagePojo messagePojo = messageContext.getMessagePojo();
         MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo();
+        messagePayloadPojo.setMessage( messagePojo );
         messagePayloadPojo.setContentId(
                 Engine.getInstance().getIdGenerator( Constants.ID_GENERATOR_MESSAGE_PAYLOAD ).getId() );
         messagePayloadPojo.setMimeType( "text/plain" );
