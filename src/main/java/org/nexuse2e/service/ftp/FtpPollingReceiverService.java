@@ -64,18 +64,22 @@ import org.nexuse2e.util.EncryptionUtil;
  */
 public class FtpPollingReceiverService extends AbstractService implements ReceiverAware {
 
-    private static Logger      LOG                      = Logger.getLogger( FtpReceiverService.class );
+    private static Logger      LOG                         = Logger.getLogger( FtpReceiverService.class );
 
-    public static final String PARTNER_PARAM_NAME       = "partnerId";
-    public static final String DOWNLOAD_DIR_PARAM_NAME  = "downloadDir";
-    public static final String ERROR_DIR_PARAM_NAME     = "errorDir";
-    public static final String FTP_TYPE_PARAM_NAME      = "ftpType";
-    public static final String CERTIFICATE_PARAM_NAME   = "certificate";
-    public static final String URL_PARAM_NAME           = "url";
-    public static final String USER_PARAM_NAME          = "username";
-    public static final String PASSWORD_PARAM_NAME      = "password";
-    public static final String INTERVAL_PARAM_NAME      = "interval";
-    public static final String TRANSFER_MODE_PARAM_NAME = "transferMode";
+    public static final String PARTNER_PARAM_NAME          = "partnerId";
+    public static final String DOWNLOAD_DIR_PARAM_NAME     = "downloadDir";
+    public static final String ERROR_DIR_PARAM_NAME        = "errorDir";
+    public static final String FTP_TYPE_PARAM_NAME         = "ftpType";
+    public static final String CERTIFICATE_PARAM_NAME      = "certificate";
+    public static final String URL_PARAM_NAME              = "url";
+    public static final String USER_PARAM_NAME             = "username";
+    public static final String PASSWORD_PARAM_NAME         = "password";
+    public static final String INTERVAL_PARAM_NAME         = "interval";
+    public static final String TRANSFER_MODE_PARAM_NAME    = "transferMode";
+
+    public static final String CUSTOM_PARAMETER_FILE_NAME  = "fileName";
+    public static final String CUSTOM_PARAMETER_PARTNER_ID = "partnerId";
+    public static final String CUSTOM_PARAMETER_URL        = "url";
 
     private TransportReceiver  transportReceiver;
     private SchedulingService  schedulingService;
@@ -233,6 +237,8 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
                 // Open the file to read one line at a time
                 byte[] fileBuffer = FileUtils.readFileToByteArray( file );
 
+                LOG.debug( "Read file " + file.getAbsolutePath() + " , size: " + fileBuffer.length );
+
                 ConfigurationAccessService cas = Engine.getInstance().getActiveConfigurationAccessService();
 
                 MessageContext messageContext = new MessageContext();
@@ -241,10 +247,11 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
                 messageContext.setMessagePojo( new MessagePojo() );
                 messageContext.setOriginalMessagePojo( messageContext.getMessagePojo() );
                 Map<String, String> customParameters = new HashMap<String, String>();
-                customParameters.put( "fileName", file.getName() );
-                customParameters.put( "partnerId", (String) getParameter( PARTNER_PARAM_NAME ) );
-                customParameters.put( "url", (String) getParameter( URL_PARAM_NAME ) );
+                customParameters.put( CUSTOM_PARAMETER_FILE_NAME, file.getName() );
+                customParameters.put( CUSTOM_PARAMETER_PARTNER_ID, (String) getParameter( PARTNER_PARAM_NAME ) );
+                customParameters.put( CUSTOM_PARAMETER_URL, (String) getParameter( URL_PARAM_NAME ) );
                 messageContext.getMessagePojo().setCustomParameters( customParameters );
+                LOG.debug( "Calling TransportReceiver..." );
                 transportReceiver.processMessage( messageContext );
 
                 file.delete();
@@ -257,6 +264,12 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
                 } catch ( IOException ioex ) {
                     LOG.error( "Could not copy file " + file + " to error directory " + errorDir, ioex );
                 }
+            }
+        } else {
+            if ( transportReceiver == null ) {
+                LOG.error( "No TransportReceiverAvailable!" );
+            } else {
+                LOG.error( "No file to process!" );
             }
         }
     }

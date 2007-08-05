@@ -302,6 +302,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                         } else if ( dialect.indexOf( "SQLServer" ) != -1 ) {
                             BasicDAO.setMsSqlServer( true );
                         }
+                        LOG.info( "DB dialect: " + dialect );
                     }
                 } else {
                     LOG.error( "No Hibernate session factory found in configuration, exiting..." );
@@ -350,7 +351,15 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
             for ( Manageable bean : currentConfiguration.getStaticBeanContainer().getManagableBeans().values() ) {
                 if ( bean.getStatus().getValue() < BeanStatus.INITIALIZED.getValue() ) {
                     LOG.trace( "Initializing bean: " + bean.getClass().getName() );
-                    bean.initialize( currentConfiguration );
+                    try {
+                        bean.initialize( currentConfiguration );
+                    } catch ( Exception e ) {
+                        LOG.error( "Error initializing managable bean - " + bean.getClass().getCanonicalName() + ": "
+                                + e );
+                        if ( LOG.isTraceEnabled() ) {
+                            e.printStackTrace();
+                        }
+                    }
                 } else if ( !( bean instanceof org.nexuse2e.logging.LogAppender ) ) {
                     LOG.error( "Bean already initialized: " + bean.getClass().getName() );
                 }

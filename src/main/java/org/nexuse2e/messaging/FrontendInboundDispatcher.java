@@ -91,10 +91,10 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
         if ( messagePojo.getConversation() != null &&
                 messagePojo.getConversation().getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_CREATED ) {
             messagePojo.getConversation().setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_PROCESSING );
-        }
+            LOG.debug( new LogMessage( "MessageType:" + messagePojo.getType(), messagePojo.getConversation()
+                    .getConversationId(), messagePojo.getMessageId() ) );
 
-        LOG.debug( new LogMessage( "MessageType:" + messagePojo.getType(), messagePojo.getConversation()
-                .getConversationId(), messagePojo.getMessageId() ) );
+        }
 
         ProtocolAdapter protocolAdapter = getProtocolAdapterByKey( messageContext.getProtocolSpecificKey() );
         if ( protocolAdapter == null ) {
