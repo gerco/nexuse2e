@@ -88,8 +88,8 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
 
         LOG.trace( "Entering FrontendInboundDispatcher.processMessage..." );
 
-        if ( messagePojo.getConversation() != null &&
-                messagePojo.getConversation().getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_CREATED ) {
+        if ( messagePojo.getConversation() != null
+                && messagePojo.getConversation().getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_CREATED ) {
             messagePojo.getConversation().setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_PROCESSING );
             LOG.debug( new LogMessage( "MessageType:" + messagePojo.getType(), messagePojo.getConversation()
                     .getConversationId(), messagePojo.getMessageId() ) );
@@ -125,6 +125,8 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
             errorFlag = true;
             errorMessages.add( new ErrorDescriptor( "No matching action found in configuration: "
                     + messagePojo.getAction().getName() ) );
+            responseMessageContext = protocolAdapter.createErrorAcknowledgement(
+                    Constants.ErrorMessageReasonCode.ACTION_NOT_PERMITTED, null, messageContext, null );
         }
 
         if ( !errorFlag ) {
@@ -212,9 +214,11 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                     } catch ( CloneNotSupportedException e ) {
                         e.printStackTrace();
                     } catch ( NexusException e ) {
-                        LOG.error( new LogMessage( "Error processing message: " + messagePojo.getMessageId() + " ("
-                                + messagePojo.getConversation().getChoreography().getName() + "/"
-                                + messagePojo.getConversation().getPartner().getPartnerId() + ") - " + e, messagePojo ) );
+                        LOG
+                                .error( new LogMessage( "Error processing message: " + messagePojo.getMessageId()
+                                        + " (" + messagePojo.getConversation().getChoreography().getName() + "/"
+                                        + messagePojo.getConversation().getPartner().getPartnerId() + ") - " + e,
+                                        messagePojo ) );
                         errorFlag = true;
                     }
                 } else {
@@ -243,20 +247,22 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
             }
 
             if ( responseMessageContext == null ) {
-                LOG.error( new LogMessage( "No dispatcheable return message created", messagePojo ) );
+                LOG.warn( new LogMessage( "No dispatchable return message created", messagePojo ) );
                 return null;
             }
 
             // Send acknowledgment/error message back asynchronously
             if ( participant.getConnection().isSynchronous() ) {
                 return responseMessageContext;
-            } else {
+            } else if ( responseMessageContext.getMessagePojo() != null ) {
                 try {
                     backendOutboundDispatcher.processMessage( responseMessageContext );
                     return null;
                 } catch ( NexusException e ) {
-                    LOG.error(  new LogMessage( "Unable to process Acknowledgement:" + e.getMessage(), messagePojo ) );
+                    LOG.error( new LogMessage( "Unable to process Acknowledgement:" + e.getMessage(), messagePojo ) );
                 }
+            } else {
+                LOG.warn( "No message to send as reply." );
             }
         } else if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_ACK ) {
             LOG.trace( "Ack detected" );
