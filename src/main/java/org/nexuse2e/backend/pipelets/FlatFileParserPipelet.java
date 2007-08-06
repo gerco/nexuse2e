@@ -63,7 +63,7 @@ public class FlatFileParserPipelet extends AbstractPipelet {
     private HashMap<String, FlatFileParser> partnerFlatFileParsers        = null;
 
     public FlatFileParserPipelet() {
-
+        
         parameterMap.put( FLAT_FILE_DEFINITION, new ParameterDescriptor( ParameterType.STRING,
                 "Flat File Definition File", "Path to flat file definition file.", "" ) );
         parameterMap.put( PARTNER_SPECIFIC, new ParameterDescriptor( ParameterType.BOOLEAN,
@@ -82,6 +82,7 @@ public class FlatFileParserPipelet extends AbstractPipelet {
         if ( partnerSpecificValue != null ) {
             partnerSpecific = partnerSpecificValue.booleanValue();
         }
+        LOG.debug( "Partner specific configuration: " + partnerSpecific + "( " + this + " )" );
 
         String flatFileDefinitionValue = getParameter( FLAT_FILE_DEFINITION );
         if ( ( flatFileDefinitionValue != null ) && ( flatFileDefinitionValue.length() != 0 ) ) {
@@ -114,6 +115,11 @@ public class FlatFileParserPipelet extends AbstractPipelet {
                     throw new InstantiationException( e.getMessage() );
                 }
             }
+            for ( String partnerId : partnerFlatFileParsers.keySet() ) {
+                LOG
+                        .debug( "Configuration fpr partner: '" + partnerId + "' - "
+                                + partnerFlatFileParsers.get( partnerId ) );
+            }
         } else {
             flatFileParser = new FlatFileParser();
             try {
@@ -141,7 +147,10 @@ public class FlatFileParserPipelet extends AbstractPipelet {
                 String contentString = new String( messagePayloadPojo.getPayloadData() );
                 ByteArrayInputStream bias = new ByteArrayInputStream( contentString.getBytes() );
 
+                LOG.debug( "Partner specific configuration: " + partnerSpecific + "( " + this + " )" );
                 if ( partnerSpecific ) {
+                    LOG.debug( "Trying to retrieve configuration for partner: '"
+                            + messageContext.getMessagePojo().getParticipant().getPartner().getPartnerId() + "'" );
                     theFlatFileParser = partnerFlatFileParsers.get( messageContext.getMessagePojo().getParticipant()
                             .getPartner().getPartnerId() );
                 } else {

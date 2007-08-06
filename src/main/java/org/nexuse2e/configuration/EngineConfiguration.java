@@ -877,11 +877,8 @@ public class EngineConfiguration {
                 }
             }
         }
-        
-        
-        
-        List<MappingPojo> obsoleteMappingEntries = getObsoleteEntries( mappings, current
-                .getMappings( null ) );
+
+        List<MappingPojo> obsoleteMappingEntries = getObsoleteEntries( mappings, current.getMappings( null ) );
         for ( MappingPojo pojo : obsoleteMappingEntries ) {
             configDao.deleteMapping( pojo, session, transaction );
         }
@@ -890,7 +887,8 @@ public class EngineConfiguration {
         if ( mappings != null && mappings.size() > 0 ) {
 
             for ( MappingPojo pojo : mappings ) {
-                LOG.debug( "Mapping: " + pojo.getNxMappingId() + " - " + pojo.getCategory()+" - "+pojo.getLeftValue()+" - "+pojo.getRightValue() );
+                LOG.debug( "Mapping: " + pojo.getNxMappingId() + " - " + pojo.getCategory() + " - "
+                        + pojo.getLeftValue() + " - " + pojo.getRightValue() );
                 if ( pojo.getNxMappingId() != 0 ) {
                     pojo.setModifiedDate( new Date() );
                     configDao.updateMapping( pojo, session, transaction );
@@ -901,10 +899,6 @@ public class EngineConfiguration {
                 }
             }
         }
-        
-        
-        
-        
 
         transaction.commit();
         configDao.releaseDBSession( session );
@@ -988,8 +982,7 @@ public class EngineConfiguration {
                                 + action.getName() );
                     }
                     if ( outboundPipelinePojo.getPipelets().size() == 0 ) {
-                        LOG.warn( "No pipelets found for outbound pipeline for action: "
-                                + action.getName() );
+                        LOG.warn( "No pipelets found for outbound pipeline for action: " + action.getName() );
                     }
 
                     pos = 0;
@@ -1014,8 +1007,10 @@ public class EngineConfiguration {
                     backendPipeline.setForwardPipelets( pipelets );
                     getBackendInboundPipelines().put( backendPipeline.getKey(), backendPipeline );
 
+                    // staticBeanContainer.getManagableBeans().put( inboundPipelinePojo.getName() + Constants.POSTFIX_BACKEND_PIPELINE, backendPipeline );
                     staticBeanContainer.getManagableBeans().put(
-                            inboundPipelinePojo.getName() + Constants.POSTFIX_BACKEND_PIPELINE, backendPipeline );
+                            inboundPipelinePojo.getName() + "-" + backendPipeline.getKey() + "-"
+                                    + Constants.POSTFIX_BACKEND_PIPELINE, backendPipeline );
 
                     backendPipeline = new BackendPipeline();
                     backendPipeline.setKey( actionSpecificKey );
@@ -1034,7 +1029,8 @@ public class EngineConfiguration {
                     LOG.debug( "PipelineKey: " + backendPipeline.getKey() + " - " + backendPipeline );
                     getBackendOutboundPipelines().put( backendPipeline.getKey(), backendPipeline );
                     staticBeanContainer.getManagableBeans().put(
-                            outboundPipelinePojo.getName() + Constants.POSTFIX_BACKEND_PIPELINE, backendPipeline );
+                            outboundPipelinePojo.getName() + "-" + backendPipeline.getKey() + "-"
+                                    + Constants.POSTFIX_BACKEND_PIPELINE, backendPipeline );
                 }
 
             }
@@ -1050,7 +1046,7 @@ public class EngineConfiguration {
             frontendPipeline.setReturnPipelets( new Pipelet[0] );
             try {
                 staticBeanContainer.getManagableBeans().put(
-                        pipelinePojo.getName() + Constants.POSTFIX_FRONTEND_PIPELINE, frontendPipeline );
+                        pipelinePojo.getName() + "-" + frontendPipeline.getKey() + "-" + Constants.POSTFIX_FRONTEND_PIPELINE, frontendPipeline );
                 if ( pipelinePojo.isOutbound() ) {
                     getFrontendOutboundPipelines().put( pipelinePojo.getTrp(), frontendPipeline );
 
@@ -1720,7 +1716,7 @@ public class EngineConfiguration {
             configDao.deleteMapping( mapping, null, null );
         }
     }
-    
+
     /**
      * @return
      */
