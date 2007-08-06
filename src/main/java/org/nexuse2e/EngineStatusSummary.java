@@ -125,5 +125,18 @@ public class EngineStatusSummary implements StatusSummary {
     
         this.cause = cause;
     }
+
+    /**
+     * @param summary
+     */
+    public void update( EngineStatusSummary summary ) {
+
+        this.setCause( summary.getCause() );
+        this.setDatabaseStatus( summary.getDatabaseStatus() );
+        this.setInboundStatus( summary.getInboundStatus() );
+        this.setOutboundStatus( summary.getOutboundStatus() );
+        this.setStatus( summary.getStatus() );
+        
+    }
     
 }

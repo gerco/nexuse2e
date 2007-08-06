@@ -63,14 +63,14 @@ public class BasicDAO extends HibernateDaoSupport {
      *
      */
     public BasicDAO() {
-        
-        if(timestampPattern == null) {
+
+        if ( timestampPattern == null ) {
             timestampPattern = Engine.getInstance().getTimestampPattern();
-            if(StringUtils.isEmpty( timestampPattern )) {
+            if ( StringUtils.isEmpty( timestampPattern ) ) {
                 timestampPattern = DEFAULT_DATE_FORMAT;
             }
         }
-        
+
     } // BasicDAO
 
     public Session getDBSession() {
@@ -220,17 +220,34 @@ public class BasicDAO extends HibernateDaoSupport {
 
         try {
             if ( session == null ) {
-                session = getDBSession();
+                try {
+                    session = getDBSession();
+                } catch ( Exception e ) {
+                    throw new NexusException( e );
+                }
                 extSessionFlag = false;
             }
 
             try {
 
                 if ( transaction == null ) {
-                    transaction = session.beginTransaction();
+                    try {
+                        transaction = session.beginTransaction();
+                    } catch ( Exception e ) {
+                        if ( !extSessionFlag && session != null ) {
+                            try {
+                                session.close();
+                            } catch ( Exception e1 ) {
+                                // session cleanup failed
+                            }
+                        }
+                        throw new NexusException( e );
+                    }
                     extTransactionFlag = false;
                 }
-                session.save( record );
+                if ( session.isConnected() ) {
+                    session.save( record );
+                }
 
                 if ( !extTransactionFlag ) {
                     transaction.commit();
@@ -488,27 +505,45 @@ public class BasicDAO extends HibernateDaoSupport {
 
         try {
             if ( session == null ) {
-                session = getDBSession();
+                try {
+                    session = getDBSession();
+                } catch ( Exception e ) {
+                    throw new NexusException( e );
+                }
                 extSessionFlag = false;
             }
 
             try {
                 Query query;
                 if ( transaction == null ) {
-                    transaction = session.beginTransaction();
+                    try {
+                        transaction = session.beginTransaction();
+                    } catch ( Exception e ) {
+                        if ( !extSessionFlag && session != null ) {
+                            try {
+                                session.close();
+                            } catch ( RuntimeException e1 ) {
+                                // Cleanup failed
+                            }
+                        }
+                        throw new NexusException(e);
+                    }
                     extTransactionFlag = false;
                 }
-                query = session.createQuery( queryString );
-                entries = query.list();
-                if ( !extTransactionFlag ) {
-                    transaction.commit();
+                if ( session.isConnected() ) {
+                    query = session.createQuery( queryString );
+                    entries = query.list();
+                    if ( !extTransactionFlag ) {
+                        transaction.commit();
+                    }
                 }
+
             } catch ( HibernateException e ) {
                 if ( transaction != null && !extTransactionFlag ) {
                     transaction.rollback();
                 }
                 LOG.error( "Error retrieving list for query: " + queryString );
-                e.printStackTrace();
+                //                e.printStackTrace();
                 nexusException = new NexusException( e );
             } finally {
                 if ( !extSessionFlag ) {
@@ -571,7 +606,7 @@ public class BasicDAO extends HibernateDaoSupport {
                     }
                     Query hqlQuery = session.createQuery( query );
                     hqlQuery.setFirstResult( fromIndex );
-                    if(maximumResults > 0) {
+                    if ( maximumResults > 0 ) {
                         hqlQuery.setMaxResults( maximumResults );
                     }
                     entries = hqlQuery.list();
@@ -631,7 +666,7 @@ public class BasicDAO extends HibernateDaoSupport {
                     transaction = session.beginTransaction();
                     extTransactionFlag = false;
                 }
-                
+
                 Query query = session.createQuery( SELECT_COUNT_PREFIX + queryString );
                 count = ( (Long) query.iterate().next() ).intValue();
                 if ( !extTransactionFlag ) {

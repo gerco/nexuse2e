@@ -37,10 +37,11 @@ import org.nexuse2e.pojo.TRPPojo;
  */
 public class EngineMonitor {
 
-    private static Logger               LOG = Logger.getLogger( EngineMonitor.class );
+    private static Logger               LOG               = Logger.getLogger( EngineMonitor.class );
 
     private List<EngineMonitorListener> listeners;
     private Timer                       timer;
+    private boolean                     shutdownInitiated = false;
 
     /**
      * 
@@ -117,11 +118,13 @@ public class EngineMonitor {
         List<TRPPojo> trps = null;
         try {
             trps = configDao.getTrps( null, null );
-        } catch ( NexusException e ) {
+        } catch ( Exception e ) {
             summary.setCause( "Error while fetching testdata from database: " + e );
             summary.setDatabaseStatus( Status.ERROR );
             summary.setStatus( Status.ERROR );
             return summary;
+        } catch ( Error e ) {
+            System.out.println( "Error: " + e );
         }
         summary.setDatabaseStatus( Status.ACTIVE );
         if ( trps == null || trps.size() == 0 ) {
@@ -155,19 +158,36 @@ public class EngineMonitor {
         @Override
         public void run() {
 
-            EngineStatusSummary summary = probe();
-            if ( summary.getStatus() == Status.ERROR ) {
-                try {
-                    Engine.getInstance().changeStatus( BeanStatus.INSTANTIATED );
-                } catch ( InstantiationException e ) {
-                    LOG.error( "Error while handling error: (cause: " + summary.getCause() + "): " + e );
+            try {
+                EngineStatusSummary summary = probe();
+                if ( summary.getStatus() == Status.ERROR ) {
+                    try {
+                        shutdownInitiated = true;
+                        Engine.getInstance().changeStatus( BeanStatus.INSTANTIATED );
+                        LOG.info( "Engine shutdown triggered" );
+                    } catch ( InstantiationException e ) {
+                        LOG.error( "Error while handling error: (cause: " + summary.getCause() + "): " + e );
+                    }
+                } else if(shutdownInitiated) {
+                    if(Engine.getInstance().getStatus().equals( BeanStatus.INSTANTIATED )) {
+                        shutdownInitiated = false;
+                        Engine.getInstance().changeStatus( BeanStatus.STARTED );
+                        LOG.info( "Engine startup triggered" );
+                    }
+                } else {
+                    shutdownInitiated = false;
                 }
-            }
-            if ( listeners != null ) {
+                if ( listeners != null ) {
 
-                for ( EngineMonitorListener listener : listeners ) {
-                    listener.engineEvent( summary );
+                    for ( EngineMonitorListener listener : listeners ) {
+                        EngineStatusSummary specialSummary = listener.getSummaryInstance();
+                        specialSummary.update(summary);
+                        listener.engineEvent( specialSummary );
+                    }
                 }
+            } catch ( Exception e ) {
+                System.out.println( "Monitoring: " + e );
+                e.printStackTrace();
             }
         }
 

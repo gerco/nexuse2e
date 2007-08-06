@@ -30,4 +30,6 @@ public interface EngineMonitorListener {
      * 
      */
     public void engineEvent(EngineStatusSummary summary);
+    
+    public EngineStatusSummary getSummaryInstance();
 }
