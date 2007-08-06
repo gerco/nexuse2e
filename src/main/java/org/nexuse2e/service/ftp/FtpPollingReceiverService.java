@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
@@ -72,6 +73,7 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
     public static final String FTP_TYPE_PARAM_NAME         = "ftpType";
     public static final String CERTIFICATE_PARAM_NAME      = "certificate";
     public static final String URL_PARAM_NAME              = "url";
+    public static final String FILE_PATTERN_PARAM_NAME     = "filePattern";
     public static final String USER_PARAM_NAME             = "username";
     public static final String PASSWORD_PARAM_NAME         = "password";
     public static final String INTERVAL_PARAM_NAME         = "interval";
@@ -111,6 +113,9 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
 
         parameterMap.put( URL_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "URL",
                 "Polling URL (use ftp://host.com:[port]/dir/subdir format)", "" ) );
+
+        parameterMap.put( FILE_PATTERN_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "File pattern",
+                "DOS-like file pattern with wildcards * and ? (examples: *.xml, ab?.*)", "*" ) );
 
         parameterMap.put( USER_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "User name",
                 "The FTP user name", "anonymous" ) );
@@ -293,6 +298,24 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
         }
         return cert;
     }
+    
+    private static String dosStyleToRegEx( String pattern ) {
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < pattern.length(); i++) {
+            char c = pattern.charAt( i );
+            if ('?' != c && '*' != c) {
+                sb.append( "\\Q" );
+                sb.append( c );
+                sb.append( "\\E" );
+            } else {
+                sb.append( c );
+            }
+        }
+        pattern = sb.toString().replaceAll( "\\*", "\\.\\*" );
+        pattern = pattern.replaceAll( "\\?", "\\." );
+        
+        return pattern;
+    }
 
     class FtpSchedulerClient implements SchedulerClient {
 
@@ -366,27 +389,32 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
 
                 String localDir = getParameter( DOWNLOAD_DIR_PARAM_NAME );
 
+                String filePattern = getParameter( FILE_PATTERN_PARAM_NAME );
                 List<File> localFiles = new ArrayList<File>();
                 FTPFile[] files = ftp.listFiles();
-                LOG.debug( "Number of files in directory: " + files.length );
+                LOG.debug( "Number of files in directory: "
+                        + files.length + ", checking against pattern " + filePattern );
+                String regEx = dosStyleToRegEx( filePattern );
                 for ( FTPFile file : files ) {
-                    File localFile = new File( localDir, file.getName() );
-                    FileOutputStream fout = new FileOutputStream( localFile );
-                    success = ftp.retrieveFile( file.getName(), fout );
-                    if ( !success ) {
-                        LOG.error( "Could not retrieve file " + file.getName() );
-                    } else {
-                        if ( !ftp.deleteFile( file.getName() ) ) {
-                            LOG.error( "Could not delete file " + file.getName() );
+                    if ( Pattern.matches( regEx, file.getName() ) ) {
+                        File localFile = new File( localDir, file.getName() );
+                        FileOutputStream fout = new FileOutputStream( localFile );
+                        success = ftp.retrieveFile( file.getName(), fout );
+                        if ( !success ) {
+                            LOG.error( "Could not retrieve file " + file.getName() );
                         } else {
-                            localFiles.add( localFile );
+                            if ( !ftp.deleteFile( file.getName() ) ) {
+                                LOG.error( "Could not delete file " + file.getName() );
+                            } else {
+                                localFiles.add( localFile );
+                            }
                         }
+                        fout.close();
                     }
-                    fout.close();
                 }
 
                 File errorDir = new File( (String) getParameter( ERROR_DIR_PARAM_NAME ) );
-
+                
                 for ( File localFile : localFiles ) {
                     processFile( localFile, errorDir, (String) getParameter( PARTNER_PARAM_NAME ) );
                 }
