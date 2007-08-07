@@ -23,6 +23,8 @@ package org.nexuse2e.backend.pipelets;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
+import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -42,6 +44,8 @@ import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Severity;
+import org.nexuse2e.backend.pipelets.helper.PartnerSpecificConfiguration;
+import org.nexuse2e.backend.pipelets.helper.PartnerSpecificConfigurations;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
@@ -49,8 +53,11 @@ import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.ErrorDescriptor;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.MessagePayloadPojo;
+import org.nexuse2e.pojo.ParticipantPojo;
+import org.nexuse2e.pojo.PartnerPojo;
 import org.nexuse2e.service.DataConversionService;
 import org.nexuse2e.service.Service;
+import org.nexuse2e.tools.mapping.FlatFileParser;
 import org.nexuse2e.tools.mapping.xmldata.MappingDefinition;
 import org.nexuse2e.tools.validation.ValidationDefinition;
 import org.nexuse2e.tools.validation.ValidationDefinitions;
@@ -59,26 +66,34 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 public class XMLValidationPipelet extends AbstractPipelet {
 
-    private static Logger         LOG                          = Logger.getLogger( XMLValidationPipelet.class );
+    private static Logger                          LOG                          = Logger
+                                                                                        .getLogger( XMLValidationPipelet.class );
 
-    public static final String    CONFIG_FILE                  = "config_file";
-    public static final String    PARTNER_SPECIFIC = "partner_specific";
-    public static final String    MAPPING_SERVICE              = "mapping_service";
+    public static final String                     CONFIG_FILE                  = "config_file";
+    public static final String                     PARTNER_SPECIFIC             = "partner_specific";
+    public static final String                     MAPPING_SERVICE              = "mapping_service";
 
-    private String                configFileName               = null;
-    private DataConversionService mappingService               = null;
-    private ValidationDefinitions validationDefinitions        = null;
+    private String                                 configFileName               = null;
+    private DataConversionService                  mappingService               = null;
+    private ValidationDefinitions                  validationDefinitions        = null;
+
+    private boolean                                partnerSpecific              = false;
+    private HashMap<String, ValidationDefinitions> partnerValidationDefinitions = null;
 
     public XMLValidationPipelet() {
 
+        
         parameterMap.put( CONFIG_FILE, new ParameterDescriptor( ParameterType.STRING, "Validation Definitions",
                 "Path to validation definitions file", "" ) );
-        parameterMap.put( PARTNER_SPECIFIC, new ParameterDescriptor( ParameterType.BOOLEAN,
-                "Partner Specific", "use partner specific validation configuration file", Boolean.FALSE ) );
+        parameterMap.put( PARTNER_SPECIFIC, new ParameterDescriptor( ParameterType.BOOLEAN, "Partner Specific",
+                "use partner specific validation configuration file", Boolean.FALSE ) );
+        parameterMap.put( MAPPING_SERVICE, new ParameterDescriptor( ParameterType.SERVICE, "Data Mapping Service",
+                "The Data Mapping and Conversion Service", null ) );
     }
 
     /* (non-Javadoc)
@@ -88,6 +103,11 @@ public class XMLValidationPipelet extends AbstractPipelet {
     public void initialize( EngineConfiguration config ) throws InstantiationException {
 
         File testFile = null;
+
+        Boolean partnerSpecificValue = getParameter( PARTNER_SPECIFIC );
+        if ( partnerSpecificValue != null ) {
+            partnerSpecific = partnerSpecificValue.booleanValue();
+        }
 
         String mappingServiceName = getParameter( MAPPING_SERVICE );
         if ( !StringUtils.isEmpty( mappingServiceName ) ) {
@@ -109,7 +129,26 @@ public class XMLValidationPipelet extends AbstractPipelet {
                 return;
             }
 
-            validationDefinitions = readConfiguration( configFileName );
+            if ( partnerSpecific ) {
+                ValidationDefinitions partnerDefinitions = null;
+                PartnerSpecificConfigurations partnerSpecificConfigurations = readPartnerSpecificConfigurations( configFileName );
+                partnerValidationDefinitions = new HashMap<String, ValidationDefinitions>();
+
+                for ( PartnerSpecificConfiguration partnerSpecificConfiguration : partnerSpecificConfigurations
+                        .getPartnerSpecificConfigurations() ) {
+                    partnerDefinitions = readConfiguration( partnerSpecificConfiguration.getConfigurationFile() );
+                    partnerValidationDefinitions.put( partnerSpecificConfiguration.getPartnerId(), partnerDefinitions );
+
+                }
+                for ( String partnerId : partnerValidationDefinitions.keySet() ) {
+                    LOG.debug( "Configuration fpr partner: '" + partnerId + "' - "
+                            + partnerValidationDefinitions.get( partnerId ) );
+                }
+            } else {
+
+                validationDefinitions = readConfiguration( configFileName );
+
+            }
 
         } else {
             status = BeanStatus.ERROR;
@@ -129,14 +168,32 @@ public class XMLValidationPipelet extends AbstractPipelet {
         try {
 
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            documentBuilderFactory.setNamespaceAware( false );
             DocumentBuilder builder;
             builder = documentBuilderFactory.newDocumentBuilder();
 
             for ( MessagePayloadPojo payload : messageContext.getMessagePojo().getMessagePayloads() ) {
                 if ( payload.getPayloadData() != null && payload.getPayloadData().length > 0 ) {
-                    Document document = builder.parse( new String( payload.getPayloadData() ) );
-                    MessageContext mc = new MessageContext();
-                    document = processValidation( document, mc );
+                    String doc = new String( payload.getPayloadData() );
+                    if ( doc == null || doc.length() == 0 ) {
+                        continue;
+                    } else {
+                        LOG.debug( ">>> start doc <<<" );
+                        LOG.debug( "doc: " + doc );
+                        LOG.debug( ">>> end doc <<<" );
+                    }
+                    Document document = null;
+                    try {
+                        document = builder.parse(new InputSource( new StringReader(doc) ) );
+                    } catch ( Exception e ) {
+                        e.printStackTrace();
+
+                        continue;
+                    } catch ( Error e ) {
+                        e.printStackTrace();
+                        continue;
+                    }
+                    document = processValidation( document, messageContext );
                     // Serialize result
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -150,7 +207,37 @@ public class XMLValidationPipelet extends AbstractPipelet {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        return null;
+        return messageContext;
+    }
+
+    /**
+     * @param configFileName
+     * @return
+     */
+    private PartnerSpecificConfigurations readPartnerSpecificConfigurations( String configFileName ) {
+
+        PartnerSpecificConfigurations partnerSpecificConfigurations = null;
+        Digester digester = new Digester();
+        digester.setValidating( false );
+        digester.addObjectCreate( "PartnerSpecificConfigurations",
+                "org.nexuse2e.backend.pipelets.helper.PartnerSpecificConfigurations" );
+        digester.addSetProperties( "PartnerSpecificConfigurations" );
+        digester.addObjectCreate( "PartnerSpecificConfigurations/PartnerSpecificConfiguration",
+                "org.nexuse2e.backend.pipelets.helper.PartnerSpecificConfiguration" );
+        digester.addSetProperties( "PartnerSpecificConfigurations/PartnerSpecificConfiguration" );
+        digester.addSetNext( "PartnerSpecificConfigurations/PartnerSpecificConfiguration",
+                "addPartnerSpecificConfiguration", "org.nexuse2e.backend.pipelets.helper.PartnerSpecificConfiguration" );
+
+        try {
+            partnerSpecificConfigurations = (PartnerSpecificConfigurations) digester.parse( configFileName );
+        } catch ( IOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch ( SAXException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return partnerSpecificConfigurations;
     }
 
     /**
@@ -194,6 +281,7 @@ public class XMLValidationPipelet extends AbstractPipelet {
             ValidationDefinitions validationDefinitions = xmlValidationPipelet.readConfiguration( args[1] );
             xmlValidationPipelet.setValidationDefinitions( validationDefinitions );
             xmlValidationPipelet.setMappingService( new DataConversionService() );
+            xmlValidationPipelet.setPartnerSpecific( true );
             System.out.println( "MappingDefinitions: " + validationDefinitions );
 
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -234,10 +322,15 @@ public class XMLValidationPipelet extends AbstractPipelet {
         try {
             XPath xPath = XPathFactory.newInstance().newXPath();
 
-            for ( ValidationDefinition definition : validationDefinitions.getValidationDefinitions() ) {
+            ValidationDefinitions definitions = validationDefinitions;
+            if ( partnerSpecific ) {
+                LOG.debug( "partnerValidationDefinitions: "+partnerValidationDefinitions );
+                LOG.debug( "getPartnerId: "+ context.getMessagePojo().getParticipant().getPartner().getPartnerId() );
+                definitions = partnerValidationDefinitions.get( context.getMessagePojo().getParticipant().getPartner().getPartnerId() );
+                LOG.debug( "definitions: "+definitions);
+            }
 
-                System.out.println( "def.Command: " + definition.getCommand() );
-                System.out.println( "def.XPath: " + definition.getXpath() );
+            for ( ValidationDefinition definition : definitions.getValidationDefinitions() ) {
 
                 Node node = (Node) xPath.evaluate( definition.getXpath(), document, XPathConstants.NODE );
                 if ( node != null ) {
@@ -279,13 +372,16 @@ public class XMLValidationPipelet extends AbstractPipelet {
         } catch ( DOMException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        }catch ( Exception e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
         return result;
     }
 
     private String mapData( String textContent, ValidationDefinition definition ) {
 
-        System.out.println( "mapping Data..." );
+        //        System.out.println( "mapping Data..." );
         if ( mappingService != null ) {
             System.out.println( "value: " + textContent );
             MappingDefinition mappingDef = new MappingDefinition();
@@ -327,5 +423,37 @@ public class XMLValidationPipelet extends AbstractPipelet {
     public void setMappingService( DataConversionService mappingService ) {
 
         this.mappingService = mappingService;
+    }
+
+    /**
+     * @return the partnerSpecific
+     */
+    public boolean isPartnerSpecific() {
+
+        return partnerSpecific;
+    }
+
+    /**
+     * @param partnerSpecific the partnerSpecific to set
+     */
+    public void setPartnerSpecific( boolean partnerSpecific ) {
+
+        this.partnerSpecific = partnerSpecific;
+    }
+
+    /**
+     * @return the partnerValidationDefinitions
+     */
+    public HashMap<String, ValidationDefinitions> getPartnerValidationDefinitions() {
+
+        return partnerValidationDefinitions;
+    }
+
+    /**
+     * @param partnerValidationDefinitions the partnerValidationDefinitions to set
+     */
+    public void setPartnerValidationDefinitions( HashMap<String, ValidationDefinitions> partnerValidationDefinitions ) {
+
+        this.partnerValidationDefinitions = partnerValidationDefinitions;
     }
 }

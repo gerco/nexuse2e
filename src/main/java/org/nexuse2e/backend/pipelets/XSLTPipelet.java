@@ -36,9 +36,12 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.digester.Digester;
 import org.apache.log4j.Logger;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
+import org.nexuse2e.backend.pipelets.helper.PartnerSpecificConfiguration;
+import org.nexuse2e.backend.pipelets.helper.PartnerSpecificConfigurations;
 import org.nexuse2e.backend.pipelets.helper.RequestResponseData;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
@@ -46,6 +49,8 @@ import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.MessagePayloadPojo;
+import org.nexuse2e.tools.validation.ValidationDefinitions;
+import org.xml.sax.SAXException;
 
 /**
  * @author mbreilmann
@@ -53,17 +58,22 @@ import org.nexuse2e.pojo.MessagePayloadPojo;
  */
 public class XSLTPipelet extends AbstractPipelet {
 
-    private static Logger      LOG              = Logger.getLogger( XSLTPipelet.class );
+    private static Logger                 LOG                  = Logger.getLogger( XSLTPipelet.class );
 
-    public static final String XSLT_FILE        = "xsltFile";
+    public static final String            XSLT_FILE            = "xsltFile";
+    public static final String            PARTNER_SPECIFIC     = "partnerSpecific";
 
-    private String             xsltFileName     = null;
-    private StreamSource       xsltStreamSource = null;
+    private String                        xsltFileName         = null;
+    private StreamSource                  xsltStreamSource     = null;
+    private boolean                       partnerSpecific      = false;
+    private HashMap<String, StreamSource> partnerStreamSources = null;
 
     public XSLTPipelet() {
 
         parameterMap.put( XSLT_FILE, new ParameterDescriptor( ParameterType.STRING, "XSLT Path", "Path to XSLT file",
                 "" ) );
+        parameterMap.put( PARTNER_SPECIFIC, new ParameterDescriptor( ParameterType.BOOLEAN,
+                "Partner Specific Configuration", "Partner Specific Configuration", Boolean.FALSE ) );
     }
 
     /* (non-Javadoc)
@@ -73,6 +83,11 @@ public class XSLTPipelet extends AbstractPipelet {
     public void initialize( EngineConfiguration config ) throws InstantiationException {
 
         File testFile = null;
+
+        Boolean partnerSpecificValue = getParameter( PARTNER_SPECIFIC );
+        if ( partnerSpecificValue != null ) {
+            partnerSpecific = partnerSpecificValue.booleanValue();
+        }
 
         String xsltFileNameValue = getParameter( XSLT_FILE );
         if ( ( xsltFileNameValue != null ) && ( xsltFileNameValue.length() != 0 ) ) {
@@ -84,7 +99,27 @@ public class XSLTPipelet extends AbstractPipelet {
                 return;
             }
 
-            xsltStreamSource = new StreamSource( testFile );
+            if ( partnerSpecific ) {
+                StreamSource partnerSource = null;
+                PartnerSpecificConfigurations partnerSpecificConfigurations = readPartnerSpecificConfigurations( xsltFileName );
+                partnerStreamSources = new HashMap<String, StreamSource>();
+
+                for ( PartnerSpecificConfiguration partnerSpecificConfiguration : partnerSpecificConfigurations
+                        .getPartnerSpecificConfigurations() ) {
+                    partnerSource = new StreamSource( new File( partnerSpecificConfiguration.getConfigurationFile() ) );
+                    partnerStreamSources.put( partnerSpecificConfiguration.getPartnerId(), partnerSource );
+
+                }
+                for ( String partnerId : partnerStreamSources.keySet() ) {
+                    LOG.debug( "Configuration fpr partner: '" + partnerId + "' - "
+                            + partnerStreamSources.get( partnerId ) );
+                }
+            } else {
+
+                xsltStreamSource = new StreamSource( testFile );
+
+            }
+
         } else {
             status = BeanStatus.ERROR;
             LOG.error( "No value for setting 'xslt file' provided!" );
@@ -103,25 +138,38 @@ public class XSLTPipelet extends AbstractPipelet {
     public MessageContext processMessage( MessageContext messageContext ) throws IllegalArgumentException,
             IllegalStateException, NexusException {
 
+        LOG.debug( "processing xslt" );
         Map<?, ?> map = null;
 
         if ( ( messageContext.getData() != null ) && ( messageContext.getData() instanceof RequestResponseData )
                 && ( ( (RequestResponseData) messageContext.getData() ).getParameters() != null ) ) {
             map = ( (RequestResponseData) messageContext.getData() ).getParameters();
         }
-        if ( xsltStreamSource != null ) {
+        
+        StreamSource streamSource = xsltStreamSource;
+        
+        if(partnerSpecific) {
+            streamSource = partnerStreamSources.get( messageContext.getParticipant().getPartner().getPartnerId() );
+        }
+        
+        if ( streamSource != null ) {
             List<MessagePayloadPojo> payloads = messageContext.getMessagePojo().getMessagePayloads();
             for ( Iterator iter = payloads.iterator(); iter.hasNext(); ) {
                 MessagePayloadPojo messagePayloadPojo = (MessagePayloadPojo) iter.next();
                 ByteArrayInputStream bais = new ByteArrayInputStream( messagePayloadPojo.getPayloadData() );
 
-                messagePayloadPojo.setPayloadData( transformXML( new StreamSource( bais ), xsltStreamSource, map ) );
+                messagePayloadPojo.setPayloadData( transformXML( new StreamSource( bais ), streamSource, map ) );
 
-                if ( LOG.isTraceEnabled() ) {
-                    LOG.trace( "...................." );
-                    LOG.trace( new String( messagePayloadPojo.getPayloadData() ) );
-                    LOG.trace( "...................." );
-                }
+                LOG.debug( "...................." );
+                LOG.debug( new String( messagePayloadPojo.getPayloadData() ) );
+                LOG.debug( "...................." );
+                
+                
+//                if ( LOG.isTraceEnabled() ) {
+//                    LOG.trace( "...................." );
+//                    LOG.trace( new String( messagePayloadPojo.getPayloadData() ) );
+//                    LOG.trace( "...................." );
+//                }
             }
 
         } else {
@@ -132,6 +180,43 @@ public class XSLTPipelet extends AbstractPipelet {
         return messageContext;
     }
 
+    /**
+     * @param configFileName
+     * @return
+     */
+    private PartnerSpecificConfigurations readPartnerSpecificConfigurations( String configFileName ) {
+
+        PartnerSpecificConfigurations partnerSpecificConfigurations = null;
+        Digester digester = new Digester();
+        digester.setValidating( false );
+        digester.addObjectCreate( "PartnerSpecificConfigurations",
+                "org.nexuse2e.backend.pipelets.helper.PartnerSpecificConfigurations" );
+        digester.addSetProperties( "PartnerSpecificConfigurations" );
+        digester.addObjectCreate( "PartnerSpecificConfigurations/PartnerSpecificConfiguration",
+                "org.nexuse2e.backend.pipelets.helper.PartnerSpecificConfiguration" );
+        digester.addSetProperties( "PartnerSpecificConfigurations/PartnerSpecificConfiguration" );
+        digester.addSetNext( "PartnerSpecificConfigurations/PartnerSpecificConfiguration",
+                "addPartnerSpecificConfiguration", "org.nexuse2e.backend.pipelets.helper.PartnerSpecificConfiguration" );
+
+        try {
+            partnerSpecificConfigurations = (PartnerSpecificConfigurations) digester.parse( configFileName );
+        } catch ( IOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch ( SAXException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return partnerSpecificConfigurations;
+    }
+
+    /**
+     * @param xmlSource
+     * @param xsltSource
+     * @param map
+     * @return
+     * @throws NexusException
+     */
     private byte[] transformXML( StreamSource xmlSource, StreamSource xsltSource, Map<?, ?> map ) throws NexusException {
 
         byte[] result = null;
@@ -166,11 +251,12 @@ public class XSLTPipelet extends AbstractPipelet {
     public static void main( String args[] ) {
 
         if ( args.length < 2 ) {
-            System.err.println( "Wrong number of parameters. Usage: XSLTPipelet <xml file> <xslt file> [<output file>]" );
+            System.err
+                    .println( "Wrong number of parameters. Usage: XSLTPipelet <xml file> <xslt file> [<output file>]" );
             return;
         }
         long start = System.currentTimeMillis();
-        
+
         StreamSource xmlSource = new StreamSource( new File( args[0] ) );
         StreamSource xsltSource = new StreamSource( new File( args[1] ) );
 
@@ -180,23 +266,22 @@ public class XSLTPipelet extends AbstractPipelet {
 
         try {
             byte[] result = new XSLTPipelet().transformXML( xmlSource, xsltSource, map );
-            
-            if(args.length > 2) {
+
+            if ( args.length > 2 ) {
                 try {
-                    File output = new File(args[2]);
-                    FileOutputStream fos = new FileOutputStream(output);
+                    File output = new File( args[2] );
+                    FileOutputStream fos = new FileOutputStream( output );
                     fos.write( result );
                     fos.flush();
                     fos.close();
-                    
+
                 } catch ( FileNotFoundException e ) {
-                    System.out.println("Error while creating output: "+e);
+                    System.out.println( "Error while creating output: " + e );
                 } catch ( IOException e ) {
-                    System.out.println("Error while writing output: "+e);
+                    System.out.println( "Error while writing output: " + e );
                 }
-                
-            }
-            else {
+
+            } else {
                 System.out.println( "Result:\n" + new String( result ) );
             }
         } catch ( NexusException e ) {
@@ -204,7 +289,7 @@ public class XSLTPipelet extends AbstractPipelet {
             e.printStackTrace();
         }
         long end = System.currentTimeMillis();
-        System.out.println("time: "+ (end-start));
-        
+        System.out.println( "time: " + ( end - start ) );
+
     }
 } // XSLTPipelet
