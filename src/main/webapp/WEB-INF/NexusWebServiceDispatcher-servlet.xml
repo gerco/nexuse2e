@@ -8,6 +8,9 @@
                 <entry key="/NEXUSe2eInterface">
                     <ref bean="NEXUSe2eInterface"/>
                 </entry>
+                <entry key="/EngineStatusInterface">
+                    <ref bean="EngineStatusInterface"/>
+                </entry>
             </map>
         </property>
     </bean>
@@ -25,6 +28,22 @@
         </property>
         <property name="serviceClass">
             <value>org.nexuse2e.integration.NEXUSe2eInterface</value>
+        </property>
+    </bean>
+    
+    <!-- Declare a parent bean with all properties common to both services -->
+    <bean id="EngineStatusInterface" class="org.codehaus.xfire.spring.remoting.XFireExporter">
+        <property name="serviceFactory">
+            <ref bean="xfire.serviceFactory"/>
+        </property>
+        <property name="xfire">
+            <ref bean="xfire"/>
+        </property>
+        <property name="serviceBean">
+            <ref bean="engineStatusInterfaceBean"/>
+        </property>
+        <property name="serviceClass">
+            <value>org.nexuse2e.integration.EngineStatusInterface</value>
         </property>
     </bean>
     <!-- END SNIPPET: xfire -->

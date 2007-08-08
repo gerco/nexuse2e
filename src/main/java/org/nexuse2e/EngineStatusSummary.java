@@ -19,8 +19,6 @@
  */
 package org.nexuse2e;
 
-
-
 /**
  * @author gesch
  *
@@ -31,14 +29,35 @@ public class EngineStatusSummary implements StatusSummary {
      * 
      */
     private static final long serialVersionUID = 5958453423169252669L;
-    private Status status = Status.UNKNOWN;
-    
-    private Status databaseStatus = Status.UNKNOWN;
-    private Status inboundStatus = Status.UNKNOWN;
-    private Status outboundStatus = Status.UNKNOWN;
-    
-    private String cause = null;
-    
+    private Status            status           = Status.UNKNOWN;
+
+    private Status            databaseStatus   = Status.UNKNOWN;
+    private Status            inboundStatus    = Status.UNKNOWN;
+    private Status            outboundStatus   = Status.UNKNOWN;
+
+    private String            cause            = null;
+
+    public static String getStatusString( StatusSummary.Status status ) {
+
+        String result = null;
+
+        switch ( status.getValue() ) {
+            case 2:
+                result = "Active";
+                break;
+            case 1:
+                result = "Inactive";
+                break;
+            case -1:
+                result = "Error";
+                break;
+            default:
+                result = "Unknown";
+        }
+
+        return result;
+    }
+
     /* (non-Javadoc)
      * @see org.nexuse2e.StatusSummary#getStatus()
      */
@@ -50,79 +69,72 @@ public class EngineStatusSummary implements StatusSummary {
     /* (non-Javadoc)
      * @see org.nexuse2e.StatusSummary#setStatus()
      */
-    public void setStatus(Status status) {
+    public void setStatus( Status status ) {
 
         this.status = status;
     }
 
-    
     /**
      * @return the databaseStatus
      */
     public Status getDatabaseStatus() {
-    
+
         return databaseStatus;
     }
 
-    
     /**
      * @param databaseStatus the databaseStatus to set
      */
     public void setDatabaseStatus( Status databaseStatus ) {
-    
+
         this.databaseStatus = databaseStatus;
     }
-    
+
     /**
      * @return the inboundStatus
      */
     public Status getInboundStatus() {
-    
+
         return inboundStatus;
     }
 
-    
     /**
      * @param inboundStatus the inboundStatus to set
      */
     public void setInboundStatus( Status inboundStatus ) {
-    
+
         this.inboundStatus = inboundStatus;
     }
 
-    
     /**
      * @return the outboundStatus
      */
     public Status getOutboundStatus() {
-    
+
         return outboundStatus;
     }
 
-    
     /**
      * @param outboundStatus the outboundStatus to set
      */
     public void setOutboundStatus( Status outboundStatus ) {
-    
+
         this.outboundStatus = outboundStatus;
     }
 
-    
     /**
      * @return the cause
      */
     public String getCause() {
-    
+
         return cause;
     }
 
-    
     /**
      * @param cause the cause to set
      */
     public void setCause( String cause ) {
-    
+
         this.cause = cause;
     }
 
@@ -136,7 +148,7 @@ public class EngineStatusSummary implements StatusSummary {
         this.setInboundStatus( summary.getInboundStatus() );
         this.setOutboundStatus( summary.getOutboundStatus() );
         this.setStatus( summary.getStatus() );
-        
+
     }
-    
+
 }

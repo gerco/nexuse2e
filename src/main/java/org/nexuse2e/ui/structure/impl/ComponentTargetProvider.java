@@ -46,7 +46,7 @@ public class ComponentTargetProvider implements TargetProvider {
         List<StructureNode> list = new ArrayList<StructureNode>();
         try {
             List<ComponentPojo> componentPojos = Engine.getInstance().getActiveConfigurationAccessService().getComponents(
-                    ComponentType.ALL, Constants.COMPONENTCOMPARATOR );
+                    ComponentType.ALL, Constants.COMPONENT_NAME_COMPARATOR );
             for ( ComponentPojo componentPojo : componentPojos ) {
                 StructureNode sn = new PageNode( pattern.getTarget() + "?nxComponentId=" + componentPojo.getNxComponentId(),
                         componentPojo.getName(), pattern.getIcon() );

@@ -63,7 +63,6 @@ public class Constants extends org.nexuse2e.Constants {
     public static final String DEFAULT_KEY_STORE                   = "PKCS12";
     public static final String DEFAULT_JCE_PROVIDER                = "BC";
 
-
     /**
      * Used to store incomplete Certificate chain parts in rcp client
      */
@@ -113,21 +112,23 @@ public class Constants extends org.nexuse2e.Constants {
         }
     }
 
-    public static GenericComparator PIPELINECOMPARATOR      = new GenericComparator( PipelinePojo.class,
-                                                                    "nxPipelineId", true );
-    public static GenericComparator PARTNERCOMPARATOR       = new GenericComparator( PartnerPojo.class, "partnerId",
-                                                                    true );
-    public static GenericComparator COMPONENTCOMPARATOR     = new GenericComparator( ComponentPojo.class, "type;name",
-                                                                    true );
-    public static GenericComparator PIPELETCOMPARATOR       = new GenericComparator( PipeletPojo.class, "position",
-                                                                    true );
-    public static GenericComparator CERTIFICATECOMPARATOR   = new GenericComparator( CertificatePojo.class, "name",
-                                                                    true );
-    public static GenericComparator CONVERTSATIONCOMPARATOR = new GenericComparator( ConversationPojo.class,
-                                                                    "createdDate", false );
+    public static GenericComparator PIPELINECOMPARATOR        = new GenericComparator( PipelinePojo.class,
+                                                                      "nxPipelineId", true );
+    public static GenericComparator PARTNERCOMPARATOR         = new GenericComparator( PartnerPojo.class, "partnerId",
+                                                                      true );
+    public static GenericComparator COMPONENTCOMPARATOR       = new GenericComparator( ComponentPojo.class,
+                                                                      "type;name", true );
+    public static GenericComparator COMPONENT_NAME_COMPARATOR = new GenericComparator( ComponentPojo.class,
+                                                                      "name", true );
+    public static GenericComparator PIPELETCOMPARATOR         = new GenericComparator( PipeletPojo.class, "position",
+                                                                      true );
+    public static GenericComparator CERTIFICATECOMPARATOR     = new GenericComparator( CertificatePojo.class, "name",
+                                                                      true );
+    public static GenericComparator CONVERTSATIONCOMPARATOR   = new GenericComparator( ConversationPojo.class,
+                                                                      "createdDate", false );
 
-    public static GenericComparator COMPARATOR_USER_BY_NAME = new GenericComparator( UserPojo.class,
-                                                                    "lastName;firstName;middleName", true );
-    public static GenericComparator COMPARATOR_ROLE_BY_NAME = new GenericComparator( RolePojo.class, "name", true );
+    public static GenericComparator COMPARATOR_USER_BY_NAME   = new GenericComparator( UserPojo.class,
+                                                                      "lastName;firstName;middleName", true );
+    public static GenericComparator COMPARATOR_ROLE_BY_NAME   = new GenericComparator( RolePojo.class, "name", true );
 
 }

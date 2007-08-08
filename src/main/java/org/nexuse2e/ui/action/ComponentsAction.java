@@ -55,7 +55,7 @@ public class ComponentsAction extends NexusE2EAction {
         List<ComponentForm> components = new ArrayList<ComponentForm>();
         List<ComponentPojo> componentPojos = null;
         componentPojos = Engine.getInstance().getActiveConfigurationAccessService().getComponents( ComponentType.ALL,
-                Constants.COMPONENTCOMPARATOR );
+                Constants.COMPONENT_NAME_COMPARATOR );
 
         Iterator<ComponentPojo> componentI = componentPojos.iterator();
         while ( componentI.hasNext() ) {

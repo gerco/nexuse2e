@@ -167,7 +167,20 @@ public class HttpSenderService extends AbstractService implements SenderAware {
 
             // Support for HTTP plain
             TRPPojo trpPojo = messageContext.getMessagePojo().getTRP();
-            if ( trpPojo.getProtocol().equalsIgnoreCase( org.nexuse2e.Constants.PROTOCOL_ID_HTTP_PLAIN ) ) {
+            if ( trpPojo.getProtocol().equalsIgnoreCase( org.nexuse2e.Constants.PROTOCOL_ID_EBXML ) ) {
+                ContentType contentType = new ContentType( "multipart/related" );
+                contentType.setParameter( "type", "text/xml" );
+                contentType.setParameter( "boundary", "MIME_boundary" );
+                contentType.setParameter( "start", messageContext.getMessagePojo().getMessageId()
+                        + messageContext.getMessagePojo().getTRP().getProtocol() + "-Header" );
+
+                RequestEntity requestEntity = new ByteArrayRequestEntity( (byte[]) messageContext.getData(),
+                        "Content-Type:" + contentType.toString() );
+                method.setRequestEntity( requestEntity );
+
+                method.setRequestHeader( "SOAPAction", "\"ebXML\"" );
+                method.setRequestHeader( "Content-Type", contentType.toString() );
+            } else if ( trpPojo.getProtocol().equalsIgnoreCase( org.nexuse2e.Constants.PROTOCOL_ID_HTTP_PLAIN ) ) {
                 StringBuffer uriParams = new StringBuffer();
                 uriParams.append( "ChoreographyID="
                         + messageContext.getMessagePojo().getConversation().getChoreography().getName() );
@@ -188,18 +201,9 @@ public class HttpSenderService extends AbstractService implements SenderAware {
                 LOG.debug( "URI: " + uri );
                 method.setRequestEntity( new StringRequestEntity( new String( (byte[]) messageContext.getData() ) ) );
             } else {
-                ContentType contentType = new ContentType( "multipart/related" );
-                contentType.setParameter( "type", "text/xml" );
-                contentType.setParameter( "boundary", "MIME_boundary" );
-                contentType.setParameter( "start", messageContext.getMessagePojo().getMessageId()
-                        + messageContext.getMessagePojo().getTRP().getProtocol() + "-Header" );
-
                 RequestEntity requestEntity = new ByteArrayRequestEntity( (byte[]) messageContext.getData(),
-                        "Content-Type:" + contentType.toString() );
+                        "Content-Type:text/xml" );
                 method.setRequestEntity( requestEntity );
-
-                method.setRequestHeader( "SOAPAction", "\"ebXML\"" );
-                method.setRequestHeader( "Content-Type", contentType.toString() );
             }
 
             client.executeMethod( method );

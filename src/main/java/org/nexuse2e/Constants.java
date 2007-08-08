@@ -29,7 +29,7 @@ public class Constants {
     public static enum Severity {
         INFO, WARN, ERROR;
     }
-    
+
     public static String       HIBERNATESESSIONFACTORYBEANID      = "HybernateSessionFactory";
 
     // DAO bean IDs
@@ -56,18 +56,18 @@ public class Constants {
     public static final String POSTFIX_FRONTEND_ACTION_SERIALIZER = "-Frontend-Action-Serializer";
     public static final String POSTFIX_BACKEND_ACTION_SERIALIZER  = "-Backend-Action-Serializer";
 
-    public static final String POSTFIX_BACKEND_PIPELINE  = "-Backend-Pipeline";
-    public static final String POSTFIX_FRONTEND_PIPELINE  = "-Frontend-Pipeline";
-    
+    public static final String POSTFIX_BACKEND_PIPELINE           = "-Backend-Pipeline";
+    public static final String POSTFIX_FRONTEND_PIPELINE          = "-Frontend-Pipeline";
+
     /**
      * the possible types for mapping value pairs
      * Do not change the order of this Enumeration
      */
     public static enum MappingType {
-        STRING, INT, BOOLEAN ;
-        
+        STRING, INT, BOOLEAN;
+
     }
-    
+
     /**
      * The possible states of a bean that implements the <code>Manageable</code> interface.
      * @see org.nexuse2e.Manageable
@@ -131,6 +131,7 @@ public class Constants {
      */
     public static final String DERBYROOT                                     = CONFIGROOT + "database/derby/";
 
+    public static final String PROTOCOL_ID_EBXML                             = "ebxml";
     public static final String PROTOCOL_ID_HTTP_PLAIN                        = "httpplain";
 
     /**

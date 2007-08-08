@@ -40,12 +40,14 @@
   <!-- Integration beans -->
   <bean id="httpIntegrationController" class="org.nexuse2e.integration.HTTPIntegrationController"></bean>
   <bean id="debugController" class="org.nexuse2e.integration.DebugController"></bean>
+  <bean id="engineStatusController" class="org.nexuse2e.integration.EngineStatusController"></bean>
 
   <!-- ********************************************** -->
   <!-- Web services                                   -->
   <!-- ********************************************** -->
 
   <bean id="nexusE2EInterfaceBean" class="org.nexuse2e.integration.NEXUSe2eInterfaceImpl" />
+  <bean id="engineStatusInterfaceBean" class="org.nexuse2e.integration.EngineStatusInterfaceImpl" />
 
   <!-- Generic Web services interface (XFire) -->
   <!--

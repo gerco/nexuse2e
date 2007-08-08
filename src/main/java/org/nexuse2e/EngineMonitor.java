@@ -37,11 +37,12 @@ import org.nexuse2e.pojo.TRPPojo;
  */
 public class EngineMonitor {
 
-    private static Logger               LOG               = Logger.getLogger( EngineMonitor.class );
+    private static Logger               LOG                        = Logger.getLogger( EngineMonitor.class );
 
     private List<EngineMonitorListener> listeners;
     private Timer                       timer;
-    private boolean                     shutdownInitiated = false;
+    private boolean                     shutdownInitiated          = false;
+    protected EngineStatusSummary       currentEngineStatusSummary = null;
 
     /**
      * 
@@ -67,7 +68,7 @@ public class EngineMonitor {
      */
     public EngineStatusSummary getStatus() {
 
-        return new EngineStatusSummary();
+        return currentEngineStatusSummary;
     }
 
     /**
@@ -168,8 +169,8 @@ public class EngineMonitor {
                     } catch ( InstantiationException e ) {
                         LOG.error( "Error while handling error: (cause: " + summary.getCause() + "): " + e );
                     }
-                } else if(shutdownInitiated) {
-                    if(Engine.getInstance().getStatus().equals( BeanStatus.INSTANTIATED )) {
+                } else if ( shutdownInitiated ) {
+                    if ( Engine.getInstance().getStatus().equals( BeanStatus.INSTANTIATED ) ) {
                         shutdownInitiated = false;
                         Engine.getInstance().changeStatus( BeanStatus.STARTED );
                         LOG.info( "Engine startup triggered" );
@@ -177,11 +178,14 @@ public class EngineMonitor {
                 } else {
                     shutdownInitiated = false;
                 }
+                
+                currentEngineStatusSummary = summary;
+                
                 if ( listeners != null ) {
 
                     for ( EngineMonitorListener listener : listeners ) {
                         EngineStatusSummary specialSummary = listener.getSummaryInstance();
-                        specialSummary.update(summary);
+                        specialSummary.update( summary );
                         listener.engineEvent( specialSummary );
                     }
                 }
