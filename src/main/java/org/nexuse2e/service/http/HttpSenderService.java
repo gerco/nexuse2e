@@ -27,8 +27,11 @@ import java.util.Map;
 import javax.mail.internet.ContentType;
 
 import org.apache.commons.httpclient.ConnectTimeoutException;
+import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.URI;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
@@ -50,6 +53,7 @@ import org.nexuse2e.pojo.TRPPojo;
 import org.nexuse2e.service.AbstractService;
 import org.nexuse2e.service.SenderAware;
 import org.nexuse2e.transport.TransportSender;
+import org.nexuse2e.ui.action.reporting.MessageViewAction;
 import org.nexuse2e.util.CertSSLProtocolSocketFactory;
 import org.nexuse2e.util.CertificateUtil;
 import org.nexuse2e.util.EncryptionUtil;
@@ -96,6 +100,8 @@ public class HttpSenderService extends AbstractService implements SenderAware {
         try {
 
             URL receiverURL = new URL( messageContext.getParticipant().getConnection().getUri() );
+            String pwd = messageContext.getParticipant().getConnection().getPassword();
+            String user = messageContext.getParticipant().getConnection().getLoginName();
             LOG.debug( "ConnectionURL:" + receiverURL );
             client = new HttpClient();
             //TODO: check for https and check isEnforced
@@ -146,6 +152,7 @@ public class HttpSenderService extends AbstractService implements SenderAware {
                 client.getHostConfiguration().setHost( receiverURL.getHost(), receiverURL.getPort() );
 
             }
+            
             client.getHttpConnectionManager().getParams().setConnectionTimeout( timeout );
             client.getHttpConnectionManager().getParams().setSoTimeout( timeout );
             method = new PostMethod( receiverURL.getPath() );
@@ -153,6 +160,15 @@ public class HttpSenderService extends AbstractService implements SenderAware {
             method.getParams().setSoTimeout( timeout );
             LOG.trace( "Created new NexusHttpConnection with timeout: " + timeout + ", SSL: "
                     + participant.getConnection().isSecure() );
+            
+            
+            // Use basic auth if credentials are present
+            if ( ( user != null ) && ( user.length() != 0 ) && ( pwd != null ) ) {
+                Credentials credentials = new UsernamePasswordCredentials( user, pwd );
+                LOG.debug( "HTTPBackendConnector: Using basic auth." );
+                client.getState().setCredentials( AuthScope.ANY, credentials );
+                method.setDoAuthentication( true );
+            }
         } catch ( Exception e ) {
             e.printStackTrace();
             throw new NexusException( "Error creating HTTP POST call: " + e );

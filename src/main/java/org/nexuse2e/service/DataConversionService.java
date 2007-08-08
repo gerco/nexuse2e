@@ -248,8 +248,8 @@ public class DataConversionService extends AbstractService {
     private String processValidatePattern( String[] params, MappingDefinition definition,
             Map<String, String> aditionalValues ) {
 
-        if ( params == null || params.length < 4 ) {
-            LOG.error( "static requires at least 3 parameter: validatePattern[$value,'decimal','.','true']" );
+        if ( params == null || params.length < 3 ) {
+            LOG.error( "pattern validation requires at least 3 parameter! e.g: validatePattern[$value,'decimal','.','true'] / validatePattern[$value,'numeric','true']" );
             return null;
         }
 
