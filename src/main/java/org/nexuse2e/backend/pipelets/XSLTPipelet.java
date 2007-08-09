@@ -148,34 +148,39 @@ public class XSLTPipelet extends AbstractPipelet {
         
         StreamSource streamSource = xsltStreamSource;
         
-        if(partnerSpecific) {
-            streamSource = partnerStreamSources.get( messageContext.getParticipant().getPartner().getPartnerId() );
-        }
-        
-        if ( streamSource != null ) {
-            List<MessagePayloadPojo> payloads = messageContext.getMessagePojo().getMessagePayloads();
-            for ( Iterator iter = payloads.iterator(); iter.hasNext(); ) {
-                MessagePayloadPojo messagePayloadPojo = (MessagePayloadPojo) iter.next();
-                ByteArrayInputStream bais = new ByteArrayInputStream( messagePayloadPojo.getPayloadData() );
+        try {
+            if(partnerSpecific) {
+                for ( String key : partnerStreamSources.keySet() ) {
+                    LOG.debug( "id:"+ key +" -  source: "+partnerStreamSources.get( key ) );
+                }
+                LOG.debug( "selecting streamSource: "+messageContext.getMessagePojo().getParticipant().getPartner().getPartnerId() );
+                streamSource = partnerStreamSources.get( messageContext.getMessagePojo().getParticipant().getPartner().getPartnerId()  );
+            }
+            
+            if ( streamSource != null ) {
+                List<MessagePayloadPojo> payloads = messageContext.getMessagePojo().getMessagePayloads();
+                for ( Iterator iter = payloads.iterator(); iter.hasNext(); ) {
+                    MessagePayloadPojo messagePayloadPojo = (MessagePayloadPojo) iter.next();
+                    ByteArrayInputStream bais = new ByteArrayInputStream( messagePayloadPojo.getPayloadData() );
 
-                messagePayloadPojo.setPayloadData( transformXML( new StreamSource( bais ), streamSource, map ) );
-
-                LOG.debug( "...................." );
-                LOG.debug( new String( messagePayloadPojo.getPayloadData() ) );
-                LOG.debug( "...................." );
-                
-                
+                    messagePayloadPojo.setPayloadData( transformXML( new StreamSource( bais ), streamSource, map ) );
+                    
+                    
 //                if ( LOG.isTraceEnabled() ) {
 //                    LOG.trace( "...................." );
 //                    LOG.trace( new String( messagePayloadPojo.getPayloadData() ) );
 //                    LOG.trace( "...................." );
 //                }
-            }
+                }
 
-        } else {
-            LOG.error( "No XSLT stylesheet configured - no transformation possible." );
-            throw new NexusException( "No XSLT stylesheet configured - no transformation possible." );
-        }// if
+            } else {
+                LOG.error( "No XSLT stylesheet configured - no transformation possible." );
+                throw new NexusException( "No XSLT stylesheet configured - no transformation possible." );
+            }// if
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            throw new NexusException(e);
+        }
 
         return messageContext;
     }
