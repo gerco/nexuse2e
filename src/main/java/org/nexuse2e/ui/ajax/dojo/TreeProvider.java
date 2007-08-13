@@ -75,7 +75,7 @@ public class TreeProvider implements AjaxRequestHandler {
             LOG.warn( "Invalid request parameter: action=" + action + ", data=" + data );
         }
         
-        LOG.debug( "RETURN REQUEST");
+        LOG.trace( "RETURN REQUEST");
 
         return result;
     }
@@ -120,7 +120,7 @@ public class TreeProvider implements AjaxRequestHandler {
             LOG.warn( "No StructureService instance found. Check bean factory (id=" + BEAN_STRUCTURE_SERVICE + ")!" );
         }
 
-        LOG.debug( "RETURN CHILDREN");
+        LOG.trace( "RETURN CHILDREN");
         
         return result;
 

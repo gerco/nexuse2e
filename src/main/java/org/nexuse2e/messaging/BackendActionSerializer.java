@@ -230,7 +230,7 @@ public class BackendActionSerializer extends AbstractPipelet {
      */
     public void initialize( EngineConfiguration config ) {
 
-        LOG.debug( "Initializing BackendActionSerializer " + choreographyId );
+        LOG.trace( "Initializing BackendActionSerializer " + choreographyId );
 
         frontendOutboundDispatcher = config.getStaticBeanContainer().getFrontendOutboundDispatcher();
 
@@ -252,7 +252,7 @@ public class BackendActionSerializer extends AbstractPipelet {
      */
     public void teardown() {
 
-        LOG.debug( "Freeing resources..." );
+        LOG.trace( "Freeing resources..." );
 
         status = BeanStatus.INSTANTIATED;
     } // teardown

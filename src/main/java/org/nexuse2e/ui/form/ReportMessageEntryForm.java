@@ -72,9 +72,9 @@ public class ReportMessageEntryForm extends ActionForm {
         // LOG.trace("created: "+pojo.getCreatedDate());
         setExpireDate( messagePojo.getExpirationDate() );
         setRetries( "" + messagePojo.getRetries() );
-        
+
         setOutbound( messagePojo.isOutbound() );
-        
+
         setProtocol( messagePojo.getTRP().getProtocol() + " / " + messagePojo.getTRP().getVersion() );
         if ( messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ACK ) {
             setType( "Acknowledgement" );
@@ -120,11 +120,11 @@ public class ReportMessageEntryForm extends ActionForm {
 
         setEndDate( messagePojo.getEndDate() );
 
-        //        if ( pojo.getEndDate() == null || pojo.getEndDate().equals( "" ) ) {
-        //            setTurnaroundTime( "not terminated" );
-        //        } else {
-        //            setTurnaroundTime( DateWrapper.getDiffTimeRounded( pojo.getCreatedDate(), pojo.getEndDate() ) );
-        //        }
+        if ( messagePojo.getEndDate() == null ) {
+            setTurnaroundTime( "Not terminated" );
+        } else {
+            setTurnaroundTime( DateUtil.getDiffTimeRounded( messagePojo.getCreatedDate(), messagePojo.getEndDate() ) );
+        }
     }
 
     public String getCreatedDate() {
@@ -321,15 +321,13 @@ public class ReportMessageEntryForm extends ActionForm {
         this.createdDate = createdDate;
     }
 
-    
     public boolean isOutbound() {
-    
+
         return outbound;
     }
 
-    
     public void setOutbound( boolean outbound ) {
-    
+
         this.outbound = outbound;
     }
 }

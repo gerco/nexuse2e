@@ -141,7 +141,8 @@ public class FileLogger extends FileAppender implements LogAppender {
         }
         patternLayout.setConversionPattern( pattern );
         setName( "NexusFileAppender" );
-        setFile( getParameter( DIRECTORY ) + "/log.log" );
+        String tempFile = getParameter( PREFIX );
+        setFile( getParameter( DIRECTORY ) + "/" + ( tempFile != null ? tempFile : "/log.log") );
         setLayout( patternLayout );
         setBufferedIO( false );
         setAppend( ( (Boolean) getParameter( APPEND ) ).booleanValue() );

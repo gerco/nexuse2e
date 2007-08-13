@@ -103,7 +103,7 @@ public class TransportSender extends AbstractPipelet {
      */
     public void teardown() {
 
-        LOG.debug( "Freeing resources..." );
+        LOG.trace( "Freeing resources..." );
         service = null;
         super.teardown();
 

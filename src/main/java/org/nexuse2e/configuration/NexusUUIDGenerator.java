@@ -19,17 +19,17 @@
  */
 package org.nexuse2e.configuration;
 
-import java.net.UnknownHostException;
+import java.util.UUID;
 
-import org.apache.log4j.Logger;
 import org.nexuse2e.NexusException;
 
 public class NexusUUIDGenerator implements IdGenerator {
 
-    private static Logger LOG = Logger.getLogger( NexusUUIDGenerator.class );
+    // private static Logger LOG = Logger.getLogger( NexusUUIDGenerator.class );
 
     public String getId() throws NexusException {
 
+        /*
         String uuid = null;
         String uid = null;
         String host = null;
@@ -39,11 +39,15 @@ public class NexusUUIDGenerator implements IdGenerator {
             uid = new java.rmi.server.UID().toString();
             uuid = host + "/" + uid;
         } catch ( UnknownHostException e ) {
-            LOG.error( "Error while creating MessageId:" + e.getMessage() );
+            LOG.error( "Error while creating UUID:" + e.getMessage() );
             throw new NexusException( "unable to create UUID", e );
         }
-
         return uuid;
+        */
+
+        // ISO-11578 compliant UUIDs
+        UUID isoUuid = UUID.randomUUID();
+        return isoUuid.toString();
     }
 
 }

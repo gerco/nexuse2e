@@ -68,4 +68,60 @@ public class DateUtil {
         String stringDate = databaseDateFormat.format( date );
         return stringDate;
     }
+    
+    /**
+     * @param createdDate
+     * @param endDate
+     * @return rounded human readable String, e.g '~6 Seconds' or '~8 years'
+     */
+    public static String getDiffTimeRounded( Date createdDate, Date endDate ) {
+
+        long createMils = createdDate.getTime();
+        long endMils = endDate.getTime();
+
+        String diff = "";
+        if ( createMils < endMils ) {
+            long div = endMils - createMils;
+            long sec = 1000;
+            long remSecs = div / sec;
+            if ( remSecs > 180 ) {
+                long min = 1000 * 60;
+                long remMins = div / min;
+                if ( remMins > 180 ) {
+                    long hour = 1000 * 60 * 60;
+                    long remHours = div / hour;
+                    if ( remHours > 72 ) {
+                        long day = hour * 24;
+                        long remDays = div / day;
+                        if ( remDays > 14 ) {
+                            long week = day * 7;
+                            long remWeeks = div / week;
+                            if ( remWeeks > 8 ) {
+                                long month = day * 30;
+                                long remMonth = div / month;
+                                if ( remMonth > 24 ) {
+                                    long year = month * 12;
+                                    long remYears = div / year;
+                                    diff = "~ " + remYears + " Years";
+                                } else {
+                                    diff = "~ " + remMonth + " Month";
+                                }
+                            } else {
+                                diff = "~ " + remWeeks + " Weeks";
+                            }
+                        } else {
+                            diff = "~ " + remDays + " Days";
+                        }
+                    } else {
+                        diff = "~ " + remHours + " Hours";
+                    }
+                } else {
+                    diff = "~ " + remMins + " Minutes";
+                }
+            } else {
+                diff = "~ " + remSecs + " Seconds";
+            }
+        }
+        return diff;
+    }
 }

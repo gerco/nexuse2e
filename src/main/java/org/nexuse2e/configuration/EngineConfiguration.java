@@ -242,11 +242,11 @@ public class EngineConfiguration {
 
     private void initializeLogAppenders() throws InstantiationException {
 
-        LOG.debug( "Initializing Appenders" );
+        LOG.trace( "Initializing Appenders" );
         if ( loggers != null ) {
             if ( components != null ) {
                 for ( LoggerPojo logger : loggers ) {
-                    LOG.debug( "initializing Logger: " + logger.getName() );
+                    LOG.trace( "initializing Logger: " + logger.getName() );
                     if ( logger.getComponent() == null ) {
                         throw new InstantiationError( "No ComponentReference found for logger: " + logger.getName() );
                     }
@@ -1026,7 +1026,7 @@ public class EngineConfiguration {
                     }
                     backendPipeline.setForwardPipelets( pipelets );
                     backendPipeline.setPipelineEndpoint( getStaticBeanContainer().getBackendOutboundDispatcher() );
-                    LOG.debug( "PipelineKey: " + backendPipeline.getKey() + " - " + backendPipeline );
+                    LOG.trace( "PipelineKey: " + backendPipeline.getKey() + " - " + backendPipeline );
                     getBackendOutboundPipelines().put( backendPipeline.getKey(), backendPipeline );
                     staticBeanContainer.getManagableBeans().put(
                             outboundPipelinePojo.getName() + "-" + backendPipeline.getKey() + "-"
@@ -1046,7 +1046,8 @@ public class EngineConfiguration {
             frontendPipeline.setReturnPipelets( new Pipelet[0] );
             try {
                 staticBeanContainer.getManagableBeans().put(
-                        pipelinePojo.getName() + "-" + frontendPipeline.getKey() + "-" + Constants.POSTFIX_FRONTEND_PIPELINE, frontendPipeline );
+                        pipelinePojo.getName() + "-" + frontendPipeline.getKey() + "-"
+                                + Constants.POSTFIX_FRONTEND_PIPELINE, frontendPipeline );
                 if ( pipelinePojo.isOutbound() ) {
                     getFrontendOutboundPipelines().put( pipelinePojo.getTrp(), frontendPipeline );
 
@@ -1071,7 +1072,7 @@ public class EngineConfiguration {
                     frontendPipeline.setForwardPipelets( forwardPipelets );
                 } else {
                     getFrontendInboundPipelines().put( pipelinePojo.getTrp(), frontendPipeline );
-                    LOG.debug( "Frontend inbound pipeline: " + pipelinePojo.getName() );
+                    LOG.trace( "Frontend inbound pipeline: " + pipelinePojo.getName() );
                     Pipelet[] forwardPipelets = null;
                     if ( pipelinePojo.getPipelets() != null && pipelinePojo.getPipelets().size() > 0 ) {
                         forwardPipelets = new Pipelet[pipelinePojo.getPipelets().size() - 1];
@@ -1096,7 +1097,7 @@ public class EngineConfiguration {
                             String beanKey = "TransportReceiver" + frontendPipeline.getKey().toString();
                             if ( !staticBeanContainer.getManagableBeans().containsKey( beanKey ) ) {
                                 LOG
-                                        .debug( "Registering managable bean: " + beanKey + "(" + pipeletPojo.getName()
+                                        .trace( "Registering managable bean: " + beanKey + "(" + pipeletPojo.getName()
                                                 + ")" );
                                 staticBeanContainer.getManagableBeans().put( beanKey, transportReceiver );
                             } else {
@@ -1140,7 +1141,7 @@ public class EngineConfiguration {
                         }
                         AbstractControllerService controller = Engine.getInstance().getEngineController()
                                 .getControllerWrapper( urlAppendix, (AbstractControllerService) service );
-                        LOG.debug( "Registering controller: " + urlAppendix + " - " + controller );
+                        LOG.trace( "Registering controller: " + urlAppendix + " - " + controller );
                         mappings.put( urlAppendix, controller );
                     }
                     if ( service instanceof ApplicationObjectSupport ) {

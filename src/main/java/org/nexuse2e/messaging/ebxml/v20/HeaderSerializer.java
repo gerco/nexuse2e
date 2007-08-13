@@ -51,6 +51,12 @@ public class HeaderSerializer extends AbstractPipelet {
 
     private static Logger LOG = Logger.getLogger( HeaderDeserializer.class );
 
+    static {
+        // Grab soap factories explicitly to make sure we get the ones we ship with
+        System.setProperty( "javax.xml.soap.SOAPFactory", "org.apache.axis.soap.SOAPFactoryImpl" );
+        System.setProperty( "javax.xml.soap.MessageFactory", "org.apache.axis.soap.MessageFactoryImpl" );
+    }
+
     /**
      * Default constructor.
      */

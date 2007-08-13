@@ -127,6 +127,9 @@ public class NotifierUpdateAction extends NexusE2EAction {
                 filter.append( "," );
             }
             filter.append( form.getFilterJavaPackagePattern() );
+            if ( filter.length() == 0 ) {
+                filter.append( "core" );
+            }
             originalLogger.setFilter( filter.toString() );
 
             form.fillPojosFromParameterMap();

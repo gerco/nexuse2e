@@ -68,11 +68,11 @@ public class LoginAction extends Action {
                     HttpSession session = request.getSession();
                     session.setAttribute( NexusE2EAction.ATTRIBUTE_USER, userInstance );
                     forward = actionMapping.findForward( NexusE2EAction.ACTION_FORWARD_SUCCESS );
-                    LOG.info( "Login for \"" + user + "\" successful." );
+                    LOG.trace( "Login for \"" + user + "\" successful." );
                 } else {
                     ActionMessage errorMessage = new ActionMessage( "login.credentials.wrong" );
                     errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
-                    LOG.info( "Login for \"" + user + "\" failed." );
+                    LOG.warn( "Login for \"" + user + "\" failed." );
                 }
             }
 

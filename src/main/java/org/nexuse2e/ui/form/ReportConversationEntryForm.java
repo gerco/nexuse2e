@@ -112,11 +112,11 @@ public class ReportConversationEntryForm extends ActionForm {
             setEndDate( pojo.getEndDate() );
         }
         setModifiedDate( pojo.getModifiedDate() );
-        //        if ( pojo.getEndDate() == null || pojo.getEndDate().equals( "" ) ) {
-        //            setTurnaroundTime( "not terminated" );
-        //        } else {
-        //            setTurnaroundTime( DateWrapper.getDiffTimeRounded( pojo.getCreatedDate(), pojo.getEndDate() ) );
-        //        }
+        if ( pojo.getEndDate() == null || pojo.getEndDate().equals( "" ) ) {
+            setTurnaroundTime( "not terminated" );
+        } else {
+            setTurnaroundTime( DateUtil.getDiffTimeRounded( pojo.getCreatedDate(), pojo.getEndDate() ) );
+        }
     }
 
     @Override

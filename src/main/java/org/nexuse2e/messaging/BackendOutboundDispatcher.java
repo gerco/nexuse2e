@@ -194,7 +194,7 @@ public class BackendOutboundDispatcher extends StateMachineExecutor implements P
      */
     public void initialize( EngineConfiguration config ) {
 
-        LOG.debug( "Initializing..." );
+        LOG.trace( "Initializing..." );
 
         frontendOutboundDispatcher = config.getStaticBeanContainer().getFrontendOutboundDispatcher();
         if ( frontendOutboundDispatcher == null ) {
@@ -216,7 +216,7 @@ public class BackendOutboundDispatcher extends StateMachineExecutor implements P
      */
     public void teardown() {
 
-        LOG.debug( "Freeing resources..." );
+        LOG.trace( "Freeing resources..." );
 
         status = BeanStatus.INSTANTIATED;
     } // teardown

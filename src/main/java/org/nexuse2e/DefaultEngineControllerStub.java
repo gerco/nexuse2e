@@ -42,7 +42,7 @@ public class DefaultEngineControllerStub implements EngineControllerStub {
      * @see org.nexuse2e.EngineControllerStub#getControllerWrapper(java.lang.String)
      */
     public AbstractControllerService getControllerWrapper( String controllerId, AbstractControllerService controller ) {
-        LOG.debug( "Returning controller: " + controller );
+        LOG.trace( "Returning controller: " + controller );
 
         return controller;
     }

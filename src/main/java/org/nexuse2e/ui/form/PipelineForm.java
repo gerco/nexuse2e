@@ -162,7 +162,7 @@ public class PipelineForm extends ActionForm {
         TRPPojo trpPojo = Engine.getInstance().getActiveConfigurationAccessService().getTrpByNxTrpId( nxTrpId );
         if ( trpPojo != null ) {
             pipeline.setTrp( trpPojo );
-        } else {
+        } else if ( pipeline.isFrontend() ) {
             LOG.error( "No valid TRP found!" );
         }
 

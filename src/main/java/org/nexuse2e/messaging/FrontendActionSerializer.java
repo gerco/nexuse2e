@@ -230,7 +230,7 @@ public class FrontendActionSerializer implements Manageable {
      */
     public void initialize( EngineConfiguration config ) {
 
-        LOG.debug( "Initializing FrontendActionSerializer " + choreographyId );
+        LOG.trace( "Initializing FrontendActionSerializer " + choreographyId );
 
         backendInboundDispatcher = config.getStaticBeanContainer().getBackendInboundDispatcher();
 
@@ -250,7 +250,7 @@ public class FrontendActionSerializer implements Manageable {
      */
     public void teardown() {
 
-        LOG.debug( "Freeing resources..." );
+        LOG.trace( "Freeing resources..." );
 
         status = BeanStatus.INSTANTIATED;
     } // teardown

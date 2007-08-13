@@ -381,7 +381,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
      */
     public void initialize( EngineConfiguration config ) {
 
-        LOG.debug( "Initializing..." );
+        LOG.trace( "Initializing..." );
 
         backendOutboundDispatcher = config.getStaticBeanContainer().getBackendOutboundDispatcher();
 
@@ -395,7 +395,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
      */
     public void teardown() {
 
-        LOG.debug( "Freeing resources..." );
+        LOG.trace( "Freeing resources..." );
 
         status = BeanStatus.INSTANTIATED;
     }

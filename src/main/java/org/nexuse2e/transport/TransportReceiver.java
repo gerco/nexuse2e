@@ -166,7 +166,7 @@ public class TransportReceiver implements Pipelet, ProtocolSpecific {
         
         Service service = null;
         String s = getParameter( SERVICE_PARAM_NAME );
-        LOG.debug( "TransportReceiver - service: " + s );
+        LOG.trace( "TransportReceiver - service: " + s );
         if ( s != null && s.trim().length() > 0 ) {
             service = config.getStaticBeanContainer().getService( s );
             if ( service == null ) {
@@ -182,7 +182,7 @@ public class TransportReceiver implements Pipelet, ProtocolSpecific {
             }
             service = new HttpReceiverService();
         }
-        LOG.debug( "TransportService: " +service );
+        LOG.trace( "TransportService: " +service );
         ( (ReceiverAware) service ).setTransportReceiver( this );
         status = BeanStatus.INITIALIZED;
     }
@@ -192,7 +192,7 @@ public class TransportReceiver implements Pipelet, ProtocolSpecific {
      */
     public void teardown() {
 
-        LOG.debug( "Freeing resources..." );
+        LOG.trace( "Freeing resources..." );
 
         parameterDescriptors = null;
         parameters = null;

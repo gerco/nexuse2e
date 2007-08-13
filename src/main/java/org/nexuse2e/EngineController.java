@@ -37,6 +37,8 @@ public class EngineController {
 
     private EngineMonitor        engineMonitor             = null;
 
+    private boolean              monitorAutoStart          = true;
+
     /**
      * 
      */
@@ -48,8 +50,6 @@ public class EngineController {
                 engineControllerStub = (EngineControllerStub) Class.forName( engineControllerStubClass ).newInstance();
                 LOG.debug( "EngineControllerStub instantiated" );
 
-                
-                
                 if ( engine != null ) {
                     engine.setEngineController( this );
                     engine.changeStatus( BeanStatus.INSTANTIATED );
@@ -57,13 +57,14 @@ public class EngineController {
                     LOG.error( "No Engine instance found, exiting..." );
                     return;
                 }
-                
-                engineMonitor = new EngineMonitor();
-                engineMonitor.start();
+
+                if ( monitorAutoStart ) {
+                    engineMonitor = new EngineMonitor();
+                    engineMonitor.start();
+                }
                 engineControllerStub.initialize();
                 engine.changeStatus( BeanStatus.STARTED );
-                
-                
+
             } catch ( InstantiationException e ) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -155,22 +156,30 @@ public class EngineController {
         this.engine = engine;
     }
 
-    
     /**
      * @return the engineMonitor
      */
     public EngineMonitor getEngineMonitor() {
-    
+
         return engineMonitor;
     }
 
-    
     /**
      * @param engineMonitor the engineMonitor to set
      */
     public void setEngineMonitor( EngineMonitor engineMonitor ) {
-    
+
         this.engineMonitor = engineMonitor;
+    }
+
+    public boolean isMonitorAutoStart() {
+
+        return monitorAutoStart;
+    }
+
+    public void setMonitorAutoStart( boolean monitorAutoStart ) {
+
+        this.monitorAutoStart = monitorAutoStart;
     }
 
 } // EngineController

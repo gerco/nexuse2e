@@ -829,7 +829,7 @@ public class TransactionServiceImpl implements TransactionService {
      */
     public void initialize( EngineConfiguration config ) {
 
-        LOG.debug( "Initializing..." );
+        LOG.trace( "Initializing..." );
         status = Constants.BeanStatus.INITIALIZED;
     }
 
@@ -839,7 +839,7 @@ public class TransactionServiceImpl implements TransactionService {
     @SuppressWarnings("unchecked")
     public void teardown() {
 
-        LOG.debug( "Tearing down..." );
+        LOG.trace( "Tearing down..." );
 
         Set<String> keys = ( (HashMap<String, ScheduledFuture>) processingMessages.clone() ).keySet();
         for ( String key : keys ) {

@@ -100,7 +100,7 @@ public class BackendInboundDispatcher implements InitializingBean, Manageable {
      */
     public void initialize( EngineConfiguration config ) {
 
-        LOG.debug( "Initializing..." );
+        LOG.trace( "Initializing..." );
 
         backendInboundPipelines = config.getBackendInboundPipelines();
 
@@ -112,7 +112,7 @@ public class BackendInboundDispatcher implements InitializingBean, Manageable {
      */
     public void teardown() {
 
-        LOG.debug( "Freeing resources..." );
+        LOG.trace( "Freeing resources..." );
 
         status = BeanStatus.INSTANTIATED;
     } // teardown
