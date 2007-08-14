@@ -20,6 +20,7 @@
   <bean id="engineController" class="org.nexuse2e.EngineController" init-method="initialize" destroy-method="shutdown">
     <property name="engineControllerStubClass" value="${engineController.stub.class}" />
     <property name="engine" ref="engine" />
+    <property name="monitorAutoStart" value="true" />
   </bean>
 
   <!-- Engine  -->
@@ -265,7 +266,11 @@
     <property name="hibernateProperties">
       <props>        <prop key="hibernate.show_sql">${database.showSQL}</prop>        <prop key="hibernate.dialect">${database.dialect}</prop>
         <prop key="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</prop>
-        <prop key="hibernate.current_session_context_class">org.hibernate.context.ThreadLocalSessionContext</prop>        <!--
+        <prop key="hibernate.current_session_context_class">org.hibernate.context.ThreadLocalSessionContext</prop>       <!--
+        <prop key="hibernate.c3p0.min_size">2</prop>
+        <prop key="hibernate.c3p0.max_size">20</prop>
+        <prop key="hibernate.c3p0.timeout">1800</prop>
+        <prop key="hibernate.c3p0.max_statements">50</prop>
           <prop key="transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</prop>
         -->      </props>
     </property>
