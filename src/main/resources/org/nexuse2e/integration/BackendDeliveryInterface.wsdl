@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:nx="http://integration.nexuse2e.org/BackendDeliveryInterface/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="BackendDeliveryInterface"
+  targetNamespace="http://integration.nexuse2e.org/BackendDeliveryInterface/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://integration.nexuse2e.org/BackendDeliveryInterface/">
+      <xsd:element name="processInboundMessage">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="choreographyId" type="xsd:string" />
+            <xsd:element name="businessPartnerId" type="xsd:string"></xsd:element>
+            <xsd:element name="actionId" type="xsd:string"></xsd:element>
+            <xsd:element name="conversationId" type="xsd:string"></xsd:element>
+            <xsd:element name="messageId" type="xsd:string"></xsd:element>
+            <xsd:sequence maxOccurs="unbounded" minOccurs="0">
+              <xsd:element name="payload" type="xsd:string"></xsd:element>
+            </xsd:sequence>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="processInboundMessageResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="statusResponse" type="xsd:string" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="processInboundMessageFault">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="errorCode" type="xsd:integer"></xsd:element>
+            <xsd:element name="errorDescription" type="xsd:string"></xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="processInboundMessageRequest">
+    <wsdl:part element="nx:processInboundMessage" name="parameters" />
+  </wsdl:message>
+  <wsdl:message name="processInboundMessageResponse">
+    <wsdl:part element="nx:processInboundMessageResponse" name="parameters" />
+  </wsdl:message>
+  <wsdl:message name="processInboundMessageFaultMsg">
+    <wsdl:part name="parameters" element="nx:processInboundMessageFault"></wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="BackendDeliveryInterface">
+    <wsdl:operation name="processInboundMessage">
+      <wsdl:input message="nx:processInboundMessageRequest" />
+      <wsdl:output message="nx:processInboundMessageResponse" />
+      <wsdl:fault name="fault" message="nx:processInboundMessageFaultMsg"></wsdl:fault>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="BackendDeliveryInterfaceSOAP" type="nx:BackendDeliveryInterface">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="processInboundMessage">
+      <soap:operation soapAction="http://integration.nexuse2e.org/BackendDeliveryInterface/processInboundMessage" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="BackendDeliveryInterface">
+    <wsdl:port binding="nx:BackendDeliveryInterfaceSOAP" name="BackendDeliveryInterfaceSOAP">
+      <soap:address location="http://www.nexuse2e.org/" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
