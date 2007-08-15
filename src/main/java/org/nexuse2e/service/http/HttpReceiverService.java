@@ -77,6 +77,9 @@ public class HttpReceiverService extends AbstractControllerService implements Re
             MessageContext messageContext = new MessageContext();
 
             messageContext.setData( getContentFromRequest( request ) );
+            if ( LOG.isTraceEnabled() ) {
+                LOG.trace( "Inbound message:\n" + new String( (byte[])messageContext.getData() ) );
+            }
             messageContext.setMessagePojo( new MessagePojo() );
             messageContext.setOriginalMessagePojo( messageContext.getMessagePojo() );
             messageContext.getMessagePojo().setCustomParameters( new HashMap<String, String>() );

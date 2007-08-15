@@ -53,7 +53,6 @@ import org.nexuse2e.pojo.TRPPojo;
 import org.nexuse2e.service.AbstractService;
 import org.nexuse2e.service.SenderAware;
 import org.nexuse2e.transport.TransportSender;
-import org.nexuse2e.ui.action.reporting.MessageViewAction;
 import org.nexuse2e.util.CertSSLProtocolSocketFactory;
 import org.nexuse2e.util.CertificateUtil;
 import org.nexuse2e.util.EncryptionUtil;

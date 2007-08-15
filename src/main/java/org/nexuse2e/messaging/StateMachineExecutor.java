@@ -58,9 +58,11 @@ public class StateMachineExecutor {
         messagePojo = messageContext.getMessagePojo();
 
         LOG.trace( "messagePojo:" + messagePojo );
-        LOG.trace( "Conversation:" + messagePojo.getConversation() );
-        LOG.trace( "Choreography:" + messagePojo.getConversation().getChoreography() );
-        LOG.debug( "ChoreographyID:" + messagePojo.getConversation().getChoreography().getName() );
+        if ( messagePojo.getConversation() != null ) {
+            LOG.trace( "Conversation:" + messagePojo.getConversation() );
+            LOG.trace( "Choreography:" + messagePojo.getConversation().getChoreography() );
+            LOG.debug( "ChoreographyID:" + messagePojo.getConversation().getChoreography().getName() );
+        }
 
         String choreographyId = messagePojo.getConversation().getChoreography().getName();
         if ( choreographyId == null || choreographyId.equals( "" ) ) {

@@ -270,7 +270,8 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
             MessagePojo referencedMessagePojo = messagePojo.getReferencedMessage();
             if ( referencedMessagePojo != null ) {
                 synchronized ( referencedMessagePojo.getConversation() ) {
-                    if ( referencedMessagePojo.getConversation().getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_AWAITING_ACK ) {
+                    if ( ( referencedMessagePojo.getConversation().getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_AWAITING_ACK )
+                            || ( referencedMessagePojo.getConversation().getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_PROCESSING ) ) {
                         if ( referencedMessagePojo.getConversation().getCurrentAction().isEnd() ) {
                             referencedMessagePojo.getConversation().setStatus(
                                     org.nexuse2e.Constants.CONVERSATION_STATUS_COMPLETED );
@@ -296,7 +297,8 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                         }
                     } else {
                         LOG.warn( new LogMessage( "Received ACK when it was not expected - ID of acknowleged message: "
-                                + referencedMessagePojo.getMessageId(), messagePojo ) );
+                                + referencedMessagePojo.getMessageId() + ", status: "
+                                + referencedMessagePojo.getConversation().getStatus(), messagePojo ) );
                     }
                 } // synchronized
             } else {

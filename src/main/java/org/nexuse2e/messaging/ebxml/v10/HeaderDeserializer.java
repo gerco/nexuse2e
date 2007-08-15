@@ -51,6 +51,25 @@ public class HeaderDeserializer extends AbstractPipelet {
 
     private static Logger LOG = Logger.getLogger( HeaderDeserializer.class );
 
+    private static MessageFactory messageFactory = null;
+
+    static {
+        String saveMessageFactory = System.getProperty( "javax.xml.soap.MessageFactory" );
+
+        // Grab soap factories explicitly to make sure we get the ones we ship with
+        System.setProperty( "javax.xml.soap.MessageFactory",
+                "com.sun.xml.messaging.saaj.soap.ver1_1.SOAPMessageFactory1_1Impl" );
+        try {
+            messageFactory = MessageFactory.newInstance();
+        } catch ( SOAPException e ) {
+            LOG.error( "Could not instantiate MessageFactory! " + e );
+        }
+
+        if ( saveMessageFactory != null ) {
+            System.setProperty( "javax.xml.soap.MessageFactory", saveMessageFactory );
+        }
+    }
+
     /**
      * Default constructor.
      */
@@ -76,7 +95,7 @@ public class HeaderDeserializer extends AbstractPipelet {
 
         try {
             LOG.trace( "Header:" + new String( messagePojo.getHeaderData() ) );
-            MessageFactory messageFactory = MessageFactory.newInstance();
+            // MessageFactory messageFactory = MessageFactory.newInstance();
             /*
              for ( int i = 0; i < messagePojo.getHeaderData().length; i++ ) {
              byte theByte = messagePojo.getHeaderData()[i];
