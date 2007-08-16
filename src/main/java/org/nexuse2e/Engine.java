@@ -113,11 +113,6 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     private String                           timestampPattern               = null;
 
     static {
-        System.setProperty( "javax.xml.parsers.SAXParserFactory", "org.apache.xerces.jaxp.SAXParserFactoryImpl" );
-        System.setProperty( "javax.xml.parsers.DocumentBuilderFactory", "org.apache.xerces.jaxp.DocumentBuilderFactoryImpl" );
-        System.setProperty( "javax.xml.soap.MessageFactory", "com.sun.xml.messaging.saaj.soap.ver1_1.SOAPMessageFactory1_1Impl" );
-        System.setProperty( "javax.xml.soap.SOAPFactory", "com.sun.xml.messaging.saaj.soap.ver1_1.SOAPFactory1_1Impl" );
-
         // Make sure we have the right JCE provider available...
         BouncyCastleProvider bcp = new BouncyCastleProvider();
         Security.removeProvider( CertificateUtil.DEFAULT_JCE_PROVIDER );
