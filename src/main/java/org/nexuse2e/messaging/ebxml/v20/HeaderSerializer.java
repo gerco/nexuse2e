@@ -95,6 +95,11 @@ public class HeaderSerializer extends AbstractPipelet {
     @SuppressWarnings("unchecked")
     public MessageContext processMessage( MessageContext messageContext ) throws NexusException {
 
+        Thread cur = Thread.currentThread();
+        ClassLoader save = cur.getContextClassLoader();
+        ClassLoader notsave = getClass().getClassLoader();
+
+        cur.setContextClassLoader( notsave );
         try {
             MessagePojo messagePojo = messageContext.getMessagePojo();
 
@@ -319,6 +324,8 @@ public class HeaderSerializer extends AbstractPipelet {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+
+        cur.setContextClassLoader( save );
 
         return messageContext;
     }
