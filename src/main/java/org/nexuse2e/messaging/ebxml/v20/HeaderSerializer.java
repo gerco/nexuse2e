@@ -51,35 +51,35 @@ public class HeaderSerializer extends AbstractPipelet {
 
     private static Logger         LOG            = Logger.getLogger( HeaderDeserializer.class );
 
-    private static SOAPFactory    soapFactory    = null;
-    private static MessageFactory messageFactory = null;
-
-    static {
-        String saveSOAPFactory = System.getProperty( "javax.xml.soap.SOAPFactory" );
-        String saveMessageFactory = System.getProperty( "javax.xml.soap.MessageFactory" );
-
-        // Grab soap factories explicitly to make sure we get the ones we ship with
-        System.setProperty( "javax.xml.soap.SOAPFactory", "com.sun.xml.messaging.saaj.soap.ver1_1.SOAPFactory1_1Impl" );
-        System.setProperty( "javax.xml.soap.MessageFactory",
-                "com.sun.xml.messaging.saaj.soap.ver1_1.SOAPMessageFactory1_1Impl" );
-        try {
-            soapFactory = SOAPFactory.newInstance();
-        } catch ( SOAPException e ) {
-            LOG.error( "Could not instantiate SOAPFactory! " + e );
-        }
-        try {
-            messageFactory = MessageFactory.newInstance();
-        } catch ( SOAPException e ) {
-            LOG.error( "Could not instantiate MessageFactory! " + e );
-        }
-
-        if ( saveSOAPFactory != null ) {
-            System.setProperty( "javax.xml.soap.SOAPFactory", saveSOAPFactory );
-        }
-        if ( saveMessageFactory != null ) {
-            System.setProperty( "javax.xml.soap.MessageFactory", saveMessageFactory );
-        }
-    }
+//    private static SOAPFactory    soapFactory    = null;
+//    private static MessageFactory messageFactory = null;
+//
+//    static {
+//        String saveSOAPFactory = System.getProperty( "javax.xml.soap.SOAPFactory" );
+//        String saveMessageFactory = System.getProperty( "javax.xml.soap.MessageFactory" );
+//
+//        // Grab soap factories explicitly to make sure we get the ones we ship with
+//        System.setProperty( "javax.xml.soap.SOAPFactory", "com.sun.xml.messaging.saaj.soap.ver1_1.SOAPFactory1_1Impl" );
+//        System.setProperty( "javax.xml.soap.MessageFactory",
+//                "com.sun.xml.messaging.saaj.soap.ver1_1.SOAPMessageFactory1_1Impl" );
+//        try {
+//            soapFactory = SOAPFactory.newInstance();
+//        } catch ( SOAPException e ) {
+//            LOG.error( "Could not instantiate SOAPFactory! " + e );
+//        }
+//        try {
+//            messageFactory = MessageFactory.newInstance();
+//        } catch ( SOAPException e ) {
+//            LOG.error( "Could not instantiate MessageFactory! " + e );
+//        }
+//
+//        if ( saveSOAPFactory != null ) {
+//            System.setProperty( "javax.xml.soap.SOAPFactory", saveSOAPFactory );
+//        }
+//        if ( saveMessageFactory != null ) {
+//            System.setProperty( "javax.xml.soap.MessageFactory", saveMessageFactory );
+//        }
+//    }
 
     /**
      * Default constructor.
@@ -98,6 +98,9 @@ public class HeaderSerializer extends AbstractPipelet {
         try {
             MessagePojo messagePojo = messageContext.getMessagePojo();
 
+            SOAPFactory soapFactory = SOAPFactory.newInstance();
+            MessageFactory messageFactory = MessageFactory.newInstance();
+            
             //messagePojo.setCreatedDate( "2006-09-15T17:50:24Z" );
 
             TimestampFormatter formatter = Engine.getInstance().getTimestampFormatter( "ebxml" );

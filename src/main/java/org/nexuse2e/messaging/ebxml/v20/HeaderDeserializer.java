@@ -51,24 +51,24 @@ public class HeaderDeserializer extends AbstractPipelet {
 
     private static Logger         LOG            = Logger.getLogger( HeaderDeserializer.class );
 
-    private static MessageFactory messageFactory = null;
-
-    static {
-        String saveMessageFactory = System.getProperty( "javax.xml.soap.MessageFactory" );
-
-        // Grab soap factories explicitly to make sure we get the ones we ship with
-        System.setProperty( "javax.xml.soap.MessageFactory",
-                "com.sun.xml.messaging.saaj.soap.ver1_1.SOAPMessageFactory1_1Impl" );
-        try {
-            messageFactory = MessageFactory.newInstance();
-        } catch ( SOAPException e ) {
-            LOG.error( "Could not instantiate MessageFactory! " + e );
-        }
-
-        if ( saveMessageFactory != null ) {
-            System.setProperty( "javax.xml.soap.MessageFactory", saveMessageFactory );
-        }
-    }
+//    private static MessageFactory messageFactory = null;
+//
+//    static {
+//        String saveMessageFactory = System.getProperty( "javax.xml.soap.MessageFactory" );
+//
+//        // Grab soap factories explicitly to make sure we get the ones we ship with
+//        System.setProperty( "javax.xml.soap.MessageFactory",
+//                "com.sun.xml.messaging.saaj.soap.ver1_1.SOAPMessageFactory1_1Impl" );
+//        try {
+//            messageFactory = MessageFactory.newInstance();
+//        } catch ( SOAPException e ) {
+//            LOG.error( "Could not instantiate MessageFactory! " + e );
+//        }
+//
+//        if ( saveMessageFactory != null ) {
+//            System.setProperty( "javax.xml.soap.MessageFactory", saveMessageFactory );
+//        }
+//    }
 
     /**
      * Default constructor.
@@ -95,6 +95,8 @@ public class HeaderDeserializer extends AbstractPipelet {
         messagePojo.setType( org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_NORMAL );
 
         try {
+            MessageFactory messageFactory = MessageFactory.newInstance();
+
             LOG.trace( "Header:" + new String( messagePojo.getHeaderData() ) );
             // MessageFactory messageFactory = MessageFactory.newInstance();
             /*
