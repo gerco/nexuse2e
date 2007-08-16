@@ -265,7 +265,7 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                     if ( LOG.isTraceEnabled() ) {
                         e.printStackTrace();
                     }
-                    LOG.error( new LogMessage( "Error sending message: " + e, messagePojo ) );
+                    LOG.error( new LogMessage( "Error sending message: " + e, messagePojo ), e );
                 }
             } else {
                 LOG.debug( new LogMessage( "Max number of retries reached!", messagePojo ) );
