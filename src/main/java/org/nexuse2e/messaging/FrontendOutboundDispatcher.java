@@ -61,8 +61,10 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
             throw new NexusException( "No valid pipeline found for " + messageContext.getProtocolSpecificKey() );
         }
 
-        final Runnable messageSender = new MessageSender( pipeline, messageContext, messageContext.getParticipant()
-                .getConnection().getRetries() );
+        int retries = messageContext.getParticipant().getConnection().getRetries();
+        boolean reliable = messageContext.getParticipant().getConnection().isReliable();
+
+        final Runnable messageSender = new MessageSender( pipeline, messageContext, ( reliable ? retries : 0 ) );
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool( 1 );
 
         ParticipantPojo participantPojo = messageContext.getMessagePojo().getParticipant();
@@ -241,8 +243,9 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                                     conversationPojo.setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_IDLE );
                                 }
                             } else if ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_AWAITING_BACKEND ) {
-                                LOG.debug( new LogMessage( "Received ack message, backend still processing - conversation ID: "
-                                        + conversationPojo.getConversationId(), messagePojo ) );
+                                LOG.debug( new LogMessage(
+                                        "Received ack message, backend still processing - conversation ID: "
+                                                + conversationPojo.getConversationId(), messagePojo ) );
                             } else {
                                 LOG.error( new LogMessage( "Unexpected conversation state after sending ack message: "
                                         + conversationPojo.getStatus(), messagePojo ) );

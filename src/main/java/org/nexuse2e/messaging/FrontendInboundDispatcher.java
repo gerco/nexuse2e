@@ -232,12 +232,23 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                 if ( !errorFlag ) {
                     LOG.trace( "no error response message found, creating ack" );
                     responseMessageContext = null;
-                    try {
-                        responseMessageContext = protocolAdapter.createAcknowledgement( choreography,
-                                clonedMessageContext );
-                    } catch ( NexusException e ) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                    if ( messageContext.getParticipant().getConnection().isReliable() ) {
+                        try {
+                            responseMessageContext = protocolAdapter.createAcknowledgement( choreography,
+                                    clonedMessageContext );
+                        } catch ( NexusException e ) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    } else {
+                        LOG.debug( "Not reliable, not creating ack - message ID: " + messagePojo.getMessageId() );
+                        if ( messagePojo.getConversation().getCurrentAction().isEnd() ) {
+                            messagePojo.getConversation().setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_COMPLETED );
+                        } else {
+                            messagePojo.getConversation().setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_IDLE );
+                        }
+                        // Persist status changes
+                        Engine.getInstance().getTransactionService().updateTransaction( messagePojo.getConversation() );
                     }
                 } else {
                     LOG.trace( "error response message found" );
