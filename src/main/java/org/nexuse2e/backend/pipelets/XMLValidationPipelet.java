@@ -190,16 +190,35 @@ public class XMLValidationPipelet extends AbstractPipelet {
                         e.printStackTrace();
                         continue;
                     }
-                    String encoding = document.getInputEncoding();
-                    LOG.debug( "document.getInputEncoding(): "+encoding);
-                    document = processValidation( document, messageContext );
+
+                    ValidationDefinitions definitions = validationDefinitions;
+                    if ( partnerSpecific ) {
+                        LOG.debug( "partnerValidationDefinitions: " + partnerValidationDefinitions );
+                        LOG.debug( "getPartnerId: "
+                                + messageContext.getMessagePojo().getParticipant().getPartner().getPartnerId() );
+                        definitions = partnerValidationDefinitions.get( messageContext.getMessagePojo()
+                                .getParticipant().getPartner().getPartnerId() );
+                        LOG.debug( "definitions: " + definitions );
+                    }
+
+                    // Validate document
+                    document = processValidation( document, messageContext, definitions );
+
                     // Serialize result
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     TransformerFactory transformerFactory = TransformerFactory.newInstance();
                     Transformer transformer = transformerFactory.newTransformer();
-                    if(encoding != null) {
-                        transformer.setOutputProperty( OutputKeys.ENCODING, encoding );
+
+                    String outputEncoding = "UTF-8"; // or use "ISO-8859-1"
+                    if ( ( definitions.getOutputEncoding() != null )
+                            && ( definitions.getOutputEncoding().length() != 0 ) ) {
+                        outputEncoding = definitions.getOutputEncoding();
                     }
+
+                    LOG.debug( "Using output encoding: " + outputEncoding );
+
+                    transformer.setOutputProperty( OutputKeys.ENCODING, outputEncoding );
+
                     transformer.transform( new DOMSource( document ), new StreamResult( baos ) );
                     payload.setPayloadData( baos.toByteArray() );
                 }
@@ -283,6 +302,7 @@ public class XMLValidationPipelet extends AbstractPipelet {
             ValidationDefinitions validationDefinitions = xmlValidationPipelet.readConfiguration( args[1] );
             xmlValidationPipelet.setValidationDefinitions( validationDefinitions );
             xmlValidationPipelet.setMappingService( new DataConversionService() );
+            xmlValidationPipelet.setPartnerSpecific( true );
             System.out.println( "MappingDefinitions: " + validationDefinitions );
 
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -291,7 +311,7 @@ public class XMLValidationPipelet extends AbstractPipelet {
             Document document = builder.parse( args[0] );
 
             MessageContext mc = new MessageContext();
-            document = xmlValidationPipelet.processValidation( document, mc );
+            document = xmlValidationPipelet.processValidation( document, mc, validationDefinitions );
 
             // Serialize result
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -314,60 +334,49 @@ public class XMLValidationPipelet extends AbstractPipelet {
 
     /**
      * @param document
-     * @param context
+     * @param messageContext
      * @return
      */
-    private Document processValidation( Document document, MessageContext context ) {
+    private Document processValidation( Document document, MessageContext messageContext,
+            ValidationDefinitions definitions ) {
 
         Document result = null;
         try {
             XPath xPath = XPathFactory.newInstance().newXPath();
 
-            ValidationDefinitions definitions = validationDefinitions;
-            if ( partnerSpecific ) {
-                LOG.debug( "partnerValidationDefinitions: " + partnerValidationDefinitions );
-                LOG.debug( "getPartnerId: " + context.getMessagePojo().getParticipant().getPartner().getPartnerId() );
-                definitions = partnerValidationDefinitions.get( context.getMessagePojo().getParticipant().getPartner()
-                        .getPartnerId() );
-                LOG.debug( "definitions: " + definitions );
-            }
+            for ( ValidationDefinition definition : definitions.getValidationDefinitions() ) {
 
-            if ( definitions != null && definitions.getValidationDefinitions() != null ) {
-
-                for ( ValidationDefinition definition : definitions.getValidationDefinitions() ) {
-
-                    Node node = (Node) xPath.evaluate( definition.getXpath(), document, XPathConstants.NODE );
-                    if ( node != null ) {
-                        if ( node instanceof Element ) {
-                            String value = ( (Element) node ).getTextContent();
-                            String resultValue = mapData( value, definition );
-                            if ( resultValue == null || resultValue.length() != value.length() ) {
-                                if ( context != null ) {
-                                    ErrorDescriptor rd = new ErrorDescriptor();
-                                    rd.setDescription( "Invalid Field: " + node.getNodeName() );
-                                    if ( resultValue == null ) {
-                                        rd.setErrorCode( definition.getFatalCode() );
-                                    } else {
-                                        rd.setErrorCode( definition.getModifiedCode() );
-                                    }
-                                    rd.setSeverity( Severity.ERROR );
-                                    context.addError( rd );
+                Node node = (Node) xPath.evaluate( definition.getXpath(), document, XPathConstants.NODE );
+                if ( node != null ) {
+                    if ( node instanceof Element ) {
+                        String value = ( (Element) node ).getTextContent();
+                        String resultValue = mapData( value, definition );
+                        if ( resultValue == null || resultValue.length() != value.length() ) {
+                            if ( messageContext != null ) {
+                                ErrorDescriptor rd = new ErrorDescriptor();
+                                rd.setDescription( "Invalid Field: " + node.getNodeName() );
+                                if ( resultValue == null ) {
+                                    rd.setErrorCode( definition.getFatalCode() );
+                                } else {
+                                    rd.setErrorCode( definition.getModifiedCode() );
                                 }
-                                if ( definition.getDefaultValue() != null ) {
-                                    resultValue = definition.getDefaultValue();
-                                }
+                                rd.setSeverity( Severity.ERROR );
+                                messageContext.addError( rd );
                             }
-                            ( (Element) node ).setTextContent( resultValue );
-                        } else if ( node instanceof Attr ) {
-                            String nodeValue = ( (Attr) node ).getNodeValue();
-                            String resultValue = mapData( nodeValue, definition );
-                            ( (Attr) node ).setNodeValue( resultValue );
-                        } else {
-                            LOG.error( "Node type not recognized: " + node.getClass() );
+                            if ( definition.getDefaultValue() != null ) {
+                                resultValue = definition.getDefaultValue();
+                            }
                         }
+                        ( (Element) node ).setTextContent( resultValue );
+                    } else if ( node instanceof Attr ) {
+                        String nodeValue = ( (Attr) node ).getNodeValue();
+                        String resultValue = mapData( nodeValue, definition );
+                        ( (Attr) node ).setNodeValue( resultValue );
                     } else {
-                        LOG.warn( "Could not find matching node for " + definition.getXpath() );
+                        LOG.error( "Node type not recognized: " + node.getClass() );
                     }
+                } else {
+                    LOG.warn( "Could not find matching node for " + definition.getXpath() );
                 }
             }
             result = document;
