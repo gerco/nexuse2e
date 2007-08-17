@@ -27,6 +27,7 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.SocketFactory;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
@@ -78,6 +79,7 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
     public static final String PASSWORD_PARAM_NAME         = "password";
     public static final String INTERVAL_PARAM_NAME         = "interval";
     public static final String TRANSFER_MODE_PARAM_NAME    = "transferMode";
+    public static final String RENAMING_PREFIX_PARAM_NAME  = "prefix";
 
     public static final String CUSTOM_PARAMETER_FILE_NAME  = "fileName";
     public static final String CUSTOM_PARAMETER_PARTNER_ID = "partnerId";
@@ -125,6 +127,9 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
 
         parameterMap.put( INTERVAL_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "Interval (minutes)",
                 "Connect every n minutes to look for new files", "5" ) );
+
+        parameterMap.put( RENAMING_PREFIX_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "File Prefix",
+                "prefix is prepended to successfully transfered files, instead of file delete", "5" ) );
 
         ListParameter transferModeListParam = new ListParameter();
         transferModeListParam.addElement( "Auto", "auto" );
@@ -298,12 +303,13 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
         }
         return cert;
     }
-    
+
     private static String dosStyleToRegEx( String pattern ) {
+
         StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < pattern.length(); i++) {
+        for ( int i = 0; i < pattern.length(); i++ ) {
             char c = pattern.charAt( i );
-            if ('?' != c && '*' != c) {
+            if ( '?' != c && '*' != c ) {
                 sb.append( "\\Q" );
                 sb.append( c );
                 sb.append( "\\E" );
@@ -313,7 +319,7 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
         }
         pattern = sb.toString().replaceAll( "\\*", "\\.\\*" );
         pattern = pattern.replaceAll( "\\?", "\\." );
-        
+
         return pattern;
     }
 
@@ -392,8 +398,8 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
                 String filePattern = getParameter( FILE_PATTERN_PARAM_NAME );
                 List<File> localFiles = new ArrayList<File>();
                 FTPFile[] files = ftp.listFiles();
-                LOG.debug( "Number of files in directory: "
-                        + files.length + ", checking against pattern " + filePattern );
+                LOG.debug( "Number of files in directory: " + files.length + ", checking against pattern "
+                        + filePattern );
                 String regEx = dosStyleToRegEx( filePattern );
                 for ( FTPFile file : files ) {
                     if ( Pattern.matches( regEx, file.getName() ) ) {
@@ -403,9 +409,21 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
                         if ( !success ) {
                             LOG.error( "Could not retrieve file " + file.getName() );
                         } else {
-                            if ( !ftp.deleteFile( file.getName() ) ) {
-                                LOG.error( "Could not delete file " + file.getName() );
+                            String prefix = getParameter( RENAMING_PREFIX_PARAM_NAME );
+                            boolean error = false;
+                            if ( StringUtils.isEmpty( prefix ) ) {
+                                if ( !ftp.deleteFile( file.getName() ) ) {
+                                    LOG.error( "Could not delete file " + file.getName() );
+                                    error = true;
+                                }
                             } else {
+                                if(!ftp.rename( file.getName(), prefix+file.getName() )) {
+                                    LOG.error( "Could not rename file from " + file.getName()+" to "+prefix+file.getName() );
+                                    error = true;
+                                }
+                            }
+
+                            if ( !error ) {
                                 localFiles.add( localFile );
                             }
                         }
@@ -414,7 +432,7 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
                 }
 
                 File errorDir = new File( (String) getParameter( ERROR_DIR_PARAM_NAME ) );
-                
+
                 for ( File localFile : localFiles ) {
                     processFile( localFile, errorDir, (String) getParameter( PARTNER_PARAM_NAME ) );
                 }

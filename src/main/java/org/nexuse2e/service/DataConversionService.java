@@ -268,7 +268,7 @@ public class DataConversionService extends AbstractService {
                     return null;
                 }
             }
-            Pattern p = Pattern.compile( "[0-9]+" + delimiter + "[0-9]+" );
+            Pattern p = Pattern.compile( "[0-9]+[" + delimiter + "]*[0-9]*" );
             Matcher matcher = p.matcher( value );
             if ( matcher.matches() ) {
                 return value;

@@ -139,12 +139,21 @@ public class XSLTPipelet extends AbstractPipelet {
             IllegalStateException, NexusException {
 
         LOG.debug( "processing xslt" );
-        Map<?, ?> map = null;
+        Map map = null;
 
         if ( ( messageContext.getData() != null ) && ( messageContext.getData() instanceof RequestResponseData )
                 && ( ( (RequestResponseData) messageContext.getData() ).getParameters() != null ) ) {
             map = ( (RequestResponseData) messageContext.getData() ).getParameters();
         }
+        if(map == null) {
+            map = new HashMap<String, String>();
+            
+        }
+        map.put( "nexuse2e_partner_id", messageContext.getMessagePojo().getParticipant().getPartner().getPartnerId() );
+        map.put( "nexuse2e_conversation_id", messageContext.getMessagePojo().getConversation().getConversationId() );
+        map.put( "nexuse2e_message_id", messageContext.getMessagePojo().getMessageId() );
+        map.put( "nexuse2e_action_id", messageContext.getMessagePojo().getAction().getName() );
+        map.put( "nexuse2e_choreography_id", messageContext.getMessagePojo().getConversation().getChoreography().getName() );
         
         StreamSource streamSource = xsltStreamSource;
         
@@ -232,11 +241,12 @@ public class XSLTPipelet extends AbstractPipelet {
             Transformer transformer = transformerFactory.newTransformer( xsltSource );
             if ( map != null ) {
                 LOG.debug( "Using provided XSLT parameters..." );
-                if ( LOG.isTraceEnabled() ) {
+                LOG.debug( "map: "+map );
+                if ( LOG.isDebugEnabled() ) {
                     for ( Iterator iter = map.keySet().iterator(); iter.hasNext(); ) {
                         String key = (String) iter.next();
                         transformer.setParameter( key, map.get( key ) );
-                        LOG.trace( "XSLT param: " + key + " - " + map.get( key ) );
+                        LOG.debug( "XSLT param: " + key + " - " + map.get( key ) );
                     }
                 }
             }
@@ -262,6 +272,7 @@ public class XSLTPipelet extends AbstractPipelet {
         }
         long start = System.currentTimeMillis();
 
+        
         StreamSource xmlSource = new StreamSource( new File( args[0] ) );
         StreamSource xsltSource = new StreamSource( new File( args[1] ) );
 

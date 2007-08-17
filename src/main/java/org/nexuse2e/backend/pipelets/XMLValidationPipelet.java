@@ -28,6 +28,7 @@ import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -84,7 +85,6 @@ public class XMLValidationPipelet extends AbstractPipelet {
 
     public XMLValidationPipelet() {
 
-        
         parameterMap.put( CONFIG_FILE, new ParameterDescriptor( ParameterType.STRING, "Validation Definitions",
                 "Path to validation definitions file", "" ) );
         parameterMap.put( PARTNER_SPECIFIC, new ParameterDescriptor( ParameterType.BOOLEAN, "Partner Specific",
@@ -181,7 +181,7 @@ public class XMLValidationPipelet extends AbstractPipelet {
                     }
                     Document document = null;
                     try {
-                        document = builder.parse(new InputSource( new StringReader(doc) ) );
+                        document = builder.parse( new InputSource( new StringReader( doc ) ) );
                     } catch ( Exception e ) {
                         e.printStackTrace();
 
@@ -190,11 +190,16 @@ public class XMLValidationPipelet extends AbstractPipelet {
                         e.printStackTrace();
                         continue;
                     }
+                    String encoding = document.getInputEncoding();
+                    LOG.debug( "document.getInputEncoding(): "+encoding);
                     document = processValidation( document, messageContext );
                     // Serialize result
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     TransformerFactory transformerFactory = TransformerFactory.newInstance();
                     Transformer transformer = transformerFactory.newTransformer();
+                    if(encoding != null) {
+                        transformer.setOutputProperty( OutputKeys.ENCODING, encoding );
+                    }
                     transformer.transform( new DOMSource( document ), new StreamResult( baos ) );
                     payload.setPayloadData( baos.toByteArray() );
                 }
@@ -278,7 +283,6 @@ public class XMLValidationPipelet extends AbstractPipelet {
             ValidationDefinitions validationDefinitions = xmlValidationPipelet.readConfiguration( args[1] );
             xmlValidationPipelet.setValidationDefinitions( validationDefinitions );
             xmlValidationPipelet.setMappingService( new DataConversionService() );
-            xmlValidationPipelet.setPartnerSpecific( true );
             System.out.println( "MappingDefinitions: " + validationDefinitions );
 
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -321,45 +325,49 @@ public class XMLValidationPipelet extends AbstractPipelet {
 
             ValidationDefinitions definitions = validationDefinitions;
             if ( partnerSpecific ) {
-                LOG.debug( "partnerValidationDefinitions: "+partnerValidationDefinitions );
-                LOG.debug( "getPartnerId: "+ context.getMessagePojo().getParticipant().getPartner().getPartnerId() );
-                definitions = partnerValidationDefinitions.get( context.getMessagePojo().getParticipant().getPartner().getPartnerId() );
-                LOG.debug( "definitions: "+definitions);
+                LOG.debug( "partnerValidationDefinitions: " + partnerValidationDefinitions );
+                LOG.debug( "getPartnerId: " + context.getMessagePojo().getParticipant().getPartner().getPartnerId() );
+                definitions = partnerValidationDefinitions.get( context.getMessagePojo().getParticipant().getPartner()
+                        .getPartnerId() );
+                LOG.debug( "definitions: " + definitions );
             }
 
-            for ( ValidationDefinition definition : definitions.getValidationDefinitions() ) {
+            if ( definitions != null && definitions.getValidationDefinitions() != null ) {
 
-                Node node = (Node) xPath.evaluate( definition.getXpath(), document, XPathConstants.NODE );
-                if ( node != null ) {
-                    if ( node instanceof Element ) {
-                        String value = ( (Element) node ).getTextContent();
-                        String resultValue = mapData( value, definition );
-                        if ( resultValue == null || resultValue.length() != value.length() ) {
-                            if ( context != null ) {
-                                ErrorDescriptor rd = new ErrorDescriptor();
-                                rd.setDescription( "Invalid Field: " + node.getNodeName() );
-                                if ( resultValue == null ) {
-                                    rd.setErrorCode( definition.getFatalCode() );
-                                } else {
-                                    rd.setErrorCode( definition.getModifiedCode() );
+                for ( ValidationDefinition definition : definitions.getValidationDefinitions() ) {
+
+                    Node node = (Node) xPath.evaluate( definition.getXpath(), document, XPathConstants.NODE );
+                    if ( node != null ) {
+                        if ( node instanceof Element ) {
+                            String value = ( (Element) node ).getTextContent();
+                            String resultValue = mapData( value, definition );
+                            if ( resultValue == null || resultValue.length() != value.length() ) {
+                                if ( context != null ) {
+                                    ErrorDescriptor rd = new ErrorDescriptor();
+                                    rd.setDescription( "Invalid Field: " + node.getNodeName() );
+                                    if ( resultValue == null ) {
+                                        rd.setErrorCode( definition.getFatalCode() );
+                                    } else {
+                                        rd.setErrorCode( definition.getModifiedCode() );
+                                    }
+                                    rd.setSeverity( Severity.ERROR );
+                                    context.addError( rd );
                                 }
-                                rd.setSeverity( Severity.ERROR );
-                                context.addError( rd );
+                                if ( definition.getDefaultValue() != null ) {
+                                    resultValue = definition.getDefaultValue();
+                                }
                             }
-                            if ( definition.getDefaultValue() != null ) {
-                                resultValue = definition.getDefaultValue();
-                            }
+                            ( (Element) node ).setTextContent( resultValue );
+                        } else if ( node instanceof Attr ) {
+                            String nodeValue = ( (Attr) node ).getNodeValue();
+                            String resultValue = mapData( nodeValue, definition );
+                            ( (Attr) node ).setNodeValue( resultValue );
+                        } else {
+                            LOG.error( "Node type not recognized: " + node.getClass() );
                         }
-                        ( (Element) node ).setTextContent( resultValue );
-                    } else if ( node instanceof Attr ) {
-                        String nodeValue = ( (Attr) node ).getNodeValue();
-                        String resultValue = mapData( nodeValue, definition );
-                        ( (Attr) node ).setNodeValue( resultValue );
                     } else {
-                        LOG.error( "Node type not recognized: " + node.getClass() );
+                        LOG.warn( "Could not find matching node for " + definition.getXpath() );
                     }
-                } else {
-                    LOG.warn( "Could not find matching node for " + definition.getXpath() );
                 }
             }
             result = document;
@@ -369,7 +377,7 @@ public class XMLValidationPipelet extends AbstractPipelet {
         } catch ( DOMException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        }catch ( Exception e ) {
+        } catch ( Exception e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
