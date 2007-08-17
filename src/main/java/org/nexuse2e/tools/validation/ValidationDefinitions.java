@@ -29,6 +29,8 @@ import java.util.List;
  */
 public class ValidationDefinitions {
 
+    String                             outputEncoding        = null;
+
     private List<ValidationDefinition> validationDefinitions = new ArrayList<ValidationDefinition>();
 
     /**
@@ -39,21 +41,31 @@ public class ValidationDefinitions {
         validationDefinitions.add( validationDefinition );
     }
 
-    
     /**
      * @return the validationDefinitions
      */
     public List<ValidationDefinition> getValidationDefinitions() {
-    
+
         return validationDefinitions;
     }
 
-    
     /**
      * @param validationDefinitions the validationDefinitions to set
      */
     public void setValidationDefinitions( List<ValidationDefinition> validationDefinitions ) {
-    
+
         this.validationDefinitions = validationDefinitions;
+    }
+
+    
+    public String getOutputEncoding() {
+    
+        return outputEncoding;
+    }
+
+    
+    public void setOutputEncoding( String outputEncoding ) {
+    
+        this.outputEncoding = outputEncoding;
     }
 }
