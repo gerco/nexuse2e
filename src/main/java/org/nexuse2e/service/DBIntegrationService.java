@@ -188,14 +188,14 @@ public class DBIntegrationService extends AbstractService implements SchedulerCl
      */
     public void scheduleNotify() {
 
-        LOG.debug( "do something" );
+        // LOG.debug( "do something" );
         if ( status == BeanStatus.STARTED ) {
             if ( dbService == null ) {
                 LOG.error( "no Database Service found!" );
                 status = BeanStatus.ERROR;
                 return;
             }
-            LOG.trace( "checking for new messages in database" );
+            // LOG.trace( "checking for new messages in database" );
             checkForNewMessages();
         }
     }
@@ -212,7 +212,6 @@ public class DBIntegrationService extends AbstractService implements SchedulerCl
 
         String sql = "select KeyField, ConversationID, MessageID, ChoreographyID, ActionID, ParticipantID, Contenttype, PayloadField, SentFlag, LastModified_Date from "
                 + tableName
-                + " with( TABLOCKX ) "
                 + " where SentFlag=0 and InboundFlag=0";
         if ( !StringUtils.isEmpty( choreography ) ) {
             sql = sql + " and ChoreographyID='" + choreography;
@@ -232,9 +231,7 @@ public class DBIntegrationService extends AbstractService implements SchedulerCl
             statement = connection.createStatement( ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY );
 
             // Process all rows that match the criteria
-            LOG.debug( "checkForNewMessages - running query..." );
-
-            LOG.debug( "SQL: " + sql );
+            LOG.trace( "Running query - SQL: " + sql );
 
             for ( resultSet = statement.executeQuery( sql ); resultSet.next(); ) {
                 int key = resultSet.getInt( "KeyField" );
@@ -246,13 +243,13 @@ public class DBIntegrationService extends AbstractService implements SchedulerCl
                 String contentType = resultSet.getString( "Contenttype" );
                 byte[] payload = resultSet.getString( "PayloadField" ).getBytes();
 
-                LOG.debug( "KeyField: " + key );
-                LOG.debug( "PaticipantId: " + participantId );
-                LOG.debug( "ConversationId:" + conversationId );
-                LOG.debug( "MessageId: " +messageId );
-                LOG.debug( "contentType: " + contentType );
-                LOG.debug( "choreography: " + choreographyId );
-                LOG.debug( "Action: " + actionId );
+                LOG.trace( "KeyField: " + key );
+                LOG.trace( "PaticipantId: " + participantId );
+                LOG.trace( "ConversationId:" + conversationId );
+                LOG.trace( "MessageId: " +messageId );
+                LOG.trace( "ContentType: " + contentType );
+                LOG.trace( "Choreography: " + choreographyId );
+                LOG.trace( "Action: " + actionId );
 
                 MessageContext message = Engine.getInstance().getCurrentConfiguration().getBackendPipelineDispatcher()
                         .processMessage( participantId, choreographyId, actionId, conversationId, null, null, payload );
@@ -270,7 +267,7 @@ public class DBIntegrationService extends AbstractService implements SchedulerCl
                     updateSentFlag( connection,messageId, conversationId, key );
                 }
 
-                LOG.debug( "ConversationId: " +conversationId );
+                LOG.trace( "ConversationId: " +conversationId );
 
             }
         } catch ( SQLException sqlException ) {

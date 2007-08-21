@@ -96,72 +96,76 @@ public class FileSystemLoadPipelet extends AbstractOutboundBackendPipelet {
             throw new NexusException( "MessageContext not properly initialized, missing MessagePojo!" );
         }
 
-        StringTokenizer tokens = new StringTokenizer( newPrimaryKey, "," );
-        List<MessagePayloadPojo> messagePayloads = new ArrayList<MessagePayloadPojo>();
-        int count = tokens.countTokens();
+        if ( newPrimaryKey != null ) {
+            StringTokenizer tokens = new StringTokenizer( newPrimaryKey, "," );
+            List<MessagePayloadPojo> messagePayloads = new ArrayList<MessagePayloadPojo>();
+            int count = tokens.countTokens();
 
-        for ( int i = 0; i < count; i++ ) {
-            fileName = ( (String) tokens.nextElement() ).trim();
+            for ( int i = 0; i < count; i++ ) {
+                fileName = ( (String) tokens.nextElement() ).trim();
 
-            LOG.debug( "File to send: '" + fileName + "'" );
+                LOG.debug( "File to send: '" + fileName + "'" );
 
-            // Only execute if a file name was specified
-            if ( ( fileName != null ) && ( fileName.length() != 0 ) ) {
-                // Execute within a try/catch block to handle any exceptions that might occur
-                try {
-
-                    // Open the file to read one line at a time
-                    FileInputStream fis = null;
-
-                    // Workaround: Some filesystem need two tries to successfully
-                    // get a file, expecially remote (network) file shares.
+                // Only execute if a file name was specified
+                if ( ( fileName != null ) && ( fileName.length() != 0 ) ) {
+                    // Execute within a try/catch block to handle any exceptions that might occur
                     try {
-                        fis = new FileInputStream( fileName );
-                    } catch ( Exception ex ) {
-                    }
 
-                    if ( fis == null ) {
-                        fis = new FileInputStream( fileName );
-                    }
-                    BufferedInputStream bufferedInputStream = new BufferedInputStream( fis );
+                        // Open the file to read one line at a time
+                        FileInputStream fis = null;
 
-                    // Determine the size of the file
-                    int fileSize = bufferedInputStream.available();
+                        // Workaround: Some filesystem need two tries to successfully
+                        // get a file, expecially remote (network) file shares.
+                        try {
+                            fis = new FileInputStream( fileName );
+                        } catch ( Exception ex ) {
+                        }
 
-                    long memory = Runtime.getRuntime().freeMemory();
-                    if ( fileSize >= memory ) {
-                        String msg = "Not Enough memory to transfer data of " + fileSize / 1024
-                                + " Kbytes. Available memory is " + memory / 1024 + " Kbytes";
-                        throw new NexusException( msg );
-                    }
+                        if ( fis == null ) {
+                            fis = new FileInputStream( fileName );
+                        }
+                        BufferedInputStream bufferedInputStream = new BufferedInputStream( fis );
 
-                    documentBuffer = new byte[fileSize]; // Create a buffer that will hold the data from the file
+                        // Determine the size of the file
+                        int fileSize = bufferedInputStream.available();
 
-                    bufferedInputStream.read( documentBuffer, 0, fileSize ); // Read the file content into the buffer
-                    bufferedInputStream.close();
+                        long memory = Runtime.getRuntime().freeMemory();
+                        if ( fileSize >= memory ) {
+                            String msg = "Not Enough memory to transfer data of " + fileSize / 1024
+                                    + " Kbytes. Available memory is " + memory / 1024 + " Kbytes";
+                            throw new NexusException( msg );
+                        }
 
-                } catch ( IOException ioEx ) { // Handle exceptions related to the file I/O
-                    ioEx.printStackTrace();
-                    LOG.error( "IOException: " + ioEx );
-                    throw new NexusException( ioEx.getMessage() ); // Pass exception to NEXUSe2e engine using correct exception type
-                } // try/catch
+                        documentBuffer = new byte[fileSize]; // Create a buffer that will hold the data from the file
 
-            } else { // if
-                throw new NexusException( "FileConnector - No primary key specified." );
-            } // if
+                        bufferedInputStream.read( documentBuffer, 0, fileSize ); // Read the file content into the buffer
+                        bufferedInputStream.close();
 
-            // Determine the MIME type of the document
-            MimetypesFileTypeMap mimetypesFileTypeMap = (MimetypesFileTypeMap) FileTypeMap.getDefaultFileTypeMap();
-            String mimeType = mimetypesFileTypeMap.getContentType( fileName );
+                    } catch ( IOException ioEx ) { // Handle exceptions related to the file I/O
+                        ioEx.printStackTrace();
+                        LOG.error( "IOException: " + ioEx );
+                        throw new NexusException( ioEx.getMessage() ); // Pass exception to NEXUSe2e engine using correct exception type
+                    } // try/catch
 
-            // Prepare the Payload and set the MIME content type
-            MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo( messageContext.getMessagePojo(), i,
-                    mimeType, Engine.getInstance().getIdGenerator( org.nexuse2e.Constants.ID_GENERATOR_MESSAGE_PAYLOAD )
-                            .getId(), documentBuffer, new Date(), new Date(), 1 );
-            messagePayloads.add( messagePayloadPojo );
+                } else { // if
+                    throw new NexusException( "FileConnector - No primary key specified." );
+                } // if
 
-        } // for
-        messageContext.getMessagePojo().setMessagePayloads( messagePayloads );
+                // Determine the MIME type of the document
+                MimetypesFileTypeMap mimetypesFileTypeMap = (MimetypesFileTypeMap) FileTypeMap.getDefaultFileTypeMap();
+                String mimeType = mimetypesFileTypeMap.getContentType( fileName );
+
+                // Prepare the Payload and set the MIME content type
+                MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo( messageContext.getMessagePojo(), i,
+                        mimeType, Engine.getInstance().getIdGenerator(
+                                org.nexuse2e.Constants.ID_GENERATOR_MESSAGE_PAYLOAD ).getId(), documentBuffer,
+                        new Date(), new Date(), 1 );
+                messagePayloads.add( messagePayloadPojo );
+
+            } // for
+            messageContext.getMessagePojo().setMessagePayloads( messagePayloads );
+
+        }
 
         return messageContext;
     } // processPrimaryKeyAvailable

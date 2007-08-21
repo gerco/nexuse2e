@@ -375,13 +375,15 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
             cachedStructureServer.cacheMenuStructure();
 
         } catch ( RuntimeException rex ) {
-            LOG.error( "Error initializing Engine: " + rex );
             rex.printStackTrace();
+            LOG.error( "Error initializing Engine: " + rex );
             throw new InstantiationException( rex.getMessage() );
         } catch ( Exception e ) {
+            e.printStackTrace();
             LOG.error( "Error initializing Engine: " + e );
             throw new InstantiationException( e.getMessage() );
         } catch ( Error e ) {
+            e.printStackTrace();
             LOG.error( "Error initializing Engine: " + e );
             throw new InstantiationException( e.getMessage() );
         }
@@ -732,6 +734,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
             try {
                 changeStatus( BeanStatus.STARTED );
             } catch ( InstantiationException e ) {
+                e.printStackTrace();
                 LOG.error( "Error setting new configuartion: " + e );
             }
         } else {
