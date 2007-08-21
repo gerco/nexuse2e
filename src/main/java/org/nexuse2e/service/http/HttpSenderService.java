@@ -217,7 +217,7 @@ public class HttpSenderService extends AbstractService implements SenderAware {
                 method.setRequestEntity( new StringRequestEntity( new String( (byte[]) messageContext.getData() ) ) );
             } else {
                 RequestEntity requestEntity = new ByteArrayRequestEntity( (byte[]) messageContext.getData(),
-                        "Content-Type:text/xml" );
+                        "text/xml" );
                 method.setRequestEntity( requestEntity );
             }
 
