@@ -227,4 +227,15 @@
       <rtexprvalue>false</rtexprvalue>
     </attribute>
   </tag>
+  <!-- prints the menu structure and the assigned grants -->
+  <tag>
+    <name>grants</name>
+    <tag-class>org.nexuse2e.ui.taglib.Grants</tag-class>
+    <description>Displays the menu structure and the assigned grants.</description>
+    <attribute>
+      <name>grantsMap</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>    
+  </tag>
 </taglib>

@@ -61,33 +61,7 @@
 		 		</p>
 	 		</td>
 	 		<td class="NEXUSValue">
-	 			<%!
-	 				// method to print structure tree recursively
-	 				public void iterateTree( List<StructureNode> nodes, StringBuffer sb, int indent, Map<String,GrantPojo> grants ) {
-	 					if ( nodes != null ) {
-		 					for ( StructureNode node : nodes ) {
-		 						sb.append( "<div style=\"padding-left: " + indent * 20 + "; background-color: " + ( indent % 2 == 0 ? "#D0D0E0" : "#D8D8E8" ) + "\">" );
-		 						sb.append( "\t<input type=\"checkbox\" name=\"__grant:" + node.getTarget() + "\"" + ( grants.containsKey( node.getTarget() ) ? " checked" : "" ) + "> " + node.getLabel() + "\n" );
-		 						sb.append( "</div>" );
-		 						if ( node instanceof ParentalStructureNode ) {
-		 							ParentalStructureNode parentNode = (ParentalStructureNode) node;
-									iterateTree( parentNode.getChildren(), sb, indent + 1, grants );
-		 						}
-		 					}
-		 				}
-	 				}
-	 			%>
-	 			<%
-	 				List<StructureNode> nodes = ( (StructureService) Engine.getInstance().getBeanFactory().getBean( "structureService" ) ).getMenuSkeleton();
-	 				StringBuffer sb = new StringBuffer();
-	 				Map<String,GrantPojo> grants = ( (RoleForm) session.getAttribute( "roleForm" ) ).getGrants();
-	 				// add wildcard
-	 				sb.append( "<div style=\"padding-left: 0; background-color: #D8D8E8\">" );
- 					sb.append( "\t<input type=\"checkbox\" name=\"__grant:*\"" + ( grants.containsKey( "*" ) ? " checked" : "" ) + "> <span style=\"font-style: italic;\">WILDCARD (grant full access)</span>\n" );
- 					sb.append( "</div>" );
-	 				iterateTree( nodes, sb, 0, grants );
-	 				out.print( sb.toString() );
-	 			%>	 			
+	 			<nexus:grants grantsMap="${ roleForm.grants }"/>	 			
 	 		</td>
 	 	</tr>
 	</table>
