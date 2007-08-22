@@ -1,0 +1,41 @@
+--MIME_boundary
+Content-ID: <roma-2.local/-75a26609:11465aba960:-7fd3ebXML-Header>
+Content-Type: text/xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:eb="http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd" xsi:schemaLocation="http://schemas.xmlsoap.org/soap/envelope/ http://www.oasis-open.org/committees/ebxml-msg/schema/envelope.xsd" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <soapenv:Header>
+  <eb:MessageHeader eb:version="2.0" soapenv:mustUnderstand="1" xmlns:eb="http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd">
+   <eb:From>
+    <eb:PartyId eb:type="Custom">${SenderID}</eb:PartyId>
+   </eb:From>
+   <eb:To>
+    <eb:PartyId eb:type="Custom">${ParticipantID}</eb:PartyId>
+   </eb:To>
+   <eb:CPAId>${ChoreographyID}</eb:CPAId>
+   <eb:ConversationId>${ConversationID}</eb:ConversationId>
+   <eb:Service>uri:${ChoreographyID}</eb:Service>
+   <eb:Action>${ActionID}</eb:Action>
+   <eb:MessageData>
+    <eb:MessageId>${MessageID}</eb:MessageId>
+    <eb:Timestamp>${Timestamp}</eb:Timestamp>
+   </eb:MessageData>
+   <eb:Timestamp>${Timestamp}</eb:Timestamp>
+   <eb:DuplicateElimination/>
+  </eb:MessageHeader>
+  <eb:AckRequested eb:version="2.0" eb:signed="false" soapenv:mustUnderstand="1" xmlns:eb="http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd"/>
+ </soapenv:Header>
+ <soapenv:Body xsi:schemaLocation="http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd" xmlns:eb="http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd">
+  <eb:Manifest soapenv:mustUnderstand="1" eb:version="2.0" xmlns:eb="http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd">
+   <eb:Reference xmlns:xlink="http://www.w3.org/1999/xlink" eb:id="Payload-1" xlink:href="roma-2.local/-75a26609:11465aba960:-7fd3-body1"/>
+  </eb:Manifest>
+ </soapenv:Body>
+</soapenv:Envelope>
+
+--MIME_boundary
+Content-ID: <roma-2.local/-75a26609:11465aba960:-7fd3-body1>
+Content-Type: text/xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<test from="Xioma"/>
+--MIME_boundary--

@@ -1,0 +1,53 @@
+--MIME_boundary
+Content-ID: <roma-2.local/-75a26609:11465aba960:-7fc6ebXML-Header>
+Content-Type: text/xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:eb="http://www.ebxml.org/namespaces/messageHeader">
+ <soapenv:Header>
+  <eb:MessageHeader eb:version="1.0" soapenv:mustUnderstand="1" xmlns:eb="http://www.ebxml.org/namespaces/messageHeader">
+   <eb:From>
+    <eb:PartyId eb:type="Custom">${SenderID}</eb:PartyId>
+   </eb:From>
+   <eb:To>
+    <eb:PartyId eb:type="Custom">${ParticipantID}</eb:PartyId>
+   </eb:To>
+   <eb:CPAId>${ChoreographyID}</eb:CPAId>
+   <eb:ConversationId>${ConversationID}</eb:ConversationId>
+   <eb:Service>uri:${ChoreographyID}</eb:Service>
+   <eb:Action>${ActionID}</eb:Action>
+   <eb:MessageData>
+    <eb:MessageId>${MessageID}</eb:MessageId>
+    <eb:Timestamp>${Timestamp}</eb:Timestamp>
+   </eb:MessageData>
+   <eb:QualityOfServiceInfo eb:deliverySemantics="OnceAndOnlyOnce"/>
+  </eb:MessageHeader>
+  <eb:TraceHeaderList eb:version="1.0" soapenv:actor="http://schemas.xmlsoap.org/soap/actor/next" soapenv:mustUnderstand="1" xmlns:eb="http://www.ebxml.org/namespaces/messageHeader">
+   <eb:TraceHeader>
+    <eb:Sender>
+     <eb:PartyId eb:type="Custom">${SenderID}</eb:PartyId>
+     <eb:Location>http://yourserver:8080/NexusE2E/SomeServlet</eb:Location>
+    </eb:Sender>
+    <eb:Receiver>
+     <eb:PartyId eb:type="Custom">${ParticipantID}</eb:PartyId>
+     <eb:Location>https://localhost:8443/NEXUSe2e/handler/ebxml10</eb:Location>
+    </eb:Receiver>
+    <eb:Timestamp>${Timestamp}</eb:Timestamp>
+   </eb:TraceHeader>
+  </eb:TraceHeaderList>
+  <eb:Via eb:version="1.0" soapenv:actor="http://schemas.xmlsoap.org/soap/actor/next" eb:ackRequested="Unsigned" eb:reliableMessagingMethod="ebXML" soapenv:mustUnderstand="1" xmlns:eb="http://www.ebxml.org/namespaces/messageHeader"/>
+ </soapenv:Header>
+ <soapenv:Body>
+  <eb:Manifest soapenv:mustUnderstand="1" eb:version="1.0" xmlns:eb="http://www.ebxml.org/namespaces/messageHeader">
+   <eb:Reference eb:id="Payload-0" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="roma-2.local/-75a26609:11465aba960:-7fc6-body1" xmlns:eb="http://www.ebxml.org/namespaces/messageHeader"/>
+  </eb:Manifest>
+ </soapenv:Body>
+</soapenv:Envelope>
+
+--MIME_boundary
+Content-ID: <roma-2.local/-75a26609:11465aba960:-7fc6-body1>
+Content-Type: text/xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<test from="Xioma"/>
+--MIME_boundary--
