@@ -137,7 +137,7 @@ public class SchedulingServiceImpl extends AbstractService implements Scheduling
          */
         public void run() {
 
-            LOG.trace( "running" );
+            // LOG.trace( "running" );
             if ( client != null ) {
                 client.scheduleNotify();
             } else {

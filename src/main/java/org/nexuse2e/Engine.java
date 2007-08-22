@@ -109,6 +109,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
      * Keyed by mime type, content is the extension, without the '.'.
      */
     private Map<String, MimeMapping>         mimeMappings                   = new HashMap<String, MimeMapping>();
+    private Map<String, MimeMapping>         fileExt2MimeMappings                   = new HashMap<String, MimeMapping>();
 
     private String                           timestampPattern               = null;
 
@@ -505,14 +506,29 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     }
 
     /**
-     * Retrieve the file extension based on a mime type.  Returns '' when not found, hence no extension.
+     * Retrieve the file extension based on a mime type.
      * @param mimeType
      * @return String Extension
      */
-
     public String getFileExtensionFromMime( String mimeType ) {
 
-        MimeMapping tempMimeMapping = (MimeMapping) mimeMappings.get( mimeType );
+        MimeMapping tempMimeMapping = mimeMappings.get( mimeType );
+
+        if ( tempMimeMapping != null ) {
+            return tempMimeMapping.fileExtension;
+        }
+
+        return null;
+    }
+
+    /**
+     * Retrieve the MIME type based on the file extension.
+     * @param mimeType
+     * @return String Extension
+     */
+    public String getMimeFromFileExtension( String fileExtension ) {
+
+        MimeMapping tempMimeMapping = fileExt2MimeMappings.get( fileExtension );
 
         if ( tempMimeMapping != null ) {
             return tempMimeMapping.fileExtension;
@@ -534,6 +550,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
         tempMimeMapping.fileExtension = newExtension;
 
         mimeMappings.put( newMimeType, tempMimeMapping );
+        fileExt2MimeMappings.put( newExtension, tempMimeMapping );
     }
 
     /**

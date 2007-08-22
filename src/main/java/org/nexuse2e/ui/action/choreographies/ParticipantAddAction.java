@@ -24,6 +24,7 @@ import java.util.Iterator;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -152,6 +153,12 @@ public class ParticipantAddAction extends NexusE2EAction {
                 CertificatePojo localCertificate = Engine.getInstance().getActiveConfigurationAccessService()
                         .getCertificateFromPartnerByNxCertificateId( partner, form.getNxLocalCertificateId() );
                 participant.setPartner( partner );
+                
+                // Make sure we have a default description set
+                if ( StringUtils.isEmpty( participant.getDescription() ) ) {
+                    participant.setDescription( partner.getPartnerId() );
+                }
+                
                 participant.setLocalPartner( localPartner );
                 participant.setCreatedDate( new Date() );
                 participant.setModifiedDate( new Date() );

@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
-import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.GenericComparator;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ParticipantPojo;
@@ -37,6 +37,8 @@ import org.nexuse2e.ui.structure.TargetProvider;
  *
  */
 public class ParticipantTargetProvider implements TargetProvider {
+
+    private static Logger LOG = Logger.getLogger( ParticipantTargetProvider.class );
 
     /* (non-Javadoc)
      * @see org.nexuse2e.ui.structure.TargetProvider#getStructure(org.nexuse2e.ui.structure.StructureNode)
@@ -57,13 +59,17 @@ public class ParticipantTargetProvider implements TargetProvider {
                 for ( ParticipantPojo participantPojo : sortedParticipants ) {
                     StructureNode sn = new PageNode( pattern.getTarget() + "?nxPartnerId="
                             + participantPojo.getPartner().getNxPartnerId() + "&nxChoreographyId="
-                            + choreographyPojo.getNxChoreographyId(), participantPojo.getPartner().getPartnerId() + " ("
-                            + participantPojo.getPartner().getName() + ")", pattern.getIcon() );
+                            + choreographyPojo.getNxChoreographyId(), participantPojo.getPartner().getPartnerId()
+                            + " (" + participantPojo.getPartner().getName() + ")", pattern.getIcon() );
                     list.add( sn );
                 }
 
             }
-        } catch ( NexusException e ) {
+        } catch ( NullPointerException e ) {
+            LOG.error( "NullPointerException while rendering participant tree - most likely cause is a missing description value in a participant entry: " + e );
+            e.printStackTrace();
+        } catch ( Exception e ) {
+            LOG.error( "Unknown exception while rendering participant tree: " + e );
             e.printStackTrace();
         }
 
