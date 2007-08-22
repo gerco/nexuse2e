@@ -51,25 +51,6 @@ public class HeaderDeserializer extends AbstractPipelet {
 
     private static Logger LOG = Logger.getLogger( HeaderDeserializer.class );
 
-//    private static MessageFactory messageFactory = null;
-//
-//    static {
-//        String saveMessageFactory = System.getProperty( "javax.xml.soap.MessageFactory" );
-//
-//        // Grab soap factories explicitly to make sure we get the ones we ship with
-//        System.setProperty( "javax.xml.soap.MessageFactory",
-//                "com.sun.xml.messaging.saaj.soap.ver1_1.SOAPMessageFactory1_1Impl" );
-//        try {
-//            messageFactory = MessageFactory.newInstance();
-//        } catch ( SOAPException e ) {
-//            LOG.error( "Could not instantiate MessageFactory! " + e );
-//        }
-//
-//        if ( saveMessageFactory != null ) {
-//            System.setProperty( "javax.xml.soap.MessageFactory", saveMessageFactory );
-//        }
-//    }
-
     /**
      * Default constructor.
      */
@@ -97,20 +78,25 @@ public class HeaderDeserializer extends AbstractPipelet {
             MessageFactory messageFactory = MessageFactory.newInstance();
 
             LOG.trace( "Header:" + new String( messagePojo.getHeaderData() ) );
-            // MessageFactory messageFactory = MessageFactory.newInstance();
-            /*
-             for ( int i = 0; i < messagePojo.getHeaderData().length; i++ ) {
-             byte theByte = messagePojo.getHeaderData()[i];
-             System.out.print( theByte + " " );
-             if ( i % 20 == 0 ) {
-             System.out.println();
-             }
-             }
-             LOG.debug( "###################### Start \n'" + new String( messagePojo.getHeaderData() )
-             + "'\n###################### End" );
-             */
-            ByteArrayInputStream bais = new ByteArrayInputStream( messagePojo.getHeaderData() );
-            SOAPMessage soapMessage = messageFactory.createMessage( null, bais );
+
+            SOAPMessage soapMessage;
+            try {
+                soapMessage = messageFactory.createMessage(
+                        null, new ByteArrayInputStream( messagePojo.getHeaderData() ) );
+            } catch (SOAPException soapException) {
+                LOG.info( "Got SOAPException (" + soapException.getMessage() + "), trying to fix SOAP header" );
+                // jre: fix invalid SOAP header sent by some Nexus versions (missing namespace decl.)
+                String token = ":Envelope";
+                String s = new String( messagePojo.getHeaderData() );
+                int index = s.indexOf( token );
+                if (index >= 0) {
+                    s = s.substring( 0, index + token.length() )
+                        + " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
+                        + s.substring( index + token.length() );
+                }
+                soapMessage = messageFactory.createMessage(
+                        null, new ByteArrayInputStream( s.getBytes() ) );
+            }
             SOAPPart part = soapMessage.getSOAPPart();
             SOAPEnvelope soapEnvelope = null;
             try {

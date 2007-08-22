@@ -135,6 +135,7 @@ public class HeaderSerializer extends AbstractPipelet {
                     "http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd" );
             soapEnvelope.addNamespaceDeclaration( "xsi",
                     "http://www.oasis-open.org/committees/ebxml-msg/schema/envelope.xsd" );
+            soapEnvelope.addNamespaceDeclaration( "xlink", "http://www.w3.org/1999/xlink" );
             /*
              soapEnvelope.addAttribute( soapFactory.createName( "xmlns:eb" ),
              "http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd" );

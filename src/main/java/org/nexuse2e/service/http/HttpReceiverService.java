@@ -88,7 +88,8 @@ public class HttpReceiverService extends AbstractControllerService implements Re
                 String key = headerNames.nextElement();
                 String value = request.getHeader( key );
                 messageContext.getMessagePojo().getCustomParameters()
-                        .put( Constants.PARAMETER_PREFIX_HTTP + key, value );
+                        .put( Constants.PARAMETER_PREFIX_HTTP + key.toLowerCase(), value );
+                LOG.trace( "  key: " + key + ", value: " + value );
             }
 
             Enumeration<String> requestParameters = request.getParameterNames();

@@ -84,7 +84,7 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
         }
         String contentType = messagePojo.getCustomParameters().get( Constants.PARAMETER_PREFIX_HTTP + "content-type" );
         sb.append( "Mime-Version: 1.0\n" );
-        sb.append( "Content-type: " + contentType + "\n\n" );
+        sb.append( "Content-Type: " + contentType + "\n\n" );
 
         String stringData = sb.toString();
         byte[] data = stringData.getBytes();
