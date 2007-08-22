@@ -783,19 +783,6 @@
     <action path="/ActionCreate" name="choreographyActionForm" type="org.nexuse2e.ui.action.choreographies.ActionCreateAction">
       <forward name="success" path="/ActionsList.do"/>
     </action>
-    <!-- 
-    
-    <action path="/ComponentConfiguration" name="componentForm" type="org.nexuse2e.ui.action.serverconfig.ComponentConfigurationAction">
-      <forward name="success" path="/WEB-INF/pages/serverconfig/component_configuration_view.jsp"/>
-    </action>
-    <action path="/ActionOptionsView" name="choreographyActionForm" type="org.nexuse2e.ui.action.choreographies.ActionOptionsViewAction">
-      <forward name="success" path="/WEB-INF/pages/choreographies/action_options_view.jsp"/>
-      <forward name="error" path="/ActionsList.do"/>
-    </action>
-    <action path="/ActionOptionsUpdate" name="choreographyActionForm" type="org.nexuse2e.ui.action.choreographies.ActionOptionsUpdateAction">
-      <forward name="success" path="/ActionsList.do"/>
-    </action>
-    -->
     <action path="/ParticipantList" name="choreographyForm" type="org.nexuse2e.ui.action.choreographies.ParticipantsListAction">
       <forward name="success" path="/WEB-INF/pages/choreographies/participants.jsp"/>
       <forward name="error" path="/ChoreographyView.do"/>
