@@ -391,7 +391,17 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
                     }
                 }
 
-                ftp.changeWorkingDirectory( url.getPath() );
+                LOG.debug( "Directory URL Path: " + url.getPath() );
+                String directory = url.getPath();
+                if ( directory.startsWith( "/" ) ) {
+                    directory = directory.substring( 1 );
+                }
+                LOG.debug( "Directory requested: " + directory );
+                success = ftp.changeWorkingDirectory( directory );
+                if ( !success ) {
+                    LOG.error( "FTP server did not change directory!" );
+                }
+                LOG.debug( "Working Directory: " + ftp.printWorkingDirectory() );
 
                 String localDir = getParameter( DOWNLOAD_DIR_PARAM_NAME );
 
@@ -417,8 +427,9 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
                                     error = true;
                                 }
                             } else {
-                                if(!ftp.rename( file.getName(), prefix+file.getName() )) {
-                                    LOG.error( "Could not rename file from " + file.getName()+" to "+prefix+file.getName() );
+                                if ( !ftp.rename( file.getName(), prefix + file.getName() ) ) {
+                                    LOG.error( "Could not rename file from " + file.getName() + " to " + prefix
+                                            + file.getName() );
                                     error = true;
                                 }
                             }

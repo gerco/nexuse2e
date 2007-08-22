@@ -24,7 +24,7 @@ import java.io.Serializable;
 import org.nexuse2e.Constants.Severity;
 
 /**
- * Helper class to procide a data structure for more descriptive error information.
+ * Helper class to provide a data structure for more descriptive error information.
  *
  * @author gesch
  */

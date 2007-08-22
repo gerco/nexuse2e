@@ -1094,7 +1094,9 @@ public class EngineConfiguration {
                             transportReceiver.setFrontendPipeline( frontendPipeline );
                             transportReceiver.setKey( frontendPipeline.getKey() );
                             ConfigurationUtil.configurePipelet( transportReceiver, pipeletPojo.getPipeletParams() );
-                            String beanKey = "TransportReceiver" + frontendPipeline.getKey().toString();
+                            // String beanKey = "TransportReceiver" + frontendPipeline.getKey().toString();
+                            String beanKey = "TransportReceiver_" + pipelinePojo.getName() + "_"
+                                    + frontendPipeline.getKey().toString();
                             if ( !staticBeanContainer.getManagableBeans().containsKey( beanKey ) ) {
                                 LOG
                                         .trace( "Registering managable bean: " + beanKey + "(" + pipeletPojo.getName()

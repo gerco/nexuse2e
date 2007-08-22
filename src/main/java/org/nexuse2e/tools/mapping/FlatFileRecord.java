@@ -102,8 +102,9 @@ public class FlatFileRecord {
         }
         return defaultValue;
     }
-    
+
     public void setColumn( String columnId, String value ) {
+
         Integer index = columnNames.get( columnId );
         if ( index != null && ( index.intValue() < columns.size() ) ) {
             columns.set( index.intValue(), value );
@@ -159,16 +160,26 @@ public class FlatFileRecord {
 
             for ( int x = 0; x < result.length; x++ ) {
                 if ( x == 0 ) {
-                    String id = result[x];
-                    setId( id.trim() );
-                    columns.add( id.trim() );
+                    String id = trimColumnValue( result[x] );
+                    setId( id );
+                    columns.add( id );
                 } else {
-
-                    String value = result[x];
-                    columns.add( value.trim() );
+                    columns.add( trimColumnValue( result[x] ) );
                 }
             }
         }
+    }
+
+    private String trimColumnValue( String value ) {
+
+        String result = null;
+
+        result = value.trim();
+        if ( ( result.length() > 1 ) && result.startsWith( "\"" ) && result.endsWith( "\"" ) ) {
+            result = result.substring( 1, ( result.length() - 1 ) );
+        }
+
+        return result;
     }
 
     public List<String> getColumns() {
@@ -224,7 +235,7 @@ public class FlatFileRecord {
     public String toString() {
 
         StringBuffer result = new StringBuffer();
-        
+
         for ( String value : columns ) {
             result.append( "'" + value + "' " );
         }

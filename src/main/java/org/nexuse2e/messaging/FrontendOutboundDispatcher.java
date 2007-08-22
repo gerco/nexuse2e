@@ -222,7 +222,18 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                         if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
                             if ( ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_PROCESSING )
                                     || ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_AWAITING_ACK ) ) {
-                                conversationPojo.setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_AWAITING_ACK );
+                                if ( messageContext.getParticipant().getConnection().isReliable() ) {
+                                    conversationPojo.setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_AWAITING_ACK );
+                                } else {
+                                    Engine.getInstance().getTransactionService().deregisterProcessingMessage(
+                                            messagePojo.getMessageId() );
+                                    messagePojo.setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_SENT );
+                                    if ( conversationPojo.getCurrentAction().isEnd() ) {
+                                        conversationPojo.setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_COMPLETED );
+                                    } else {
+                                        conversationPojo.setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_IDLE );
+                                    }
+                                }
                             } else {
                                 LOG.error( new LogMessage(
                                         "Unexpected conversation state after sending normal message: "
