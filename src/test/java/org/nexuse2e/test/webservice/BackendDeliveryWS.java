@@ -27,4 +27,26 @@ public class BackendDeliveryWS implements BackendDeliveryInterface {
         return "success";
     }
 
+    
+/*
+ * Add this to the WebServiceDispatcher-servlet.xml bean configuration:
+ * 
+    <!-- BEGIN TESTING SECTION -->
+    <bean id="BackendDeliveryInterface" class="org.codehaus.xfire.spring.remoting.XFireExporter">
+        <property name="serviceFactory">
+            <ref bean="xfire.serviceFactory"/>
+        </property>
+        <property name="xfire">
+            <ref bean="xfire"/>
+        </property>
+        <property name="serviceBean">
+            <bean class="org.nexuse2e.test.webservice.BackendDeliveryWS"/>
+        </property>
+        <property name="serviceClass">
+            <value>org.nexuse2e.integration.BackendDeliveryInterface</value>
+        </property>
+    </bean>
+    <!-- END TESTING SECTION -->
+ * 
+ */
 }
