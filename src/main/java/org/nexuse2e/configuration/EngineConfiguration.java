@@ -978,8 +978,9 @@ public class EngineConfiguration {
                     PipelinePojo inboundPipelinePojo = action.getInboundPipeline();
 
                     if ( inboundPipelinePojo.getPipelets().size() == 0 ) {
-                        throw new InstantiationException( "No endpoint for inbound pipeline found for action: "
-                                + action.getName() );
+                        //throw new InstantiationException( "No endpoint for inbound pipeline found for action: "
+                        //        + action.getName() );
+                        LOG.fatal( "No endpoint for inbound pipeline found for action: " + action.getName() );
                     }
                     if ( outboundPipelinePojo.getPipelets().size() == 0 ) {
                         LOG.warn( "No pipelets found for outbound pipeline for action: " + action.getName() );
