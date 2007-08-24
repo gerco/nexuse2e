@@ -74,8 +74,8 @@ public class BackendDeliveryWSClientPipelet extends AbstractPipelet {
                 payloadStrings[i] = new String( payloadPojos.get( i ).getPayloadData() );
             }
             String actionId = null;
-            if (messageContext.getMessagePojo().getAction() != null) {
-                messageContext.getMessagePojo().getAction().getName();
+            if (messageContext.getMessagePojo().getConversation().getCurrentAction() != null) {
+                actionId = messageContext.getMessagePojo().getConversation().getCurrentAction().getName();
             }
             String response = service.processInboundMessage( messageContext.getChoreography().getName(),
                     messageContext.getPartner().getName(),
