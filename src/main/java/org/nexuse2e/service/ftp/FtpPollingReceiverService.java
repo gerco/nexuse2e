@@ -238,7 +238,7 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
      * @param errorDir The error directory.
      * @param partnerId The partner ID.
      */
-    private void processFile( File file, File errorDir, String partnerId ) {
+    private void processFile( File file, File errorDir, String partnerId ) throws NexusException {
 
         counter++;
 
@@ -274,6 +274,7 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
                 } catch ( IOException ioex ) {
                     LOG.error( "Could not copy file " + file + " to error directory " + errorDir, ioex );
                 }
+                throw new NexusException( "An error occurred while processing file " + file, ex );
             }
         } else {
             if ( transportReceiver == null ) {
@@ -410,47 +411,59 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
                 FTPFile[] files = ftp.listFiles();
                 LOG.debug( "Number of files in directory: " + files.length + ", checking against pattern "
                         + filePattern );
+
+                File errorDir = new File( (String) getParameter( ERROR_DIR_PARAM_NAME ) );
+
                 String regEx = dosStyleToRegEx( filePattern );
                 for ( FTPFile file : files ) {
                     if ( Pattern.matches( regEx, file.getName() ) ) {
                         File localFile = new File( localDir, file.getName() );
                         FileOutputStream fout = new FileOutputStream( localFile );
                         success = ftp.retrieveFile( file.getName(), fout );
+                        fout.flush();
+                        fout.close();
                         if ( !success ) {
                             LOG.error( "Could not retrieve file " + file.getName() );
                         } else {
-                            String prefix = getParameter( RENAMING_PREFIX_PARAM_NAME );
-                            boolean error = false;
-                            if ( StringUtils.isEmpty( prefix ) ) {
-                                if ( !ftp.deleteFile( file.getName() ) ) {
-                                    LOG.error( "Could not delete file " + file.getName() );
-                                    error = true;
-                                }
-                            } else {
-                                if ( !ftp.rename( file.getName(), prefix + file.getName() ) ) {
-                                    LOG.error( "Could not rename file from " + file.getName() + " to " + prefix
-                                            + file.getName() );
-                                    error = true;
-                                }
-                            }
+                            try {
 
-                            if ( !error ) {
-                                localFiles.add( localFile );
+                                processFile( localFile, errorDir, (String) getParameter( PARTNER_PARAM_NAME ) );
+
+                                String prefix = getParameter( RENAMING_PREFIX_PARAM_NAME );
+                                boolean error = false;
+                                if ( StringUtils.isEmpty( prefix ) ) {
+                                    if ( !ftp.deleteFile( file.getName() ) ) {
+                                        LOG.error( "Could not delete file " + file.getName() );
+                                        error = true;
+                                    }
+                                } else {
+                                    if ( !ftp.rename( file.getName(), prefix + file.getName() ) ) {
+                                        LOG.error( "Could not rename file from " + file.getName() + " to " + prefix
+                                                + file.getName() );
+                                        error = true;
+                                    }
+                                }
+
+                                if ( !error ) {
+                                    localFiles.add( localFile );
+                                }
+                            } catch ( Exception e ) {
+                                LOG.error( "Error processing file " + file.getName() + ": " + e );
                             }
                         }
-                        fout.close();
                     }
                 }
 
-                File errorDir = new File( (String) getParameter( ERROR_DIR_PARAM_NAME ) );
-
+                /*
                 for ( File localFile : localFiles ) {
                     processFile( localFile, errorDir, (String) getParameter( PARTNER_PARAM_NAME ) );
                 }
+                */
 
                 // process files
             } catch ( Exception e ) {
                 e.printStackTrace();
+                LOG.error( "Error polling FTP account: " + e );
             } finally {
                 if ( ftp.isConnected() ) {
                     try {

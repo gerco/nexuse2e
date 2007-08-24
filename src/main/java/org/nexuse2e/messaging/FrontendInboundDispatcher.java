@@ -282,7 +282,8 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
             if ( referencedMessagePojo != null ) {
                 synchronized ( referencedMessagePojo.getConversation() ) {
                     if ( ( referencedMessagePojo.getConversation().getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_AWAITING_ACK )
-                            || ( referencedMessagePojo.getConversation().getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_PROCESSING ) ) {
+                            || ( referencedMessagePojo.getConversation().getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_PROCESSING )
+                            || ( referencedMessagePojo.getConversation().getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_ERROR )) {
                         if ( referencedMessagePojo.getConversation().getCurrentAction().isEnd() ) {
                             referencedMessagePojo.getConversation().setStatus(
                                     org.nexuse2e.Constants.CONVERSATION_STATUS_COMPLETED );

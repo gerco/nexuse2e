@@ -65,14 +65,11 @@ public class DatabaseServiceImpl extends AbstractService implements DatabaseServ
 
         LOG.trace( "starting" );
 
-        boolean useExternalDataSource = (Boolean)getParameter( EXTERNALDATASOURCE );
-        
-        LOG.debug( "useExternalDatasource: "+useExternalDataSource );
-        
-        
-        
-        
-        if(!useExternalDataSource){
+        boolean useExternalDataSource = (Boolean) getParameter( EXTERNALDATASOURCE );
+
+        LOG.debug( "useExternalDatasource: " + useExternalDataSource );
+
+        if ( !useExternalDataSource ) {
             BasicDataSource bds = new BasicDataSource();
             bds.setDriverClassName( (String) getParameter( DRIVERCLASSNAME ) );
             bds.setUsername( (String) getParameter( USER ) );
@@ -85,22 +82,23 @@ public class DatabaseServiceImpl extends AbstractService implements DatabaseServ
         } else {
             try {
                 InitialContext cxt = new InitialContext();
-                String extdatasourceId = "java:/comp/env/"+(String) getParameter( DATASOURCEID );
-                LOG.debug( "external datasourceId: "+ extdatasourceId);
+                String extdatasourceId = "java:/comp/env/" + (String) getParameter( DATASOURCEID );
+                LOG.debug( "external datasourceId: " + extdatasourceId );
                 datasource = (DataSource) cxt.lookup( extdatasourceId );
                 if ( datasource == null ) {
-                   LOG.error("Data source not found!");
+                    LOG.error( "Data source not found!" );
                 }
-                datasource.getConnection();
-                
+                Connection connection = datasource.getConnection();
+                if ( connection != null ) {
+                    connection.close();
+                }
+
             } catch ( Exception e ) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
-         
-        
-        
+
         super.start();
     }
 
