@@ -987,7 +987,8 @@ public class EngineConfiguration {
                     }
 
                     pos = 0;
-                    pipelets = new Pipelet[inboundPipelinePojo.getPipelets().size() - 1];
+                    int pipeletCount = inboundPipelinePojo.getPipelets().size();
+                    pipelets = new Pipelet[pipeletCount > 0 ? pipeletCount - 1: 0];
 
                     for ( PipeletPojo pipeletPojo : inboundPipelinePojo.getPipelets() ) {
                         Pipelet pipelet;
