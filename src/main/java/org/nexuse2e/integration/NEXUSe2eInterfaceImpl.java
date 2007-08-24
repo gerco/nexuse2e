@@ -23,7 +23,9 @@ import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.backend.BackendPipelineDispatcher;
+import org.nexuse2e.configuration.ConfigurationAccessService;
 import org.nexuse2e.messaging.MessageContext;
+import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ConversationPojo;
 
 public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
@@ -35,6 +37,8 @@ public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
      */
     public String createConversation( String choreographyId, String businessPartnerId ) throws NexusException {
 
+        checkExist( choreographyId, businessPartnerId, null );
+        
         LOG.debug( "createConversation - choreographyId: " + choreographyId + ", businessPartnerId: "
                 + businessPartnerId );
         ConversationPojo conversationPojo = Engine.getInstance().getTransactionService().createConversation(
@@ -48,6 +52,8 @@ public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
     public String createConversation( String choreographyId, String businessPartnerId, String conversationId )
             throws NexusException {
 
+        checkExist( choreographyId, businessPartnerId, null );
+        
         LOG.debug( "createConversation - choreographyId: " + choreographyId + ", businessPartnerId: "
                 + businessPartnerId + ", conversationId: " + conversationId );
         ConversationPojo conversationPojo = Engine.getInstance().getTransactionService().createConversation(
@@ -116,6 +122,8 @@ public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
     public String triggerSendingNewMessage( String choreographyId, String businessPartnerId, String actionId,
             String conversationId, Object primaryKey ) throws NexusException {
 
+        checkExist( choreographyId, businessPartnerId, actionId );
+        
         MessageContext messageContext = null;
 
         LOG.debug( "triggerSendingNewMessage - choreographyId: " + choreographyId + ", businessPartnerId: "
@@ -149,6 +157,8 @@ public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
     public String sendNewStringMessage( String choreographyId, String businessPartnerId, String actionId,
             String conversationId, String payload ) throws NexusException {
 
+        checkExist( choreographyId, businessPartnerId, actionId );
+        
         MessageContext messageContext = null;
 
         LOG.debug( "sendNewStringMessage - choreographyId: " + choreographyId + ", businessPartnerId: "
@@ -169,5 +179,53 @@ public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
 
         return messageContext.getMessagePojo().getConversation().getConversationId();
     } // sendNewStringMessage
+    
+    /**
+     * Checks if the given IDs exist.
+     * @param choreographyId The choreography ID to check. Can be <code>null</code>.
+     * @param businessPartnerId The business partner ID to check. Can be <code>null</code>.
+     * @param actionId The actionId to check. Can be <code>null</code>.
+     * @throws NexusException if a non-<code>null</code> ID does not exist.
+     */
+    protected void checkExist( String choreographyId, String businessPartnerId, String actionId )
+    throws NexusException {
+        ConfigurationAccessService cas = Engine.getInstance().getActiveConfigurationAccessService();
+        String error = null;
+        ChoreographyPojo choreography = null;
+        if (choreographyId != null) {
+            choreography = cas.getChoreographyByChoreographyId( choreographyId );
+            if (choreography == null) {
+                String msg = "No choreography with ID " + choreographyId + " found";
+                if (error == null) {
+                    error = msg;
+                } else {
+                    error += "; " + msg;
+                }
+            }
+        }
+        if (businessPartnerId != null) {
+            if (cas.getPartnerByPartnerId( businessPartnerId ) == null) {
+                String msg = "No partner with ID " + businessPartnerId + " found";
+                if (error == null) {
+                    error = msg;
+                } else {
+                    error += "; " + msg;
+                }
+            }
+        }
+        if (actionId != null && choreography != null) {
+            if (cas.getActionFromChoreographyByActionId( choreography, actionId ) == null) {
+                String msg = "No action with ID " + actionId + " found";
+                if (error == null) {
+                    error = msg;
+                } else {
+                    error += "; " + msg;
+                }
+            }
+        }
+        if (error != null) {
+            throw new NexusException( error );
+        }
+    }
 
 } // NEXUSe2eInterfaceImpl
