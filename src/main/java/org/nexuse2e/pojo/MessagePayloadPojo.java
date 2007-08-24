@@ -104,7 +104,7 @@ public class MessagePayloadPojo implements java.io.Serializable {
         return this.message;
     }
 
-    public void setMessage( MessagePojo message ) {
+    public void setMessage( MessagePojo messagePojo ) {
 
         this.message = message;
     }
