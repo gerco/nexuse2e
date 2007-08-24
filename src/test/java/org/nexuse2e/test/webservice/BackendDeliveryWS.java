@@ -29,7 +29,7 @@ public class BackendDeliveryWS implements BackendDeliveryInterface {
 
     
 /*
- * Add this to the WebServiceDispatcher-servlet.xml bean configuration:
+ * Add this to the NexusWebServiceDispatcher-servlet.xml bean configuration:
  * 
     <!-- BEGIN TESTING SECTION -->
     <bean id="BackendDeliveryInterface" class="org.codehaus.xfire.spring.remoting.XFireExporter">
@@ -47,6 +47,13 @@ public class BackendDeliveryWS implements BackendDeliveryInterface {
         </property>
     </bean>
     <!-- END TESTING SECTION -->
+    
+ *
+ * Add this to the URL handler mapping 
+ * 
+    <entry key="/BackendDeliveryInterface">
+        <ref bean="BackendDeliveryInterface"/>
+    </entry>
  * 
  */
 }
