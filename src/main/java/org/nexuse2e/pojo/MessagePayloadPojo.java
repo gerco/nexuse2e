@@ -106,7 +106,7 @@ public class MessagePayloadPojo implements java.io.Serializable {
 
     public void setMessage( MessagePojo messagePojo ) {
 
-        this.message = message;
+        this.message = messagePojo;
     }
 
     public int getSequenceNumber() {
