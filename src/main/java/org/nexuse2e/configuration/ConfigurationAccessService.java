@@ -781,7 +781,11 @@ public class ConfigurationAccessService {
             if ( oldChoreography != null ) {
                 getChoreographies().remove( oldChoreography );
             }
-            engineConfig.deleteChoreographyInDB( choreography );
+            try {
+                engineConfig.deleteChoreographyInDB( choreography );
+            } catch ( Exception e ) {
+                LOG.error( "Error deleting choreography: " + e );
+            }
             applyConfiguration();
         } catch ( NexusException e ) {
             e.printStackTrace();
@@ -798,7 +802,11 @@ public class ConfigurationAccessService {
             if ( oldPartner != null ) {
                 getPartners( 0, null ).remove( oldPartner );
             }
-            engineConfig.deletePartnerInDB( partner );
+            try {
+                engineConfig.deletePartnerInDB( partner );
+            } catch ( Exception e ) {
+                LOG.error( "Error deleting partner: " + e );
+            }
             applyConfiguration();
         } catch ( NexusException e ) {
             e.printStackTrace();
@@ -834,7 +842,11 @@ public class ConfigurationAccessService {
             if ( oldComponent != null ) {
                 getComponents( ComponentType.ALL, null ).remove( oldComponent );
             }
-            engineConfig.deleteComponentInDB( component );
+            try {
+                engineConfig.deleteComponentInDB( component );
+            } catch ( Exception e ) {
+                LOG.error( "Error deleting component: " + e );
+            }
             applyConfiguration();
         } catch ( NexusException e ) {
             e.printStackTrace();
@@ -870,7 +882,11 @@ public class ConfigurationAccessService {
             if ( oldPipeline != null ) {
                 getBackendPipelinePojos( Constants.PIPELINE_TYPE_ALL, null ).remove( oldPipeline );
             }
-            engineConfig.deletePipelineInDB( pipeline );
+            try {
+                engineConfig.deletePipelineInDB( pipeline );
+            } catch ( Exception e ) {
+                LOG.error( "Error deleting pipeline: " + e );
+            }
             applyConfiguration();
         } catch ( NexusException e ) {
             e.printStackTrace();
@@ -974,7 +990,11 @@ public class ConfigurationAccessService {
                     engineConfig.getStaticBeanContainer().getManagableBeans().remove( servicePojo.getName() );
                 }
                 services.remove( oldServicePojo );
-                engineConfig.deleteServiceInDB( oldServicePojo );
+                try {
+                    engineConfig.deleteServiceInDB( oldServicePojo );
+                } catch ( Exception e ) {
+                    LOG.error( "Error deleting service: " + e );
+                }
                 applyConfiguration();
             }
         } catch ( NexusException e ) {
@@ -1034,7 +1054,11 @@ public class ConfigurationAccessService {
             if ( oldLogger != null ) {
                 getLoggers().remove( oldLogger );
             }
-            engineConfig.deleteLoggerInDB( logger );
+            try {
+                engineConfig.deleteLoggerInDB( logger );
+            } catch ( Exception e ) {
+                LOG.error( "Error deleting logger: " + e );
+            }
             applyConfiguration();
         } catch ( NexusException e ) {
             e.printStackTrace();
@@ -1159,7 +1183,11 @@ public class ConfigurationAccessService {
         if ( oldCertificate != null ) {
             getCertificates( Constants.CERTIFICATE_TYPE_ALL, null ).remove( oldCertificate );
         }
-        engineConfig.deleteCertificateInDB( certificate );
+        try {
+            engineConfig.deleteCertificateInDB( certificate );
+        } catch ( Exception e ) {
+            LOG.error( "Error deleting certificate: " + e );
+        }
         applyConfiguration();
     }
 
@@ -1170,17 +1198,20 @@ public class ConfigurationAccessService {
     public void deleteCertificates( List<CertificatePojo> certificates ) throws NexusException {
 
         for ( CertificatePojo pojo : certificates ) {
-            CertificatePojo oldCertificate = getCertificateByNxCertificateId( Constants.CERTIFICATE_TYPE_ALL, pojo.getNxCertificateId() );
+            CertificatePojo oldCertificate = getCertificateByNxCertificateId( Constants.CERTIFICATE_TYPE_ALL, pojo
+                    .getNxCertificateId() );
             if ( oldCertificate != null ) {
                 getCertificates( Constants.CERTIFICATE_TYPE_ALL, null ).remove( oldCertificate );
             }
-            engineConfig.deleteCertificateInDB( pojo );
+            try {
+                engineConfig.deleteCertificateInDB( pojo );
+            } catch ( Exception e ) {
+                LOG.error( "Error deleting certificate: " + e );
+            }
         }
-        
+
         applyConfiguration();
     }
-
-    
 
     /**
      * @param certificate
@@ -1330,7 +1361,11 @@ public class ConfigurationAccessService {
             if ( oldUser != null ) {
                 getUsers( null ).remove( oldUser );
             }
-            engineConfig.deleteUserInDB( user );
+            try {
+                engineConfig.deleteUserInDB( user );
+            } catch ( Exception e ) {
+                LOG.error( "Error deleting user: " + e );
+            }
             applyConfiguration();
         } catch ( NexusException e ) {
             e.printStackTrace();
@@ -1418,7 +1453,11 @@ public class ConfigurationAccessService {
             if ( oldRole != null ) {
                 getRoles( null ).remove( oldRole );
             }
-            engineConfig.deleteRoleInDB( role );
+            try {
+                engineConfig.deleteRoleInDB( role );
+            } catch ( Exception e ) {
+                LOG.error( "Error deleting role: " + e );
+            }
             applyConfiguration();
         } catch ( NexusException e ) {
             e.printStackTrace();
@@ -1464,7 +1503,7 @@ public class ConfigurationAccessService {
     public MappingPojo getMappingByCategoryDirectionAndKey( String category, boolean left, String key ) {
 
         if ( category != null && key != null ) {
-            if(engineConfig != null && engineConfig.getMappings() != null ) {
+            if ( engineConfig != null && engineConfig.getMappings() != null ) {
                 for ( MappingPojo mapping : engineConfig.getMappings() ) {
                     if ( category.equals( mapping.getCategory() ) ) {
                         String tempKey = left ? mapping.getLeftValue() : mapping.getRightValue();
@@ -1472,11 +1511,11 @@ public class ConfigurationAccessService {
                             return mapping;
                         }
                     }
-                }    
+                }
             } else {
                 LOG.error( "engine config is not initalized! No mapping available" );
             }
-            
+
         }
         return null;
     }
@@ -1509,7 +1548,11 @@ public class ConfigurationAccessService {
             if ( oldMapping != null ) {
                 getMappings( null ).remove( oldMapping );
             }
-            engineConfig.deleteMappingInDB( mapping );
+            try {
+                engineConfig.deleteMappingInDB( mapping );
+            } catch ( Exception e ) {
+                LOG.error( "Error deleting mapping: " + e );
+            }
             applyConfiguration();
         } catch ( NexusException e ) {
             e.printStackTrace();
@@ -1710,10 +1753,9 @@ public class ConfigurationAccessService {
      */
     public void updateCertificates( List<CertificatePojo> certs ) throws NexusException {
 
-        
         for ( CertificatePojo certificate : certs ) {
-            CertificatePojo oldCertificate = getCertificateByNxCertificateId( Constants.CERTIFICATE_TYPE_ALL, certificate
-                    .getNxCertificateId() );
+            CertificatePojo oldCertificate = getCertificateByNxCertificateId( Constants.CERTIFICATE_TYPE_ALL,
+                    certificate.getNxCertificateId() );
             if ( oldCertificate != null ) {
                 getCertificates( Constants.CERTIFICATE_TYPE_ALL, null );
             }
@@ -1721,7 +1763,7 @@ public class ConfigurationAccessService {
             getCertificates( Constants.CERTIFICATE_TYPE_ALL, null ).add( certificate );
         }
         applyConfiguration();
-        
+
     }
 
 }

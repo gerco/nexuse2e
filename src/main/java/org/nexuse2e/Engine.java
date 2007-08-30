@@ -109,7 +109,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
      * Keyed by mime type, content is the extension, without the '.'.
      */
     private Map<String, MimeMapping>         mimeMappings                   = new HashMap<String, MimeMapping>();
-    private Map<String, MimeMapping>         fileExt2MimeMappings                   = new HashMap<String, MimeMapping>();
+    private Map<String, MimeMapping>         fileExt2MimeMappings           = new HashMap<String, MimeMapping>();
 
     private String                           timestampPattern               = null;
 
@@ -309,8 +309,8 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                 }
 
                 Object dsObject = getBeanFactory().getBean( "internal" );
-                if ( (dsObject != null) && (dsObject instanceof org.apache.commons.dbcp.BasicDataSource) ) {
-                    
+                if ( ( dsObject != null ) && ( dsObject instanceof org.apache.commons.dbcp.BasicDataSource ) ) {
+
                 }
             } catch ( Exception e1 ) {
                 LOG.error( "Problem with database configuration, exiting..." );
@@ -741,10 +741,23 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                 changeStatus( BeanStatus.INSTANTIATED );
                 LOG.debug( "Saving configuration..." );
                 newConfiguration.saveConfigurationToDB();
+            } catch ( Exception e ) {
+                LOG.error( "Error saving configuration: " + e );
+                e.printStackTrace();
+            }
+            try {
+                LOG.debug( "Re-load  configuration to make sure it's consistent" );
+                newConfiguration.loadDatafromDB();
+            } catch ( Exception e ) {
+                LOG.error( "Error loading configuration: " + e );
+                e.printStackTrace();
+            }
+            try {
                 LOG.debug( "Initialize new configuration" );
                 newConfiguration.init();
                 this.currentConfiguration = newConfiguration;
             } catch ( Exception e ) {
+                LOG.error( "Error initializing configuration: " + e );
                 e.printStackTrace();
             }
             LOG.debug( "Initialize Engine" );
@@ -871,7 +884,11 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                 for ( Manageable bean : currentConfiguration.getStaticBeanContainer().getManagableBeans().values() ) {
                     if ( layer.equals( bean.getActivationLayer() ) ) {
                         if ( bean.getStatus().getValue() < BeanStatus.ACTIVATED.getValue() ) {
-                            bean.activate();
+                            try {
+                                bean.activate();
+                            } catch ( Exception e ) {
+                                LOG.error( "Could not active bean: " + bean.getClass().getCanonicalName() );
+                            }
                         }
                     }
                 }

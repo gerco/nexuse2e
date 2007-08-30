@@ -369,7 +369,7 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
                 }
 
                 ftp.connect( url.getHost(), port );
-                LOG.info( "Connected to " + url.getHost() + "." );
+                LOG.trace( "Connected to " + url.getHost() + "." );
 
                 int reply = ftp.getReplyCode();
 
@@ -384,7 +384,7 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
                 if ( !success ) {
                     throw new NexusException( "FTP authentication failed: " + ftp.getReplyString() );
                 }
-                LOG.debug( "Successfully logged in user " + user );
+                LOG.debug( "Connected to " + url.getHost() + ", successfully logged in user " + user );
                 if ( ssl ) {
                     reply = ftp.sendCommand( "PROT P" );
                     if ( !FTPReply.isPositiveCompletion( reply ) ) {
@@ -392,24 +392,24 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
                     }
                 }
 
-                LOG.debug( "Directory URL Path: " + url.getPath() );
+                LOG.trace( "Directory URL Path: " + url.getPath() );
                 String directory = url.getPath();
                 if ( directory.startsWith( "/" ) ) {
                     directory = directory.substring( 1 );
                 }
-                LOG.debug( "Directory requested: " + directory );
+                LOG.trace( "Directory requested: " + directory );
                 success = ftp.changeWorkingDirectory( directory );
                 if ( !success ) {
                     LOG.error( "FTP server did not change directory!" );
                 }
-                LOG.debug( "Working Directory: " + ftp.printWorkingDirectory() );
+                LOG.trace( "Working Directory: " + ftp.printWorkingDirectory() );
 
                 String localDir = getParameter( DOWNLOAD_DIR_PARAM_NAME );
 
                 String filePattern = getParameter( FILE_PATTERN_PARAM_NAME );
                 List<File> localFiles = new ArrayList<File>();
                 FTPFile[] files = ftp.listFiles();
-                LOG.debug( "Number of files in directory: " + files.length + ", checking against pattern "
+                LOG.trace( "Number of files in directory: " + files.length + ", checking against pattern "
                         + filePattern );
 
                 File errorDir = new File( (String) getParameter( ERROR_DIR_PARAM_NAME ) );
@@ -468,7 +468,7 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
                 if ( ftp.isConnected() ) {
                     try {
                         ftp.logout();
-                        LOG.info( "Logged out" );
+                        LOG.trace( "Logged out." );
                     } catch ( IOException ioe ) {
                     }
                     try {
