@@ -52,6 +52,7 @@ public class DataConversionService extends AbstractService {
     public final static String VALIDATEPATTERN         = "validatePattern";
     public final static String VALIDATELENGTH          = "validateLength";
     public final static String MODIFY                  = "modify";
+    public final static String REPLACE_STRING          = "replaceString";
 
     @Override
     public void fillParameterMap( Map<String, ParameterDescriptor> parameterMap ) {
@@ -110,7 +111,7 @@ public class DataConversionService extends AbstractService {
             if ( matcher.find( endIndex ) ) {
                 paramList = new ArrayList<String>();
                 String params = matcher.group();
-                LOG.debug( "parameterlist:" + params );
+                LOG.trace( "parameterlist:" + params );
 
                 pattern = Pattern
                         .compile( "((\\'([a-zA-Z0-9\\,\\:\\-\\_\\. \\@\\#\\[\\]\\+]|\\\\')+\\')|(\\$[a-zA-Z0-9\\_]+))+" );
@@ -118,7 +119,7 @@ public class DataConversionService extends AbstractService {
                 while ( matcher.find() ) {
                     String param = matcher.group();
                     paramList.add( param );
-                    LOG.debug( "param: " + param );
+                    LOG.trace( "param: " + param );
                 }
             }
             String[] paramArray = null;
@@ -150,34 +151,37 @@ public class DataConversionService extends AbstractService {
             return null;
         }
         if ( name.equals( MAPPINGTABLE_LEFT2RIGHT ) ) {
-            LOG.debug( "dispatching: Left2right" );
+            LOG.trace( "dispatching: Left2right" );
             return processDBMapping( definition.getCategory(), true, params, aditionalValues );
         } else if ( name.equals( MAPPINGTABLE_RIGHT2LEFT ) ) {
-            LOG.debug( "dispatching: right2left" );
+            LOG.trace( "dispatching: right2left" );
             return processDBMapping( definition.getCategory(), false, params, aditionalValues );
         } else if ( name.equals( DATEFORMAT ) ) {
-            LOG.debug( "dispatching: dateformat" );
+            LOG.trace( "dispatching: dateformat" );
             return processDateFormat( params, definition, aditionalValues );
         } else if ( name.equals( STATIC ) ) {
-            LOG.debug( "dispatching: static" );
+            LOG.trace( "dispatching: static" );
             return processStatic( params, definition, aditionalValues );
         } else if ( name.equals( SUBSTRING ) ) {
-            LOG.debug( "dispatching: substring" );
+            LOG.trace( "dispatching: substring" );
             return processSubstring( params, definition, aditionalValues );
         } else if ( name.equals( REGEX ) ) {
-            LOG.debug( "dispatching: regex" );
+            LOG.trace( "dispatching: regex" );
             return processRegex( params, definition, aditionalValues );
         } else if ( name.equals( VALIDATEPATTERN ) ) {
-            LOG.debug( "dispatching: validatepattern" );
+            LOG.trace( "dispatching: validatepattern" );
             return processValidatePattern( params, definition, aditionalValues );
         } else if ( name.equals( VALIDATELENGTH ) ) {
-            LOG.debug( "dispatching: validatelength" );
+            LOG.trace( "dispatching: validatelength" );
             return processValidateLength( params, definition, aditionalValues );
         } else if ( name.equals( MODIFY ) ) {
-            LOG.debug( "dispatching: modify" );
+            LOG.trace( "dispatching: modify" );
             return processModify( params, definition, aditionalValues );
+        } else if ( name.equals( REPLACE_STRING ) ) {
+            LOG.trace( "dispatching: replaceString" );
+            return processReplaceString( params, definition, aditionalValues );
         } else {
-            LOG.error( "Method: " + name + " is not a valid conversion method!" );
+            LOG.trace( "Method: " + name + " is not a valid conversion method!" );
         }
 
         return null;
@@ -192,7 +196,7 @@ public class DataConversionService extends AbstractService {
     private String processModify( String[] params, MappingDefinition definition, Map<String, String> aditionalValues ) {
 
         if ( params == null || params.length < 3 ) {
-            LOG.error( "static requires at least 3 parameter: modify[$value,'aa.aa','aa,aa']" );
+            LOG.error( "modify requires at least 3 parameter: modify[$value,'aa.aa','aa,aa']" );
             return null;
         }
         System.out.println( "doing..." );
@@ -210,7 +214,7 @@ public class DataConversionService extends AbstractService {
             Map<String, String> aditionalValues ) {
 
         if ( params == null || params.length < 3 ) {
-            LOG.error( "static requires at least 3 parameter: validateLength[$value,'30','true']" );
+            LOG.error( "validateLength requires at least 3 parameter: validateLength[$value,'30','true']" );
             return null;
         }
         String value = aditionalValues.get( "$value" );
@@ -249,7 +253,8 @@ public class DataConversionService extends AbstractService {
             Map<String, String> aditionalValues ) {
 
         if ( params == null || params.length < 3 ) {
-            LOG.error( "pattern validation requires at least 3 parameter! e.g: validatePattern[$value,'decimal','.','true'] / validatePattern[$value,'numeric','true']" );
+            LOG
+                    .error( "pattern validation requires at least 3 parameter! e.g: validatePattern[$value,'decimal','.','true'] / validatePattern[$value,'numeric','true']" );
             return null;
         }
 
@@ -275,10 +280,10 @@ public class DataConversionService extends AbstractService {
             }
         } else if ( pattern.equals( "numeric" ) ) {
             //max length (MAX_INT)
-//            if ( value.length() > 10 ) {
-//                LOG.error( "value: " + value + " exceeds max_int" );
-//                return null;
-//            }
+            //            if ( value.length() > 10 ) {
+            //                LOG.error( "value: " + value + " exceeds max_int" );
+            //                return null;
+            //            }
             String emptyAllowed = stripParameter( params[2] );
             if ( emptyAllowed.toLowerCase().equals( "true" ) ) {
                 if ( value.length() == 0 ) {
@@ -309,11 +314,11 @@ public class DataConversionService extends AbstractService {
     private String processRegex( String[] params, MappingDefinition definition, Map<String, String> aditionalValues ) {
 
         if ( params == null || params.length < 1 ) {
-            LOG.error( "static requires at least 1 parameter: regex['the_static_value']" );
+            LOG.error( "regex requires at least 1 parameter: regex['the_static_value']" );
             return null;
         }
         if ( params == null || params.length < 2 ) {
-            LOG.error( "static requires at least 2 parameter: regex[$value,'regular_expression']" );
+            LOG.error( "regex requires at least 2 parameter: regex[$value,'regular_expression']" );
             return null;
         }
         String value = null;
@@ -348,6 +353,34 @@ public class DataConversionService extends AbstractService {
     }
 
     /**
+     * @param params
+     * @param definition
+     * @param aditionalValues
+     * @return
+     */
+    private String processReplaceString( String[] params, MappingDefinition definition,
+            Map<String, String> aditionalValues ) {
+
+        if ( params == null || params.length < 2 ) {
+            LOG.error( "replaceString requires at least 3 parameter: replaceString['.',',']" );
+            return null;
+        }
+        try {
+            String value = aditionalValues.get( "$value" );
+            if ( !StringUtils.isEmpty( value ) ) {
+                String target = stripParameter( params[0] );
+                String replacement = stripParameter( params[1] );
+
+                return value.replace( target, replacement );
+            }
+        } catch ( Exception e ) {
+            LOG.error( "Error while replacing String: " + e );
+        }
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /**
      * @param value
      * @param params
      * @param definition
@@ -357,7 +390,7 @@ public class DataConversionService extends AbstractService {
     private String processSubstring( String[] params, MappingDefinition definition, Map<String, String> aditionalValues ) {
 
         if ( params == null || params.length < 3 ) {
-            LOG.error( "static requires at least 3 parameter: substring[$value,'startIndex','endIndex']" );
+            LOG.error( "substring requires at least 3 parameter: substring[$value,'startIndex','endIndex']" );
             return null;
         }
 
@@ -502,13 +535,14 @@ public class DataConversionService extends AbstractService {
         }
         if ( param.startsWith( "'" ) && param.endsWith( "'" ) ) {
             String resultparam = param.substring( 1, param.length() - 1 );
-            LOG.debug( "Stripped Parameter: " + resultparam );
+            // LOG.debug( "Stripped Parameter: " + resultparam );
             resultparam = StringUtils.replace( resultparam, "\\'", "'" );
-            LOG.debug( "Stripped Parameter: " + resultparam );
+            LOG.trace( "Stripped Parameter: " + resultparam );
             return resultparam;
 
         } else if ( param.startsWith( "$" ) ) {
-
+            // TODO why is this here?
+            LOG.debug( "Parameter starts with $: " + param );
         } else {
             LOG.debug( "Parameter: " + param + "is not valid" );
         }
