@@ -113,6 +113,8 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
 
     private String                           timestampPattern               = null;
 
+    private MimetypesFileTypeMap             mimetypesFileTypeMap           = null;
+
     static {
         // Make sure we have the right JCE provider available...
         BouncyCastleProvider bcp = new BouncyCastleProvider();
@@ -456,8 +458,9 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
      */
     private void parseMimeFileMappings( Document mimeConfigDoc ) {
 
-        MimetypesFileTypeMap mimetypesFileTypeMap = (MimetypesFileTypeMap) FileTypeMap.getDefaultFileTypeMap();
-
+        if ( mimetypesFileTypeMap == null ) {
+            mimetypesFileTypeMap = (MimetypesFileTypeMap) FileTypeMap.getDefaultFileTypeMap();
+        }
         try {
 
             XPath xpath = XPathFactory.newInstance().newXPath();
@@ -516,6 +519,20 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
 
         if ( tempMimeMapping != null ) {
             return tempMimeMapping.fileExtension;
+        }
+
+        return null;
+    }
+
+    /**
+     * Retrieve the MIME type based on the file extension.
+     * @param mimeType
+     * @return String Extension
+     */
+    public String getMimeFromFileName( String fileName ) {
+
+        if ( mimetypesFileTypeMap != null ) {
+            return mimetypesFileTypeMap.getContentType( fileName );
         }
 
         return null;
