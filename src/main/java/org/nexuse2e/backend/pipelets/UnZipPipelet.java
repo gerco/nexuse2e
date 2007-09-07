@@ -62,33 +62,41 @@ public class UnZipPipelet extends AbstractPipelet {
 
         MessagePojo messagePojo = messageContext.getMessagePojo();
         for ( MessagePayloadPojo messagePayloadPojo : messagePojo.getMessagePayloads() ) {
-            try {
-                ZipInputStream zis = new ZipInputStream( new ByteArrayInputStream( messagePayloadPojo.getPayloadData() ) );
-                ZipEntry zipEntry = zis.getNextEntry();
+            byte payloadData[] = messagePayloadPojo.getPayloadData();
 
-                String fileName = zipEntry.getName();
+            // Test if ZIP file  - seach for PKZIP header 0x04034b50
+            if ( ( payloadData[0] == 0x50 ) && ( payloadData[1] == 0x4B ) && ( payloadData[2] == 0x03 )
+                    && ( payloadData[3] == 0x04 ) ) {
+                try {
+                    ZipInputStream zis = new ZipInputStream( new ByteArrayInputStream( payloadData ) );
+                    ZipEntry zipEntry = zis.getNextEntry();
 
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                BufferedOutputStream bos = new BufferedOutputStream( baos, BUFFER );
-                while ( ( count = zis.read( data, 0, BUFFER ) ) != -1 ) {
-                    bos.write( data, 0, count );
+                    String fileName = zipEntry.getName();
+
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    BufferedOutputStream bos = new BufferedOutputStream( baos, BUFFER );
+                    while ( ( count = zis.read( data, 0, BUFFER ) ) != -1 ) {
+                        bos.write( data, 0, count );
+                    }
+                    bos.flush();
+                    bos.close();
+
+                    zis.closeEntry();
+                    zis.close();
+
+                    messagePayloadPojo.setPayloadData( baos.toByteArray() );
+                    if ( ( Engine.getInstance() != null ) && ( fileName != null ) ) {
+                        mimeType = Engine.getInstance().getMimeFromFileName( fileName );
+                    }
+                    messagePayloadPojo.setMimeType( mimeType );
+
+                    LOG.debug( "Uncompressed size of file '" + fileName + "': "
+                            + messagePayloadPojo.getPayloadData().length );
+                } catch ( IOException ioEx ) {
+                    throw new NexusException( "Error decompressing message payload.  Exception:  " + ioEx );
                 }
-                bos.flush();
-                bos.close();
-
-                zis.closeEntry();
-                zis.close();
-
-                messagePayloadPojo.setPayloadData( baos.toByteArray() );
-                if ( ( Engine.getInstance() != null ) && ( fileName != null ) ) {
-                    mimeType = Engine.getInstance().getMimeFromFileName( fileName );
-                }
-                messagePayloadPojo.setMimeType( mimeType );
-
-                LOG.debug( "Uncompressed size of file '" + fileName + "': "
-                        + messagePayloadPojo.getPayloadData().length );
-            } catch ( IOException ioEx ) {
-                throw new NexusException( "Error decompressing message payload.  Exception:  " + ioEx );
+            } else {
+                LOG.info( "Message payload not a ZIP file!" );
             }
         }
 
