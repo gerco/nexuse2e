@@ -13,10 +13,15 @@ import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 import javax.net.ssl.KeyManager;
@@ -42,6 +47,7 @@ import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.ConfigurationAccessService;
 import org.nexuse2e.configuration.Constants;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ListParameter;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
@@ -88,6 +94,8 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
     private TransportReceiver  transportReceiver;
     private SchedulingService  schedulingService;
     private SchedulerClient    schedulerClient;
+
+    private SimpleDateFormat   simpleDateFormat            = new SimpleDateFormat( "HH:mm" );
 
     public FtpPollingReceiverService() {
 
@@ -174,38 +182,80 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
             LOG.error( "Could not retrieve local certificate list", nex );
         }
     }
+    
+
+    @Override
+    public void initialize( EngineConfiguration config ) throws InstantiationException {
+
+        // TODO Auto-generated method stub
+        super.initialize( config );
+    }
 
     @Override
     public void start() {
 
-        System.setProperty( "javax.net.ssl.trustStore", "C:\\Programme\\Java\\jre1.5.0_09\\lib\\security\\cacerts" );
-        try {
-            ConfigurationAccessService cas = Engine.getInstance().getActiveConfigurationAccessService();
-            schedulingService = null;
-            for ( Service service : cas.getServiceInstances() ) {
-                if ( service instanceof SchedulingService ) {
-                    schedulingService = (SchedulingService) service;
+        if ( getStatus() == BeanStatus.ACTIVATED ) {
+
+            System.setProperty( "javax.net.ssl.trustStore", "C:\\Programme\\Java\\jre1.5.0_09\\lib\\security\\cacerts" );
+            try {
+                ConfigurationAccessService cas = Engine.getInstance().getActiveConfigurationAccessService();
+                schedulingService = null;
+                for ( Service service : cas.getServiceInstances() ) {
+                    if ( service instanceof SchedulingService ) {
+                        schedulingService = (SchedulingService) service;
+                    }
                 }
-            }
-            if ( schedulingService == null ) {
-                throw new NexusException( "No ScheduleService implementation found" );
-            }
+                if ( schedulingService == null ) {
+                    throw new NexusException( "No ScheduleService implementation found" );
+                }
 
-            int interval = Integer.parseInt( (String) getParameter( INTERVAL_PARAM_NAME ) ) * 60000;
-            schedulingService.registerClient( schedulerClient, interval );
+                String intervalString = getParameter( INTERVAL_PARAM_NAME );
+                if ( StringUtils.isEmpty( intervalString ) ) {
+                    LOG.warn( "No interval definition found!" );
+                    schedulingService.registerClient( schedulerClient, ( 5 * 60000 ) );
+                } else if ( intervalString.indexOf( ":" ) != -1 ) {
+                    StringTokenizer st = new StringTokenizer( intervalString, "," );
+                    ArrayList<Date> times = new ArrayList<Date>();
+                    while ( st.hasMoreTokens() ) {
+                        String time = st.nextToken();
+                        LOG.debug( "Parsing scheduled time: " + time );
+                        Date scheduledTime = simpleDateFormat.parse( time );
+                        Calendar tempCalendar = new GregorianCalendar();
+                        tempCalendar.setTime( scheduledTime );
+                        Calendar scheduledCalendar = new GregorianCalendar();
+                        scheduledCalendar.set( Calendar.HOUR_OF_DAY, tempCalendar.get( Calendar.HOUR_OF_DAY ) );
+                        scheduledCalendar.set( Calendar.MINUTE, tempCalendar.get( Calendar.MINUTE ) );
+                        scheduledCalendar.set( Calendar.SECOND, 0 );
+                        scheduledCalendar.set( Calendar.MILLISECOND, 0 );
+                        scheduledTime = new Date( scheduledCalendar.getTimeInMillis() );
+                        times.add( scheduledTime );
+                        LOG.debug( "Scheduled time: " + scheduledTime );
+                    }
+                    if ( !times.isEmpty() ) {
+                        schedulingService.registerClient( schedulerClient, times );
 
-            super.start();
-            LOG.debug( "FtpPollingReceiver service started" );
-        } catch ( Exception ex ) {
-            LOG.error( "FtpPollingReceiver service could not be started", ex );
-            status = BeanStatus.ERROR;
+                    }
+                } else {
+                    int interval = Integer.parseInt( intervalString ) * 60000;
+                    LOG.debug( "Using interval: " + interval );
+                    schedulingService.registerClient( schedulerClient, interval );
+                }
+
+                super.start();
+                LOG.debug( "FtpPollingReceiver service started" );
+            } catch ( Exception ex ) {
+                LOG.error( "FtpPollingReceiver service could not be started", ex );
+                status = BeanStatus.ERROR;
+            }
+        } else {
+            LOG.error( "Service not in correct state to be started: " + status );
         }
     }
 
     @Override
     public void stop() {
 
-        if ( getStatus() == BeanStatus.STARTED ) {
+        if ( ( getStatus() == BeanStatus.STARTED ) || ( getStatus() == BeanStatus.ERROR ) ) {
             if ( schedulingService != null ) {
                 schedulingService.deregisterClient( schedulerClient );
             }

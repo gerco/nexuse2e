@@ -19,6 +19,9 @@
  */
 package org.nexuse2e.service;
 
+import java.util.Date;
+import java.util.List;
+
 import org.nexuse2e.Constants.BeanStatus;
 
 /**
@@ -38,6 +41,17 @@ public interface SchedulingService extends Service {
      * an illegal interval was specified.
      */
     public abstract void registerClient( SchedulerClient client, long millseconds ) throws IllegalArgumentException;
+
+    /**
+     * Registers a <code>SchedulerClient</code> for this <code>SchedulingService</code>.
+     * It will be invoked once per day at the specified time when the <code>SchedulingService</code>
+     * is in {@link BeanStatus#STARTED} state.
+     * @param client The client to register. Must not be <code>null</code>.
+     * @param time The time (date part must be today's date).
+     * @throws IllegalArgumentException if <code>client</code> is <code>null</code> or
+     * an illegal interval was specified.
+     */
+    public abstract void registerClient( SchedulerClient client, List<Date> times ) throws IllegalArgumentException;
 
     /**
      * Deregisters a <code>SchedulerClient</code> from this <code>SchedulingService</code>.

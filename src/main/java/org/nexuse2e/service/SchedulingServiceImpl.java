@@ -20,7 +20,9 @@
 
 package org.nexuse2e.service;
 
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -41,7 +43,7 @@ public class SchedulingServiceImpl extends AbstractService implements Scheduling
     private static Logger                                      LOG        = Logger
                                                                                   .getLogger( SchedulingServiceImpl.class );
 
-    private HashMap<SchedulerClient, ScheduledFuture>          clients    = new HashMap<SchedulerClient, ScheduledFuture>();
+    private HashMap<SchedulerClient, ScheduledFuture[]>        clients    = new HashMap<SchedulerClient, ScheduledFuture[]>();
     private HashMap<SchedulerClient, ScheduledExecutorService> schedulers = new HashMap<SchedulerClient, ScheduledExecutorService>();
 
     /* (non-Javadoc)
@@ -88,9 +90,44 @@ public class SchedulingServiceImpl extends AbstractService implements Scheduling
         SchedulingThread thread = new SchedulingThread( client );
         ScheduledFuture<?> handle = scheduler.scheduleAtFixedRate( thread, 0, millseconds, TimeUnit.MILLISECONDS );
 
-        clients.put( client, handle );
+        ScheduledFuture[] handles = { handle};
+        clients.put( client, handles );
         schedulers.put( client, scheduler );
 
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.service.SchedulingService#registerClient(org.nexuse2e.service.SchedulerClient, java.util.Date)
+     */
+    public void registerClient( SchedulerClient client, List<Date> times ) throws IllegalArgumentException {
+
+        LOG.trace( "registerClient" );
+        LOG.debug( "client: " + client + " Times: " + times );
+
+        if ( !times.isEmpty() ) {
+
+            ScheduledExecutorService scheduler = Executors.newScheduledThreadPool( 1 );
+            ScheduledFuture[] handles = new ScheduledFuture[times.size()];
+            int handleCount = 0;
+
+            for ( Date time : times ) {
+                Date now = new Date();
+                long delay = time.getTime() - now.getTime();
+                if ( delay < 0 ) {
+                    delay += ( 24 * 60 * 60 * 1000 );
+                }
+
+                LOG.trace( "delay: " + delay );
+
+                SchedulingThread thread = new SchedulingThread( client );
+                ScheduledFuture<?> handle = scheduler.scheduleAtFixedRate( thread, delay, ( 24 * 60 * 60 * 1000 ),
+                        TimeUnit.MILLISECONDS );
+                handles[handleCount++] = handle;
+            }
+
+            clients.put( client, handles );
+            schedulers.put( client, scheduler );
+        }
     }
 
     /* (non-Javadoc)
@@ -99,10 +136,15 @@ public class SchedulingServiceImpl extends AbstractService implements Scheduling
     public void deregisterClient( SchedulerClient client ) throws IllegalArgumentException {
 
         LOG.trace( "deregistering client" );
-        ScheduledFuture handle = clients.get( client );
-        if ( handle != null ) {
-            handle.cancel( false );
-            LOG.debug( "deregisterClient - processing cancelled!" );
+        ScheduledFuture[] handles = clients.get( client );
+        if ( handles != null ) {
+            for ( int i = 0; i < handles.length; i++ ) {
+                ScheduledFuture handle = handles[i];
+                if ( handle != null ) {
+                    handle.cancel( false );
+                    LOG.debug( "deregisterClient - processing cancelled!" );
+                }
+            }
             try {
                 ScheduledExecutorService scheduler = schedulers.remove( client );
                 if ( scheduler != null ) {
