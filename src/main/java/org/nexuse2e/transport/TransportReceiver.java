@@ -64,7 +64,7 @@ public class TransportReceiver implements Pipelet, ProtocolSpecific {
     protected Map<String, ParameterDescriptor> parameterDescriptors;
     protected Map<String, Object>              parameters;
     private FrontendPipeline                   frontendPipeline                          = null;
-    private BeanStatus                         status;
+    private BeanStatus                         status                                    = BeanStatus.UNDEFINED;
     private ProtocolSpecificKey                key;
 
     /**
@@ -162,8 +162,7 @@ public class TransportReceiver implements Pipelet, ProtocolSpecific {
      * @see org.nexuse2e.Manageable#initialize(org.nexuse2e.configuration.EngineConfiguration)
      */
     public void initialize( EngineConfiguration config ) {
-        
-        
+
         Service service = null;
         String s = getParameter( SERVICE_PARAM_NAME );
         LOG.trace( "TransportReceiver - service: " + s );
@@ -182,7 +181,7 @@ public class TransportReceiver implements Pipelet, ProtocolSpecific {
             }
             service = new HttpReceiverService();
         }
-        LOG.trace( "TransportService: " +service );
+        LOG.trace( "TransportReceiverService: " + service );
         ( (ReceiverAware) service ).setTransportReceiver( this );
         status = BeanStatus.INITIALIZED;
     }
@@ -194,10 +193,13 @@ public class TransportReceiver implements Pipelet, ProtocolSpecific {
 
         LOG.trace( "Freeing resources..." );
 
-        parameterDescriptors = null;
-        parameters = null;
-        frontendPipeline = null;
-        key = null;
+        // For properly restarting the engine the following refrences MUST NOT be cleared/reset!!!
+        // parameterDescriptors
+        // parameters
+        // frontendpipeline
+        // key
+
+        status = BeanStatus.INSTANTIATED;
     } // teardown
 
     /* (non-Javadoc)
@@ -265,6 +267,7 @@ public class TransportReceiver implements Pipelet, ProtocolSpecific {
      * @see org.nexuse2e.messaging.Pipelet#isForwardPipelet()
      */
     public boolean isForwardPipelet() {
+
         return true;
     }
 
@@ -272,6 +275,7 @@ public class TransportReceiver implements Pipelet, ProtocolSpecific {
      * @see org.nexuse2e.messaging.Pipelet#isFrontendPipelet()
      */
     public boolean isFrontendPipelet() {
+
         return true;
     }
 
@@ -279,11 +283,13 @@ public class TransportReceiver implements Pipelet, ProtocolSpecific {
      * @see org.nexuse2e.messaging.Pipelet#setForwardPipelet(boolean)
      */
     public void setForwardPipelet( boolean isForwardPipelet ) {
+
     }
 
     /* (non-Javadoc)
      * @see org.nexuse2e.messaging.Pipelet#setFrontendPipelet(boolean)
      */
     public void setFrontendPipelet( boolean isFrontendPipelet ) {
+
     }
 }

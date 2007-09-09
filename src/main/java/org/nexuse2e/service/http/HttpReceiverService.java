@@ -19,8 +19,13 @@
  */
 package org.nexuse2e.service.http;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +36,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
@@ -78,7 +85,7 @@ public class HttpReceiverService extends AbstractControllerService implements Re
 
             messageContext.setData( getContentFromRequest( request ) );
             if ( LOG.isTraceEnabled() ) {
-                LOG.trace( "Inbound message:\n" + new String( (byte[])messageContext.getData() ) );
+                LOG.trace( "Inbound message:\n" + new String( (byte[]) messageContext.getData() ) );
             }
             messageContext.setMessagePojo( new MessagePojo() );
             messageContext.setOriginalMessagePojo( messageContext.getMessagePojo() );
@@ -87,8 +94,8 @@ public class HttpReceiverService extends AbstractControllerService implements Re
             while ( headerNames.hasMoreElements() ) {
                 String key = headerNames.nextElement();
                 String value = request.getHeader( key );
-                messageContext.getMessagePojo().getCustomParameters()
-                        .put( Constants.PARAMETER_PREFIX_HTTP + key.toLowerCase(), value );
+                messageContext.getMessagePojo().getCustomParameters().put(
+                        Constants.PARAMETER_PREFIX_HTTP + key.toLowerCase(), value );
                 LOG.trace( "  key: " + key + ", value: " + value );
             }
 
@@ -177,7 +184,50 @@ public class HttpReceiverService extends AbstractControllerService implements Re
     public MessageContext processMessage( MessageContext messageContext ) throws IllegalArgumentException,
             IllegalStateException, NexusException {
 
-        transportReceiver.processMessage( messageContext );
+        if ( transportReceiver != null ) {
+            transportReceiver.processMessage( messageContext );
+            if ( transportReceiver.getStatus() != BeanStatus.ACTIVATED ) {
+                savePaylod( messageContext );
+            }
+        } else {
+            LOG.fatal( "No TransportReceiver available for inbound message!" );
+            savePaylod( messageContext );
+        }
         return null;
     }
-}
+
+    private void savePaylod( MessageContext messageContext ) {
+
+        String dir = Engine.getInstance().getNexusE2ERoot();
+        if ( dir == null ) {
+            dir = ".";
+        }
+
+        File dirFile = new File( dir );
+        if ( !dirFile.isDirectory() ) {
+           LOG.error( "NEXUSe2eRoot not pointing to a directory!" ); 
+        }
+        File outputDir = new File( dirFile.getAbsolutePath() + "/inbox/notproc" );
+        
+        outputDir.mkdirs();
+        
+        DateFormat df = new SimpleDateFormat( "yyyyMMddHHmmssSSS" );
+        String now = df.format( new Date() );
+
+        File outputFile = new File( outputDir.getAbsolutePath() + "/HttpReceiverService_" + now + ".dat" );
+
+        if ( messageContext.getData() != null ) {
+            try {
+                FileOutputStream fos = new FileOutputStream( outputFile );
+                fos.write( (byte[])messageContext.getData() );
+                fos.flush();
+                fos.close();
+            } catch ( Exception e ) {
+                LOG.error( "Error saving raw inbound message:" + e ); 
+            }
+        } else {
+            LOG.error( "No raw inbound message data found!" ); 
+        }
+        
+    }
+} // HttpReceiverService

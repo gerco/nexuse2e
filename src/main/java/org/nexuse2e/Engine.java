@@ -965,6 +965,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                     for ( Manageable bean : currentConfiguration.getStaticBeanContainer().getManagableBeans().values() ) {
                         if ( runlevels[i].equals( bean.getActivationLayer() ) ) {
                             bean.deactivate();
+                            LOG.trace( "Bean status: " + bean.getClass().getCanonicalName() + " - " + bean.getStatus() );
                         }
                     }
                 }
