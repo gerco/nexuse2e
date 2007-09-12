@@ -21,6 +21,7 @@ package org.nexuse2e.ui.action.reporting;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -35,7 +36,12 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.Engine;
+import org.nexuse2e.NexusException;
 import org.nexuse2e.dao.TransactionDAO;
+import org.nexuse2e.logging.LogMessage;
+import org.nexuse2e.messaging.BackendActionSerializer;
+import org.nexuse2e.messaging.FrontendActionSerializer;
+import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ConversationPojo;
 import org.nexuse2e.pojo.MessagePojo;
@@ -86,35 +92,64 @@ public class ProcessConversationReportAction extends NexusE2EAction {
         //        form.setConvColCreated( true );
 
         if ( searchFor != null && searchFor.equals( "message" ) && dir != null && dir.equals( "requeue" ) ) {
-            //            for ( int i = 0; i < form.getSelectedResults().length; i++ ) {
-            //                String messageIdent = form.getSelectedResults()[i];
-            //                StringTokenizer st = new StringTokenizer( messageIdent, "|" );
-            //                if ( st.countTokens() != 4 ) {
-            //                    ActionMessage errorMessage = new ActionMessage( "generic.error", "cant re-queue Message: >"
-            //                            + messageIdent + "<" );
-            //                    errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
-            //                    addRedirect( request, URL, TIMEOUT );
-            //                    continue;
-            //                }
-            //                String participant = st.nextToken();
-            //                String choreography = st.nextToken();
-            //                String conversation = st.nextToken();
-            //                String message = st.nextToken();
-            //
-            //                MessageDAO messageDao = new MessageDAO();
-            //                MessagePojo messagePojo = messageDao.getMessageByMessageKey( choreography, conversation, message, participant );
-            //                Message newMessage = new Message(messagePojo);
-            //                
-            //                
-            //                try {
-            //                    MessageDispatcher.getInstance().startMessage( newMessage );
-            //                } catch ( Exception e ) {
-            //                    ActionMessage errorMessage = new ActionMessage( "generic.error", e.getMessage() );
-            //                    errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
-            //                    addRedirect( request, URL, TIMEOUT );
-            //                    continue;
-            //                }
-            //            }
+            for ( int i = 0; i < form.getSelectedResults().length; i++ ) {
+                String messageIdent = form.getSelectedResults()[i];
+                StringTokenizer st = new StringTokenizer( messageIdent, "|" );
+                if ( st.countTokens() != 4 ) {
+                    ActionMessage errorMessage = new ActionMessage( "generic.error", "Can't re-queue Message: >"
+                            + messageIdent + "<" );
+                    errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
+                    addRedirect( request, URL, TIMEOUT );
+                    continue;
+                }
+                String participantId = st.nextToken();
+                String choreographyId = st.nextToken();
+                String conversationId = st.nextToken();
+                String messageId = st.nextToken();
+
+                MessageContext messageContext = Engine.getInstance().getTransactionService().getMessageContext(
+                        messageId );
+
+                if ( messageContext != null ) {
+                    if ( messageContext.getMessagePojo().isOutbound() ) {
+                        LOG.debug( "Re-queueing outbound message " + messageId + " for choreography " + choreographyId
+                                + " and participant " + participantId );
+                        HashMap<String, BackendActionSerializer> backendActionSerializers = Engine.getInstance()
+                                .getCurrentConfiguration().getBackendActionSerializers();
+                        BackendActionSerializer backendActionSerializer = backendActionSerializers.get( choreographyId );
+
+                        try {
+                            backendActionSerializer.requeueMessage( messageContext, conversationId, messageId );
+                        } catch ( Exception e ) {
+                            ActionMessage errorMessage = new ActionMessage( "generic.error", e.getMessage() );
+                            errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
+                        }
+                    } else {
+                        LOG.debug( "Re-queueing inbound message " + messageId + " for choreography " + choreographyId
+                                + " and participant " + participantId );
+
+                        HashMap<String, FrontendActionSerializer> frontendActionSerializers = Engine.getInstance()
+                                .getCurrentConfiguration().getFrontendActionSerializers();
+                        FrontendActionSerializer frontendActionSerializer = frontendActionSerializers
+                                .get( choreographyId );
+
+                        try {
+                            frontendActionSerializer.requeueMessage( messageContext, conversationId, messageId );
+                        } catch ( Exception e ) {
+                            ActionMessage errorMessage = new ActionMessage( "generic.error", e.getMessage() );
+                            errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
+                        }
+                    }
+                } else {
+                    String logMessage = "Message: " + messageId
+                    + " could not be found in database, cancelled re-queueing!";
+                    LOG.error( new LogMessage( logMessage, conversationId, messageId ) );
+                    ActionMessage errorMessage = new ActionMessage( "generic.error", logMessage );
+                    errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
+                    addRedirect( request, URL, TIMEOUT );
+                    continue;
+                }
+            }
 
             dir = "transaction";
         }
@@ -157,7 +192,7 @@ public class ProcessConversationReportAction extends NexusE2EAction {
                 String messageIdent = form.getSelectedResults()[i];
                 StringTokenizer st = new StringTokenizer( messageIdent, "|" );
                 if ( st.countTokens() != 3 ) {
-                    ActionMessage errorMessage = new ActionMessage( "generic.error", "cant delete conversation: >"
+                    ActionMessage errorMessage = new ActionMessage( "generic.error", "Can't delete conversation: >"
                             + messageIdent + "<" );
                     errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
                     addRedirect( request, URL, TIMEOUT );

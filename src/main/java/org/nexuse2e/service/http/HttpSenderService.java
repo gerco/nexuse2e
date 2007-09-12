@@ -151,7 +151,7 @@ public class HttpSenderService extends AbstractService implements SenderAware {
                 client.getHostConfiguration().setHost( receiverURL.getHost(), receiverURL.getPort() );
 
             }
-            
+
             client.getHttpConnectionManager().getParams().setConnectionTimeout( timeout );
             client.getHttpConnectionManager().getParams().setSoTimeout( timeout );
             method = new PostMethod( receiverURL.getPath() );
@@ -159,8 +159,7 @@ public class HttpSenderService extends AbstractService implements SenderAware {
             method.getParams().setSoTimeout( timeout );
             LOG.trace( "Created new NexusHttpConnection with timeout: " + timeout + ", SSL: "
                     + participant.getConnection().isSecure() );
-            
-            
+
             // Use basic auth if credentials are present
             if ( ( user != null ) && ( user.length() != 0 ) && ( pwd != null ) ) {
                 Credentials credentials = new UsernamePasswordCredentials( user, pwd );
@@ -216,13 +215,19 @@ public class HttpSenderService extends AbstractService implements SenderAware {
                 LOG.debug( "URI: " + uri );
                 method.setRequestEntity( new StringRequestEntity( new String( (byte[]) messageContext.getData() ) ) );
             } else {
-                RequestEntity requestEntity = new ByteArrayRequestEntity( (byte[]) messageContext.getData(),
-                        "text/xml" );
+                RequestEntity requestEntity = new ByteArrayRequestEntity( (byte[]) messageContext.getData(), "text/xml" );
                 method.setRequestEntity( requestEntity );
             }
 
             client.executeMethod( method );
             LOG.debug( "HTTP call done" );
+            int statusCode = method.getStatusCode();
+            if ( statusCode != 200 ) {
+                LOG.error( new LogMessage( "Message submission failed, server responsed with status: " + statusCode,
+                        messageContext.getMessagePojo() ) );
+                throw new NexusException( "Message submission failed, server responsed with status: " + statusCode );
+            }
+
             httpReply = getHTTPReply( method );
             LOG.debug( "Retrieved HTTP response:" + httpReply );
 

@@ -21,7 +21,10 @@
 package org.nexuse2e.backend.pipelets;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -29,8 +32,10 @@ import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
+import org.nexuse2e.pojo.ConversationPojo;
 import org.nexuse2e.pojo.MessagePayloadPojo;
 import org.nexuse2e.pojo.MessagePojo;
+import org.nexuse2e.pojo.PartnerPojo;
 
 /**
  * @author mbreilmann
@@ -43,8 +48,7 @@ public class ZipPipelet extends AbstractPipelet {
      */
     public MessageContext processMessage( MessageContext messageContext ) throws NexusException {
 
-        if ( messageContext != null && messageContext.getData() != null
-                && messageContext.getMessagePojo().getMessagePayloads() != null
+        if ( messageContext != null && messageContext.getMessagePojo().getMessagePayloads() != null
                 && messageContext.getMessagePojo().getMessagePayloads().size() > 0 ) {
 
             byte[] newContent = null;
@@ -56,12 +60,13 @@ public class ZipPipelet extends AbstractPipelet {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     ZipOutputStream zos = new ZipOutputStream( baos );
                     zos.setMethod( ZipOutputStream.DEFLATED );
-                    String fileExtension = "."
-                            + Engine.getInstance().getFileExtensionFromMime( messagePayloadPojo.getMimeType() );
+                    String fileExtension = ".txt";
                     ZipEntry zipEntry = new ZipEntry( messagePayloadPojo.getContentId() + fileExtension );
                     zipEntry.setSize( messagePayloadPojo.getPayloadData().length );
+                    if ( messagePayloadPojo.getMimeType() != null ) {
                     zipEntry.setComment( messagePayloadPojo.getMimeType() );
                     zipEntry.setExtra( messagePayloadPojo.getMimeType().getBytes() );
+                    }
                     zos.putNextEntry( zipEntry );
                     zos.write( messagePayloadPojo.getPayloadData() );
                     zos.closeEntry();
@@ -82,6 +87,65 @@ public class ZipPipelet extends AbstractPipelet {
         }
 
         return messageContext;
+    }
+
+    /**
+     * @param args
+     */
+    public static void main( String[] args ) {
+
+        if ( args.length != 1 ) {
+            System.err.println( "No file specified!" );
+            return;
+        }
+
+        FileInputStream fis;
+        try {
+            fis = new FileInputStream( args[0] );
+
+            byte[] payloadData = new byte[fis.available()];
+            fis.read( payloadData );
+            fis.close();
+
+            MessageContext messageContext = new MessageContext();
+            MessagePojo messagePojo = new MessagePojo();
+            ConversationPojo conversationPojo = new ConversationPojo();
+            messagePojo.setConversation( conversationPojo );
+            PartnerPojo partnerPojo = new PartnerPojo();
+            partnerPojo.setPartnerId( "TestPartner" );
+            conversationPojo.setPartner( partnerPojo );
+            MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo();
+            messagePayloadPojo.setPayloadData( payloadData );
+            messagePayloadPojo.setMimeType( "text/plain" );
+            messagePayloadPojo.setContentId( "test" );
+
+            messageContext.setMessagePojo( messagePojo );
+            messagePayloadPojo.setMessage( messagePojo );
+            messagePojo.getMessagePayloads().add( messagePayloadPojo );
+
+            new ZipPipelet().processMessage( messageContext );
+
+            for ( Iterator<MessagePayloadPojo> payloads = messageContext.getMessagePojo().getMessagePayloads()
+                    .iterator(); payloads.hasNext(); ) {
+                MessagePayloadPojo tempMessagePayloadPojo = payloads.next();
+                /* */
+                FileOutputStream fos = new FileOutputStream( args[0] + ".zip" );
+                fos.write( tempMessagePayloadPojo.getPayloadData() );
+                fos.flush();
+                fos.close();
+                /* */
+
+                System.out.println( "Mime type: " + tempMessagePayloadPojo.getMimeType() );
+                System.out.println( "Payload (" + tempMessagePayloadPojo.getSequenceNumber() + "):\n"
+                        + new String( tempMessagePayloadPojo.getPayloadData() ) );
+            }
+
+        } catch ( Exception e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        System.out.println( "Done!" );
+
     }
 
 }

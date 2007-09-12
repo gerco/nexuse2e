@@ -176,6 +176,18 @@ public class BackendActionSerializer extends AbstractPipelet {
                 + participantId + ", conversation " + conversationId );
 
         MessageContext messageContext = Engine.getInstance().getTransactionService().getMessageContext( messageId );
+        requeueMessage( messageContext, conversationId, messageId );
+    } // requeueMessage
+
+    
+    /**
+     * @param messageContext
+     * @param conversationId
+     * @param messageId
+     * @throws NexusException
+     */
+    public void requeueMessage( MessageContext messageContext, String conversationId, String messageId )
+            throws NexusException {
 
         if ( messageContext != null ) {
             queueMessage( messageContext, messageContext.getConversation(), false );

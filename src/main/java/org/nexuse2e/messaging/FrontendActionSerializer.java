@@ -155,6 +155,17 @@ public class FrontendActionSerializer implements Manageable {
                 + ", participant " + participantId + ", conversation " + conversationId, conversationId, messageId ) );
 
         MessageContext messageContext = Engine.getInstance().getTransactionService().getMessageContext( messageId );
+        requeueMessage( messageContext, conversationId, messageId );
+    }
+
+    /**
+     * @param messageContext
+     * @param conversationId
+     * @param messageId
+     * @throws NexusException
+     */
+    public void requeueMessage( MessageContext messageContext, String conversationId, String messageId )
+            throws NexusException {
 
         if ( messageContext != null ) {
             queueMessage( messageContext, messageContext.getConversation(), false );
