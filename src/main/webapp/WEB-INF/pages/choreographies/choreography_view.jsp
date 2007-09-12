@@ -32,23 +32,23 @@
 			
             <table class="NEXUS_TABLE" width="100%">
                 <tr>
-                    <td class="NEXUSIcon"><nexus:link href="Actions.do?Target=ClusterTest&amp;Type=View" styleClass="NexusLink">
+                    <td class="NEXUSIcon"><nexus:link href="Actions.do?Target=ClusterTest&amp;Type=View" styleClass="NexusImgLink">
                       <img src="images/tree/actions_g.gif" border="0"></nexus:link></td>
                     <td class="NEXUSNameNoWidth"><nexus:link href="ActionsList.do?choreographyId=${choreographyForm.choreographyName}" styleClass="NexusLink">Actions</nexus:link></td>
                 </tr>
                 <tr>
-                    <td class="NEXUSIcon"><nexus:link href="Notifiers.do?Target=ClusterTest&amp;Type=View" styleClass="NexusLink">
+                    <td class="NEXUSIcon"><nexus:link href="Notifiers.do?Target=ClusterTest&amp;Type=View" styleClass="NexusImgLink">
                     <img src="images/tree/notifiers_g.gif" border="0"></nexus:link></td>
                     <td class="NEXUSNameNoWidth"><nexus:link href="NotifierList.do?choreographyId=${choreographyForm.choreographyName}" styleClass="NexusLink">Notifiers</nexus:link></td>
                 </tr>
                 
                 <tr>
-                    <td class="NEXUSIcon"><nexus:link href="ParticipantList.do?choreographyId=${choreographyForm.choreographyName}" styleClass="NexusLink">
+                    <td class="NEXUSIcon"><nexus:link href="ParticipantList.do?choreographyId=${choreographyForm.choreographyName}" styleClass="NexusImgLink">
                     <img src="images/tree/collaborativepartners_g.gif" border="0"></nexus:link></td>
                     <td class="NEXUSNameNoWidth"><nexus:link href="ParticipantList.do?choreographyId=${choreographyForm.choreographyName}" styleClass="NexusLink">Participants</nexus:link></td>
                 </tr>
                 <tr>
-                    <td class="NEXUSIcon"><nexus:link href="ReportingForward.do?noReset&amp;refresh&amp;type=transaction" styleClass="NexusLink">
+                    <td class="NEXUSIcon"><nexus:link href="ReportingForward.do?noReset&amp;refresh&amp;type=transaction" styleClass="NexusImgLink">
                     <img src="images/tree/reports_g.gif" border="0"></nexus:link></td>
                     <td class="NEXUSNameNoWidth"><nexus:link href="ReportingForward.do?noReset&amp;refresh&amp;type=transaction" styleClass="NexusLink">Reports</nexus:link></td>
                 </tr>

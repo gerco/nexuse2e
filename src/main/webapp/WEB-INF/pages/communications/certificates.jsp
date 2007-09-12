@@ -13,7 +13,7 @@
 
 <table width="100%" class="NEXUS_TABLE">
 	<tr>
-		<td class="NEXUSIcon"><nexus:link styleClass="NexusLink"
+		<td class="NEXUSIcon"><nexus:link styleClass="NexusImgLink"
 			href="RequestOverview.do">
 			<img border="0" src="images/tree/importexport_g.gif">
 		</nexus:link></td>
@@ -21,7 +21,7 @@
 			href="RequestOverview.do">Certificate Request</nexus:link></td>
 	</tr>
 	<tr>
-		<td class="NEXUSIcon"><nexus:link styleClass="NexusLink"
+		<td class="NEXUSIcon"><nexus:link styleClass="NexusImgLink"
 			href="StagingList.do">
 			<img border="0" src="images/tree/ssl_g.gif">
 		</nexus:link></td>

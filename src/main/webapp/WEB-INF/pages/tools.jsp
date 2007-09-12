@@ -19,7 +19,7 @@
 
 <table width="100%" class="NEXUS_TABLE">
 	<tr>
-		<td class="NEXUSIcon"><nexus:link styleClass="NexusLink"
+		<td class="NEXUSIcon"><nexus:link styleClass="NexusImgLink"
 			href="MessageSubmission.do">
 			<img border="0" src="images/tree/communications.gif">
 		</nexus:link></td>
@@ -27,7 +27,7 @@
 			href="MessageSubmission.do">Message Submission</nexus:link></td>
 	</tr>
 	<tr>
-		<td class="NEXUSIcon"><nexus:link styleClass="NexusLink"
+		<td class="NEXUSIcon"><nexus:link styleClass="NexusImgLink"
 			href="ProvisioningSubmission.do">
 			<img border="0" src="images/tree/communications.gif">
 		</nexus:link></td>
@@ -35,7 +35,7 @@
 			href="ProvisioningSubmission.do">Partner Provisioning</nexus:link></td>
 	</tr>
 	<tr>
-		<td class="NEXUSIcon"><nexus:link styleClass="NexusLink"
+		<td class="NEXUSIcon"><nexus:link styleClass="NexusImgLink"
 			href="DatabasePurge.do?type=select">
 			<img border="0" src="images/delete.gif">
 		</nexus:link></td>
@@ -43,7 +43,7 @@
 			href="DatabasePurge.do?type=select">Database Purge</nexus:link></td>
 	</tr>
 	<tr>
-		<td class="NEXUSIcon"><nexus:link styleClass="NexusLink"
+		<td class="NEXUSIcon"><nexus:link styleClass="NexusImgLink"
 			href="MappingMaintenance.do">
 			<img border="0" src="images/tree/collaborativepartners.gif">
 		</nexus:link></td>

@@ -295,7 +295,7 @@ TD.BUTTON_RIGHT {
 .NEXUSIcon {
 	background: #DDDDDD;
 	white-space: nowrap;
-	width: 24;
+	width: 24px;
 }
 
 .NEXUSValue {
@@ -324,23 +324,23 @@ TD.BUTTON_RIGHT {
 	width: 140px;
 }
 
-.NexusLink {
-	text-decoration: none;
-	border-width: 1pt;
-	border-style: ridge;
+.NexusLink:LINK {
+    background-image: url(../images/link.gif);
+    background-repeat: no-repeat;
+	text-decoration: underline;
+	border-width: 0pt;
 	font-family: verdana, garamond;
-	color: #ffffff;
+	color: #000000;
 	font-size: 10pt;
 	padding-top: 1pt;
 	padding-bottom: 1pt;
 	padding-right: 3pt;
-	padding-left: 3pt;
+	padding-left: 10pt;
 }
 
 .NexusLinkDisabled {
 	text-decoration: none;
 	border-width: 0pt;
-	border-style: ridge;
 	font-family: verdana, garamond;
 	color: #000080;
 	font-size: 10pt;
@@ -355,12 +355,11 @@ TD.BUTTON_RIGHT {
 	font-family: verdana, garamond;
 	font-size: 10pt;
 	color: #000080;
-	border-width: 1pt;
-	border-style: inset;
+	border-width: 0pt;
 	padding-top: 1pt;
 	padding-bottom: 1pt;
 	padding-right: 3pt;
-	padding-left: 3pt;
+	padding-left: 12pt;
 }
 
 .NexusDrillDownLink {
