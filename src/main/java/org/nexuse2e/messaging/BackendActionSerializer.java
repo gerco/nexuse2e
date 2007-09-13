@@ -344,7 +344,7 @@ public class BackendActionSerializer extends AbstractPipelet {
                     BackendActionSerializer.LOG.debug( "Interrupted while listening on queue " );
                 }
             }
-            BackendActionSerializer.LOG.info( "Stopped InboundQueueListener "
+            BackendActionSerializer.LOG.info( "Stopped InboundQueueListener (BackendActionSerializer) "
                     + BackendActionSerializer.this.choreographyId );
             stopRequested = false;
         }

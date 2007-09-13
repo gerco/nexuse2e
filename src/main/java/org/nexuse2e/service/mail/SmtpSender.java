@@ -35,6 +35,7 @@ import java.util.Properties;
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.Multipart;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
@@ -387,6 +388,12 @@ public class SmtpSender extends AbstractService implements SenderAware {
 
     public void sendMessage( String recipient, String subjectLine, String description ) throws NexusException {
 
+        sendMessage( recipient, subjectLine, description, null );
+    }
+
+    public void sendMessage( String recipient, String subjectLine, String description, MimeBodyPart[] mimeBodyParts )
+            throws NexusException {
+
         Session session = null;
         Transport transport = null;
 
@@ -401,7 +408,15 @@ public class SmtpSender extends AbstractService implements SenderAware {
             msg.setRecipients( Message.RecipientType.TO, InternetAddress.parse( recipient, false ) );
             msg.setHeader( "X-Mailer", "msgsend" );
             msg.setFrom( new InternetAddress( (String) getParameter( EMAIL_PARAM_NAME ) ) );
-            msg.setText( description );
+            if ( ( mimeBodyParts != null ) && ( mimeBodyParts.length != 0 ) ) {
+                Multipart multipart = new MimeMultipart();
+                for ( int i = 0; i < mimeBodyParts.length; i++ ) {
+                    multipart.addBodyPart( mimeBodyParts[i] );
+                }
+                msg.setContent( multipart );
+            } else {
+                msg.setText( description );
+            }
             msg.setSentDate( new Date() );
             msg.setSubject( subjectLine );
             msg.saveChanges();
