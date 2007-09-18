@@ -158,7 +158,7 @@ TABLE.NEXUS_TAB_TABLE {
 TD.NEXUS_TAB_UNSELECTED {
 	padding: 0;
 	background: #666666;
-	height: 20;
+	height: 20px;
 	font-weight: bold;
 	white-space: nowrap;
 }
@@ -182,20 +182,20 @@ A.NEXUS_TAB_UNSELECTED_LINK:active {
 
 TD.NEXUS_TAB_LEFT_UNSELECTED {
 	padding: 0;
-	width: 20;
-	height: 20;
+	width: 20px;
+	height: 20px;
 }
 
 TD.NEXUS_TAB_RIGHT_UNSELECTED {
 	padding: 0;
-	width: 20;
-	height: 20;
+	width: 20px;
+	height: 20px;
 }
 
 TD.NEXUS_TAB_SELECTED {
 	padding: 0;
 	background: #CCCCCC;
-	height: 20;
+	height: 20px;
 	color: #000000;
 	font-weight: bold;
 	white-space: nowrap;
@@ -203,14 +203,14 @@ TD.NEXUS_TAB_SELECTED {
 
 TD.NEXUS_TAB_LEFT_SELECTED {
 	padding: 0;
-	width: 20;
-	height: 20;
+	width: 20px;
+	height: 20px;
 }
 
 TD.NEXUS_TAB_RIGHT_SELECTED {
 	padding: 0;
-	width: 20;
-	height: 20;
+	width: 20px;
+	height: 20px;
 }
 
 TD.BUTTON_LEFT {
@@ -324,7 +324,21 @@ TD.BUTTON_RIGHT {
 	width: 140px;
 }
 
-.NexusLink:LINK {
+.NexusLink:link {
+    background-image: url(../images/link.gif);
+    background-repeat: no-repeat;
+	text-decoration: underline;
+	border-width: 0pt;
+	font-family: verdana, garamond;
+	color: #000000;
+	font-size: 10pt;
+	padding-top: 1pt;
+	padding-bottom: 1pt;
+	padding-right: 3pt;
+	padding-left: 10pt;
+}
+
+.NexusLink:visited {
     background-image: url(../images/link.gif);
     background-repeat: no-repeat;
 	text-decoration: underline;
@@ -350,7 +364,7 @@ TD.BUTTON_RIGHT {
 	padding-left: 3pt;
 }
 
-.NexusLink:HOVER {
+.NexusLink:hover {
 	text-decoration: underline;
 	font-family: verdana, garamond;
 	font-size: 10pt;
