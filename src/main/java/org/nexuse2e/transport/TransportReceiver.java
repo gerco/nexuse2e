@@ -77,6 +77,7 @@ public class TransportReceiver implements Pipelet, ProtocolSpecific {
         parameterDescriptors = new LinkedHashMap<String, ParameterDescriptor>();
         parameterDescriptors.put( SERVICE_PARAM_NAME, new ParameterDescriptor( ParameterType.SERVICE, "Service",
                 "The name of the service that shall be used by the receiver", "" ) );
+        /*
         ListParameter communicationProtocolIdDropdown = new ListParameter();
         communicationProtocolIdDropdown.addElement( "EBXML", "ebxml" );
         parameterDescriptors.put( COMMUNICATION_PROTOCOL_ID_PARAM_NAME, new ParameterDescriptor( ParameterType.LIST,
@@ -92,6 +93,7 @@ public class TransportReceiver implements Pipelet, ProtocolSpecific {
         transportProtocolIdDropdown.addElement( "HTTP", "http" );
         parameterDescriptors.put( TRANSPORT_PROTOCOL_ID_PARAM_NAME, new ParameterDescriptor( ParameterType.LIST,
                 "Transport protocol", "The transport protocol", transportProtocolIdDropdown ) );
+                */
         status = BeanStatus.INSTANTIATED;
     }
 

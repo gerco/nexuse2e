@@ -73,6 +73,9 @@ public class ConfigurationUtil {
 
     public static String getParameterStringValue( PipeletParamPojo param ) {
 
+        if ( (param == null) || (param.getParameterDescriptor() == null) ) {
+            return null;
+        }
         switch ( param.getParameterDescriptor().getParameterType() ) {
             case PASSWORD:
                 return EncryptionUtil.decryptString( param.getValue() );
