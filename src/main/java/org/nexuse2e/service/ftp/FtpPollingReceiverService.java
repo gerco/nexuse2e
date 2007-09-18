@@ -194,7 +194,7 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
         Boolean tempFileChangeActive = (Boolean) getParameter( CHANGE_FILE_PARAM_NAME );
         if ( tempFileChangeActive != null ) {
             fileChangeActive = tempFileChangeActive.booleanValue();
-            LOG.info( "fileChangeActive: " + fileChangeActive );
+            LOG.debug( "fileChangeActive: " + fileChangeActive );
         }
 
         // TODO Auto-generated method stub
