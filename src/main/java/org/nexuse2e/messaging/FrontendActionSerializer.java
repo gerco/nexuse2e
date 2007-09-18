@@ -337,6 +337,8 @@ public class FrontendActionSerializer implements Manageable {
                         } else if ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_AWAITING_BACKEND ) {
                             conversationPojo
                                     .setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_BACKEND_SENT_SENDING_ACK );
+                        } else if ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_COMPLETED ) {
+                            LOG.debug( new LogMessage( "Processing message for completed conversation.", messagePojo ) );
                         } else {
                             LOG.error( new LogMessage( "Unexpected conversation state detected: "
                                     + conversationPojo.getStatus(), messagePojo ) );
@@ -374,8 +376,8 @@ public class FrontendActionSerializer implements Manageable {
                     LOG.debug( new LogMessage( "Interrupted while listening on queue ", messagePojo ) );
                 }
             } // while
-            LOG.info( new LogMessage( "Stopped InboundQueueListener (FrontendActionSerializer) " + FrontendActionSerializer.this.choreographyId,
-                    messagePojo ) );
+            LOG.info( new LogMessage( "Stopped InboundQueueListener (FrontendActionSerializer) "
+                    + FrontendActionSerializer.this.choreographyId, messagePojo ) );
             stopRequested = false;
         } // run
 

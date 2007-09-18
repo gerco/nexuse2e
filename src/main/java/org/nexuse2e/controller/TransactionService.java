@@ -117,9 +117,26 @@ public interface TransactionService extends Manageable {
     /**
      * @param messageId
      * @return
+     * 
+     * EbXML 2.0 Spec
+     * 878 The REQUIRED element MessageId is a globally unique identifier for each message conforming to   
+     * 879 MessageId [RFC2822].
+     */
+    public abstract MessagePojo getMessage( String messageId, boolean isReferencedMessageId ) throws NexusException;
+
+    /**
+     * @param messageId
+     * @return
      * @throws NexusException
      */
     public abstract MessageContext getMessageContext( String messageId ) throws NexusException;
+    
+    /**
+     * @param messageId
+     * @return
+     * @throws NexusException
+     */
+    public abstract MessageContext getMessageContext( String messageId, boolean isReferencedMessageId ) throws NexusException;
     
     /**
      * @param status

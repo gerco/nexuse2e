@@ -86,6 +86,7 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
     public static final String INTERVAL_PARAM_NAME         = "interval";
     public static final String TRANSFER_MODE_PARAM_NAME    = "transferMode";
     public static final String RENAMING_PREFIX_PARAM_NAME  = "prefix";
+    public static final String CHANGE_FILE_PARAM_NAME      = "changeFile";
 
     public static final String CUSTOM_PARAMETER_FILE_NAME  = "fileName";
     public static final String CUSTOM_PARAMETER_PARTNER_ID = "partnerId";
@@ -94,6 +95,7 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
     private TransportReceiver  transportReceiver;
     private SchedulingService  schedulingService;
     private SchedulerClient    schedulerClient;
+    private boolean            fileChangeActive            = true;
 
     private SimpleDateFormat   simpleDateFormat            = new SimpleDateFormat( "HH:mm" );
 
@@ -137,7 +139,10 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
                 "Connect every n minutes to look for new files", "5" ) );
 
         parameterMap.put( RENAMING_PREFIX_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "File Prefix",
-                "prefix is prepended to successfully transfered files, instead of file delete", "5" ) );
+                "Prefix is prepended to successfully transfered files, instead of file delete", "5" ) );
+
+        parameterMap.put( CHANGE_FILE_PARAM_NAME, new ParameterDescriptor( ParameterType.BOOLEAN, "Change/Delete File",
+                "Rename/Delete file active", Boolean.TRUE ) );
 
         ListParameter transferModeListParam = new ListParameter();
         transferModeListParam.addElement( "Auto", "auto" );
@@ -182,10 +187,15 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
             LOG.error( "Could not retrieve local certificate list", nex );
         }
     }
-    
 
     @Override
     public void initialize( EngineConfiguration config ) throws InstantiationException {
+
+        Boolean tempFileChangeActive = (Boolean) getParameter( CHANGE_FILE_PARAM_NAME );
+        if ( tempFileChangeActive != null ) {
+            fileChangeActive = tempFileChangeActive.booleanValue();
+            LOG.info( "fileChangeActive: " + fileChangeActive );
+        }
 
         // TODO Auto-generated method stub
         super.initialize( config );
@@ -447,10 +457,13 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
                 if ( directory.startsWith( "/" ) ) {
                     directory = directory.substring( 1 );
                 }
-                LOG.trace( "Directory requested: " + directory );
-                success = ftp.changeWorkingDirectory( directory );
-                if ( !success ) {
-                    LOG.error( "FTP server did not change directory!" );
+
+                if ( StringUtils.isNotEmpty( directory ) ) {
+                    LOG.trace( "Directory requested: " + directory );
+                    success = ftp.changeWorkingDirectory( directory );
+                    if ( !success ) {
+                        LOG.error( "FTP server did not change directory!" );
+                    }
                 }
                 LOG.trace( "Working Directory: " + ftp.printWorkingDirectory() );
 
@@ -481,16 +494,18 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
 
                                 String prefix = getParameter( RENAMING_PREFIX_PARAM_NAME );
                                 boolean error = false;
-                                if ( StringUtils.isEmpty( prefix ) ) {
-                                    if ( !ftp.deleteFile( file.getName() ) ) {
-                                        LOG.error( "Could not delete file " + file.getName() );
-                                        error = true;
-                                    }
-                                } else {
-                                    if ( !ftp.rename( file.getName(), prefix + file.getName() ) ) {
-                                        LOG.error( "Could not rename file from " + file.getName() + " to " + prefix
-                                                + file.getName() );
-                                        error = true;
+                                if ( fileChangeActive ) {
+                                    if ( StringUtils.isEmpty( prefix ) ) {
+                                        if ( !ftp.deleteFile( file.getName() ) ) {
+                                            LOG.error( "Could not delete file " + file.getName() );
+                                            error = true;
+                                        }
+                                    } else {
+                                        if ( !ftp.rename( file.getName(), prefix + file.getName() ) ) {
+                                            LOG.error( "Could not rename file from " + file.getName() + " to " + prefix
+                                                    + file.getName() );
+                                            error = true;
+                                        }
                                     }
                                 }
 

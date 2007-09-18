@@ -187,13 +187,25 @@ public class TransactionServiceImpl implements TransactionService {
      */
     public MessagePojo getMessage( String messageId ) throws NexusException {
 
+        return getMessage( messageId, false );
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.controller.TransactionService#getMessage(java.lang.String)
+     */
+    public MessagePojo getMessage( String messageId, boolean isReferencedMessageId ) throws NexusException {
+
         TransactionDAO transactionDao;
         try {
             transactionDao = (TransactionDAO) Engine.getInstance().getDao( "transactionDao" );
         } catch ( Exception e ) {
             throw new NexusException( e );
         }
-        return transactionDao.getMessageByMessageId( messageId, null, null );
+        if ( isReferencedMessageId ) {
+            return transactionDao.getMessageByReferencedMessageId( messageId, null, null );
+        } else {
+            return transactionDao.getMessageByMessageId( messageId, null, null );
+        }
     }
 
     /* (non-Javadoc)
@@ -400,8 +412,16 @@ public class TransactionServiceImpl implements TransactionService {
      */
     public MessageContext getMessageContext( String messageId ) throws NexusException {
 
+        return getMessageContext( messageId, false );
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.controller.TransactionService#getMessageContext(java.lang.String)
+     */
+    public MessageContext getMessageContext( String messageId, boolean isReferencedMessageId ) throws NexusException {
+
         MessageContext messageContext = null;
-        MessagePojo messagePojo = Engine.getInstance().getTransactionService().getMessage( messageId );
+        MessagePojo messagePojo = Engine.getInstance().getTransactionService().getMessage( messageId, isReferencedMessageId );
 
         if ( messagePojo != null ) {
             messageContext = new MessageContext();

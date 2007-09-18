@@ -114,6 +114,20 @@ public class TransactionDAO extends BasicDAO {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
+    public MessagePojo getMessageByReferencedMessageId( String messageId, Session session, Transaction transaction )
+            throws NexusException {
+
+        StringBuffer query = new StringBuffer( "from MessagePojo where referencedMessage.messageId='" + messageId + "'" );
+
+        List<MessagePojo> result = getListThroughSessionFind( query.toString(), session, transaction );
+
+        if ( result != null && result.size() > 0 ) {
+            return result.get( 0 );
+        }
+        return null;
+    }
+
     /**
      * @param status
      * @param nxChoreographyId

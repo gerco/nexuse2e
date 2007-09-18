@@ -49,37 +49,37 @@ import org.nexuse2e.pojo.MessagePojo;
 
 public class HeaderSerializer extends AbstractPipelet {
 
-    private static Logger         LOG            = Logger.getLogger( HeaderDeserializer.class );
+    private static Logger LOG = Logger.getLogger( HeaderDeserializer.class );
 
-//    private static SOAPFactory    soapFactory    = null;
-//    private static MessageFactory messageFactory = null;
-//
-//    static {
-//        String saveSOAPFactory = System.getProperty( "javax.xml.soap.SOAPFactory" );
-//        String saveMessageFactory = System.getProperty( "javax.xml.soap.MessageFactory" );
-//
-//        // Grab soap factories explicitly to make sure we get the ones we ship with
-//        System.setProperty( "javax.xml.soap.SOAPFactory", "com.sun.xml.messaging.saaj.soap.ver1_1.SOAPFactory1_1Impl" );
-//        System.setProperty( "javax.xml.soap.MessageFactory",
-//                "com.sun.xml.messaging.saaj.soap.ver1_1.SOAPMessageFactory1_1Impl" );
-//        try {
-//            soapFactory = SOAPFactory.newInstance();
-//        } catch ( SOAPException e ) {
-//            LOG.error( "Could not instantiate SOAPFactory! " + e );
-//        }
-//        try {
-//            messageFactory = MessageFactory.newInstance();
-//        } catch ( SOAPException e ) {
-//            LOG.error( "Could not instantiate MessageFactory! " + e );
-//        }
-//
-//        if ( saveSOAPFactory != null ) {
-//            System.setProperty( "javax.xml.soap.SOAPFactory", saveSOAPFactory );
-//        }
-//        if ( saveMessageFactory != null ) {
-//            System.setProperty( "javax.xml.soap.MessageFactory", saveMessageFactory );
-//        }
-//    }
+    //    private static SOAPFactory    soapFactory    = null;
+    //    private static MessageFactory messageFactory = null;
+    //
+    //    static {
+    //        String saveSOAPFactory = System.getProperty( "javax.xml.soap.SOAPFactory" );
+    //        String saveMessageFactory = System.getProperty( "javax.xml.soap.MessageFactory" );
+    //
+    //        // Grab soap factories explicitly to make sure we get the ones we ship with
+    //        System.setProperty( "javax.xml.soap.SOAPFactory", "com.sun.xml.messaging.saaj.soap.ver1_1.SOAPFactory1_1Impl" );
+    //        System.setProperty( "javax.xml.soap.MessageFactory",
+    //                "com.sun.xml.messaging.saaj.soap.ver1_1.SOAPMessageFactory1_1Impl" );
+    //        try {
+    //            soapFactory = SOAPFactory.newInstance();
+    //        } catch ( SOAPException e ) {
+    //            LOG.error( "Could not instantiate SOAPFactory! " + e );
+    //        }
+    //        try {
+    //            messageFactory = MessageFactory.newInstance();
+    //        } catch ( SOAPException e ) {
+    //            LOG.error( "Could not instantiate MessageFactory! " + e );
+    //        }
+    //
+    //        if ( saveSOAPFactory != null ) {
+    //            System.setProperty( "javax.xml.soap.SOAPFactory", saveSOAPFactory );
+    //        }
+    //        if ( saveMessageFactory != null ) {
+    //            System.setProperty( "javax.xml.soap.MessageFactory", saveMessageFactory );
+    //        }
+    //    }
 
     /**
      * Default constructor.
@@ -98,221 +98,231 @@ public class HeaderSerializer extends AbstractPipelet {
         try {
             MessagePojo messagePojo = messageContext.getMessagePojo();
 
-            SOAPFactory soapFactory = SOAPFactory.newInstance();
-            MessageFactory messageFactory = MessageFactory.newInstance();
-            
-            //messagePojo.setCreatedDate( "2006-09-15T17:50:24Z" );
-
-            TimestampFormatter formatter = Engine.getInstance().getTimestampFormatter( "ebxml" );
-            String createdDate;
-            try {
-                Date createdDateObject = messagePojo.getCreatedDate();
-                createdDate = formatter.getTimestamp( createdDateObject );
-            } catch ( Exception e ) {
-                throw new NexusException( "error while processing createdDate field:" + messagePojo.getCreatedDate(), e );
-            }
-
-            LOG.debug( "Messgae Factory: " + messageFactory.getClass().getCanonicalName() );
-            SOAPMessage soapMessage = messageFactory.createMessage();
-            SOAPPart soapPart = soapMessage.getSOAPPart();
-            SOAPEnvelope soapEnvelope = soapPart.getEnvelope();
-            SOAPBody soapBody = soapEnvelope.getBody();
-            SOAPHeader soapHeader = soapEnvelope.getHeader();
-            SOAPElement soapElement = null;
-            Name name = null;
-            boolean ack = false;
-            boolean error = false;
-            if ( messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ACK ) {
-                ack = true;
-            }
-            if ( messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ERROR ) {
-                error = false;
-            }
-
-            // ENVELOPE ATTRS ------------------------------------------------------
-            //  namespace attributes, 'soap-env' namespace handled by JAXM
-            soapEnvelope.addNamespaceDeclaration( "eb",
-                    "http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd" );
-            soapEnvelope.addNamespaceDeclaration( "xsi",
-                    "http://www.oasis-open.org/committees/ebxml-msg/schema/envelope.xsd" );
-            soapEnvelope.addNamespaceDeclaration( "xlink", "http://www.w3.org/1999/xlink" );
-            /*
-             soapEnvelope.addAttribute( soapFactory.createName( "xmlns:eb" ),
-             "http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd" );
-             soapEnvelope
-             .addAttribute( soapFactory.createName( "schemaLocation", "xsi", "http://www.oasis-open.org/committees/ebxml-msg/schema/envelope.xsd" ),
-             "http://schemas.xmlsoap.org/soap/envelope/ http://www.oasis-open.org/committees/ebxml-msg/schema/envelope.xsd" );
-             */
-
-            // HEADER ATTRS --------------------------------------------------------
-            soapHeader
-                    .addAttribute(
-                            soapFactory.createName( "xsi:schemaLocation" ),
-                            "http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd" );
-            soapHeader.addAttribute( soapFactory.createName( "xmlns:eb" ),
-                    "http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd" );
-
-            // BODY ATTRS ----------------------------------------------------------
-            soapBody
-                    .addAttribute(
-                            soapFactory.createName( "xsi:schemaLocation" ),
-                            "http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd" );
-            soapBody.addAttribute( soapFactory.createName( "xmlns:eb" ),
-                    "http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd" );
-
-            // MESSAGE HEADER ------------------------------------------------------
-            name = soapFactory
-                    .createName( "MessageHeader", Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE );
-            SOAPHeaderElement msgHeader = soapHeader.addHeaderElement( name );
-            msgHeader.setMustUnderstand( true );
-            msgHeader.addAttribute( soapFactory.createName( Constants.VERSION, Constants.EBXML_NAMESPACE_PREFIX,
-                    Constants.EBXML_NAMESPACE ), Constants.EBXMLVERSION );
-
-            // TO & FROM -----------------------------------------------------------
-            String from = messagePojo.getParticipant().getLocalPartner().getPartnerId();
-            if ( from == null ) {
-                //TODO: for testing..
-                from = "dummyfrom";
-            }
-            String fromIdType = messagePojo.getParticipant().getLocalPartner().getPartnerIdType();
-            ;
-            if ( fromIdType == null ) {
-                //              TODO: for testing..
-                fromIdType = "dummyFromType";
-            }
-            String to = messagePojo.getConversation().getPartner().getPartnerId();
-            if ( to == null ) {
-                //              TODO: for testing..
-                to = "dummyto";
-            }
-            String toIDType = messagePojo.getConversation().getPartner().getPartnerIdType();
-            if ( toIDType == null ) {
-                //              TODO: for testing..
-                toIDType = "dummytoType";
-            }
-            msgHeader.addChildElement( createPartyElement( soapFactory, "From", from, fromIdType, null ) );
-            msgHeader.addChildElement( createPartyElement( soapFactory, "To", to, toIDType, null ) );
-
-            // CPA & ConversationId ------------------------------------------------
-            crateSOAPElement( soapFactory, msgHeader, "CPAId", messagePojo.getConversation().getChoreography()
-                    .getName() );
-            crateSOAPElement( soapFactory, msgHeader, "ConversationId", messagePojo.getConversation()
-                    .getConversationId() );
-
-            // SERVICE -------------------------------------------------------------
-            //  service is hard coded to  meet spec.  Services are not used.
-            String service = messagePojo.getCustomParameters().get(
-                    Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_SERVICE );
-            if ( service == null ) {
-                service = messagePojo.getConversation().getChoreography().getName();
-            }
-            soapElement = soapFactory.createElement( "Service", Constants.EBXML_NAMESPACE_PREFIX,
-                    Constants.EBXML_NAMESPACE );
-            /*
-            if ( service != null && service.length() > 0 ) {
-                soapElement.addAttribute( soapFactory.createName( "type", Constants.EBXML_NAMESPACE_PREFIX,
-                        Constants.EBXML_NAMESPACE ), service );
-            }
-            */
-
-            String serviceVal = new String();
-            if ( !( service.startsWith( "uri:" ) || service.startsWith( "urn:" ) ) ) {
-                serviceVal += "uri:";
-            }
-
-            soapElement.addTextNode( serviceVal + service );
-            msgHeader.addChildElement( soapElement );
-
-            // ACTION --------------------------------------------------------------
-
-            String actionName = null;
-            if ( messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ACK ) {
-                actionName = "Acknowledgement";
+            // Test for re-send of ack
+            if ( ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_ACK ) && ( messagePojo.getHeaderData() != null )
+                    && ( messagePojo.getHeaderData().length != 0 ) ) {
+                LOG.debug( "Re-send of acknowledgment - using existing header." );
             } else {
-                actionName = messagePojo.getAction().getName();
-            }
 
-            crateSOAPElement( soapFactory, msgHeader, "Action", actionName );
+                SOAPFactory soapFactory = SOAPFactory.newInstance();
+                MessageFactory messageFactory = MessageFactory.newInstance();
 
-            // MESSAGE DATA --------------------------------------------------------
-            SOAPElement msgDataEl = soapFactory.createElement( "MessageData", Constants.EBXML_NAMESPACE_PREFIX,
-                    Constants.EBXML_NAMESPACE );
+                //messagePojo.setCreatedDate( "2006-09-15T17:50:24Z" );
 
-            // MESSAGEDATA MESSAGE ID ----------------------------------------------
-            soapElement = soapFactory.createElement( "MessageId", Constants.EBXML_NAMESPACE_PREFIX,
-                    Constants.EBXML_NAMESPACE );
-            soapElement.addTextNode( messagePojo.getMessageId() );
-            msgDataEl.addChildElement( soapElement );
-
-            // MESSAGEDATA TIMESTAMP -----------------------------------------------
-            soapElement = soapFactory.createElement( Constants.TIMESTAMP_ID, Constants.EBXML_NAMESPACE_PREFIX,
-                    Constants.EBXML_NAMESPACE );
-
-            soapElement.addTextNode( createdDate );
-            msgDataEl.addChildElement( soapElement );
-
-            if ( ack || error ) {
-                // MESSAGEDATA REFTOMESSAGE ID ----------------------------------------------
-                soapElement = soapFactory.createElement( "RefToMessageId", Constants.EBXML_NAMESPACE_PREFIX,
-                        Constants.EBXML_NAMESPACE );
-                soapElement.addTextNode( messagePojo.getReferencedMessage().getMessageId() );
-                msgDataEl.addChildElement( soapElement );
-            }
-
-            msgHeader.addChildElement( msgDataEl );
-
-            if ( ack ) { // ack
-                // ACKNOWLEDGEMENT--------------------------------------------------
-                createAck( soapFactory, soapHeader, createdDate, messagePojo.getReferencedMessage().getMessageId(),
-                        from, fromIdType );
-            } else if ( error ) { // error
-                createErrorList( soapFactory, soapHeader, messagePojo.getReferencedMessage().getMessageId(),
-                        (Vector<ErrorDescriptor>) messageContext.getData() );
-            } else { // regular message
-                // QUALITY OF SERVICE---------------------------------------------------
-                if ( messagePojo.getParticipant().getConnection().isReliable() ) {
-                    name = soapFactory.createName( "AckRequested", Constants.EBXML_NAMESPACE_PREFIX,
-                            Constants.EBXML_NAMESPACE );
-                    SOAPHeaderElement ackReq = soapHeader.addHeaderElement( name );
-                    ackReq.setMustUnderstand( true );
-                    ackReq.addAttribute( soapFactory.createName( Constants.VERSION, Constants.EBXML_NAMESPACE_PREFIX,
-                            Constants.EBXML_NAMESPACE ), Constants.EBXMLVERSION );
-                    ackReq.addAttribute( soapFactory.createName( "signed", Constants.EBXML_NAMESPACE_PREFIX,
-                            Constants.EBXML_NAMESPACE ), Constants.ACKREQUESTED_UNSIGNED );
-                    msgHeader.addChildElement( soapElement );
-                    soapElement = soapFactory.createElement( "DuplicateElimination", Constants.EBXML_NAMESPACE_PREFIX,
-                            Constants.EBXML_NAMESPACE );
-                    msgHeader.addChildElement( soapElement );
+                TimestampFormatter formatter = Engine.getInstance().getTimestampFormatter( "ebxml" );
+                String createdDate;
+                try {
+                    Date createdDateObject = messagePojo.getCreatedDate();
+                    createdDate = formatter.getTimestamp( createdDateObject );
+                } catch ( Exception e ) {
+                    throw new NexusException( "error while processing createdDate field:"
+                            + messagePojo.getCreatedDate(), e );
                 }
 
-                SOAPElement soapManifest = null;
+                LOG.debug( "Messgae Factory: " + messageFactory.getClass().getCanonicalName() );
+                SOAPMessage soapMessage = messageFactory.createMessage();
+                SOAPPart soapPart = soapMessage.getSOAPPart();
+                SOAPEnvelope soapEnvelope = soapPart.getEnvelope();
+                SOAPBody soapBody = soapEnvelope.getBody();
+                SOAPHeader soapHeader = soapEnvelope.getHeader();
+                SOAPElement soapElement = null;
+                Name name = null;
+                boolean ack = false;
+                boolean error = false;
+                if ( messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ACK ) {
+                    ack = true;
+                }
+                if ( messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ERROR ) {
+                    error = false;
+                }
 
-                // MANIFEST --------------------------------------------------------
-                name = soapFactory.createName( "Manifest", Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE );
-                soapManifest = soapBody.addBodyElement( name );
+                // ENVELOPE ATTRS ------------------------------------------------------
+                //  namespace attributes, 'soap-env' namespace handled by JAXM
+                soapEnvelope.addNamespaceDeclaration( "eb",
+                        "http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd" );
+                soapEnvelope.addNamespaceDeclaration( "xsi",
+                        "http://www.oasis-open.org/committees/ebxml-msg/schema/envelope.xsd" );
+                soapEnvelope.addNamespaceDeclaration( "xlink", "http://www.w3.org/1999/xlink" );
+                /*
+                 soapEnvelope.addAttribute( soapFactory.createName( "xmlns:eb" ),
+                 "http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd" );
+                 soapEnvelope
+                 .addAttribute( soapFactory.createName( "schemaLocation", "xsi", "http://www.oasis-open.org/committees/ebxml-msg/schema/envelope.xsd" ),
+                 "http://schemas.xmlsoap.org/soap/envelope/ http://www.oasis-open.org/committees/ebxml-msg/schema/envelope.xsd" );
+                 */
 
-                soapManifest.addAttribute( soapFactory.createName( Constants.MUSTUNDERSTAND,
-                        Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE ), Constants.MUSTUNDERSTAND_VALUE );
-                soapManifest.addAttribute( soapFactory.createName( Constants.VERSION, Constants.EBXML_NAMESPACE_PREFIX,
+                // HEADER ATTRS --------------------------------------------------------
+                soapHeader
+                        .addAttribute(
+                                soapFactory.createName( "xsi:schemaLocation" ),
+                                "http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd" );
+                soapHeader.addAttribute( soapFactory.createName( "xmlns:eb" ),
+                        "http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd" );
+
+                // BODY ATTRS ----------------------------------------------------------
+                soapBody
+                        .addAttribute(
+                                soapFactory.createName( "xsi:schemaLocation" ),
+                                "http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd" );
+                soapBody.addAttribute( soapFactory.createName( "xmlns:eb" ),
+                        "http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd" );
+
+                // MESSAGE HEADER ------------------------------------------------------
+                name = soapFactory.createName( "MessageHeader", Constants.EBXML_NAMESPACE_PREFIX,
+                        Constants.EBXML_NAMESPACE );
+                SOAPHeaderElement msgHeader = soapHeader.addHeaderElement( name );
+                msgHeader.setMustUnderstand( true );
+                msgHeader.addAttribute( soapFactory.createName( Constants.VERSION, Constants.EBXML_NAMESPACE_PREFIX,
                         Constants.EBXML_NAMESPACE ), Constants.EBXMLVERSION );
 
-                // REFERENCES ------------------------------------------------------
+                // TO & FROM -----------------------------------------------------------
+                String from = messagePojo.getParticipant().getLocalPartner().getPartnerId();
+                if ( from == null ) {
+                    //TODO: for testing..
+                    from = "dummyfrom";
+                }
+                String fromIdType = messagePojo.getParticipant().getLocalPartner().getPartnerIdType();
+                ;
+                if ( fromIdType == null ) {
+                    //              TODO: for testing..
+                    fromIdType = "dummyFromType";
+                }
+                String to = messagePojo.getConversation().getPartner().getPartnerId();
+                if ( to == null ) {
+                    //              TODO: for testing..
+                    to = "dummyto";
+                }
+                String toIDType = messagePojo.getConversation().getPartner().getPartnerIdType();
+                if ( toIDType == null ) {
+                    //              TODO: for testing..
+                    toIDType = "dummytoType";
+                }
+                msgHeader.addChildElement( createPartyElement( soapFactory, "From", from, fromIdType, null ) );
+                msgHeader.addChildElement( createPartyElement( soapFactory, "To", to, toIDType, null ) );
 
-                // newMsg.addManifestEntry( newMsg.getMessageID() + "-body" + ( i + 1 ) );
+                // CPA & ConversationId ------------------------------------------------
+                crateSOAPElement( soapFactory, msgHeader, "CPAId", messagePojo.getConversation().getChoreography()
+                        .getName() );
+                crateSOAPElement( soapFactory, msgHeader, "ConversationId", messagePojo.getConversation()
+                        .getConversationId() );
 
-                Iterator bodyParts = messagePojo.getMessagePayloads().iterator();
-                while ( bodyParts.hasNext() ) {
-                    MessagePayloadPojo bodyPart = (MessagePayloadPojo) bodyParts.next();
-                    LOG.trace( "ContentID:" + bodyPart.getContentId() );
-                    createManifestReference( soapFactory, soapManifest, bodyPart.getContentId(), "Payload-"
-                            + bodyPart.getSequenceNumber(), bodyPart.getMimeType(), null );
+                // SERVICE -------------------------------------------------------------
+                //  service is hard coded to  meet spec.  Services are not used.
+                String service = messagePojo.getCustomParameters().get(
+                        Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_SERVICE );
+                if ( service == null ) {
+                    service = messagePojo.getConversation().getChoreography().getName();
+                }
+                soapElement = soapFactory.createElement( "Service", Constants.EBXML_NAMESPACE_PREFIX,
+                        Constants.EBXML_NAMESPACE );
+                /*
+                if ( service != null && service.length() > 0 ) {
+                    soapElement.addAttribute( soapFactory.createName( "type", Constants.EBXML_NAMESPACE_PREFIX,
+                            Constants.EBXML_NAMESPACE ), service );
+                }
+                */
+
+                String serviceVal = new String();
+                if ( !( service.startsWith( "uri:" ) || service.startsWith( "urn:" ) ) ) {
+                    serviceVal += "uri:";
                 }
 
-            }
-            soapMessage.saveChanges();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            soapMessage.writeTo( baos );
-            messagePojo.setHeaderData( baos.toByteArray() );
+                soapElement.addTextNode( serviceVal + service );
+                msgHeader.addChildElement( soapElement );
+
+                // ACTION --------------------------------------------------------------
+
+                String actionName = null;
+                if ( messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ACK ) {
+                    actionName = "Acknowledgement";
+                } else {
+                    actionName = messagePojo.getAction().getName();
+                }
+
+                crateSOAPElement( soapFactory, msgHeader, "Action", actionName );
+
+                // MESSAGE DATA --------------------------------------------------------
+                SOAPElement msgDataEl = soapFactory.createElement( "MessageData", Constants.EBXML_NAMESPACE_PREFIX,
+                        Constants.EBXML_NAMESPACE );
+
+                // MESSAGEDATA MESSAGE ID ----------------------------------------------
+                soapElement = soapFactory.createElement( "MessageId", Constants.EBXML_NAMESPACE_PREFIX,
+                        Constants.EBXML_NAMESPACE );
+                soapElement.addTextNode( messagePojo.getMessageId() );
+                msgDataEl.addChildElement( soapElement );
+
+                // MESSAGEDATA TIMESTAMP -----------------------------------------------
+                soapElement = soapFactory.createElement( Constants.TIMESTAMP_ID, Constants.EBXML_NAMESPACE_PREFIX,
+                        Constants.EBXML_NAMESPACE );
+
+                soapElement.addTextNode( createdDate );
+                msgDataEl.addChildElement( soapElement );
+
+                if ( ack || error ) {
+                    // MESSAGEDATA REFTOMESSAGE ID ----------------------------------------------
+                    soapElement = soapFactory.createElement( "RefToMessageId", Constants.EBXML_NAMESPACE_PREFIX,
+                            Constants.EBXML_NAMESPACE );
+                    soapElement.addTextNode( messagePojo.getReferencedMessage().getMessageId() );
+                    msgDataEl.addChildElement( soapElement );
+                }
+
+                msgHeader.addChildElement( msgDataEl );
+
+                if ( ack ) { // ack
+                    // ACKNOWLEDGEMENT--------------------------------------------------
+                    createAck( soapFactory, soapHeader, createdDate, messagePojo.getReferencedMessage().getMessageId(),
+                            from, fromIdType );
+                } else if ( error ) { // error
+                    createErrorList( soapFactory, soapHeader, messagePojo.getReferencedMessage().getMessageId(),
+                            (Vector<ErrorDescriptor>) messageContext.getData() );
+                } else { // regular message
+                    // QUALITY OF SERVICE---------------------------------------------------
+                    if ( messagePojo.getParticipant().getConnection().isReliable() ) {
+                        name = soapFactory.createName( "AckRequested", Constants.EBXML_NAMESPACE_PREFIX,
+                                Constants.EBXML_NAMESPACE );
+                        SOAPHeaderElement ackReq = soapHeader.addHeaderElement( name );
+                        ackReq.setMustUnderstand( true );
+                        ackReq.addAttribute( soapFactory.createName( Constants.VERSION,
+                                Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE ), Constants.EBXMLVERSION );
+                        ackReq.addAttribute( soapFactory.createName( "signed", Constants.EBXML_NAMESPACE_PREFIX,
+                                Constants.EBXML_NAMESPACE ), Constants.ACKREQUESTED_UNSIGNED );
+                        msgHeader.addChildElement( soapElement );
+                        soapElement = soapFactory.createElement( "DuplicateElimination",
+                                Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE );
+                        msgHeader.addChildElement( soapElement );
+                    }
+
+                    SOAPElement soapManifest = null;
+
+                    // MANIFEST --------------------------------------------------------
+                    name = soapFactory.createName( "Manifest", Constants.EBXML_NAMESPACE_PREFIX,
+                            Constants.EBXML_NAMESPACE );
+                    soapManifest = soapBody.addBodyElement( name );
+
+                    soapManifest.addAttribute( soapFactory.createName( Constants.MUSTUNDERSTAND,
+                            Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE ),
+                            Constants.MUSTUNDERSTAND_VALUE );
+                    soapManifest.addAttribute( soapFactory.createName( Constants.VERSION,
+                            Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE ), Constants.EBXMLVERSION );
+
+                    // REFERENCES ------------------------------------------------------
+
+                    // newMsg.addManifestEntry( newMsg.getMessageID() + "-body" + ( i + 1 ) );
+
+                    Iterator bodyParts = messagePojo.getMessagePayloads().iterator();
+                    while ( bodyParts.hasNext() ) {
+                        MessagePayloadPojo bodyPart = (MessagePayloadPojo) bodyParts.next();
+                        LOG.trace( "ContentID:" + bodyPart.getContentId() );
+                        createManifestReference( soapFactory, soapManifest, bodyPart.getContentId(), "Payload-"
+                                + bodyPart.getSequenceNumber(), bodyPart.getMimeType(), null );
+                    }
+
+                }
+                soapMessage.saveChanges();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                soapMessage.writeTo( baos );
+                messagePojo.setHeaderData( baos.toByteArray() );
+            } // Test for re-send of ack
             LOG.trace( "Message:" + new String( messagePojo.getHeaderData() ) );
         } catch ( NexusException e ) {
             throw e;

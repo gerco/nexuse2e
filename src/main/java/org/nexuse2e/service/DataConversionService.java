@@ -102,8 +102,7 @@ public class DataConversionService extends AbstractService {
 
             String commandName = matcher.group();
             int endIndex = matcher.end();
-            System.out.println( "command(" + endIndex + "): " + commandName );
-            LOG.debug( "command(" + endIndex + "): " + commandName );
+            // LOG.trace( "command(" + endIndex + "): " + commandName );
 
             pattern = Pattern.compile( "[a-zA-Z0-9\\'\\,\\:\\$\\#\\.\\\\\\-\\_\\. \\@\\[\\]\\+]+" );
             matcher = pattern.matcher( command );
@@ -111,7 +110,7 @@ public class DataConversionService extends AbstractService {
             if ( matcher.find( endIndex ) ) {
                 paramList = new ArrayList<String>();
                 String params = matcher.group();
-                LOG.trace( "parameterlist:" + params );
+                // LOG.trace( "parameterlist:" + params );
 
                 pattern = Pattern
                         .compile( "((\\'([a-zA-Z0-9\\,\\:\\-\\_\\. \\@\\#\\[\\]\\+]|\\\\')+\\')|(\\$[a-zA-Z0-9\\_]+))+" );
@@ -119,7 +118,7 @@ public class DataConversionService extends AbstractService {
                 while ( matcher.find() ) {
                     String param = matcher.group();
                     paramList.add( param );
-                    LOG.trace( "param: " + param );
+                    // LOG.trace( "param: " + param );
                 }
             }
             String[] paramArray = null;
@@ -537,7 +536,7 @@ public class DataConversionService extends AbstractService {
             String resultparam = param.substring( 1, param.length() - 1 );
             // LOG.debug( "Stripped Parameter: " + resultparam );
             resultparam = StringUtils.replace( resultparam, "\\'", "'" );
-            LOG.trace( "Stripped Parameter: " + resultparam );
+            // LOG.trace( "Stripped Parameter: " + resultparam );
             return resultparam;
 
         } else if ( param.startsWith( "$" ) ) {
