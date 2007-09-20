@@ -25,9 +25,11 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.codehaus.xfire.client.Client;
 import org.codehaus.xfire.client.XFireProxyFactory;
 import org.codehaus.xfire.service.Service;
 import org.codehaus.xfire.service.binding.ObjectServiceFactory;
+import org.codehaus.xfire.transport.Channel;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
@@ -48,11 +50,23 @@ public class BackendDeliveryWSClientPipelet extends AbstractPipelet {
     private static Logger LOG = Logger.getLogger( BackendDeliveryWSClientPipelet.class );
     
     public static final String URL_PARAM_NAME = "url";
+    public static final String BASIC_AUTH_PARAM_NAME = "basicAuth";
+    public static final String USERNAME_PARAM_NAME = "username";
+    public static final String PASSWORD_PARAM_NAME = "password";
     
     
     public BackendDeliveryWSClientPipelet() {
         parameterMap.put( URL_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "URL",
                 "The backend delivery web service URL", "" ) );
+        parameterMap.put( BASIC_AUTH_PARAM_NAME,
+                new ParameterDescriptor( ParameterType.BOOLEAN, "HTTP Basic Authentication",
+                        "Enable HTTP Basic Authentication", Boolean.FALSE ) );
+        parameterMap.put( USERNAME_PARAM_NAME,
+                new ParameterDescriptor( ParameterType.STRING, "User Name",
+                        "HTTP Basic Auth User Name", "" ) );
+        parameterMap.put( PASSWORD_PARAM_NAME,
+                new ParameterDescriptor( ParameterType.STRING, "Password",
+                        "HTTP Basic Auth Password", "" ) );
     }
     
     /* (non-Javadoc)
@@ -68,6 +82,25 @@ public class BackendDeliveryWSClientPipelet extends AbstractPipelet {
         try {
             BackendDeliveryInterface service = (BackendDeliveryInterface)
                     new XFireProxyFactory().create( serviceModel, (String) getParameter( URL_PARAM_NAME ) );
+            
+            // HTTP basic auth
+            boolean httpAuth = ((Boolean) getParameter( BASIC_AUTH_PARAM_NAME )).booleanValue();
+            if (httpAuth) {
+                String username = getParameter( USERNAME_PARAM_NAME );
+                String password = getParameter( PASSWORD_PARAM_NAME );
+                
+                if (username == null) {
+                    username = "";
+                }
+                if (password == null) {
+                    password = "";
+                }
+                
+                Client client = Client.getInstance( service );
+                client.setProperty( Channel.USERNAME, username );
+                client.setProperty( Channel.PASSWORD, password );
+            }
+            
             List<MessagePayloadPojo> payloadPojos = messageContext.getMessagePojo().getMessagePayloads();
             String[] payloadStrings = new String[payloadPojos.size()];
             for (int i = 0; i < payloadPojos.size(); i++) {
