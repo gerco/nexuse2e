@@ -65,7 +65,7 @@ public class BackendDeliveryWSClientPipelet extends AbstractPipelet {
                 new ParameterDescriptor( ParameterType.STRING, "User Name",
                         "HTTP Basic Auth User Name", "" ) );
         parameterMap.put( PASSWORD_PARAM_NAME,
-                new ParameterDescriptor( ParameterType.STRING, "Password",
+                new ParameterDescriptor( ParameterType.PASSWORD, "Password",
                         "HTTP Basic Auth Password", "" ) );
     }
     
