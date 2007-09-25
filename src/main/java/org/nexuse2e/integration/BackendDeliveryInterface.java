@@ -20,15 +20,22 @@
 
 package org.nexuse2e.integration;
 
-import java.rmi.Remote;
 import java.rmi.RemoteException;
+
+import javax.jws.WebMethod;
+import javax.jws.WebParam;
+import javax.jws.WebResult;
+import javax.jws.WebService;
+import javax.jws.soap.SOAPBinding;
 
 /**
  * 
  * 
  * @author jonas.reese
  */
-public interface BackendDeliveryInterface extends Remote {
+@WebService(name = "BackendDeliveryInterface", targetNamespace = "http://integration.nexuse2e.org/BackendDeliveryInterface/")
+@SOAPBinding(use = SOAPBinding.Use.LITERAL, parameterStyle = SOAPBinding.ParameterStyle.WRAPPED)
+public interface BackendDeliveryInterface {
 
     /**
      * Process an inbound message.
@@ -41,7 +48,20 @@ public interface BackendDeliveryInterface extends Remote {
      * @return The message processing response as a string.
      * @throws ProcessInboundMessageException If some processing error occurred.
      */
-    public String processInboundMessage( String choreographyId, String businessPartnerId,
-            String actionId, String conversationId, String messageId, String[] payload )
-    throws RemoteException, ProcessInboundMessageException;
+    @WebMethod(operationName = "processInboundMessage", action = "http://integration.nexuse2e.org/BackendDeliveryInterface/processInboundMessage")
+    @WebResult(name = "statusResponse", targetNamespace = "")
+    public String processInboundMessage(
+        @WebParam(name = "choreographyId", targetNamespace = "")
+        String choreographyId,
+        @WebParam(name = "businessPartnerId", targetNamespace = "")
+        String businessPartnerId,
+        @WebParam(name = "actionId", targetNamespace = "")
+        String actionId,
+        @WebParam(name = "conversationId", targetNamespace = "")
+        String conversationId,
+        @WebParam(name = "messageId", targetNamespace = "")
+        String messageId,
+        @WebParam(name = "payload", targetNamespace = "") String payload)
+        throws RemoteException, ProcessInboundMessageException;
+
 }
