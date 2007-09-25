@@ -25,10 +25,10 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.codehaus.xfire.annotations.AnnotationServiceFactory;
 import org.codehaus.xfire.client.Client;
 import org.codehaus.xfire.client.XFireProxyFactory;
 import org.codehaus.xfire.service.Service;
-import org.codehaus.xfire.service.binding.ObjectServiceFactory;
 import org.codehaus.xfire.transport.Channel;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.ParameterDescriptor;
@@ -77,7 +77,7 @@ public class BackendDeliveryWSClientPipelet extends AbstractPipelet {
             throws IllegalArgumentException, IllegalStateException,
             NexusException {
 
-        ObjectServiceFactory objectServiceFactory = new ObjectServiceFactory();
+        AnnotationServiceFactory objectServiceFactory = new AnnotationServiceFactory();
         Service serviceModel = objectServiceFactory.create( BackendDeliveryInterface.class );
         try {
             BackendDeliveryInterface service = (BackendDeliveryInterface)
@@ -102,9 +102,9 @@ public class BackendDeliveryWSClientPipelet extends AbstractPipelet {
             }
             
             List<MessagePayloadPojo> payloadPojos = messageContext.getMessagePojo().getMessagePayloads();
-            String[] payloadStrings = new String[payloadPojos.size()];
-            for (int i = 0; i < payloadPojos.size(); i++) {
-                payloadStrings[i] = new String( payloadPojos.get( i ).getPayloadData() );
+            String payload = null;
+            if (!payloadPojos.isEmpty()) {
+                payload = new String( payloadPojos.get( 0 ).getPayloadData() );
             }
             String actionId = null;
             if (messageContext.getMessagePojo().getConversation().getCurrentAction() != null) {
@@ -114,7 +114,7 @@ public class BackendDeliveryWSClientPipelet extends AbstractPipelet {
                     messageContext.getPartner().getName(),
                     actionId,
                     messageContext.getConversation().getConversationId(),
-                    messageContext.getMessagePojo().getMessageId(), payloadStrings );
+                    messageContext.getMessagePojo().getMessageId(), payload );
             LOG.debug( "response from backend delivery WS is " + response );
             return messageContext;
         } catch (MalformedURLException e) {
