@@ -22,14 +22,19 @@ package org.nexuse2e.backend.pipelets;
 
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.apache.xerces.dom.AttrNSImpl;
+import org.apache.xerces.dom.CoreDocumentImpl;
 import org.codehaus.xfire.annotations.AnnotationServiceFactory;
 import org.codehaus.xfire.client.Client;
 import org.codehaus.xfire.client.XFireProxyFactory;
+import org.codehaus.xfire.exchange.OutMessage;
 import org.codehaus.xfire.service.Service;
 import org.codehaus.xfire.transport.Channel;
+import org.codehaus.xfire.util.dom.DOMOutHandler;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
@@ -37,7 +42,15 @@ import org.nexuse2e.integration.BackendDeliveryInterface;
 import org.nexuse2e.integration.ProcessInboundMessageException;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
+import org.nexuse2e.pojo.ActionPojo;
+import org.nexuse2e.pojo.ChoreographyPojo;
+import org.nexuse2e.pojo.ConversationPojo;
 import org.nexuse2e.pojo.MessagePayloadPojo;
+import org.nexuse2e.pojo.MessagePojo;
+import org.nexuse2e.pojo.PartnerPojo;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * A pipelet that sends messages to a backend delivery web service that can be configured.
@@ -77,11 +90,15 @@ public class BackendDeliveryWSClientPipelet extends AbstractPipelet {
             throws IllegalArgumentException, IllegalStateException,
             NexusException {
 
-        AnnotationServiceFactory objectServiceFactory = new AnnotationServiceFactory();
-        Service serviceModel = objectServiceFactory.create( BackendDeliveryInterface.class );
+        AnnotationServiceFactory serviceFactory = new AnnotationServiceFactory();
+        Service serviceModel = serviceFactory.create( BackendDeliveryInterface.class );
+
         try {
             BackendDeliveryInterface service = (BackendDeliveryInterface)
                     new XFireProxyFactory().create( serviceModel, (String) getParameter( URL_PARAM_NAME ) );
+
+            Client client = Client.getInstance( service );
+            client.addOutHandler( new RemoveNamespaceOutHandler() );
             
             // HTTP basic auth
             boolean httpAuth = ((Boolean) getParameter( BASIC_AUTH_PARAM_NAME )).booleanValue();
@@ -96,7 +113,6 @@ public class BackendDeliveryWSClientPipelet extends AbstractPipelet {
                     password = "";
                 }
                 
-                Client client = Client.getInstance( service );
                 client.setProperty( Channel.USERNAME, username );
                 client.setProperty( Channel.PASSWORD, password );
             }
@@ -124,6 +140,82 @@ public class BackendDeliveryWSClientPipelet extends AbstractPipelet {
         } catch (ProcessInboundMessageException e) {
             throw new NexusException( e );
         }
+    }
+    
+    /**
+     * This handler removes the namespace attributes from the SOAP request parameters.
+     * Obviously some WebService implementations cannot cope with the default namespace
+     * being present for every parameter.
+     * 
+     * @author jonas.reese
+     */
+    public static class RemoveNamespaceOutHandler extends DOMOutHandler {
+        
+        public void invoke( org.codehaus.xfire.MessageContext context ) throws Exception {
+            super.invoke( context );
+
+            OutMessage msg = context.getOutMessage();
+            Document doc = (Document) msg.getProperty( DOMOutHandler.DOM_MESSAGE );
+            if (doc != null) {
+                System.out.println( doc.getFirstChild().getNodeName() );
+                System.out.println( doc.getFirstChild().getFirstChild().getNodeName() );
+                System.out.println( doc.getFirstChild().getFirstChild().getFirstChild().getNodeName() );
+                System.out.println( doc.getFirstChild().getFirstChild().getFirstChild().getFirstChild().getNodeName() );
+                System.out.println( doc.getFirstChild().getFirstChild().getFirstChild().getFirstChild().getAttributes().item( 0 ).getNodeName() );
+                
+                if (doc.getFirstChild() != null && doc.getFirstChild().getFirstChild() != null &&
+                        doc.getFirstChild().getFirstChild().getFirstChild() != null &&
+                        "processInboundMessage".equals( doc.getFirstChild().getFirstChild().getFirstChild().getNodeName() )) {
+                    Node node = doc.getFirstChild().getFirstChild().getFirstChild();
+                    node.setPrefix( "x" );
+                    Node namespaceNode = node.getAttributes().getNamedItem( "xmlns" );
+                    if (namespaceNode != null && node.getOwnerDocument() instanceof CoreDocumentImpl) {
+                        node.getAttributes().removeNamedItem( namespaceNode.getNodeName() );
+                        AttrNSImpl newNSNode = new AttrNSImpl(
+                                (CoreDocumentImpl) node.getOwnerDocument(), namespaceNode.getNamespaceURI(),
+                                namespaceNode.getNodeName() + ":x", namespaceNode.getLocalName() );
+                        newNSNode.setValue( namespaceNode.getNodeValue() );
+                        node.getAttributes().setNamedItem( newNSNode );
+                    }
+                    NodeList nodes = node.getChildNodes();
+                    for (int i = 0; i < nodes.getLength(); i++) {
+                        Node paramNode = nodes.item( i );
+                        namespaceNode = paramNode.getAttributes().getNamedItem( "xmlns" );
+                        if (namespaceNode != null) {
+                            paramNode.getAttributes().removeNamedItem( namespaceNode.getNodeName() );
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    
+    public static void main( String[] args ) throws Exception {
+        BackendDeliveryWSClientPipelet pipelet = new BackendDeliveryWSClientPipelet();
+        pipelet.setParameter( URL_PARAM_NAME, "http://localhost:8080/NEXUSe2e/webservice/TrafficLogger" );
+        pipelet.setParameter( BASIC_AUTH_PARAM_NAME, Boolean.FALSE );
+        MessageContext mc = new MessageContext();
+        ConversationPojo conversation = new ConversationPojo();
+        ActionPojo action = new ActionPojo();
+        action.setName( "actionId" );
+        conversation.setCurrentAction( action );
+        conversation.setConversationId( "conversationId" );
+        mc.setConversation( conversation );
+        MessagePojo message = new MessagePojo();
+        message.setMessageId( "messageId" );
+        MessagePayloadPojo payload = new MessagePayloadPojo();
+        payload.setPayloadData( "payload".getBytes() );
+        message.setMessagePayloads( Collections.singletonList( payload ) );
+        message.setConversation( conversation );
+        mc.setMessagePojo( message );
+        ChoreographyPojo choreo = new ChoreographyPojo();
+        choreo.setName( "choreographyId" );
+        mc.setChoreography( choreo );
+        PartnerPojo partner = new PartnerPojo();
+        partner.setName( "partnerId" );
+        mc.setCommunicationPartner( partner );
+        pipelet.processMessage( mc );
     }
 
 }
