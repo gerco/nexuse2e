@@ -157,12 +157,6 @@ public class BackendDeliveryWSClientPipelet extends AbstractPipelet {
             OutMessage msg = context.getOutMessage();
             Document doc = (Document) msg.getProperty( DOMOutHandler.DOM_MESSAGE );
             if (doc != null) {
-                System.out.println( doc.getFirstChild().getNodeName() );
-                System.out.println( doc.getFirstChild().getFirstChild().getNodeName() );
-                System.out.println( doc.getFirstChild().getFirstChild().getFirstChild().getNodeName() );
-                System.out.println( doc.getFirstChild().getFirstChild().getFirstChild().getFirstChild().getNodeName() );
-                System.out.println( doc.getFirstChild().getFirstChild().getFirstChild().getFirstChild().getAttributes().item( 0 ).getNodeName() );
-                
                 if (doc.getFirstChild() != null && doc.getFirstChild().getFirstChild() != null &&
                         doc.getFirstChild().getFirstChild().getFirstChild() != null &&
                         "processInboundMessage".equals( doc.getFirstChild().getFirstChild().getFirstChild().getNodeName() )) {
