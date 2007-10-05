@@ -310,10 +310,12 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                     LOG.error( "No Hibernate session factory found in configuration, exiting..." );
                 }
 
+                /*
                 Object dsObject = getBeanFactory().getBean( "internal" );
                 if ( ( dsObject != null ) && ( dsObject instanceof org.apache.commons.dbcp.BasicDataSource ) ) {
 
                 }
+                */
             } catch ( Exception e1 ) {
                 LOG.error( "Problem with database configuration, exiting..." );
                 e1.printStackTrace();
