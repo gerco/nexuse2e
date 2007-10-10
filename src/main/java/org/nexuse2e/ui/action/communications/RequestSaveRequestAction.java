@@ -174,11 +174,6 @@ public class RequestSaveRequestAction extends NexusE2EAction {
             
             Engine.getInstance().getActiveConfigurationAccessService().updateCertificates( certs );
             
-            
-            
-            
-            
-            
         } catch ( Exception ex ) {
             ex.printStackTrace();
         }

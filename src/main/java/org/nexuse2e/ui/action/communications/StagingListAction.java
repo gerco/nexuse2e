@@ -69,38 +69,44 @@ public class StagingListAction extends NexusE2EAction {
         if ( certPojos != null ) {
             for ( CertificatePojo certificate : certPojos ) {
                 byte[] data = certificate.getBinaryData();
-                KeyStore jks = KeyStore.getInstance( CertificateUtil.DEFAULT_KEY_STORE,
-                        CertificateUtil.DEFAULT_JCE_PROVIDER );
-                jks.load( new ByteArrayInputStream( data ), EncryptionUtil.decryptString( certificate.getPassword() )
-                        .toCharArray() );
+                if ( data != null ) {
 
-                Enumeration aliases = jks.aliases();
-                if ( !aliases.hasMoreElements() ) {
-                    LOG.info( "No certificate aliases found!" );
-                    continue;
-                }
+                    KeyStore jks = KeyStore.getInstance( CertificateUtil.DEFAULT_KEY_STORE,
+                            CertificateUtil.DEFAULT_JCE_PROVIDER );
+                    jks.load( new ByteArrayInputStream( data ), EncryptionUtil
+                            .decryptString( certificate.getPassword() ).toCharArray() );
 
-                while ( aliases.hasMoreElements() ) {
-                    String alias = (String) aliases.nextElement();
-                    if ( jks.isKeyEntry( alias ) ) {
-                        certsArray = jks.getCertificateChain( alias );
-                        // LOG.trace( "Cert alias: " + alias );
-
-                        if ( ( certsArray != null ) && ( certsArray.length != 0 ) ) {
-                            form = new CertificatePropertiesForm();
-                            form.setCertificateProperties( (X509Certificate) certsArray[0] );
-                            form.setNxCertificateId( certificate.getNxCertificateId() );
-                            Date date = certificate.getCreatedDate();
-                            SimpleDateFormat databaseDateFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
-                            form.setCreated( databaseDateFormat.format( date ) );
-                            String issuerCN = CertificateUtil.getIssuer( (X509Certificate) certsArray[certsArray.length - 1],X509Name.CN );
-                            form.setIssuerCN( issuerCN );
-                            certs.addElement( form );
-
-                            break;
-                        }
+                    Enumeration<String> aliases = jks.aliases();
+                    if ( !aliases.hasMoreElements() ) {
+                        LOG.info( "No certificate aliases found!" );
+                        continue;
                     }
-                } // while
+
+                    while ( aliases.hasMoreElements() ) {
+                        String alias = aliases.nextElement();
+                        if ( jks.isKeyEntry( alias ) ) {
+                            certsArray = jks.getCertificateChain( alias );
+                            // LOG.trace( "Cert alias: " + alias );
+
+                            if ( ( certsArray != null ) && ( certsArray.length != 0 ) ) {
+                                form = new CertificatePropertiesForm();
+                                form.setCertificateProperties( (X509Certificate) certsArray[0] );
+                                form.setNxCertificateId( certificate.getNxCertificateId() );
+                                Date date = certificate.getCreatedDate();
+                                SimpleDateFormat databaseDateFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
+                                form.setCreated( databaseDateFormat.format( date ) );
+                                String issuerCN = CertificateUtil.getIssuer(
+                                        (X509Certificate) certsArray[certsArray.length - 1], X509Name.CN );
+                                form.setIssuerCN( issuerCN );
+                                certs.addElement( form );
+
+                                break;
+                            }
+                        }
+                    } // while
+                } else {
+                    LOG.error( "Certificate entry does not contain any binary data: " + certificate.getName() );
+                }
             } // while
         } else {
             LOG.info( "no certs found" );
