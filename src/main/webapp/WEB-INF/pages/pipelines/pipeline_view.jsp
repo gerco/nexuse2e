@@ -4,7 +4,7 @@
 <%@ taglib uri="/tags/struts-nested" prefix="nested"%>
 <%@ taglib uri="/tags/struts-tiles" prefix="tiles"%>
 <%@ taglib uri="/tags/struts-logic" prefix="logic"%>
-<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="/tags/struts-html-el" prefix="html-el"%>
 
 <nexus:helpBar helpDoc="documentation/Collaboration_Partners.htm" />
@@ -78,10 +78,14 @@
 				</nexus:submit> <nexus:submit
 					onClick="document.forms[0].sortaction.value=${pipelet.position};document.forms[0].submitaction.value='delete';">
 					<img src="images/delete.gif" class="button" alt="Delete" id="deletePipelet"><span dojoType="tooltip" connectId="deletePipelet" toggle="explode">Delete Pipelet</span>
-				</nexus:submit> <nexus:submit
+				</nexus:submit> 
+				<logic:notEqual name="pipelet" property="nxPipeletId" value="">
+				<nexus:submit
 					onClick="document.forms[0].sortaction.value=${pipelet.position};document.forms[0].submitaction.value='config';">
 					<img src="images/submit.gif" class="button" alt="Configure" id="configurePipelet"><span dojoType="tooltip" connectId="configurePipelet" toggle="explode">Configure Pipelet</span>
-				</nexus:submit></td>
+				</nexus:submit>
+				</logic:notEqual>
+				</td>
 			</tr>
 		</logic:iterate>
 
