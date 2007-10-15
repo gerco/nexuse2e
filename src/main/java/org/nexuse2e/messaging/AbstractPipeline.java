@@ -28,7 +28,7 @@ abstract public class AbstractPipeline implements Pipeline {
 
     protected boolean          frontendPipeline;
     protected boolean          outboundPipeline;
-
+    protected BeanStatus       status           = BeanStatus.UNDEFINED;
     /**
      * The pipelets used for processing the message.
      */
@@ -100,6 +100,8 @@ abstract public class AbstractPipeline implements Pipeline {
      */
     public void activate() {
 
+        status = BeanStatus.ACTIVATED;
+
         if ( forwardPipelets != null ) {
             for ( int i = 0; i < forwardPipelets.length; i++ ) {
                 forwardPipelets[i].activate();
@@ -120,6 +122,8 @@ abstract public class AbstractPipeline implements Pipeline {
      */
     public void deactivate() {
 
+        status = BeanStatus.INITIALIZED;
+        
         if ( forwardPipelets != null ) {
             for ( int i = 0; i < forwardPipelets.length; i++ ) {
                 forwardPipelets[i].deactivate();
@@ -150,7 +154,8 @@ abstract public class AbstractPipeline implements Pipeline {
      * @see org.nexuse2e.Manageable#getStatus()
      */
     public BeanStatus getStatus() {
-
+        
+        
         try {
             BeanStatus minimumStatus = BeanStatus.STARTED;
             if ( forwardPipelets != null ) {
@@ -182,6 +187,11 @@ abstract public class AbstractPipeline implements Pipeline {
                 }
             }
 
+            if( (forwardPipelets == null || forwardPipelets.length == 0) && 
+                    (returnPipelets == null || returnPipelets.length == 0)) {
+                minimumStatus = status;
+            }
+            
             return minimumStatus;
         } catch ( Exception e ) {
             // TODO Auto-generated catch block
@@ -195,6 +205,8 @@ abstract public class AbstractPipeline implements Pipeline {
      */
     public void initialize( EngineConfiguration config ) throws InstantiationException {
 
+        status = BeanStatus.INITIALIZED;
+        
         if ( forwardPipelets != null ) {
             for ( int i = 0; i < forwardPipelets.length; i++ ) {
                 forwardPipelets[i].initialize( null );
@@ -215,6 +227,8 @@ abstract public class AbstractPipeline implements Pipeline {
      */
     public void teardown() {
 
+        status = BeanStatus.INSTANTIATED;
+        
         if ( forwardPipelets != null ) {
             for ( int i = 0; i < forwardPipelets.length; i++ ) {
                 forwardPipelets[i].teardown();

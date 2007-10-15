@@ -210,12 +210,28 @@ public class PipelineForm extends ActionForm {
     @Override
     public void reset( ActionMapping mapping, HttpServletRequest request ) {
 
-        for ( PipeletParamPojo pipeletParamPojo : parameters ) {
-            if ( pipeletParamPojo.getParameterDescriptor().getParameterType() == ParameterType.BOOLEAN ) {
-                pipeletParamPojo.setValue( null );
+        System.out.println("mapping.name: "+mapping.getName());
+        System.out.println("request: "+request.getParameterNames());
+//        Enumeration e = request.getParameterNames();
+//        while(e.hasMoreElements() ) {
+//            System.out.println("param:"+e.nextElement());
+//        }
+        String action = request.getParameter( "submitaction" );
+        
+        if(mapping.getPath().indexOf( "PipelineView" ) != -1 &&(action == null)) {
+            this.pipelets = new Vector<PipeletPojo>();
+            this.parameters = new Vector<PipeletParamPojo>();
+            this.currentPipelet = null;
+        } else if(mapping.getPath().indexOf( "PipeletParamsUpdate" ) != -1) {
+            for ( PipeletParamPojo pipeletParamPojo : parameters ) {
+                if ( pipeletParamPojo.getParameterDescriptor().getParameterType() == ParameterType.BOOLEAN ) {
+                    pipeletParamPojo.setValue( null );
+                }
             }
+        } else {
         }
         pipeletParamValues = new HashMap<String, String>();
+        
     }
 
     /**

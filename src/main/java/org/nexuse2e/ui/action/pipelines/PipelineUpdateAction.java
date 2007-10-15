@@ -38,6 +38,7 @@ import org.nexuse2e.configuration.ConfigurationUtil;
 import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.messaging.Pipelet;
 import org.nexuse2e.pojo.ComponentPojo;
+import org.nexuse2e.pojo.PipeletParamPojo;
 import org.nexuse2e.pojo.PipeletPojo;
 import org.nexuse2e.pojo.PipelinePojo;
 import org.nexuse2e.transport.TransportReceiver;
@@ -181,6 +182,16 @@ public class PipelineUpdateAction extends NexusE2EAction {
 
         if ( action.equals( "update" ) ) {
             form.getProperties( pipeline );
+            // debug
+            
+//                PipeletPojo p = pipeline.getPipelets().iterator().next();
+//                
+//                for ( PipeletParamPojo param : p.getPipeletParams() ) {
+//                    System.out.println("param:"+param.getLabel()+" - "+param.getValue());
+//                }
+                
+            
+            //
             Engine.getInstance().getActiveConfigurationAccessService().updatePipeline( pipeline );
         }
 

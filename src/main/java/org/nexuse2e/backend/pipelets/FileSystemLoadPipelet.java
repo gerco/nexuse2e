@@ -178,27 +178,5 @@ public class FileSystemLoadPipelet extends AbstractOutboundBackendPipelet {
         return Collections.unmodifiableMap( parameterMap );
     }
 
-    public void activate() {
-
-        // TODO Auto-generated method stub
-
-    }
-
-    public void deactivate() {
-
-        // TODO Auto-generated method stub
-
-    }
-
-    public void initialize() {
-
-        // TODO Auto-generated method stub
-
-    }
-
-    public void teardown() {
-
-        // TODO Auto-generated method stub
-
-    }
+    
 } // FileSystemLoadPipelet

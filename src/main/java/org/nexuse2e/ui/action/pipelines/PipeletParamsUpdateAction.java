@@ -59,7 +59,7 @@ public class PipeletParamsUpdateAction extends NexusE2EAction {
 
         PipelineForm form = (PipelineForm) actionForm;
 
-        request.setAttribute( "keepData", "true" );
+//        request.setAttribute( "keepData", "true" );
         //request.getSession().setAttribute( Crumbs.CURRENT_LOCATION, Crumbs.PIPELINE_VIEW + "_" + form.getNxPipelineId() );
 
         String action = form.getSubmitaction();
