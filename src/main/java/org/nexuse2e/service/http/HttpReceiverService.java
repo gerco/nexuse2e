@@ -120,11 +120,11 @@ public class HttpReceiverService extends AbstractControllerService implements Re
 
             LOG.trace( "Processing Done" );
 
-            PrintWriter out = new PrintWriter( response.getOutputStream() );
+            // PrintWriter out = new PrintWriter( response.getOutputStream() );
             response.setStatus( HttpServletResponse.SC_OK );
-            out.println( "\n" );
-            out.flush();
-            out.close();
+            // out.println( "\n" );
+            //out.flush();
+            //out.close();
 
         } catch ( Exception e ) {
             e.printStackTrace();
