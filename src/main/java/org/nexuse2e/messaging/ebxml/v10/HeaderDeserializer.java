@@ -64,7 +64,7 @@ public class HeaderDeserializer extends AbstractPipelet {
     public MessageContext processMessage( MessageContext messageContext ) throws IllegalArgumentException,
             IllegalStateException {
 
-        LOG.trace( "enter EbXMLV20HeaderDeserializer.processMessageImpl" );
+        LOG.trace( "enter EbXMLV10HeaderDeserializer.processMessageImpl" );
 
         MessagePojo messagePojo = messageContext.getMessagePojo();
 
@@ -175,7 +175,7 @@ public class HeaderDeserializer extends AbstractPipelet {
         //            }
         //        }
 
-        LOG.trace( "leave EbXMLV20HeaderDeserializer.processMessageImpl" );
+        LOG.trace( "leave EbXMLV10HeaderDeserializer.processMessageImpl" );
 
         return messageContext;
     }
@@ -195,7 +195,7 @@ public class HeaderDeserializer extends AbstractPipelet {
         String actionId = null;
         String choreographyId = null;
 
-        LOG.trace( "enter EbXMLV20HeaderDeserializer.unmarshallMessageHeader" );
+        LOG.trace( "enter EbXMLV10HeaderDeserializer.unmarshallMessageHeader" );
         try {
             SOAPElement element = null;
             SOAPElement innerElement = null;
@@ -334,7 +334,7 @@ public class HeaderDeserializer extends AbstractPipelet {
     private void unmarshallAckRequested( SOAPEnvelope soapEnvelope, SOAPElement ackRequested, MessagePojo messagePojo )
             throws NexusException {
 
-        LOG.trace( "enter EbXMLV20HeaderDeserializer.unmarshallAckRequested" );
+        LOG.trace( "enter EbXMLV10HeaderDeserializer.unmarshallAckRequested" );
         //setReliableMessaging( true );
         /* NYI
          try {
@@ -344,7 +344,7 @@ public class HeaderDeserializer extends AbstractPipelet {
          throw new MessagingException( ex.getMessage() );
          }
          */
-        LOG.trace( "leave EbXMLV20HeaderDeserializer.unmarshallAckRequested" );
+        LOG.trace( "leave EbXMLV10HeaderDeserializer.unmarshallAckRequested" );
     } // unmarshallAckRequested
 
     /**
@@ -356,7 +356,7 @@ public class HeaderDeserializer extends AbstractPipelet {
     private void unmarshallAcknowledgment( SOAPEnvelope soapEnvelope, SOAPElement acknowledgement,
             MessagePojo messagePojo ) throws NexusException {
 
-        LOG.trace( "enter EbXMLV20HeaderDeserializer.unmarshallAcknowledgment" );
+        LOG.trace( "enter EbXMLV10HeaderDeserializer.unmarshallAcknowledgment" );
         //setMessageType( MESSAGE_TYPE_ACK );
         messagePojo.setType( org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ACK );
         try {
@@ -405,7 +405,7 @@ public class HeaderDeserializer extends AbstractPipelet {
             ex.printStackTrace();
             throw new NexusException( ex.getMessage() );
         }
-        LOG.trace( "leave EbXMLV20HeaderDeserializer.unmarshallAcknowledgment" );
+        LOG.trace( "leave EbXMLV10HeaderDeserializer.unmarshallAcknowledgment" );
     } // unmarshallAcknowledgment    
 
     /**
@@ -417,9 +417,9 @@ public class HeaderDeserializer extends AbstractPipelet {
     private void unmarshallErrorList( SOAPEnvelope soapEnvelope, SOAPElement errorList, MessagePojo messagePojo )
             throws NexusException {
 
-        LOG.trace( "enter EbXMLV20HeaderDeserializer.unmarshallErrorList" );
+        LOG.trace( "enter EbXMLV10HeaderDeserializer.unmarshallErrorList" );
         messagePojo.setType( org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ERROR );
-        LOG.trace( "leave EbXMLV20HeaderDeserializer.unmarshallErrorList" );
+        LOG.trace( "leave EbXMLV10HeaderDeserializer.unmarshallErrorList" );
     } // unmarshallErrorList
 
 }

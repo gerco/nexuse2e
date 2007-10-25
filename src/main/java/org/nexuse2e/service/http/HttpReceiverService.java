@@ -19,6 +19,7 @@
  */
 package org.nexuse2e.service.http;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -34,6 +35,14 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.namespace.QName;
+import javax.xml.soap.MessageFactory;
+import javax.xml.soap.SOAPBody;
+import javax.xml.soap.SOAPConstants;
+import javax.xml.soap.SOAPEnvelope;
+import javax.xml.soap.SOAPFactory;
+import javax.xml.soap.SOAPMessage;
+import javax.xml.soap.SOAPPart;
 
 import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
@@ -119,7 +128,7 @@ public class HttpReceiverService extends AbstractControllerService implements Re
 
         } catch ( Exception e ) {
             e.printStackTrace();
-            response.sendError( 500, "NEXUSe2e - Processing error: " + e );
+            createErrorResponse( request, response, e.getMessage() );
         }
 
         return null;
@@ -150,6 +159,29 @@ public class HttpReceiverService extends AbstractControllerService implements Re
         }
 
         return bufferArray;
+    }
+
+    private void createErrorResponse( HttpServletRequest request, HttpServletResponse response, String message )
+            throws IOException {
+
+        if ( ( transportReceiver != null )
+                && ( transportReceiver.getKey().getCommunicationProtocolId().equalsIgnoreCase( "ebxml" ) ) ) {
+            try {
+                MessageFactory messageFactory = MessageFactory.newInstance();
+                SOAPMessage soapMessage = messageFactory.createMessage();
+                SOAPPart soapPart = soapMessage.getSOAPPart();
+                SOAPEnvelope soapEnvelope = soapPart.getEnvelope();
+                SOAPBody soapBody = soapEnvelope.getBody();
+                QName faultName = new QName( SOAPConstants.URI_NS_SOAP_ENVELOPE, "Server" );
+                soapBody.addFault( faultName, message );
+                soapMessage.saveChanges();
+                soapMessage.writeTo( response.getOutputStream() );
+            } catch ( Exception e ) {
+                response.sendError( 500, "NEXUSe2e - Processing error error creating SOAPFault " + e );
+            }
+        } else {
+            response.sendError( 500, "NEXUSe2e - Processing error: " + message );
+        }
     }
 
     /* (non-Javadoc)
@@ -205,12 +237,12 @@ public class HttpReceiverService extends AbstractControllerService implements Re
 
         File dirFile = new File( dir );
         if ( !dirFile.isDirectory() ) {
-           LOG.error( "NEXUSe2eRoot not pointing to a directory!" ); 
+            LOG.error( "NEXUSe2eRoot not pointing to a directory!" );
         }
         File outputDir = new File( dirFile.getAbsolutePath() + "/inbox/notproc" );
-        
+
         outputDir.mkdirs();
-        
+
         DateFormat df = new SimpleDateFormat( "yyyyMMddHHmmssSSS" );
         String now = df.format( new Date() );
 
@@ -219,15 +251,15 @@ public class HttpReceiverService extends AbstractControllerService implements Re
         if ( messageContext.getData() != null ) {
             try {
                 FileOutputStream fos = new FileOutputStream( outputFile );
-                fos.write( (byte[])messageContext.getData() );
+                fos.write( (byte[]) messageContext.getData() );
                 fos.flush();
                 fos.close();
             } catch ( Exception e ) {
-                LOG.error( "Error saving raw inbound message:" + e ); 
+                LOG.error( "Error saving raw inbound message:" + e );
             }
         } else {
-            LOG.error( "No raw inbound message data found!" ); 
+            LOG.error( "No raw inbound message data found!" );
         }
-        
+
     }
 } // HttpReceiverService

@@ -238,7 +238,7 @@ public class HeaderSerializer extends AbstractPipelet {
 
                 String actionName = null;
                 if ( messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ACK ) {
-                    actionName = "Acknowledgement";
+                    actionName = "Acknowledgment";
                 } else {
                     actionName = messagePojo.getAction().getName();
                 }

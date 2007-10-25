@@ -222,6 +222,10 @@ public class HeaderSerializer extends AbstractPipelet {
                 }
                 */
 
+                if ( ( messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ACK )
+                        || ( messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ERROR ) ) {
+                    service = "urn:oasis:names:tc:ebxml-msg:service";
+                }
                 String serviceVal = new String();
                 if ( !( service.startsWith( "uri:" ) || service.startsWith( "urn:" ) ) ) {
                     serviceVal += "uri:";
@@ -234,7 +238,10 @@ public class HeaderSerializer extends AbstractPipelet {
 
                 String actionName = null;
                 if ( messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ACK ) {
-                    actionName = "Acknowledgement";
+                    actionName = "Acknowledgment";
+                } else if ( messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ERROR ) {
+                    actionName = "MessageError";
+
                 } else {
                     actionName = messagePojo.getAction().getName();
                 }

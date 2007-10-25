@@ -222,10 +222,13 @@ public class HttpSenderService extends AbstractService implements SenderAware {
             client.executeMethod( method );
             LOG.debug( "HTTP call done" );
             int statusCode = method.getStatusCode();
-            if ( statusCode != 200 ) {
-                LOG.error( new LogMessage( "Message submission failed, server responsed with status: " + statusCode,
+            if ( statusCode > 299 ) {
+                LOG.error( new LogMessage( "Message submission failed, server responded with status: " + statusCode,
                         messageContext.getMessagePojo() ) );
-                throw new NexusException( "Message submission failed, server responsed with status: " + statusCode );
+                throw new NexusException( "Message submission failed, server responded with status: " + statusCode );
+            } else if ( statusCode < 200 ) {
+                LOG.warn( new LogMessage( "Partner server responded with status: " + statusCode,
+                        messageContext.getMessagePojo() ) );
             }
 
             httpReply = getHTTPReply( method );
