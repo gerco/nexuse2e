@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Vector;
 
+import javax.xml.namespace.QName;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.Name;
 import javax.xml.soap.SOAPBody;
@@ -143,6 +144,10 @@ public class HeaderSerializer extends AbstractPipelet {
                 soapEnvelope.addNamespaceDeclaration( "xsi",
                         "http://www.oasis-open.org/committees/ebxml-msg/schema/envelope.xsd" );
                 soapEnvelope.addNamespaceDeclaration( "xlink", "http://www.w3.org/1999/xlink" );
+                soapEnvelope
+                        .addAttribute(
+                                new QName( "http://www.w3.org/2001/XMLSchema-instance", "schemaLocation", "xsi" ),
+                                "http://schemas.xmlsoap.org/soap/envelope/ http://www.oasis-open.org/committees/ebxml-msg/schema/envelope.xsd" );
                 /*
                  soapEnvelope.addAttribute( soapFactory.createName( "xmlns:eb" ),
                  "http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd" );
@@ -160,12 +165,8 @@ public class HeaderSerializer extends AbstractPipelet {
                         "http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd" );
 
                 // BODY ATTRS ----------------------------------------------------------
-                soapBody
-                        .addAttribute(
-                                soapFactory.createName( "xsi:schemaLocation" ),
-                                "http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd" );
-                soapBody.addAttribute( soapFactory.createName( "xmlns:eb" ),
-                        "http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd" );
+                // soapBody.addAttribute(soapFactory.createName( "xsi:schemaLocation" ),"http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd" );
+                // soapBody.addAttribute( soapFactory.createName( "xmlns:eb" ),"http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd" );
 
                 // MESSAGE HEADER ------------------------------------------------------
                 name = soapFactory.createName( "MessageHeader", Constants.EBXML_NAMESPACE_PREFIX,
@@ -293,7 +294,6 @@ public class HeaderSerializer extends AbstractPipelet {
                                 Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE ), Constants.EBXMLVERSION );
                         ackReq.addAttribute( soapFactory.createName( "signed", Constants.EBXML_NAMESPACE_PREFIX,
                                 Constants.EBXML_NAMESPACE ), Constants.ACKREQUESTED_UNSIGNED );
-                        msgHeader.addChildElement( soapElement );
                         soapElement = soapFactory.createElement( "DuplicateElimination",
                                 Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE );
                         msgHeader.addChildElement( soapElement );
@@ -306,11 +306,11 @@ public class HeaderSerializer extends AbstractPipelet {
                             Constants.EBXML_NAMESPACE );
                     soapManifest = soapBody.addBodyElement( name );
 
-                    soapManifest.addAttribute( soapFactory.createName( Constants.MUSTUNDERSTAND,
-                            Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE ),
-                            Constants.MUSTUNDERSTAND_VALUE );
+                    // soapManifest.addAttribute( soapFactory.createName( Constants.MUSTUNDERSTAND,Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE ),Constants.MUSTUNDERSTAND_VALUE );
                     soapManifest.addAttribute( soapFactory.createName( Constants.VERSION,
                             Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE ), Constants.EBXMLVERSION );
+                    soapManifest.addAttribute( soapFactory.createName( "id", Constants.EBXML_NAMESPACE_PREFIX,
+                            Constants.EBXML_NAMESPACE ), "Manifest" );
 
                     // REFERENCES ------------------------------------------------------
 
@@ -472,12 +472,12 @@ public class HeaderSerializer extends AbstractPipelet {
     private void createManifestReference( SOAPFactory soapFactory, SOAPElement parent, String href, String id,
             String type, String role ) throws SOAPException {
 
-        SOAPElement soapEl = soapFactory.createElement( "Reference", Constants.EBXML_NAMESPACE_PREFIX,
-                Constants.EBXML_NAMESPACE );
+        // SOAPElement soapEl = soapFactory.createElement( "Reference", Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE );
+        SOAPElement soapEl = soapFactory.createElement( soapFactory.createName( "eb:Reference" ) );
         soapEl.addAttribute( soapFactory.createName( "xmlns:xlink" ), "http://www.w3.org/1999/xlink" );
 
-        soapEl.addAttribute(
-                soapFactory.createName( "id", Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE ), id );
+        // soapEl.addAttribute( soapFactory.createName( "id", Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE ), id );
+        soapEl.addAttribute( soapFactory.createName( "eb:id" ), id );
         soapEl.addAttribute( soapFactory.createName( "xlink:href" ), href );
 
         if ( role != null && role.length() != 0 ) {

@@ -37,10 +37,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.namespace.QName;
 import javax.xml.soap.MessageFactory;
+import javax.xml.soap.Name;
 import javax.xml.soap.SOAPBody;
 import javax.xml.soap.SOAPConstants;
 import javax.xml.soap.SOAPEnvelope;
 import javax.xml.soap.SOAPFactory;
+import javax.xml.soap.SOAPFault;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.soap.SOAPPart;
 
@@ -171,11 +173,16 @@ public class HttpReceiverService extends AbstractControllerService implements Re
                 SOAPMessage soapMessage = messageFactory.createMessage();
                 SOAPPart soapPart = soapMessage.getSOAPPart();
                 SOAPEnvelope soapEnvelope = soapPart.getEnvelope();
+                // soapEnvelope.addNamespaceDeclaration( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
+                soapEnvelope.addAttribute( new QName("http://www.w3.org/2001/XMLSchema-instance", "schemaLocation", "xsi") , "http://schemas.xmlsoap.org/soap/envelope/ http://www.oasis-open.org/committees/ebxml-msg/schema/envelope.xsd" );
                 SOAPBody soapBody = soapEnvelope.getBody();
-                QName faultName = new QName( SOAPConstants.URI_NS_SOAP_ENVELOPE, "Server" );
-                soapBody.addFault( faultName, message );
+                // QName faultName = new QName( SOAPConstants.URI_NS_SOAP_ENVELOPE, "Server" );
+                SOAPFault soapFault = soapBody.addFault();
+                soapFault.setFaultCode( "soapenv:Server" );
+                soapFault.setFaultString( message );
                 soapMessage.saveChanges();
                 soapMessage.writeTo( response.getOutputStream() );
+                response.setContentType( "text/xml" );
             } catch ( Exception e ) {
                 response.sendError( 500, "NEXUSe2e - Processing error error creating SOAPFault " + e );
             }
@@ -262,4 +269,5 @@ public class HttpReceiverService extends AbstractControllerService implements Re
         }
 
     }
+    
 } // HttpReceiverService
