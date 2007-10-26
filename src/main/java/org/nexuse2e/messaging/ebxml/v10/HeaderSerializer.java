@@ -121,6 +121,7 @@ public class HeaderSerializer extends AbstractPipelet {
                 }
 
                 SOAPMessage soapMessage = messageFactory.createMessage();
+                soapMessage.setProperty( SOAPMessage.WRITE_XML_DECLARATION, "true" );
                 SOAPPart soapPart = soapMessage.getSOAPPart();
                 SOAPEnvelope soapEnvelope = soapPart.getEnvelope();
                 SOAPBody soapBody = soapEnvelope.getBody();

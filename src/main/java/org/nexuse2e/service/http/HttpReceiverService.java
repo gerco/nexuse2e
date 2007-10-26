@@ -171,6 +171,7 @@ public class HttpReceiverService extends AbstractControllerService implements Re
             try {
                 MessageFactory messageFactory = MessageFactory.newInstance();
                 SOAPMessage soapMessage = messageFactory.createMessage();
+                soapMessage.setProperty( SOAPMessage.WRITE_XML_DECLARATION, "true" );
                 SOAPPart soapPart = soapMessage.getSOAPPart();
                 SOAPEnvelope soapEnvelope = soapPart.getEnvelope();
                 // soapEnvelope.addNamespaceDeclaration( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
