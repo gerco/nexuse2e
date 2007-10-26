@@ -421,7 +421,8 @@ public class TransactionServiceImpl implements TransactionService {
     public MessageContext getMessageContext( String messageId, boolean isReferencedMessageId ) throws NexusException {
 
         MessageContext messageContext = null;
-        MessagePojo messagePojo = Engine.getInstance().getTransactionService().getMessage( messageId, isReferencedMessageId );
+        MessagePojo messagePojo = Engine.getInstance().getTransactionService().getMessage( messageId,
+                isReferencedMessageId );
 
         if ( messagePojo != null ) {
             messageContext = new MessageContext();
@@ -566,6 +567,18 @@ public class TransactionServiceImpl implements TransactionService {
             processingMessages.remove( id );
         }
     } // deregisterProcessingMessage
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.controller.TransactionService#stopProcessingMessage(java.lang.String)
+     */
+    public void stopProcessingMessage( String id ) throws NexusException {
+
+        MessagePojo messagePojo = getMessage( id );
+        messagePojo.setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_STOPPED );
+        messagePojo.getConversation().setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_IDLE );
+        updateTransaction( messagePojo.getConversation() );
+        deregisterProcessingMessage( id );
+    } // stopProcessingMessage
 
     /* (non-Javadoc)
      * @see org.nexuse2e.controller.TransactionService#addSynchronousRequest(java.lang.String)

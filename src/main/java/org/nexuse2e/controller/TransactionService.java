@@ -262,6 +262,13 @@ public interface TransactionService extends Manageable {
     public abstract void deregisterProcessingMessage( String id ); // deregisterProcessingMessage
 
     /**
+     * Unregister a <code>ScheduledFuture</code> for a message that no longer needs processing, 
+     * stop the scheduler for it and set the message to state 'STOPPED'.
+     * @param id The message ID
+     */
+    public abstract void stopProcessingMessage( String id ) throws NexusException; // stopProcessingMessage
+
+    /**
      * @param messageId
      */
     public abstract void addSynchronousRequest( String messageId );

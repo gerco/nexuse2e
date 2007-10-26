@@ -107,7 +107,7 @@ public class ModifyMessageAction extends NexusE2EAction {
                     + participantId );
             // Message newMessage = MessageJDBCPersistent.getMessage( choreography, participant, conversation, message );
             try {
-                // MessageDispatcher.getInstance().stopMessage( newMessage );
+                Engine.getInstance().getTransactionService().stopProcessingMessage( messageId );
             } catch ( Exception e ) {
                 ActionMessage errorMessage = new ActionMessage( "generic.error", e.getMessage() );
                 errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );

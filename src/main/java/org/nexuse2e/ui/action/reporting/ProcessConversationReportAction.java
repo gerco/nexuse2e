@@ -75,10 +75,10 @@ public class ProcessConversationReportAction extends NexusE2EAction {
 
         ReportingPropertiesForm form = (ReportingPropertiesForm) actionForm;
 
-        String dir = form.getCommand();
+        String command = form.getCommand();
         String refresh = request.getParameter( "refresh" );
         if ( refresh != null ) {
-            dir = "transaction";
+            command = "transaction";
         }
         String timezone = form.getTimezone();
 
@@ -91,7 +91,7 @@ public class ProcessConversationReportAction extends NexusE2EAction {
         //        form.setConvColPartId( true );
         //        form.setConvColCreated( true );
 
-        if ( searchFor != null && searchFor.equals( "message" ) && dir != null && dir.equals( "requeue" ) ) {
+        if ( searchFor != null && searchFor.equals( "message" ) && command != null && command.equals( "requeue" ) ) {
             for ( int i = 0; i < form.getSelectedResults().length; i++ ) {
                 String messageIdent = form.getSelectedResults()[i];
                 StringTokenizer st = new StringTokenizer( messageIdent, "|" );
@@ -142,7 +142,7 @@ public class ProcessConversationReportAction extends NexusE2EAction {
                     }
                 } else {
                     String logMessage = "Message: " + messageId
-                    + " could not be found in database, cancelled re-queueing!";
+                            + " could not be found in database, cancelled re-queueing!";
                     LOG.error( new LogMessage( logMessage, conversationId, messageId ) );
                     ActionMessage errorMessage = new ActionMessage( "generic.error", logMessage );
                     errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
@@ -151,40 +151,36 @@ public class ProcessConversationReportAction extends NexusE2EAction {
                 }
             }
 
-            dir = "transaction";
+            command = "transaction";
         }
-        if ( searchFor != null && searchFor.equals( "message" ) && dir != null && dir.equals( "stop" ) ) {
-            //            for ( int i = 0; i < form.getSelectedResults().length; i++ ) {
-            //                String messageIdent = form.getSelectedResults()[i];
-            //                StringTokenizer st = new StringTokenizer( messageIdent, "|" );
-            //                if ( st.countTokens() != 4 ) {
-            //                    ActionMessage errorMessage = new ActionMessage( "generic.error", "cant stop Message: >"
-            //                            + messageIdent + "<" );
-            //                    errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
-            //                    addRedirect( request, URL, TIMEOUT );
-            //                    continue;
-            //                }
-            //                String participant = st.nextToken();
-            //                String choreography = st.nextToken();
-            //                String conversation = st.nextToken();
-            //                String message = st.nextToken();
-            //
-            //                MessageDAO messageDao = new MessageDAO();
-            //                MessagePojo messagePojo = messageDao.getMessageByMessageKey( choreography, conversation, message, participant );
-            //                Message newMessage = new Message(messagePojo);
-            //                
-            //                try {
-            //                    MessageDispatcher.getInstance().stopMessage( newMessage );
-            //                } catch ( MessagingException e ) {
-            //                    ActionMessage errorMessage = new ActionMessage( "generic.error", e.getMessage() );
-            //                    errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
-            //                    addRedirect( request, URL, TIMEOUT );
-            //                    continue;
-            //                }
-            //            }
-            dir = "transaction";
+        if ( searchFor != null && searchFor.equals( "message" ) && command != null && command.equals( "stop" ) ) {
+            for ( int i = 0; i < form.getSelectedResults().length; i++ ) {
+                String messageIdent = form.getSelectedResults()[i];
+                StringTokenizer st = new StringTokenizer( messageIdent, "|" );
+                if ( st.countTokens() != 4 ) {
+                    ActionMessage errorMessage = new ActionMessage( "generic.error", "cant stop Message: >"
+                            + messageIdent + "<" );
+                    errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
+                    addRedirect( request, URL, TIMEOUT );
+                    continue;
+                }
+                String participant = st.nextToken();
+                String choreography = st.nextToken();
+                String conversation = st.nextToken();
+                String message = st.nextToken();
+
+                try {
+                    Engine.getInstance().getTransactionService().stopProcessingMessage( message );
+                } catch ( Exception e ) {
+                    ActionMessage errorMessage = new ActionMessage( "generic.error", e.getMessage() );
+                    errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
+                    addRedirect( request, URL, TIMEOUT );
+                    continue;
+                }
+            }
+            command = "transaction";
         }
-        if ( searchFor != null && searchFor.equals( "conversation" ) && dir != null && dir.equals( "delete" ) ) {
+        if ( searchFor != null && searchFor.equals( "conversation" ) && command != null && command.equals( "delete" ) ) {
             System.out.println( "deleting conversation" );
 
             for ( int i = 0; i < form.getSelectedResults().length; i++ ) {
@@ -213,7 +209,7 @@ public class ProcessConversationReportAction extends NexusE2EAction {
 
             }
 
-            dir = "transaction";
+            command = "transaction";
         }
 
         String status = null;
@@ -282,9 +278,9 @@ public class ProcessConversationReportAction extends NexusE2EAction {
 
             form.setAllItemsCount( items );
             List reportMessages = null;
-            if ( dir == null || dir.equals( "" ) || dir.equals( "first" ) || dir.equals( "transaction" ) ) {
+            if ( command == null || command.equals( "" ) || command.equals( "first" ) || command.equals( "transaction" ) ) {
                 int pos = form.getStartCount();
-                if ( pos == 0 || !dir.equals( "transaction" ) ) {
+                if ( pos == 0 || !command.equals( "transaction" ) ) {
                     reportMessages = Engine.getInstance().getTransactionService().getMessagesForReport( status,
                             nxChoreographyId, nxPartnerId, conversationId, messageId, null, getStartDate( form ),
                             getEndDate( form ), form.getPageSize(), 0, TransactionDAO.SORT_CREATED, false );
@@ -312,7 +308,7 @@ public class ProcessConversationReportAction extends NexusE2EAction {
                         form.setEndCount( form.getStartCount() + form.getPageSize() - 1 );
                     }
                 }
-            } else if ( dir.equals( "back" ) ) {
+            } else if ( command.equals( "back" ) ) {
                 int pos = form.getStartCount();
                 if ( pos < form.getPageSize() ) {
                     reportMessages = Engine.getInstance().getTransactionService().getMessagesForReport( status,
@@ -331,7 +327,7 @@ public class ProcessConversationReportAction extends NexusE2EAction {
                     form.setStartCount( pos - form.getPageSize() );
                     form.setEndCount( form.getStartCount() + form.getPageSize() - 1 );
                 }
-            } else if ( dir.equals( "next" ) ) {
+            } else if ( command.equals( "next" ) ) {
                 int pos = form.getStartCount();
                 if ( pos + 2 * form.getPageSize() >= items ) {
 
@@ -353,7 +349,7 @@ public class ProcessConversationReportAction extends NexusE2EAction {
                     form.setStartCount( form.getStartCount() + form.getPageSize() );
                     form.setEndCount( form.getStartCount() + form.getPageSize() - 1 );
                 }
-            } else if ( dir.equals( "last" ) ) {
+            } else if ( command.equals( "last" ) ) {
 
                 reportMessages = Engine.getInstance().getTransactionService().getMessagesForReport( status,
                         nxChoreographyId, nxPartnerId, conversationId, messageId, null, getStartDate( form ),
@@ -385,9 +381,9 @@ public class ProcessConversationReportAction extends NexusE2EAction {
 
             form.setAllItemsCount( items );
             List<ConversationPojo> conversations = null;
-            if ( dir == null || dir.equals( "" ) || dir.equals( "first" ) || dir.equals( "transaction" ) ) {
+            if ( command == null || command.equals( "" ) || command.equals( "first" ) || command.equals( "transaction" ) ) {
                 int pos = form.getStartCount();
-                if ( pos == 0 || !"transaction".equals( dir ) ) {
+                if ( pos == 0 || !"transaction".equals( command ) ) {
 
                     conversations = Engine.getInstance().getTransactionService().getConversationsForReport( status,
                             nxChoreographyId, nxPartnerId, conversationId, getStartDate( form ), getEndDate( form ),
@@ -417,7 +413,7 @@ public class ProcessConversationReportAction extends NexusE2EAction {
                         form.setEndCount( form.getStartCount() + form.getPageSize() - 1 );
                     }
                 }
-            } else if ( "back".equals( dir ) ) {
+            } else if ( "back".equals( command ) ) {
                 int pos = form.getStartCount();
                 if ( pos < form.getPageSize() ) {
 
@@ -437,7 +433,7 @@ public class ProcessConversationReportAction extends NexusE2EAction {
                     form.setStartCount( pos - form.getPageSize() );
                     form.setEndCount( form.getStartCount() + form.getPageSize() - 1 );
                 }
-            } else if ( "next".equals( dir ) ) {
+            } else if ( "next".equals( command ) ) {
                 int pos = form.getStartCount();
                 if ( pos + 2 * form.getPageSize() >= items ) {
 
@@ -459,7 +455,7 @@ public class ProcessConversationReportAction extends NexusE2EAction {
                     form.setStartCount( form.getStartCount() + form.getPageSize() );
                     form.setEndCount( form.getStartCount() + form.getPageSize() - 1 );
                 }
-            } else if ( "last".equals( dir ) ) {
+            } else if ( "last".equals( command ) ) {
 
                 conversations = Engine.getInstance().getTransactionService().getConversationsForReport( status,
                         nxChoreographyId, nxPartnerId, conversationId, getStartDate( form ), getEndDate( form ),
