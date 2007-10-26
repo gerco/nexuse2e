@@ -141,13 +141,18 @@ public class HeaderSerializer extends AbstractPipelet {
                 //  namespace attributes, 'soap-env' namespace handled by JAXM
                 soapEnvelope.addNamespaceDeclaration( "eb",
                         "http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd" );
-                soapEnvelope.addNamespaceDeclaration( "xsi",
-                        "http://www.oasis-open.org/committees/ebxml-msg/schema/envelope.xsd" );
+                // soapEnvelope.addNamespaceDeclaration( "xsi", "http://www.oasis-open.org/committees/ebxml-msg/schema/envelope.xsd" );
+                soapEnvelope.addNamespaceDeclaration( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
                 soapEnvelope.addNamespaceDeclaration( "xlink", "http://www.w3.org/1999/xlink" );
+                soapEnvelope
+                        .addAttribute( soapFactory.createName( "xsi:schemaLocation" ),
+                                "http://schemas.xmlsoap.org/soap/envelope/ http://www.oasis-open.org/committees/ebxml-msg/schema/envelope.xsd" );
+                /*
                 soapEnvelope
                         .addAttribute( soapFactory.createName( "http://www.w3.org/2001/XMLSchema-instance",
                                 "schemaLocation", "xsi" ),
                                 "http://schemas.xmlsoap.org/soap/envelope/ http://www.oasis-open.org/committees/ebxml-msg/schema/envelope.xsd" );
+                                */
                 /*
                  soapEnvelope.addAttribute( soapFactory.createName( "xmlns:eb" ),
                  "http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd" );

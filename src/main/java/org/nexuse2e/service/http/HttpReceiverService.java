@@ -170,11 +170,16 @@ public class HttpReceiverService extends AbstractControllerService implements Re
                 soapMessage.setProperty( SOAPMessage.WRITE_XML_DECLARATION, "true" );
                 SOAPPart soapPart = soapMessage.getSOAPPart();
                 SOAPEnvelope soapEnvelope = soapPart.getEnvelope();
-                // soapEnvelope.addNamespaceDeclaration( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
+                soapEnvelope.addNamespaceDeclaration( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
+                soapEnvelope
+                .addAttribute( soapFactory.createName( "xsi:schemaLocation" ),
+                        "http://schemas.xmlsoap.org/soap/envelope/ http://www.oasis-open.org/committees/ebxml-msg/schema/envelope.xsd" );
+                /*
                 soapEnvelope
                         .addAttribute( soapFactory.createName( "http://www.w3.org/2001/XMLSchema-instance",
                                 "schemaLocation", "xsi" ),
                                 "http://schemas.xmlsoap.org/soap/envelope/ http://www.oasis-open.org/committees/ebxml-msg/schema/envelope.xsd" );
+                                */
                 SOAPBody soapBody = soapEnvelope.getBody();
                 // QName faultName = new QName( SOAPConstants.URI_NS_SOAP_ENVELOPE, "Server" );
                 SOAPFault soapFault = soapBody.addFault();
