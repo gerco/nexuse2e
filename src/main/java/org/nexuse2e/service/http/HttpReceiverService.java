@@ -19,11 +19,9 @@
  */
 package org.nexuse2e.service.http;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -35,11 +33,8 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.namespace.QName;
 import javax.xml.soap.MessageFactory;
-import javax.xml.soap.Name;
 import javax.xml.soap.SOAPBody;
-import javax.xml.soap.SOAPConstants;
 import javax.xml.soap.SOAPEnvelope;
 import javax.xml.soap.SOAPFactory;
 import javax.xml.soap.SOAPFault;
@@ -169,13 +164,17 @@ public class HttpReceiverService extends AbstractControllerService implements Re
         if ( ( transportReceiver != null )
                 && ( transportReceiver.getKey().getCommunicationProtocolId().equalsIgnoreCase( "ebxml" ) ) ) {
             try {
+                SOAPFactory soapFactory = SOAPFactory.newInstance();
                 MessageFactory messageFactory = MessageFactory.newInstance();
                 SOAPMessage soapMessage = messageFactory.createMessage();
                 soapMessage.setProperty( SOAPMessage.WRITE_XML_DECLARATION, "true" );
                 SOAPPart soapPart = soapMessage.getSOAPPart();
                 SOAPEnvelope soapEnvelope = soapPart.getEnvelope();
                 // soapEnvelope.addNamespaceDeclaration( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-                soapEnvelope.addAttribute( new QName("http://www.w3.org/2001/XMLSchema-instance", "schemaLocation", "xsi") , "http://schemas.xmlsoap.org/soap/envelope/ http://www.oasis-open.org/committees/ebxml-msg/schema/envelope.xsd" );
+                soapEnvelope
+                        .addAttribute( soapFactory.createName( "http://www.w3.org/2001/XMLSchema-instance",
+                                "schemaLocation", "xsi" ),
+                                "http://schemas.xmlsoap.org/soap/envelope/ http://www.oasis-open.org/committees/ebxml-msg/schema/envelope.xsd" );
                 SOAPBody soapBody = soapEnvelope.getBody();
                 // QName faultName = new QName( SOAPConstants.URI_NS_SOAP_ENVELOPE, "Server" );
                 SOAPFault soapFault = soapBody.addFault();
@@ -270,5 +269,5 @@ public class HttpReceiverService extends AbstractControllerService implements Re
         }
 
     }
-    
+
 } // HttpReceiverService

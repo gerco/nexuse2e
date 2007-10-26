@@ -24,7 +24,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Vector;
 
-import javax.xml.namespace.QName;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.Name;
 import javax.xml.soap.SOAPBody;
@@ -146,8 +145,8 @@ public class HeaderSerializer extends AbstractPipelet {
                         "http://www.oasis-open.org/committees/ebxml-msg/schema/envelope.xsd" );
                 soapEnvelope.addNamespaceDeclaration( "xlink", "http://www.w3.org/1999/xlink" );
                 soapEnvelope
-                        .addAttribute(
-                                new QName( "http://www.w3.org/2001/XMLSchema-instance", "schemaLocation", "xsi" ),
+                        .addAttribute( soapFactory.createName( "http://www.w3.org/2001/XMLSchema-instance",
+                                "schemaLocation", "xsi" ),
                                 "http://schemas.xmlsoap.org/soap/envelope/ http://www.oasis-open.org/committees/ebxml-msg/schema/envelope.xsd" );
                 /*
                  soapEnvelope.addAttribute( soapFactory.createName( "xmlns:eb" ),
