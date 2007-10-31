@@ -44,7 +44,7 @@ public class PipeletPojo implements java.io.Serializable {
     private int                    modifiedNxUserId;
     private int                    position;
     private boolean                frontend;
-    private boolean                forward;
+    private boolean                forward          = true;
     private boolean                endpoint;
     private String                 name;
     private String                 description;
@@ -54,6 +54,7 @@ public class PipeletPojo implements java.io.Serializable {
 
     /** default constructor */
     public PipeletPojo() {
+
         createdDate = new Date();
         modifiedDate = createdDate;
     }

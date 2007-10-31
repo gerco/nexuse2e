@@ -131,6 +131,28 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
             String conversationId, String messageId, String label, Object primaryKey, byte[] payload,
             List<ErrorDescriptor> errors ) throws NexusException {
 
+        List<byte[]> payloads = new ArrayList<byte[]>();
+        payloads.add( payload );
+        return processMessage( partnerId, choreographyId, actionId, conversationId, messageId, label, primaryKey,
+                payloads, errors );
+    }
+
+    /**
+     * @param partnerId
+     * @param choreographyId
+     * @param actionId
+     * @param conversationId
+     * @param messageId
+     * @param label
+     * @param primaryKey
+     * @param payload
+     * @return
+     * @throws NexusException
+     */
+    public MessageContext processMessage( String partnerId, String choreographyId, String actionId,
+            String conversationId, String messageId, String label, Object primaryKey, List<byte[]> payloads,
+            List<ErrorDescriptor> errors ) throws NexusException {
+
         if ( choreographyId == null || choreographyId.trim().equals( "" ) ) {
             throw new NexusException( "No valid choreography found for ID: " + choreographyId );
         }
@@ -172,22 +194,24 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
         if ( primaryKey != null ) {
             messageContext.setData( primaryKey );
         }
-        if ( payload != null && payload.length > 0 ) {
-            MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo();
-            messagePayloadPojo.setMessage( messagePojo );
-            messagePayloadPojo.setPayloadData( payload );
-            // TODO: MIME type must be determined!
-            messagePayloadPojo.setMimeType( "text/xml" );
-            messagePayloadPojo.setContentId( messagePojo.getMessageId() + "-body1" );
-            messagePayloadPojo.setSequenceNumber( new Integer( 1 ) );
-            messagePayloadPojo.setCreatedDate( messagePojo.getCreatedDate() );
-            messagePayloadPojo.setModifiedDate( messagePojo.getCreatedDate() );
+        List<MessagePayloadPojo> bodyParts = new ArrayList<MessagePayloadPojo>();
+        for ( byte[] payload : payloads ) {
+            if ( payload != null && payload.length > 0 ) {
+                MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo();
+                messagePayloadPojo.setMessage( messagePojo );
+                messagePayloadPojo.setPayloadData( payload );
+                // TODO: MIME type must be determined!
+                messagePayloadPojo.setMimeType( "text/xml" );
+                messagePayloadPojo.setContentId( messagePojo.getMessageId() + "-body1" );
+                messagePayloadPojo.setSequenceNumber( new Integer( 1 ) );
+                messagePayloadPojo.setCreatedDate( messagePojo.getCreatedDate() );
+                messagePayloadPojo.setModifiedDate( messagePojo.getCreatedDate() );
 
-            List<MessagePayloadPojo> bodyParts = new ArrayList<MessagePayloadPojo>();
-            bodyParts.add( messagePayloadPojo );
-            messagePojo.setMessagePayloads( bodyParts );
-            //messageContext.setData( payload );    
+                bodyParts.add( messagePayloadPojo );
+                //messageContext.setData( payload );    
+            }
         }
+        messagePojo.setMessagePayloads( bodyParts );
 
         if ( errors != null ) {
             messagePojo.setErrors( errors );
