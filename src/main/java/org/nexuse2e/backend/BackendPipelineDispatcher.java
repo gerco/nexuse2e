@@ -180,6 +180,12 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
 
         //      TODO labelhandling
 
+        if ( messageId == null || messageId.equals( "" ) ) {
+            IdGenerator messageIdGenerator = Engine.getInstance().getIdGenerator(
+                    Constants.ID_GENERATOR_MESSAGE );
+            messageId = messageIdGenerator.getId();
+        }
+
         if ( conversationId == null || conversationId.equals( "" ) ) {
             IdGenerator conversationIdGenerator = Engine.getInstance().getIdGenerator(
                     Constants.ID_GENERATOR_CONVERSATION );
