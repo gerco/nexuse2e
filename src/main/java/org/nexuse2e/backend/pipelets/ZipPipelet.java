@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -54,10 +55,12 @@ public class ZipPipelet extends AbstractPipelet {
     public final static String FILE_NAME_PATTERN = "fileNamePattern";
     public final static String TIMESTAMP_PATTERN = "timestampPattern";
     public final static String FILE_EXTENSION    = "fileExtension";
+    public final static String COMBINE_PAYLOADS  = "combinePayloads";
 
     private String             fileNamePattern   = null;
     private String             timestampPattern  = null;
     private String             fileExtension     = null;
+    private boolean            combinePayloads   = false;
 
     public ZipPipelet() {
 
@@ -66,6 +69,8 @@ public class ZipPipelet extends AbstractPipelet {
         parameterMap.put( FILE_EXTENSION, new ParameterDescriptor( ParameterType.STRING, "File extension",
                 "The file extension to append", "Payloads" ) );
         parameterMap.put( TIMESTAMP_PATTERN, new ParameterDescriptor( ParameterType.STRING, "Timestamp pattern",
+                "The timestamp pattern to use", "yyyy-MM-dd HH.mm.ssSSS" ) );
+        parameterMap.put( TIMESTAMP_PATTERN, new ParameterDescriptor( ParameterType.BOOLEAN, "Timestamp pattern",
                 "The timestamp pattern to use", "yyyy-MM-dd HH.mm.ssSSS" ) );
 
     }
@@ -104,6 +109,11 @@ public class ZipPipelet extends AbstractPipelet {
             LOG.error( "No timestamp pattern provided!" );
             timestampPattern = "yyyy-MM-dd HH.mm.ssSSS";
         }
+
+        Boolean tempBoolean = getParameter( COMBINE_PAYLOADS );
+        if ( ( tempBoolean != null ) ) {
+            combinePayloads = tempBoolean.booleanValue();
+        }
     }
 
     /* (non-Javadoc)
@@ -119,16 +129,21 @@ public class ZipPipelet extends AbstractPipelet {
 
             int sequence = 1;
 
+            SimpleDateFormat sdt = new SimpleDateFormat( timestampPattern );
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ZipOutputStream zos = new ZipOutputStream( baos );
+            zos.setMethod( ZipOutputStream.DEFLATED );
+
             MessagePojo messagePojo = messageContext.getMessagePojo();
             for ( MessagePayloadPojo messagePayloadPojo : messagePojo.getMessagePayloads() ) {
                 try {
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    ZipOutputStream zos = new ZipOutputStream( baos );
-                    zos.setMethod( ZipOutputStream.DEFLATED );
-
+                    if ( !combinePayloads ) {
+                        baos = new ByteArrayOutputStream();
+                        zos = new ZipOutputStream( baos );
+                        zos.setMethod( ZipOutputStream.DEFLATED );
+                    }
                     String filename = null;
-
-                    SimpleDateFormat sdt = new SimpleDateFormat( timestampPattern );
 
                     filename = StringUtils.replace( fileNamePattern, "${timestamp}", sdt.format( new Date() ) );
 
@@ -147,17 +162,42 @@ public class ZipPipelet extends AbstractPipelet {
                     zos.putNextEntry( zipEntry );
                     zos.write( messagePayloadPojo.getPayloadData() );
                     zos.closeEntry();
-                    zos.finish();
-                    newContent = baos.toByteArray();
+                    if ( !combinePayloads ) {
+                        zos.finish();
+                        newContent = baos.toByteArray();
+                        if ( newContent != null ) {
+                            messagePayloadPojo.setPayloadData( newContent );
+                            messagePayloadPojo.setMimeType( mimeType );
+                        } else {
+                            throw new NexusException( "No content found after compression of payload." );
+                        }
+                    }
                 } catch ( IOException ioEx ) {
-                    throw new NexusException( "Error compressing payload.  Exception:  " + ioEx.getMessage() );
+                    throw new NexusException( "Error compressing payload.  Exception: " + ioEx.getMessage() );
                 }
 
-                if ( newContent != null ) {
-                    messagePayloadPojo.setPayloadData( newContent );
-                    messagePayloadPojo.setMimeType( mimeType );
-                } else {
-                    throw new NexusException( "No content found after compression of payload." );
+            } // for
+
+            if ( combinePayloads ) {
+                try {
+                    zos.finish();
+                    List<MessagePayloadPojo> payloads = messagePojo.getMessagePayloads();
+                    if ( !payloads.isEmpty() ) {
+                        MessagePayloadPojo messagePayloadPojo = payloads.get( 0 );
+                        newContent = baos.toByteArray();
+                        if ( newContent != null ) {
+                            messagePayloadPojo.setPayloadData( newContent );
+                            messagePayloadPojo.setMimeType( mimeType );
+                            payloads.clear();
+                            payloads.add( messagePayloadPojo );
+                        } else {
+                            throw new NexusException( "No content found after compression of payload." );
+                        }
+                    } else {
+                        LOG.warn( "No payloads to compress!" );
+                    }
+                } catch ( IOException ioEx ) {
+                    throw new NexusException( "Error compressing payload.  Exception: " + ioEx.getMessage() );
                 }
             }
 
@@ -201,13 +241,13 @@ public class ZipPipelet extends AbstractPipelet {
             messagePojo.getMessagePayloads().add( messagePayloadPojo );
 
             ZipPipelet zipPipelet = new ZipPipelet();
-            
+
             zipPipelet.setParameter( FILE_NAME_PATTERN, "Payload_${sequence}_${timestamp}" );
             zipPipelet.setParameter( TIMESTAMP_PATTERN, "yyyyMMddHHmmssSSS" );
             zipPipelet.setParameter( FILE_EXTENSION, "xml" );
-            
+
             zipPipelet.initialize( null );
-            
+
             zipPipelet.processMessage( messageContext );
 
             for ( Iterator<MessagePayloadPojo> payloads = messageContext.getMessagePojo().getMessagePayloads()

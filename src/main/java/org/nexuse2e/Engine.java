@@ -24,6 +24,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.activation.CommandMap;
 import javax.activation.FileTypeMap;
@@ -235,6 +236,12 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
         LOG.info( "*** Java home: " + System.getProperty( "java.home" ) );
 
         LOG.info( "*** This software is licensed under the GNU Lesser General Public License (LGPL), Version 2.1" );
+
+        // Dump system properties
+        Properties properties = System.getProperties();
+        for ( Object property : properties.keySet() ) {
+            LOG.debug( property + " - " + properties.get( property ) );
+        }
 
         try {
             if ( nexusE2ERoot == null ) {

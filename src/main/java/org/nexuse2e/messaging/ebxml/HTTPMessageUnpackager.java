@@ -193,6 +193,12 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
                 } else {
                     LOG.error( "MIME message contains no body parts!" );
                 }
+            } else if ( mimeMessage.getContentType().startsWith( "text" ) ) {
+                // String content = (String) mimeMessage.getContent();
+                messageBodyParts = new MimeBodyPart[1];
+                MimeBodyPart mimeBodyPart = new MimeBodyPart();
+                mimeBodyPart.setContent( mimeMessage.getContent(), mimeMessage.getContentType() );
+                messageBodyParts[0] = mimeBodyPart;
             } else {
                 LOG.error( "MIME message doesn't seem to be of type multipart: " + mimeMessage.getContentType() );
                 throw new IllegalArgumentException( "MIME message doesn't seem to be of type multipart: "
