@@ -70,8 +70,8 @@ public class ZipPipelet extends AbstractPipelet {
                 "The file extension to append", "Payloads" ) );
         parameterMap.put( TIMESTAMP_PATTERN, new ParameterDescriptor( ParameterType.STRING, "Timestamp pattern",
                 "The timestamp pattern to use", "yyyy-MM-dd HH.mm.ssSSS" ) );
-        parameterMap.put( TIMESTAMP_PATTERN, new ParameterDescriptor( ParameterType.BOOLEAN, "Timestamp pattern",
-                "The timestamp pattern to use", "yyyy-MM-dd HH.mm.ssSSS" ) );
+        parameterMap.put( COMBINE_PAYLOADS, new ParameterDescriptor( ParameterType.BOOLEAN, "Combine Payloads",
+                "Combine Payloads", Boolean.FALSE ) );
 
     }
 
