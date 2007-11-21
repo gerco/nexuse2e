@@ -9,7 +9,7 @@
             <generator class="native" />
         </id>
         
-        <many-to-one foreign-key="fk__message__conversation_id" name="conversation" column="nx_conversation_id" class="org.nexuse2e.pojo.ConversationPojo" not-null="true" index="ix_message_1"/>
+        <many-to-one foreign-key="fk__msg__conversation_id" name="conversation" column="nx_conversation_id" class="org.nexuse2e.pojo.ConversationPojo" not-null="true" index="ix_message_1"/>
         
         <property name="messageId" type="string">
             <column name="message_id" length="96" not-null="true">
@@ -36,9 +36,9 @@
         </property>
         
         
-        <many-to-one foreign-key="fk__message__trp_id" name="TRP" column="nx_trp_id" class="org.nexuse2e.pojo.TRPPojo" cascade="none" index="ix_message_3"/>
+        <many-to-one foreign-key="fk__msg__trp_id" name="TRP" column="nx_trp_id" class="org.nexuse2e.pojo.TRPPojo" cascade="none" index="ix_message_3"/>
 
-        <many-to-one foreign-key="fk__message__referenced_message_id" name="referencedMessage" column="referenced_nx_message_id" class="org.nexuse2e.pojo.MessagePojo" cascade="none" index="ix_message_4"/>
+        <many-to-one foreign-key="fk__msg__referenced_message_id" name="referencedMessage" column="referenced_nx_message_id" class="org.nexuse2e.pojo.MessagePojo" cascade="none" index="ix_message_4"/>
         
         <property name="retries" type="int">
             <column name="retries" not-null="true" sql-type="integer">

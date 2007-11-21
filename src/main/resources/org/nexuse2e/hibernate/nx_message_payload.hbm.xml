@@ -9,7 +9,7 @@
             <generator class="native" />
         </id>
         
-        <many-to-one foreign-key="fk__message_payload__message_id" name="message" column="nx_message_id" class="org.nexuse2e.pojo.MessagePojo" not-null="true" index="ix_message_payload_1"/>
+        <many-to-one foreign-key="fk__msg_payload__message_id" name="message" column="nx_message_id" class="org.nexuse2e.pojo.MessagePojo" not-null="true" index="ix_message_payload_1"/>
         
         <property name="sequenceNumber" type="int">
             <column name="sequence_number" not-null="true" sql-type="integer">

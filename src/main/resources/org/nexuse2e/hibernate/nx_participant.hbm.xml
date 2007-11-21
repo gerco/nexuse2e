@@ -9,15 +9,15 @@
             <generator class="native" />
         </id>
         
-        <many-to-one foreign-key="fk__participant__certificate_id" name="localCertificate" column="nx_local_certificate_id" class="org.nexuse2e.pojo.CertificatePojo" not-null="false" cascade="none" index="ix_participant_1"/>
+        <many-to-one foreign-key="fk__part__certificate_id" name="localCertificate" column="nx_local_certificate_id" class="org.nexuse2e.pojo.CertificatePojo" not-null="false" cascade="none" index="ix_participant_1"/>
         
-        <many-to-one foreign-key="fk__participant__partner_id" name="partner" column="nx_partner_id" class="org.nexuse2e.pojo.PartnerPojo" not-null="true" cascade="none" index="ix_participant_2"/>
+        <many-to-one foreign-key="fk__part__partner_id" name="partner" column="nx_partner_id" class="org.nexuse2e.pojo.PartnerPojo" not-null="true" cascade="none" index="ix_participant_2"/>
         
-        <many-to-one foreign-key="fk__participant__choreography_id" name="choreography" column="nx_choreography_id" class="org.nexuse2e.pojo.ChoreographyPojo" not-null="true" cascade="none" index="ix_participant_3"/>
+        <many-to-one foreign-key="fk__part__choreography_id" name="choreography" column="nx_choreography_id" class="org.nexuse2e.pojo.ChoreographyPojo" not-null="true" cascade="none" index="ix_participant_3"/>
         
-        <many-to-one foreign-key="fk__participant__local_partner_id" name="localPartner" column="nx_local_partner_id" class="org.nexuse2e.pojo.PartnerPojo" not-null="true" cascade="none" index="ix_participant_4"/>
+        <many-to-one foreign-key="fk__part__local_partner_id" name="localPartner" column="nx_local_partner_id" class="org.nexuse2e.pojo.PartnerPojo" not-null="true" cascade="none" index="ix_participant_4"/>
         
-        <many-to-one foreign-key="fk__participant__connection_id" name="connection" column="nx_connection_id" class="org.nexuse2e.pojo.ConnectionPojo" not-null="true" cascade="none" index="ix_participant_5"/>
+        <many-to-one foreign-key="fk__part__connection_id" name="connection" column="nx_connection_id" class="org.nexuse2e.pojo.ConnectionPojo" not-null="true" cascade="none" index="ix_participant_5"/>
         
         <property name="createdDate" type="timestamp">
             <column name="created_date" not-null="true">
