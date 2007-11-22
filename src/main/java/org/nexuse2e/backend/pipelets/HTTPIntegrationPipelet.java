@@ -161,6 +161,7 @@ public class HTTPIntegrationPipelet extends AbstractPipelet {
                 messageContext.setData( new RequestResponseData( result, post.getResponseBodyAsString(), documentString ) );
 
                 LOG.debug( "Response status code: " + result );
+                LOG.debug( "Response status message:\n" + post.getResponseBodyAsString() );
                 if ( LOG.isTraceEnabled() ) {
                     LOG.trace( "Response:\n--- RESPONSE START ---\n"
                             + ( (RequestResponseData) messageContext.getData() ).getResponseString() + "\n---  RESPONSE END  ---" );
