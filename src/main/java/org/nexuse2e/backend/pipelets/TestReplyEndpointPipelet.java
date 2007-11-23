@@ -20,9 +20,14 @@
 package org.nexuse2e.backend.pipelets;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.List;
 
@@ -146,7 +151,7 @@ public class TestReplyEndpointPipelet extends AbstractPipelet {
 
             if ( ( directory != null ) && ( directory.length() != 0 ) ) {
                 try {
-                    new FileSystemSavePipelet().writePayloadToUniqueFile( directory, messageContext, true );
+                    writePayloadToUniqueFile( directory, messageContext, true );
                 } catch ( Exception e ) {
                     e.printStackTrace();
                     throw new NexusException( e );
@@ -184,6 +189,88 @@ public class TestReplyEndpointPipelet extends AbstractPipelet {
         LOG.debug( "Done!" );
 
         return messageContext;
+    }
+
+    /**
+     * Generate a unique file name for a payload, finding it's file extension
+     * and write data to that file.
+     * @param destinationDirectory where the file gets written
+     * @param msgInfo Information about message.
+     * @param includeSender Flag whether to include the sender in the file name.
+     * @param payload the contents of the message
+     * returns the full name of the file written.
+     */
+    private String writePayloadToUniqueFile( String destinationDirectory, MessageContext messageContext,
+            boolean includeSender ) throws FileNotFoundException, IOException {
+
+        String retVal = null;
+        boolean success = false;
+
+        // Workaround, sometimes filesystem are 'sleeping' and need two tries to
+        // get things rolling. Try once and ignore failure.
+        try {
+            retVal = writePayload( destinationDirectory, messageContext, includeSender );
+            success = true;
+        } catch ( Exception ex ) {
+            // ignore
+            success = false;
+        }
+
+        // If 1st time failed, try again
+        if ( success == false ) {
+            retVal = writePayload( destinationDirectory, messageContext, includeSender );
+        }
+
+        return retVal;
+
+    }
+
+    /**
+     * @param destinationDirectory
+     * @param messageContext
+     * @param includeSender
+     * @return
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
+    private String writePayload( String destinationDirectory, MessageContext messageContext, boolean includeSender )
+            throws FileNotFoundException, IOException {
+
+        File destDirFile = new File( destinationDirectory );
+        StringBuffer fileName = new StringBuffer();
+
+        List<MessagePayloadPojo> messagePayloadPojos = messageContext.getMessagePojo().getMessagePayloads();
+        Iterator<MessagePayloadPojo> iterator = messagePayloadPojos.iterator();
+        if ( iterator.hasNext() ) {
+            DateFormat df = new SimpleDateFormat( "yyyyMMddHHmmss" );
+            MessagePayloadPojo payload = iterator.next();
+            if ( includeSender ) {
+                fileName.append( messageContext.getPartner().getPartnerId() + "_"
+                        + df.format( messageContext.getMessagePojo().getCreatedDate() ) + "_"
+                        + payload.getSequenceNumber() );
+            } else {
+                fileName.append( df.format( messageContext.getMessagePojo().getCreatedDate() ) + "_"
+                        + payload.getSequenceNumber() );
+            }
+            fileName.append( "_" ); // separator for java random part of filename
+
+            String fileExtension = ".xml"; // getFileExtension( payload.getContentType() );
+
+            // null fileExtension is supported
+            File tmpFile = File.createTempFile( fileName.toString(), fileExtension, destDirFile );
+            fileName = new StringBuffer( tmpFile.getPath() );
+
+            BufferedOutputStream fileOutputStream = new BufferedOutputStream(
+                    new FileOutputStream( fileName.toString() ) );
+
+            fileOutputStream.write( payload.getPayloadData() );
+            fileOutputStream.flush();
+            fileOutputStream.close();
+
+            LOG.trace( "Wrote output file: " + fileName.toString() );
+        }
+
+        return fileName.toString();
     }
 
     private String loadFile( File file ) {

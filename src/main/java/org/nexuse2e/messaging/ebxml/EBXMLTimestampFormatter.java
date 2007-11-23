@@ -20,6 +20,7 @@
 package org.nexuse2e.messaging.ebxml;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.nexuse2e.NexusException;
@@ -29,14 +30,14 @@ public class EBXMLTimestampFormatter implements TimestampFormatter {
 
     public String getTimestamp( Date time ) {
 
-        java.text.SimpleDateFormat ebXMLDateFormat = new java.text.SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss'Z'" );
+        SimpleDateFormat ebXMLDateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss'Z'" );
         return ebXMLDateFormat.format( time );
     }
 
     public Date getTimestamp( String time ) throws NexusException {
 
         try {
-            java.text.SimpleDateFormat ebXMLDateFormat = new java.text.SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss'Z'" );
+            SimpleDateFormat ebXMLDateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss'Z'" );
             return ebXMLDateFormat.parse( time );
         } catch ( ParseException e ) {
             throw new NexusException( "Error while parsing timestamp:", e );
@@ -44,3 +45,14 @@ public class EBXMLTimestampFormatter implements TimestampFormatter {
     }
 
 }
+
+/*
+    if ( timestamp.endsWith( "Z" ) || timestamp.endsWith( "z" ) ) {
+        LOG
+                .info( "timestamp ends with Z. UTC is expected and Z is replaced with '-0000'" );
+        timestamp = timestamp.substring( 0, timestamp.length() - 1 ) + "+0000";
+        SimpleDateFormat targetFormat = new SimpleDateFormat(
+                stripParameter( params[1] ) );
+        Date dateValue = newDate;
+    }
+*/

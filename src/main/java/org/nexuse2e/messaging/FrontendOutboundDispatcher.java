@@ -223,13 +223,15 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                             if ( ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_PROCESSING )
                                     || ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_AWAITING_ACK ) ) {
                                 if ( messageContext.getParticipant().getConnection().isReliable() ) {
-                                    conversationPojo.setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_AWAITING_ACK );
+                                    conversationPojo
+                                            .setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_AWAITING_ACK );
                                 } else {
                                     Engine.getInstance().getTransactionService().deregisterProcessingMessage(
                                             messagePojo.getMessageId() );
                                     messagePojo.setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_SENT );
                                     if ( conversationPojo.getCurrentAction().isEnd() ) {
-                                        conversationPojo.setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_COMPLETED );
+                                        conversationPojo
+                                                .setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_COMPLETED );
                                     } else {
                                         conversationPojo.setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_IDLE );
                                     }
@@ -247,7 +249,8 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                                 conversationPojo
                                         .setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND );
                             } else if ( ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_BACKEND_SENT_SENDING_ACK )
-                                    || ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_IDLE ) ) {
+                                    || ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_IDLE )
+                                    || ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND ) ) {
                                 if ( conversationPojo.getCurrentAction().isEnd() ) {
                                     conversationPojo.setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_COMPLETED );
                                 } else {

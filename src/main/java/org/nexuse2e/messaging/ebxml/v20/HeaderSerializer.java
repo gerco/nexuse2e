@@ -219,15 +219,6 @@ public class HeaderSerializer extends AbstractPipelet {
                 if ( service == null ) {
                     service = messagePojo.getConversation().getChoreography().getName();
                 }
-                soapElement = soapFactory.createElement( "Service", Constants.EBXML_NAMESPACE_PREFIX,
-                        Constants.EBXML_NAMESPACE );
-                /*
-                if ( service != null && service.length() > 0 ) {
-                    soapElement.addAttribute( soapFactory.createName( "type", Constants.EBXML_NAMESPACE_PREFIX,
-                            Constants.EBXML_NAMESPACE ), service );
-                }
-                */
-
                 if ( ( messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ACK )
                         || ( messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ERROR ) ) {
                     service = "urn:oasis:names:tc:ebxml-msg:service";
@@ -237,8 +228,13 @@ public class HeaderSerializer extends AbstractPipelet {
                     serviceVal += "uri:";
                 }
 
+                /*
+                soapElement = soapFactory.createElement( "Service", Constants.EBXML_NAMESPACE_PREFIX,
+                        Constants.EBXML_NAMESPACE );
                 soapElement.addTextNode( serviceVal + service );
                 msgHeader.addChildElement( soapElement );
+                */
+                crateSOAPElement( soapFactory, msgHeader, "Service", serviceVal + service );
 
                 // ACTION --------------------------------------------------------------
 
@@ -255,21 +251,27 @@ public class HeaderSerializer extends AbstractPipelet {
                 crateSOAPElement( soapFactory, msgHeader, "Action", actionName );
 
                 // MESSAGE DATA --------------------------------------------------------
-                SOAPElement msgDataEl = soapFactory.createElement( "MessageData", Constants.EBXML_NAMESPACE_PREFIX,
-                        Constants.EBXML_NAMESPACE );
+                // SOAPElement msgDataEl = soapFactory.createElement( "MessageData", Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE );
+                SOAPElement msgDataEl = soapFactory.createElement( Constants.EBXML_NAMESPACE_PREFIX + ":"
+                        + "MessageData" );
 
                 // MESSAGEDATA MESSAGE ID ----------------------------------------------
+                /*
                 soapElement = soapFactory.createElement( "MessageId", Constants.EBXML_NAMESPACE_PREFIX,
                         Constants.EBXML_NAMESPACE );
                 soapElement.addTextNode( messagePojo.getMessageId() );
                 msgDataEl.addChildElement( soapElement );
+                */
+                crateSOAPElement( soapFactory, msgDataEl, "MessageId", messagePojo.getMessageId() );
 
                 // MESSAGEDATA TIMESTAMP -----------------------------------------------
+                /*
                 soapElement = soapFactory.createElement( Constants.TIMESTAMP_ID, Constants.EBXML_NAMESPACE_PREFIX,
                         Constants.EBXML_NAMESPACE );
-
                 soapElement.addTextNode( createdDate );
                 msgDataEl.addChildElement( soapElement );
+                */
+                crateSOAPElement( soapFactory, msgDataEl, Constants.TIMESTAMP_ID, createdDate );
 
                 if ( ack || error ) {
                     // MESSAGEDATA REFTOMESSAGE ID ----------------------------------------------
@@ -299,8 +301,10 @@ public class HeaderSerializer extends AbstractPipelet {
                                 Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE ), Constants.EBXMLVERSION );
                         ackReq.addAttribute( soapFactory.createName( "signed", Constants.EBXML_NAMESPACE_PREFIX,
                                 Constants.EBXML_NAMESPACE ), Constants.ACKREQUESTED_UNSIGNED );
-                        soapElement = soapFactory.createElement( "DuplicateElimination",
-                                Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE );
+                        // soapElement = soapFactory.createElement( "DuplicateElimination", Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE );
+                        soapElement = soapFactory.createElement( Constants.EBXML_NAMESPACE_PREFIX + ":"
+                                + "DuplicateElimination" );
+
                         msgHeader.addChildElement( soapElement );
                     }
 
@@ -503,9 +507,9 @@ public class HeaderSerializer extends AbstractPipelet {
     private void crateSOAPElement( SOAPFactory soapFactory, SOAPElement parent, String childName, String childText )
             throws SOAPException {
 
-        LOG.trace( "crateSOAPElement: " + childName );
-        SOAPElement soapEl = soapFactory.createElement( childName, Constants.EBXML_NAMESPACE_PREFIX,
-                Constants.EBXML_NAMESPACE );
+        // LOG.trace( "crateSOAPElement: " + childName );
+        // SOAPElement soapEl = soapFactory.createElement( childName, Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE );
+        SOAPElement soapEl = soapFactory.createElement( Constants.EBXML_NAMESPACE_PREFIX + ":" + childName );
         soapEl.addTextNode( childText );
         parent.addChildElement( soapEl );
     }
@@ -523,16 +527,15 @@ public class HeaderSerializer extends AbstractPipelet {
             String location ) throws SOAPException {
 
         String party = null;
-        SOAPElement soapEl = soapFactory
-                .createElement( id, Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE );
-        SOAPElement partyId = soapEl.addChildElement( Constants.PARTY_ID, Constants.EBXML_NAMESPACE_PREFIX,
-                Constants.EBXML_NAMESPACE );
+        // SOAPElement soapEl = soapFactory.createElement( id, Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE );
+        SOAPElement soapEl = soapFactory.createElement( Constants.EBXML_NAMESPACE_PREFIX + ":" + id );
+        // SOAPElement partyId = soapEl.addChildElement( Constants.PARTY_ID, Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE );
+        SOAPElement partyId = soapEl.addChildElement( Constants.EBXML_NAMESPACE_PREFIX + ":" + Constants.PARTY_ID );
 
         if ( type != null && !type.equals( "" ) ) {
             // partyId.addAttribute( soapFactory.createName( "type" ), type );
-            // partyId.addAttribute( soapFactory.createName( "eb:type" ), type );
-            partyId.addAttribute( soapFactory.createName( "type", Constants.EBXML_NAMESPACE_PREFIX,
-                    Constants.EBXML_NAMESPACE ), type );
+            partyId.addAttribute( soapFactory.createName( "eb:type" ), type );
+            // partyId.addAttribute( soapFactory.createName( "type", Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE ), type );
             party = value;
         } else { // as per ebXML 1.0 spec, if no type attr, value is a uri
             if ( ( value.startsWith( Constants.URI_ID ) == false ) && ( value.indexOf( ":" ) == -1 ) ) {

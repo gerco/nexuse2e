@@ -335,8 +335,12 @@ public class TransactionServiceImpl implements TransactionService {
 
         message.setMessageId( messageId );
         Date date = new Date();
-        message.setCreatedDate( date );
-        message.setModifiedDate( date );
+        if ( message.getCreatedDate() == null ) {
+            message.setCreatedDate( date );
+        }
+        if ( message.getModifiedDate() == null ) {
+            message.setModifiedDate( date );
+        }
         TransactionDAO transactionDao;
         try {
             transactionDao = (TransactionDAO) Engine.getInstance().getDao( "transactionDao" );

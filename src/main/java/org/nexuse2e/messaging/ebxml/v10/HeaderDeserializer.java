@@ -41,6 +41,7 @@ import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
+import org.nexuse2e.messaging.TimestampFormatter;
 import org.nexuse2e.pojo.MessagePojo;
 
 /**
@@ -55,6 +56,7 @@ public class HeaderDeserializer extends AbstractPipelet {
      * Default constructor.
      */
     public HeaderDeserializer() {
+
         frontendPipelet = true;
     }
 
@@ -81,21 +83,19 @@ public class HeaderDeserializer extends AbstractPipelet {
 
             SOAPMessage soapMessage;
             try {
-                soapMessage = messageFactory.createMessage(
-                        null, new ByteArrayInputStream( messagePojo.getHeaderData() ) );
-            } catch (SOAPException soapException) {
+                soapMessage = messageFactory.createMessage( null,
+                        new ByteArrayInputStream( messagePojo.getHeaderData() ) );
+            } catch ( SOAPException soapException ) {
                 LOG.info( "Got SOAPException (" + soapException.getMessage() + "), trying to fix SOAP header" );
                 // jre: fix invalid SOAP header sent by some Nexus versions (missing namespace decl.)
                 String token = ":Envelope";
                 String s = new String( messagePojo.getHeaderData() );
                 int index = s.indexOf( token );
-                if (index >= 0) {
-                    s = s.substring( 0, index + token.length() )
-                        + " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
-                        + s.substring( index + token.length() );
+                if ( index >= 0 ) {
+                    s = s.substring( 0, index + token.length() ) + " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
+                            + s.substring( index + token.length() );
                 }
-                soapMessage = messageFactory.createMessage(
-                        null, new ByteArrayInputStream( s.getBytes() ) );
+                soapMessage = messageFactory.createMessage( null, new ByteArrayInputStream( s.getBytes() ) );
             }
             SOAPPart part = soapMessage.getSOAPPart();
             SOAPEnvelope soapEnvelope = null;
@@ -290,10 +290,14 @@ public class HeaderDeserializer extends AbstractPipelet {
                                 } else if ( innerElement.getElementName().getLocalName().equals( "Timestamp" ) ) {
                                     String timestamp = innerElement.getValue();
                                     LOG.trace( "Timestamp:" + timestamp );
-                                    //                          TODO fix timestamp convert to date.
-                                    //messagePojo.setCreatedDate( timestamp );
-                                    messagePojo.setCreatedDate( new Date() );
-                                    messagePojo.setModifiedDate( new Date() );
+                                    TimestampFormatter formatter = Engine.getInstance().getTimestampFormatter( "ebxml" );
+                                    Date createdDate = formatter.getTimestamp( timestamp );
+                                    if ( createdDate == null ) {
+                                        createdDate = new Date();
+                                        LOG.error( "Could not parse ebXML timestamp: '" + timestamp + "'" );
+                                    }
+                                    messagePojo.setCreatedDate( createdDate );
+                                    messagePojo.setModifiedDate( createdDate );
                                 } else if ( innerElement.getElementName().getLocalName().equals( "RefToMessageId" ) ) {
                                     String refToMessageId = innerElement.getValue();
                                     if ( ( refToMessageId != null ) && ( messagePojo.getReferencedMessage() == null ) ) {

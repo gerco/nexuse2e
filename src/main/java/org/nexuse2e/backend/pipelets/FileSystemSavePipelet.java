@@ -24,27 +24,30 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Iterator;
-import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.MessagePayloadPojo;
 import org.nexuse2e.util.ServerPropertiesUtil;
-import org.springframework.util.SystemPropertyUtils;
 
 public class FileSystemSavePipelet extends AbstractPipelet {
 
-    private static Logger      LOG                  = Logger.getLogger( FileSystemSavePipelet.class );
+    private static Logger      LOG                          = Logger.getLogger( FileSystemSavePipelet.class );
 
-    public static final String DIRECTORY_PARAM_NAME = "directory";
+    public static final String DIRECTORY_PARAM_NAME         = "directory";
+    public static final String FILE_NAME_PATTERN_PARAM_NAME = "fileNamePattern";
+
+    public static final String SEQUENCE_PARAM               = "${nexus.message.payload.sequence}";
+
+    private String             targetDirectory              = null;
+    private String             fileNamePattern              = null;
 
     /**
      * Default constructor.
@@ -53,32 +56,52 @@ public class FileSystemSavePipelet extends AbstractPipelet {
 
         parameterMap.put( DIRECTORY_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "Save directory",
                 "Path to directory where to store files", "" ) );
+        parameterMap.put( FILE_NAME_PATTERN_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "File Name",
+                "File Name Pattern", "${nexus.message.message}" ) );
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.messaging.AbstractPipelet#initialize(org.nexuse2e.configuration.EngineConfiguration)
+     */
+    @Override
+    public void initialize( EngineConfiguration config ) throws InstantiationException {
+
+        targetDirectory = (String) getParameter( DIRECTORY_PARAM_NAME );
+        if ( StringUtils.isEmpty( targetDirectory ) ) {
+            LOG.error( "Output directory not defined, can not store inbound message!" );
+        } else {
+            targetDirectory = ServerPropertiesUtil.replacePathSeparators( targetDirectory );
+        }
+        LOG.trace( "targetDirectory : " + targetDirectory );
+
+        fileNamePattern = (String) getParameter( FILE_NAME_PATTERN_PARAM_NAME );
+        if ( StringUtils.isEmpty( fileNamePattern ) ) {
+            LOG.error( "Output file name pattern not defined, using default!" );
+            fileNamePattern = "${nexus.message.message}";
+        }
+
+        super.initialize( config );
     }
 
     /* (non-Javadoc)
      * @see org.nexuse2e.messaging.Pipelet#processMessage(org.nexuse2e.messaging.MessageContext)
      */
-    public MessageContext processMessage( MessageContext messageContext )
-            throws NexusException {
-        String targetDirectory = (String) getParameter( DIRECTORY_PARAM_NAME );
-        
-        if ( StringUtils.isEmpty( targetDirectory ) ) {
-            LOG.error( "Output directory not defined, can not store inbound message!" );
-            throw new NexusException( "Output directory not defined, can not store inbound message!" );
-        }
-        targetDirectory = ServerPropertiesUtil.replaceServerProperties( targetDirectory, messageContext );
-        targetDirectory = ServerPropertiesUtil.replacePathSeparators( targetDirectory );
-        
-        try {
-            writePayloadToUniqueFile( targetDirectory, messageContext );
-        } catch ( FileNotFoundException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            throw new NexusException( "Could not create output file in target directory: "+targetDirectory, e );
-        } catch ( IOException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            throw new NexusException( "Could not create output file in target directory: "+targetDirectory, e );
+    public MessageContext processMessage( MessageContext messageContext ) throws NexusException {
+
+        String tempDirectory = ServerPropertiesUtil.replaceServerProperties( targetDirectory, messageContext );
+        for ( MessagePayloadPojo payload : messageContext.getMessagePojo().getMessagePayloads() ) {
+            try {
+                String fileName = writePayloadToUniqueFile( tempDirectory, payload, messageContext );
+                LOG.trace( "Wrote output file: " + fileName.toString() );
+            } catch ( FileNotFoundException e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                throw new NexusException( "Could not create output file in target directory: " + targetDirectory, e );
+            } catch ( IOException e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                throw new NexusException( "Could not create output file in target directory: " + targetDirectory, e );
+            }
         }
 
         // TODO Auto-generated method stub
@@ -93,23 +116,8 @@ public class FileSystemSavePipelet extends AbstractPipelet {
      * @param payload the contents of the message
      * returns the full name of the file written.
      */
-    public String writePayloadToUniqueFile( String destinationDirectory, MessageContext messageContext )
-            throws FileNotFoundException, IOException {
-
-        return writePayloadToUniqueFile( destinationDirectory, messageContext, false );
-    }
-
-    /**
-     * Generate a unique file name for a payload, finding it's file extension
-     * and write data to that file.
-     * @param destinationDirectory where the file gets written
-     * @param msgInfo Information about message.
-     * @param includeSender Flag whether to include the sender in the file name.
-     * @param payload the contents of the message
-     * returns the full name of the file written.
-     */
-    public String writePayloadToUniqueFile( String destinationDirectory, MessageContext messageContext,
-            boolean includeSender ) throws FileNotFoundException, IOException {
+    public String writePayloadToUniqueFile( String destinationDirectory, MessagePayloadPojo payload,
+            MessageContext messageContext ) throws FileNotFoundException, IOException {
 
         String retVal = null;
         boolean success = false;
@@ -117,7 +125,7 @@ public class FileSystemSavePipelet extends AbstractPipelet {
         // Workaround, sometimes filesystem are 'sleeping' and need two tries to
         // get things rolling. Try once and ignore failure.
         try {
-            retVal = writePayload( destinationDirectory, messageContext, includeSender );
+            retVal = writePayload( destinationDirectory, payload, messageContext );
             success = true;
         } catch ( Exception ex ) {
             // ignore
@@ -126,7 +134,7 @@ public class FileSystemSavePipelet extends AbstractPipelet {
 
         // If 1st time failed, try again
         if ( success == false ) {
-            retVal = writePayload( destinationDirectory, messageContext, includeSender );
+            retVal = writePayload( destinationDirectory, payload, messageContext );
         }
 
         return retVal;
@@ -141,44 +149,35 @@ public class FileSystemSavePipelet extends AbstractPipelet {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    private String writePayload( String destinationDirectory, MessageContext messageContext, boolean includeSender )
+    private String writePayload( String destinationDirectory, MessagePayloadPojo payload, MessageContext messageContext )
             throws FileNotFoundException, IOException {
 
         File destDirFile = new File( destinationDirectory );
-        StringBuffer fileName = new StringBuffer();
+        // StringBuffer fileName = new StringBuffer();
 
-        List<MessagePayloadPojo> messagePayloadPojos = messageContext.getMessagePojo().getMessagePayloads();
-        Iterator<MessagePayloadPojo> iterator = messagePayloadPojos.iterator();
-        if ( iterator.hasNext() ) {
-            DateFormat df = new SimpleDateFormat( "yyyyMMddHHmmss" );
-            MessagePayloadPojo payload = iterator.next();
-            if ( includeSender ) {
-                fileName.append( messageContext.getPartner().getPartnerId() + "_"
-                        + df.format( messageContext.getMessagePojo().getCreatedDate() ) + "_"
-                        + payload.getSequenceNumber() );
-            } else {
-                fileName.append( df.format( messageContext.getMessagePojo().getCreatedDate() ) + "_"
-                        + payload.getSequenceNumber() );
+        if ( destDirFile.isDirectory() ) {
+            if ( !destDirFile.exists() ) {
+                destDirFile.mkdirs();
             }
-            fileName.append( "_" ); // separator for java random part of filename
-
-            String fileExtension = ".xml"; // getFileExtension( payload.getContentType() );
-
-            // null fileExtension is supported
-            File tmpFile = File.createTempFile( fileName.toString(), fileExtension, destDirFile );
-            fileName = new StringBuffer( tmpFile.getPath() );
-
-            BufferedOutputStream fileOutputStream = new BufferedOutputStream(
-                    new FileOutputStream( fileName.toString() ) );
-
-            fileOutputStream.write( payload.getPayloadData() );
-            fileOutputStream.flush();
-            fileOutputStream.close();
-            
-            LOG.trace( "Wrote output file: " + fileName.toString() );
+        } else {
+            throw new FileNotFoundException( "Not a directory: " + destDirFile );
         }
+
+        String baseFileName = ServerPropertiesUtil.replaceServerProperties( fileNamePattern, messageContext );
+
+        String extension = Engine.getInstance().getFileExtensionFromMime( payload.getMimeType() );
+        if ( StringUtils.isEmpty( extension ) ) {
+            extension = "dat";
+        }
+        String fileName = destinationDirectory + File.separatorChar + baseFileName + "_" + payload.getSequenceNumber()
+                + "." + extension;
+
+        BufferedOutputStream fileOutputStream = new BufferedOutputStream( new FileOutputStream( fileName.toString() ) );
+
+        fileOutputStream.write( payload.getPayloadData() );
+        fileOutputStream.flush();
+        fileOutputStream.close();
 
         return fileName.toString();
     }
-
 } // FileSystemSavePipelet

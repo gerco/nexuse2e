@@ -301,6 +301,91 @@ public class SftpPollingReceiverService extends AbstractService implements Recei
         return pattern;
     }
 
+    public static void main( String args[] ) {
+
+        JSch jsch = new JSch();
+        ChannelSftp channelSftp = null;
+        Session session = null;
+
+        try {
+            String host = "sftp.wirecard.com";
+            String user = "T2078";
+            String password = "NTum-93!";
+            String path = "/toT2078/WD_RESP/new";
+            String prefix = "../processed/";
+
+            session = jsch.getSession( user, host, 22 );
+
+            UserInfo userInfo = new UserInfo( password );
+            session.setUserInfo( userInfo );
+
+            try {
+                session.connect();
+            } catch ( JSchException jSchEx ) {
+                throw new NexusException( "SFTP authentication failed: " + jSchEx );
+            }
+            LOG.trace( "Connected to " + host + "." );
+
+            Channel channel = session.openChannel( "sftp" );
+            channel.connect();
+            channelSftp = (ChannelSftp) channel;
+
+            LOG.trace( "Directory URL Path: " + path );
+            String directory = path;
+            if ( directory.startsWith( "/" ) ) {
+                directory = directory.substring( 1 );
+            }
+
+            if ( StringUtils.isNotEmpty( directory ) ) {
+                LOG.trace( "Directory requested: " + directory );
+                try {
+                    channelSftp.cd( directory );
+                } catch ( SftpException sftpEx ) {
+                    throw new NexusException( "SFTP server did not change directory: " + sftpEx );
+                }
+            }
+            LOG.trace( "Working Directory: " + channelSftp.pwd() );
+
+            String filePattern = "*.xml";
+            Vector<LsEntry> files = channelSftp.ls( "." );
+            LOG.trace( "Number of files in directory: " + files.size() + ", checking against pattern " + filePattern );
+
+            String regEx = dosStyleToRegEx( filePattern );
+            for ( LsEntry file : files ) {
+                if ( Pattern.matches( regEx, file.getFilename() ) ) {
+                    Vector<LsEntry> targetFiles = null;
+                    try {
+                        targetFiles = channelSftp.ls( prefix + file.getFilename() );
+                    } catch ( SftpException sftpEx ) {
+                        LOG.error( "Could not retrieve file " + file.getFilename() );
+                    }
+                    if ( targetFiles == null || targetFiles.isEmpty() ) {
+                        LOG.trace( "Target file does not exist!" );
+                    } else {
+                        LOG.trace( "Target file DOES exist :-(" );
+                    }
+                }
+            }
+
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            LOG.error( "Error polling FTP account: " + e );
+        } finally {
+            if ( ( channelSftp != null ) && channelSftp.isConnected() ) {
+                LOG.trace( "Closing channel..." );
+                channelSftp.disconnect();
+            } else {
+                LOG.trace( "Channel not connected." );
+            }
+            if ( ( session != null ) && session.isConnected() ) {
+                LOG.trace( "Closing session..." );
+                session.disconnect();
+            } else {
+                LOG.trace( "Session not connected." );
+            }
+        }
+    }
+
     class FtpSchedulerClient implements SchedulerClient {
 
         @SuppressWarnings("unchecked")
@@ -308,11 +393,12 @@ public class SftpPollingReceiverService extends AbstractService implements Recei
 
             JSch jsch = new JSch();
             ChannelSftp channelSftp = null;
+            Session session = null;
 
             try {
                 URL url = new URL( (String) getParameter( URL_PARAM_NAME ) );
 
-                Session session = jsch.getSession( user, url.getHost(), 22 );
+                session = jsch.getSession( user, url.getHost(), 22 );
 
                 UserInfo userInfo = new UserInfo( password );
                 session.setUserInfo( userInfo );
@@ -355,48 +441,60 @@ public class SftpPollingReceiverService extends AbstractService implements Recei
                 File errorDir = new File( (String) getParameter( ERROR_DIR_PARAM_NAME ) );
 
                 String regEx = dosStyleToRegEx( filePattern );
+                String prefix = getParameter( RENAMING_PREFIX_PARAM_NAME );
                 for ( LsEntry file : files ) {
                     if ( Pattern.matches( regEx, file.getFilename() ) ) {
-                        File localFile = new File( localDir, file.getFilename() );
-                        FileOutputStream fout = new FileOutputStream( localFile );
-
+                        Vector<LsEntry> targetFiles = null;
                         try {
-                            channelSftp.get( file.getFilename(), fout );
-                            fout.flush();
-                            fout.close();
-                            try {
-
-                                processFile( localFile, errorDir, (String) getParameter( PARTNER_PARAM_NAME ) );
-
-                                String prefix = getParameter( RENAMING_PREFIX_PARAM_NAME );
-                                boolean error = false;
-                                if ( fileChangeActive ) {
-                                    if ( StringUtils.isEmpty( prefix ) ) {
-                                        try {
-                                            channelSftp.rm( file.getFilename() );
-                                        } catch ( SftpException sftpEx ) {
-                                            LOG.error( "Could not delete file " + file.getFilename() );
-                                            error = true;
-                                        }
-                                    } else {
-                                        try {
-                                            channelSftp.rename( file.getFilename(), prefix + file.getFilename() );
-                                        } catch ( SftpException sftpEx ) {
-                                            LOG.error( "Could not rename file from " + file.getFilename() + " to "
-                                                    + prefix + file.getFilename() );
-                                            error = true;
-                                        }
-                                    }
-                                }
-
-                                if ( !error ) {
-                                    localFiles.add( localFile );
-                                }
-                            } catch ( Exception e ) {
-                                LOG.error( "Error processing file " + file.getFilename() + ": " + e );
-                            }
+                            targetFiles = channelSftp.ls( prefix + file.getFilename() );
                         } catch ( SftpException sftpEx ) {
                             LOG.error( "Could not retrieve file " + file.getFilename() );
+                        }
+                        if ( !fileChangeActive || (targetFiles == null) || targetFiles.isEmpty() ) {
+                            LOG.trace( "Processing file: " + file.getFilename() );
+
+                            File localFile = new File( localDir, file.getFilename() );
+                            FileOutputStream fout = new FileOutputStream( localFile );
+
+                            try {
+                                channelSftp.get( file.getFilename(), fout );
+                                fout.flush();
+                                fout.close();
+                                try {
+
+                                    processFile( localFile, errorDir, (String) getParameter( PARTNER_PARAM_NAME ) );
+
+                                    boolean error = false;
+                                    if ( fileChangeActive ) {
+                                        if ( StringUtils.isEmpty( prefix ) ) {
+                                            try {
+                                                channelSftp.rm( file.getFilename() );
+                                            } catch ( SftpException sftpEx ) {
+                                                LOG.error( "Could not delete file " + file.getFilename() );
+                                                error = true;
+                                            }
+                                        } else {
+                                            try {
+                                                channelSftp.rename( file.getFilename(), prefix + file.getFilename() );
+                                            } catch ( SftpException sftpEx ) {
+                                                LOG.error( "Could not rename file from " + file.getFilename() + " to "
+                                                        + prefix + file.getFilename() );
+                                                error = true;
+                                            }
+                                        }
+                                    }
+
+                                    if ( !error ) {
+                                        localFiles.add( localFile );
+                                    }
+                                } catch ( Exception e ) {
+                                    LOG.error( "Error processing file " + file.getFilename() + ": " + e );
+                                }
+                            } catch ( SftpException sftpEx ) {
+                                LOG.error( "Could not retrieve file " + file.getFilename() );
+                            }
+                        } else {
+                            LOG.error( "Target file " + file.getFilename() + " DOES exist - won't process!" );
                         }
                     }
                 }
@@ -413,7 +511,16 @@ public class SftpPollingReceiverService extends AbstractService implements Recei
                 LOG.error( "Error polling FTP account: " + e );
             } finally {
                 if ( ( channelSftp != null ) && channelSftp.isConnected() ) {
+                    LOG.trace( "Closing channel..." );
                     channelSftp.disconnect();
+                } else {
+                    LOG.trace( "Channel not connected." );
+                }
+                if ( ( session != null ) && session.isConnected() ) {
+                    LOG.trace( "Closing session..." );
+                    session.disconnect();
+                } else {
+                    LOG.trace( "Session not connected." );
                 }
             }
         }

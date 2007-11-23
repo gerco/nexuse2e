@@ -46,31 +46,23 @@ import org.nexuse2e.pojo.MessagePayloadPojo;
  */
 public class FileSystemLoadPipelet extends AbstractOutboundBackendPipelet {
 
-    private static Logger LOG = Logger.getLogger( FileSystemLoadPipelet.class );
+    private static Logger      LOG                  = Logger.getLogger( FileSystemLoadPipelet.class );
+
+    public static final String DIRECTORY_PARAM_NAME = "directory";
+    public static final String PASSWORD_PARAM_NAME  = "password";
+    public static final String USER_NAME_PARAM_NAME = "username";
 
     /**
      * Default constructor.
      */
     public FileSystemLoadPipelet() {
 
-        parameterMap.put( "directory", new ParameterDescriptor( ParameterType.STRING, "Directory", "Target directory",
-                "/nexus/dump" ) );
-        parameterMap.put( "password", new ParameterDescriptor( ParameterType.PASSWORD, "Password", "Secure password",
-                "" ) );
-        parameterMap
-                .put( "username", new ParameterDescriptor( ParameterType.STRING, "Username", "Login Username", "" ) );
-        //        DropdownParameter dropdown = new DropdownParameter();
-        //        dropdown.addElement( "Testing 1", "a" );
-        //        dropdown.addElement( "Testing 2", "b" );
-        //        dropdown.addElement( "Testing 3", "c" );
-        //        dropdown.setSelectedIndex( 0 );
-        //        parameterMap.put( "dummyDropDown", new ParameterDescriptor( ParameterType.DROPDOWN, "Test Dropdown",
-        //                "Please make your choice", dropdown ) );
-        //        EnumerationParameter enumeration = new EnumerationParameter();
-        //        enumeration.putElement( "firstKey", "First Value" );
-        //        enumeration.putElement( "secondKey", "Second Value" );
-        //        parameterMap.put( "enum", new ParameterDescriptor( ParameterType.ENUMERATION, "Magic Enum",
-        //                "Extesible key/value pairs", enumeration ) );
+        parameterMap.put( DIRECTORY_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "Directory",
+                "Target directory", "/nexus/dump" ) );
+        parameterMap.put( PASSWORD_PARAM_NAME, new ParameterDescriptor( ParameterType.PASSWORD, "Password",
+                "Secure password", "" ) );
+        parameterMap.put( USER_NAME_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "Username",
+                "Login Username", "" ) );
     }
 
     /* (non-Javadoc)
@@ -178,5 +170,4 @@ public class FileSystemLoadPipelet extends AbstractOutboundBackendPipelet {
         return Collections.unmodifiableMap( parameterMap );
     }
 
-    
 } // FileSystemLoadPipelet

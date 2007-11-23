@@ -46,6 +46,7 @@ window.open('DataSaveAs?type=cacerts','Save as...')
 				<font color="red"><b><bean:write name="cert"
 					property="valid" /></b></font>
 			</logic:notEqual></td>
+			<td class="NEXUSValue"><bean:write name="cert" property="fingerprint"/></td>
 		</tr>
 	</logic:iterate>
 </table>

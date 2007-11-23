@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.bouncycastle.asn1.x509.X509Name;
 import org.bouncycastle.crypto.Digest;
@@ -309,7 +310,7 @@ public class DataSaveAsServlet extends HttpServlet {
                 sb.append( "\n" );
                 sb.append( CertificateUtil.getPemData( keyPair, EncryptionUtil
                         .decryptString( privKeyPojo.getPassword() ) ) );
-                
+
                 byte[] data = new byte[0];
                 res.setHeader( "Content-Disposition", "attachment; filename=\"private_data.pem\"" );
                 data = sb.toString().getBytes();
@@ -322,12 +323,12 @@ public class DataSaveAsServlet extends HttpServlet {
             } else if ( request.getParameter( "type" ).equals( "request" ) ) {
                 String format = request.getParameter( "format" );
                 String nxCertIdString = request.getParameter( "nxCertificateId" );
-                System.out.println( "NXParam: " + request.getParameter( "nxCertificateId" ) );
-                System.out.println( "NXAttrib: " + request.getAttribute( "nxCertificateId" ) );
+                // System.out.println( "NXParam: " + request.getParameter( "nxCertificateId" ) );
+                // System.out.println( "NXAttrib: " + request.getAttribute( "nxCertificateId" ) );
 
                 int nxCertificateId = Integer.parseInt( nxCertIdString );
-                System.out.println( "format:" + format );
-                System.out.println( "nxCertificateId" + nxCertificateId );
+                // System.out.println( "format:" + format );
+                // System.out.println( "nxCertificateId" + nxCertificateId );
                 if ( nxCertificateId < 1 ) {
                     LOG.error( "no certificateId found!" );
                     return;
@@ -353,6 +354,8 @@ public class DataSaveAsServlet extends HttpServlet {
             } else if ( request.getParameter( "type" ).equals( "content" ) ) {
 
                 byte[] data = new byte[0];
+                String contenType = "text/xml";
+                String fileExtension = "dat";
 
                 String messageId = request.getParameter( "messageId" );
                 String contentNo = request.getParameter( "no" );
@@ -367,16 +370,27 @@ public class DataSaveAsServlet extends HttpServlet {
                         if ( no < payloads.size() ) {
                             MessagePayloadPojo payload = payloads.get( no );
                             data = payload.getPayloadData();
+                            if ( !StringUtils.isEmpty( payload.getMimeType() ) ) {
+                                contenType = payload.getMimeType();
+                            }
                         }
                     }
                 }
 
                 //                res.setHeader( "Content-Disposition", "attachment; filename=\"CertficateRequest.pem\"" );
 
-                res.setContentType( "text/xml" );
+                res.setContentType( contenType );
                 if ( data != null ) {
                     res.setContentLength( data.length );
                 }
+
+                String tempFileExtension = Engine.getInstance().getFileExtensionFromMime( contenType );
+                if ( !StringUtils.isEmpty( tempFileExtension ) ) {
+                    fileExtension = tempFileExtension;
+                }
+
+                res.setHeader( "Content-Disposition", "attachment; filename=\"" + message.getMessageId() + "_payload-"
+                        + contentNo + "." + fileExtension + "\"" );
                 OutputStream os = res.getOutputStream();
                 os.write( data );
                 os.flush();

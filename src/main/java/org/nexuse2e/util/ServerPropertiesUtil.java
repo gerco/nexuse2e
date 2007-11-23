@@ -1,6 +1,8 @@
 package org.nexuse2e.util;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import org.apache.commons.lang.StringUtils;
 import org.nexuse2e.Engine;
@@ -12,7 +14,8 @@ public class ServerPropertiesUtil {
 
         ROOTDIR("${nexus.server.root}"), PARTNERID("${nexus.message.partnerid}"), PARTNERNAME(
                 "${nexus.message.partnername}"), CHOREOGRAPHY("${nexus.message.choreography}"), ACTION(
-                "${nexus.message.action}");
+                "${nexus.message.action}"), CONVERSATION("${nexus.message.conversation}"), MESSAGE(
+                "${nexus.message.message}"), CREATED_DATE("${nexus.message.createdDate}");
 
         private String value;
 
@@ -70,8 +73,8 @@ public class ServerPropertiesUtil {
             if ( property.equals( ServerProperty.ROOTDIR ) ) {
                 String nexusRoot = Engine.getInstance().getNexusE2ERoot();
                 if ( !StringUtils.isEmpty( nexusRoot ) ) {
-                    if(nexusRoot.endsWith( "/" ) || nexusRoot.endsWith( "\\" )) {
-                        nexusRoot = nexusRoot.substring( 0,nexusRoot.length()-1 );
+                    if ( nexusRoot.endsWith( "/" ) || nexusRoot.endsWith( "\\" ) ) {
+                        nexusRoot = nexusRoot.substring( 0, nexusRoot.length() - 1 );
                     }
                     value = StringUtils.replace( value, property.getValue(), nexusRoot );
                 }
@@ -104,6 +107,28 @@ public class ServerPropertiesUtil {
                         if ( !StringUtils.isEmpty( action ) ) {
                             value = StringUtils.replace( value, property.getValue(), action );
                         }
+                    }
+                } else if ( property.equals( ServerProperty.CONVERSATION ) ) {
+                    if ( context.getConversation() != null ) {
+                        String conversationId = context.getConversation().getConversationId();
+                        conversationId = conversationId.replaceAll( "[?:\\/*\"<>|]" , "_" );
+                        if ( !StringUtils.isEmpty( conversationId ) ) {
+                            value = StringUtils.replace( value, property.getValue(), conversationId );
+                        }
+                    }
+                } else if ( property.equals( ServerProperty.MESSAGE ) ) {
+                    if ( context.getMessagePojo() != null ) {
+                        String messageId = context.getMessagePojo().getMessageId();
+                        if ( !StringUtils.isEmpty( messageId ) ) {
+                            messageId = messageId.replaceAll( "[?:\\/*\"<>|]" , "_" );
+                            value = StringUtils.replace( value, property.getValue(), messageId );
+                        }
+                    }
+                } else if ( property.equals( ServerProperty.CREATED_DATE ) ) {
+                    if ( ( context.getMessagePojo() != null ) && ( context.getMessagePojo().getCreatedDate() != null ) ) {
+                        DateFormat df = new SimpleDateFormat( "yyyyMMddHHmmssSSS" );
+                        value = StringUtils.replace( value, property.getValue(), df.format( context.getMessagePojo()
+                                .getCreatedDate() ) );
                     }
                 }
             }
