@@ -24,9 +24,12 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -483,7 +486,7 @@ public class DataConversionService extends AbstractService {
     private String processDateFormat( String[] params, MappingDefinition definition, Map<String, String> aditionalValues ) {
 
         if ( params == null || params.length < 2 ) {
-            LOG.error( "dateformat requires at least 2 parameters: dateformat['sourceformat','targetformat']" );
+            LOG.error( "dateformat requires at least 2 parameters: dateformat['sourceformat','targetformat'], third parameter timezone is optional. '-0300' or 'local'" );
             return null;
         }
 
@@ -494,10 +497,45 @@ public class DataConversionService extends AbstractService {
                     date = new Date();
                 }
             } else {
-                SimpleDateFormat sourceFormat = new SimpleDateFormat( stripParameter( params[0] ) );
-                date = sourceFormat.parse( aditionalValues.get( "$value" ).trim() );
+                String dateValue = aditionalValues.get( "$value" ).trim() ;
+                
+                
+                // TODO: configurable  ?
+                
+                if(dateValue.substring( dateValue.length()-3 ).startsWith( ":" )) {
+                    LOG.info( "dateValue needs to be modified, unparesable ':' in timezone found" );
+                    String newDate = dateValue.substring( 0,dateValue.length()-3 )+dateValue.substring( dateValue.length()-2 );
+                    dateValue = newDate;
+                }
+                
+                // TODO configurable  ?
+                if(dateValue.endsWith( "Z" )) {
+                    LOG.info( "dateValue ends with Z. UTC is expected and Z is replaced with '-0000'");
+                    String newDate = dateValue.substring( 0,dateValue.length()-1 )+"+0000";
+                    dateValue = newDate;
+                }
+                
+                
+                String datePattern = stripParameter( params[0] );
+                SimpleDateFormat sourceFormat = new SimpleDateFormat( datePattern );
+                date = sourceFormat.parse( dateValue );
             }
             SimpleDateFormat targetFormat = new SimpleDateFormat( stripParameter( params[1] ) );
+            
+            if(params.length > 2) {
+                System.out.println("timezone transformation: "+params[2] );
+                String timezone = stripParameter( params[2] );
+                if(!StringUtils.isEmpty( timezone )) {
+                    if(timezone.toLowerCase().equals( "local" )) {
+                        // SimpleDateFormat uses server local time as base.
+                    } else {
+                        TimeZone zone = TimeZone.getTimeZone( timezone );
+                        targetFormat.setTimeZone( zone );
+                    }
+                }
+            }
+            
+            
             return targetFormat.format( date );
         } catch ( ParseException e ) {
             // TODO Auto-generated catch block
