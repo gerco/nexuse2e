@@ -131,12 +131,6 @@
 			reloadChildren(rootNode.children);
 		}
 		//debug("... done");
-		var wrapper_layout = dojo.widget.byId('wrapper_layout');
-		var navigator = dojo.widget.byId('navigator');
-		var docpane = dojo.widget.byId('docpane');
-		navigator.refresh();
-		docpane.refresh();
-		wrapper_layout.show();		
 	}
 	
 	/*
