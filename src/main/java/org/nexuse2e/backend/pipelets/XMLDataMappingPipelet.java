@@ -293,7 +293,9 @@ public class XMLDataMappingPipelet extends AbstractPipelet {
             return;
         }
         try {
+            
             XMLDataMappingPipelet xmlDataMappingPipelet = new XMLDataMappingPipelet();
+            xmlDataMappingPipelet.mappingService = new DataConversionService();
             MappingDefinitions mappingDefinitions = xmlDataMappingPipelet.readConfiguration( args[1] );
             xmlDataMappingPipelet.setMappingDefinitions( mappingDefinitions );
             System.out.println( "MappingDefinitions: " + mappingDefinitions );
@@ -313,7 +315,8 @@ public class XMLDataMappingPipelet extends AbstractPipelet {
 
             System.out.println( "Result: " + baos.toString() );
         } catch ( Exception e ) {
-            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (Error e) {
             e.printStackTrace();
         }
     }
