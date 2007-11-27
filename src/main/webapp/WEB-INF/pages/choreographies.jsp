@@ -36,9 +36,8 @@
 		<td>&nbsp;</td>
 		<td class="BUTTON_RIGHT"><nexus:link href="ChoreographyAdd.do"
 			styleClass="NexusHeaderLink">
-			<img src="images/tree/plus.gif" border="0" alt="">
-		</nexus:link></td>
-		<td class="NexusHeaderLink">Add Choreography</td>
+			<img src="images/tree/plus.gif" border="0" alt="" class="button">
+		Add Choreography</nexus:link></td>
 	</tr>
 </table>
 </center>

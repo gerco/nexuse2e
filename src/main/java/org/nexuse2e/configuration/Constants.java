@@ -93,19 +93,19 @@ public class Constants extends org.nexuse2e.Constants {
                 String.class);
 
         private final int   value;
-        private final Class type;
+        private final Class<?> type;
 
         public int getValue() {
 
             return value;
         }
 
-        public Class getType() {
+        public Class<?> getType() {
 
             return type;
         }
 
-        ParameterType( int value, Class type ) {
+        ParameterType( int value, Class<?> type ) {
 
             this.value = value;
             this.type = type;

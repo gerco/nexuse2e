@@ -80,7 +80,7 @@
 <table class="NEXUS_BUTTON_TABLE">
 	<tr>
 		<td>&nbsp;</td>
-		<td class="NexusHeaderLink" style="text-align: right;"><logic:equal
+		<td class="BUTTON_RIGHT" style="text-align: right;"><logic:equal
 			name="collaborationPartnerForm" property="type" value="1">
 			<td class="NexusHeaderLink">Use Certificates -> CertificateStaging to
 			add Certificate</td>

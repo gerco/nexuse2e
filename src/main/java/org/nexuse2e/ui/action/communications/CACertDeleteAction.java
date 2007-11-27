@@ -62,7 +62,7 @@ public class CACertDeleteAction extends NexusE2EAction {
                     Constants.CERTIFICATE_TYPE_ALL, nxCertificateId );
 
             if ( cPojo != null ) {
-                Engine.getInstance().getActiveConfigurationAccessService().deleteCertificate( Constants.CERTIFICATE_TYPE_ALL, cPojo );
+                Engine.getInstance().getActiveConfigurationAccessService().deleteCertificate( cPojo );
 
             } else {
                 ActionMessage errorMessage = new ActionMessage( "cacerts.certnotfound", nxCertificateId );

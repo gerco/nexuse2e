@@ -29,8 +29,9 @@ import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
-import org.nexuse2e.configuration.Constants;
+import org.nexuse2e.configuration.ReferencedCertificateException;
 import org.nexuse2e.pojo.CertificatePojo;
+import org.nexuse2e.pojo.ConnectionPojo;
 import org.nexuse2e.pojo.PartnerPojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.PartnerCertificateForm;
@@ -53,7 +54,7 @@ public class PartnerCertificateDeleteAction extends NexusE2EAction {
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
-        ActionForward error = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
+        ActionForward error = actionMapping.findForward( ACTION_FORWARD_FAILURE );
 
         PartnerCertificateForm form = (PartnerCertificateForm) actionForm;
 
@@ -79,18 +80,23 @@ public class PartnerCertificateDeleteAction extends NexusE2EAction {
                     nxPartnerId );
             CertificatePojo certificate = Engine.getInstance().getActiveConfigurationAccessService()
                     .getCertificateFromPartnerByNxCertificateId( partner, nxCertificateId );
-            partner.getCertificates().remove( certificate );
-            certificate.setPartner( null );
             if ( certificate != null ) {
-                Engine.getInstance().getActiveConfigurationAccessService().deleteCertificate(
-                        Constants.CERTIFICATE_TYPE_ALL, certificate );
+                Engine.getInstance().getActiveConfigurationAccessService().deleteCertificate( certificate );
             }
-        } catch ( NexusException e ) {
-            ActionMessage errorMessage = new ActionMessage( "generic.error", e.getMessage() );
-            errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
+        } catch ( ReferencedCertificateException e ) {
+            for (ConnectionPojo connection : e.getReferringObjects()) {
+                ActionMessage errorMessage = new ActionMessage(
+                        "error.referenced.object.connection", connection.getName() );
+                errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
+            }
             addRedirect( request, URL, TIMEOUT );
             return error;
-        }
+        } catch ( NexusException e ) {
+                ActionMessage errorMessage = new ActionMessage( "generic.error", e.getMessage() );
+                errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
+                addRedirect( request, URL, TIMEOUT );
+                return error;
+            }
         return success;
     }
 

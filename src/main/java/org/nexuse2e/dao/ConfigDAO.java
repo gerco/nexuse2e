@@ -103,6 +103,12 @@ public class ConfigDAO extends BasicDAO {
     public void deletePartner( PartnerPojo partner, Session session, Transaction transaction ) throws NexusException {
 
         if ( partner != null ) {
+            if (!partner.getConnections().isEmpty()) {
+                partner.getConnections().clear();
+            }
+            if (!partner.getCertificates().isEmpty()) {
+                partner.getCertificates().clear();
+            }
             deleteRecord( partner, session, transaction );
         }
     }

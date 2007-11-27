@@ -75,7 +75,7 @@ public class StagingDeleteCertificateAction extends NexusE2EAction {
             return error;
         }
         try {
-            Engine.getInstance().getActiveConfigurationAccessService().deleteCertificate( Constants.CERTIFICATE_TYPE_ALL, cPojo );
+            Engine.getInstance().getActiveConfigurationAccessService().deleteCertificate( cPojo );
         } catch ( NexusException e1 ) {
             ActionMessage errorMessage = new ActionMessage( "generic.error", e1.getMessage() );
             errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );

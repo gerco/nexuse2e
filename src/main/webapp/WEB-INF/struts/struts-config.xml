@@ -647,12 +647,7 @@
     <action path="/PartnerConnectionList" name="collaborationPartnerForm" type="org.nexuse2e.ui.action.partners.PartnerConnectionListAction">
       <forward name="success" path="/WEB-INF/pages/partners/partner_connection_list.jsp"/>
     </action>
-    <!--
-    <action path="/PartnerContactList" name="collaborationPartnerForm" type="org.nexuse2e.ui.action.partners.PartnerContactListAction">
-      <forward name="success" path="/WEB-INF/pages/partners/partner_contact_list.jsp"/>
-    </action>
-    -->
-    
+
     <action path="/PartnerCertificateList" name="collaborationPartnerForm" type="org.nexuse2e.ui.action.partners.PartnerCertificateListAction">
       <forward name="success" path="/WEB-INF/pages/partners/partner_certificate_list.jsp"/>
     </action>
@@ -673,20 +668,8 @@
     </action>
     <action path="/PartnerCertificateDelete" name="partnerCertificateForm" type="org.nexuse2e.ui.action.partners.PartnerCertificateDeleteAction">
       <forward name="success" path="/PartnerCertificateList.do"/>
+      <forward name="error" path="/PartnerCertificateView.do"/>
     </action>
-    <!--
-    <action path="/PartnerContactSave" name="partnerContactForm" type="org.nexuse2e.ui.action.partners.PartnerContactSaveAction">
-      <forward name="success" path="/CollaborationPartners.do"/>
-      <forward name="error" path="/PartnerContactList.do"/>
-    </action>
-    <action path="/PartnerContactView" name="partnerContactForm" type="org.nexuse2e.ui.action.partners.PartnerContactUpdateAction">
-      <forward name="success" path="/WEB-INF/pages/partners/partner_contact_view.jsp"/>
-      <forward name="error" path="/PartnerContactList.do"/>
-    </action>
-    <action path="/PartnerContactDelete" name="partnerContactForm" type="org.nexuse2e.ui.action.partners.PartnerContactDeleteAction">
-      <forward name="success" path="/PartnerContactList.do"/>
-    </action>
-    -->
     <action path="/PartnerConnectionView" name="partnerConnectionForm" type="org.nexuse2e.ui.action.partners.PartnerConnectionUpdateAction">
       <forward name="success" path="/WEB-INF/pages/partners/partner_connection_view.jsp"/>
     </action>
@@ -704,15 +687,6 @@
       <forward name="success" path="/WEB-INF/pages/partners/partner_connection_add.jsp"/>
       <forward name="error" path="/PartnerConnectionList.do"/>
     </action>
-    <!-- 
-    
-    <action path="/PartnerContactAdd" name="partnerContactForm" type="org.nexuse2e.ui.action.partners.PartnerContactAddAction">
-      <forward name="success" path="/WEB-INF/pages/partners/partner_contact_add.jsp"/>
-    </action>
-    <action path="/PartnerContactCreate" name="partnerContactForm" type="org.nexuse2e.ui.action.partners.PartnerContactCreateAction">
-      <forward name="success" path="/PartnerContactList.do"/>
-    </action>
-    -->
     
     <action path="/PartnerCertificateAdd" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.partners.PartnerCertificateAddAction">
       <forward name="success" path="/WEB-INF/pages/partners/partner_certificate_add.jsp"/>
@@ -721,13 +695,13 @@
     <action path="/PartnerCertificateCreate" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.partners.PartnerCertificateCreateAction">
       <forward name="success" path="/PartnerCertificateList.do"/>
     </action>
-    
-    
+
     <action path="/CollaborationPartnerCreate" name="collaborationPartnerForm" type="org.nexuse2e.ui.action.partners.PartnerCreateAction">
       <forward name="success" path="/CollaborationPartners.do"/>
     </action>
     <action path="/CollaborationPartnerDelete" name="collaborationPartnerForm" type="org.nexuse2e.ui.action.partners.PartnerDeleteAction">
       <forward name="success" path="/ServerIdentities.do"/>
+      <forward name="error" path="/WEB-INF/pages/partners/partner_info_view.jsp"/>
     </action>
     
     <action path="/Choreographies" type="org.nexuse2e.ui.action.ChoreographiesAction">
@@ -801,7 +775,7 @@
     <action path="/ParticipantAdd" name="participantForm" type="org.nexuse2e.ui.action.choreographies.ParticipantAddAction">
       <forward name="reload" path="/WEB-INF/pages/choreographies/participant_add.jsp"/>
       <forward name="created" path="/ParticipantList.do"/>
-      <forward name="error" path="/ParticipantList.do"/>
+      <forward name="error" path="/WEB-INF/pages/choreographies/participant_add.jsp"/>
     </action>
     
     <action path="/ChoreographyAdd" name="choreographyForm" type="org.nexuse2e.ui.action.choreographies.ChoreographyAddAction">

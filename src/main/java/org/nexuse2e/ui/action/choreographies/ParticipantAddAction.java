@@ -20,7 +20,7 @@
 package org.nexuse2e.ui.action.choreographies;
 
 import java.util.Date;
-import java.util.Iterator;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -144,7 +144,6 @@ public class ParticipantAddAction extends NexusE2EAction {
             try {
                 ChoreographyPojo choreography = Engine.getInstance().getActiveConfigurationAccessService()
                         .getChoreographyByNxChoreographyId( nxChoreographyId );
-                choreography.getParticipants().add( participant );
                 participant.setChoreography( choreography );
                 PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByNxPartnerId(
                         form.getNxPartnerId() );
@@ -163,15 +162,23 @@ public class ParticipantAddAction extends NexusE2EAction {
                 participant.setCreatedDate( new Date() );
                 participant.setModifiedDate( new Date() );
                 participant.setLocalCertificate( localCertificate );
-                Iterator<ConnectionPojo> i = partner.getConnections().iterator();
-                while ( i.hasNext() ) {
-                    ConnectionPojo connection = i.next();
+
+                for (ConnectionPojo connection : partner.getConnections()) {
                     if ( connection.getNxConnectionId() == form.getNxConnectionId() ) {
                         participant.setConnection( connection );
                         break;
                     }
                 }
-                Engine.getInstance().getActiveConfigurationAccessService().updateChoreography( choreography );
+
+                if (participant.getConnection() == null) {
+                    ActionMessage errorMessage = new ActionMessage( "participant.error.noconnection" );
+                    errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
+                    addRedirect( request, URL, TIMEOUT );
+                    return error;
+                } else {
+                    choreography.getParticipants().add( participant );
+                    Engine.getInstance().getActiveConfigurationAccessService().updateChoreography( choreography );
+                }
 
             } catch ( NexusException e ) {
                 ActionMessage errorMessage = new ActionMessage( "generic.error", e.getMessage() );

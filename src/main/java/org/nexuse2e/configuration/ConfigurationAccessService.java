@@ -793,24 +793,27 @@ public class ConfigurationAccessService {
     }
 
     /**
-     * @param partner
+     * Removes a partner from the configuration.
+     * @param partner The partner to be removed
+     * @throws ReferencedPartnerException if the partner is being referenced by
+     * one or more participants.
+     * @throws NexusException if something else went wrong.
      */
-    public void deletePartner( PartnerPojo partner ) {
+    public void deletePartner( PartnerPojo partner ) throws ReferencedPartnerException, NexusException {
 
-        try {
-            PartnerPojo oldPartner = getPartnerByNxPartnerId( partner.getNxPartnerId() );
-            if ( oldPartner != null ) {
-                getPartners( 0, null ).remove( oldPartner );
+        PartnerPojo oldPartner = getPartnerByNxPartnerId( partner.getNxPartnerId() );
+        if ( oldPartner != null ) {
+            // check references
+            if (!oldPartner.getParticipants().isEmpty()) {
+                throw new ReferencedPartnerException( oldPartner.getParticipants() );
             }
-            try {
-                engineConfig.deletePartnerInDB( partner );
-            } catch ( Exception e ) {
-                LOG.error( "Error deleting partner: " + e );
-            }
-            applyConfiguration();
-        } catch ( NexusException e ) {
-            e.printStackTrace();
+            
+            getPartners( 0, null ).remove( oldPartner );
+
+            engineConfig.deletePartnerInDB( partner );
         }
+
+        applyConfiguration();
     }
 
     /**
@@ -1175,53 +1178,68 @@ public class ConfigurationAccessService {
     }
 
     /**
-     * @param pojo
+     * Removes the given certificate from the configuration.
+     * @param certificate The certificate to be removed.
+     * @throws ReferencedCertificateException if the certificate is being referenced by
+     * one or more connections.
+     * @throws NexusException if something else went wrong.
      */
-    public void deleteCertificate( int type, CertificatePojo certificate ) throws NexusException {
+    public void deleteCertificate( CertificatePojo certificate )
+    throws ReferencedCertificateException, NexusException {
 
-        CertificatePojo oldCertificate = getCertificateByNxCertificateId( type, certificate.getNxCertificateId() );
+        // check if certificate is referenced by any connection
+        List<PartnerPojo> partners = getPartners( Constants.PARTNER_TYPE_ALL, null );
+        List<ConnectionPojo> referringObjects = new ArrayList<ConnectionPojo>();
+        for (PartnerPojo partner : partners) {
+            for (ConnectionPojo connection : partner.getConnections()) {
+                CertificatePojo cert = connection.getCertificate();
+                if (cert != null && cert.getNxCertificateId() == certificate.getNxCertificateId()) {
+                    referringObjects.add( connection );
+                }
+            }
+        }
+        if (!referringObjects.isEmpty()) {
+            throw new ReferencedCertificateException( referringObjects );
+        }
+        
+        CertificatePojo oldCertificate = getCertificateByNxCertificateId(
+                Constants.CERTIFICATE_TYPE_ALL, certificate.getNxCertificateId() );
         if ( oldCertificate != null ) {
             getCertificates( Constants.CERTIFICATE_TYPE_ALL, null ).remove( oldCertificate );
         }
-        try {
-            engineConfig.deleteCertificateInDB( certificate );
-        } catch ( Exception e ) {
-            LOG.error( "Error deleting certificate: " + e );
-        }
+        
+        engineConfig.deleteCertificateInDB( certificate );
         applyConfiguration();
     }
 
     /**
-     * @param certificates
-     * @throws NexusException
+     * Removes a list of certificates from the configuration.
+     * @param certificates The certificates to be removed.
+     * @throws ReferencedCertificateException if the certificate is being referenced by
+     * one or more connections.
+     * @throws NexusException if something else went wrong.
      */
-    public void deleteCertificates( List<CertificatePojo> certificates ) throws NexusException {
+    public void deleteCertificates( List<CertificatePojo> certificates )
+    throws NexusException, ReferencedCertificateException {
 
-        for ( CertificatePojo pojo : certificates ) {
-            CertificatePojo oldCertificate = getCertificateByNxCertificateId( Constants.CERTIFICATE_TYPE_ALL, pojo
-                    .getNxCertificateId() );
-            if ( oldCertificate != null ) {
-                getCertificates( Constants.CERTIFICATE_TYPE_ALL, null ).remove( oldCertificate );
-            }
-            try {
-                engineConfig.deleteCertificateInDB( pojo );
-            } catch ( Exception e ) {
-                LOG.error( "Error deleting certificate: " + e );
-            }
+        for (CertificatePojo certificate : certificates) {
+            deleteCertificate( certificate );
         }
 
         applyConfiguration();
     }
 
     /**
-     * @param certificate
+     * Updates a certificate.
+     * @param certificate The certificate to be updated.
+     * @throws NexusException if something went wrong.
      */
     public void updateCertificate( CertificatePojo certificate ) throws NexusException {
 
-        CertificatePojo oldCertificate = getCertificateByNxCertificateId( Constants.CERTIFICATE_TYPE_ALL, certificate
-                .getNxCertificateId() );
+        CertificatePojo oldCertificate = getCertificateByNxCertificateId(
+                Constants.CERTIFICATE_TYPE_ALL, certificate.getNxCertificateId() );
         if ( oldCertificate != null ) {
-            getCertificates( Constants.CERTIFICATE_TYPE_ALL, null );
+            getCertificates( Constants.CERTIFICATE_TYPE_ALL, null ).remove( oldCertificate );
         }
 
         getCertificates( Constants.CERTIFICATE_TYPE_ALL, null ).add( certificate );
@@ -1251,11 +1269,9 @@ public class ConfigurationAccessService {
             }
             KeyStore keyStore = KeyStore.getInstance( "JKS" );
             keyStore.load( null, cacertspwd.toCharArray() );
-            List certs = getCertificates( Constants.CERTIFICATE_TYPE_CA, null );
-            Iterator certI = certs.iterator();
+            List<CertificatePojo> certs = getCertificates( Constants.CERTIFICATE_TYPE_CA, null );
             // log.debug( "getCACertificates - count: " + certs.size() );
-            while ( certI.hasNext() ) {
-                CertificatePojo tempCert = (CertificatePojo) certI.next();
+            for ( CertificatePojo tempCert : certs ) {
                 byte[] data = tempCert.getBinaryData();
                 if ( ( data != null ) && ( data.length != 0 ) ) {
                     try {
@@ -1570,7 +1586,7 @@ public class ConfigurationAccessService {
     }
 
     /**
-     * @param category any subsystem selects its own category id to avaid parameter naming conflicts. 
+     * @param category any subsystem selects its own category id to avoid parameter naming conflicts. 
      * @param tag optional ability to separate different sets of parameters for the same category, e.g. for different instances. 
      * @param descriptors 
      * @return
