@@ -60,6 +60,26 @@
 			<td class="NEXUSSection">Description</td>
 			<td class="NEXUSSection"></td>
 		</tr>
+		<tr>
+			<td class="NEXUSName" colspan="3">
+			<logic:equal name="pipelineForm" property="direction" value="0"> <%/* inbound */%>
+				<logic:equal name="pipelineForm" property="frontend" value="true">
+				Partner system
+				</logic:equal>
+				<logic:notEqual name="pipelineForm" property="frontend" value="true">
+				NEXUSe2e frontend
+				</logic:notEqual>
+			</logic:equal>
+			<logic:equal name="pipelineForm" property="direction" value="1"> <%/* outbound */%>
+				<logic:equal name="pipelineForm" property="frontend" value="true">
+				NEXUSe2e backend
+				</logic:equal>
+				<logic:notEqual name="pipelineForm" property="frontend" value="true">
+				Backend system
+				</logic:notEqual>
+			</logic:equal>
+			</td>
+		</tr>
 
 		<logic:iterate id="pipelet" name="pipelineForm" property="pipelets">
 			<tr>
@@ -101,6 +121,26 @@
 				<img src="images/submit.gif" class="button">
 			</nexus:submit></td>
 			<td class="NEXUSSection"></td>
+		</tr>
+		<tr>
+			<td class="NEXUSName" colspan="3">
+			<logic:equal name="pipelineForm" property="direction" value="0"> <%/* inbound */%>
+				<logic:equal name="pipelineForm" property="frontend" value="true">
+				NEXUSe2e backend
+				</logic:equal>
+				<logic:notEqual name="pipelineForm" property="frontend" value="true">
+				Backend system
+				</logic:notEqual>
+			</logic:equal>
+			<logic:equal name="pipelineForm" property="direction" value="1"> <%/* outbound */%>
+				<logic:equal name="pipelineForm" property="frontend" value="true">
+				Partner system
+				</logic:equal>
+				<logic:notEqual name="pipelineForm" property="frontend" value="true">
+				NEXUSe2e frontend
+				</logic:notEqual>
+			</logic:equal>
+			</td>
 		</tr>
 	</table>
 	<table class="NEXUS_BUTTON_TABLE">

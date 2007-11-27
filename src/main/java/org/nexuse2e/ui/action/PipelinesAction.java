@@ -41,9 +41,6 @@ import org.nexuse2e.ui.form.PipelineForm;
  */
 public class PipelinesAction extends NexusE2EAction {
 
-    //    private static String URL     = "choreographies.error.url";
-    //    private static String TIMEOUT = "choreographies.error.timeout";
-
     /* (non-Javadoc)
      * @see com.tamgroup.nexus.e2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages)
      */
