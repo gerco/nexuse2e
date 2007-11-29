@@ -301,6 +301,7 @@ public class SftpPollingReceiverService extends AbstractService implements Recei
         return pattern;
     }
 
+    @SuppressWarnings("unchecked")
     public static void main( String args[] ) {
 
         JSch jsch = new JSch();
@@ -357,7 +358,7 @@ public class SftpPollingReceiverService extends AbstractService implements Recei
                     try {
                         targetFiles = channelSftp.ls( prefix + file.getFilename() );
                     } catch ( SftpException sftpEx ) {
-                        LOG.error( "Could not retrieve file " + file.getFilename() );
+                        // No message/output required
                     }
                     if ( targetFiles == null || targetFiles.isEmpty() ) {
                         LOG.trace( "Target file does not exist!" );
