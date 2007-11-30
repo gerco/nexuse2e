@@ -318,13 +318,17 @@ public class PipelineForm extends ActionForm {
 
         return pipelets;
     }
-
+    
     /**
      * @param pipelets the pipelets to set
      */
     public void setPipelets( List<PipeletPojo> pipelets ) {
 
         this.pipelets = pipelets;
+    }
+    
+    public int getPipeletCount() {
+        return (pipelets == null ? 0 : pipelets.size());
     }
 
     /**

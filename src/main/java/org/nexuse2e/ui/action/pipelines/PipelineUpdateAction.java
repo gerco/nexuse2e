@@ -38,7 +38,6 @@ import org.nexuse2e.configuration.ConfigurationUtil;
 import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.messaging.Pipelet;
 import org.nexuse2e.pojo.ComponentPojo;
-import org.nexuse2e.pojo.PipeletParamPojo;
 import org.nexuse2e.pojo.PipeletPojo;
 import org.nexuse2e.pojo.PipelinePojo;
 import org.nexuse2e.transport.TransportReceiver;
@@ -158,13 +157,17 @@ public class PipelineUpdateAction extends NexusE2EAction {
                 } else {
                     // up
                     if ( direction == 1 ) {
-                        pipelets.get( sortaction - 2 ).setPosition( sortaction );
-                        pipelets.get( sortaction - 1 ).setPosition( sortaction - 1 );
+                        if (sortaction >= 2 && pipelets.size() > sortaction - 1) {
+                            pipelets.get( sortaction - 2 ).setPosition( sortaction );
+                            pipelets.get( sortaction - 1 ).setPosition( sortaction - 1 );
+                        }
                     }
                     // down
                     else if ( direction == 2 ) {
-                        pipelets.get( sortaction ).setPosition( sortaction );
-                        pipelets.get( sortaction - 1 ).setPosition( sortaction + 1 );
+                        if (pipelets.size() > sortaction && sortaction > 0) {
+                            pipelets.get( sortaction ).setPosition( sortaction );
+                            pipelets.get( sortaction - 1 ).setPosition( sortaction + 1 );
+                        }
                     }
                     Collections.sort( pipelets, Constants.PIPELETCOMPARATOR );
 
