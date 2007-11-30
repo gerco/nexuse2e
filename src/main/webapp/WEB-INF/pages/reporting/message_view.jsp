@@ -134,18 +134,26 @@
 <table class="NEXUS_BUTTON_TABLE" width="100%">
 	<tr>
 
+	<logic:equal name="reportingPropertiesForm" property="searchFor" value="conversation">
+		<td class="BUTTON_RIGHT"><nexus:link
+			href="ConversationView.do?noReset&choreographyId=${reportMessageEntryForm.choreographyId}&convId=${reportMessageEntryForm.conversationId}&partnerId=${reportMessageEntryForm.participantId}"
+			styleClass="NexusHeaderLink">
+			<nobr><img src="images/back.gif" border="0" alt="" class="button">Back</nexus:link></nobr></td>
+	</logic:equal>
+	<logic:equal name="reportingPropertiesForm" property="searchFor" value="message">
+		<td class="BUTTON_RIGHT"><nexus:link
+			href="ProcessConversationReport.do?noReset=true"
+			styleClass="NexusHeaderLink">
+			<nobr><img src="images/back.gif" border="0" alt="" class="button">Back</nexus:link></nobr></td>
+	</logic:equal>
 		<td class="BUTTON_RIGHT"><nexus:link
 			href="ModifyMessage.do?noReset&refresh&type=transaction&command=requeue&participantId=${reportMessageEntryForm.participantId}&choreographyId=${reportMessageEntryForm.choreographyId}&conversationId=${reportMessageEntryForm.conversationId}&messageId=${reportMessageEntryForm.messageId}&outbound=${reportMessageEntryForm.outbound}"
 			styleClass="NexusHeaderLink">
-			<img src="images/submit.gif" border="0" alt="">
-		</nexus:link></td>
-		<td class="NexusHeaderLink">Re-Queue</td>
+			<nobr><img src="images/submit.gif" border="0" alt="" class="button">Re-Queue</nexus:link></nobr></td>
 		<td class="BUTTON_RIGHT"><nexus:link
 			href="ModifyMessage.do?noReset&refresh&type=transaction&command=stop&participantId=${reportMessageEntryForm.participantId}&choreographyId=${reportMessageEntryForm.choreographyId}&conversationId=${reportMessageEntryForm.conversationId}&messageId=${reportMessageEntryForm.messageId}&outbound=${reportMessageEntryForm.outbound}"
 			styleClass="NexusHeaderLink">
-			<img src="images/reset.gif" onclick="" border="0" alt="">
-		</nexus:link></td>
-		<td class="NexusHeaderLink">Stop</td>
+			<nobr><img src="images/reset.gif" onclick="" border="0" alt="" class="button">Stop</nexus:link></nobr></td>
 	</tr>
 </table>
 </center>

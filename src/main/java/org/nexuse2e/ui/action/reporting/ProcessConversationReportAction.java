@@ -36,7 +36,6 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.Engine;
-import org.nexuse2e.NexusException;
 import org.nexuse2e.dao.TransactionDAO;
 import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.BackendActionSerializer;

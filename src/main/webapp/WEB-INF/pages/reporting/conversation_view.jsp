@@ -80,6 +80,11 @@
                 <td class="NEXUSValue"><bean:write name="messages" property="turnaroundTime"/></td>
             </tr>
       </logic:iterate>
-            
+        </table>
+        <table width="100%">
+      		<tr>
+                <td class="BUTTON_RIGHT">
+                <nobr><nexus:link href="ProcessConversationReport.do?noReset=true"><img src="images/back.gif" name="resultsButton" class="button"/>Back</nexus:link></nobr></td>
+            </tr>
         </table>
     </center>

@@ -85,7 +85,7 @@ public interface TransactionService extends Manageable {
      * @return
      * @throws NexusException
      */
-    public abstract List getConversationsForReport( String status, int nxChoreographyId, int nxPartnerId,
+    public abstract List<ConversationPojo> getConversationsForReport( String status, int nxChoreographyId, int nxPartnerId,
             String conversationId, Date start, Date end, int itemsPerPage, int page, int field, boolean ascending, Session session, Transaction transaction )
             throws NexusException;
 
@@ -154,7 +154,7 @@ public interface TransactionService extends Manageable {
      * @return
      * @throws NexusException
      */
-    public abstract List getMessagesForReport( String status, int nxChoreographyId, int nxPartnerId,
+    public abstract List<MessagePojo> getMessagesForReport( String status, int nxChoreographyId, int nxPartnerId,
             String conversationId, String messageId, String type, Date start, Date end, int itemsPerPage, int page,
             int field, boolean ascending ) throws NexusException;
 
@@ -251,7 +251,7 @@ public interface TransactionService extends Manageable {
      * @param id The message ID
      * @param handle The <code>ScheduledFuture</code> handle
      */
-    public abstract void registerProcessingMessage( String id, ScheduledFuture handle,
+    public abstract void registerProcessingMessage( String id, ScheduledFuture<?> handle,
             ScheduledExecutorService scheduler ); // registerProcessingMessage
 
     /**

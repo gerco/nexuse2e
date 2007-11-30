@@ -61,7 +61,7 @@ public class TransactionServiceImpl implements TransactionService {
     private static Logger                             LOG                = Logger
                                                                                  .getLogger( TransactionServiceImpl.class );
 
-    private HashMap<String, ScheduledFuture>          processingMessages = new HashMap<String, ScheduledFuture>();
+    private HashMap<String, ScheduledFuture<?>>       processingMessages = new HashMap<String, ScheduledFuture<?>>();
     private HashMap<String, ScheduledExecutorService> schedulers         = new HashMap<String, ScheduledExecutorService>();
     private Hashtable<String, String>                 synchronousReplies = new Hashtable<String, String>();
 
@@ -142,6 +142,9 @@ public class TransactionServiceImpl implements TransactionService {
 
         PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByPartnerId(
                 partnerId );
+        if (partner == null) {
+            return null;
+        }
 
         return transactionDao.getConversationByConversationId( choreographyId, conversationId,
                 partner.getNxPartnerId(), null, null );
@@ -151,7 +154,7 @@ public class TransactionServiceImpl implements TransactionService {
     /* (non-Javadoc)
      * @see org.nexuse2e.controller.TransactionService#getConversationsForReport(java.lang.String, int, int, java.lang.String, java.util.Date, java.util.Date, int, int, int, boolean)
      */
-    public List getConversationsForReport( String status, int nxChoreographyId, int nxPartnerId, String conversationId,
+    public List<ConversationPojo> getConversationsForReport( String status, int nxChoreographyId, int nxPartnerId, String conversationId,
             Date start, Date end, int itemsPerPage, int page, int field, boolean ascending, Session session,
             Transaction transaction ) throws NexusException {
 
@@ -211,7 +214,7 @@ public class TransactionServiceImpl implements TransactionService {
     /* (non-Javadoc)
      * @see org.nexuse2e.controller.TransactionService#getMessagesForReport(java.lang.String, int, int, java.lang.String, java.lang.String, java.lang.String, java.util.Date, java.util.Date, int, int, int, boolean)
      */
-    public List getMessagesForReport( String status, int nxChoreographyId, int nxPartnerId, String conversationId,
+    public List<MessagePojo> getMessagesForReport( String status, int nxChoreographyId, int nxPartnerId, String conversationId,
             String messageId, String type, Date start, Date end, int itemsPerPage, int page, int field,
             boolean ascending ) throws NexusException {
 
@@ -540,7 +543,7 @@ public class TransactionServiceImpl implements TransactionService {
     /* (non-Javadoc)
      * @see org.nexuse2e.controller.TransactionService#registerProcessingMessage(java.lang.String, java.util.concurrent.ScheduledFuture)
      */
-    public void registerProcessingMessage( String id, ScheduledFuture handle, ScheduledExecutorService scheduler ) {
+    public void registerProcessingMessage( String id, ScheduledFuture<?> handle, ScheduledExecutorService scheduler ) {
 
         LOG.debug( "registerProcessingMessage: " + id );
 
@@ -555,7 +558,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         LOG.debug( "deregisterProcessingMessage: " + id );
 
-        ScheduledFuture handle = processingMessages.get( id );
+        ScheduledFuture<?> handle = processingMessages.get( id );
         if ( handle != null ) {
             handle.cancel( false );
             LOG.debug( "deregisterProcessingMessage - processing cancelled!" );

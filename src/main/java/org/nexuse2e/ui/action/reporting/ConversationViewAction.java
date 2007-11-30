@@ -19,10 +19,8 @@
  */
 package org.nexuse2e.ui.action.reporting;
 
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.TreeSet;
-import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,8 +31,6 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.Engine;
-import org.nexuse2e.configuration.GenericComparator;
-import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.ConversationPojo;
 import org.nexuse2e.pojo.MessagePojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
@@ -85,28 +81,15 @@ public class ConversationViewAction extends NexusE2EAction {
         //        form.setTimezone( ( (ReportingPropertiesForm) request.getSession().getAttribute( "reportingPropertiesForm" ) )
         //                .getTimezone() );
 
-        Vector reportMessages = new Vector();
-
-        // List<MessagePojo> messagePojos = Engine.getInstance().getTransactionService().getMessagesFromConversation( cPojo );
+        ArrayList<Object> reportMessages = new ArrayList<Object>();
 
         List<MessagePojo> messagePojos = cPojo.getMessages();
-        
-        /* Does not work on MySQL since some of the dates might be the same
-        TreeSet<MessagePojo> sortedMessagePojos = new TreeSet<MessagePojo>( new GenericComparator( MessagePojo.class, "createdDate",
-                true ) );
-        sortedMessagePojos.addAll( messagePojos );
-        */
 
-        //List messagePojos = 
-        //mDao.getMessagesByChoreographyPartnerAndConversation( choreographyId, partnerId,
-        //  conversationId, MessageDAO.SORT_CREATED, true );
-        Iterator<MessagePojo> i = messagePojos.iterator();
-        while ( i.hasNext() ) {
-            MessagePojo pojo = i.next();
+        for (MessagePojo pojo : messagePojos) {
             ReportMessageEntryForm entry = new ReportMessageEntryForm();
             entry.setMessageProperties( pojo );
             entry.setTimezone( form.getTimezone() );
-            reportMessages.addElement( entry );
+            reportMessages.add( entry );
         }
         request.setAttribute( ATTRIBUTE_COLLECTION, reportMessages );
         return success;

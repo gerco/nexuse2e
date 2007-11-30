@@ -6,7 +6,6 @@
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %> 
 <%@ taglib uri="/tags/struts-html-el" prefix="html-el" %>
 <%@ taglib uri="/tags/nexus" prefix="nexus" %>
-<%@ page import="org.nexuse2e.ui.form.ReportingPropertiesForm" %>
 
   <style type="text/css" media="screen">
   <!--
@@ -488,8 +487,8 @@
     
         <table class="NEXUS_BUTTON_TABLE" width="100%">
             <tr>                
-                <td class="BUTTON_LEFT"><img src="images/reset.gif" onclick="javascript: scriptScope.Clear(); scriptScope.disableLinks();" name="clearButton"></td>
-                <td class="NexusHeaderLink">Reset Fields</td>
+                <td class="BUTTON_LEFT">
+                <nobr><a class="NexusHeaderLink" href="#" onclick="javascript: scriptScope.Clear(); scriptScope.disableLinks();"><img src="images/reset.gif" name="clearButton" class="button">Reset Fields</a></nobr></td>
                 <td width="100%"><center>
                 <logic:equal name="reportingPropertiesForm" property="firstActive" value="true"><nexus:submit id="startLink" onClick="document.forms['reportingPropertiesForm'].command.value='first';" styleClass="NexusLink">Start</nexus:submit></logic:equal>
                 <logic:equal name="reportingPropertiesForm" property="firstActive" value="false">Start</logic:equal>
@@ -504,8 +503,7 @@
                 <logic:equal name="reportingPropertiesForm" property="lastActive" value="false">End</logic:equal>
                 </center></td>
                 <td class="BUTTON_RIGHT">
-                <nexus:submit onClick="javascript: document.forms['reportingPropertiesForm'].command.value='first'; scriptScope.enableLinks();"><img src="images/submit.gif" name="resultsButton" class="button"/></nexus:submit></td>
-                <td class="NexusHeaderLink">Refresh Results</td>
+                <nobr><nexus:submit  onClick="javascript: document.forms['reportingPropertiesForm'].command.value='first'; scriptScope.enableLinks();"><img src="images/submit.gif" name="resultsButton" class="button"/>Refresh Results</nexus:submit></nobr></td>
             </tr>
         </table>
         <html:hidden property="convColSelect"/>

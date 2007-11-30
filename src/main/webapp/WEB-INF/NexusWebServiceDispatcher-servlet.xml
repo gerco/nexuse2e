@@ -11,6 +11,12 @@
                 <entry key="/EngineStatusInterface">
                     <ref bean="EngineStatusInterface"/>
                 </entry>
+                <entry key="/TrafficLogger">
+                    <bean class="org.nexuse2e.test.RequestLogger"/>
+                </entry>
+                <entry key="/BackendDeliveryInterface">
+                  <ref bean="BackendDeliveryInterface"/>
+                </entry>
             </map>
         </property>
     </bean>
@@ -47,4 +53,27 @@
         </property>
     </bean>
     <!-- END SNIPPET: xfire -->
+
+    <!-- BEGIN TESTING SECTION -->
+    <bean id="xfire.annotServiceFactory"
+      class="org.codehaus.xfire.annotations.AnnotationServiceFactory"
+      singleton="true">
+    </bean>
+    <bean id="BackendDeliveryInterface" class="org.codehaus.xfire.spring.remoting.XFireExporter">
+        <property name="serviceFactory">
+            <ref bean="xfire.annotServiceFactory"/>
+        </property>
+        <property name="xfire">
+            <ref bean="xfire"/>
+        </property>
+        <property name="serviceBean">
+            <bean class="org.nexuse2e.test.webservice.BackendDeliveryWS"/>
+        </property>
+        <property name="serviceClass">
+            <value>org.nexuse2e.integration.BackendDeliveryInterface</value>
+        </property>
+    </bean>
+    <!-- END TESTING SECTION -->
+
+
 </beans>

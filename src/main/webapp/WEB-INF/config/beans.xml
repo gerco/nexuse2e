@@ -143,6 +143,7 @@
         <ref bean="ebxml10Adapter" />
         <ref bean="ebxml20Adapter" />
         <ref bean="httpPlainAdapter" />
+        <ref bean="articleImportAdapter" />
       </list>
     </property>
   </bean>
@@ -155,6 +156,7 @@
         <ref bean="ebxml10Adapter" />
         <ref bean="ebxml20Adapter" />
         <ref bean="httpPlainAdapter" />
+        <ref bean="articleImportAdapter" />
       </list>
     </property>
   </bean>
@@ -198,6 +200,15 @@
         <property name="communicationProtocolId" value="httpplain" />
         <property name="communicationProtocolVersion" value="1.0" />
         <property name="transportProtocolId" value="http" />
+      </bean>
+    </property>
+  </bean>
+  <bean id="articleImportAdapter" class="org.nexuse2e.messaging.ebxml.v20.ProtocolAdapter">
+    <property name="key">
+      <bean class="org.nexuse2e.ProtocolSpecificKey">
+        <property name="communicationProtocolId" value="article_master" />
+        <property name="communicationProtocolVersion" value="1.0" />
+        <property name="transportProtocolId" value="ftp" />
       </bean>
     </property>
   </bean>

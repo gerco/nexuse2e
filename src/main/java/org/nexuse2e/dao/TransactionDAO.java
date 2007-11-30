@@ -150,7 +150,8 @@ public class TransactionDAO extends BasicDAO {
      * @return
      * @throws NexusException
      */
-    public List getActiveMessages() throws NexusException {
+    @SuppressWarnings("unchecked")
+    public List<MessagePojo> getActiveMessages() throws NexusException {
 
         return getListThroughSessionFind( "select message from MessagePojo as message where (message.status = "
                 + Constants.MESSAGE_STATUS_RETRYING + " or message.status = " + Constants.MESSAGE_STATUS_QUEUED
@@ -173,11 +174,12 @@ public class TransactionDAO extends BasicDAO {
      * @return
      * @throws NexusException
      */
-    public List getMessagesForReport( String status, int nxChoreographyId, int nxPartnerId, String conversationId,
+    @SuppressWarnings("unchecked")
+    public List<MessagePojo> getMessagesForReport( String status, int nxChoreographyId, int nxPartnerId, String conversationId,
             String messageId, String type, Date start, Date end, int itemsPerPage, int page, int field,
             boolean ascending ) throws NexusException {
 
-        return getListThroughSessionFindByPageNo( "select message "
+        return (List<MessagePojo>) getListThroughSessionFindByPageNo( "select message "
                 + getMessagesForReportHQL( status, nxChoreographyId, nxPartnerId, conversationId, messageId, type,
                         start, end, field, ascending ), itemsPerPage, page );
     }
@@ -188,7 +190,7 @@ public class TransactionDAO extends BasicDAO {
      * @return List with the retrieved entries.
      * @throws HibernateException
      */
-    public List getListThroughSessionFindByPageNo( String queryString, int itemsPerPage, int pageNo )
+    public List<?> getListThroughSessionFindByPageNo( String queryString, int itemsPerPage, int pageNo )
             throws NexusException {
 
         return getListThroughSessionFind( queryString, itemsPerPage * pageNo, itemsPerPage, null, null );
@@ -208,7 +210,8 @@ public class TransactionDAO extends BasicDAO {
      * @return
      * @throws NexusException
      */
-    public List getConversationsForReport( String status, int nxChoreographyId, int nxPartnerId, String conversationId,
+    @SuppressWarnings("unchecked")
+    public List<ConversationPojo> getConversationsForReport( String status, int nxChoreographyId, int nxPartnerId, String conversationId,
             Date start, Date end, int itemsPerPage, int page, int field, boolean ascending, Session session, Transaction transaction ) throws NexusException {
 
         return getListThroughSessionFindByPageNo( getConversationsForReportHQL( status, nxChoreographyId, nxPartnerId,
