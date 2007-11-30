@@ -43,7 +43,7 @@ public class Link extends BodyTagSupport {
 
     private String                href;
     private String                styleClass;
-    private String                widgetId          = DEFAULT_WIDGET_ID;
+//    private String                widgetId          = DEFAULT_WIDGET_ID;
     private String                precondition;
     private String                onClick;
     private String                id;
@@ -58,7 +58,7 @@ public class Link extends BodyTagSupport {
         try {
             writer.print( "<a" + ( id != null ? " id=" + id : "" ) + " href=\"javascript: "
                     + ( precondition != null && precondition.length() > 0 ? "if(" + precondition + ") { " : "" )
-                    + ( onClick != null ? onClick + " " : "" ) + "dojo.widget.byId('" + widgetId + "').setUrl('" + href + "');"
+                    + ( onClick != null ? onClick + " " : "" ) + "setContentUrl('" + href + "');"
                     + ( precondition != null && precondition.length() > 0 ? " }" : "" )
                     + "\"" + ( styleClass != null ? " class=\"" + styleClass + "\"" : "" ) + ">" );
         } catch ( IOException e ) {
@@ -98,13 +98,13 @@ public class Link extends BodyTagSupport {
         this.href = href;
     }
 
-    /**
-     * @return the widgetId
-     */
-    public String getWidgetId() {
-
-        return widgetId;
-    }
+//    /**
+//     * @return the widgetId
+//     */
+//    public String getWidgetId() {
+//
+//        return widgetId;
+//    }
 
     /**
      * @return the styleClass
@@ -122,13 +122,13 @@ public class Link extends BodyTagSupport {
         this.styleClass = styleClass;
     }
 
-    /**
-     * @param widgetId the widgetId to set
-     */
-    public void setWidgetId( String widgetId ) {
-
-        this.widgetId = widgetId;
-    }
+//    /**
+//     * @param widgetId the widgetId to set
+//     */
+//    public void setWidgetId( String widgetId ) {
+//
+//        this.widgetId = widgetId;
+//    }
     
     /**
      * @return the precondition

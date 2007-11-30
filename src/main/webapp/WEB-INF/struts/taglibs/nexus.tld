@@ -68,11 +68,13 @@
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
     </attribute>
+    <!--
     <attribute>
       <name>widgetId</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
     </attribute>
+    -->
   </tag>
   <!-- To display replies of submitted forms in the correct DOJO ContentPane widget.
     The submit tag MUST be placed within the form definition. -->

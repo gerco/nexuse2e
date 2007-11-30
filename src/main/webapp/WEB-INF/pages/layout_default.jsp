@@ -19,6 +19,7 @@
 	dojo.require("dojo.widget.TreeSelector");
 	dojo.require("dojo.widget.FloatingPane");
 	dojo.require("dojo.widget.Dialog");
+	dojo.require("dojo.widget.ProgressBar");
 	dojo.require("dojo.widget.Tooltip");
 	dojo.require("dojo.io.IframeIO"); // Needed for file uploads
 
@@ -119,6 +120,36 @@
   	return dojo.widget.byId('menuTree');
   }
   
+  /*
+   * Returns the progress dialog.
+   */
+  function getProgressDialog() {
+  	return dojo.widget.byId('progressDialog');
+  }
+  
+  /*
+   * Returns the progress bar.
+   */
+  function getProgressBar() {
+  	return dojo.widget.byId('progressBar');
+  }
+  
+  /*
+   * Show the progress bar dialog.
+   */
+  function showProgressBarDialog() {
+  	getProgressDialog().show();
+  	getProgressBar().startAnimation();
+  }
+  
+  /*
+   * Hide the progress bar dialog.
+   */
+  function hideProgressBarDialog() {
+  	getProgressBar().stopAnimation();
+  	getProgressDialog().hide();
+  }
+    
   /*
    * Refreshes all expanded dynamic nodes in the tree. 
    */
@@ -232,8 +263,30 @@
 		
 		return result;
 	}
+	
+	function setContentUrl(contentUrl) {
+		showProgressBarDialog();
+		//debug(form);
+		// alert( 'Form: ' + form  );
+		// alert( 'Action: ' + form.action );
+	 	var kw = {
+	 		url: contentUrl,
+	 		mimetype: "text/html",
+	 		formNode: null,
+	 		load: function(load, data, e) {	
+	 			//debug( 'Data: ' + data );
+	 			getDocPane().setContent(data);
+	 			hideProgressBarDialog();
+	 		},		
+	 		error: function(t, e) {
+	 			alert('error: ' + t + " - " + e.message);
+	 		}
+	 	};
+	 	dojo.io.bind(kw);
+	}
   
 	function submitForm(form){	
+		showProgressBarDialog();
 		//debug(form);
 		// alert( 'Form: ' + form  );
 		// alert( 'Action: ' + form.action );
@@ -244,6 +297,7 @@
 	 		load: function(load, data, e) {	
 	 			//debug( 'Data: ' + data );
 	 			getDocPane().setContent(data);
+	 			hideProgressBarDialog();
 	 		},		
 	 		error: function(t, e) {
 	 			alert('error: ' + t + " - " + e.message);
@@ -258,6 +312,7 @@
 	}
 	
 	function submitFileFormData(form){	
+		showProgressBarDialog();
 		// alert( 'Form: ' + form  );
 		// alert( 'Action: ' + form.action );
 	 	var kw = {
@@ -268,6 +323,7 @@
 	 			var res = dojo.byId( 'dojoIoIframe' ).contentWindow.document.body.innerHTML;
 	 			//debug( 'Data: ' + res );
 	 			getDocPane().setContent(res);
+	 			hideProgressBarDialog();
 	 		},		
 	 		error: function(t, e) {
 	 			alert('error: ' + t.message + " - " + e.message);
@@ -284,6 +340,12 @@
 		<tiles:insert attribute="header"/>
 	</div>
 	<div dojoType="ContentPane" layoutAlign="left" style="overflow:auto;" id="navigator">
+		<div id="progressDialog" dojoType="Dialog">
+			<div id="dialogContent" style="background-color: #FFFFFF; padding: 20px;">
+				<div style="margin: 10px;">Please wait ...</div>
+				<div id="progressBar" dojoType="ProgressBar"></div>
+			</div>
+		</div>
 		<tiles:insert attribute="menu"/>
 	</div>
 	<div dojoType="ContentPane" layoutAlign="client" style="overflow:true;" id="docpane" executeScripts="true" cacheContent="false">
