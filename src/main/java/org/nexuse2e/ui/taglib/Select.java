@@ -114,8 +114,8 @@ public class Select extends BodyTagSupport {
             // add scriptlet that handles the click event and loads the data
             writer.print( "<script>\n" );
             // we need a UID as method name (in order to support multiple usage of this tag on one page)
-            String methodName = RandomStringUtils.randomAlphabetic( DEFAULT_METHOD_NAME_LENGTH );
-            writer.print( "function " + methodName + "() { \n" );
+            writer.print( "dojo.addOnLoad(" );
+            writer.print( "function() { \n" );
             writer.print( "\tnew dojo.io.FormBind({\n" );
             if ( form != null && form.length() > 0 ) {
                 writer.print( "\t\tformNode: document.forms['" + form + "'],\n" );
@@ -127,9 +127,8 @@ public class Select extends BodyTagSupport {
             writer.print( "\t\t\tpanel = dojo.widget.byId(\"" + widgetId + "\");\n" );
             writer.print( "\t\t\tpanel.setContent(data);\n" );
             writer.print( "\t\t}\n" );
-            writer.print( "\t});\n" );
+            writer.print( "\t}));\n" );
             writer.print( "}\n" );
-            writer.print( "dojo.addOnLoad(" + methodName + ");" );
             writer.print( "</script>\n" );
         } catch ( IOException e ) {
             throw new JspException( e );
