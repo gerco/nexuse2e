@@ -522,7 +522,7 @@
     </action>
     
     <action path="/ModifyMessage" name="reportingPropertiesForm" type="org.nexuse2e.ui.action.reporting.ModifyMessageAction">
-      <forward name="success" redirect="true" path="/ProcessConversationReport.do"/>
+      <forward name="success" redirect="true" path="/ProcessConversationReport.do?noReset&amp;command=first"/>
     </action>
 
 <!-- 
