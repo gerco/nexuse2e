@@ -21,8 +21,11 @@ package org.nexuse2e.ui.action.partners;
 
 import java.io.ByteArrayInputStream;
 import java.security.KeyStore;
+import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,6 +41,8 @@ import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.pojo.PartnerPojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
+import org.nexuse2e.ui.form.CertificatePromotionForm;
+import org.nexuse2e.ui.form.CertificatePropertiesForm;
 import org.nexuse2e.ui.form.PartnerCertificateForm;
 import org.nexuse2e.util.CertificateUtil;
 import org.nexuse2e.util.EncryptionUtil;
@@ -82,7 +87,8 @@ public class PartnerCertificateUpdateAction extends NexusE2EAction {
 
         byte[] data = cert.getBinaryData();
         X509Certificate x509Certificate = null;
-
+        List<X509Certificate> allCertificates = new ArrayList<X509Certificate>();
+        
         if ( cert.getType() == Constants.CERTIFICATE_TYPE_PARTNER ) {
             x509Certificate = CertificateUtil.getX509Certificate( data );
         } else if ( cert.getType() == Constants.CERTIFICATE_TYPE_LOCAL ) {
@@ -94,16 +100,19 @@ public class PartnerCertificateUpdateAction extends NexusE2EAction {
                         cert.getPassword() ).toCharArray() );
                 if ( jks != null ) {
 
-                    Enumeration aliases = jks.aliases();
+                    Enumeration<String> aliases = jks.aliases();
                     if ( !aliases.hasMoreElements() ) {
                         throw new NexusException( "no certificate aliases found" );
                     }
                     while ( aliases.hasMoreElements() ) {
-                        String tempAlias = (String) aliases.nextElement();
+                        String tempAlias = aliases.nextElement();
                         if ( jks.isKeyEntry( tempAlias ) ) {
                             java.security.cert.Certificate[] certArray = jks.getCertificateChain( tempAlias );
                             if ( certArray != null ) {
                                 x509Certificate = (X509Certificate) certArray[0];
+                                for (int i = 0; i < certArray.length; i++) {
+                                    allCertificates.add( (X509Certificate) certArray[i] );
+                                }
                             }
                         }
                     }
@@ -113,11 +122,44 @@ public class PartnerCertificateUpdateAction extends NexusE2EAction {
             }
         }
 
-        form.setCertificateProperties( x509Certificate );
 
+        List<CertificatePropertiesForm> certificateList = new ArrayList<CertificatePropertiesForm>();
+        form.setCertificateProperties( x509Certificate );
+        
         form.setNxCertificateId( cert.getNxCertificateId() );
         form.setNxPartnerId( nxPartnerId );
         form.setCertificateId( cert.getName() );
+        CertificatePromotionForm certs = new CertificatePromotionForm();
+        
+        for (CertificatePojo certificate : Engine.getInstance().getCurrentConfiguration().getCertificates()) {
+            byte[] b = certificate.getBinaryData();
+            if (b != null && b.length > 0) {
+                try {
+                    X509Certificate cacert = CertificateUtil.getX509Certificate( b );
+                    allCertificates.add( cacert );
+                } catch (Exception ignored) {}
+            }
+        }
+        
+        Certificate[] chain = CertificateUtil.getCertificateChain( x509Certificate, allCertificates );
+        for (int i = 0; i < chain.length; i++) {
+            CertificatePropertiesForm f = new CertificatePropertiesForm();
+            X509Certificate certificate = (X509Certificate) chain[i];
+            f.setCertificateProperties( certificate );
+            certificateList.add( f );
+            
+            if (i + 1 == chain.length && !certificate.getSubjectX500Principal().getName().equals(
+                    certificate.getIssuerX500Principal().getName() )) {
+                f = new CertificatePropertiesForm();
+                f.setPrincipal( CertificateUtil.getPrincipalFromCertificate( certificate, false ) );
+                f.setNxCertificateId( -1 ); // indicate "missing"
+                f.setFingerprint( CertificateUtil.getPrincipalFromCertificate( certificate, false ).getName() );
+                certificateList.add( f );
+            }
+        }
+
+        certs.setCertificateParts( certificateList );
+        request.setAttribute( "certs", certs );
 
         //request.getSession().setAttribute( Crumbs.CURRENT_LOCATION, Crumbs.PARTNER_ADDCERT + "_" + form.getPartnerId() );
 

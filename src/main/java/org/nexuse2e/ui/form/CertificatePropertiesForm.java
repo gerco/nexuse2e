@@ -26,6 +26,7 @@ import java.security.cert.X509Certificate;
 
 import org.apache.struts.action.ActionForm;
 import org.bouncycastle.asn1.x509.X509Name;
+import org.bouncycastle.jce.X509Principal;
 import org.nexuse2e.util.CertificateUtil;
 
 /**
@@ -66,13 +67,7 @@ public class CertificatePropertiesForm extends ActionForm {
     public void setCertificateProperties( X509Certificate x509 ) {
 
         setCert( x509 );
-        setCommonName( CertificateUtil.getSubject( x509, X509Name.CN ) );
-        setCountry( CertificateUtil.getSubject( x509, X509Name.C ) );
-        setOrganisation( CertificateUtil.getSubject( x509, X509Name.O ) );
-        setOrganisationUnit( CertificateUtil.getSubject( x509, X509Name.OU ) );
-        setEmail( CertificateUtil.getSubject( x509, X509Name.E ) );
-        setState( CertificateUtil.getSubject( x509, X509Name.ST ) );
-        setLocation( CertificateUtil.getSubject( x509, X509Name.L ) );
+        setPrincipal( CertificateUtil.getPrincipalFromCertificate( x509, true ) );
         setNotAfter( "" + x509.getNotAfter() );
         setNotBefore( "" + x509.getNotBefore() );
         String valid = "Okay";
@@ -88,13 +83,21 @@ public class CertificatePropertiesForm extends ActionForm {
         String remaining = CertificateUtil.getRemainingValidity( x509 );
         setTimeRemaining( remaining );
 
-        byte[] resBuf;
         try {
             setFingerprint( CertificateUtil.getMD5Fingerprint( x509 ) );
         } catch ( CertificateEncodingException e1 ) {
             setFingerprint( "not available" );
         }
-
+    }
+    
+    public void setPrincipal( X509Principal principal ) {
+        setCommonName( CertificateUtil.getCertificateInfo( principal, X509Name.CN ) );
+        setCountry( CertificateUtil.getCertificateInfo( principal, X509Name.C ) );
+        setOrganisation( CertificateUtil.getCertificateInfo( principal, X509Name.O ) );
+        setOrganisationUnit( CertificateUtil.getCertificateInfo( principal, X509Name.OU ) );
+        setEmail( CertificateUtil.getCertificateInfo( principal, X509Name.E ) );
+        setState( CertificateUtil.getCertificateInfo( principal, X509Name.ST ) );
+        setLocation( CertificateUtil.getCertificateInfo( principal, X509Name.L ) );
     }
 
     public String getCommonName() {

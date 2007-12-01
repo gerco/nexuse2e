@@ -59,14 +59,14 @@ public class PartnerCertificateSaveAction extends NexusE2EAction {
 
         PartnerCertificateForm form = (PartnerCertificateForm) actionForm;
 
-        String partnerId = form.getPartnerId();
-        int nxCertificateId = form.getSeqNo();
+        int nxPartnerId = form.getNxPartnerId();
+        int nxCertificateId = form.getNxCertificateId();
 
         try {
             LOG.debug( "nxCertficateId: " + nxCertificateId );
-            LOG.debug( "PartnerId: " + partnerId );
-            PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByPartnerId(
-                    partnerId );
+            LOG.debug( "nxPartnerId: " + nxPartnerId );
+            PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByNxPartnerId(
+                    nxPartnerId );
             CertificatePojo cPojo = Engine.getInstance().getActiveConfigurationAccessService()
                     .getCertificateFromPartnerByNxCertificateId( partner, nxCertificateId );
 

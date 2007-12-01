@@ -1090,12 +1090,11 @@ public class CertificateUtil {
             HashMap<X509Principal, X509Certificate>  certHashMap = getX509CertificateHashMap( certificates );
 
             certHashMap.put( subject, head );
-            ArrayList certsList = getCertChainDN( certHashMap, subject );
+            List<X509Certificate> certsList = getCertChainDN( certHashMap, subject );
             // log.debug("getPartnerCertificateChain: count: " + certsList.size());
             certs = new Certificate[certsList.size()];
             int pos = 0;
-            for ( Iterator iter = certsList.iterator(); iter.hasNext(); ) {
-                X509Certificate cert = (X509Certificate) iter.next();
+            for (X509Certificate cert : certsList) {
                 certs[pos++] = cert;
             }
 

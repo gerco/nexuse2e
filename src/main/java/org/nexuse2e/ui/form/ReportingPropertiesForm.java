@@ -228,7 +228,7 @@ public class ReportingPropertiesForm extends ActionForm {
 
         //        LOG.trace( "path:" + arg0.getPath() );
         String noReset = request.getParameter( "noReset" );
-        if ( noReset != null && noReset.equals( "true" ) ) {
+        if ( noReset != null && !noReset.equals( "false" ) ) {
             // System.out.println( "no reset" );
             return;
         }
