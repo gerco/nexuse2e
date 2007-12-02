@@ -45,6 +45,7 @@ public class Errors extends ErrorsTag {
     /* (non-Javadoc)
      * @see org.apache.struts.taglib.html.ErrorsTag#doStartTag()
      */
+    @SuppressWarnings("unchecked")
     @Override
     public int doStartTag() throws JspException {
 
@@ -66,7 +67,7 @@ public class Errors extends ErrorsTag {
         StringBuffer stacktraces = new StringBuffer();
         boolean headerDone = false;
         String message = null;
-        Iterator reports = ( property == null ) ? errors.get() : errors.get( property );
+        Iterator<ActionMessage> reports = ( property == null ) ? errors.get() : errors.get( property );
         while ( reports.hasNext() ) {
             ActionMessage report = (ActionMessage) reports.next();
             if ( !headerDone ) {
@@ -81,16 +82,18 @@ public class Errors extends ErrorsTag {
                 results.append( message );
             }
             message = TagUtils.getInstance().message( pageContext, bundle, locale, report.getKey(), report.getValues() );
-            for ( Object param : report.getValues() ) {
-                if ( param instanceof Exception ) {
-                    Exception e = (Exception) param;
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    PrintStream ps = new PrintStream( baos );
-                    e.printStackTrace( ps );
-                    stacktraces.append( "<!--\n" );
-                    stacktraces.append( new String( baos.toByteArray() ) );
-                    stacktraces.append( "-->\n" );
-
+            if ( report.getValues() != null ) {
+                for ( Object param : report.getValues() ) {
+                    if ( param instanceof Exception ) {
+                        Exception e = (Exception) param;
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        PrintStream ps = new PrintStream( baos );
+                        e.printStackTrace( ps );
+                        stacktraces.append( "<!--\n" );
+                        stacktraces.append( new String( baos.toByteArray() ) );
+                        stacktraces.append( "-->\n" );
+    
+                    }
                 }
             }
             if ( message != null ) {

@@ -49,7 +49,7 @@
 			if (!file){
 				docPane.setContent("Unknown document \"" + file + "\"");
 			}else{
-				docPane.setUrl(file);
+				setContentUrl(file);
 			}
   }
   
@@ -148,6 +148,14 @@
   function hideProgressBarDialog() {
   	getProgressBar().stopAnimation();
   	getProgressDialog().hide();
+  }
+  
+  /*
+   * Displays an error.
+   */
+  function displayError(message) {
+  	alert(message);
+	hideProgressBarDialog();
   }
     
   /*
@@ -279,7 +287,7 @@
 	 			hideProgressBarDialog();
 	 		},		
 	 		error: function(t, e) {
-	 			alert('error: ' + t + " - " + e.message);
+	 			displayError(e.message);
 	 		}
 	 	};
 	 	dojo.io.bind(kw);
@@ -300,7 +308,7 @@
 	 			hideProgressBarDialog();
 	 		},		
 	 		error: function(t, e) {
-	 			alert('error: ' + t + " - " + e.message);
+	 			displayError(e.message);
 	 		}
 	 	};
 	 	dojo.io.bind(kw);
@@ -313,20 +321,20 @@
 	
 	function submitFileFormData(form){	
 		showProgressBarDialog();
-		// alert( 'Form: ' + form  );
-		// alert( 'Action: ' + form.action );
+		//debug( 'Form: ' + form  );
+		//debug( 'Action: ' + form.action );
 	 	var kw = {
 	 		url: form.action,
 	 		mimetype: "text/html",
 	 		formNode: form,
-	 		load: function(load, data, e) {	
+	 		load: function(load, data, e) {
 	 			var res = dojo.byId( 'dojoIoIframe' ).contentWindow.document.body.innerHTML;
 	 			//debug( 'Data: ' + res );
 	 			getDocPane().setContent(res);
 	 			hideProgressBarDialog();
 	 		},		
 	 		error: function(t, e) {
-	 			alert('error: ' + t.message + " - " + e.message);
+	 			displayError(e.message);
 	 		}
 	 	};
 	 	dojo.io.bind(kw);

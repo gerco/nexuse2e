@@ -53,6 +53,7 @@ public class RoleSaveAction extends NexusE2EAction {
     /* (non-Javadoc)
      * @see org.nexuse2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages, org.apache.struts.action.ActionMessages)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
             HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
@@ -82,7 +83,7 @@ public class RoleSaveAction extends NexusE2EAction {
             // update grants
             Map<String,GrantPojo> oldGrants = role.getGrants();
             Map<String,GrantPojo> newGrants = new HashMap<String,GrantPojo>();
-            Enumeration paramEnum = request.getParameterNames();
+            Enumeration<String> paramEnum = request.getParameterNames();
             while ( paramEnum.hasMoreElements() ) {
                 String paramName = (String) paramEnum.nextElement();
                 if ( paramName != null && paramName.startsWith( PARAMETER_NAME_GRANT_PREFIX ) ) {

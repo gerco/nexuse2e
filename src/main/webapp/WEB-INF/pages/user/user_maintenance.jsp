@@ -17,6 +17,25 @@
 	</tr>
 </table>
 
+<table width="100%" class="NEXUS_TABLE">
+	<tr>
+		<td class="NEXUSIcon"><nexus:link styleClass="NexusImgLink"
+			href="UserList.do">
+			<img border="0" src="images/tree/users_g.gif">
+		</nexus:link></td>
+		<td class="NEXUSNameNoWidth"><nexus:link styleClass="NexusLink"
+			href="UserList.do">Users</nexus:link></td>
+	</tr>
+	<tr>
+		<td class="NEXUSIcon"><nexus:link styleClass="NexusImgLink"
+			href="RoleList.do">
+			<img border="0" src="images/tree/ssl_g.gif">
+		</nexus:link></td>
+		<td class="NEXUSNameNoWidth"><nexus:link styleClass="NexusLink"
+			href="RoleList.do">Roles</nexus:link></td>
+	</tr>
+</table>
+
 <center><logic:messagesPresent>
 	<div class="NexusError"><html:errors /></div>
 </logic:messagesPresent></center>

@@ -42,6 +42,8 @@ import org.nexuse2e.ui.structure.StructureService;
 public class Grants extends TagSupport {
     private static final long     serialVersionUID            = 1L;
     
+    private static final String QUERY_STRING_PREFIX = "?";
+    
     private Map<String,GrantPojo> grantsMap;
 
     /* (non-Javadoc)
@@ -84,8 +86,17 @@ public class Grants extends TagSupport {
     protected void iterateTree( List<StructureNode> nodes, StringBuffer sb, int indent, Map<String,GrantPojo> grants ) {
         if ( nodes != null ) {
             for ( StructureNode node : nodes ) {
+                // extract the action by chopping the query string starting with '?'
+                String target = node.getTarget();
+                String actionName = null;
+                int queryStringStartPos = target.indexOf( QUERY_STRING_PREFIX );
+                if ( queryStringStartPos > -1 ) {
+                    actionName = target.substring( 0, queryStringStartPos );
+                } else {
+                    actionName = target;
+                }
                 sb.append( "<div style=\"padding-left: " + indent * 20 + "; background-color: " + ( indent % 2 == 0 ? "#D0D0E0" : "#D8D8E8" ) + "\">" );
-                sb.append( "\t<input type=\"checkbox\" name=\"__grant:" + node.getTarget() + "\"" + ( grants.containsKey( node.getTarget() ) ? " checked" : "" ) + "> " + node.getLabel() + "\n" );
+                sb.append( "\t<input type=\"checkbox\" name=\"__grant:" + actionName + "\"" + ( grants.containsKey( actionName ) ? " checked" : "" ) + "> " + node.getLabel() + "\n" );
                 sb.append( "</div>" );
                 if ( node instanceof ParentalStructureNode ) {
                     ParentalStructureNode parentNode = (ParentalStructureNode) node;

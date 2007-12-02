@@ -50,7 +50,7 @@ public class AccessController {
     private static final String VARIABLE_END = "}";
     
     /**
-     * Checks wheather a user has the permission to performe a request.
+     * Checks wheather a user has the permission to perform a request.
      * @param user The user.
      * @param request The request.
      * @return <code>true</code> if the access is granted. <code>false</code> if access is denied.
@@ -158,6 +158,7 @@ public class AccessController {
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     public static String getStringRepresentation( HttpServletRequest request ) {
 
         StringBuffer sb = new StringBuffer();
@@ -179,7 +180,7 @@ public class AccessController {
         sb.append( "\n" );
         sb.append( "--- Headers ---" );
         sb.append( "\n" );
-        Enumeration headerNames = request.getHeaderNames();
+        Enumeration<String> headerNames = request.getHeaderNames();
         while ( headerNames.hasMoreElements() ) {
             String currName = (String) headerNames.nextElement();
             sb.append( currName + ": " + request.getHeader( currName ) );
@@ -187,7 +188,7 @@ public class AccessController {
         }
         sb.append( "--- Attributes ---" );
         sb.append( "\n" );
-        Enumeration attributeNames = request.getAttributeNames();
+        Enumeration<String> attributeNames = request.getAttributeNames();
         while ( attributeNames.hasMoreElements() ) {
             String currName = (String) attributeNames.nextElement();
             sb.append( currName + ": " + request.getAttribute( currName ) );
@@ -195,7 +196,7 @@ public class AccessController {
         }
         sb.append( "--- Parameters ---" );
         sb.append( "\n" );
-        Enumeration paramNames = request.getParameterNames();
+        Enumeration<String> paramNames = request.getParameterNames();
         while ( paramNames.hasMoreElements() ) {
             String currName = (String) paramNames.nextElement();
             sb.append( currName + ": " + request.getParameter( currName ) );
