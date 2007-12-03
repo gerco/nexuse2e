@@ -101,14 +101,16 @@
         
         <html:form action="/StagingPromoteCertificate.do?seqNo=${seqNo}" method="POST"> 
 		<table class="NEXUS_TABLE" width="100%">
-			<tr><td colspan="2" class="NEXUSSection">Promote Certificate
+			<tr><td class="NEXUSName">
 			
 			<html:select property="localNxPartnerId">
 				<logic:iterate name="certificatePromotionForm" property="localPartners" id="localpartner">
 					<html-el:option value="${localpartner.nxPartnerId}">${localpartner.partnerId}</html-el:option>
 				</logic:iterate>
 			</html:select> 
-			<nexus:submit><img src="images/submit.gif" name="SUBMIT"></nexus:submit>
+			</td>
+			<td class="NexusHeaderLink" width="100%"><nexus:submit>
+			<img src="images/submit.gif" name="SUBMIT" class="button">Promote Certificate</nexus:submit>
 			</td></tr>
 		</table>
 		</html:form>
@@ -116,16 +118,10 @@
 		
         <table class="NEXUS_BUTTON_TABLE" width="100%">
             <tr>
-                <td>&nbsp;</td>
-                <td class="BUTTON_RIGHT"><nexus:link href="StagingDeleteCertificate.do?nxCertificateId=${seqNo}" styleClass="NexusLink">
-                <image src="images/submit.gif" border="0"/></nexus:link></td>
-                <td class="NexusHeaderLink">Delete this Certificate</td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td class="BUTTON_RIGHT"><nexus:link href="StagingExportCertificate.do?nxCertificateId=${seqNo}" styleClass="NexusLink">
-                <image src="images/submit.gif" border="0"/></nexus:link></td>
-                <td class="NexusHeaderLink">Export this Certificate</td>
+                <td class="BUTTON_RIGHT"><nexus:link href="StagingExportCertificate.do?nxCertificateId=${seqNo}" styleClass="NexusHeaderLink">
+                <nobr><img src="images/submit.gif" class="button"/>Export this Certificate</nexus:link></nobr></td>
+                <td class="BUTTON_RIGHT"><nexus:link href="StagingDeleteCertificate.do?nxCertificateId=${seqNo}" styleClass="NexusHeaderLink">
+                <nobr><img src="images/delete.gif" class="button"/>Delete this Certificate</nexus:link></nobr></td>
             </tr>
         </table>
     </center>

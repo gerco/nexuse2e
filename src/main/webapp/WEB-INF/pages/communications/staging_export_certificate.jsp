@@ -70,9 +70,7 @@
             </center>
         <table class="NEXUS_BUTTON_TABLE" width="100%">
                 <tr>
-                    <td>&nbsp;</td>
-                    <td class="BUTTON_RIGHT"><nexus:submit><img src="images/submit.gif" name="SUBMIT"></nexus:submit></td>
-                    <td class="NexusHeaderLink">save</td>
+                    <td class="BUTTON_RIGHT"><nexus:submit><img src="images/submit.gif" class="button">Save</nexus:submit></td>
                 </tr>
             </table>
       </html:form>
