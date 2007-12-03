@@ -57,7 +57,7 @@
 	 			</script>
 	 			Grants
 	 			<p>
-		 			<a href="javascript: scriptScope.grantAll();" class="button"><img src="images/submit.gif" class="button">Check all</a>
+		 			<a href="javascript: scriptScope.grantAll();" class="button"><img src="images/submit_g.gif" class="button">Check all</a>
 		 		</p>
 	 		</td>
 	 		<td class="NEXUSValue">
