@@ -90,7 +90,7 @@
 				<td class="NEXUSName">
 				<logic:greaterThan name="index" value="0">
 				  <nexus:submit
-					onClick="document.forms[0].sortaction.value=${index + 1};document.forms[0].submitaction.value='sort';document.forms['pipelineForm'].sortingDirection.value=1;">
+					onClick="document.forms[0].sortaction.value=${index};document.forms[0].submitaction.value='sort';document.forms['pipelineForm'].sortingDirection.value=1;">
 					<img src="images/arrow_up.gif" class="button" alt="Move up"
 						id="moveUp"><span dojoType="tooltip" connectId="moveUp" toggle="explode">Move up</span>
 				</nexus:submit></logic:greaterThan>
@@ -99,7 +99,7 @@
 				</logic:lessEqual>
 				<logic:lessThan name="index" value="${pipelineForm.pipeletCount - 1}">
 				<nexus:submit
-					onClick="document.forms[0].sortaction.value=${index + 1};document.forms[0].submitaction.value='sort';document.forms['pipelineForm'].sortingDirection.value=2;">
+					onClick="document.forms[0].sortaction.value=${index};document.forms[0].submitaction.value='sort';document.forms['pipelineForm'].sortingDirection.value=2;">
 					<img src="images/arrow_down.gif" class="button" value="Submit"
 						alt="Move down" id="moveDown"><span dojoType="tooltip" connectId="moveDown" toggle="explode">Move down</span>
 				</nexus:submit>
@@ -108,12 +108,12 @@
 					<img src="images/arrow_down.gif" class="button" value="Submit" alt="Move down" id="moveDown">
 				</logic:greaterEqual>
 				<nexus:submit
-					onClick="document.forms[0].sortaction.value=${index + 1};document.forms[0].submitaction.value='delete';">
+					onClick="document.forms[0].sortaction.value=${index};document.forms[0].submitaction.value='delete';">
 					<img src="images/delete.gif" class="button" alt="Delete" id="deletePipelet"><span dojoType="tooltip" connectId="deletePipelet" toggle="explode">Delete Pipelet</span>
 				</nexus:submit> 
 				<logic:notEqual name="pipelet" property="nxPipeletId" value="">
 				<nexus:submit
-					onClick="document.forms[0].sortaction.value=${index + 1};document.forms[0].submitaction.value='config';">
+					onClick="document.forms[0].sortaction.value=${index};document.forms[0].submitaction.value='config';">
 					<img src="images/submit.gif" class="button" alt="Configure" id="configurePipelet"><span dojoType="tooltip" connectId="configurePipelet" toggle="explode">Configure Pipelet</span>
 				</nexus:submit>
 				</logic:notEqual>
