@@ -19,7 +19,6 @@
  */
 package org.nexuse2e.ui.action.pipelines;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -35,7 +34,6 @@ import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.Configurable;
 import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.ConfigurationUtil;
-import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.messaging.Pipelet;
 import org.nexuse2e.pojo.ComponentPojo;
 import org.nexuse2e.pojo.PipeletPojo;
@@ -152,27 +150,22 @@ public class PipelineUpdateAction extends NexusE2EAction {
             LOG.trace( "sortaction: " + form.getSortaction() );
 
             if ( pipelets != null && pipelets.size() > 0 ) {
-                if ( ( sortaction == 1 && direction == 1 ) || ( sortaction == pipelets.size() && direction == 2 ) ) {
-                    LOG.trace( "nothing to sort..." );
-                } else {
-                    // up
-                    if ( direction == 1 ) {
-                        if (sortaction >= 2 && pipelets.size() > sortaction - 1) {
-                            pipelets.get( sortaction - 2 ).setPosition( sortaction );
-                            pipelets.get( sortaction - 1 ).setPosition( sortaction - 1 );
-                        }
+                // up
+                if ( direction == 1 ) {
+                    if (sortaction >= 1 && pipelets.size() > sortaction) {
+                        PipeletPojo pipelet = pipelets.get( sortaction - 1 );
+                        pipelets.set( sortaction - 1, pipelets.get( sortaction  ) );
+                        pipelets.set( sortaction, pipelet );
                     }
-                    // down
-                    else if ( direction == 2 ) {
-                        if (pipelets.size() > sortaction && sortaction > 0) {
-                            pipelets.get( sortaction ).setPosition( sortaction );
-                            pipelets.get( sortaction - 1 ).setPosition( sortaction + 1 );
-                        }
-                    }
-                    Collections.sort( pipelets, Constants.PIPELETCOMPARATOR );
-
                 }
-
+                // down
+                else if ( direction == 2 ) {
+                    if (pipelets.size() > sortaction + 1 && sortaction >= 0) {
+                        PipeletPojo pipelet = pipelets.get( sortaction );
+                        pipelets.set( sortaction, pipelets.get( sortaction + 1 ) );
+                        pipelets.set( sortaction + 1, pipelet );
+                    }
+                }
             }
             request.setAttribute( "keepData", "true" );
 

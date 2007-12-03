@@ -19,11 +19,10 @@
  */
 package org.nexuse2e.ui.form;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -60,10 +59,10 @@ public class PipelineForm extends ActionForm {
     private String                  name               = null;
     private String                  Description        = null;
     private int                     direction          = -1;
-    private List<PipeletPojo>       pipelets           = new Vector<PipeletPojo>();
+    private List<PipeletPojo>       pipelets           = new ArrayList<PipeletPojo>();
     private List<ComponentPojo>     availableTemplates = null;
 
-    private List<PipeletParamPojo>  parameters         = new Vector<PipeletParamPojo>();
+    private List<PipeletParamPojo>  parameters         = new ArrayList<PipeletParamPojo>();
     private List<TRPPojo>           trps               = null;
 
     private boolean                 frontend           = false;
@@ -116,18 +115,18 @@ public class PipelineForm extends ActionForm {
 
         setFrontend( pipeline.isFrontend() );
 
-        Vector<PipeletPojo> pipeletVector = null;
+        List<PipeletPojo> pipeletList = null;
 
         setTrps( Engine.getInstance().getActiveConfigurationAccessService().getTrps() );
 
+        pipeletList = new ArrayList<PipeletPojo>( pipeline.getPipelets() );
         if ( pipeline.getPipelets() != null ) {
-            pipeletVector = new Vector<PipeletPojo>( pipeline.getPipelets() );
-            Collections.sort( pipeletVector, Constants.PIPELETCOMPARATOR );
-            setPipelets( pipeletVector );
-        } else {
-            pipeletVector = new Vector<PipeletPojo>();
-            setPipelets( pipeletVector );
+            Collections.sort( pipeletList, Constants.PIPELETCOMPARATOR );
+            if ((pipeline.isBackendInbound() || pipeline.isFrontendOutbound()) && pipeletList.size() > 1) {
+                pipeletList.add( pipeletList.remove( 0 ) );
+            }
         }
+        setPipelets( pipeletList );
 
         // TODO: timer settings
     }
@@ -147,15 +146,20 @@ public class PipelineForm extends ActionForm {
             pipeline.setOutbound( true );
         }
         if ( pipeline.getPipelets() == null ) {
-            pipeline.setPipelets( new Vector<PipeletPojo>() );
+            pipeline.setPipelets( new ArrayList<PipeletPojo>() );
         } else {
             pipeline.getPipelets().clear();
         }
 
         if ( getPipelets() != null ) {
-            Iterator<PipeletPojo> i = getPipelets().iterator();
-            while ( i.hasNext() ) {
-                pipeline.getPipelets().add( i.next() );
+            List<PipeletPojo> pipeletList = new ArrayList<PipeletPojo>( getPipelets() );
+            if ((pipeline.isBackendInbound() || pipeline.isFrontendOutbound()) && pipeletList.size() > 1) {
+                pipeletList.add( 0, pipeletList.remove( pipeletList.size() - 1 ) );
+            }
+            for (int i = 0; i < pipeletList.size(); i++) {
+                PipeletPojo pipelet = pipeletList.get( i );
+                pipelet.setPosition( i );
+                pipeline.getPipelets().add( pipelet );
             }
         }
 
@@ -165,7 +169,7 @@ public class PipelineForm extends ActionForm {
         } else if ( pipeline.isFrontend() ) {
             LOG.error( "No valid TRP found!" );
         }
-
+        
         //TODO: timer settings
 
         return pipeline;
@@ -219,8 +223,8 @@ public class PipelineForm extends ActionForm {
         String action = request.getParameter( "submitaction" );
         
         if(mapping.getPath().indexOf( "PipelineView" ) != -1 &&(action == null)) {
-            this.pipelets = new Vector<PipeletPojo>();
-            this.parameters = new Vector<PipeletParamPojo>();
+            this.pipelets = new ArrayList<PipeletPojo>();
+            this.parameters = new ArrayList<PipeletParamPojo>();
             this.currentPipelet = null;
         } else if(mapping.getPath().indexOf( "PipeletParamsUpdate" ) != -1) {
             for ( PipeletParamPojo pipeletParamPojo : parameters ) {

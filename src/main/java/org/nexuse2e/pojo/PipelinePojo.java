@@ -209,5 +209,20 @@ public class PipelinePojo implements java.io.Serializable {
 
         this.trp = trp;
     }
+    
+    public boolean isFrontendInbound() {
+        return isFrontend() && !isOutbound();
+    }
 
+    public boolean isFrontendOutbound() {
+        return isFrontend() && isOutbound();
+    }
+    
+    public boolean isBackendInbound() {
+        return !isFrontend() && !isOutbound();
+    }
+    
+    public boolean isBackendOutbound() {
+        return !isFrontend() && isOutbound();
+    }
 }
