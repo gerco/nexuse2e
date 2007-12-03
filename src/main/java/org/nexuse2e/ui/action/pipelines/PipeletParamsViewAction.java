@@ -19,6 +19,8 @@
  */
 package org.nexuse2e.ui.action.pipelines;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -54,14 +56,12 @@ public class PipeletParamsViewAction extends NexusE2EAction {
 
         PipelineForm form = (PipelineForm) actionForm;
 
-        int position = form.getSortaction();
+        int position = form.getSortaction() - 1;
 
         PipeletPojo pipeletPojo = null;
-        for ( PipeletPojo pp : form.getPipelets() ) {
-            if ( pp.getPosition() == position ) {
-                pipeletPojo = pp;
-                break;
-            }
+        List<PipeletPojo> pipelets = form.getPipelets();
+        if (position >= 0 && position < pipelets.size()) {
+            pipeletPojo = pipelets.get( position );
         }
 
         if ( pipeletPojo == null ) {
