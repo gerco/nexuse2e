@@ -42,7 +42,7 @@
      			<td>
 			    	&nbsp;
     			</td>
-	        <td class="NexusHeaderLink" style="text-align: right;">
+	        <td class="BUTTON_RIGHT" style="text-align: right;">
 				    <nexus:link href="ComponentAdd.do?nxComponentId=0" styleClass="button"><img src="images/tree/plus.gif" class="button">Add Component</nexus:link>
     			</td>
       	</tr>

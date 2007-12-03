@@ -24,8 +24,9 @@
       <tr>
         <td width="50%" class="NEXUSSection">Service Name</td>
         <td class="NEXUSSection">Component</td>
-        <td class="NEXUSSection">Auto Start</td>
+        <td class="NEXUSSection">Autostart</td>
         <td class="NEXUSSection">Status</td>
+        <td class="NEXUSSection">&nbsp;</td>
       </tr>
 
       <logic:iterate id="service" name="collection"> 
@@ -48,6 +49,16 @@
           </td>
           <td class="NEXUSValue">
             <bean:write name="service" property="serviceInstance.status"/>
+          </td>
+          <td class="NEXUSValue">
+            <logic:equal name="service" property="serviceInstance.status" value="STARTED">
+              <nexus:link href="ServiceStop.do?nxServiceId=${service.nxServiceId}"><img width="16" height="16" src="images/delete.gif" class="button" alt="Stop" id="stop"><span dojoType="tooltip" connectId="stop" toggle="explode">Stop Service</span></nexus:link>
+            </logic:equal>
+            <logic:notEqual name="service" property="serviceInstance.status" value="STARTED">
+            <logic:notEqual name="service" property="serviceInstance.status" value="ERROR">
+              <nexus:link href="ServiceStart.do?nxServiceId=${service.nxServiceId}"><img width="16" height="16" src="images/submit.gif" class="button" alt="Start" id="start"><span dojoType="tooltip" connectId="start" toggle="explode">Start Service</span></nexus:link>
+            </logic:notEqual>
+            </logic:notEqual>
           </td>
         </tr>
       </logic:iterate>
