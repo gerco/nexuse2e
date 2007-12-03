@@ -122,7 +122,7 @@ public class PipelineForm extends ActionForm {
         pipeletList = new ArrayList<PipeletPojo>( pipeline.getPipelets() );
         if ( pipeline.getPipelets() != null ) {
             Collections.sort( pipeletList, Constants.PIPELETCOMPARATOR );
-            if ((pipeline.isBackendInbound() || pipeline.isFrontendOutbound()) && pipeletList.size() > 1) {
+            if ((pipeline.isBackendInbound()) && pipeletList.size() > 1) {
                 pipeletList.add( pipeletList.remove( 0 ) );
             }
         }
@@ -153,7 +153,7 @@ public class PipelineForm extends ActionForm {
 
         if ( getPipelets() != null ) {
             List<PipeletPojo> pipeletList = new ArrayList<PipeletPojo>( getPipelets() );
-            if ((pipeline.isBackendInbound() || pipeline.isFrontendOutbound()) && pipeletList.size() > 1) {
+            if ((pipeline.isBackendInbound()) && pipeletList.size() > 1) {
                 pipeletList.add( 0, pipeletList.remove( pipeletList.size() - 1 ) );
             }
             for (int i = 0; i < pipeletList.size(); i++) {

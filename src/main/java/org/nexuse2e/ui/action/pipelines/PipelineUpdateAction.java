@@ -20,7 +20,6 @@
 package org.nexuse2e.ui.action.pipelines;
 
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -126,17 +125,8 @@ public class PipelineUpdateAction extends NexusE2EAction {
         if ( action.equals( "delete" ) ) {
             int deletePosition = form.getSortaction();
             List<PipeletPojo> pipelets = form.getPipelets();
-            if ( pipelets != null && deletePosition > 0 && deletePosition <= pipelets.size() ) {
-                pipeline.getPipelets().remove( pipelets.get( deletePosition - 1 ) );
-
-                pipelets.remove( deletePosition - 1 );
-                Iterator<PipeletPojo> pipeletI = pipelets.iterator();
-                int counter = 1;
-                while ( pipeletI.hasNext() ) {
-                    PipeletPojo pipelet = pipeletI.next();
-                    pipelet.setPosition( counter );
-                    counter++;
-                }
+            if ( pipelets != null && deletePosition >= 0 && deletePosition < pipelets.size() ) {
+                pipelets.remove( deletePosition );
             }
             request.setAttribute( "keepData", "true" );
         }

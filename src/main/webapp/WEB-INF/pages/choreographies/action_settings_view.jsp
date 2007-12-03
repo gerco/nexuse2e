@@ -87,32 +87,16 @@
 		</logic:iterate>
 
 	</table>
+</html:form>
 
 	<table class="NEXUS_BUTTON_TABLE" width="100%">
 		<tr>
-			<td>&nbsp;</td>
-			<td class="BUTTON_RIGHT">
-			    <!-- 
-				<nexus:submit precondition="actionCheckFields()"><img src="images/submit.gif"></nexus:submit>
-			     -->
-				<nexus:submit><img src="images/submit.gif"></nexus:submit>
-			</td>
-			<td class="NexusHeaderLink">Update</td>
-		</tr>
-	</table>
-</html:form>
+			<td class="BUTTON_RIGHT"><nobr><nexus:submit form="document.forms[0]"><img src="images/submit.gif" class="button">Update</nexus:submit></nobr><nobr></td>
 
-<html:form
-	action="ActionDelete">
-	<html:hidden property="nxChoreographyId" name="choreographyActionForm" />
-	<html:hidden property="nxActionId" name="choreographyActionForm" />
-	<table class="NEXUS_BUTTON_TABLE" width="100%">
-		<tr>
-			<td>&nbsp;</td>
 			<td class="BUTTON_RIGHT">
-				<nexus:submit precondition="confirmDelete('Are you sure you want to delete this Action?')" form="document.forms[1]"><img src="images/submit.gif"></nexus:submit></td>
+				<nobr>
+				<nexus:submit onClick="document.forms[0].action='ActionDelete.do'; document.forms[0].nxChoreographyId=${choreographyActionForm.nxChoreographyId}; document.forms[0].nxActionId=${choreographyActionForm.nxActionId};" precondition="confirmDelete('Are you sure you want to delete this Action?')" form="document.forms[0]"><img src="images/submit.gif" class="button">Delete</nexus:submit>
+				</nobr>
 			</td>
-			<td class="NexusHeaderLink">Delete</td>
 		</tr>
 	</table>
-</html:form>

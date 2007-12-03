@@ -56,7 +56,7 @@ public class PipeletParamsViewAction extends NexusE2EAction {
 
         PipelineForm form = (PipelineForm) actionForm;
 
-        int position = form.getSortaction() - 1;
+        int position = form.getSortaction();
 
         PipeletPojo pipeletPojo = null;
         List<PipeletPojo> pipelets = form.getPipelets();
