@@ -791,22 +791,25 @@
               <goal>run</goal>
             </goals>
           </execution>
-          <!-- 
-            <execution>
+          <execution>
             <id>compile</id>
             <phase>compile</phase>
             <configuration>
-            <tasks>
-            <ant antfile="${basedir}/compile.xml" inheritRefs="true">
-            <target name="compile" />
-            </ant>
-            </tasks>
+              <tasks>
+                <ant antfile="${basedir}/rmi.xml">
+                  <target name="rmi" />
+                </ant>
+                <!-- 
+                  <ant antfile="${basedir}/compile.xml" inheritRefs="true">
+                  <target name="compile" />
+                  </ant>
+                -->
+              </tasks>
             </configuration>
             <goals>
-            <goal>run</goal>
+              <goal>run</goal>
             </goals>
-            </execution>
-          -->
+          </execution>
         </executions>
         <!--  
           <artifactId>maven-antrun-plugin</artifactId>
