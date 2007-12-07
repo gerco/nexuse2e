@@ -62,6 +62,7 @@ import org.nexuse2e.service.Service;
 import org.nexuse2e.transport.TransportReceiver;
 import org.nexuse2e.util.CertificateUtil;
 import org.nexuse2e.util.EncryptionUtil;
+import org.nexuse2e.util.FileUtil;
 
 /**
  * This service implementation acts as an (S)FTP client and receives files by
@@ -365,25 +366,6 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
         return cert;
     }
 
-    private static String dosStyleToRegEx( String pattern ) {
-
-        StringBuffer sb = new StringBuffer();
-        for ( int i = 0; i < pattern.length(); i++ ) {
-            char c = pattern.charAt( i );
-            if ( '?' != c && '*' != c ) {
-                sb.append( "\\Q" );
-                sb.append( c );
-                sb.append( "\\E" );
-            } else {
-                sb.append( c );
-            }
-        }
-        pattern = sb.toString().replaceAll( "\\*", "\\.\\*" );
-        pattern = pattern.replaceAll( "\\?", "\\." );
-
-        return pattern;
-    }
-
     class FtpSchedulerClient implements SchedulerClient {
 
         public void scheduleNotify() {
@@ -477,7 +459,7 @@ public class FtpPollingReceiverService extends AbstractService implements Receiv
 
                 File errorDir = new File( (String) getParameter( ERROR_DIR_PARAM_NAME ) );
 
-                String regEx = dosStyleToRegEx( filePattern );
+                String regEx = FileUtil.dosStyleToRegEx( filePattern );
                 for ( FTPFile file : files ) {
                     if ( Pattern.matches( regEx, file.getName() ) ) {
                         File localFile = new File( localDir, file.getName() );
