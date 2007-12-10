@@ -593,7 +593,7 @@ public class MinimalServerConfigurationProvider implements BaseConfigurationProv
             RolePojo adminRole = new RolePojo( "Admin", now, now, 1 );
             adminRole.setDescription( "Administrator Role" );
             Map<String, GrantPojo> grants = new HashMap<String, GrantPojo>();
-            grants.put( "*", new GrantPojo( "*", now, now, 1, adminRole ) );
+            grants.put( "*", new GrantPojo( "*", now, now, 1 ) );
             adminRole.setGrants( grants );
 
             // set admin role

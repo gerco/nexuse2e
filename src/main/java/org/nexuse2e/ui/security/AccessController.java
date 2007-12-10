@@ -20,13 +20,16 @@
 package org.nexuse2e.ui.security;
 
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
-import org.nexuse2e.pojo.GrantPojo;
 import org.nexuse2e.pojo.UserPojo;
 
 
@@ -43,73 +46,83 @@ public class AccessController {
     protected static final String DEFAULT_FORWARD_ACTION = "NexusE2EAdmin.do";
     protected static final String LOGOUT_ACTION = "Logout.do";
     protected static final String WILDCARD = "*";
-    private static final String QUERY_STRING_PREFIX = "?";
-    private static final String QUERY_STRING_DELIMITER = "&";
-    private static final String QUERY_STRING_ASSIGNMENT = "=";
+//    private static final String QUERY_STRING_PREFIX = "?";
+//    private static final String QUERY_STRING_DELIMITER = "&";
+//    private static final String QUERY_STRING_ASSIGNMENT = "=";
     private static final String VARIABLE_START = "${";
     private static final String VARIABLE_END = "}";
     
     /**
-     * Checks wheather a user has the permission to perform a request.
+     * Checks whether a user has the permission to perform a request.
      * @param user The user.
      * @param request The request.
      * @return <code>true</code> if the access is granted. <code>false</code> if access is denied.
      */
+    @SuppressWarnings("unchecked")
     public static boolean hasAccess( UserPojo user, HttpServletRequest request ) {
+        String requestUrl = request.getRequestURL().toString();
+        boolean result = hasAccess( user.getRole().getAllowedRequests(), requestUrl, request.getParameterMap(), false );
+        if ( LOG.isTraceEnabled() ) {
+            if ( result ) {
+                LOG.trace( "Granted access to path " + requestUrl + " for user " + user.getLoginName() );
+            } else {
+                LOG.trace( "Denied access to path " + requestUrl  + " for user " + user.getLoginName() );
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Checks whether a user has the permission to perform a request.
+     * @param allowedRequests The requests one is allowed to make.
+     * @param requestUrl The url of the request.
+     * @param requestParameters The request parameters.
+     * @param ignoreWildcard if <code>true</code> the wildcard "*" will not be taken into account,
+     *                       but only the explicit allowed requests will be checked for access permission.
+     * @return <code>true</code> if the access is granted. <code>false</code> if access is denied.
+     */        
+    public static boolean hasAccess( Map<String,Set<ParsedRequest>> allowedRequests, String requestUrl, Map<String,String[]> requestParameters, boolean ignoreWildcard ) {
         boolean result = false;
         
         //LOG.trace( getStringRepresentation( request ) );
         
-        String path = request.getRequestURL().toString();;
-        
-        if ( user.getRole() != null ) {
-            Map<String,GrantPojo> grants = user.getRole().getGrants();
-            if ( grants != null ) {
-                // check for wildcard
-                if ( grants.containsKey( WILDCARD ) ) {
-                    result = true;
-                    LOG.trace( "Found wildcard for \"" + user.getLoginName() + "\"" );
-                } else {
-                    if ( path != null ) {
-                        // extract path
-                        int lastSlash = path.lastIndexOf( "/" );
-                        path = path.substring( ( lastSlash > -1 ? lastSlash + 1 : 0 ) );
-                        // check for default forward action
-                        if ( DEFAULT_FORWARD_ACTION.equals( path ) || LOGOUT_ACTION.equals( path ) ) {
-                            result = true;
-                        } else {
-                            // check grants
-                            if ( grants.containsKey( path ) ) {
-                                GrantPojo grant = grants.get( path );
-                                String target = grant.getTarget();
-                                // test whether grant is tied to a special query parameter
-                                int paramStringStartPos = target.indexOf( QUERY_STRING_PREFIX );
-                                if ( paramStringStartPos > -1 ) {
-                                    StringTokenizer st = new StringTokenizer( target.substring( paramStringStartPos + 1 ), QUERY_STRING_DELIMITER );
+        if ( allowedRequests != null ) {
+            // check for wildcard
+            if ( !ignoreWildcard && allowedRequests.containsKey( WILDCARD ) ) {
+                result = true;                
+            } else {
+                if ( requestUrl != null ) {
+                    ParsedRequest pr = parseRequestUrl( requestUrl );
+                    // check for default forward action
+                    if ( DEFAULT_FORWARD_ACTION.equals( pr.getActionMapping() ) || LOGOUT_ACTION.equals( pr.getActionMapping() ) ) {
+                        result = true;
+                    } else {
+                        // check grants
+                        if ( allowedRequests.containsKey( pr.getActionMapping() ) ) {
+                            // test whether allowedRequest is tied to special query parameters
+                            Set<ParsedRequest> requests = allowedRequests.get( pr.getActionMapping() );
+                            if ( requests != null ) {
+                                Iterator<ParsedRequest> requestIter = requests.iterator();
+                                while ( !result && requestIter.hasNext() ) {
+                                    ParsedRequest currRequest = requestIter.next();
                                     boolean paramMismatch = false;
-                                    // iterate over query parameters
-                                    while ( st.hasMoreTokens() && !paramMismatch ) {
-                                        String token = st.nextToken();
-                                        int assignmentCharPos = token.indexOf( QUERY_STRING_ASSIGNMENT );
-                                        String name = null;
-                                        String value = null;
-                                        if ( assignmentCharPos > -1 ) {
-                                            name = token.substring( 0, assignmentCharPos );
-                                            value = token.substring( assignmentCharPos + 1 );
-                                        } else {
-                                            name = token;
+                                    if ( currRequest.getRequestParameters().size() > 0 ) {
+                                        Iterator<String> keyIter = currRequest.getRequestParameters().keySet().iterator();
+                                        while ( !paramMismatch && keyIter.hasNext() ) {
+                                            String key = keyIter.next();
+                                            paramMismatch = !isMatchingQueryConstraint( requestParameters,
+                                                    key,
+                                                    currRequest.getRequestParameters().get( key ) );
                                         }
                                         
-                                        paramMismatch = !isMatchingQueryConstraint( request, name, value );
-                                    }
-                                    
-                                    // did all params match?
-                                    if( !paramMismatch ) {
+                                        // did all parameters match?
+                                        if( !paramMismatch ) {
+                                            result = true;
+                                        }
+                                    } else {
+                                        // no query condition
                                         result = true;
                                     }
-                                } else {
-                                    // no query condition
-                                    result = true;
                                 }
                             }
                         }
@@ -118,16 +131,17 @@ public class AccessController {
             }
         }
         
-        if ( result ) {
-            LOG.trace( "Granted access to path " + path );
-        } else {
-            LOG.trace( "Denied access to path " + path );
-        }
         
+        if ( result ) {
+            LOG.trace( "Granted access to path " + parseRequestUrl( requestUrl ).getActionMappingWithParameters() + " with request parameters " + requestParameters );
+        } else {
+            LOG.trace( "Denied access to path " + parseRequestUrl( requestUrl ).getActionMappingWithParameters() + " with request parameters " + requestParameters );
+        }
+                
         return result;
     }
     
-    private static boolean isMatchingQueryConstraint( HttpServletRequest request, String name, String value ) {
+    private static boolean isMatchingQueryConstraint( Map<String,String[]> requestParameters, String name, String value[] ) {
         boolean result = false;
         if ( name == null ) {
             // null always matches
@@ -140,22 +154,81 @@ public class AccessController {
                 // names with variables always match
                 result = true;
             } else {
-                String requestParamValue = request.getParameter( name );
-                if ( requestParamValue != null ) {
-                    if ( value != null ) {
-                        variableStartPos = value.indexOf( VARIABLE_START );
-                        variableEndPos = value.indexOf( VARIABLE_END );
+                /* TODO: Maybe we need support for multiple values for the same query parameter in the future.
+                 * We only care of the first value for now.
+                 */
+                String[] requestParamValue = requestParameters.get( name );
+                if ( requestParamValue != null && requestParamValue.length > 0 ) {
+                    if ( value != null && value.length > 0 ) {
+                        variableStartPos = value[0].indexOf( VARIABLE_START );
+                        variableEndPos = value[0].indexOf( VARIABLE_END );
                         if ( variableStartPos > -1 && variableEndPos > -1 ) {
                             // values with variables always match
                             result = true;
                         } else {
-                            result = value.equals( requestParamValue );
+                            result = value[0].equals( requestParamValue[0] );
                         }
                     }
                 }
             }
         }
         return result;
+    }
+    
+    public static ParsedRequest parseRequestUrl( String requestUrl ) {
+        String actionMapping = null;
+        String actionMappingWithParams = null;
+        Map<String,String[]> requestParameters = new HashMap<String,String[]>();
+        // parse request url
+        Pattern p1 = Pattern.compile( "([^/\\?]*)(\\?(.*))?$" );
+        Matcher m1 = p1.matcher( requestUrl );
+        if ( m1.find() ) {
+            actionMapping = m1.group( 1 );
+            actionMappingWithParams = m1.group( 0 );
+            String params = m1.group( 3 );
+            if ( params != null ) {
+                // parse request parameters
+                Pattern p2 = Pattern.compile( "([^\\&\\=]+)(\\=([^\\&\\=]+))?" );
+                Matcher m2 = p2.matcher( params );
+                while ( m2.find() ) {
+                    String[] values = requestParameters.get( m2.group( 1 ) );
+                    if ( values != null ) {
+                        String[] newValues = new String[ values.length + 1 ];
+                        System.arraycopy( values, 0, newValues, 0, values.length );
+                        newValues[ values.length ] = m2.group( 3 );
+                        requestParameters.put( m2.group( 1 ), newValues );
+                    } else {
+                        requestParameters.put( m2.group( 1 ), new String[] { m2.group( 3 ) } );
+                    }
+                }
+            }
+        }
+        
+        return new ParsedRequest( actionMapping, actionMappingWithParams, requestParameters );
+    }
+    
+    public static class ParsedRequest {
+        private String actionMapping;
+        private String actionMappingWithParams;
+        private Map<String,String[]> requestParameters;
+        
+        protected ParsedRequest( String actionMapping, String actionMappingWithParams, Map<String,String[]> requestParameters ) {
+            this.actionMapping = actionMapping;
+            this.actionMappingWithParams = actionMappingWithParams;
+            this.requestParameters = requestParameters;            
+        }
+        
+        public String getActionMapping() {
+            return actionMapping;
+        }
+        
+        public String getActionMappingWithParameters() {
+            return actionMappingWithParams;
+        }
+        
+        public Map<String,String[]> getRequestParameters() {
+            return requestParameters;
+        }
     }
     
     @SuppressWarnings("unchecked")

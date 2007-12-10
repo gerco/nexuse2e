@@ -48,7 +48,6 @@ import org.nexuse2e.ui.form.RoleForm;
 public class RoleSaveAction extends NexusE2EAction {
 
     private static final String PARAMETER_NAME_GRANT_PREFIX = "__grant:";
-    private static final String QUERY_STRING_PREFIX = "?";
     
     /* (non-Javadoc)
      * @see org.nexuse2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages, org.apache.struts.action.ActionMessages)
@@ -81,36 +80,23 @@ public class RoleSaveAction extends NexusE2EAction {
             role.setName( roleForm.getName() );
             role.setDescription( roleForm.getDescription() );
             // update grants
-            Map<String,GrantPojo> oldGrants = role.getGrants();
-            Map<String,GrantPojo> newGrants = new HashMap<String,GrantPojo>();
+            Map<String,GrantPojo> oldGrants = new HashMap<String,GrantPojo>( role.getGrants() );
+            role.getGrants().clear();
             Enumeration<String> paramEnum = request.getParameterNames();
             while ( paramEnum.hasMoreElements() ) {
                 String paramName = (String) paramEnum.nextElement();
                 if ( paramName != null && paramName.startsWith( PARAMETER_NAME_GRANT_PREFIX ) ) {
-                    String grantName = paramName.substring( PARAMETER_NAME_GRANT_PREFIX.length() );
-                    // extract the action by chopping the query string starting with '?'
-                    String actionName = null;
-                    int queryStringStartPos = grantName.indexOf( QUERY_STRING_PREFIX );
-                    if ( queryStringStartPos > -1 ) {
-                        actionName = grantName.substring( 0, queryStringStartPos );
-                    } else {
-                        actionName = grantName;
-                    }
+                    String target = paramName.substring( PARAMETER_NAME_GRANT_PREFIX.length() );
                     // check if grant already exists; grants are identified by the action string only
-                    if ( oldGrants.containsKey( actionName ) ) {
-                        GrantPojo oldGrant = oldGrants.get( actionName );
-                        oldGrant.setTarget( grantName );
-                        oldGrant.setModifiedDate( now );
-                        oldGrant.setModifiedNxUserId( modifier );
-                        oldGrant.setRole( role );
-                        newGrants.put( actionName, oldGrant );
+                    if ( oldGrants.containsKey( target ) ) {
+                        role.getGrants().put( target, oldGrants.get( target ) );
                     } else {
-                        GrantPojo newGrant = new GrantPojo( grantName, now, now, modifier, role );
-                        newGrants.put( actionName, newGrant );
+                        GrantPojo newGrant = new GrantPojo( target, now, now, modifier );
+                        role.getGrants().put( target, newGrant );
                     }
                 }
             }
-            role.setGrants( newGrants );
+            //role.setGrants( newGrants );
             
             if ( role.getCreatedDate() == null ) {
                 role.setCreatedDate( now );

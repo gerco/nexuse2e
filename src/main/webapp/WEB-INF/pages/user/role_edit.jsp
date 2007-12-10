@@ -54,14 +54,29 @@
 	 						}
 	 					}
 	 				}
+	 				this.grantNone = function () {
+	 					//debug("checkNone");
+	 					for(var i = 0; i < roleForm.elements.length; i++) {
+	 						var currElement = roleForm.elements[i];
+	 						if(currElement.type == "checkbox") {
+	 							//debug(currElement.name + " " + currElement.checked);
+	 							//currElement.checked = true;
+	 							currElement.checked = false;
+	 							//debug(currElement.name + " " + currElement.checked);
+	 						}
+	 					}
+	 				}
 	 			</script>
 	 			Grants
 	 			<p>
 		 			<a href="javascript: scriptScope.grantAll();" class="button"><img src="images/submit_g.gif" class="button">Check all</a>
 		 		</p>
+		 		<p>
+		 			<a href="javascript: scriptScope.grantNone();" class="button"><img src="images/reset_g.gif" class="button">Uncheck all</a>
+		 		</p>
 	 		</td>
 	 		<td class="NEXUSValue">
-	 			<nexus:grants grantsMap="${ roleForm.grants }"/>	 			
+	 			<nexus:grants allowedRequests="${ roleForm.allowedRequests }"/>	 			
 	 		</td>
 	 	</tr>
 	</table>

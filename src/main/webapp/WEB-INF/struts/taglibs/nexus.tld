@@ -235,7 +235,7 @@
     <tag-class>org.nexuse2e.ui.taglib.Grants</tag-class>
     <description>Displays the menu structure and the assigned grants.</description>
     <attribute>
-      <name>grantsMap</name>
+      <name>allowedRequests</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>    

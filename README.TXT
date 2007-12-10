@@ -5,14 +5,18 @@ This document describes the steps that are necessary to create the
 NEXUSe2e Server project under Eclipse and build it with Maven.
 Of course you can use a different IDE instead of Eclipse.
 
-1. Install Eclipse SDK from http://www.eclipse.org
+1 Download and install software
 
-2. Install an Eclipse plugin that supports Subversion
+1.1 Install Eclipse SDK from http://www.eclipse.org
+
+1.2 Install an Eclipse plugin that supports Subversion
 e.g. "Subversive" from http://www.polarion.org
 
-3. Install Maven from http://maven.apache.org and
+1.3 Install Maven from http://maven.apache.org and
 add the Maven subfolder "bin" to the PATH variable
 of your os.
+
+1.4 Install Tomcat 6 from http://tomcat.apache.org
 
 2. Create a new Java project in Eclipse
 
@@ -44,6 +48,8 @@ add all required libraries manually.
 named "M2_REPO" that points to the directory ".m2/repository" in
 your home directory (e.g. "/Users/<username>/.m2/repository" for OS X).
 The ".m2" directory will be automatically created by Maven later.
+Add another classpath variable named "TOMCAT_HOME" that points to
+your Tomcat 6 installation directory.
 
 3. Download necessary libraries
 

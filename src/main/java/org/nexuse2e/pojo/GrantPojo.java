@@ -39,7 +39,6 @@ public class GrantPojo implements java.io.Serializable {
     private Date              createdDate;
     private Date              modifiedDate;
     private int               modifiedNxUserId;
-    private RolePojo          role;
 
     // Constructors
 
@@ -56,16 +55,6 @@ public class GrantPojo implements java.io.Serializable {
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
         this.modifiedNxUserId = modifiedNxUserId;
-    }
-
-    /** full constructor */
-    public GrantPojo( String target, Date createdDate, Date modifiedDate, int modifiedNxUserId, RolePojo role ) {
-
-        this.target = target;
-        this.createdDate = createdDate;
-        this.modifiedDate = modifiedDate;
-        this.modifiedNxUserId = modifiedNxUserId;
-        this.role = role;
     }
 
     // Property accessors
@@ -118,15 +107,4 @@ public class GrantPojo implements java.io.Serializable {
 
         this.modifiedNxUserId = modifiedNxUserId;
     }
-
-    public RolePojo getRole() {
-
-        return this.role;
-    }
-
-    public void setRole( RolePojo role ) {
-
-        this.role = role;
-    }
-
 }

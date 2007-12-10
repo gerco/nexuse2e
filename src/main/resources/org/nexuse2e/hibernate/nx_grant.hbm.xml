@@ -31,9 +31,6 @@
             <column name="modified_nx_user_id" not-null="true" sql-type="integer">
                 <comment></comment>
             </column>
-        </property>
-      
-        <many-to-one foreign-key="fk__grant__role_id" name="role" class="org.nexuse2e.pojo.RolePojo" column="nx_role_id" index="ix_grant_1"/>
-        
+        </property>  
     </class>
 </hibernate-mapping>
