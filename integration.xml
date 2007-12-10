@@ -1,0 +1,50 @@
+<project name="nexuse2e-server.integration.http" default="jar" basedir=".">
+	<property file="nexuse2e-build.properties" />
+
+	<target name="init" description="Initialize properties etc.">
+		<echo message="Init RMIC..." />
+	    <path id="project.class.path">
+	        <fileset dir="${basedir}/src/main/webapp/WEB-INF/lib">
+	            <include name="**/*.jar" />
+	            <include name="**/*.zip" />
+	        </fileset>
+	    </path>
+	</target>
+	
+	<target name="compile" description="Compile RMI classes" depends="init">
+		<delete dir="${basedir}/target/integration.http" failonerror="false" />
+		<mkdir dir="${basedir}/target/integration.http" />
+		<mkdir dir="${basedir}/target/integration.http/src" />
+		<mkdir dir="${basedir}/target/integration.http/classes" />
+        <copy todir="${basedir}/target/integration.http/src/org/nexuse2e/integration/client" file="${basedir}/src/main/java/org/nexuse2e/integration/client/HttpIntegrationClient.java" />
+		<!--
+        <copy todir="${basedir}/target/integration.http/src/org/nexuse2e/integration" file="${basedir}/src/main/java/org/nexuse2e/integration/NEXUSe2eInterface.java" />
+        <copy todir="${basedir}/target/integration.http/src/org/nexuse2e/integration" file="${basedir}/src/main/java/org/nexuse2e/integration/NEXUSe2eInterfaceImpl.java" />
+		<copy todir="${basedir}/target/integration.http/src/org/nexuse2e/integration" file="${basedir}/src/main/java/org/nexuse2e/integration/NexusRemote.java" />
+		<copy todir="${basedir}/target/integration.http/src/org/nexuse2e" file="${basedir}/src/main/java/org/nexuse2e/NexusException.java" />
+		<copy todir="${basedir}/target/integration.http/src/org/nexuse2e" file="${basedir}/src/main/java/org/nexuse2e/Engine.java" />
+		<copy todir="${basedir}/target/integration.http/src/org/nexuse2e/backend" file="${basedir}/src/main/java/org/nexuse2e/backend/BackendPipelineDispatcher.java" />
+		<copy todir="${basedir}/target/integration.http/src/org/nexuse2e/configuration" file="${basedir}/src/main/java/org/nexuse2e/configuration/ConfigurationAccessService.java" />
+		<copy todir="${basedir}/target/integration.http/src/org/nexuse2e/messaging" file="${basedir}/src/main/java/org/nexuse2e/messaging/MessageContext.java" />
+		<copy todir="${basedir}/target/integration.http/src/org/nexuse2e/pojo" file="${basedir}/src/main/java/org/nexuse2e/pojo/ChoreographyPojo.java" />
+		<copy todir="${basedir}/target/integration.http/src/org/nexuse2e/pojo" file="${basedir}/src/main/java/org/nexuse2e/pojo/ConversationPojo.java" />
+        -->
+		<javac srcdir="${basedir}/target/integration.http/src" destdir="${basedir}/target/integration.http/classes" debug="false" optimize="true" target="1.4">
+			<classpath refid="project.class.path" />
+		</javac>
+	</target>
+
+	<target name="jar" description="Create the JAR file" depends="compile">
+		<echo message="Creating JAR..." />
+        <jar jarfile="${basedir}/target/nexuse2e_int-http.jar">
+            <fileset dir="${basedir}/target/integration.http/classes">
+                <!--
+                <include name="**/ConnectorException.class" />
+                <include name="**/NexusE2EException.class" />
+                <include name="**/NexusE2EServerInterface.class" />
+            -->
+            </fileset>
+        </jar>
+	</target>
+
+</project>
