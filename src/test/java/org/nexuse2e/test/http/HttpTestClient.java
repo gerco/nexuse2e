@@ -82,16 +82,28 @@ public class HttpTestClient {
                 for ( int i = 0; i < repeat; i++ ) {
                     long delay = (long) ( Math.random() * 100.0 );
                     Thread.sleep( delay );
+                    
+                    String urlParams = "";
 
+                    NexusUUIDGenerator idGenerator = new NexusUUIDGenerator();
+                    String messageId = idGenerator.getId();
+                    String conversationId = idGenerator.getId();
+
+                    if ( plain ) {
+                        StringBuffer buffer = new StringBuffer( "?" );
+                        buffer.append( "ChoreographyID=" + choreographyId );
+                        buffer.append( "&ActionID=" + actionId );
+                        buffer.append( "&ParticipantID=" + senderId );
+                        buffer.append( "&ConversationID="+ conversationId );
+                        buffer.append( "&MessageID="+ messageId );
+                        urlParams = buffer.toString();
+                    }
                     HostConfiguration configuration = new HostConfiguration();
                     configuration.setHost( new HttpHost( url.getHost(), url.getPort(), Protocol.getProtocol( url
                             .getProtocol() ) ) );
                     client.setHostConfiguration( configuration );
-                    PostMethod method = new PostMethod( url.toExternalForm() );
+                    PostMethod method = new PostMethod( url.toExternalForm() + urlParams );
                     method.getParams().setSoTimeout( SOCKET_TIMEOUT );
-                    NexusUUIDGenerator idGenerator = new NexusUUIDGenerator();
-                    String messageId = idGenerator.getId();
-                    String conversationId = idGenerator.getId();
                     if ( plain ) {
                         method.setParameter( "ChoreographyID", choreographyId );
                         method.setParameter( "ActionID", actionId );
