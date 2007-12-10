@@ -126,18 +126,18 @@ public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
         
         MessageContext messageContext = null;
 
-        LOG.debug( "triggerSendingNewMessage - choreographyId: " + choreographyId + ", businessPartnerId: "
+        LOG.debug( "Parameters - choreographyId: " + choreographyId + ", businessPartnerId: "
                 + businessPartnerId + ", actionId: " + actionId + ", primaryKey: " + primaryKey );
 
         BackendPipelineDispatcher backendPipelineDispatcher = Engine.getInstance().getCurrentConfiguration()
                 .getStaticBeanContainer().getBackendPipelineDispatcher();
-        LOG.debug( "sendNewStringMessage - backendPipelineDispatcher: " + backendPipelineDispatcher );
+        LOG.debug( "BackendPipelineDispatcher: " + backendPipelineDispatcher );
         if ( backendPipelineDispatcher != null ) {
             try {
                 messageContext = backendPipelineDispatcher.processMessage( businessPartnerId, choreographyId, actionId,
                         conversationId, null, primaryKey, null );
             } catch ( NexusException e ) {
-                LOG.debug( "sendNewStringMessage - error: " + e );
+                LOG.debug( "Error submitting message: " + e );
                 throw e;
             }
         }
@@ -161,18 +161,18 @@ public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
         
         MessageContext messageContext = null;
 
-        LOG.debug( "sendNewStringMessage - choreographyId: " + choreographyId + ", businessPartnerId: "
+        LOG.debug( "Parameters - choreographyId: " + choreographyId + ", businessPartnerId: "
                 + businessPartnerId + ", actionId: " + actionId + ", primaryKey: " + payload );
 
         BackendPipelineDispatcher backendPipelineDispatcher = Engine.getInstance().getCurrentConfiguration()
                 .getStaticBeanContainer().getBackendPipelineDispatcher();
-        LOG.debug( "sendNewStringMessage - backendPipelineDispatcher: " + backendPipelineDispatcher );
+        LOG.debug( "BackendPipelineDispatcher: " + backendPipelineDispatcher );
         if ( backendPipelineDispatcher != null ) {
             try {
                 messageContext = backendPipelineDispatcher.processMessage( businessPartnerId, choreographyId, actionId,
                         conversationId, null, null, payload.getBytes() );
             } catch ( NexusException e ) {
-                LOG.debug( "sendNewStringMessage - error: " + e );
+                LOG.debug( "Error submitting message: " + e );
                 e.printStackTrace();
             }
         }

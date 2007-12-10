@@ -30,5 +30,6 @@ public class Constants extends org.nexuse2e.Constants {
     public static final String PARAM_ACTION_ID              = "action";
     public static final String PARAM_SENDER_ID              = "sender";
     public static final String PARAM_CONTENT                = "content";
+    public static final String PARAM_PRIMARY_KEY            = "primaryKey";
 
 } // Constants

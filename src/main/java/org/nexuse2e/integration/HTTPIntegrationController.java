@@ -26,6 +26,7 @@ import java.io.InputStreamReader;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
@@ -55,11 +56,13 @@ public class HTTPIntegrationController implements Controller {
             partnerId = request.getParameter( org.nexuse2e.messaging.httpplain.Constants.PARAM_PARTNER_ID );
         }
         String content = request.getParameter( Constants.PARAM_CONTENT );
+        String primaryKey = request.getParameter( Constants.PARAM_PRIMARY_KEY );
+
         StringBuffer contentBuffer = new StringBuffer();
 
         LOG.debug( "Handling HTTP request from legacy system..." );
 
-        if ( content == null ) {
+        if ( ( content == null ) && StringUtils.isEmpty( primaryKey ) ) {
             String line = null;
             InputStream inStream = request.getInputStream();
             BufferedReader bufferedReader = new BufferedReader( new InputStreamReader( inStream ) );
@@ -72,28 +75,35 @@ public class HTTPIntegrationController implements Controller {
             content = contentBuffer.toString();
         }
 
-        if ( ( choreographyId == null ) || ( choreographyId.length() == 0 ) ) {
+        if ( StringUtils.isEmpty( primaryKey ) && StringUtils.isEmpty( content ) ) {
+            response
+                    .sendError( HttpServletResponse.SC_BAD_REQUEST, "Content or PrimaryKey parameter must be provided!" );
+            return null;
+        }
+
+        if ( StringUtils.isEmpty( choreographyId ) ) {
             response.sendError( HttpServletResponse.SC_BAD_REQUEST, "Choreography ID parameter must be provided!" );
             return null;
         }
-        if ( ( actionId == null ) || ( actionId.length() == 0 ) ) {
+        if ( StringUtils.isEmpty( actionId ) ) {
             response.sendError( HttpServletResponse.SC_BAD_REQUEST, "Action name parameter must be provided!" );
             return null;
         }
-        if ( ( partnerId == null ) || ( partnerId.length() == 0 ) ) {
+        if ( StringUtils.isEmpty( partnerId ) ) {
             response.sendError( HttpServletResponse.SC_BAD_REQUEST, "Partner ID parameter must be provided!" );
-            return null;
-        }
-        if ( ( content == null ) || ( content.length() == 0 ) ) {
-            response.sendError( HttpServletResponse.SC_BAD_REQUEST, "Content parameter must be provided!" );
             return null;
         }
 
         NEXUSe2eInterface theNEXUSe2eInterface = Engine.getInstance().getInProcessNEXUSe2eInterface();
 
         try {
-            conversationId = theNEXUSe2eInterface.sendNewStringMessage( choreographyId, partnerId, actionId,
-                    conversationId, content );
+            if ( StringUtils.isEmpty( primaryKey ) ) {
+                conversationId = theNEXUSe2eInterface.sendNewStringMessage( choreographyId, partnerId, actionId,
+                        conversationId, content );
+            } else {
+                conversationId = theNEXUSe2eInterface.triggerSendingNewMessage( choreographyId, partnerId, actionId,
+                        conversationId, primaryKey );
+            }
             /*
             if ( conversationId == null || conversationId.length() == 0 ) { // Create a new conversation if none was specified
                 conversationId = theNEXUSe2eInterface.sendNewStringMessage( choreographyId, partnerId, actionId,
