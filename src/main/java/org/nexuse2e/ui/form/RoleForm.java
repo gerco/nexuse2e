@@ -21,6 +21,7 @@ package org.nexuse2e.ui.form;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -29,8 +30,8 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.nexuse2e.pojo.GrantPojo;
 import org.nexuse2e.pojo.RolePojo;
+import org.nexuse2e.ui.security.AccessController.ParsedRequest;
 
 
 /**
@@ -46,7 +47,7 @@ public class RoleForm extends ActionForm {
     private int    nxRoleId;
     private String name;
     private String description;
-    private Map<String,GrantPojo> grants;
+    private Map<String,Set<ParsedRequest>> allowedRequests;
 
     /**
      * @param role the role to set
@@ -56,7 +57,7 @@ public class RoleForm extends ActionForm {
         nxRoleId = role.getNxRoleId();
         name = role.getName();
         description = role.getDescription();
-        grants = role.getGrants();
+        allowedRequests = role.getAllowedRequests();
     }
     
     public void reset() {
@@ -64,7 +65,7 @@ public class RoleForm extends ActionForm {
         nxRoleId = 0;
         name = null;
         description = null;
-        grants = new HashMap<String,GrantPojo>();
+        allowedRequests = new HashMap<String,Set<ParsedRequest>>();
     }
     
     /* (non-Javadoc)
@@ -118,19 +119,18 @@ public class RoleForm extends ActionForm {
 
     
     /**
-     * @return the grants
+     * @return the allowed requests
      */
-    public Map<String, GrantPojo> getGrants() {
+    public Map<String, Set<ParsedRequest>> getAllowedRequests() {
     
-        return grants;
+        return allowedRequests;
     }
-
     
     /**
-     * @param grants the grants to set
+     * @param allowed requests
      */
-    public void setGrants( Map<String, GrantPojo> grants ) {
+    public void setAllowedRequests( Map<String, Set<ParsedRequest>> allowedRequests ) {
     
-        this.grants = grants;
-    }    
+        this.allowedRequests = allowedRequests;
+    }
 }
