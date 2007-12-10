@@ -877,23 +877,40 @@ public class ConfigurationAccessService {
 
     /**
      * @param pipeline
+     * @throws ReferencedPipelineException if the pipeline is being referenced by
+     * one or more actions.
+     * @throws NexusException if something else went wrong.
      */
-    public void deletePipeline( PipelinePojo pipeline ) {
+    public void deletePipeline( PipelinePojo pipeline ) throws ReferencedPipelineException, NexusException {
 
-        try {
-            PipelinePojo oldPipeline = getPipelinePojoByNxPipelineId( pipeline.getNxPipelineId() );
-            if ( oldPipeline != null ) {
-                getBackendPipelinePojos( Constants.PIPELINE_TYPE_ALL, null ).remove( oldPipeline );
+        // check if backend pipeline is being referenced
+        if (!pipeline.isFrontend()) {
+            int id = pipeline.getNxPipelineId();
+            List<ActionPojo> referrers = new ArrayList<ActionPojo>();
+            for (ChoreographyPojo choreography : getChoreographies()) {
+                for (ActionPojo action : choreography.getActions()) {
+                    if (action != null &&
+                            ((action.getInboundPipeline() != null && action.getInboundPipeline().getNxPipelineId() == id) ||
+                            (action.getOutboundPipeline() != null && action.getOutboundPipeline().getNxPipelineId() == id))) {
+                        referrers.add( action );
+                    }
+                }
             }
-            try {
-                engineConfig.deletePipelineInDB( pipeline );
-            } catch ( Exception e ) {
-                LOG.error( "Error deleting pipeline: " + e );
+            if (!referrers.isEmpty()) {
+                throw new ReferencedPipelineException( referrers );
             }
-            applyConfiguration();
-        } catch ( NexusException e ) {
-            e.printStackTrace();
         }
+        
+        PipelinePojo oldPipeline = getPipelinePojoByNxPipelineId( pipeline.getNxPipelineId() );
+        if ( oldPipeline != null ) {
+            getBackendPipelinePojos( Constants.PIPELINE_TYPE_ALL, null ).remove( oldPipeline );
+        }
+        try {
+            engineConfig.deletePipelineInDB( pipeline );
+        } catch ( Exception e ) {
+            LOG.error( "Error deleting pipeline: " + e );
+        }
+        applyConfiguration();
     }
 
     /**

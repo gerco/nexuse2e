@@ -24,7 +24,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -139,8 +138,7 @@ public class XMLDataMappingPipelet extends AbstractPipelet {
         if ( configFileName != null ) {
             try {
                 List<MessagePayloadPojo> payloads = messageContext.getMessagePojo().getMessagePayloads();
-                for ( Iterator iter = payloads.iterator(); iter.hasNext(); ) {
-                    MessagePayloadPojo messagePayloadPojo = (MessagePayloadPojo) iter.next();
+                for (MessagePayloadPojo messagePayloadPojo : payloads) {
                     ByteArrayInputStream bais = new ByteArrayInputStream( messagePayloadPojo.getPayloadData() );
 
                     DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -188,32 +186,32 @@ public class XMLDataMappingPipelet extends AbstractPipelet {
         XPath xPath = XPathFactory.newInstance().newXPath();
 
         try {
-            for ( Iterator iter = mappingDefinitions.getMappingDefinitions().iterator(); iter.hasNext(); ) {
-                MappingDefinition mappingDefinition = (MappingDefinition) iter.next();
-                
-                LOG.debug( "def.Category: "+mappingDefinition.getCategory());
-                LOG.debug( "def.Command: "+mappingDefinition.getCommand());
-                LOG.debug( "def.XPath: "+mappingDefinition.getXpath());
-                
-                Node node = (Node) xPath.evaluate( mappingDefinition.getXpath(), document, XPathConstants.NODE );
-                if ( node != null ) {
-                    if ( node instanceof Element ) {
-                        ( (Element) node ).setTextContent( mapData( ( (Element) node ).getTextContent(),
-                                mappingDefinition ) );
-                    } else if ( node instanceof Attr ) {
-                        String nodeValue = ( (Attr) node ).getNodeValue();
-                        String resultValue = mapData(nodeValue, mappingDefinition );
-                        ( (Attr) node ).setNodeValue( resultValue );
+            if (mappingDefinitions != null && mappingDefinitions.getMappingDefinitions() != null) {
+                for (MappingDefinition mappingDefinition : mappingDefinitions.getMappingDefinitions()) {
+                    LOG.debug( "def.Category: "+mappingDefinition.getCategory());
+                    LOG.debug( "def.Command: "+mappingDefinition.getCommand());
+                    LOG.debug( "def.XPath: "+mappingDefinition.getXpath());
+                    
+                    Node node = (Node) xPath.evaluate( mappingDefinition.getXpath(), document, XPathConstants.NODE );
+                    if ( node != null ) {
+                        if ( node instanceof Element ) {
+                            ( (Element) node ).setTextContent( mapData( ( (Element) node ).getTextContent(),
+                                    mappingDefinition ) );
+                        } else if ( node instanceof Attr ) {
+                            String nodeValue = ( (Attr) node ).getNodeValue();
+                            String resultValue = mapData(nodeValue, mappingDefinition );
+                            ( (Attr) node ).setNodeValue( resultValue );
+                        } else {
+                            LOG.error( "Node type not recognized: " + node.getClass() );
+                        }
                     } else {
-                        LOG.error( "Node type not recognized: " + node.getClass() );
+                        LOG.warn( "Could not find matching node for " + mappingDefinition.getXpath() );
                     }
-                } else {
-                    LOG.warn( "Could not find matching node for " + mappingDefinition.getXpath() );
                 }
             }
             result = document;
         } catch ( XPathExpressionException e ) {
-            // TODO Auto-generated catch block
+            LOG.error( e );
             e.printStackTrace();
         }
 

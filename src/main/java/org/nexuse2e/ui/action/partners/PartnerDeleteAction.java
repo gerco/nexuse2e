@@ -62,7 +62,9 @@ public class PartnerDeleteAction extends NexusE2EAction {
         try {
             PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByNxPartnerId(
                     form.getNxPartnerId() );
-            Engine.getInstance().getActiveConfigurationAccessService().deletePartner( partner );
+            if (partner != null) {
+                Engine.getInstance().getActiveConfigurationAccessService().deletePartner( partner );
+            }
         } catch ( ReferencedPartnerException e ) {
             for (ParticipantPojo participant : e.getReferringObjects()) {
                 ActionMessage errorMessage = new ActionMessage(

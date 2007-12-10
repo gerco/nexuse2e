@@ -21,26 +21,26 @@ package org.nexuse2e.configuration;
 
 import java.util.Collection;
 
-import org.nexuse2e.pojo.ParticipantPojo;
+import org.nexuse2e.pojo.ActionPojo;
 
 /**
- * This exception shall be thrown if an attempt is made to remove a partner from a configuration
- * that is still referenced by one or more participants.
+ * This exception shall be thrown if an attempt is made to remove a pipeline from a configuration
+ * that is still referenced by one or more actions.
  *
  * @author Jonas Reese
  */
-public class ReferencedPartnerException extends ReferencedObjectException {
+public class ReferencedPipelineException extends ReferencedObjectException {
 
     private static final long serialVersionUID = 1L;
 
-    private Collection<ParticipantPojo> referringParticipants;
+    private Collection<ActionPojo> referringActions;
     
-    public ReferencedPartnerException( Collection<ParticipantPojo> referringParticipants ) {
-        this.referringParticipants = referringParticipants;
+    public ReferencedPipelineException( Collection<ActionPojo> referringActions ) {
+        this.referringActions = referringActions;
     }
 
     @Override
-    public Collection<ParticipantPojo> getReferringObjects() {
-        return referringParticipants;
+    public Collection<ActionPojo> getReferringObjects() {
+        return referringActions;
     }
 }

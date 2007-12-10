@@ -25,9 +25,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.Engine;
-import org.nexuse2e.configuration.Constants;
+import org.nexuse2e.configuration.ReferencedPipelineException;
+import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.PipelinePojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.PipelineForm;
@@ -59,9 +61,15 @@ public class PipelineDeleteAction extends NexusE2EAction {
 
         PipelinePojo pipeline = Engine.getInstance().getActiveConfigurationAccessService()
                 .getPipelinePojoByNxPipelineId( form.getNxPipelineId() );
-        Engine.getInstance().getActiveConfigurationAccessService().getBackendPipelinePojos(
-                Constants.PIPELINE_TYPE_ALL, null ).remove( pipeline );
-        Engine.getInstance().getActiveConfigurationAccessService().deletePipeline( pipeline );
+        try {
+            Engine.getInstance().getActiveConfigurationAccessService().deletePipeline( pipeline );
+        } catch (ReferencedPipelineException e) {
+            for (ActionPojo action : e.getReferringObjects()) {
+                ActionMessage errorMessage = new ActionMessage(
+                        "error.referenced.object.pipeline", action.getName(), action.getChoreography().getName() );
+                errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
+            }
+        }
 
         request.setAttribute( REFRESH_TREE, "true" );
 
