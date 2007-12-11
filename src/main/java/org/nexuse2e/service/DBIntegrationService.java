@@ -53,12 +53,12 @@ public class DBIntegrationService extends AbstractService implements SchedulerCl
     public static String      ACTION            = "action";
     public static String      INTERVAL          = "interval";
 
-    private DatabaseService   dbService         = null;
-    private SchedulingService schedulingService = null;
-    private String            choreography      = null;
-    private String            action            = null;
-    private String            tableName         = null;
-    private int               interval          = 10000;
+    protected DatabaseService   dbService         = null;
+    protected SchedulingService schedulingService = null;
+    protected String            choreography      = null;
+    protected String            action            = null;
+    protected String            tableName         = null;
+    protected int               interval          = 10000;
 
     @Override
     public void fillParameterMap( Map<String, ParameterDescriptor> parameterMap ) {
@@ -203,7 +203,7 @@ public class DBIntegrationService extends AbstractService implements SchedulerCl
     /**
      * 
      */
-    public void checkForNewMessages() {
+    protected void checkForNewMessages() {
 
         ResultSet resultSet = null;
         Connection connection = null;
@@ -300,7 +300,7 @@ public class DBIntegrationService extends AbstractService implements SchedulerCl
      * @param key
      * @throws ConnectorException
      */
-    public void updateSentFlag( Connection connection, String messageId, String conversationId, int key ) throws NexusException {
+    private void updateSentFlag( Connection connection, String messageId, String conversationId, int key ) throws NexusException {
 
         String currentDate = DateUtil.getFormatedNowString();
         PreparedStatement preparedstatement = null;

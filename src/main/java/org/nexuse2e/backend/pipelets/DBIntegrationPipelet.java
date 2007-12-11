@@ -50,8 +50,8 @@ public class DBIntegrationPipelet extends AbstractPipelet {
     public static String    DATABASESERVICE = "databasename";
     public static String    TABLENAME       = "tablename";
 
-    private DatabaseService dbService       = null;
-    private String          tableName       = null;
+    protected DatabaseService dbService       = null;
+    protected String          tableName       = null;
 
     /**
      * Default constructor.
