@@ -61,12 +61,14 @@ public class DebugBackendPipelet extends AbstractPipelet {
         if (s != null && s.trim().length() > 0) {
             LOG.info( s );
         }
-        if (((Boolean) getParameter( PRINT_PAYLOAD_PARAM_NAME )).booleanValue()) {
+        if (((Boolean) getParameter( PRINT_PAYLOAD_PARAM_NAME )).booleanValue() && messageContext != null) {
             Object o = messageContext.getData();
             if (o instanceof byte[]) {
                 LOG.info( new String( (byte[]) messageContext.getData() ) );
-            } else {
+            } else if (o != null) {
                 LOG.info( o );
+            } else {
+                LOG.info( null );
             }
         }
         
