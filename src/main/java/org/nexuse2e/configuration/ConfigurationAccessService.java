@@ -1555,43 +1555,57 @@ public class ConfigurationAccessService {
 
     /**
      * @param mapping
+     * @throws NexusException 
      */
-    public void updateMapping( MappingPojo mapping ) {
+    public void updateMapping( MappingPojo mapping ) throws NexusException {
 
-        try {
-            MappingPojo oldMapping = getMappingByNxMappingId( mapping.getNxMappingId() );
-            if ( oldMapping != null ) {
-                getMappings( null ).remove( oldMapping );
-            }
-            getMappings( null ).add( mapping );
-
-            applyConfiguration();
-        } catch ( NexusException e ) {
-            e.printStackTrace();
+        MappingPojo oldMapping = getMappingByNxMappingId( mapping.getNxMappingId() );
+        if ( oldMapping != null ) {
+            getMappings( null ).remove( oldMapping );
         }
+        getMappings( null ).add( mapping );
+
+        applyConfiguration();
     }
 
     /**
      * @param mapping
      */
-    public void deleteMapping( MappingPojo mapping ) {
+    public void updateMappings( List<MappingPojo> addMappings, List<MappingPojo> removeMappings ) throws NexusException {
 
-        try {
+        for (MappingPojo mapping : removeMappings) {
+            MappingPojo oldMapping = getMappingByNxMappingId( mapping.getNxMappingId() );
+            if ( oldMapping != null ) {
+                getMappings( null ).remove( oldMapping );
+                engineConfig.deleteMappingInDB( mapping );
+            }
+        }
+
+        for (MappingPojo mapping : addMappings) {
             MappingPojo oldMapping = getMappingByNxMappingId( mapping.getNxMappingId() );
             if ( oldMapping != null ) {
                 getMappings( null ).remove( oldMapping );
             }
-            try {
-                engineConfig.deleteMappingInDB( mapping );
-            } catch ( Exception e ) {
-                LOG.error( "Error deleting mapping: " + e );
-            }
-            applyConfiguration();
-        } catch ( NexusException e ) {
-            e.printStackTrace();
+            getMappings( null ).add( mapping );
         }
+
+        applyConfiguration();
     }
 
+    /**
+     * @param mapping
+     * @throws NexusException 
+     */
+    public void deleteMapping( MappingPojo mapping ) throws NexusException {
+
+        MappingPojo oldMapping = getMappingByNxMappingId( mapping.getNxMappingId() );
+        if ( oldMapping != null ) {
+            getMappings( null ).remove( oldMapping );
+            engineConfig.deleteMappingInDB( oldMapping );
+        }
+        applyConfiguration();
+    }
+    
     /**
      * Applies the current configuration and updates the engine.
      * @throws NexusException if the configuration update failed.
