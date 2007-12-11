@@ -19,12 +19,15 @@
  */
 package org.nexuse2e.backend.pipelets;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
+import org.nexuse2e.pojo.MessagePayloadPojo;
 
 /**
  * Pipelet for debugging purposes.
@@ -61,14 +64,19 @@ public class DebugBackendPipelet extends AbstractPipelet {
         if (s != null && s.trim().length() > 0) {
             LOG.info( s );
         }
-        if (((Boolean) getParameter( PRINT_PAYLOAD_PARAM_NAME )).booleanValue() && messageContext != null) {
-            Object o = messageContext.getData();
-            if (o instanceof byte[]) {
-                LOG.info( new String( (byte[]) messageContext.getData() ) );
-            } else if (o != null) {
-                LOG.info( o );
-            } else {
-                LOG.info( null );
+        if (((Boolean) getParameter( PRINT_PAYLOAD_PARAM_NAME )).booleanValue()
+                && messageContext != null && messageContext.getMessagePojo() != null) {
+            List<MessagePayloadPojo> list = messageContext.getMessagePojo().getMessagePayloads();
+            if (list != null) {
+                for (MessagePayloadPojo payload : list) {
+                    byte[] data = payload.getPayloadData();
+                    LOG.info( "Payload " + payload.getContentId() + ", mime-type " + payload.getMimeType() );
+                    if (data != null) {
+                        LOG.info( new String( data ) );
+                    } else {
+                        LOG.info( null );
+                    }
+                }
             }
         }
         
