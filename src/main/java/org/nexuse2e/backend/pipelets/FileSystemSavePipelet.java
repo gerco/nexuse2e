@@ -165,7 +165,7 @@ public class FileSystemSavePipelet extends AbstractPipelet {
 
         String baseFileName = ServerPropertiesUtil.replaceServerProperties( fileNamePattern, messageContext );
 
-        String extension = Engine.getInstance().getFileExtensionFromMime( payload.getMimeType() );
+        String extension = Engine.getInstance().getFileExtensionFromMime( payload.getMimeType().toLowerCase() );
         if ( StringUtils.isEmpty( extension ) ) {
             extension = "dat";
         }
