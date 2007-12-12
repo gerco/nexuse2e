@@ -7,13 +7,16 @@
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
 <%@ taglib uri="/tags/struts-html-el" prefix="html-el"%>
 
-<nexus:helpBar helpDoc="documentation/Participants.htm" />
+<nexus:helpBar helpDoc="documentation/Participants.htm"/>
 
 <center>
+
 <table class="NEXUS_TABLE" width="100%">
-	<tr>
-		<td><nexus:crumbs /></td>
-	</tr>
+   <tr>
+      <td>
+        	<nexus:crumbs/>
+      </td>
+  </tr>
 	<tr>
 		<td class="NEXUSScreenName">Add Participant</td>
 	</tr>
@@ -24,10 +27,6 @@
 	<html:hidden property="submitted" value="false" />
 
 	<table class="NEXUS_TABLE" width="100%">
-		<tr>
-			<td class="NEXUSName">Description</td>
-			<td class="NEXUSValue"><html:text property="description" /></td>
-		</tr>
 		<tr>
 			<td class="NEXUSName">Partner ID</td>
 			<td class="NEXUSValue"><nexus:select submitOnChange="true"
@@ -46,6 +45,10 @@
 					</logic:notEqual>
 				</logic:iterate>
 			</nexus:select></td>
+		</tr>
+		<tr>
+			<td class="NEXUSName">Description</td>
+			<td class="NEXUSValue"><html:text property="description" /></td>
 		</tr>
 		<tr>
 			<td class="NEXUSName">Local Partner ID</td>
@@ -73,17 +76,7 @@
 				<html-el:option value="0">none</html-el:option>
 				<logic:iterate id="localCertficate" property="localCertificates"
 					name="participantForm">
-					<logic:equal name="participantForm" property="nxLocalCertificateId"
-						value="${localCertficate.nxCertificateId}">
-						<option value="${localCertficate.nxCertificateId}" selected="true">${con.name}
-						(${con.description})</option>
-					</logic:equal>
-					<logic:notEqual name="participantForm"
-						property="nxLocalCertificateId"
-						value="${localCertficate.nxCertificateId}">
-						<option value="${localCertficate.nxCertificateId}">${con.name}
-						(${con.description})</option>
-					</logic:notEqual>
+					<html-el:option value="${localCertficate.nxCertificateId}">${localCertficate.name}</html-el:option>
 				</logic:iterate>
 			</html:select></td>
 		</tr>
@@ -92,16 +85,9 @@
 			<td class="NEXUSValue"><html:select property="nxConnectionId">
 				<logic:iterate id="con" property="connections"
 					name="participantForm">
-					<logic:equal name="participantForm" property="nxConnectionId"
-						value="${con.nxConnectionId}">
-						<option value="${con.nxConnectionId}" selected="true">${con.name}
-						(${con.description})</option>
-					</logic:equal>
-					<logic:notEqual name="participantForm" property="nxConnectionId"
-						value="${con.nxConnectionId}">
-						<option value="${con.nxConnectionId}">${con.name}
-						(${con.description})</option>
-					</logic:notEqual>
+					<html-el:option value="${con.nxConnectionId}">
+						<bean:write name="con" property="name" /> (<bean:write name="con"
+							property="uri" />)</html-el:option>
 				</logic:iterate>
 			</html:select></td>
 		</tr>

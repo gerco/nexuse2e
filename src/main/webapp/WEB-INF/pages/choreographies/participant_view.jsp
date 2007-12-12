@@ -7,13 +7,16 @@
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
 <%@ taglib uri="/tags/struts-html-el" prefix="html-el"%>
 
-<nexus:helpBar helpDoc="documentation/Participants.htm" />
+<nexus:helpBar helpDoc="documentation/Participants.htm"/>
 
-<center>
+    <center>
+
 <table class="NEXUS_TABLE" width="100%">
-	<tr>
-		<td><nexus:crumbs /></td>
-	</tr>
+    <tr>
+        <td>
+        	<nexus:crumbs/>
+      </td>
+  </tr>
 	<tr>
 		<td class="NEXUSScreenName">Update Participant</td>
 	</tr>
@@ -42,11 +45,11 @@
 					name="participantForm">
 					<logic:equal name="participantForm" property="nxLocalPartnerId"
 						value="${localPartner.nxPartnerId}">
-						<option value="${localPartner.nxPartnerId}" selected="true">${localPartner.name}(${localPartner.partnerId})</option>
+						<option value="${localPartner.nxPartnerId}" selected>${localPartner.name} (${localPartner.partnerId})</option>
 					</logic:equal>
 					<logic:notEqual name="participantForm" property="nxLocalPartnerId"
 						value="${localPartner.nxPartnerId}">
-						<option value="${localPartner.nxPartnerId}">${localPartner.name}(${localPartner.partnerId})</option>
+						<option value="${localPartner.nxPartnerId}">${localPartner.name} (${localPartner.partnerId})</option>
 					</logic:notEqual>
 				</logic:iterate>
 			</nexus:select></td>

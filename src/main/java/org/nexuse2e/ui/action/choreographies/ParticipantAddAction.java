@@ -19,7 +19,9 @@
  */
 package org.nexuse2e.ui.action.choreographies;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,6 +34,7 @@ import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.configuration.ConfigurationAccessService;
 import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
@@ -80,8 +83,25 @@ public class ParticipantAddAction extends NexusE2EAction {
             form.setNxLocalPartnerId( localPartnerId );
             form.setDescription( description );
 
-            form.setPartners( Engine.getInstance().getActiveConfigurationAccessService().getPartners(
-                    Constants.PARTNER_TYPE_PARTNER, Constants.PARTNERCOMPARATOR ) );
+            ConfigurationAccessService cas = Engine.getInstance().getActiveConfigurationAccessService();
+            ChoreographyPojo choreography = Engine.getInstance().getActiveConfigurationAccessService()
+                                                    .getChoreographyByNxChoreographyId( nxChoreographyId );
+            if ( choreography == null ) {
+                ActionMessage errorMessage = new ActionMessage( "generic.error", "ChoreographyId must not be null!" );
+                errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
+                addRedirect( request, URL, TIMEOUT );
+                return error;
+            }
+            
+            List<PartnerPojo> allPartners = cas.getPartners( Constants.PARTNER_TYPE_PARTNER, Constants.PARTNERCOMPARATOR );
+            List<PartnerPojo> unboundPartners = new ArrayList<PartnerPojo>();
+            for ( PartnerPojo currPartner : allPartners ) {
+                // return only partners that are not participants for this choreography already
+                if ( cas.getParticipantFromChoreographyByNxPartnerId( choreography, currPartner.getNxPartnerId() ) == null ) {
+                    unboundPartners.add( currPartner );
+                }
+            }
+            form.setPartners( unboundPartners );
             form.setLocalPartners( Engine.getInstance().getActiveConfigurationAccessService().getPartners(
                     Constants.PARTNER_TYPE_LOCAL, Constants.PARTNERCOMPARATOR ) );
 
@@ -89,8 +109,15 @@ public class ParticipantAddAction extends NexusE2EAction {
             LOG.trace( "localPartners: " + form.getLocalPartners().size() );
 
             if ( form.getPartners() == null || form.getPartners().size() == 0 ) {
-                ActionMessage errorMessage = new ActionMessage( "generic.error", "No partners found!" );
-                errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
+                if ( allPartners == null || allPartners.size() == 0 ) {
+                    // there are no partners
+                    errors.add( ActionMessages.GLOBAL_MESSAGE,
+                            new ActionMessage( "generic.error", "No partners found!" ) );
+                } else {
+                    // all partners are already bound
+                    errors.add( ActionMessages.GLOBAL_MESSAGE,
+                            new ActionMessage( "generic.error", "All partners are participants already!" ) );
+                }
                 addRedirect( request, URL, TIMEOUT );
                 return error;
             }
@@ -134,6 +161,13 @@ public class ParticipantAddAction extends NexusE2EAction {
         } else {
             if ( nxChoreographyId == 0 ) {
                 ActionMessage errorMessage = new ActionMessage( "generic.error", "ChoreographyId must not be null!" );
+                errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
+                addRedirect( request, URL, TIMEOUT );
+                return error;
+            }
+            
+            if ( partnerId == 0 ) {
+                ActionMessage errorMessage = new ActionMessage( "generic.error", "PartnerId must not be null!" );
                 errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
                 addRedirect( request, URL, TIMEOUT );
                 return error;
