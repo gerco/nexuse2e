@@ -4,15 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.URL;
-import java.net.UnknownHostException;
-import java.security.GeneralSecurityException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -23,15 +15,9 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.net.SocketFactory;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
@@ -54,8 +40,7 @@ import org.nexuse2e.service.AbstractService;
 import org.nexuse2e.service.SchedulerClient;
 import org.nexuse2e.service.SchedulingService;
 import org.nexuse2e.service.Service;
-import org.nexuse2e.util.CertificateUtil;
-import org.nexuse2e.util.EncryptionUtil;
+import org.nexuse2e.util.CertificatePojoSocketFactory;
 import org.nexuse2e.util.FileUtil;
 
 /**
@@ -276,7 +261,7 @@ public abstract class AbstractFtpService extends AbstractService {
      */
     protected abstract void processFile( File file, File errorDir, String partnerId ) throws NexusException;
 
-    private CertificatePojo getSelectedCertificate( String certId ) throws NexusException {
+    public CertificatePojo getSelectedCertificate( String certId ) throws NexusException {
 
         CertificatePojo cert;
         ConfigurationAccessService cas = Engine.getInstance().getActiveConfigurationAccessService();
@@ -337,7 +322,7 @@ public abstract class AbstractFtpService extends AbstractService {
                     ListParameter certSel = getParameter( CERTIFICATE_PARAM_NAME );
                     String certId = certSel.getSelectedValue();
                     getSelectedCertificate( certId );
-                    ftp.setSocketFactory( new SocketFactoryImpl( getSelectedCertificate( certId ) ) );
+                    ftp.setSocketFactory( new CertificatePojoSocketFactory( getSelectedCertificate( certId ) ) );
                 }
 
                 ftp.connect( url.getHost(), port );
@@ -454,135 +439,6 @@ public abstract class AbstractFtpService extends AbstractService {
                     }
                 }
             }
-        }
-    }
-
-    class SocketFactoryImpl implements SocketFactory {
-
-        private KeyStore        keystore;
-        private KeyStore        truststore;
-        private SSLContext      sslContext;
-        private CertificatePojo cert;
-
-        public SocketFactoryImpl( CertificatePojo cert ) throws NexusException {
-
-            this.cert = cert;
-            ConfigurationAccessService cas = Engine.getInstance().getActiveConfigurationAccessService();
-            keystore = CertificateUtil.getPKCS12KeyStore( cert );
-            truststore = cas.getCacertsKeyStore();
-        }
-
-        /**
-         * Get SSL Context.
-         */
-        private SSLContext getSSLContext() throws IOException {
-
-            // if already stored - return it
-            if ( sslContext != null ) {
-                return sslContext;
-            }
-
-            try {
-                KeyManager[] keymanagers = null;
-                TrustManager[] trustmanagers = null;
-                if ( keystore != null ) {
-                    keymanagers = CertificateUtil.createKeyManagers( keystore, EncryptionUtil.decryptString( cert
-                            .getPassword() ) );
-                }
-                if ( truststore != null ) {
-                    trustmanagers = CertificateUtil.createTrustManagers( truststore );
-                }
-                SSLContext sslcontext = SSLContext.getInstance( "TLS" );
-                sslcontext.init( keymanagers, trustmanagers, null );
-                return sslcontext;
-            } catch ( NoSuchAlgorithmException e ) {
-                LOG.error( e.getMessage(), e );
-                throw new IOException( "Unsupported algorithm exception: " + e.getMessage() );
-            } catch ( KeyStoreException e ) {
-                LOG.error( e.getMessage(), e );
-                throw new IOException( "Keystore exception: " + e.getMessage() );
-            } catch ( GeneralSecurityException e ) {
-                LOG.error( e.getMessage(), e );
-                throw new IOException( "Key management exception: " + e.getMessage() );
-            } catch ( Exception e ) {
-                LOG.error( e.getMessage(), e );
-                throw new IOException( "error reading keystore/truststore file: " + e.getMessage() );
-            }
-        }
-
-        public ServerSocket createServerSocket( int port ) throws IOException {
-
-            throw new UnsupportedOperationException( "createServerSocket() not implemented" );
-        }
-
-        public ServerSocket createServerSocket( int port, int backlog ) throws IOException {
-
-            throw new UnsupportedOperationException( "createServerSocket() not implemented" );
-        }
-
-        public ServerSocket createServerSocket( int port, int backlog, InetAddress address ) throws IOException {
-
-            throw new UnsupportedOperationException( "createServerSocket() not implemented" );
-        }
-
-        public Socket createSocket( String host, int port ) throws UnknownHostException, IOException {
-
-            // get socket factory
-            SSLContext ctx = getSSLContext();
-            SSLSocketFactory socFactory = ctx.getSocketFactory();
-
-            // create socket
-            SSLSocket sslSocket = (SSLSocket) socFactory.createSocket( host, port );
-            initializeSocket( sslSocket );
-
-            return sslSocket;
-        }
-
-        public Socket createSocket( InetAddress address, int port ) throws IOException {
-
-            // get socket factory
-            SSLContext ctx = getSSLContext();
-            SSLSocketFactory socFactory = ctx.getSocketFactory();
-
-            // create socket
-            SSLSocket sslSocket = (SSLSocket) socFactory.createSocket( address, port );
-            initializeSocket( sslSocket );
-
-            return sslSocket;
-        }
-
-        public Socket createSocket( String host, int port, InetAddress localAddr, int localPort )
-                throws UnknownHostException, IOException {
-
-            // get socket factory
-            SSLContext ctx = getSSLContext();
-            SSLSocketFactory socFactory = ctx.getSocketFactory();
-
-            // create socket
-            SSLSocket sslSocket = (SSLSocket) socFactory.createSocket( host, port, localAddr, localPort );
-            initializeSocket( sslSocket );
-
-            return sslSocket;
-        }
-
-        public Socket createSocket( InetAddress address, int port, InetAddress localAddr, int localPort )
-                throws IOException {
-
-            // get socket factory
-            SSLContext ctx = getSSLContext();
-            SSLSocketFactory socFactory = ctx.getSocketFactory();
-
-            // create socket
-            SSLSocket sslSocket = (SSLSocket) socFactory.createSocket( address, port, localAddr, localPort );
-
-            initializeSocket( sslSocket );
-            return sslSocket;
-        }
-
-        private void initializeSocket( SSLSocket sslSocket ) {
-
-            String cipherSuites[] = sslSocket.getSupportedCipherSuites();
-            sslSocket.setEnabledCipherSuites( cipherSuites );
         }
     }
 }
