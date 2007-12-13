@@ -61,86 +61,86 @@ public class ActionSettingsUpdateAction extends NexusE2EAction {
         ActionForward error = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
 
         ChoreographyActionForm form = (ChoreographyActionForm) actionForm;
-
-        String[] selectedFollowUps = form.getFollowups();
-        int nxActionId = form.getNxActionId();
-        int nxChoreographyId = form.getNxChoreographyId();
-
-        ActionPojo actionPojo;
-        ChoreographyPojo choreography;
-        try {
-            choreography = Engine.getInstance().getActiveConfigurationAccessService().getChoreographyByNxChoreographyId(
-                    nxChoreographyId );
-            actionPojo = Engine.getInstance().getActiveConfigurationAccessService().getActionFromChoreographyByNxActionId(
-                    choreography, nxActionId );
-            form.getProperties( actionPojo );
-            for ( int i = 0; i < selectedFollowUps.length; i++ ) {
-                LOG.trace( "selected: " + selectedFollowUps[i] );
-                Iterator<FollowUpActionPojo> followI = actionPojo.getFollowUpActions().iterator();
-                boolean exists = false;
-                while ( followI.hasNext() ) {
-                    FollowUpActionPojo followUp = followI.next();
-                    if ( followUp.getFollowUpAction().getName().equals( selectedFollowUps[i] ) ) {
-                        exists = true;
-                        break;
-                    }
-                }
-                if ( !exists ) {
-                    ActionPojo followAction = Engine.getInstance().getActiveConfigurationAccessService()
-                            .getActionFromChoreographyByActionId( choreography, selectedFollowUps[i] );
-                    followAction.setModifiedDate( new Date() );
-                    FollowUpActionPojo newFollowUp = new FollowUpActionPojo();
-                    newFollowUp.setAction( actionPojo );
-                    newFollowUp.setCreatedDate( new Date() );
-                    newFollowUp.setModifiedDate( new Date() );
-                    newFollowUp.setModifiedNxUserId( 0 );
-                    newFollowUp.setFollowUpAction( followAction );
-                    followAction.getFollowedActions().add( newFollowUp );
-                    actionPojo.getFollowUpActions().add( newFollowUp );
-                }
-
-            }
-            Iterator<FollowUpActionPojo> followI = actionPojo.getFollowUpActions().iterator();
-            while ( followI.hasNext() ) {
-                FollowUpActionPojo followUp = followI.next();
-                boolean exists = false;
-                for ( int i = 0; i < selectedFollowUps.length; i++ ) {
-                    if ( followUp.getFollowUpAction().getName().equals( selectedFollowUps[i] ) ) {
-                        exists = true;
-                        break;
-                    }
-                }
-                if ( !exists ) {
-                    followUp.getFollowUpAction().getFollowedActions().remove( followUp );
-                    // followUp.setAction( null );
-                    followI.remove();
-                }
-            }
-            Engine.getInstance().getActiveConfigurationAccessService().updateChoreography( choreography );
-
-        } catch ( NexusException e ) {
-            e.printStackTrace();
-            ActionMessage errorMessage = new ActionMessage( "generic.error", e.getMessage() );
-            errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
-            addRedirect( request, URL, TIMEOUT );
-            return error;
-        } catch ( Exception e ) {
-            e.printStackTrace();
-        } catch ( Error e ) {
-            e.printStackTrace();
+        if (form.getBackendInboundPipelineId() == 0) {
+            errors.add( ActionMessages.GLOBAL_MESSAGE,
+                    new ActionMessage( "participant.error.noinboundpipeline" ) );
+        }
+        if (form.getBackendOutboundPipelineId() == 0) {
+            errors.add( ActionMessages.GLOBAL_MESSAGE,
+                    new ActionMessage( "participant.error.nooutboundpipeline" ) );
         }
 
-        //        try {
-        //            //cl.updateActionAndFollowUpActions( form.getProperties( actionPojo ),form.getConnector(), selectedFollowUps );
-        //            
-        //            
-        //            
-        //        } catch ( NexusException e ) {
-        //            ActionMessage errorMessage = new ActionMessage( "generic.error", e.getMessage() );
-        //            errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
-        //            addRedirect( request, URL, TIMEOUT );
-        //            return error;
-        //        }
+        if (errors.isEmpty()) {
+            String[] selectedFollowUps = form.getFollowups();
+            int nxActionId = form.getNxActionId();
+            int nxChoreographyId = form.getNxChoreographyId();
+    
+            ActionPojo actionPojo;
+            ChoreographyPojo choreography;
+            try {
+                choreography = Engine.getInstance().getActiveConfigurationAccessService().getChoreographyByNxChoreographyId(
+                        nxChoreographyId );
+                actionPojo = Engine.getInstance().getActiveConfigurationAccessService().getActionFromChoreographyByNxActionId(
+                        choreography, nxActionId );
+                form.getProperties( actionPojo );
+                for ( int i = 0; i < selectedFollowUps.length; i++ ) {
+                    LOG.trace( "selected: " + selectedFollowUps[i] );
+                    Iterator<FollowUpActionPojo> followI = actionPojo.getFollowUpActions().iterator();
+                    boolean exists = false;
+                    while ( followI.hasNext() ) {
+                        FollowUpActionPojo followUp = followI.next();
+                        if ( followUp.getFollowUpAction().getName().equals( selectedFollowUps[i] ) ) {
+                            exists = true;
+                            break;
+                        }
+                    }
+                    if ( !exists ) {
+                        ActionPojo followAction = Engine.getInstance().getActiveConfigurationAccessService()
+                                .getActionFromChoreographyByActionId( choreography, selectedFollowUps[i] );
+                        followAction.setModifiedDate( new Date() );
+                        FollowUpActionPojo newFollowUp = new FollowUpActionPojo();
+                        newFollowUp.setAction( actionPojo );
+                        newFollowUp.setCreatedDate( new Date() );
+                        newFollowUp.setModifiedDate( new Date() );
+                        newFollowUp.setModifiedNxUserId( 0 );
+                        newFollowUp.setFollowUpAction( followAction );
+                        followAction.getFollowedActions().add( newFollowUp );
+                        actionPojo.getFollowUpActions().add( newFollowUp );
+                    }
+    
+                }
+                Iterator<FollowUpActionPojo> followI = actionPojo.getFollowUpActions().iterator();
+                while ( followI.hasNext() ) {
+                    FollowUpActionPojo followUp = followI.next();
+                    boolean exists = false;
+                    for ( int i = 0; i < selectedFollowUps.length; i++ ) {
+                        if ( followUp.getFollowUpAction().getName().equals( selectedFollowUps[i] ) ) {
+                            exists = true;
+                            break;
+                        }
+                    }
+                    if ( !exists ) {
+                        followUp.getFollowUpAction().getFollowedActions().remove( followUp );
+                        // followUp.setAction( null );
+                        followI.remove();
+                    }
+                }
+                Engine.getInstance().getActiveConfigurationAccessService().updateChoreography( choreography );
+    
+            } catch ( NexusException e ) {
+                e.printStackTrace();
+                ActionMessage errorMessage = new ActionMessage( "generic.error", e.getMessage() );
+                errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
+                addRedirect( request, URL, TIMEOUT );
+                return error;
+            } catch ( Exception e ) {
+                e.printStackTrace();
+            } catch ( Error e ) {
+                e.printStackTrace();
+            }
+        } else {
+            return error;
+        }
 
         return success;
     }

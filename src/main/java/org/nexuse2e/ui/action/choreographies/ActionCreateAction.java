@@ -70,14 +70,26 @@ public class ActionCreateAction extends NexusE2EAction {
                 addRedirect( request, URL, TIMEOUT );
                 return error;
             }
-            action.setChoreography( choreography );
-            form.getProperties( action );
-            choreography.getActions().add( action );
+            if (form.getBackendInboundPipelineId() == 0) {
+                errors.add( ActionMessages.GLOBAL_MESSAGE,
+                        new ActionMessage( "participant.error.noinboundpipeline" ) );
+            }
+            if (form.getBackendOutboundPipelineId() == 0) {
+                errors.add( ActionMessages.GLOBAL_MESSAGE,
+                        new ActionMessage( "participant.error.nooutboundpipeline" ) );
+            }
 
-            action.setCreatedDate( new Date() );
-            action.setModifiedDate( new Date() );
+            if (errors.isEmpty()) {
+                action.setChoreography( choreography );
+                form.getProperties( action );
+                Date date = new Date();
+                action.setCreatedDate( date );
+                action.setModifiedDate( date );
 
-            Engine.getInstance().getActiveConfigurationAccessService().updateChoreography( choreography );
+                choreography.getActions().add( action );
+
+                Engine.getInstance().getActiveConfigurationAccessService().updateChoreography( choreography );
+            }
 
         } catch ( NexusException e ) {
             ActionMessage errorMessage = new ActionMessage( "generic.error", e.getMessage() );

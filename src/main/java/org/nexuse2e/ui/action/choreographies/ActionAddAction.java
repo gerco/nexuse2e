@@ -19,15 +19,20 @@
  */
 package org.nexuse2e.ui.action.choreographies;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.Engine;
+import org.nexuse2e.configuration.ConfigurationAccessService;
 import org.nexuse2e.configuration.Constants;
+import org.nexuse2e.pojo.PipelinePojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.ChoreographyActionForm;
 
@@ -47,25 +52,31 @@ public class ActionAddAction extends NexusE2EAction {
             HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
-        ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
-
         ChoreographyActionForm form = (ChoreographyActionForm) actionForm;
         String choreographyId = form.getChoreographyId();
         form.cleanSettings();
         form.setChoreographyId( choreographyId );
 
-        form.setBackendInboundPipelines( Engine.getInstance().getActiveConfigurationAccessService()
-                .getBackendPipelinePojos( Constants.PIPELINE_TYPE_INBOUND, null ) );
-
-        form.setStatusUpdatePipelines( Engine.getInstance().getActiveConfigurationAccessService()
-                .getBackendPipelinePojos( Constants.PIPELINE_TYPE_INBOUND, null ) );
-
-        form.setBackendOutboundPipelines( Engine.getInstance().getActiveConfigurationAccessService()
-                .getBackendPipelinePojos( Constants.PIPELINE_TYPE_OUTBOUND, null ) );
-
-        //request.getSession().setAttribute( Crumbs.CURRENT_LOCATION, Crumbs.ADD_ACTION + "_" + choreographyId );
-
-        return success;
+        ConfigurationAccessService cas = Engine.getInstance().getActiveConfigurationAccessService();
+        List<PipelinePojo> inboundPipelines = cas.getBackendPipelinePojos( Constants.PIPELINE_TYPE_INBOUND, null );
+        List<PipelinePojo> outboundPipelines = cas.getBackendPipelinePojos( Constants.PIPELINE_TYPE_OUTBOUND, null );
+        
+        if (inboundPipelines == null || inboundPipelines.isEmpty()) {
+            errors.add( ActionMessages.GLOBAL_MESSAGE,
+                    new ActionMessage( "participant.error.noinboundpipeline" ) );
+        }
+        if (outboundPipelines == null || outboundPipelines.isEmpty()) {
+            errors.add( ActionMessages.GLOBAL_MESSAGE,
+                    new ActionMessage( "participant.error.nooutboundpipeline" ) );
+        }
+        if (errors.isEmpty()) {
+            form.setBackendInboundPipelines( inboundPipelines );
+            form.setStatusUpdatePipelines( inboundPipelines );
+            form.setBackendOutboundPipelines( outboundPipelines );
+            return actionMapping.findForward( ACTION_FORWARD_SUCCESS );
+        } else {
+            return actionMapping.findForward( ACTION_FORWARD_FAILURE );
+        }
     }
 
 }
