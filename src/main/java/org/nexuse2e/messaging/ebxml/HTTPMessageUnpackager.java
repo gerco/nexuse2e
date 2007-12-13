@@ -150,7 +150,8 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
                 }
                 LOG.trace( "contentId:" + contentId );
                 messagePayloadPojo.setContentId( contentId );
-                messagePayloadPojo.setMimeType( mimeBodyPart.getContentType() );
+                // MBR 20071213: added toLowerCase
+                messagePayloadPojo.setMimeType( mimeBodyPart.getContentType().toLowerCase() );
                 messagePayloadPojo.setMessage( messagePojo );
                 payloads.add( messagePayloadPojo );
             }
