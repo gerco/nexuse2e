@@ -24,20 +24,20 @@ import org.nexuse2e.integration.NEXUSe2eInterface;
  */
 public class FtpDirectoryScannerService extends AbstractFtpService {
 
-    private static Logger LOG = Logger.getLogger( FtpDirectoryScannerService.class );
+    private static Logger      LOG                     = Logger.getLogger( FtpDirectoryScannerService.class );
 
     public static final String CHOREOGRAPHY_PARAM_NAME = "choreographyId";
-    public static final String ACTION_PARAM_NAME = "actionId";
-    
-    
-    
+    public static final String ACTION_PARAM_NAME       = "actionId";
+
+    private static int         counter                 = 0;
+
     @Override
     public void fillParameterMap( Map<String, ParameterDescriptor> parameterMap ) {
 
         parameterMap.put( CHOREOGRAPHY_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "Choreography",
                 "The choreography ID", "" ) );
-        parameterMap.put( ACTION_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "Action",
-                "The action ID", "" ) );
+        parameterMap.put( ACTION_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "Action", "The action ID",
+                "" ) );
         super.fillParameterMap( parameterMap );
     }
 
@@ -46,8 +46,6 @@ public class FtpDirectoryScannerService extends AbstractFtpService {
 
         return Layer.INBOUND_PIPELINES;
     }
-
-    private static int counter = 0;
 
     /**
      * Process any files found.
@@ -61,21 +59,19 @@ public class FtpDirectoryScannerService extends AbstractFtpService {
 
         String choreographyId = (String) getParameter( CHOREOGRAPHY_PARAM_NAME );
         String actionId = (String) getParameter( ACTION_PARAM_NAME );
-        
-        if ( choreographyId != null && actionId != null &&
-                choreographyId.length() > 0 && actionId.length() > 0 &&
-                file != null && file.exists() && file.length() != 0 ) {
+
+        if ( choreographyId != null && actionId != null && choreographyId.length() > 0 && actionId.length() > 0
+                && file != null && file.exists() && file.length() != 0 ) {
             try {
                 // Open the file to read one line at a time
                 String content = FileUtils.readFileToString( file, null );
 
-                LOG.debug( "Read file " + file.getAbsolutePath() + " , character size: " + content.length() );
+                LOG.debug( "Submitting file " + file.getAbsolutePath() + " , character size: " + content.length() );
 
-                LOG.debug( "Calling TransportReceiver..." );
                 NEXUSe2eInterface nexusInterface = Engine.getInstance().getInProcessNEXUSe2eInterface();
 
-                String conversationId = nexusInterface.sendNewStringMessage(
-                        choreographyId, partnerId, actionId, content );
+                String conversationId = nexusInterface.sendNewStringMessage( choreographyId, partnerId, actionId,
+                        content );
 
                 LOG.debug( "Message sent ( choreography '" + choreographyId + "', conversation ID '" + conversationId
                         + "')!" );
@@ -93,8 +89,8 @@ public class FtpDirectoryScannerService extends AbstractFtpService {
                 throw new NexusException( "An error occurred while processing file " + file, ex );
             }
         } else {
-            LOG.error( "FTP content not delivered to backend pipelet. " +
-            		"Please verify that action ID and choreography ID are configured." );
+            LOG.error( "FTP content not delivered to backend pipeline. "
+                    + "Please verify that action ID and choreography ID are configured." );
         }
     }
 }

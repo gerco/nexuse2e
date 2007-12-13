@@ -449,7 +449,7 @@ public class SftpPollingReceiverService extends AbstractService implements Recei
                         try {
                             targetFiles = channelSftp.ls( prefix + file.getFilename() );
                         } catch ( SftpException sftpEx ) {
-                            LOG.error( "Could not retrieve file " + file.getFilename() );
+                            LOG.debug( "File does not exist in backup location: " + file.getFilename() );
                         }
                         if ( !fileChangeActive || (targetFiles == null) || targetFiles.isEmpty() ) {
                             LOG.trace( "Processing file: " + file.getFilename() );
