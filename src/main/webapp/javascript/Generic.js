@@ -1,6 +1,23 @@
 <!-- *************************************************************************  -->
 <!-- ***************************** Generic JavaScript ************************  -->
 <!-- *************************************************************************  -->
+document.onkeypress=checkKey;
+
+function checkKey(e) {
+  if (!e) {
+    e = window.event;
+  }
+  if (e.which) {
+    code = e.which;
+  } else if (e.keyCode) {
+    code = Ereignis.keyCode;
+  }
+  if (code == 13) {
+    return false;
+  }
+  return true;
+}
+<!-- *************************************************************************  -->
 function confirmDelete(deleteMsg) {
   var agree=confirm(deleteMsg);
   if (agree)
