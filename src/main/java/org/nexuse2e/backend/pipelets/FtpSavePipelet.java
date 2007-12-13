@@ -42,7 +42,6 @@ public class FtpSavePipelet extends AbstractPipelet {
 
     private static Logger LOG = Logger.getLogger( FtpSavePipelet.class );
 
-    public static final String PARTNER_PARAM_NAME          = "partnerId";
     public static final String FTP_TYPE_PARAM_NAME         = "ftpType";
     public static final String CERTIFICATE_PARAM_NAME      = "certificate";
     public static final String URL_PARAM_NAME              = "url";
@@ -57,9 +56,6 @@ public class FtpSavePipelet extends AbstractPipelet {
     
     
     public FtpSavePipelet() {
-
-        parameterMap.put( PARTNER_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "Partner",
-                "The partner ID", "" ) );
 
         ListParameter ftpTypeDrowdown = new ListParameter();
         ftpTypeDrowdown.addElement( "FTPS (encrypted)", "ftps" );
