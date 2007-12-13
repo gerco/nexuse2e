@@ -72,23 +72,21 @@
 			<td class="NEXUSName">File (XML/text)<br />
 			- or -<br />
 			Primary Key</td>
-			<td class="NEXUSValue"><html:file size="50"
-				property="payloadFile1" /><br />
+			<td class="NEXUSValue"><html:file size="50" property="payloadFile1" onkeypress="return checkKey(event);" /><br />
 			&nbsp;<br />
 			<html:text property="primaryKey" size="50" /></td>
 		</tr>
 
 		<tr>
 			<td class="NEXUSName">Conversation ID</td>
-			<td class="NEXUSValue"><html:text property="conversationId"
-				size="50" /> <a href="#"
+			<td class="NEXUSValue"><html:text property="conversationId" size="50" onkeypress="return checkKey(event);" /> <a href="#"
 				onClick="javascript:scriptScope.clearConvId()" class="button">Clear</a>
 			</td>
 		</tr>
 
 		<tr>
 			<td class="NEXUSName">Repeat</td>
-			<td class="NEXUSValue"><html:text property="repeat" size="5" /></td>
+			<td class="NEXUSValue"><html:text property="repeat" size="5" onkeypress="return checkKey(event);"/></td>
 		</tr>
 		<tr>
 			<td class="NEXUSName">Encoding</td>

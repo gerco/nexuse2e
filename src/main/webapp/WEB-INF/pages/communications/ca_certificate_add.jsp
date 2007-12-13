@@ -27,13 +27,13 @@
                 <tr>
                     <td class="NEXUSName">Certificate Filename</td>
                     <td class="NEXUSValue">
-                    <html:file property="certficate" size="20"/>
+                    <html:file property="certficate" size="20" onkeypress="checkKey" onkeypress="return checkKey(event);"/>
                     <br>
                     <font size="1">browse to select a valid certificate</font></td>
                 </tr>
                 <tr>
                     <td class="NEXUSName">Certificate Alias</td>
-                    <td class="NEXUSValue"><html:text property="alias" size="20"/>
+                    <td class="NEXUSValue"><html:text property="alias" size="20" onkeypress="return checkKey(event);"/>
                     </td>
                 </tr>                
             </table>

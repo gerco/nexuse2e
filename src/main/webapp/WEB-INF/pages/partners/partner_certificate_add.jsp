@@ -28,11 +28,11 @@
             </tr>
             <tr>
                 <td class="NEXUSName">Certificate ID</td>
-                <td class="NEXUSValue"><html:text size="64" property="alias"/></td>
+                <td class="NEXUSValue"><html:text size="64" property="alias" onkeypress="return checkKey(event);"/></td>
             </tr>
             <tr>
                 <td class="NEXUSName">FileName</td>
-                <td class="NEXUSValue"><html:file size="50" property="certficate"/><br>
+                <td class="NEXUSValue"><html:file size="50" property="certficate" onkeypress="return checkKey(event);"/><br>
                 <font size="1">browse to select X509 compatible certificate</font></td>
             </tr>
         </table>

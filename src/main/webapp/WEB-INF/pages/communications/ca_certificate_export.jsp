@@ -27,7 +27,7 @@
             </tr> 
                    
             <tr>
-                <td class="NEXUSName"><html:radio property="status" value="1"></html:radio>
+                <td class="NEXUSName"><html:radio property="status" value="1" onkeypress="return checkKey(event);"></html:radio>
                 </td>
                 <td class="NEXUSName">Predefined Path:
                 </td>
@@ -35,15 +35,15 @@
                 </td>                
             </tr>
             <tr>
-                <td class="NEXUSName"><html:radio property="status" value="2"></html:radio>
+                <td class="NEXUSName"><html:radio property="status" value="2" onkeypress="return checkKey(event);"></html:radio>
                 </td>
                 <td class="NEXUSName">different Position:
                 </td>
-        <td class="NEXUSName"><html:text property="certficatePath" size="80"/>
+        <td class="NEXUSName"><html:text property="certficatePath" size="80" onkeypress="return checkKey(event);"/>
                 </td>                
             </tr>
             <tr>
-                <td class="NEXUSName"><html:radio property="status" value="3"></html:radio>
+                <td class="NEXUSName"><html:radio property="status" value="3" onkeypress="return checkKey(event);"></html:radio>
                 </td>
                 <td colspan="2" class="NEXUSName">save as...
                 </td>                        

@@ -26,7 +26,7 @@
 		</tr>
 		<tr>
 			<td class="NEXUSName">Path</td>
-			<td class="NEXUSValue"><html:file property="certficate" size="60" /></td>
+			<td class="NEXUSValue"><html:file property="certficate" size="60" onkeypress="return checkKey(event);" /></td>
 		</tr>
 	</table>
 	<center><logic:messagesPresent>
