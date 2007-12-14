@@ -31,7 +31,7 @@ public class RequestResponseData {
     private int       responseCode   = 0;
     private String    requestString  = null;
     private String    responseString = null;
-    private Map<?, ?> parameters     = null;
+    private Map<String, String> parameters     = null;
 
     public RequestResponseData( int responseCode, String responseString, String requestString ) {
 
@@ -40,12 +40,12 @@ public class RequestResponseData {
         this.responseCode = responseCode;
     }
 
-    public Map<?, ?> getParameters() {
+    public Map<String, String> getParameters() {
 
         return parameters;
     }
 
-    public void setParameters( Map<?, ?> parameters ) {
+    public void setParameters( Map<String, String> parameters ) {
 
         this.parameters = parameters;
     }

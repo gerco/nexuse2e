@@ -350,7 +350,7 @@ public class XMLValidationPipelet extends AbstractPipelet {
                 if ( node != null ) {
                     if ( node instanceof Element ) {
                         String value = ( (Element) node ).getTextContent();
-                        String resultValue = mapData( value, definition );
+                        String resultValue = mapData( xPath, document, value, definition );
                         if ( resultValue == null || resultValue.length() != value.length() ) {
                             if ( messageContext != null ) {
                                 ErrorDescriptor rd = new ErrorDescriptor();
@@ -370,7 +370,7 @@ public class XMLValidationPipelet extends AbstractPipelet {
                         ( (Element) node ).setTextContent( resultValue );
                     } else if ( node instanceof Attr ) {
                         String nodeValue = ( (Attr) node ).getNodeValue();
-                        String resultValue = mapData( nodeValue, definition );
+                        String resultValue = mapData( xPath, document, nodeValue, definition );
                         ( (Attr) node ).setNodeValue( resultValue );
                     } else {
                         LOG.error( "Node type not recognized: " + node.getClass() );
@@ -393,14 +393,14 @@ public class XMLValidationPipelet extends AbstractPipelet {
         return result;
     }
 
-    private String mapData( String textContent, ValidationDefinition definition ) {
+    private String mapData( XPath xPath, Document document, String textContent, ValidationDefinition definition ) {
 
         //        System.out.println( "mapping Data..." );
         if ( mappingService != null ) {
             System.out.println( "value: " + textContent );
             MappingDefinition mappingDef = new MappingDefinition();
             mappingDef.setCommand( definition.getCommand() );
-            return mappingService.processConversion( textContent, mappingDef );
+            return mappingService.processConversion( xPath, document, textContent, mappingDef );
         } else {
             LOG.error( "MappingService must be configured" );
         }

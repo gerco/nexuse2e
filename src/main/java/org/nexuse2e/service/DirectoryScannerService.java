@@ -344,7 +344,7 @@ public class DirectoryScannerService extends AbstractService implements Schedule
                     } else {
                         MappingDefinition mappingDef = new MappingDefinition();
                         mappingDef.setCommand( partnerId );
-                        tempPartnerId = mappingService.processConversion( null, mappingDef, variables );
+                        tempPartnerId = mappingService.processConversion( null, null, null, mappingDef, variables );
                     }
                 }
 
@@ -355,7 +355,7 @@ public class DirectoryScannerService extends AbstractService implements Schedule
                     } else {
                         MappingDefinition mappingDef = new MappingDefinition();
                         mappingDef.setCommand( choreographyId );
-                        tempChoreographyId = mappingService.processConversion( null, mappingDef, variables );
+                        tempChoreographyId = mappingService.processConversion( null, null, null, mappingDef, variables );
                     }
                 }
 
@@ -366,7 +366,7 @@ public class DirectoryScannerService extends AbstractService implements Schedule
                     } else {
                         MappingDefinition mappingDef = new MappingDefinition();
                         mappingDef.setCommand( actionId );
-                        tempActionId = mappingService.processConversion( null, mappingDef, variables );
+                        tempActionId = mappingService.processConversion( null, null, null, mappingDef, variables );
                     }
                 }
 

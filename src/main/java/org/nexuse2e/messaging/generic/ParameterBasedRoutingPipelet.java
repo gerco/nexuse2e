@@ -173,7 +173,7 @@ public class ParameterBasedRoutingPipelet extends AbstractPipelet {
             String parameter = messageContext.getMessagePojo().getCustomParameters().get( mappingDefinition.getXpath() );
             String routingInfo = mappingDefinition.getCategory();
             if ( parameter != null ) {
-                String result = mappingService.processConversion( parameter, mappingDefinition );
+                String result = mappingService.processConversion( null, null, parameter, mappingDefinition );
                 if ( CHOREOGRAPHY_ID.equalsIgnoreCase( routingInfo ) ) {
                     choreographyId = result;
                 } else if ( ACTION_ID.equalsIgnoreCase( routingInfo ) ) {

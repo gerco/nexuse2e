@@ -27,7 +27,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +48,6 @@ import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.MessagePayloadPojo;
-import org.nexuse2e.tools.validation.ValidationDefinitions;
 import org.xml.sax.SAXException;
 
 /**
@@ -139,7 +137,7 @@ public class XSLTPipelet extends AbstractPipelet {
             IllegalStateException, NexusException {
 
         LOG.debug( "processing xslt" );
-        Map map = null;
+        Map<String, String> map = null;
 
         if ( ( messageContext.getData() != null ) && ( messageContext.getData() instanceof RequestResponseData )
                 && ( ( (RequestResponseData) messageContext.getData() ).getParameters() != null ) ) {
@@ -155,6 +153,18 @@ public class XSLTPipelet extends AbstractPipelet {
         map.put( "nexuse2e_action_id", messageContext.getMessagePojo().getAction().getName() );
         map.put( "nexuse2e_choreography_id", messageContext.getMessagePojo().getConversation().getChoreography().getName() );
         
+        Map<String, String> customMap = messageContext.getMessagePojo().getCustomParameters();
+        if (customMap != null) {
+            for (String key : customMap.keySet()) {
+                if (key != null) {
+                    String value = customMap.get( key );
+                    if (value != null) {
+                        map.put( key, value );
+                    }
+                }
+            }
+        }
+        
         StreamSource streamSource = xsltStreamSource;
         
         try {
@@ -168,18 +178,9 @@ public class XSLTPipelet extends AbstractPipelet {
             
             if ( streamSource != null ) {
                 List<MessagePayloadPojo> payloads = messageContext.getMessagePojo().getMessagePayloads();
-                for ( Iterator iter = payloads.iterator(); iter.hasNext(); ) {
-                    MessagePayloadPojo messagePayloadPojo = (MessagePayloadPojo) iter.next();
+                for (MessagePayloadPojo messagePayloadPojo : payloads) {
                     ByteArrayInputStream bais = new ByteArrayInputStream( messagePayloadPojo.getPayloadData() );
-
                     messagePayloadPojo.setPayloadData( transformXML( new StreamSource( bais ), streamSource, map ) );
-                    
-                    
-//                if ( LOG.isTraceEnabled() ) {
-//                    LOG.trace( "...................." );
-//                    LOG.trace( new String( messagePayloadPojo.getPayloadData() ) );
-//                    LOG.trace( "...................." );
-//                }
                 }
 
             } else {
@@ -231,7 +232,7 @@ public class XSLTPipelet extends AbstractPipelet {
      * @return
      * @throws NexusException
      */
-    private byte[] transformXML( StreamSource xmlSource, StreamSource xsltSource, Map<?, ?> map ) throws NexusException {
+    private byte[] transformXML( StreamSource xmlSource, StreamSource xsltSource, Map<String, String> map ) throws NexusException {
 
         byte[] result = null;
         try {
@@ -243,8 +244,7 @@ public class XSLTPipelet extends AbstractPipelet {
                 LOG.debug( "Using provided XSLT parameters..." );
                 LOG.debug( "map: "+map );
                 if ( LOG.isDebugEnabled() ) {
-                    for ( Iterator iter = map.keySet().iterator(); iter.hasNext(); ) {
-                        String key = (String) iter.next();
+                    for ( String key : map.keySet() ) {
                         transformer.setParameter( key, map.get( key ) );
                         LOG.debug( "XSLT param: " + key + " - " + map.get( key ) );
                     }

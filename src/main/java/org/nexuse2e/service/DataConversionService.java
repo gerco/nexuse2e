@@ -20,20 +20,18 @@
 
 package org.nexuse2e.service;
 
-import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.digester.RegexMatcher;
+import javax.xml.xpath.XPath;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
@@ -41,6 +39,7 @@ import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.pojo.MappingPojo;
 import org.nexuse2e.tools.mapping.xmldata.MappingDefinition;
+import org.w3c.dom.Document;
 
 public class DataConversionService extends AbstractService {
 
@@ -56,6 +55,7 @@ public class DataConversionService extends AbstractService {
     public final static String VALIDATELENGTH          = "validateLength";
     public final static String MODIFY                  = "modify";
     public final static String REPLACE_STRING          = "replaceString";
+    public final static String CONCAT                  = "concat";
 
     @Override
     public void fillParameterMap( Map<String, ParameterDescriptor> parameterMap ) {
@@ -69,22 +69,37 @@ public class DataConversionService extends AbstractService {
     }
 
     /**
-     * @param value
-     * @param definition
-     * @return
+     * Process a conversion operation.
+     * @param xPath The <code>XPath</code> object to be used for XPath statement lookups. Can be
+     * <code>null</code> if not operating on an XML document.
+     * @param document The XML document. Can be <code>null</code> if not operating on an XML document.
+     * @param value The value to be converted.
+     * @param definition The mapping definition.
+     * @return The converted value.
      */
-    public String processConversion( String value, MappingDefinition definition ) {
+    public String processConversion(
+            XPath xPath, Document document, String value, MappingDefinition definition ) {
 
-        return processConversion( value, definition, null );
+        return processConversion( xPath, document, value, definition, null );
     }
 
     /**
-     * @param value
-     * @param definition
-     * @param aditionalValues
-     * @return
+     * Process a conversion operation.
+     * @param xPath The <code>XPath</code> object to be used for XPath statement lookups. Can be
+     * <code>null</code> if not operating on an XML document.
+     * @param document The XML document. Can be <code>null</code> if not operating on an XML document.
+     * @param value The value to be converted.
+     * @param definition The mapping definition.
+     * @param additionalValues Additional values that can be used for conversion operations.
+     * May be <code>null</code>.
+     * @return The converted value.
      */
-    public String processConversion( String value, MappingDefinition definition, Map<String, String> aditionalValues ) {
+    public String processConversion(
+            XPath xPath,
+            Document document,
+            String value,
+            MappingDefinition definition,
+            Map<String, String> aditionalValues ) {
 
         // We return the unchanged value in case no command was found
         String result = value;
@@ -107,7 +122,7 @@ public class DataConversionService extends AbstractService {
             int endIndex = matcher.end();
             // LOG.trace( "command(" + endIndex + "): " + commandName );
 
-            pattern = Pattern.compile( "[a-zA-Z0-9\\'\\,\\:\\$\\#\\.\\\\\\-\\_\\. \\@\\[\\]\\+]+" );
+            pattern = Pattern.compile( "[a-zA-Z0-9/\\(\\)\\'\\,\\:\\$\\#\\.\\\\\\-\\_\\. \\@\\[\\]\\+]+" );
             matcher = pattern.matcher( command );
             ArrayList<String> paramList = null;
             if ( matcher.find( endIndex ) ) {
@@ -116,7 +131,7 @@ public class DataConversionService extends AbstractService {
                 // LOG.trace( "parameterlist:" + params );
 
                 pattern = Pattern
-                        .compile( "((\\'([a-zA-Z0-9\\,\\:\\-\\_\\. \\@\\#\\[\\]\\+]|\\\\')+\\')|(\\$[a-zA-Z0-9\\_]+))+" );
+                        .compile( "((\\'([a-zA-Z0-9/\\(\\)\\,\\:\\-\\_\\. \\@\\#\\[\\]\\+]|\\\\')+\\')|(\\$[a-zA-Z0-9\\_]+))+" );
                 matcher = pattern.matcher( params );
                 while ( matcher.find() ) {
                     String param = matcher.group();
@@ -128,7 +143,7 @@ public class DataConversionService extends AbstractService {
             if ( paramList != null && paramList.size() > 0 ) {
                 paramArray = paramList.toArray( new String[paramList.size()] );
             }
-            result = executeCommand( commandName, paramArray, definition, aditionalValues );
+            result = executeCommand( xPath, document, commandName, paramArray, definition, aditionalValues );
         }
 
         // Process any formatting rules (length etc.)
@@ -139,49 +154,50 @@ public class DataConversionService extends AbstractService {
         return result;
     }
 
-    /**
-     * @param value
-     * @param name
-     * @param params
-     * @param definition
-     * @return
-     */
-    private String executeCommand( String name, String[] params, MappingDefinition definition,
-            Map<String, String> aditionalValues ) {
+    private String executeCommand(
+            XPath xPath,
+            Document document,
+            String name,
+            String[] params,
+            MappingDefinition definition,
+            Map<String, String> additionalValues ) {
 
         if ( name == null ) {
             return null;
         }
         if ( name.equals( MAPPINGTABLE_LEFT2RIGHT ) ) {
             LOG.trace( "dispatching: Left2right" );
-            return processDBMapping( definition.getCategory(), true, params, aditionalValues );
+            return processDBMapping( definition.getCategory(), true, params, additionalValues );
         } else if ( name.equals( MAPPINGTABLE_RIGHT2LEFT ) ) {
             LOG.trace( "dispatching: right2left" );
-            return processDBMapping( definition.getCategory(), false, params, aditionalValues );
+            return processDBMapping( definition.getCategory(), false, params, additionalValues );
         } else if ( name.equals( DATEFORMAT ) ) {
             LOG.trace( "dispatching: dateformat" );
-            return processDateFormat( params, definition, aditionalValues );
+            return processDateFormat( params, definition, additionalValues );
         } else if ( name.equals( STATIC ) ) {
             LOG.trace( "dispatching: static" );
-            return processStatic( params, definition, aditionalValues );
+            return processStatic( params, definition, additionalValues );
         } else if ( name.equals( SUBSTRING ) ) {
             LOG.trace( "dispatching: substring" );
-            return processSubstring( params, definition, aditionalValues );
+            return processSubstring( params, definition, additionalValues );
         } else if ( name.equals( REGEX ) ) {
             LOG.trace( "dispatching: regex" );
-            return processRegex( params, definition, aditionalValues );
+            return processRegex( params, definition, additionalValues );
         } else if ( name.equals( VALIDATEPATTERN ) ) {
             LOG.trace( "dispatching: validatepattern" );
-            return processValidatePattern( params, definition, aditionalValues );
+            return processValidatePattern( params, definition, additionalValues );
         } else if ( name.equals( VALIDATELENGTH ) ) {
             LOG.trace( "dispatching: validatelength" );
-            return processValidateLength( params, definition, aditionalValues );
+            return processValidateLength( params, definition, additionalValues );
         } else if ( name.equals( MODIFY ) ) {
             LOG.trace( "dispatching: modify" );
-            return processModify( params, definition, aditionalValues );
+            return processModify( params, definition, additionalValues );
         } else if ( name.equals( REPLACE_STRING ) ) {
             LOG.trace( "dispatching: replaceString" );
-            return processReplaceString( params, definition, aditionalValues );
+            return processReplaceString( params, definition, additionalValues );
+        } else if (name.equals( CONCAT )) {
+            LOG.trace( "dispatching: concat" );
+            return processConcat( xPath, document, params, definition, additionalValues );
         } else {
             LOG.trace( "Method: " + name + " is not a valid conversion method!" );
         }
@@ -379,6 +395,35 @@ public class DataConversionService extends AbstractService {
             LOG.error( "Error while replacing String: " + e );
         }
         // TODO Auto-generated method stub
+        return null;
+    }
+
+    private String processConcat(
+            XPath xPath,
+            Document document,
+            String[] params,
+            MappingDefinition definition,
+            Map<String, String> aditionalValues ) {
+
+        if (xPath == null || document == null) {
+            LOG.error( "concat can only be executed on XML documents" );
+        }
+        try {
+            String value = aditionalValues.get( "$value" );
+            if ( !StringUtils.isEmpty( value ) ) {
+                StringBuilder sb = new StringBuilder( value );
+                if (params != null) {
+                    for (String parameter : params) {
+                        String xPathStatement = stripParameter( parameter );
+                        sb.append( xPath.evaluate( xPathStatement, document ) );
+                    }
+                }
+                
+                return sb.toString();
+            }
+        } catch ( Exception e ) {
+            LOG.error( "Error while replacing String: " + e );
+        }
         return null;
     }
 

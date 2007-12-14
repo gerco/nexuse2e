@@ -195,11 +195,11 @@ public class XMLDataMappingPipelet extends AbstractPipelet {
                     Node node = (Node) xPath.evaluate( mappingDefinition.getXpath(), document, XPathConstants.NODE );
                     if ( node != null ) {
                         if ( node instanceof Element ) {
-                            ( (Element) node ).setTextContent( mapData( ( (Element) node ).getTextContent(),
+                            ( (Element) node ).setTextContent( mapData( xPath, document, ( (Element) node ).getTextContent(),
                                     mappingDefinition ) );
                         } else if ( node instanceof Attr ) {
                             String nodeValue = ( (Attr) node ).getNodeValue();
-                            String resultValue = mapData(nodeValue, mappingDefinition );
+                            String resultValue = mapData(xPath, document, nodeValue, mappingDefinition );
                             ( (Attr) node ).setNodeValue( resultValue );
                         } else {
                             LOG.error( "Node type not recognized: " + node.getClass() );
@@ -218,18 +218,13 @@ public class XMLDataMappingPipelet extends AbstractPipelet {
         return result;
     }
 
-    /**
-     * @param sourceValue
-     * @param mappingDefinition
-     * @return
-     */
-    private String mapData( String sourceValue, MappingDefinition mappingDefinition ) {
+    private String mapData( XPath xPath, Document document, String sourceValue, MappingDefinition mappingDefinition ) {
         String result = null;
         
         
         if(mappingService != null) {
             LOG.debug( "calling mappingservice" );
-            String targetValue = mappingService.processConversion( sourceValue, mappingDefinition );
+            String targetValue = mappingService.processConversion( xPath, document, sourceValue, mappingDefinition );
             if(!StringUtils.isEmpty( targetValue )) {
                 return targetValue;
             } else {

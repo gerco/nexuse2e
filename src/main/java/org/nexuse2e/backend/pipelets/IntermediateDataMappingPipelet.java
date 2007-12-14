@@ -213,7 +213,7 @@ public class IntermediateDataMappingPipelet extends AbstractPipelet {
 
         if ( mappingService != null ) {
             // LOG.debug( "calling mappingservice" );
-            String targetValue = mappingService.processConversion( sourceValue, mappingDefinition );
+            String targetValue = mappingService.processConversion( null, null, sourceValue, mappingDefinition );
             if ( !StringUtils.isEmpty( targetValue ) ) {
                 return targetValue;
             } else {
