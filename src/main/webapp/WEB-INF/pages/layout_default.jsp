@@ -347,7 +347,7 @@
 	<div dojoType="ContentPane" layoutAlign="top" id="header">
 		<tiles:insert attribute="header"/>
 	</div>
-	<div dojoType="ContentPane" layoutAlign="left" style="overflow:auto;" id="navigator">
+	<div dojoType="ContentPane" layoutAlign="left" style="overflow:auto;" id="navigator" cacheContent="false" preventCache="true" useCache="false">
 		<div id="progressDialog" dojoType="Dialog">
 			<div id="dialogContent" style="background-color: #FFFFFF; padding: 20px;">
 				<div style="margin: 10px;">Please wait ...</div>
@@ -356,7 +356,7 @@
 		</div>
 		<tiles:insert attribute="menu"/>
 	</div>
-	<div dojoType="ContentPane" layoutAlign="client" style="overflow:true;" id="docpane" executeScripts="true" cacheContent="false">
+	<div dojoType="ContentPane" layoutAlign="client" style="overflow:true;" id="docpane" executeScripts="true" cacheContent="false" preventCache="true" useCache="false">
 		<tiles:insert attribute="document"/>
 	</div>	
 </div>

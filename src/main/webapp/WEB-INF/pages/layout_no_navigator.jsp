@@ -26,7 +26,7 @@
 	<div dojoType="ContentPane" layoutAlign="top" id="header">
 		<tiles:insert attribute="header"/>
 	</div>
-	<div dojoType="ContentPane" layoutAlign="client" id="docpane" executeScripts="true" cacheContent="false">
+	<div dojoType="ContentPane" layoutAlign="client" id="docpane" executeScripts="true" cacheContent="false" preventCache="true" useCache="false">
 		<tiles:insert attribute="document"/>
 	</div>
 </div>
