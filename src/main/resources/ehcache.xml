@@ -43,7 +43,7 @@
     overflowToDisk="true"
     />
 
-  <cache name="org.nexuse2e.pojo.MessagepayloadPojo"
+  <cache name="org.nexuse2e.pojo.MessagePayloadPojo"
     maxElementsInMemory="10000"
     eternal="false"
     timeToIdleSeconds="300"
