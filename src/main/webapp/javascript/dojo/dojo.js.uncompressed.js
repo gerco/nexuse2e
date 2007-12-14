@@ -2223,7 +2223,7 @@ dojo.lang.extend(dojo.io.Request, {
 	useCache: false,
 
 	/** Prevent the browser from caching this by adding a query string argument to the URL */
-	preventCache: false,
+	preventCache: true,
 
 	jsonFilter: function(value){
 		if(	(this.mimetype == "text/json-comment-filtered")||
@@ -4496,7 +4496,7 @@ dojo.io.XMLHTTPTransport = new function(){
 
 	var _cache = {}; // FIXME: make this public? do we even need to?
 	this.useCache = false; // if this is true, we'll cache unless kwArgs.useCache = false
-	this.preventCache = false; // if this is true, we'll always force GET requests to cache
+	this.preventCache = true; // if this is true, we'll always force GET requests to cache
 
 	// FIXME: Should this even be a function? or do we just hard code it in the next 2 functions?
 	function getCacheKey(url, query, method) {

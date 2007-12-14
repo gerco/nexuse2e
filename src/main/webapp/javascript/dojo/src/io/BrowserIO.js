@@ -190,7 +190,7 @@ if (!dj_undef("window")) {
 		var _this = this;
 		var _cache = {};
 		this.useCache = false;
-		this.preventCache = false;
+		this.preventCache = true;
 		function getCacheKey(url, query, method) {
 			return url + "|" + query + "|" + method.toLowerCase();
 		}

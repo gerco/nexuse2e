@@ -1300,7 +1300,7 @@ this.changeUrl=_142;
 }
 }
 };
-dojo.lang.extend(dojo.io.Request,{url:"",mimetype:"text/plain",method:"GET",content:undefined,transport:undefined,changeUrl:undefined,formNode:undefined,sync:false,bindSuccess:false,useCache:false,preventCache:false,jsonFilter:function(_143){
+dojo.lang.extend(dojo.io.Request,{url:"",mimetype:"text/plain",method:"GET",content:undefined,transport:undefined,changeUrl:undefined,formNode:undefined,sync:false,bindSuccess:false,useCache:false,preventCache:true,jsonFilter:function(_143){
 if((this.mimetype=="text/json-comment-filtered")||(this.mimetype=="application/json-comment-filtered")){
 var _144=_143.indexOf("/*");
 var _145=_143.lastIndexOf("*/");
@@ -2674,7 +2674,7 @@ dojo.io.XMLHTTPTransport=new function(){
 var _29e=this;
 var _29f={};
 this.useCache=false;
-this.preventCache=false;
+this.preventCache=true;
 function getCacheKey(url,_2a1,_2a2){
 return url+"|"+_2a1+"|"+_2a2.toLowerCase();
 }

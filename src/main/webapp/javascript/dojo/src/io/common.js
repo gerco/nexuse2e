@@ -31,7 +31,7 @@ dojo.io.Request = function (url, mimetype, transport, changeUrl) {
 		}
 	}
 };
-dojo.lang.extend(dojo.io.Request, {url:"", mimetype:"text/plain", method:"GET", content:undefined, transport:undefined, changeUrl:undefined, formNode:undefined, sync:false, bindSuccess:false, useCache:false, preventCache:false, jsonFilter:function (value) {
+dojo.lang.extend(dojo.io.Request, {url:"", mimetype:"text/plain", method:"GET", content:undefined, transport:undefined, changeUrl:undefined, formNode:undefined, sync:false, bindSuccess:false, useCache:false, preventCache:true, jsonFilter:function (value) {
 	if ((this.mimetype == "text/json-comment-filtered") || (this.mimetype == "application/json-comment-filtered")) {
 		var cStartIdx = value.indexOf("/*");
 		var cEndIdx = value.lastIndexOf("*/");

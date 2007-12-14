@@ -14,7 +14,7 @@ dojo.provide("dojo.io.ScriptSrcIO");
 dojo.require("dojo.io.BrowserIO");
 dojo.require("dojo.undo.browser");
 dojo.io.ScriptSrcTransport = new function () {
-	this.preventCache = false;
+	this.preventCache = true;
 	this.maxUrlLength = 1000;
 	this.inFlightTimer = null;
 	this.DsrStatusCodes = {Continue:100, Ok:200, Error:500};
