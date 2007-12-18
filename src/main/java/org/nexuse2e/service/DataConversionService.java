@@ -70,6 +70,17 @@ public class DataConversionService extends AbstractService {
 
     /**
      * Process a conversion operation.
+     * @param value The value to be converted.
+     * @param definition The mapping definition.
+     * @return The converted value.
+     */
+    public String processConversion( String value, MappingDefinition definition ) {
+
+        return processConversion( null, null, value, definition, null );
+    }
+
+    /**
+     * Process a conversion operation.
      * @param xPath The <code>XPath</code> object to be used for XPath statement lookups. Can be
      * <code>null</code> if not operating on an XML document.
      * @param document The XML document. Can be <code>null</code> if not operating on an XML document.
@@ -81,6 +92,19 @@ public class DataConversionService extends AbstractService {
             XPath xPath, Document document, String value, MappingDefinition definition ) {
 
         return processConversion( xPath, document, value, definition, null );
+    }
+    
+    /**
+     * Process a conversion operation.
+     * @param value The value to be converted
+     * @param definition The mapping definition.
+     * @param additionalValues Additional values that can be used for conversion operations.
+     * May be <code>null</code>.
+     * @return The converted value.
+     */
+    public String processConversion(
+            String value, MappingDefinition definition, Map<String, String> additionalValues ) {
+        return processConversion( null, null, value, definition, additionalValues );
     }
 
     /**
