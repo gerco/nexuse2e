@@ -76,7 +76,7 @@ public class FileSystemSavePipelet extends AbstractPipelet {
 
         fileNamePattern = (String) getParameter( FILE_NAME_PATTERN_PARAM_NAME );
         if ( StringUtils.isEmpty( fileNamePattern ) ) {
-            LOG.error( "Output file name pattern not defined, using default!" );
+            LOG.warn( "Output file name pattern not defined, using default!" );
             fileNamePattern = "${nexus.message.message}";
         }
 
