@@ -57,6 +57,7 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
@@ -192,17 +193,20 @@ public class XMLDataMappingPipelet extends AbstractPipelet {
                     LOG.debug( "def.Command: "+mappingDefinition.getCommand());
                     LOG.debug( "def.XPath: "+mappingDefinition.getXpath());
                     
-                    Node node = (Node) xPath.evaluate( mappingDefinition.getXpath(), document, XPathConstants.NODE );
-                    if ( node != null ) {
-                        if ( node instanceof Element ) {
-                            ( (Element) node ).setTextContent( mapData( xPath, document, ( (Element) node ).getTextContent(),
-                                    mappingDefinition ) );
-                        } else if ( node instanceof Attr ) {
-                            String nodeValue = ( (Attr) node ).getNodeValue();
-                            String resultValue = mapData(xPath, document, nodeValue, mappingDefinition );
-                            ( (Attr) node ).setNodeValue( resultValue );
-                        } else {
-                            LOG.error( "Node type not recognized: " + node.getClass() );
+                    NodeList nodes = (NodeList) xPath.evaluate( mappingDefinition.getXpath(), document, XPathConstants.NODESET );
+                    if (nodes != null && nodes.getLength() > 0) {
+                        for (int i = 0; i < nodes.getLength(); i++) {
+                            Node node = nodes.item( i );
+                            if ( node instanceof Element ) {
+                                ( (Element) node ).setTextContent( mapData( xPath, document, ( (Element) node ).getTextContent(),
+                                        mappingDefinition ) );
+                            } else if ( node instanceof Attr ) {
+                                String nodeValue = ( (Attr) node ).getNodeValue();
+                                String resultValue = mapData(xPath, document, nodeValue, mappingDefinition );
+                                ( (Attr) node ).setNodeValue( resultValue );
+                            } else {
+                                LOG.error( "Node type not recognized: " + node.getClass() );
+                            }
                         }
                     } else {
                         LOG.warn( "Could not find matching node for " + mappingDefinition.getXpath() );
