@@ -124,7 +124,9 @@ public class PartnerCertificateUpdateAction extends NexusE2EAction {
 
 
         List<CertificatePropertiesForm> certificateList = new ArrayList<CertificatePropertiesForm>();
-        form.setCertificateProperties( x509Certificate );
+        if (x509Certificate != null) {
+            form.setCertificateProperties( x509Certificate );
+        }
         
         form.setNxCertificateId( cert.getNxCertificateId() );
         form.setNxPartnerId( nxPartnerId );
