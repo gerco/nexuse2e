@@ -22,6 +22,7 @@ package org.nexuse2e.configuration;
 import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -733,10 +734,11 @@ public class ConfigurationAccessService {
         return validConfiguration;
     }
 
-    /**
-     * @param choreography
-     */
     public void updatePartner( PartnerPojo partner ) {
+        updatePartner( partner, true );
+    }
+
+    private void updatePartner( PartnerPojo partner, boolean applyConfiguration ) {
 
         try {
             PartnerPojo oldPartner = getPartnerByNxPartnerId( partner.getNxPartnerId() );
@@ -810,6 +812,8 @@ public class ConfigurationAccessService {
             
             getPartners( 0, null ).remove( oldPartner );
 
+            getCertificates( Constants.CERTIFICATE_TYPE_ALL, null ).removeAll( partner.getCertificates() );
+            
             engineConfig.deletePartnerInDB( partner );
         }
 
@@ -1194,6 +1198,7 @@ public class ConfigurationAccessService {
         return null;
     }
 
+
     /**
      * Removes the given certificate from the configuration.
      * @param certificate The certificate to be removed.
@@ -1202,6 +1207,11 @@ public class ConfigurationAccessService {
      * @throws NexusException if something else went wrong.
      */
     public void deleteCertificate( CertificatePojo certificate )
+    throws ReferencedCertificateException, NexusException {
+        deleteCertificate( certificate, true );
+    }
+    
+    private void deleteCertificate( CertificatePojo certificate, boolean applyConfiguration )
     throws ReferencedCertificateException, NexusException {
 
         // check if certificate is referenced by any connection
@@ -1226,7 +1236,9 @@ public class ConfigurationAccessService {
         }
         
         engineConfig.deleteCertificateInDB( certificate );
-        applyConfiguration();
+        if (applyConfiguration) {
+            applyConfiguration();
+        }
     }
 
     /**
@@ -1236,14 +1248,21 @@ public class ConfigurationAccessService {
      * one or more connections.
      * @throws NexusException if something else went wrong.
      */
-    public void deleteCertificates( List<CertificatePojo> certificates )
+    public void deleteCertificates( Collection<CertificatePojo> certificates )
+    throws NexusException, ReferencedCertificateException {
+        deleteCertificates( certificates, true );
+    }
+
+    public void deleteCertificates( Collection<CertificatePojo> certificates, boolean applyConfiguration )
     throws NexusException, ReferencedCertificateException {
 
         for (CertificatePojo certificate : certificates) {
-            deleteCertificate( certificate );
+            deleteCertificate( certificate, false );
         }
 
-        applyConfiguration();
+        if (applyConfiguration) {
+            applyConfiguration();
+        }
     }
 
     /**
