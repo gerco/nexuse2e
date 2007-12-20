@@ -41,17 +41,17 @@ import org.hibernate.usertype.UserType;
 
 public class BinaryBlobType implements UserType {
 
-    private static final String   ORACLE_DRIVER_NAME          = "Oracle JDBC driver";
-    private static final int      ORACLE9_DRIVER_MAJOR_VERSION = 9;
+    private static final String   ORACLE_DRIVER_NAME            = "Oracle JDBC driver";
+    private static final int      ORACLE9_DRIVER_MAJOR_VERSION  = 9;
     private static final int      ORACLE10_DRIVER_MAJOR_VERSION = 10;
-    private static final int      ORACLE_DRIVER_MINOR_VERSION = 0;
+    private static final int      ORACLE_DRIVER_MINOR_VERSION   = 0;
 
-    private static final String   ISERIES_DRIVER_NAME         = "AS/400 Toolbox for Java JDBC Driver";
+    private static final String   ISERIES_DRIVER_NAME           = "AS/400 Toolbox for Java JDBC Driver";
 
-    private static final String   MICROSOFT_DRIVER_NAME       = "SQLServer";
-    private static final String   MYSQL_DRIVER_NAME           = "MySQL-AB JDBC Driver";
+    private static final String   MICROSOFT_DRIVER_NAME         = "SQLServer";
+    private static final String   MYSQL_DRIVER_NAME             = "MySQL-AB JDBC Driver";
 
-    private Map<String, Class<?>> map                         = new HashMap<String, Class<?>>();
+    private Map<String, Class<?>> map                           = new HashMap<String, Class<?>>();
 
     public BinaryBlobType() {
 
@@ -104,13 +104,9 @@ public class BinaryBlobType implements UserType {
 
         // LOG.trace( "Driver: " + dbMetaData.getDriverName() );
 
-        
-        
-        
         if ( value != null ) {
             if ( ORACLE_DRIVER_NAME.equalsIgnoreCase( dbMetaData.getDriverName() ) ) {
-                
-                
+
                 if ( ( dbMetaData.getDriverMajorVersion() == ORACLE9_DRIVER_MAJOR_VERSION )
                         && ( dbMetaData.getDriverMinorVersion() >= ORACLE_DRIVER_MINOR_VERSION ) ) {
                     try {
@@ -136,6 +132,11 @@ public class BinaryBlobType implements UserType {
                         Field durationSessionField = oracleBlobClass.getField( "DURATION_SESSION" );
                         Object arglist[] = new Object[3];
                         Connection conn = st.getConnection();
+
+                        // Unwrap pooled connection
+                        if ( conn instanceof org.apache.commons.dbcp.PoolableConnection ) {
+                            conn = ( (org.apache.commons.dbcp.PoolableConnection) conn ).getDelegate();
+                        }
 
                         // Make sure connection object is right type
                         if ( !oracleConnectionClass.isAssignableFrom( conn.getClass() ) ) {
@@ -201,11 +202,11 @@ public class BinaryBlobType implements UserType {
                     } catch ( IOException e ) {
                         throw new HibernateException( e.getMessage() );
                     }
-                } else if(( dbMetaData.getDriverMajorVersion() == ORACLE10_DRIVER_MAJOR_VERSION )
-                        && ( dbMetaData.getDriverMinorVersion() >= ORACLE_DRIVER_MINOR_VERSION )) {
+                } else if ( ( dbMetaData.getDriverMajorVersion() == ORACLE10_DRIVER_MAJOR_VERSION )
+                        && ( dbMetaData.getDriverMinorVersion() >= ORACLE_DRIVER_MINOR_VERSION ) ) {
                     st.setBytes( index, (byte[]) value );
                 } else {
-                    throw new HibernateException( "No BLOBS support. Use Oracle âdriver version "
+                    throw new HibernateException( "No BLOBS support. Use Oracle driver version "
                             + ORACLE9_DRIVER_MAJOR_VERSION + ", minor " + ORACLE_DRIVER_MINOR_VERSION + " or higher!" );
                 }
             } else if ( ISERIES_DRIVER_NAME.equalsIgnoreCase( dbMetaData.getDriverName() )
