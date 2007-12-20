@@ -52,6 +52,7 @@ import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ComponentPojo;
+import org.nexuse2e.pojo.ConnectionPojo;
 import org.nexuse2e.pojo.ConversationPojo;
 import org.nexuse2e.pojo.GenericParamPojo;
 import org.nexuse2e.pojo.LoggerPojo;
@@ -552,6 +553,26 @@ public class EngineConfiguration {
             throw ie;
         }
         configDao.deletePartner( partner, null, null );
+    }
+
+    /**
+     * @param connection
+     * @throws NexusException
+     */
+    public void deleteConnectionInDB( ConnectionPojo connection ) throws NexusException {
+
+        if ( connection == null ) {
+            return;
+        }
+        ConfigDAO configDao = null;
+        try {
+            configDao = (ConfigDAO) Engine.getInstance().getDao( "configDao" );
+        } catch ( Exception e ) {
+            NexusException ie = new NexusException( e );
+            ie.setStackTrace( e.getStackTrace() );
+            throw ie;
+        }
+        configDao.deleteConnection( connection, null, null );
     }
 
     /**

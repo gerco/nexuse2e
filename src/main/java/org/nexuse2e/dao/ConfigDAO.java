@@ -19,6 +19,7 @@
  */
 package org.nexuse2e.dao;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -28,6 +29,7 @@ import org.nexuse2e.NexusException;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ComponentPojo;
+import org.nexuse2e.pojo.ConnectionPojo;
 import org.nexuse2e.pojo.GenericParamPojo;
 import org.nexuse2e.pojo.LoggerPojo;
 import org.nexuse2e.pojo.MappingPojo;
@@ -103,13 +105,25 @@ public class ConfigDAO extends BasicDAO {
     public void deletePartner( PartnerPojo partner, Session session, Transaction transaction ) throws NexusException {
 
         if ( partner != null ) {
-            if (!partner.getConnections().isEmpty()) {
-                partner.getConnections().clear();
-            }
-            if (!partner.getCertificates().isEmpty()) {
-                partner.getCertificates().clear();
-            }
-            deleteRecord( partner, session, transaction );
+            ArrayList<Object> list = new ArrayList<Object>();
+            list.addAll( partner.getConnections() );
+            list.addAll( partner.getCertificates() );
+            list.add( partner );
+            deleteRecords( list, session, transaction );
+        }
+    }
+
+    /**
+     * @param connection
+     * @param session
+     * @param transaction
+     * @throws NexusException
+     */
+    public void deleteConnection(
+            ConnectionPojo connection, Session session, Transaction transaction ) throws NexusException {
+
+        if ( connection != null ) {
+            deleteRecord( connection, session, transaction );
         }
     }
 

@@ -205,6 +205,61 @@ public class BasicDAO extends HibernateDaoSupport {
 
         return record;
     } // deleteRecordById
+    
+    /**
+     * Convenience method for deleting a single record.
+     * @param record Instance of the record to delete.
+     * @throws CannotDeleteException
+     * @throws HibernateException
+     */
+    public void deleteRecords(
+            List<? extends Object> records, Session session, Transaction transaction ) throws NexusException {
+
+        NexusException nexusException = null;
+        boolean extSessionFlag = true;
+        boolean extTransactionFlag = true;
+        try {
+
+            if ( session == null ) {
+                session = getDBSession();
+                extSessionFlag = false;
+            }
+            try {
+                if ( transaction == null ) {
+                    transaction = session.beginTransaction();
+                    extTransactionFlag = false;
+                }
+
+                for (Object record : records) {
+                    session.delete( record );
+                }
+
+                if ( !extTransactionFlag ) {
+                    transaction.commit();
+                }
+            } catch ( HibernateException e ) {
+                if ( transaction != null && !extTransactionFlag ) {
+                    transaction.rollback();
+                }
+                e.printStackTrace();
+                // record does not exist
+                nexusException = new NexusException( e );
+            } finally {
+                if ( !extSessionFlag ) {
+                    releaseDBSession( session );
+                }
+            }
+
+        } catch ( HibernateException e ) {
+            e.printStackTrace();
+            // record does not exist
+            nexusException = new NexusException( e );
+        } finally {
+            if ( nexusException != null ) {
+                throw nexusException;
+            }
+        }
+    } // deleteRecordById
 
     /**
      * Convenience method for saving a new instance.

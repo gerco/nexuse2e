@@ -821,6 +821,19 @@ public class ConfigurationAccessService {
     }
 
     /**
+     * Removes a connection from the configuration.
+     * @param connection The connection to be removed.
+     * @throws NexusException if something else went wrong.
+     */
+    public void deleteConnection( ConnectionPojo connection ) throws NexusException {
+        
+        connection.getPartner().getConnections().remove( connection );
+        engineConfig.deleteConnectionInDB( connection );
+
+        applyConfiguration();
+    }
+
+    /**
      * @param component
      */
     public void updateComponent( ComponentPojo component ) {

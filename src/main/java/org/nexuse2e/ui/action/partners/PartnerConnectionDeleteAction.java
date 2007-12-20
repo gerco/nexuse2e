@@ -72,8 +72,7 @@ public class PartnerConnectionDeleteAction extends NexusE2EAction {
                     partnerId );
             ConnectionPojo connection = Engine.getInstance().getActiveConfigurationAccessService()
                     .getConnectionFromPartnerByNxConnectionId( partner, form.getNxConnectionId() );
-            partner.getConnections().remove( connection );
-            Engine.getInstance().getActiveConfigurationAccessService().updatePartner( partner );
+            Engine.getInstance().getActiveConfigurationAccessService().deleteConnection( connection );
         } catch ( NexusException e ) {
             ActionMessage errorMessage = new ActionMessage( "generic.error", e.getMessage() );
             errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );

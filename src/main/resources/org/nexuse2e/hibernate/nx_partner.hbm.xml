@@ -96,7 +96,7 @@
         	<one-to-many class="org.nexuse2e.pojo.CertificatePojo"/>
 		</set>
 		
-		<set name="connections" inverse="true" lazy="false" cascade="all,delete-orphan">
+		<set name="connections" inverse="true" lazy="false" cascade="save-update">
         	<key column="nx_partner_id"/> 
         	<one-to-many class="org.nexuse2e.pojo.ConnectionPojo"/>
 		</set>
