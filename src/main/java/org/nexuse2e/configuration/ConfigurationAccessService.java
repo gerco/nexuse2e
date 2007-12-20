@@ -1614,7 +1614,10 @@ public class ConfigurationAccessService {
         }
 
         for (MappingPojo mapping : addMappings) {
-            MappingPojo oldMapping = getMappingByNxMappingId( mapping.getNxMappingId() );
+            MappingPojo oldMapping = null;
+            if (mapping.getNxMappingId() != 0) {
+                oldMapping = getMappingByNxMappingId( mapping.getNxMappingId() );
+            }
             if ( oldMapping != null ) {
                 getMappings( null ).remove( oldMapping );
             }
