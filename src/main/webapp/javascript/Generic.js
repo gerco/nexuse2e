@@ -8,7 +8,7 @@ function checkKey(e) {
   if (e.which) {
     code = e.which;
   } else if (e.keyCode) {
-    code = Ereignis.keyCode;
+    code = e.keyCode;
   }
   if (code == 13) {
     return false;
