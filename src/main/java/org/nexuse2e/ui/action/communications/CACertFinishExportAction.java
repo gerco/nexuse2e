@@ -27,12 +27,12 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.codehaus.xfire.util.Base64;
 import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.pojo.CertificatePojo;
@@ -48,6 +48,8 @@ import org.nexuse2e.util.EncryptionUtil;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class CACertFinishExportAction extends NexusE2EAction {
+
+    private static Logger LOG = Logger.getLogger( CACertFinishExportAction.class );
 
     /* (non-Javadoc)
      * @see com.tamgroup.nexus.e2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages)
@@ -68,33 +70,41 @@ public class CACertFinishExportAction extends NexusE2EAction {
                 path = form.getCertficatePath();
             }
 
+            LOG.debug( "CA certificate export path: " + path );
+            
             CertificatePojo cPojo = Engine.getInstance().getActiveConfigurationAccessService()
-            .getFirstCertificateByType( Constants.CERTIFICATE_TYPE_CACERT_METADATA, true );
+                    .getFirstCertificateByType( Constants.CERTIFICATE_TYPE_CACERT_METADATA, true );
             String password = "changeit";
             if ( cPojo == null ) {
-                System.out.println( "metadata not found!" );
+                LOG.error( "Error retrieving CA meta data!" );
             } else {
                 password = EncryptionUtil.decryptString( cPojo.getPassword() );
             }
 
             try {
                 File certFile = new File( path );
+                LOG.trace( "Created CA keystore file handle" );
                 FileOutputStream fos = new FileOutputStream( certFile );
 
-                List<CertificatePojo> caCertificates = Engine.getInstance().getActiveConfigurationAccessService().getCertificates(
-                        Constants.CERTIFICATE_TYPE_CA, null );
+                List<CertificatePojo> caCertificates = Engine.getInstance().getActiveConfigurationAccessService()
+                        .getCertificates( Constants.CERTIFICATE_TYPE_CA, null );
 
                 KeyStore jks = CertificateUtil.generateKeyStoreFromPojos( caCertificates );
+                LOG.trace( "Created CA keystore" );
 
                 jks.store( fos, new String( password ).toCharArray() );
                 fos.flush();
                 fos.close();
             } catch ( Exception e ) {
-                
+                e.printStackTrace();
+                LOG.error( "Exception saving keystore: " + e );
+
                 ActionMessage errorMessage = new ActionMessage( "generic.error", e );
                 errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
-            }catch ( Error e ) {
-                
+            } catch ( Error e ) {
+                e.printStackTrace();
+                LOG.error( "Error saving keystore: " + e );
+
                 ActionMessage errorMessage = new ActionMessage( "generic.error", e );
                 errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
             }
