@@ -80,17 +80,19 @@ public class CACertFinishExportAction extends NexusE2EAction {
             } else {
                 password = EncryptionUtil.decryptString( cPojo.getPassword() );
             }
+            LOG.trace( "Using password: " + password );
 
             try {
                 File certFile = new File( path );
                 LOG.trace( "Created CA keystore file handle" );
                 FileOutputStream fos = new FileOutputStream( certFile );
+                LOG.trace( "Created CA keystore output stream: " + fos );
 
                 List<CertificatePojo> caCertificates = Engine.getInstance().getActiveConfigurationAccessService()
                         .getCertificates( Constants.CERTIFICATE_TYPE_CA, null );
 
                 KeyStore jks = CertificateUtil.generateKeyStoreFromPojos( caCertificates );
-                LOG.trace( "Created CA keystore" );
+                LOG.trace( "Created CA keystore: " + jks );
 
                 jks.store( fos, new String( password ).toCharArray() );
                 fos.flush();
