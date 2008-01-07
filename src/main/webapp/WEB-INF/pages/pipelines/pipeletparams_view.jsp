@@ -116,8 +116,19 @@
 					<tr>
 						<td class="NEXUSValue">${parameter.label}</td>
 						<td class="NEXUSValue"><nexus:select name="${key}">
-							<nexus:options collection="collection" value="${parameter.value}"
-								property="name" labelProperty="name" />
+							<logic:iterate id="service" name="collection">
+								<%
+								org.nexuse2e.pojo.PipeletParamPojo prm = (org.nexuse2e.pojo.PipeletParamPojo) pageContext.getAttribute( "parameter" );
+								org.nexuse2e.pojo.ServicePojo srv = (org.nexuse2e.pojo.ServicePojo) pageContext.getAttribute( "service" );
+								if (!(prm.getParameterDescriptor().getDefaultValue() instanceof Class) ||
+								        (srv.getComponent() != null
+								                && srv.getComponent().isSubtypeOf( (Class<?>) prm.getParameterDescriptor().getDefaultValue() ))) {
+								%>
+								<nexus:option name="service" value="${parameter.value}" property="name" labelProperty="name" />
+								<%
+								}
+								%>
+							</logic:iterate>
 						</nexus:select></td>
 						<td class="NEXUSValue">${parameter.parameterDescriptor.description}</td>
 					</tr>

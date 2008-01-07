@@ -208,6 +208,31 @@
       <rtexprvalue>false</rtexprvalue>
     </attribute>
   </tag>
+  <tag>
+    <name>option</name>
+    <tag-class>org.nexuse2e.ui.taglib.Option</tag-class>
+    <description>This tag can be placed in a select tag</description>
+    <attribute>
+      <name>name</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>value</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>property</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>labelProperty</name>
+      <required>true</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+  </tag>
   <!-- display "help" and "login"/"logout" bar -->
   <tag>
     <name>helpBar</name>
