@@ -21,6 +21,12 @@ package org.nexuse2e.pojo;
 
 import java.util.Date;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlType;
+
+@XmlType(name = "GenericParamType")
+@XmlAccessorType(XmlAccessType.NONE)
 public class GenericParamPojo implements java.io.Serializable {
 
     /**

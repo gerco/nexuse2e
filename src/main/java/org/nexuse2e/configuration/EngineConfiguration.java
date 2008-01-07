@@ -29,6 +29,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -74,6 +84,9 @@ import org.springframework.context.support.ApplicationObjectSupport;
  * @author gesch
  *
  */
+@XmlRootElement(name = "NEXUSe2eConfiguration")
+@XmlType(name = "NEXUSe2eConfigurationType")
+@XmlAccessorType(XmlAccessType.NONE)
 public class EngineConfiguration {
 
     private static Logger                               LOG                       = Logger
@@ -95,37 +108,51 @@ public class EngineConfiguration {
     /**
      * contains the ChoreographyPojos incl. ActionPojos
      */
+    @XmlElementWrapper(name = "Choreographies")
+    @XmlElement(name = "Choreography")
     private List<ChoreographyPojo>                      choreographies            = null;
 
     /**
      * contains all certicates and requests. 
      */
+    @XmlElementWrapper(name = "Certificates")
+    @XmlElement(name = "Certificate")
     private List<CertificatePojo>                       certificates              = null;
 
     /**
      * contains all PartnerPojos incl. partnerdependent Certificate(pojos)s, Connection(pojo)s and Contact(pojo)s
      */
+    @XmlElementWrapper(name = "Partners")
+    @XmlElement(name = "Partner")
     private List<PartnerPojo>                           partners                  = null;
 
     /**
      * List that contains all frontend <code>PipelinePojo<code> instances.
      */
+    @XmlElementWrapper(name = "FrontendPipelines")
+    @XmlElement(name = "Pipeline")
     private List<PipelinePojo>                          frontendPipelineTemplates = null;
 
     /**
      * List that contains all backend <code>PipelinePojo<code> instances.
      */
+    @XmlElementWrapper(name = "BackendPipeline")
+    @XmlElement(name = "Pipeline")
     private List<PipelinePojo>                          backendPipelineTemplates  = null;
 
     /**
      /**
      * List that contains all <code>TRPPojo<code> instances.
      */
+    @XmlElementWrapper(name = "TRPs")
+    @XmlElement(name = "TRP")
     private List<TRPPojo>                               trps                      = null;
 
     /**
      * List that contains all <code>ComponentPojo<code> instances.
      */
+    @XmlElementWrapper(name = "Components")
+    @XmlElement(name = "Component")
     private List<ComponentPojo>                         components                = null;
 
     /**
@@ -202,6 +229,8 @@ public class EngineConfiguration {
         initializeLogAppenders();
 
         createConfiguration();
+
+        exportToXML();
     } // init
 
     private void initLoggerCategories() {
@@ -494,6 +523,21 @@ public class EngineConfiguration {
         }
         configDao.releaseDBSession( session );
     } // loadDataFromDB
+
+    private void exportToXML() {
+
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance( EngineConfiguration.class );
+            Marshaller marshaller = jaxbContext.createMarshaller();
+            marshaller.setProperty( Marshaller.JAXB_FORMATTED_OUTPUT, true );
+            System.out.println( "********************************************" );
+            marshaller.marshal( this, System.out );
+            System.out.println( "********************************************" );
+        } catch ( JAXBException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 
     /**
      * @param pipeline
@@ -1009,7 +1053,7 @@ public class EngineConfiguration {
 
                     pos = 0;
                     int pipeletCount = inboundPipelinePojo.getPipelets().size();
-                    pipelets = new Pipelet[pipeletCount > 0 ? pipeletCount - 1: 0];
+                    pipelets = new Pipelet[pipeletCount > 0 ? pipeletCount - 1 : 0];
 
                     for ( PipeletPojo pipeletPojo : inboundPipelinePojo.getPipelets() ) {
                         Pipelet pipelet;

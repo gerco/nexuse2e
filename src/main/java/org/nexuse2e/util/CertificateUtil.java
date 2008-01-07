@@ -65,6 +65,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.bouncycastle.asn1.DERBMPString;
 import org.bouncycastle.asn1.DERObjectIdentifier;
@@ -493,8 +494,12 @@ public class CertificateUtil {
             jks.load( null, null );
             if ( certificates != null ) {
                 for ( String alias : certificates.keySet() ) {
-                    X509Certificate certificate = certificates.get( alias );
-                    jks.setCertificateEntry( alias, certificate );
+                    if ( !StringUtils.isEmpty( alias ) ) {
+                        X509Certificate certificate = certificates.get( alias );
+                        if ( certificate != null ) {
+                            jks.setCertificateEntry( alias, certificate );
+                        }
+                    }
                 }
             }
         } catch ( Exception e ) {
