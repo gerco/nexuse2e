@@ -168,6 +168,8 @@ public class SmtpSender extends AbstractService implements SenderAware {
 
                 // Send the message
                 sendMessage( transport, mimeMsg, new Address[] { addr} );
+                
+                transport.close();
             } else {
                 LOG.error( "Cannot connect" );
             }
