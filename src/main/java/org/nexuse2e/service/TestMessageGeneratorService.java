@@ -81,7 +81,7 @@ public class TestMessageGeneratorService extends AbstractService implements Sche
     public void fillParameterMap( Map<String, ParameterDescriptor> parameterMap ) {
 
         parameterMap.put( SCHEDULING_SERVICE, new ParameterDescriptor( ParameterType.SERVICE, "Scheduling Service",
-                "The name of the service that shall be used for scheduling.", "" ) );
+                "The name of the service that shall be used for scheduling.", SchedulingService.class ) );
         parameterMap.put( DIRECTORY, new ParameterDescriptor( ParameterType.STRING, "Directory",
                 "The directory to scan for files.", "" ) );
         parameterMap.put( INTERVAL, new ParameterDescriptor( ParameterType.STRING, "Interval",
@@ -96,7 +96,7 @@ public class TestMessageGeneratorService extends AbstractService implements Sche
                 "File extension to limit processing to.", "" ) );
 
         parameterMap.put( MAPPING_SERVICE, new ParameterDescriptor( ParameterType.SERVICE, "Mapping Service",
-                "The Mapping and Conversion Service.", null ) );
+                "The Mapping and Conversion Service.", DataConversionService.class ) );
     }
 
     /* (non-Javadoc)

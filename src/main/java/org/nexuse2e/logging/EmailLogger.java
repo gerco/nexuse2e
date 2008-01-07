@@ -70,7 +70,7 @@ public class EmailLogger extends AppenderSkeleton implements LogAppender {
         parameters = new HashMap<String, Object>();
         parameterMap = new LinkedHashMap<String, ParameterDescriptor>();
         parameterMap.put( SERVICE_PARAM_NAME, new ParameterDescriptor( ParameterType.SERVICE, "Service",
-                "The name of the SMTP service that shall be used by the sender", "" ) );
+                "The name of the SMTP service that shall be used by the sender", SmtpSender.class ) );
         parameterMap.put( RECIPIENT_PARAM, new ParameterDescriptor( ParameterType.STRING, "Recipient",
                 "The recipient(s) of the email", "" ) );
         parameterMap.put( SUBJECT_PARAM, new ParameterDescriptor( ParameterType.STRING, "Subject",

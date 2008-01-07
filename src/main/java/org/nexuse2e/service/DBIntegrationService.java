@@ -64,9 +64,9 @@ public class DBIntegrationService extends AbstractService implements SchedulerCl
     public void fillParameterMap( Map<String, ParameterDescriptor> parameterMap ) {
 
         parameterMap.put( DATABASESERVICE, new ParameterDescriptor( ParameterType.SERVICE, "Database Service",
-                "The name of the service that shall be used for database connection pooling", "" ) );
+                "The name of the service that shall be used for database connection pooling", DatabaseService.class ) );
         parameterMap.put( SCHEDULINGSERVICE, new ParameterDescriptor( ParameterType.SERVICE, "Scheduling Service",
-                "The name of the service that shall be used for time schedule", "" ) );
+                "The name of the service that shall be used for time schedule", SchedulingService.class ) );
         parameterMap.put( TABLENAME, new ParameterDescriptor( ParameterType.STRING, "Table name",
                 "The name of the table used for backend integration", "Payloads" ) );
         parameterMap.put( CHOREOGRAPHY, new ParameterDescriptor( ParameterType.STRING, "Choreography",

@@ -197,4 +197,15 @@ public class ComponentPojo implements java.io.Serializable {
         return nxComponentId;
     }
 
+    public boolean isSubtypeOf( Class<?> clazz ) {
+        if (clazz == null) {
+            return false;
+        }
+        try {
+            Class<?> thisClazz = Class.forName( getClassName() );
+            return (clazz.isAssignableFrom( thisClazz ));
+        } catch (Exception ignored) {
+        }
+        return false;
+    }
 }

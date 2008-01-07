@@ -85,7 +85,7 @@ public class DirectoryScannerService extends AbstractService implements Schedule
     public void fillParameterMap( Map<String, ParameterDescriptor> parameterMap ) {
 
         parameterMap.put( SCHEDULING_SERVICE, new ParameterDescriptor( ParameterType.SERVICE, "Scheduling Service",
-                "The name of the service that shall be used for scheduling.", "" ) );
+                "The name of the service that shall be used for scheduling.", SchedulingService.class ) );
         parameterMap.put( DIRECTORY, new ParameterDescriptor( ParameterType.STRING, "Directory",
                 "The directory to scan for files.", "" ) );
         parameterMap.put( BACKUP_DIRECTORY, new ParameterDescriptor( ParameterType.STRING, "Backup Directory",
@@ -102,7 +102,7 @@ public class DirectoryScannerService extends AbstractService implements Schedule
                 "File extension to limit processing to.", "" ) );
 
         parameterMap.put( MAPPING_SERVICE, new ParameterDescriptor( ParameterType.SERVICE, "Mapping Service",
-                "The Mapping and Conversion Service.", null ) );
+                "The Mapping and Conversion Service.", DataConversionService.class ) );
     }
 
     /* (non-Javadoc)

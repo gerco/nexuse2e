@@ -73,7 +73,7 @@ public class ParameterBasedRoutingPipelet extends AbstractPipelet {
     public ParameterBasedRoutingPipelet() {
 
         parameterMap.put( MAPPING_SERVICE, new ParameterDescriptor( ParameterType.SERVICE, "Data Mapping Service",
-                "The Data Mapping and Conversion Service", null ) );
+                "The Data Mapping and Conversion Service", DataConversionService.class ) );
         parameterMap.put( PARTNER_SPECIFIC, new ParameterDescriptor( ParameterType.BOOLEAN,
                 "Partner Specific Configuration", "Partner Specific Configuration", Boolean.FALSE ) );
         parameterMap.put( ROUTING_DEFINITION, new ParameterDescriptor( ParameterType.STRING,

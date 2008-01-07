@@ -86,7 +86,7 @@ public class XMLDataMappingPipelet extends AbstractPipelet {
         parameterMap.put( CONFIG_FILE, new ParameterDescriptor( ParameterType.STRING, "Configuration Path",
                 "Path to configuration file", "" ) );
         parameterMap.put( MAPPING_SERVICE, new ParameterDescriptor( ParameterType.SERVICE, "Data Mapping Service",
-                "The Data Mapping and Conversion Service", null ) );
+                "The Data Mapping and Conversion Service", DataConversionService.class ) );
     }
 
     /* (non-Javadoc)

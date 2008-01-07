@@ -19,8 +19,6 @@
  */
 package org.nexuse2e.ui.taglib;
 
-import java.util.Collection;
-
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
@@ -28,28 +26,27 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 import org.apache.commons.beanutils.BeanUtils;
 
 /**
- * This tag renders a list of <code>&lt;option&gt;</code> HTML tags
- * from a collection bean.
+ * This tag renders a single <code>&lt;option&gt;</code> HTML tag from a bean.
  * 
  * @author jonas.reese
  */
-public class Options extends BodyTagSupport {
+public class Option extends BodyTagSupport {
 
     private static final long serialVersionUID = 1L;
 
-    private String            collection;
+    private String            name;
     private String            value;
     private String            property;
     private String            labelProperty;
 
-    public String getCollection() {
+    public String getName() {
 
-        return collection;
+        return name;
     }
 
-    public void setCollection( String collection ) {
+    public void setName( String name ) {
 
-        this.collection = collection;
+        this.name = name;
     }
 
     public String getLabelProperty() {
@@ -87,29 +84,27 @@ public class Options extends BodyTagSupport {
     public int doStartTag() throws JspException {
 
         JspWriter out = pageContext.getOut();
-        Collection<?> collectionBean = (Collection<?>) pageContext.getAttribute( collection );
-        if (collectionBean == null) {
-            collectionBean = (Collection<?>) pageContext.getRequest().getAttribute( collection );
+        Object bean = pageContext.getAttribute( name );
+        if (bean == null) {
+            bean = pageContext.getRequest().getAttribute( name );
         }
-        for ( Object bean : collectionBean ) {
-            try {
-                Object valObj = BeanUtils.getProperty( bean, property );
-                out.print( "<option value=\"" );
-                out.print( valObj );
-                out.print( "\"" );
-                if ( value.equals( valObj.toString() ) ) {
-                    out.print( " selected" );
-                }
-                out.print( ">" );
-                if ( labelProperty != null ) {
-                    out.print( BeanUtils.getProperty( bean, labelProperty ) );
-                } else {
-                    out.print( bean );
-                }
-                out.println( "</option>" );
-            } catch ( Exception e ) {
-                throw new JspException( e );
+        try {
+            Object valObj = BeanUtils.getProperty( bean, property );
+            out.print( "<option value=\"" );
+            out.print( valObj );
+            out.print( "\"" );
+            if ( value.equals( valObj.toString() ) ) {
+                out.print( " selected" );
             }
+            out.print( ">" );
+            if ( labelProperty != null ) {
+                out.print( BeanUtils.getProperty( bean, labelProperty ) );
+            } else {
+                out.print( bean );
+            }
+            out.println( "</option>" );
+        } catch ( Exception e ) {
+            throw new JspException( e );
         }
 
         return EVAL_PAGE;

@@ -75,7 +75,7 @@ public class TransportReceiver implements Pipelet, ProtocolSpecific {
         parameters = new HashMap<String, Object>();
         parameterDescriptors = new LinkedHashMap<String, ParameterDescriptor>();
         parameterDescriptors.put( SERVICE_PARAM_NAME, new ParameterDescriptor( ParameterType.SERVICE, "Service",
-                "The name of the service that shall be used by the receiver", "" ) );
+                "The name of the service that shall be used by the receiver", ReceiverAware.class ) );
         /*
         ListParameter communicationProtocolIdDropdown = new ListParameter();
         communicationProtocolIdDropdown.addElement( "EBXML", "ebxml" );

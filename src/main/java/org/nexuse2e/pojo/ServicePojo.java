@@ -220,5 +220,4 @@ public class ServicePojo implements java.io.Serializable {
     
         this.autostart = autostart;
     }
-
 }

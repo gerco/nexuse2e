@@ -62,7 +62,8 @@ public class ParameterDescriptor implements Serializable {
         this.description = description;
         this.defaultValue = defaultValue;
         this.updater = null;
-        if ( defaultValue != null && !parameterType.getType().isInstance( defaultValue ) ) {
+        if ( defaultValue != null && parameterType != ParameterType.SERVICE
+                && !parameterType.getType().isInstance( defaultValue ) ) {
             throw new ClassCastException( "defaultValue for parameter: " + label + ", type " + parameterType
                     + " must be instanceof " + parameterType.getType() );
         }
