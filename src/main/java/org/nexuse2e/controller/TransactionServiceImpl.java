@@ -142,7 +142,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByPartnerId(
                 partnerId );
-        if (partner == null) {
+        if ( partner == null ) {
             return null;
         }
 
@@ -154,9 +154,9 @@ public class TransactionServiceImpl implements TransactionService {
     /* (non-Javadoc)
      * @see org.nexuse2e.controller.TransactionService#getConversationsForReport(java.lang.String, int, int, java.lang.String, java.util.Date, java.util.Date, int, int, int, boolean)
      */
-    public List<ConversationPojo> getConversationsForReport( String status, int nxChoreographyId, int nxPartnerId, String conversationId,
-            Date start, Date end, int itemsPerPage, int page, int field, boolean ascending, Session session,
-            Transaction transaction ) throws NexusException {
+    public List<ConversationPojo> getConversationsForReport( String status, int nxChoreographyId, int nxPartnerId,
+            String conversationId, Date start, Date end, int itemsPerPage, int page, int field, boolean ascending,
+            Session session, Transaction transaction ) throws NexusException {
 
         TransactionDAO transactionDao;
         try {
@@ -214,9 +214,9 @@ public class TransactionServiceImpl implements TransactionService {
     /* (non-Javadoc)
      * @see org.nexuse2e.controller.TransactionService#getMessagesForReport(java.lang.String, int, int, java.lang.String, java.lang.String, java.lang.String, java.util.Date, java.util.Date, int, int, int, boolean)
      */
-    public List<MessagePojo> getMessagesForReport( String status, int nxChoreographyId, int nxPartnerId, String conversationId,
-            String messageId, String type, Date start, Date end, int itemsPerPage, int page, int field,
-            boolean ascending ) throws NexusException {
+    public List<MessagePojo> getMessagesForReport( String status, int nxChoreographyId, int nxPartnerId,
+            String conversationId, String messageId, String type, Date start, Date end, int itemsPerPage, int page,
+            int field, boolean ascending ) throws NexusException {
 
         TransactionDAO transactionDao;
         try {
@@ -461,7 +461,13 @@ public class TransactionServiceImpl implements TransactionService {
      */
     public void storeTransaction( ConversationPojo conversationPojo, MessagePojo messagePojo ) throws NexusException {
 
-        LOG.debug( "storeTransaction: " + conversationPojo.getConversationId() + " - " + messagePojo.getMessageId() );
+        if ( ( conversationPojo != null ) && ( messagePojo != null ) ) {
+            LOG
+                    .debug( "storeTransaction: " + conversationPojo.getConversationId() + " - "
+                            + messagePojo.getMessageId() );
+        } else if ( conversationPojo != null ) {
+            LOG.debug( "storeTransaction: " + conversationPojo.getConversationId() );
+        }
 
         TransactionDAO transactionDao;
         try {
