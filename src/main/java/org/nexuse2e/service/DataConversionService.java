@@ -55,6 +55,8 @@ public class DataConversionService extends AbstractService {
     public final static String VALIDATELENGTH          = "validateLength";
     public final static String MODIFY                  = "modify";
     public final static String REPLACE_STRING          = "replaceString";
+    public final static String FILL_LEFT               = "fillLeft";
+    public final static String FILL_RIGHT              = "fillRight";
     public final static String CONCAT                  = "concat";
 
     @Override
@@ -219,6 +221,12 @@ public class DataConversionService extends AbstractService {
         } else if ( name.equals( REPLACE_STRING ) ) {
             LOG.trace( "dispatching: replaceString" );
             return processReplaceString( params, definition, additionalValues );
+        } else if ( name.equals( FILL_LEFT ) ) {
+            LOG.trace( "dispatching: fillLeft" );
+            return processFill( true, params, definition, additionalValues );
+        } else if ( name.equals( FILL_RIGHT ) ) {
+            LOG.trace( "dispatching: fillRight" );
+            return processFill( false, params, definition, additionalValues );
         } else if (name.equals( CONCAT )) {
             LOG.trace( "dispatching: concat" );
             return processConcat( xPath, document, params, definition, additionalValues );
@@ -419,6 +427,56 @@ public class DataConversionService extends AbstractService {
             LOG.error( "Error while replacing String: " + e );
         }
         // TODO Auto-generated method stub
+        return null;
+    }
+
+    private String processFill( boolean left, String[] params, MappingDefinition definition,
+            Map<String, String> aditionalValues ) {
+
+        String n;
+        if (left) {
+            n = "fillLeft";
+        } else {
+            n = "fillRight";
+        }
+        
+        if ( params == null || params.length < 2 ) {
+            LOG.error( n + " requires at least 2 parameters: fillLeft[char,count]" );
+            return null;
+        }
+        try {
+            String value = aditionalValues.get( "$value" );
+            if ( !StringUtils.isEmpty( value ) ) {
+                String character = stripParameter( params[0] );
+                if (StringUtils.isEmpty( character )) {
+                    LOG.error( n +": char parameter must not be empty" );
+                    return null;
+                }
+                char c = character.charAt( 0 );
+                int count = 0;
+                try {
+                    count = Integer.parseInt( stripParameter( params[1] ) );
+                } catch (NumberFormatException nfex) {
+                    LOG.error( n + ": invalid count parameter: " + params[1] );
+                    return null;
+                }
+                int fillLen = count - value.length();
+                if (fillLen > 0) {
+                    char[] filler = new char[fillLen];
+                    for (int i = 0; i < filler.length; i++) {
+                        filler[i] = c;
+                    }
+                    if (left) {
+                        value = new String( filler ) + value;
+                    } else {
+                        value += new String( filler );
+                    }
+                }
+                return value;
+            }
+        } catch ( Exception e ) {
+            LOG.error( "Error while " + n + ": " + e );
+        }
         return null;
     }
 
