@@ -656,7 +656,7 @@ public class EngineConfiguration {
         }
         Session session = configDao.getDBSession();
 
-        Transaction transaction = session.beginTransaction();
+        Transaction transaction = null;//session.beginTransaction();
 
         List<TRPPojo> obsoleteTRPs = getObsoleteEntries( trps, current.getTrps() );
         for ( TRPPojo pojo : obsoleteTRPs ) {
@@ -965,7 +965,7 @@ public class EngineConfiguration {
             }
         }
 
-        transaction.commit();
+        //transaction.commit();
         configDao.releaseDBSession( session );
     } // saveConfigurationToDB
 

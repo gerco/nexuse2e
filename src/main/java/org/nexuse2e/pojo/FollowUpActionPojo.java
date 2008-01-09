@@ -54,6 +54,9 @@ public class FollowUpActionPojo implements java.io.Serializable {
     private Date              modifiedDate;
     private int               modifiedNxUserId;
 
+    private int               actionId;
+    private int               followUpActionId;
+    
     // Constructors
 
     /** default constructor */
@@ -146,7 +149,15 @@ public class FollowUpActionPojo implements java.io.Serializable {
         if ( this.action != null ) {
             return this.action.getNxActionId();
         }
-        return 0;
+        return actionId;
+    }
+    
+    /**
+     * Required for JAXB
+     * @param actionId
+     */
+    public void setActionId( int actionId ) {
+        this.actionId = actionId;
     }
 
     /**
@@ -160,7 +171,15 @@ public class FollowUpActionPojo implements java.io.Serializable {
             return this.followUpAction.getNxActionId();
         }
 
-        return 0;
+        return followUpActionId;
+    }
+    
+    /**
+     * Required for JAXB
+     * @param followUpActionId
+     */
+    public void setFollowUpActionId( int followUpActionId ) {
+        this.followUpActionId = followUpActionId;
     }
 
     /* (non-Javadoc)

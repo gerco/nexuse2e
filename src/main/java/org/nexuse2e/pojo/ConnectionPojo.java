@@ -63,6 +63,9 @@ public class ConnectionPojo implements java.io.Serializable {
     private String               password;
     private String               description;
     private Set<ParticipantPojo> partcipants      = new HashSet<ParticipantPojo>( 0 );
+    
+    private int                  trpId;
+    private int                  certificateId;
 
     // Constructors
 
@@ -143,7 +146,15 @@ public class ConnectionPojo implements java.io.Serializable {
             return this.certificate.getNxCertificateId();
 
         }
-        return 0;
+        return certificateId;
+    }
+    
+    /**
+     * Required for JAXB
+     * @param certificateId
+     */
+    public void setCertificateId( int certificateId ) {
+        this.certificateId = certificateId;
     }
 
     public CertificatePojo getCertificate() {
@@ -167,7 +178,14 @@ public class ConnectionPojo implements java.io.Serializable {
             return this.trp.getNxTRPId();
 
         }
-        return 0;
+        return trpId;
+    }
+    
+    /**
+     * Required for JAXB
+     */
+    public void setTrpId( int trpId ) {
+        this.trpId = trpId;
     }
 
     public TRPPojo getTrp() {

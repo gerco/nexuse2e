@@ -45,7 +45,7 @@ public class PipeletPojo implements java.io.Serializable {
     private static final long      serialVersionUID = 1602063679628056983L;
 
     // Fields    
-    private Integer                nxPipeletId;
+    private int                    nxPipeletId;
     private PipelinePojo           pipeline;
     private ComponentPojo          component;
     private Date                   createdDate;
@@ -61,6 +61,8 @@ public class PipeletPojo implements java.io.Serializable {
     @XmlElement(name = "PipeletParam")
     private List<PipeletParamPojo> pipeletParams    = new Vector<PipeletParamPojo>( 0 );
 
+    private int                    componentId;
+    
     // Constructors
 
     /** default constructor */
@@ -100,12 +102,12 @@ public class PipeletPojo implements java.io.Serializable {
 
     // Property accessors
     @XmlAttribute
-    public Integer getNxPipeletId() {
+    public int getNxPipeletId() {
 
         return this.nxPipeletId;
     }
 
-    public void setNxPipeletId( Integer nxPipeletId ) {
+    public void setNxPipeletId( int nxPipeletId ) {
 
         this.nxPipeletId = nxPipeletId;
     }
@@ -131,7 +133,11 @@ public class PipeletPojo implements java.io.Serializable {
             return this.component.getNxComponentId();
 
         }
-        return 0;
+        return componentId;
+    }
+    
+    public void setComponentId( int componentId ) {
+        this.componentId = componentId;
     }
 
     public ComponentPojo getComponent() {
@@ -227,7 +233,7 @@ public class PipeletPojo implements java.io.Serializable {
             return false;
         }
 
-        if ( nxPipeletId == null || nxPipeletId.intValue() == 0 ) {
+        if ( nxPipeletId == 0 ) {
             return super.equals( obj );
         }
 

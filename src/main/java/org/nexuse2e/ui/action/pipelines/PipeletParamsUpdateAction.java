@@ -125,14 +125,13 @@ public class PipeletParamsUpdateAction extends NexusE2EAction {
             PipelinePojo pipelinePojo = Engine.getInstance().getActiveConfigurationAccessService()
                     .getPipelinePojoByNxPipelineId( form.getNxPipelineId() );
             PipeletPojo pipeletPojo = null;
-            if ( form.getCurrentPipelet().getNxPipeletId() == null
-                    || form.getCurrentPipelet().getNxPipeletId().intValue() == 0 ) {
+            if ( form.getCurrentPipelet().getNxPipeletId() == 0 ) {
                 pipeletPojo = form.getCurrentPipelet();
             } else {
                 if ( pipelinePojo != null ) {
                     if ( pipelinePojo.getPipelets() != null ) {
                         for ( PipeletPojo pp : pipelinePojo.getPipelets() ) {
-                            if ( pp.getNxPipeletId().intValue() == form.getCurrentPipelet().getNxPipeletId().intValue() ) {
+                            if ( pp.getNxPipeletId() == form.getCurrentPipelet().getNxPipeletId() ) {
                                 pipeletPojo = pp;
                                 break;
                             }
@@ -151,7 +150,7 @@ public class PipeletParamsUpdateAction extends NexusE2EAction {
                 }
                 pipeletPojo.setPipeletParams( paramPojos );
 
-                if ( pipeletPojo.getNxPipeletId() != null && pipeletPojo.getNxPipeletId().intValue() != 0 ) {
+                if ( pipeletPojo.getNxPipeletId() != 0 ) {
                     Engine.getInstance().getActiveConfigurationAccessService().updatePipeline( pipelinePojo );
 
                     // update form
