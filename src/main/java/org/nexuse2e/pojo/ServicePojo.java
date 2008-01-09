@@ -21,12 +21,15 @@ package org.nexuse2e.pojo;
 
 // Generated 04.01.2007 15:39:42 by Hibernate Tools 3.2.0.beta6a
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 
 /**
@@ -51,8 +54,12 @@ public class ServicePojo implements java.io.Serializable {
     private boolean                autostart;
     private String                 name;
     private String                 description;
-    private List<ServiceParamPojo> serviceParams    = new Vector<ServiceParamPojo>( 0 );
+    @XmlElementWrapper(name = "ServiceParams")
+    @XmlElement(name = "ServiceParam")
+    private List<ServiceParamPojo> serviceParams    = new ArrayList<ServiceParamPojo>( 0 );
 
+    private int                    componentId;
+    
     // Constructors
 
     /** default constructor */
@@ -89,6 +96,7 @@ public class ServicePojo implements java.io.Serializable {
     }
 
     // Property accessors
+    @XmlAttribute
     public int getNxServiceId() {
 
         return this.nxServiceId;
@@ -102,6 +110,27 @@ public class ServicePojo implements java.io.Serializable {
     public ComponentPojo getComponent() {
 
         return this.component;
+    }
+
+    /**
+     * Required for JAXB
+     * @return
+     */
+    @XmlAttribute
+    public int getComponentId() {
+
+        if ( this.component != null ) {
+            return this.component.getNxComponentId();
+        }
+        return componentId;
+    }
+    
+    /**
+     * Required for JAXB
+     * @param componentId
+     */
+    public void setComponentId( int componentId ) {
+        this.componentId = componentId;
     }
 
     public void setComponent( ComponentPojo component ) {
@@ -139,6 +168,7 @@ public class ServicePojo implements java.io.Serializable {
         this.modifiedNxUserId = modifiedNxUserId;
     }
 
+    @XmlAttribute
     public int getPosition() {
 
         return this.position;
@@ -149,6 +179,7 @@ public class ServicePojo implements java.io.Serializable {
         this.position = position;
     }
 
+    @XmlAttribute
     public String getName() {
 
         return this.name;
@@ -159,6 +190,7 @@ public class ServicePojo implements java.io.Serializable {
         this.name = name;
     }
 
+    @XmlAttribute
     public String getDescription() {
 
         return this.description;

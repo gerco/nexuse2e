@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.nexuse2e.NexusException;
@@ -722,6 +723,53 @@ public class ConfigDAO extends BasicDAO {
 
         if ( mapping != null ) {
             deleteRecord( mapping, session, transaction );
+        }
+    }
+    
+    /**
+     * Deletes the whole database. Don't call this method unless you really know what you're doing!
+     */
+    public void deleteAll() throws NexusException {
+        Session session = super.getDBSession();
+        Transaction t = session.beginTransaction();
+        
+        String[] typeNames = new String[] {
+                "MessageLabelPojo",
+                "MessagePayloadPojo",
+                "MessagePojo",
+                "ConversationPojo",
+                "FollowUpActionPojo",
+                "ActionPojo",
+                "ParticipantPojo",
+                "ConnectionPojo",
+                "CertificatePojo",
+                "PartnerPojo",
+                "ChoreographyPojo",
+                "ServiceParamPojo",
+                "ServicePojo",
+                "LoggerParamPojo",
+                "LoggerPojo",
+                "PipeletParamPojo",
+                "PipeletPojo",
+                "ComponentPojo",
+                "PipelinePojo",
+                "TRPPojo",
+                "UserPojo",
+                "GrantPojo",
+                "RolePojo",
+                "GenericParamPojo",
+                "MappingPojo",
+        };
+        
+        try {
+            for (String typeName : typeNames) {
+                Query query = session.createQuery( "delete from " + typeName );
+                query.executeUpdate();
+            }
+            t.commit();
+        } catch (Exception ex) {
+            t.rollback();
+            throw new NexusException( ex );
         }
     }
 

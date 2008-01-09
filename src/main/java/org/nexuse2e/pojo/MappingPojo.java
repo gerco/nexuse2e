@@ -25,6 +25,7 @@ import java.util.Date;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
 /**
@@ -73,6 +74,7 @@ public class MappingPojo implements java.io.Serializable {
         this.rightValue = rightValue;
     }
 
+    @XmlAttribute
     public String getCategory() {
 
         return category;
@@ -93,6 +95,7 @@ public class MappingPojo implements java.io.Serializable {
         this.createdDate = createdDate;
     }
 
+    @XmlAttribute
     public int getLeftType() {
 
         return leftType;
@@ -103,6 +106,7 @@ public class MappingPojo implements java.io.Serializable {
         this.leftType = leftType;
     }
 
+    @XmlAttribute
     public String getLeftValue() {
 
         return leftValue;
@@ -133,6 +137,7 @@ public class MappingPojo implements java.io.Serializable {
         this.modifiedNxUserId = modifiedNxUserId;
     }
 
+    @XmlAttribute
     public int getNxMappingId() {
 
         return nxMappingId;
@@ -143,6 +148,7 @@ public class MappingPojo implements java.io.Serializable {
         this.nxMappingId = nxMappingId;
     }
 
+    @XmlAttribute
     public int getRightType() {
 
         return rightType;
@@ -153,6 +159,7 @@ public class MappingPojo implements java.io.Serializable {
         this.rightType = rightType;
     }
 
+    @XmlAttribute
     public String getRightValue() {
 
         return rightValue;

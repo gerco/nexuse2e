@@ -611,4 +611,11 @@ public class MinimalServerConfigurationProvider implements BaseConfigurationProv
 
     }
 
+    /* (non-Javadoc)
+     * @see org.nexuse2e.configuration.BaseConfigurationProvider#isConfigurationAvailable()
+     */
+    public boolean isConfigurationAvailable() {
+        return true;
+    }
+
 }

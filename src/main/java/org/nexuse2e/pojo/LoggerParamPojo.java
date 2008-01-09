@@ -25,6 +25,7 @@ import java.util.Date;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
 import org.nexuse2e.configuration.ParameterDescriptor;
@@ -138,6 +139,7 @@ public class LoggerParamPojo implements java.io.Serializable {
         this.modifiedNxUserId = modifiedNxUserId;
     }
 
+    @XmlAttribute
     public String getParamName() {
 
         return this.paramName;
@@ -148,6 +150,7 @@ public class LoggerParamPojo implements java.io.Serializable {
         this.paramName = paramName;
     }
 
+    @XmlAttribute
     public String getLabel() {
 
         return this.label;
@@ -158,6 +161,7 @@ public class LoggerParamPojo implements java.io.Serializable {
         this.label = label;
     }
 
+    @XmlAttribute
     public String getValue() {
 
         return this.value;
@@ -168,6 +172,7 @@ public class LoggerParamPojo implements java.io.Serializable {
         this.value = value;
     }
 
+    @XmlAttribute
     public int getSequenceNumber() {
 
         return this.sequenceNumber;

@@ -46,6 +46,12 @@ import org.nexuse2e.pojo.UserPojo;
 public interface BaseConfigurationProvider {
 
     /**
+     * Determines if a configuration be made available by this <code>BaseConfigurationProvider</code>.
+     * @return <code>true</code> if a configuration is available, <code>false</code> otherwise.
+     */
+    public boolean isConfigurationAvailable();
+    
+    /**
      * Method that create the base system configuration. Receives all (empty) lists that need to be pupulated.
      * @param components The list of components (i.e. Pipelets or Loggers) that are known to the system
      * @param choreographies The list of choreographies

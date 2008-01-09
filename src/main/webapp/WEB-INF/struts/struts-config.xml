@@ -728,11 +728,12 @@
       <forward name="success" path="/WEB-INF/pages/tools/configuration_management.jsp"/>
     </action>
     <action path="/ImportConfiguration" name="configurationManagementForm" type="org.nexuse2e.ui.action.tools.ImportConfigurationAction">
-      <forward name="success" path="ConfigurationManagement.do"/>
+      <forward name="success" path="/ConfigurationManagement.do"/>
     </action>
-    <action path="/ExportConfiguration" name="configurationManagementForm" type="org.nexuse2e.ui.action.tools.ExportConfigurationAction">
-      <forward name="success" path="ConfigurationManagement.do"/>
-      <forward name="success" path="ConfigurationManagement.do"/>
+    <action path="/ExportConfiguration" name="configurationManagementForm" type="org.nexuse2e.ui.action.tools.ExportConfigurationAction"/>
+    <action path="/ImportConfiguration" name="configurationManagementForm" type="org.nexuse2e.ui.action.tools.ImportConfigurationAction">
+      <forward name="success" path="/ConfigurationManagement.do"/>
+      <forward name="failure" path="/ConfigurationManagement.do"/>
     </action>
     <!--
     <action path="/MailSettings" name="mailSettingsForm" type="org.nexuse2e.ui.action.communications.MailSettingsAction">

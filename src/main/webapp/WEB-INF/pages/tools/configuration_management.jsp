@@ -39,8 +39,8 @@
 				<img src="images/submit.gif" name="ExportButton" class="button">Import</nexus:submit>
 			</td>
 			<td class="BUTTON_RIGHT"><input name="Submit" value="blank"
-				type="hidden"><nobr><nexus:link href="ExportConfiguration.do" styleClass="button">
-				<img src="images/submit.gif" name="ImportButton" class="button">Export</nexus:link>
+				type="hidden"><nobr><a href="ExportConfiguration.do" class="button">
+				<img src="images/submit.gif" name="ImportButton" class="button">Export</a>
 				</nobr>
 			</td>
 		</tr>

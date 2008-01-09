@@ -207,6 +207,7 @@ public class PipelinePojo implements java.io.Serializable {
         return nxPipelineId;
     }
 
+    @XmlAttribute
     public boolean isFrontend() {
 
         return frontend;

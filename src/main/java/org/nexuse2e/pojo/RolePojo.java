@@ -21,14 +21,19 @@ package org.nexuse2e.pojo;
 
 // Generated 15.12.2006 16:07:02 by Hibernate Tools 3.2.0.beta6a
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 
 import org.nexuse2e.ui.security.AccessController;
@@ -51,7 +56,7 @@ public class RolePojo implements java.io.Serializable {
     private Date                   createdDate;
     private Date                   modifiedDate;
     private int                    modifiedNxUserId;
-    private Map<String,GrantPojo> grants           = new HashMap<String,GrantPojo>();
+    private Map<String,GrantPojo>  grants           = new HashMap<String,GrantPojo>();
     
     // Constructors
 
@@ -83,6 +88,7 @@ public class RolePojo implements java.io.Serializable {
     }
 
     // Property accessors
+    @XmlAttribute
     public int getNxRoleId() {
 
         return this.nxRoleId;
@@ -93,6 +99,7 @@ public class RolePojo implements java.io.Serializable {
         this.nxRoleId = nxRoleId;
     }
 
+    @XmlAttribute
     public String getName() {
 
         return this.name;
@@ -103,6 +110,7 @@ public class RolePojo implements java.io.Serializable {
         this.name = name;
     }
 
+    @XmlAttribute
     public String getDescription() {
 
         return this.description;
@@ -150,6 +158,29 @@ public class RolePojo implements java.io.Serializable {
 
     public void setGrants( Map<String,GrantPojo> grants ) {
         this.grants = grants;   
+    }
+    
+    /**
+     * Required for JAXB
+     * @return
+     */
+    @XmlElementWrapper(name = "Grants")
+    @XmlElement(name = "Grant")
+    public List<GrantPojo> getGrantCollection() {
+        List<GrantPojo> list = new ArrayList<GrantPojo>();
+        list.addAll( grants.values() );
+        return list;
+    }
+    
+    /**
+     * Required for JAXB
+     */
+    public void setGrantCollection( List<GrantPojo> grantList ) {
+        Map<String, GrantPojo> grants = new HashMap<String, GrantPojo>();
+        for (GrantPojo grant : grantList) {
+            grants.put( grant.getTarget(), grant );
+        }
+        setGrants( grants );
     }
     
     public Map<String, Set<ParsedRequest>> getAllowedRequests() {

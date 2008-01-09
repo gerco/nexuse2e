@@ -155,17 +155,24 @@ public class EngineConfiguration {
     @XmlElement(name = "Component")
     private List<ComponentPojo>                         components                = null;
 
-    /**
-     * 
-     */
+    @XmlElementWrapper(name = "Loggers")
+    @XmlElement(name = "Logger")
     private List<LoggerPojo>                            loggers                   = null;
 
+    @XmlElementWrapper(name = "Services")
+    @XmlElement(name = "Service")
     private List<ServicePojo>                           services                  = null;
 
+    @XmlElementWrapper(name = "Users")
+    @XmlElement(name="User")
     private List<UserPojo>                              users                     = null;
 
+    @XmlElementWrapper(name = "Roles")
+    @XmlElement(name="Role")
     private List<RolePojo>                              roles                     = null;
 
+    @XmlElementWrapper(name = "Mappings")
+    @XmlElement(name="Mapping")
     private List<MappingPojo>                           mappings                  = null;
 
     private HashMap<String, List<GenericParamPojo>>     genericParameters         = new HashMap<String, List<GenericParamPojo>>();
@@ -229,8 +236,6 @@ public class EngineConfiguration {
         initializeLogAppenders();
 
         createConfiguration();
-
-        exportToXML();
     } // init
 
     private void initLoggerCategories() {
@@ -447,40 +452,34 @@ public class EngineConfiguration {
                 LOG.debug( "No choreographies available in database!" );
             } else {
                 LOG.trace( "ChoreographyCount:" + tempChoreographies.size() );
-                setChoreographies( tempChoreographies );
             }
+            setChoreographies( tempChoreographies );
 
             List<PartnerPojo> tempPartners = configDao.getPartners( session, null );
             if ( tempPartners == null ) {
                 LOG.debug( "No partners available in database!" );
             } else {
                 LOG.trace( "PartnerCount:" + tempPartners.size() );
-                setPartners( tempPartners );
             }
+            setPartners( tempPartners );
 
             List<CertificatePojo> allCertificates = configDao.getCertificates( session, null );
             if ( allCertificates == null || allCertificates.size() == 0 ) {
                 LOG.debug( "No certificates available in database!" );
-            } else {
-                setCertificates( allCertificates );
-
             }
+            setCertificates( allCertificates );
 
             List<PipelinePojo> pipelines = configDao.getFrontendPipelines( session, null );
             if ( pipelines == null || pipelines.size() == 0 ) {
                 LOG.debug( "No frontend pipelines available in database!" );
-            } else {
-                setFrontendPipelineTemplates( pipelines );
-
             }
+            setFrontendPipelineTemplates( pipelines );
 
             pipelines = configDao.getBackendPipelines( session, null );
             if ( pipelines == null || pipelines.size() == 0 ) {
                 LOG.debug( "No backend pipelines available in database!" );
-            } else {
-                setBackendPipelineTemplates( pipelines );
-
             }
+            setBackendPipelineTemplates( pipelines );
 
             List<TRPPojo> tempTRPs = configDao.getTrps( session, null );
             setTrps( tempTRPs );
@@ -524,7 +523,7 @@ public class EngineConfiguration {
         configDao.releaseDBSession( session );
     } // loadDataFromDB
 
-    private void exportToXML() {
+    protected void exportToXML() {
 
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance( EngineConfiguration.class );

@@ -27,6 +27,9 @@ import java.util.Vector;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 
 /**
@@ -52,12 +55,16 @@ public class LoggerPojo implements java.io.Serializable {
     private boolean                     autostart;
     private String                      filter;
     private String                      description;
+    @XmlElementWrapper(name = "LoggerParams")
+    @XmlElement(name = "LoggerParam")
     private Collection<LoggerParamPojo> loggerParams;
 
     // non persistent fields
 
     private boolean                     running;
 
+    private int                         componentId;
+    
     // Constructors
 
     /** default constructor */
@@ -95,6 +102,7 @@ public class LoggerPojo implements java.io.Serializable {
     }
 
     // Property accessors
+    @XmlAttribute
     public int getNxLoggerId() {
 
         return this.nxLoggerId;
@@ -113,6 +121,27 @@ public class LoggerPojo implements java.io.Serializable {
     public void setComponent( ComponentPojo component ) {
 
         this.component = component;
+    }
+    
+    /**
+     * Required for JAXB
+     * @return
+     */
+    @XmlAttribute
+    public int getComponentId() {
+
+        if ( this.component != null ) {
+            return this.component.getNxComponentId();
+        }
+        return componentId;
+    }
+    
+    /**
+     * Required for JAXB
+     * @param componentId
+     */
+    public void setComponentId( int componentId ) {
+        this.componentId = componentId;
     }
 
     public Date getCreatedDate() {
@@ -145,6 +174,7 @@ public class LoggerPojo implements java.io.Serializable {
         this.modifiedNxUserId = modifiedNxUserId;
     }
 
+    @XmlAttribute
     public String getName() {
 
         return this.name;
@@ -155,6 +185,7 @@ public class LoggerPojo implements java.io.Serializable {
         this.name = name;
     }
 
+    @XmlAttribute
     public boolean isAutostart() {
 
         return this.autostart;
@@ -165,6 +196,7 @@ public class LoggerPojo implements java.io.Serializable {
         this.autostart = autostart;
     }
 
+    @XmlAttribute
     public String getFilter() {
 
         return this.filter;
@@ -175,6 +207,7 @@ public class LoggerPojo implements java.io.Serializable {
         this.filter = filter;
     }
 
+    @XmlAttribute
     public String getDescription() {
 
         return this.description;

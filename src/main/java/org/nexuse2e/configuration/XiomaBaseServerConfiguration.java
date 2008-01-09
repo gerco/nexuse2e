@@ -708,4 +708,11 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
 
     } // createBaseConfiguration
 
+    /* (non-Javadoc)
+     * @see org.nexuse2e.configuration.BaseConfigurationProvider#isConfigurationAvailable()
+     */
+    public boolean isConfigurationAvailable() {
+        return true;
+    }
+
 } // XiomaBaseServerConfiguration

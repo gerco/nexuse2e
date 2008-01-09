@@ -713,7 +713,8 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     private EngineConfiguration createEngineConfiguration() throws InstantiationException {
 
         try {
-            if ( ( baseConfigurationProvider == null ) && ( baseConfigurationProviderClass != null ) ) {
+            if ( ( baseConfigurationProvider == null || !baseConfigurationProvider.isConfigurationAvailable() )
+                    && ( baseConfigurationProviderClass != null ) ) {
                 try {
                     Class theClass = Class.forName( baseConfigurationProviderClass );
                     baseConfigurationProvider = (BaseConfigurationProvider) theClass.newInstance();
@@ -722,14 +723,20 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                             + "' could not be instantiated: " + iEx );
                 }
             }
+            if (baseConfigurationProvider == null || !baseConfigurationProvider.isConfigurationAvailable()) {
+                String message = "No base configuration available from BaseConfigurationProvider "
+                    + baseConfigurationProvider;
+                LOG.error( message );
+                throw new InstantiationException( message );
+            }
             EngineConfiguration config = new EngineConfiguration( baseConfigurationProvider );
             config.init();
 
             return config;
         } catch ( Exception e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( Error e ) {
+            if (e instanceof InstantiationException) {
+                throw (InstantiationException) e;
+            }
             e.printStackTrace();
         }
         return null;
