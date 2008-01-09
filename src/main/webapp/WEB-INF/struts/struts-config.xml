@@ -42,6 +42,7 @@
     
     <form-bean name="messageSubmissionForm" type="org.nexuse2e.ui.form.MessageSubmissionForm"/>
     <form-bean name="provisioningSubmissionForm" type="org.nexuse2e.ui.form.ProvisioningSubmissionForm"/>
+    <form-bean name="configurationManagementForm" type="org.nexuse2e.ui.form.ConfigurationManagementForm"></form-bean>
     
     <form-bean name="databasePurgeForm" type="org.nexuse2e.ui.form.DatabasePurgeForm"/>
     <form-bean name="mappingMaintenanceForm" type="org.nexuse2e.ui.form.MappingMaintenanceForm"/>
@@ -722,6 +723,16 @@
     </action>
     <action path="/ProvisioningSubmission" name="provisioningSubmissionForm" type="org.nexuse2e.ui.action.tools.ProvisioningSubmissionAction">
       <forward name="success" path="/WEB-INF/pages/communications/provisioning_submission.jsp"/>
+    </action>
+    <action path="/ConfigurationManagement" name="configurationManagementForm" type="org.nexuse2e.ui.action.tools.ConfigurationManagementAction">
+      <forward name="success" path="/WEB-INF/pages/tools/configuration_management.jsp"/>
+    </action>
+    <action path="/ImportConfiguration" name="configurationManagementForm" type="org.nexuse2e.ui.action.tools.ImportConfigurationAction">
+      <forward name="success" path="ConfigurationManagement.do"/>
+    </action>
+    <action path="/ExportConfiguration" name="configurationManagementForm" type="org.nexuse2e.ui.action.tools.ExportConfigurationAction">
+      <forward name="success" path="ConfigurationManagement.do"/>
+      <forward name="success" path="ConfigurationManagement.do"/>
     </action>
     <!--
     <action path="/MailSettings" name="mailSettingsForm" type="org.nexuse2e.ui.action.communications.MailSettingsAction">

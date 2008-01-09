@@ -50,6 +50,14 @@
 		<td class="NEXUSNameNoWidth"><nexus:link styleClass="NexusLink"
 			href="MappingMaintenance.do">Mapping Maintenance</nexus:link></td>
 	</tr>
+	<tr>
+		<td class="NEXUSIcon"><nexus:link styleClass="NexusImgLink"
+			href="ConfigurationManagement.do">
+			<img border="0" src="images/tree/businessprocesses.gif">
+		</nexus:link></td>
+		<td class="NEXUSNameNoWidth"><nexus:link styleClass="NexusLink"
+			href="ConfigurationManagement.do">Configuration Management</nexus:link></td>
+	</tr>
 
 
 
