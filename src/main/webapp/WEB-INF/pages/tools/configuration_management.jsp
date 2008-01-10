@@ -34,6 +34,7 @@
 		<tr>
 			<td class="BUTTON_RIGHT"><input name="Submit" value="blank"
 				type="hidden"> <nexus:submit
+				precondition="confirm('Your current configuration will be replaced by the imported one.\nPlease create a backup of your configuration before proceeding. Confirm to proceed now.')"
 				onClick="document.configurationManagementForm.Submit.value='Submit';"
 				sendFileForm="true" styleClass="button">
 				<img src="images/submit.gif" name="ExportButton" class="button">Import</nexus:submit>
