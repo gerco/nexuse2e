@@ -20,6 +20,7 @@
 package org.nexuse2e.messaging;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -309,10 +310,14 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                         referencedMessagePojo.setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_SENT );
                         try {
                             // Complete ack message and add to conversation
+                            Date endDate = new Date();
                             messagePojo.setAction( referencedMessagePojo.getAction() );
                             messagePojo.setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_SENT );
+                            messagePojo.setModifiedDate( endDate );
+                            messagePojo.setEndDate( endDate );
                             referencedMessagePojo.getConversation().getMessages().add( messagePojo );
-
+                            referencedMessagePojo.setModifiedDate( endDate );
+                            referencedMessagePojo.setEndDate( endDate );
                             Engine.getInstance().getTransactionService().updateTransaction(
                                     referencedMessagePojo.getConversation() );
                             Engine.getInstance().getTransactionService().deregisterProcessingMessage(

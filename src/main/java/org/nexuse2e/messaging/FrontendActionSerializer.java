@@ -19,6 +19,7 @@
  */
 package org.nexuse2e.messaging;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -121,6 +122,7 @@ public class FrontendActionSerializer implements Manageable {
 
         synchronized ( conversationPojo ) {
             messageContext.getMessagePojo().setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_QUEUED );
+            messageContext.getMessagePojo().setModifiedDate( new Date() );
             if ( newMessage ) {
                 List<MessagePojo> messages = conversationPojo.getMessages();
                 /*
@@ -327,6 +329,7 @@ public class FrontendActionSerializer implements Manageable {
                         FrontendActionSerializer.this.backendInboundDispatcher.processMessage( messageContext );
 
                         messagePojo.setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_SENT );
+                        messagePojo.setModifiedDate( new Date() );
                         if ( ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND )
                                 || ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_IDLE ) ) {
                             if ( conversationPojo.getCurrentAction().isEnd() ) {

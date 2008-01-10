@@ -19,6 +19,7 @@
  */
 package org.nexuse2e.messaging;
 
+import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -229,6 +230,7 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                                     Engine.getInstance().getTransactionService().deregisterProcessingMessage(
                                             messagePojo.getMessageId() );
                                     messagePojo.setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_SENT );
+                                    messagePojo.setModifiedDate( new Date() );
                                     if ( conversationPojo.getCurrentAction().isEnd() ) {
                                         conversationPojo
                                                 .setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_COMPLETED );
@@ -245,6 +247,10 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                             Engine.getInstance().getTransactionService().deregisterProcessingMessage(
                                     messagePojo.getMessageId() );
                             messagePojo.setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_SENT );
+                            Date endDate = new Date() ;
+                            messagePojo.setModifiedDate(endDate );
+                            messagePojo.setEndDate( endDate );
+                            messagePojo.getReferencedMessage().setEndDate( endDate );
                             if ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_SENDING_ACK ) {
                                 conversationPojo
                                         .setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND );

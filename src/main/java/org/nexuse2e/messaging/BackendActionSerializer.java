@@ -19,6 +19,7 @@
  */
 package org.nexuse2e.messaging;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -127,6 +128,8 @@ public class BackendActionSerializer extends AbstractPipelet {
             List<MessagePojo> messages = conversationPojo.getMessages();
 
             messageContext.getMessagePojo().setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_QUEUED );
+            messageContext.getMessagePojo().setModifiedDate( new Date() );
+
             if ( messageContext.getMessagePojo().getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
                 messageContext.getMessagePojo().getConversation().setStatus(
                         org.nexuse2e.Constants.CONVERSATION_STATUS_PROCESSING );

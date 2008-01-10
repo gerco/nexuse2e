@@ -588,6 +588,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         MessagePojo messagePojo = getMessage( id );
         messagePojo.setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_STOPPED );
+        messagePojo.setModifiedDate( new Date() );
         messagePojo.getConversation().setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_IDLE );
         updateTransaction( messagePojo.getConversation() );
         deregisterProcessingMessage( id );

@@ -312,9 +312,24 @@ public class HeaderSerializer extends AbstractPipelet {
                             Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE );
                     Set<ConnectionPojo> localConnections = messagePojo.getParticipant().getLocalPartner()
                             .getConnections();
-                    String localURI = "http://localhost:8080/NEXUSe2e/handler/ebxml10";
+                    String localURI = null;
                     if ( !localConnections.isEmpty() ) {
-                        localURI = localConnections.iterator().next().getUri();
+                        // Try to find connection that is names ebxml10
+                        for ( Iterator iterator = localConnections.iterator(); iterator.hasNext(); ) {
+                            ConnectionPojo connectionPojo = (ConnectionPojo) iterator.next();
+                            if ( connectionPojo.getName().equalsIgnoreCase( "ebxml10" )
+                                    || connectionPojo.getName().equalsIgnoreCase( "ebms10" )
+                                    || connectionPojo.getUri().contains( "ebxml10" ) ) {
+                                localURI = connectionPojo.getUri();
+                                break;
+                            }
+                        }
+                        // If nothing found use first URL
+                        if ( localURI == null ) {
+                            localURI = localConnections.iterator().next().getUri();
+                        }
+                    } else {
+                        localURI = "http://localhost:8080/NEXUSe2e/handler/ebxml10";
                     }
                     senderLocation.addTextNode( localURI );
                     sender.addChildElement( senderLocation );
