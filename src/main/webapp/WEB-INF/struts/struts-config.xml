@@ -701,7 +701,11 @@
       <forward name="success" path="/CollaborationPartners.do"/>
     </action>
     <action path="/CollaborationPartnerDelete" name="collaborationPartnerForm" type="org.nexuse2e.ui.action.partners.PartnerDeleteAction">
-      <forward name="success" path="/ServerIdentities.do"/>
+      <forward name="success" redirect="true" path="/CollaborationPartners.do?type=2"/>
+      <forward name="error" path="/WEB-INF/pages/partners/partner_info_view.jsp"/>
+    </action>
+    <action path="/ServerIdentityDelete" name="collaborationPartnerForm" type="org.nexuse2e.ui.action.partners.PartnerDeleteAction">
+      <forward name="success" redirect="true" path="/ServerIdentities.do?type=1"/>
       <forward name="error" path="/WEB-INF/pages/partners/partner_info_view.jsp"/>
     </action>
     

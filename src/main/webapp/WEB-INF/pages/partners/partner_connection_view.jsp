@@ -113,7 +113,7 @@
               <nexus:submit styleClass="button"><img src="images/submit.gif" class="button">Save</nexus:submit>
             </td>
             <td class="NexusHeaderLink" style="text-align: right;">
-              <nexus:link href="PartnerConnectionDelete.do?partnerId=${partnerConnectionForm.partnerId}&nxConnectionId=${partnerConnectionForm.nxConnectionId}" styleClass="button"><img src="images/delete.gif" class="button">Delete</nexus:link>
+              <nexus:link href="PartnerConnectionDelete.do?partnerId=${collaborationPartnerForm.partnerId}&nxConnectionId=${partnerConnectionForm.nxConnectionId}" styleClass="button"><img src="images/delete.gif" class="button">Delete</nexus:link>
             </td>
           </tr>
         </table>

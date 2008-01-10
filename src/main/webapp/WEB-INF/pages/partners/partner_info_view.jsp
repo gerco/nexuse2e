@@ -120,10 +120,18 @@
 			<td class="NexusHeaderLink" style="text-align: right;"><nexus:submit
 				styleClass="button">
 				<img src="images/submit.gif" class="button">Save</nexus:submit></td>
-			<td class="NexusHeaderLink" style="text-align: right;"><nexus:link
-				href="CollaborationPartnerDelete.do?nxPartnerId=${collaborationPartnerForm.nxPartnerId}"
-				styleClass="button">
-				<img src="images/delete.gif" class="button">Delete</nexus:link></td>
+        <logic:equal name="collaborationPartnerForm" property="type" value="1">
+            <td class="NexusHeaderLink" style="text-align: right;"><nexus:link
+                href="ServerIdentityDelete.do?nxPartnerId=${collaborationPartnerForm.nxPartnerId}"
+                styleClass="button">
+                <img src="images/delete.gif" class="button">Delete</nexus:link></td>
+        </logic:equal>
+        <logic:notEqual name="collaborationPartnerForm" property="type" value="1">
+            <td class="NexusHeaderLink" style="text-align: right;"><nexus:link
+                href="CollaborationPartnerDelete.do?nxPartnerId=${collaborationPartnerForm.nxPartnerId}"
+                styleClass="button">
+                <img src="images/delete.gif" class="button">Delete</nexus:link></td>
+        </logic:notEqual>
 		</tr>
 	</table>
 </html:form>
