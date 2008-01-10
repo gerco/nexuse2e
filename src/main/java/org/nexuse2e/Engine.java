@@ -19,6 +19,7 @@
  */
 package org.nexuse2e;
 
+import java.io.InputStream;
 import java.security.Security;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -46,9 +47,11 @@ import org.nexuse2e.configuration.ConfigurationAccessService;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.IdGenerator;
 import org.nexuse2e.configuration.NexusUUIDGenerator;
+import org.nexuse2e.configuration.XmlBaseConfigurationProvider;
 import org.nexuse2e.controller.TransactionService;
 import org.nexuse2e.controller.TransactionServiceImpl;
 import org.nexuse2e.dao.BasicDAO;
+import org.nexuse2e.dao.ConfigDAO;
 import org.nexuse2e.integration.NEXUSe2eInterface;
 import org.nexuse2e.integration.NEXUSe2eInterfaceImpl;
 import org.nexuse2e.messaging.TimestampFormatter;
@@ -745,6 +748,32 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     public TransactionService getTransactionService() {
 
         return transactionService;
+    }
+    
+    /**
+     * Imports the configuration from the given XML input stream and sets it as the
+     * current configuration. This method should be called with care because it deletes
+     * all configuration data, messages conversations and log records.
+     * @param xmlInput The input stream that provides the configuration in XML.
+     * @throws NexusException 
+     */
+    public void importConfiguration( InputStream xmlInput ) throws NexusException {
+        BaseConfigurationProvider provider = new XmlBaseConfigurationProvider( xmlInput );
+
+        try {
+            ConfigDAO configDao = (ConfigDAO) Engine.getInstance().getDao( "configDao" );
+            configDao.deleteAll();
+            EngineConfiguration newConfig = new EngineConfiguration( provider );
+            currentConfiguration = null;
+            newConfig.init();
+            currentConfiguration = newConfig;
+            initialize();
+        } catch (Exception ex) {
+            if (ex instanceof NexusException) {
+                throw (NexusException) ex;
+            }
+            throw new NexusException( ex );
+        }
     }
 
     /**
