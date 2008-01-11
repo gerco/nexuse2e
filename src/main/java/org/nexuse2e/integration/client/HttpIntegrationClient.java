@@ -103,7 +103,8 @@ public class HttpIntegrationClient {
                     if ( fileSize >= memory ) {
                         String msg = "Not Enough memory to transfer data of " + fileSize / 1024
                                 + " Kbytes. Available memory is " + memory / 1024 + " Kbytes";
-                        throw new Exception( msg );
+                        System.err.println( "WARNING: " + msg + " (operating system might still increase memory alocation upon request)" );
+                        // throw new Exception( msg );
                     }
 
                     byte[] documentBuffer = new byte[fileSize]; // Create a buffer that will hold the data from the file
