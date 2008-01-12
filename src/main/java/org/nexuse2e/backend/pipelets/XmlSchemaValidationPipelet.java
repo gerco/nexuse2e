@@ -115,9 +115,10 @@ public class XmlSchemaValidationPipelet extends AbstractPipelet {
         
                     LOG.info( "Validated XML Schema compliance of payload - OK!" );
                 } catch ( Exception e ) {
-                    throw new NexusException( "XML validation error. Conversation id: "
-                            + messageContext.getConversation().getConversationId()
-                            + ", message id: " + messageContext.getMessagePojo().getMessageId(), e );
+                    throw new NexusException( "XML validation error (Conversation Id: "
+                            + messageContext.getMessagePojo().getConversation().getConversationId()
+                            + ", Message Id: " + messageContext.getMessagePojo().getMessageId() + "): "
+                            + e.getMessage(), e );
                 }
             }
         } else {
