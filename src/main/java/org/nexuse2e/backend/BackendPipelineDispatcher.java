@@ -196,6 +196,9 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
                 conversationId, actionId, partnerId, choreographyId,
                 org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_NORMAL );
         messagePojo.setOutbound( true );
+        
+        // Set conversation on MessageContext
+        messageContext.setConversation( messagePojo.getConversation() );
 
         if ( primaryKey != null ) {
             messageContext.setData( primaryKey );
