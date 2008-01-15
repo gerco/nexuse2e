@@ -35,7 +35,6 @@ public class EBXMLTimestampFormatter implements TimestampFormatter {
     }
 
     public Date getTimestamp( String time ) throws NexusException {
-
         try {
             SimpleDateFormat ebXMLDateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss'Z'" );
             return ebXMLDateFormat.parse( time );
@@ -44,30 +43,38 @@ public class EBXMLTimestampFormatter implements TimestampFormatter {
                 
                 SimpleDateFormat ebXMLDateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" );
                 return ebXMLDateFormat.parse( time );
-             
-                
             } catch ( ParseException pe2 ) {
                 try {
                     
                     SimpleDateFormat ebXMLDateFormat = new SimpleDateFormat( "yyyyMMdd'T'HHmmss.SSS'Z'" );
                     return ebXMLDateFormat.parse( time );
-                    
                 } catch ( ParseException pe3 ) {
-                       throw new NexusException( "Error while parsing timestamp:", pe3 );
+                    try {
+                        SimpleDateFormat ebXMLDateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss" );
+                        return ebXMLDateFormat.parse( time );
+                    } catch ( ParseException pe4 ) {
+                           throw new NexusException( "Error while parsing timestamp:", pe4 );
+                    }
                 }
             }
         }
     }
-
-}
-
-/*
-    if ( timestamp.endsWith( "Z" ) || timestamp.endsWith( "z" ) ) {
-        LOG
-                .info( "timestamp ends with Z. UTC is expected and Z is replaced with '-0000'" );
-        timestamp = timestamp.substring( 0, timestamp.length() - 1 ) + "+0000";
-        SimpleDateFormat targetFormat = new SimpleDateFormat(
-                stripParameter( params[1] ) );
-        Date dateValue = newDate;
+    
+    
+    /**
+     * @param args
+     */
+    public static void main (String[] args) {
+        if(args != null && args.length > 0) {
+            try {
+                System.out.println("Input: "+args[0]);
+                System.out.println("parsed date: "+ new EBXMLTimestampFormatter().getTimestamp( args[0] ));
+            } catch ( NexusException e ) {
+                e.printStackTrace();
+            }
+        } else {
+            System.err.println( "Wrong number of parameters. Usage: EBXMLTimestampFormatter <date string>" );
+            return;
+        }
     }
-*/
+}
