@@ -43,6 +43,7 @@ public class MessagePayloadPojo implements java.io.Serializable {
     private Date              createdDate;
     private Date              modifiedDate;
     private int               modifiedNxUserId;
+    private String            charset;
 
     // Constructors
 
@@ -52,7 +53,21 @@ public class MessagePayloadPojo implements java.io.Serializable {
         createdDate = new Date();
         modifiedDate = createdDate;
     }
-
+    
+    public MessagePayloadPojo( MessagePojo message, int sequenceNumber, String mimeType, String charset, String contentId,
+            byte[] payloadData, Date createdDate, Date modifiedDate, int modifiedNxUserId ) {
+        
+        this.message = message;
+        this.sequenceNumber = sequenceNumber;
+        this.mimeType = mimeType;
+        this.contentId = contentId;
+        this.payloadData = payloadData;
+        this.createdDate = createdDate;
+        this.modifiedDate = modifiedDate;
+        this.modifiedNxUserId = modifiedNxUserId;
+        this.charset = charset;
+    }
+    
     /** full constructor */
     public MessagePayloadPojo( MessagePojo message, int sequenceNumber, String mimeType, String contentId,
             byte[] payloadData, Date createdDate, Date modifiedDate, int modifiedNxUserId ) {
@@ -84,7 +99,8 @@ public class MessagePayloadPojo implements java.io.Serializable {
         clonedMessagePayloadPojo.setNxMessagePayloadId( nxMessagePayloadId );
         clonedMessagePayloadPojo.setPayloadData( payloadData.clone() );
         clonedMessagePayloadPojo.setSequenceNumber( sequenceNumber );
-
+        clonedMessagePayloadPojo.setCharset( charset );
+        
         return clonedMessagePayloadPojo;
     }
 
@@ -196,6 +212,7 @@ public class MessagePayloadPojo implements java.io.Serializable {
         buffer.append( "createdDate: " + createdDate + "\n" );
         buffer.append( "modifiedDate: " + modifiedDate + "\n" );
         buffer.append( "modifiedNxUserId: " + modifiedNxUserId + "\n" );
+        buffer.append( "charset: " + charset + "\n" );
 
         return buffer.toString();
     }
@@ -229,6 +246,24 @@ public class MessagePayloadPojo implements java.io.Serializable {
 
         // TODO Auto-generated method stub
         return nxMessagePayloadId;
+    }
+
+    
+    /**
+     * @return the charset
+     */
+    public String getCharset() {
+    
+        return charset;
+    }
+
+    
+    /**
+     * @param charset the charset to set
+     */
+    public void setCharset( String charset ) {
+    
+        this.charset = charset;
     }
 
 }
