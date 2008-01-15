@@ -76,7 +76,14 @@ public class GenericComparator implements Comparator {
 
                 result1 = PropertyUtils.getProperty( o1, fieldname[i] );
                 result2 = PropertyUtils.getProperty( o2, fieldname[i] );
-
+                
+                if(result1 == null) {
+                    result1 = "";
+                }
+                if(result2 == null) {
+                    result2 = "";
+                }
+                
                 if ( result1 instanceof String && result2 instanceof String ) {
                     result = compareStrings( result1, result2 );
 
