@@ -161,6 +161,13 @@ public class XiomaBaseClientConfiguration extends XiomaBaseServerConfiguration {
                 pojo.setInboundPipeline( clientInboundPipelinePojo );
                 pojo.setOutboundPipeline( clientOutboundPipelinePojo );
             }
+            
+            
+            for ( ServicePojo service : services ) {
+                if(service.getName().equals( "Pop3ReceiverService" )) {
+                    service.setAutostart( true );
+                }
+            }
         }
     }
 }
