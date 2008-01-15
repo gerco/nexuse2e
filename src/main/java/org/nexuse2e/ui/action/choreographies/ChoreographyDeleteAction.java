@@ -29,7 +29,9 @@ import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.configuration.ReferencedChoreographyException;
 import org.nexuse2e.pojo.ChoreographyPojo;
+import org.nexuse2e.pojo.ConversationPojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.ChoreographyForm;
 
@@ -69,6 +71,14 @@ public class ChoreographyDeleteAction extends NexusE2EAction {
             ChoreographyPojo choreography = Engine.getInstance().getActiveConfigurationAccessService()
                     .getChoreographyByChoreographyId( choreographyId );
             Engine.getInstance().getActiveConfigurationAccessService().deleteChoreography( choreography );
+        } catch (ReferencedChoreographyException rcex) {
+            for (ConversationPojo conversation : rcex.getReferringObjects()) {
+                ActionMessage errorMessage = new ActionMessage(
+                        "error.referenced.object.choreography", conversation.getConversationId() );
+                errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
+            }
+            addRedirect( request, URL, TIMEOUT );
+            return error;
         } catch ( NexusException e ) {
             ActionMessage errorMessage = new ActionMessage( "generic.error", e );
             errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );

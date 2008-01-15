@@ -17,7 +17,9 @@ public class ReferencedCertificateException extends ReferencedObjectException {
     private Collection<ConnectionPojo> referringConnections;
     
     /**
-     * 
+     * Constructs a new <code>ReferencedCertificateException</code>.
+     * @param referringConnections The referring connections. Shall not be <code>null</code>
+     * or empty.
      */
     public ReferencedCertificateException( Collection<ConnectionPojo> referringConnections ) {
         this.referringConnections = referringConnections;

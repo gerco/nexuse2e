@@ -46,6 +46,7 @@ import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ComponentPojo;
 import org.nexuse2e.pojo.ConnectionPojo;
+import org.nexuse2e.pojo.ConversationPojo;
 import org.nexuse2e.pojo.GenericParamPojo;
 import org.nexuse2e.pojo.LoggerPojo;
 import org.nexuse2e.pojo.MappingPojo;
@@ -775,23 +776,23 @@ public class ConfigurationAccessService {
 
     /**
      * @param choreography
+     * @throws ReferencedChoreographyException if the choreography is being referenced by
+     * one or more conversations.
+     * @throws NexusException if something else went wrong.
      */
-    public void deleteChoreography( ChoreographyPojo choreography ) {
+    public void deleteChoreography( ChoreographyPojo choreography ) throws ReferencedChoreographyException, NexusException {
 
-        try {
-            ChoreographyPojo oldChoreography = getChoreographyByChoreographyId( choreography.getName() );
-            if ( oldChoreography != null ) {
-                getChoreographies().remove( oldChoreography );
-            }
-            try {
-                engineConfig.deleteChoreographyInDB( choreography );
-            } catch ( Exception e ) {
-                LOG.error( "Error deleting choreography: " + e );
-            }
-            applyConfiguration();
-        } catch ( NexusException e ) {
-            e.printStackTrace();
+        ChoreographyPojo oldChoreography = getChoreographyByChoreographyId( choreography.getName() );
+        List<ConversationPojo> conversations = Engine.getInstance().getTransactionService().getConversationsByChoreography(
+                choreography, null, null );
+        if (conversations != null && !conversations.isEmpty()) {
+            throw new ReferencedChoreographyException( conversations );
         }
+        if ( oldChoreography != null ) {
+            getChoreographies().remove( oldChoreography );
+        }
+        engineConfig.deleteChoreographyInDB( choreography );
+        applyConfiguration();
     }
 
     /**
