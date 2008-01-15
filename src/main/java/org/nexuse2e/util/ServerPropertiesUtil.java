@@ -3,6 +3,7 @@ package org.nexuse2e.util;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
 import org.nexuse2e.Engine;
@@ -15,7 +16,10 @@ public class ServerPropertiesUtil {
         ROOTDIR("${nexus.server.root}"), PARTNERID("${nexus.message.partnerid}"), PARTNERNAME(
                 "${nexus.message.partnername}"), CHOREOGRAPHY("${nexus.message.choreography}"), ACTION(
                 "${nexus.message.action}"), CONVERSATION("${nexus.message.conversation}"), MESSAGE(
-                "${nexus.message.message}"), CREATED_DATE("${nexus.message.createdDate}");
+                "${nexus.message.message}"), CREATED_DATE("${nexus.message.createdDate}"), PAYLOAD_SEQUENCE(
+                "${nexus.message.payload.sequence}"), PAYLOAD_CONDITIONAL_SEQUENCE(
+                "${nexus.message.payload.conditionalsequence}"), PAYLOAD_MIME_TYPE("${nexus.message.payload.mimetype}"),
+                SERVER_CURRENTMILLIS("${nexus.server.time.millis}"),SERVER_CURRENTTIME("${nexus.server.time.formated}");
 
         private String value;
 
@@ -66,74 +70,114 @@ public class ServerPropertiesUtil {
      */
     public static String replaceServerProperties( String value, MessageContext context ) {
 
-        for ( ServerProperty property : ServerProperty.values() ) {
-            if ( value.indexOf( '$' ) == -1 ) {
-                break;
-            }
-            if ( property.equals( ServerProperty.ROOTDIR ) ) {
-                String nexusRoot = Engine.getInstance().getNexusE2ERoot();
-                if ( !StringUtils.isEmpty( nexusRoot ) ) {
-                    if ( nexusRoot.endsWith( "/" ) || nexusRoot.endsWith( "\\" ) ) {
-                        nexusRoot = nexusRoot.substring( 0, nexusRoot.length() - 1 );
-                    }
-                    value = StringUtils.replace( value, property.getValue(), nexusRoot );
-                }
-            }
-            if ( context != null ) {
-                if ( property.equals( ServerProperty.PARTNERID ) ) {
-                    if ( context.getPartner() != null ) {
-                        String partnerId = context.getPartner().getPartnerId();
-                        if ( !StringUtils.isEmpty( partnerId ) ) {
-                            value = StringUtils.replace( value, property.getValue(), partnerId );
-                        }
-                    }
-                } else if ( property.equals( ServerProperty.PARTNERNAME ) ) {
-                    if ( context.getPartner() != null ) {
-                        String partnerName = context.getPartner().getName();
-                        if ( !StringUtils.isEmpty( partnerName ) ) {
-                            value = StringUtils.replace( value, property.getValue(), partnerName );
-                        }
-                    }
-                } else if ( property.equals( ServerProperty.CHOREOGRAPHY ) ) {
-                    if ( context.getChoreography() != null ) {
-                        String choreography = context.getChoreography().getName();
-                        if ( !StringUtils.isEmpty( choreography ) ) {
-                            value = StringUtils.replace( value, property.getValue(), choreography );
-                        }
-                    }
-                } else if ( property.equals( ServerProperty.ACTION ) ) {
-                    if ( context.getConversation() != null && context.getConversation().getCurrentAction() != null ) {
-                        String action = context.getConversation().getCurrentAction().getName();
-                        if ( !StringUtils.isEmpty( action ) ) {
-                            value = StringUtils.replace( value, property.getValue(), action );
-                        }
-                    }
-                } else if ( property.equals( ServerProperty.CONVERSATION ) ) {
-                    if ( context.getConversation() != null ) {
-                        String conversationId = context.getConversation().getConversationId();
-                        conversationId = conversationId.replaceAll( "[?:\\/*\"<>|]" , "_" );
-                        if ( !StringUtils.isEmpty( conversationId ) ) {
-                            value = StringUtils.replace( value, property.getValue(), conversationId );
-                        }
-                    }
-                } else if ( property.equals( ServerProperty.MESSAGE ) ) {
-                    if ( context.getMessagePojo() != null ) {
-                        String messageId = context.getMessagePojo().getMessageId();
-                        if ( !StringUtils.isEmpty( messageId ) ) {
-                            messageId = messageId.replaceAll( "[?:\\/*\"<>|]" , "_" );
-                            value = StringUtils.replace( value, property.getValue(), messageId );
-                        }
-                    }
-                } else if ( property.equals( ServerProperty.CREATED_DATE ) ) {
-                    if ( ( context.getMessagePojo() != null ) && ( context.getMessagePojo().getCreatedDate() != null ) ) {
-                        DateFormat df = new SimpleDateFormat( "yyyyMMddHHmmssSSS" );
-                        value = StringUtils.replace( value, property.getValue(), df.format( context.getMessagePojo()
-                                .getCreatedDate() ) );
-                    }
-                }
-            }
+        if ( value != null ) {
 
+            for ( ServerProperty property : ServerProperty.values() ) {
+                if ( value.indexOf( '$' ) == -1 ) {
+                    break;
+                }
+                if ( property.equals( ServerProperty.ROOTDIR ) ) {
+                    String nexusRoot = Engine.getInstance().getNexusE2ERoot();
+                    if ( !StringUtils.isEmpty( nexusRoot ) ) {
+                        if ( nexusRoot.endsWith( "/" ) || nexusRoot.endsWith( "\\" ) ) {
+                            nexusRoot = nexusRoot.substring( 0, nexusRoot.length() - 1 );
+                        }
+                        value = StringUtils.replace( value, property.getValue(), nexusRoot );
+                    }
+                } else if ( property.equals( ServerProperty.SERVER_CURRENTMILLIS ) ) {
+                    value = StringUtils.replace( value, property.getValue(), ""+System.currentTimeMillis() );
+                } else if ( property.equals( ServerProperty.SERVER_CURRENTTIME ) ) {
+                    DateFormat df = new SimpleDateFormat( "yyyyMMddHHmmssSSS" );
+                    value = StringUtils.replace( value, property.getValue(), df.format( new Date() ) );
+                }
+                if ( context != null ) {
+                    if ( property.equals( ServerProperty.PARTNERID ) ) {
+                        if ( context.getPartner() != null ) {
+                            String partnerId = context.getPartner().getPartnerId();
+                            if ( !StringUtils.isEmpty( partnerId ) ) {
+                                value = StringUtils.replace( value, property.getValue(), partnerId );
+                            }
+                        }
+                    } else if ( property.equals( ServerProperty.PARTNERNAME ) ) {
+                        if ( context.getPartner() != null ) {
+                            String partnerName = context.getPartner().getName();
+                            if ( !StringUtils.isEmpty( partnerName ) ) {
+                                value = StringUtils.replace( value, property.getValue(), partnerName );
+                            }
+                        }
+                    } else if ( property.equals( ServerProperty.CHOREOGRAPHY ) ) {
+                        if ( context.getChoreography() != null ) {
+                            String choreography = context.getChoreography().getName();
+                            if ( !StringUtils.isEmpty( choreography ) ) {
+                                value = StringUtils.replace( value, property.getValue(), choreography );
+                            }
+                        }
+                    } else if ( property.equals( ServerProperty.ACTION ) ) {
+                        if ( context.getConversation() != null && context.getConversation().getCurrentAction() != null ) {
+                            String action = context.getConversation().getCurrentAction().getName();
+                            if ( !StringUtils.isEmpty( action ) ) {
+                                value = StringUtils.replace( value, property.getValue(), action );
+                            }
+                        }
+                    } else if ( property.equals( ServerProperty.CONVERSATION ) ) {
+                        if ( context.getConversation() != null ) {
+                            String conversationId = context.getConversation().getConversationId();
+                            conversationId = conversationId.replaceAll( "[?:\\/*\"<>|]", "_" );
+                            if ( !StringUtils.isEmpty( conversationId ) ) {
+                                value = StringUtils.replace( value, property.getValue(), conversationId );
+                            }
+                        }
+                    } else if ( property.equals( ServerProperty.MESSAGE ) ) {
+                        if ( context.getMessagePojo() != null ) {
+                            String messageId = context.getMessagePojo().getMessageId();
+                            if ( !StringUtils.isEmpty( messageId ) ) {
+                                messageId = messageId.replaceAll( "[?:\\/*\"<>|]", "_" );
+                                value = StringUtils.replace( value, property.getValue(), messageId );
+                            }
+                        }
+                    } else if ( property.equals( ServerProperty.CREATED_DATE ) ) {
+                        if ( ( context.getMessagePojo() != null )
+                                && ( context.getMessagePojo().getCreatedDate() != null ) ) {
+                            DateFormat df = new SimpleDateFormat( "yyyyMMddHHmmssSSS" );
+                            value = StringUtils.replace( value, property.getValue(), df.format( context
+                                    .getMessagePojo().getCreatedDate() ) );
+                        }
+                    }
+                }
+            }
         }
+        return value;
+    }
+
+    /**
+     * @param value
+     * @param payload
+     * @param context
+     * @return
+     */
+    public static String replacePayloadDependedValues( String value, int payload, MessageContext context ) {
+
+        if ( value != null && context != null && context.getMessagePojo() != null
+                && context.getMessagePojo().getMessagePayloads() != null ) {
+            if ( payload <= context.getMessagePojo().getMessagePayloads().size() ) {
+
+                value = StringUtils.replace( value, ServerProperty.PAYLOAD_SEQUENCE.getValue(), "" + payload );
+                if ( context.getMessagePojo().getMessagePayloads().size() > 1 ) {
+                    value = StringUtils.replace( value, ServerProperty.PAYLOAD_CONDITIONAL_SEQUENCE.getValue(), ""
+                            + payload );
+                } else {
+                    value = StringUtils.replace( value, ServerProperty.PAYLOAD_CONDITIONAL_SEQUENCE.getValue(), "");
+                }
+                
+                String extension = Engine.getInstance().getFileExtensionFromMime(
+                        context.getMessagePojo().getMessagePayloads().get( payload-1 ).getMimeType().toLowerCase() );
+                if ( StringUtils.isEmpty( extension ) ) {
+                    extension = "dat";
+                }
+                value = StringUtils.replace( value, ServerProperty.PAYLOAD_MIME_TYPE.getValue(), extension );
+            }
+        }
+
         return value;
     }
 
