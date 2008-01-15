@@ -21,6 +21,10 @@ package org.nexuse2e.ui.action.communications;
 
 import java.io.ByteArrayInputStream;
 import java.security.KeyStore;
+import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,6 +35,7 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.Engine;
+import org.nexuse2e.configuration.ConfigurationAccessService;
 import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
@@ -78,9 +83,40 @@ public class StagingSaveCertificateAction extends NexusE2EAction {
         }
 
         try {
+            List<CertificatePojo> certificates = new ArrayList<CertificatePojo>();
             CertificatePojo certificate = CertificateUtil.createPojoFromPKCS12( Constants.CERTIFICATE_TYPE_STAGING,
                     jks, form.getPassword() );
-            Engine.getInstance().getActiveConfigurationAccessService().updateCertificate( certificate );
+            certificates.add( certificate );
+
+            // check if root certificate is in the CA cert list
+            // if not, add it to the CA list
+            Certificate[] chain = CertificateUtil.getCertificateChain( jks );
+            if (chain != null && chain.length > 1) {
+                if (CertificateUtil.isCertChainComplete( chain )) {
+                    X509Certificate root = (X509Certificate) chain[chain.length - 1];
+                    String fingerprint = CertificateUtil.getMD5Fingerprint( root );
+                    ConfigurationAccessService cas = Engine.getInstance().getActiveConfigurationAccessService();
+                    boolean caInCaStore = false;
+                    for (CertificatePojo cert : cas.getCertificates( Constants.CERTIFICATE_TYPE_CA, null )) {
+                        data = cert.getBinaryData();
+                        if (data != null) {
+                            X509Certificate x509Certificate = CertificateUtil.getX509Certificate( data );
+                            if (x509Certificate != null) {
+                                String fp = CertificateUtil.getMD5Fingerprint( x509Certificate );
+                                if (fp != null && fp.equals( fingerprint )) {
+                                    caInCaStore = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (!caInCaStore) {
+                        certificates.add( CertificateUtil.createPojoFromX509( root, Constants.CERTIFICATE_TYPE_CA ) );
+
+                    }
+                }
+            }
+            Engine.getInstance().getActiveConfigurationAccessService().updateCertificates( certificates );
         } catch ( Exception e ) {
             ActionMessage errorMessage = new ActionMessage( "generic.error", e.getMessage() );
             errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );

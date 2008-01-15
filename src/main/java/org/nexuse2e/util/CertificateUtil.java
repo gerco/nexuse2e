@@ -803,11 +803,14 @@ public class CertificateUtil {
         return kpg.generateKeyPair();
     }
 
+
     /**
-     * @param styleClass
-     * @param keyStore
-     * @param password
-     * @throws Exception
+     * Creates a <code>CertificatePojo</code> from the given <code>KeyStore</code>.
+     * @param type The type, e.g. Constants.CERTIFICATE_TYPE_STAGING.
+     * @param keyStore The KeyStore.
+     * @param password The password the key store is encrypted with.
+     * @return The certificate chain found in the key store, as a <code>CertificatePojo</code>.
+     * @throws NexusException
      */
     public static CertificatePojo createPojoFromPKCS12( int type, KeyStore keyStore, String password )
             throws NexusException {
