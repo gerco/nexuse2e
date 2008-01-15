@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.mail.BodyPart;
 import javax.mail.Message;
@@ -171,6 +172,20 @@ public class MimeMessageUnpackager extends AbstractPipelet {
 
         LOG.debug( "content type: " + mbp.getContentType() );
 
+        String contentType = mbp.getContentType();
+        StringTokenizer st = new StringTokenizer(contentType,";");
+        String mimetype = st.nextToken();
+        String charset = "";
+        while(st.hasMoreTokens()) {
+            String parameter = st.nextToken();
+            if(parameter.toLowerCase().startsWith( "charset" )) {
+                String list[] = parameter.split( "=" );
+                if(list.length > 1) {
+                    charset = list[2];
+                }
+            }
+        }
+        
         // Decode S/MIME
         if ( ( mbp.getContentType().indexOf( "application/pkcs7-mime" ) != -1 ) && ( privateKey != null )
                 && ( recipientId != null ) ) {
@@ -215,7 +230,7 @@ public class MimeMessageUnpackager extends AbstractPipelet {
         InputStream in = mbp.getInputStream();
         byte[] data = new byte[in.available()];
         in.read( data );
-        return new MessagePayloadPojo( null, sequenceNumber, mbp.getContentType(), mbp.getContentID(), data,
+        return new MessagePayloadPojo( null, sequenceNumber, mimetype, charset, mbp.getContentID(), data,
                 new Date(), new Date(), 0 );
     }
 

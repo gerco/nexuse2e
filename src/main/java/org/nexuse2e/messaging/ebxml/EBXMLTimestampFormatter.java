@@ -25,6 +25,7 @@ import java.util.Date;
 
 import org.nexuse2e.NexusException;
 import org.nexuse2e.messaging.TimestampFormatter;
+import org.nexuse2e.util.DateTime;
 
 public class EBXMLTimestampFormatter implements TimestampFormatter {
 
@@ -35,40 +36,48 @@ public class EBXMLTimestampFormatter implements TimestampFormatter {
     }
 
     public Date getTimestamp( String time ) throws NexusException {
+
         try {
-            SimpleDateFormat ebXMLDateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss'Z'" );
-            return ebXMLDateFormat.parse( time );
-        } catch ( ParseException pe1 ) {
-            try {
-                
-                SimpleDateFormat ebXMLDateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" );
-                return ebXMLDateFormat.parse( time );
-            } catch ( ParseException pe2 ) {
-                try {
-                    
-                    SimpleDateFormat ebXMLDateFormat = new SimpleDateFormat( "yyyyMMdd'T'HHmmss.SSS'Z'" );
-                    return ebXMLDateFormat.parse( time );
-                } catch ( ParseException pe3 ) {
-                    try {
-                        SimpleDateFormat ebXMLDateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss" );
-                        return ebXMLDateFormat.parse( time );
-                    } catch ( ParseException pe4 ) {
-                           throw new NexusException( "Error while parsing timestamp:", pe4 );
-                    }
-                }
-            }
+            DateTime date = new DateTime( time );
+            return date.toDate();
+        } catch ( ParseException e ) {
+            throw new NexusException( "Error while parsing timestamp:", e );
         }
+
+//        try {
+//            SimpleDateFormat ebXMLDateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss'Z'" );
+//            return ebXMLDateFormat.parse( time );
+//        } catch ( ParseException pe1 ) {
+//            try {
+//
+//                SimpleDateFormat ebXMLDateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" );
+//                return ebXMLDateFormat.parse( time );
+//            } catch ( ParseException pe2 ) {
+//                try {
+//
+//                    SimpleDateFormat ebXMLDateFormat = new SimpleDateFormat( "yyyyMMdd'T'HHmmss.SSS'Z'" );
+//                    return ebXMLDateFormat.parse( time );
+//                } catch ( ParseException pe3 ) {
+//                    try {
+//                        SimpleDateFormat ebXMLDateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss" );
+//                        return ebXMLDateFormat.parse( time );
+//                    } catch ( ParseException pe4 ) {
+//                        throw new NexusException( "Error while parsing timestamp:", pe4 );
+//                    }
+//                }
+//            }
+//        }
     }
-    
-    
+
     /**
      * @param args
      */
-    public static void main (String[] args) {
-        if(args != null && args.length > 0) {
+    public static void main( String[] args ) {
+
+        if ( args != null && args.length > 0 ) {
             try {
-                System.out.println("Input: "+args[0]);
-                System.out.println("parsed date: "+ new EBXMLTimestampFormatter().getTimestamp( args[0] ));
+                System.out.println( "Input: " + args[0] );
+                System.out.println( "parsed date: " + new EBXMLTimestampFormatter().getTimestamp( args[0] ) );
             } catch ( NexusException e ) {
                 e.printStackTrace();
             }
