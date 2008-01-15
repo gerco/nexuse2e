@@ -3,6 +3,11 @@
 <beans>
 
   <bean id="placeholderConfig" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="properties">
+      <props>
+        <prop key="configuration.base.xmlFile"></prop>
+      </props>
+    </property>
     <property name="locations">
       <list>
         <value>/WEB-INF/config/database.properties</value>
@@ -23,8 +28,13 @@
     <property name="monitorAutoStart" value="true" />
   </bean>
 
+  <bean id="baseConfigurationProvider" class="org.nexuse2e.configuration.XmlBaseConfigurationProvider">
+    <constructor-arg value="${configuration.base.xmlFile}"/>
+  </bean>
+
   <!-- Engine  -->
   <bean id="engine" class="org.nexuse2e.Engine">
+    <property name="baseConfigurationProvider" ref="baseConfigurationProvider" />
     <property name="baseConfigurationProviderClass" value="${configuration.base.class}" />
     <property name="cacertsPath" value="${certificate.keystorePath.ca}" />
     <property name="certificatePath" value="${certificate.keystorePath.server}" />
