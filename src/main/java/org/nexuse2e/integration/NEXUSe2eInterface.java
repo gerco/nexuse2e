@@ -36,6 +36,8 @@ public interface NEXUSe2eInterface extends Remote {
      * @param choreographyId The ID of the choreography to create the conversation for.
      * @param businessPartnerId The ID of the partner to exchange messages with.
      * @return The ID of the newly created conversation.
+     * 
+     * @deprecated Method is not required any more. Use sendNewStringMessage when sending the first message in conversation.
      */
     public String createConversation( String choreographyId, String businessPartnerId ) throws RemoteException, NexusException;
 
@@ -45,6 +47,8 @@ public interface NEXUSe2eInterface extends Remote {
      * @param businessPartnerId The ID of the partner to exchange messages with.
      * @param conversationId The ID to use for the new conversation.
      * @return The ID of the newly created conversation.
+     * 
+     * @deprecated Method is not required any more. Use sendNewStringMessage when sending the first message in conversation.
      */
     public String createConversation( String choreographyId, String businessPartnerId, String conversationId )
             throws RemoteException, NexusException;
