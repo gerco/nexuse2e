@@ -118,6 +118,11 @@ public class ServerPropertiesUtil {
                             if ( !StringUtils.isEmpty( action ) ) {
                                 value = StringUtils.replace( value, property.getValue(), action );
                             }
+                        } else if(context.getMessagePojo() != null && context.getMessagePojo().getAction() != null) {
+                            String action = context.getMessagePojo().getAction().getName();
+                            if ( !StringUtils.isEmpty( action ) ) {
+                                value = StringUtils.replace( value, property.getValue(), action );
+                            }
                         }
                     } else if ( property.equals( ServerProperty.CONVERSATION ) ) {
                         if ( context.getConversation() != null ) {
