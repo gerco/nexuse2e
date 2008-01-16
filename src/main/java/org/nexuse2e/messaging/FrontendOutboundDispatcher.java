@@ -65,9 +65,6 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
         int retries = messageContext.getParticipant().getConnection().getRetries();
         boolean reliable = messageContext.getParticipant().getConnection().isReliable();
 
-        final Runnable messageSender = new MessageSender( pipeline, messageContext, ( reliable ? retries : 0 ) );
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool( 1 );
-
         ParticipantPojo participantPojo = messageContext.getMessagePojo().getParticipant();
         if ( participantPojo != null ) {
             interval = participantPojo.getConnection().getMessageInterval();
@@ -90,12 +87,18 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                 + messageContext.getChoreography().getName() + "/"
                 + messageContext.getMessagePojo().getAction().getName(), messageContext.getMessagePojo() ) );
 
-        ScheduledFuture<?> handle = scheduler.scheduleAtFixedRate( messageSender, 0, interval, TimeUnit.SECONDS );
-        LOG.debug( new LogMessage( "Waiting " + interval + " seconds until message resend...", messageContext
-                .getMessagePojo() ) );
+        final Runnable messageSender = new MessageSender( pipeline, messageContext, ( reliable ? retries : 0 ) );
+        if ( messageContext.getMessagePojo().getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
+            ScheduledExecutorService scheduler = Executors.newScheduledThreadPool( 1 );
 
-        Engine.getInstance().getTransactionService().registerProcessingMessage(
-                messageContext.getMessagePojo().getMessageId(), handle, scheduler );
+            ScheduledFuture<?> handle = scheduler.scheduleAtFixedRate( messageSender, 0, interval, TimeUnit.SECONDS );
+            LOG.debug( new LogMessage( "Waiting " + interval + " seconds until message resend...", messageContext
+                    .getMessagePojo() ) );
+            Engine.getInstance().getTransactionService().registerProcessingMessage(
+                    messageContext.getMessagePojo().getMessageId(), handle, scheduler );
+        } else {
+            new Thread( messageSender, messageContext.getMessagePojo().getMessageId() ).start();
+        }
 
         return messageContext;
     } // processMessage
@@ -244,8 +247,7 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                                                 + conversationPojo.getStatus(), messagePojo ) );
                             }
                         } else {
-                            Engine.getInstance().getTransactionService().deregisterProcessingMessage(
-                                    messagePojo.getMessageId() );
+                            // Engine.getInstance().getTransactionService().deregisterProcessingMessage( messagePojo.getMessageId() );
                             messagePojo.setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_SENT );
                             Date endDate = new Date();
                             messagePojo.setModifiedDate( endDate );
@@ -292,7 +294,7 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                 }
             } else {
                 if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
-                    LOG.error( new LogMessage( "Maximum number of retries reached without recieving acknowledgment: "
+                    LOG.error( new LogMessage( "Maximum number of retries reached without receiving acknowledgment: "
                             + messagePojo.getConversation().getConversationId() + "/" + messagePojo.getMessageId()
                             + " (choreography: " + messagePojo.getConversation().getChoreography().getName() + ")",
                             messagePojo ) );
