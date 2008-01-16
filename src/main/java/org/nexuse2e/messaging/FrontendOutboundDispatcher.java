@@ -209,6 +209,8 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
             ;
             ConversationPojo conversationPojo = messagePojo.getConversation();
 
+            LOG.trace( "Message ( " + messagePojo.getMessageId() + " ) end timestamp: " + messagePojo.getEndDate() );
+
             if ( retryCount <= retries ) {
                 LOG.debug( new LogMessage( "Sending message...", messagePojo ) );
                 try {
@@ -217,6 +219,12 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                         if ( ( messagePojo.getType() != Constants.INT_MESSAGE_TYPE_NORMAL )
                                 && ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_PROCESSING ) ) {
                             conversationPojo.setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_SENDING_ACK );
+                        } else if ( messagePojo.getEndDate() != null ) {
+                            
+                            // If message has been ack'ed while we were waiting do nothing
+                            LOG.info( "Cancelled sending message (ack was just received): " + messagePojo.getMessageId() );
+                            cancelRetrying();
+                            return;
                         }
 
                         // Send message
@@ -287,17 +295,19 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                         LOG.error( new LogMessage( "Error saving message: " + e1, messagePojo ) );
                     }
 
+                    /*
                     if ( LOG.isTraceEnabled() ) {
                         e.printStackTrace();
                     }
-                    LOG.warn( new LogMessage( "Error sending message: " + e, messagePojo ), e );
+                    */
+
+                    LOG.error( new LogMessage( "Error sending message: " + e, messagePojo ), e );
                 }
             } else {
                 if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
-                    LOG.error( new LogMessage( "Maximum number of retries reached without receiving acknowledgment: "
-                            + messagePojo.getConversation().getConversationId() + "/" + messagePojo.getMessageId()
-                            + " (choreography: " + messagePojo.getConversation().getChoreography().getName() + ")",
-                            messagePojo ) );
+                    LOG.error( new LogMessage(
+                            "Maximum number of retries reached without receiving acknowledgment - choreography: "
+                                    + messagePojo.getConversation().getChoreography().getName(), messagePojo ) );
                 } else {
                     LOG.debug( new LogMessage( "Max number of retries reached!", messagePojo ) );
                 }

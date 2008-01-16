@@ -237,12 +237,12 @@ public class HttpSenderService extends AbstractService implements SenderAware {
             method.releaseConnection();
 
         } catch ( ConnectTimeoutException e ) {
-            LOG.error( new LogMessage( "Message submission failed, connection timeout for URL: "
+            LOG.warn( new LogMessage( "Message submission failed, connection timeout for URL: "
                     + messageContext.getParticipant().getConnection().getUri() + " - " + e, messageContext
                     .getMessagePojo() ) );
             throw new NexusException( "Message submission failed, connection timeout for URL: " + e );
         } catch ( Exception ex ) {
-            LOG.error( new LogMessage( "Message submission failed: " + ex, messageContext.getMessagePojo() ) );
+            LOG.warn( new LogMessage( "Message submission failed: " + ex, messageContext.getMessagePojo() ) );
             throw new NexusException( "Message submission failed: " + ex );
         }
     }
