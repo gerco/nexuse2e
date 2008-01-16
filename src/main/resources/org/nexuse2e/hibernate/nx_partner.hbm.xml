@@ -91,7 +91,7 @@
         	<one-to-many class="org.nexuse2e.pojo.ConversationPojo"/>
 		</set>
         
-        <set name="certificates" inverse="true" lazy="false" cascade="none">
+        <set name="certificates" inverse="true" lazy="false" cascade="save-update">
         	<key column="nx_partner_id"/> 
         	<one-to-many class="org.nexuse2e.pojo.CertificatePojo"/>
 		</set>
