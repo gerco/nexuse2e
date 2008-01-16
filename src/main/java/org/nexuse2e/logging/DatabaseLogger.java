@@ -19,24 +19,14 @@
  */
 package org.nexuse2e.logging;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
-import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
-import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.EngineConfiguration;
-import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.dao.LogDAO;
 import org.nexuse2e.pojo.LogPojo;
 
@@ -44,53 +34,16 @@ import org.nexuse2e.pojo.LogPojo;
  * @author gesch
  *
  */
-public class DatabaseLogger extends AppenderSkeleton implements LogAppender {
+public class DatabaseLogger extends AbstractLogger {
 
-    private Map<String, Object>              parameters;
-    private Map<String, ParameterDescriptor> parameterMap;
-    private List<Logger>                     loggers      = new ArrayList<Logger>();
-    private BeanStatus                       status       = BeanStatus.UNDEFINED;
-    private int                              logThreshold = 0;
-    private LogDAO                           logDao       = null;
+    private LogDAO logDao = null;
 
     /**
      * Default constructor.
      */
     public DatabaseLogger() {
 
-        parameters = new HashMap<String, Object>();
-        parameterMap = new LinkedHashMap<String, ParameterDescriptor>();
         status = BeanStatus.INSTANTIATED;
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> T getParameter( String name ) {
-
-        return (T) parameters.get( name );
-    }
-
-    /* (non-Javadoc)
-     * @see org.nexuse2e.Configurable#setParameter(java.lang.String, java.lang.Object)
-     */
-    public void setParameter( String name, Object value ) {
-
-        parameters.put( name, value );
-    }
-
-    /* (non-Javadoc)
-     * @see org.nexuse2e.Configurable#getParameters()
-     */
-    public Map<String, Object> getParameters() {
-
-        return Collections.unmodifiableMap( parameters );
-    }
-
-    /* (non-Javadoc)
-     * @see org.nexuse2e.Configurable#getParameterMap()
-     */
-    public Map<String, ParameterDescriptor> getParameterMap() {
-
-        return parameterMap;
     }
 
     @Override
@@ -171,48 +124,6 @@ public class DatabaseLogger extends AppenderSkeleton implements LogAppender {
     @Override
     public void close() {
 
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public boolean requiresLayout() {
-
-        return false;
-    }
-
-    /* (non-Javadoc)
-     * @see org.nexuse2e.Manageable#activate()
-     */
-    public void activate() {
-
-        status = BeanStatus.ACTIVATED;
-
-    }
-
-    /* (non-Javadoc)
-     * @see org.nexuse2e.Manageable#deactivate()
-     */
-    public void deactivate() {
-
-        status = BeanStatus.INITIALIZED;
-
-    }
-
-    /* (non-Javadoc)
-     * @see org.nexuse2e.Manageable#getActivationTime()
-     */
-    public Layer getActivationLayer() {
-
-        return Layer.CONFIGURATION;
-    }
-
-    /* (non-Javadoc)
-     * @see org.nexuse2e.Manageable#getStatus()
-     */
-    public BeanStatus getStatus() {
-
-        return status;
     }
 
     /* (non-Javadoc)
@@ -221,40 +132,6 @@ public class DatabaseLogger extends AppenderSkeleton implements LogAppender {
     public void initialize( EngineConfiguration config ) {
 
         status = BeanStatus.INITIALIZED;
-    }
-
-    /* (non-Javadoc)
-     * @see org.nexuse2e.Manageable#teardown()
-     */
-    public void teardown() {
-
-        deregisterLoggers();
-        loggers.clear();
-    } // teardown
-
-    public void deregisterLoggers() {
-
-        for ( Logger logger : loggers ) {
-            logger.removeAppender( this );
-        }
-
-    }
-
-    public void registerLogger( Logger logger ) {
-
-        if ( loggers != null ) {
-            loggers.add( logger );
-        }
-    }
-
-    public int getLogThreshold() {
-
-        return logThreshold;
-    }
-
-    public void setLogThreshold( int threshold ) {
-
-        logThreshold = threshold;
     }
 
 }

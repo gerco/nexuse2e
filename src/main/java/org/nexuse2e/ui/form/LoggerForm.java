@@ -100,6 +100,8 @@ public class LoggerForm extends ActionForm {
         name = logger.getName();
         running = logger.isRunning();
         autoStart = logger.isAutostart();
+        
+        filterJavaPackagePattern = logger.getFilter();
     }
 
     /**
@@ -304,7 +306,7 @@ public class LoggerForm extends ActionForm {
 
     public String getFilterString() {
 
-        return "dummyFilterString";
+        return filterJavaPackagePattern;
     }
 
     /**

@@ -45,10 +45,12 @@ public class SftpSenderService extends AbstractService implements SenderAware {
     public static final String PASSWORD_PARAM_NAME       = "password";
     public static final String BASE_FILE_NAME_PARAM_NAME = "baseFileName";
     public static final String FILE_EXTENSION_PARAM_NAME = "fileExtension";
+    public static final String APPEND_TIMESTAMP          = "appendTimestamp";
 
     private TransportSender    transportSender           = null;
     private String             baseFileName              = null;
     private String             fileExtension             = null;
+    private boolean            useTimestamp              = true;
 
     /* (non-Javadoc)
      * @see org.nexuse2e.service.AbstractService#fillParameterMap(java.util.Map)
@@ -61,6 +63,9 @@ public class SftpSenderService extends AbstractService implements SenderAware {
 
         parameterMap.put( FILE_EXTENSION_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "File extension",
                 "The file extension used in uploads", ".xml" ) );
+
+        parameterMap.put( APPEND_TIMESTAMP, new ParameterDescriptor( ParameterType.BOOLEAN, "Append Timestamp",
+                "Flag whether to append a timestamp to the filename", Boolean.TRUE ) );
     }
 
     @Override
@@ -71,10 +76,18 @@ public class SftpSenderService extends AbstractService implements SenderAware {
             LOG.error( "No base file name provided!" );
         }
         fileExtension = getParameter( FILE_EXTENSION_PARAM_NAME );
-        if ( fileExtension == null ) {
-            LOG.error( "No file extension provided!" );
+        if ( StringUtils.isEmpty( fileExtension ) ) {
+            LOG.info( "No file extension provided!" );
+            fileExtension = "";
         } else if ( !fileExtension.startsWith( "." ) ) {
             fileExtension = "." + fileExtension;
+        }
+        LOG.debug( "Using file extension: " + fileExtension );
+
+        Boolean tempFlag = getParameter( APPEND_TIMESTAMP );
+        if ( tempFlag != null && tempFlag.equals( Boolean.FALSE ) ) {
+            useTimestamp = false;
+            LOG.info( "Using base file name - not appending timestamp." );
         }
 
         super.initialize( config );
@@ -137,11 +150,11 @@ public class SftpSenderService extends AbstractService implements SenderAware {
             }
             LOG.trace( "Working Directory: " + channelSftp.pwd() );
 
+            SimpleDateFormat sdf = new SimpleDateFormat( "yyyyMMddHHmmssSSS" );
             for ( MessagePayloadPojo messagePayloadPojo : messageContext.getMessagePojo().getMessagePayloads() ) {
-                SimpleDateFormat sdf = new SimpleDateFormat( "yyyyMMddHHmmssSSS" );
                 ByteArrayInputStream bais = new ByteArrayInputStream( messagePayloadPojo.getPayloadData() );
 
-                String newFileName = baseFileName + sdf.format( new Date() ) + fileExtension;
+                String newFileName = baseFileName + ( useTimestamp ? sdf.format( new Date() ) : "" ) + fileExtension;
 
                 channelSftp.put( bais, newFileName );
                 LOG.trace( "Uploaded file: " + newFileName );

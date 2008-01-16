@@ -247,8 +247,8 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                             Engine.getInstance().getTransactionService().deregisterProcessingMessage(
                                     messagePojo.getMessageId() );
                             messagePojo.setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_SENT );
-                            Date endDate = new Date() ;
-                            messagePojo.setModifiedDate(endDate );
+                            Date endDate = new Date();
+                            messagePojo.setModifiedDate( endDate );
                             messagePojo.setEndDate( endDate );
                             messagePojo.getReferencedMessage().setEndDate( endDate );
                             if ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_SENDING_ACK ) {
@@ -266,7 +266,7 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                                 LOG.debug( new LogMessage(
                                         "Received ack message, backend still processing - conversation ID: "
                                                 + conversationPojo.getConversationId(), messagePojo ) );
-                            } else {
+                            } else if ( conversationPojo.getStatus() != org.nexuse2e.Constants.CONVERSATION_STATUS_COMPLETED ) {
                                 LOG.error( new LogMessage( "Unexpected conversation state after sending ack message: "
                                         + conversationPojo.getStatus(), messagePojo ) );
                             }
@@ -288,10 +288,17 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                     if ( LOG.isTraceEnabled() ) {
                         e.printStackTrace();
                     }
-                    LOG.error( new LogMessage( "Error sending message: " + e, messagePojo ), e );
+                    LOG.warn( new LogMessage( "Error sending message: " + e, messagePojo ), e );
                 }
             } else {
-                LOG.debug( new LogMessage( "Max number of retries reached!", messagePojo ) );
+                if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
+                    LOG.error( new LogMessage( "Maximum number of retries reached without recieving acknowledgment: "
+                            + messagePojo.getConversation().getConversationId() + "/" + messagePojo.getMessageId()
+                            + " (choreography: " + messagePojo.getConversation().getChoreography().getName() + ")",
+                            messagePojo ) );
+                } else {
+                    LOG.debug( new LogMessage( "Max number of retries reached!", messagePojo ) );
+                }
                 cancelRetrying();
             }
         } // run
@@ -304,6 +311,7 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
             MessagePojo messagePojo = messageContext.getMessagePojo();
             synchronized ( messagePojo.getConversation() ) {
 
+                // if ( messagePojo.getStatus() != org.nexuse2e.Constants.MESSAGE_STATUS_SENT ) {
                 messagePojo.setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_FAILED );
                 messagePojo.getConversation().setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_ERROR );
                 try {
@@ -313,11 +321,11 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                             messagePojo ) );
                     e.printStackTrace();
                 }
+                // }
                 Engine.getInstance().getTransactionService().deregisterProcessingMessage(
                         messageContext.getMessagePojo().getMessageId() );
             } // synchronized
         }
-
     } // inner class MessageSender
 
 } // FrontendOutboundDispatcher

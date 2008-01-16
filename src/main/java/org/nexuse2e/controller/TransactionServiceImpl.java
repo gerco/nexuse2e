@@ -578,6 +578,8 @@ public class TransactionServiceImpl implements TransactionService {
                 e.printStackTrace();
             }
             processingMessages.remove( id );
+        } else {
+            new Exception().printStackTrace();
         }
     } // deregisterProcessingMessage
 

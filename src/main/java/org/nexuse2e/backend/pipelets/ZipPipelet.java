@@ -56,11 +56,14 @@ public class ZipPipelet extends AbstractPipelet {
     public final static String TIMESTAMP_PATTERN = "timestampPattern";
     public final static String FILE_EXTENSION    = "fileExtension";
     public final static String COMBINE_PAYLOADS  = "combinePayloads";
+    public final static String SEQUENCE_DIGITS   = "sequenceDigits";
 
     private String             fileNamePattern   = null;
     private String             timestampPattern  = null;
     private String             fileExtension     = null;
     private boolean            combinePayloads   = false;
+    private int                sequenceDigits    = 2;
+    private boolean            useTimestamp      = true;
 
     public ZipPipelet() {
 
@@ -70,6 +73,8 @@ public class ZipPipelet extends AbstractPipelet {
                 "The file extension to append", "Payloads" ) );
         parameterMap.put( TIMESTAMP_PATTERN, new ParameterDescriptor( ParameterType.STRING, "Timestamp pattern",
                 "The timestamp pattern to use", "yyyy-MM-dd HH.mm.ssSSS" ) );
+        parameterMap.put( SEQUENCE_DIGITS, new ParameterDescriptor( ParameterType.STRING, "Sequence digits",
+                "Number of digits in sequence counter (prepended zeroes)", "2" ) );
         parameterMap.put( COMBINE_PAYLOADS, new ParameterDescriptor( ParameterType.BOOLEAN, "Combine Payloads",
                 "Combine Payloads", Boolean.FALSE ) );
 
@@ -84,7 +89,7 @@ public class ZipPipelet extends AbstractPipelet {
         LOG.trace( "initializing" );
 
         String tempParam = getParameter( FILE_NAME_PATTERN );
-        if ( ( tempParam != null ) && ( tempParam.length() != 0 ) ) {
+        if ( !StringUtils.isEmpty( tempParam ) ) {
             fileNamePattern = tempParam;
         } else {
             LOG.error( "No file name pattern provided!" );
@@ -92,7 +97,7 @@ public class ZipPipelet extends AbstractPipelet {
         }
 
         tempParam = getParameter( FILE_EXTENSION );
-        if ( ( tempParam != null ) && ( tempParam.length() != 0 ) ) {
+        if ( !StringUtils.isEmpty( tempParam ) ) {
             fileExtension = tempParam;
             if ( !fileExtension.startsWith( "." ) ) {
                 fileExtension = "." + fileExtension;
@@ -103,11 +108,24 @@ public class ZipPipelet extends AbstractPipelet {
         }
 
         tempParam = getParameter( TIMESTAMP_PATTERN );
-        if ( ( tempParam != null ) && ( tempParam.length() != 0 ) ) {
+        if ( !StringUtils.isEmpty( tempParam ) ) {
             timestampPattern = tempParam;
         } else {
-            LOG.error( "No timestamp pattern provided!" );
+            LOG.warn( "No timestamp pattern provided!" );
             timestampPattern = "yyyy-MM-dd HH.mm.ssSSS";
+            useTimestamp = false;
+        }
+        tempParam = getParameter( SEQUENCE_DIGITS );
+        if ( !StringUtils.isEmpty( tempParam ) ) {
+            try {
+                sequenceDigits = Integer.parseInt( tempParam );
+            } catch ( NumberFormatException nfe ) {
+                LOG.error( "Parameter sequence digits nota number: " + tempParam );
+                sequenceDigits = 2;
+            }
+        } else {
+            LOG.warn( "No sequence digits parameter provided!" );
+            sequenceDigits = 2;
         }
 
         Boolean tempBoolean = getParameter( COMBINE_PAYLOADS );
@@ -136,6 +154,7 @@ public class ZipPipelet extends AbstractPipelet {
             zos.setMethod( ZipOutputStream.DEFLATED );
 
             MessagePojo messagePojo = messageContext.getMessagePojo();
+            String timestamp = sdt.format( new Date() );
             for ( MessagePayloadPojo messagePayloadPojo : messagePojo.getMessagePayloads() ) {
                 try {
                     if ( !combinePayloads ) {
@@ -143,11 +162,20 @@ public class ZipPipelet extends AbstractPipelet {
                         zos = new ZipOutputStream( baos );
                         zos.setMethod( ZipOutputStream.DEFLATED );
                     }
+
+                    // Create sequence with fixed number of digits (leading zeroes)
+                    String sequenceTemp = "" + sequence;
+                    String sequenceFix = "";
+                    for ( int i = 0; i < ( sequenceDigits - sequenceTemp.length() ); i++ ) {
+                        sequenceFix += "0";
+                    }
+                    sequenceFix += sequenceTemp;
+
                     String filename = null;
-
-                    filename = StringUtils.replace( fileNamePattern, "${timestamp}", sdt.format( new Date() ) );
-
-                    filename = StringUtils.replace( filename, "${sequence}", "" + sequence );
+                    if ( useTimestamp ) {
+                        filename = StringUtils.replace( fileNamePattern, "${timestamp}", timestamp );
+                    }
+                    filename = StringUtils.replace( filename, "${sequence}", "" + sequenceFix );
 
                     sequence++;
 

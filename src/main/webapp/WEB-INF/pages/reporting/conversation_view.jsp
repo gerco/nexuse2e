@@ -65,6 +65,7 @@
                 <th class="NEXUSSection">Status</th>
                 <th class="NEXUSSection">Message Type</th>
                 <th class="NEXUSSection">Action</th>
+                <th class="NEXUSSection">Direction</th>
                 <th class="NEXUSSection">Created Date</th>
                 <th class="NEXUSSection">End Date</th>
                 <th class="NEXUSSection">Turnaround Time</th>
@@ -75,6 +76,7 @@
                 <td class="NEXUSValue"><bean:write name="messages" property="status"/></td>
                 <td class="NEXUSValue"><bean:write name="messages" property="type"/></td>
                 <td class="NEXUSValue"><bean:write name="messages" property="action"/></td>
+                <td class="NEXUSValue"><bean:write name="messages" property="direction"/></td>
                 <td class="NEXUSValue"><bean:write name="messages" property="createdDate"/></td>
                 <td class="NEXUSValue"><bean:write name="messages" property="endDate"/></td>
                 <td class="NEXUSValue"><bean:write name="messages" property="turnaroundTime"/></td>
