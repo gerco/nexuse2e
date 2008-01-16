@@ -167,10 +167,13 @@ public class XmlBaseConfigurationProvider implements BaseConfigurationProvider {
             if (configuration.getPartners() != null) {
                 for (PartnerPojo partner : configuration.getPartners()) {
                     partnerMap.put( partner.getNxPartnerId(), partner );
-                    if (partner.getNxCertificateIds() != null) {
-                        for (Integer nxCertId : partner.getNxCertificateIds()) {
+                    Set<Integer> certIds = partner.getNxCertificateIds();
+                    partner.setNxCertificateIds( null );
+                    if (certIds != null) {
+                        for (Integer nxCertId : certIds) {
                             CertificatePojo cert = certificateMap.get( nxCertId );
                             if (cert != null) {
+                                partner.getCertificates().add( cert );
                                 cert.setPartner( partner );
                             }
                         }
@@ -181,20 +184,12 @@ public class XmlBaseConfigurationProvider implements BaseConfigurationProvider {
                             connection.setTrp( trpMap.get( connection.getNxTrpId() ) );
                             connection.setPartner( partner );
                             connection.setNxConnectionId( 0 );
-                        }
-                    }
-                    Set<CertificatePojo> certificateSet = new HashSet<CertificatePojo>();
-                    partner.setCertificates( null );
-                    if (partner.getNxCertificateIds() != null) {
-                        for (Integer id : partner.getNxCertificateIds()) {
-                            CertificatePojo cert = certificateMap.get( id );
+                            CertificatePojo cert = certificateMap.get( connection.getNxCertificateId() );
                             if (cert != null) {
-                                cert.setPartner( partner );
-                                certificateSet.add( cert );
+                                connection.setCertificate( cert );
                             }
                         }
                     }
-                    partner.setCertificates( certificateSet );
                 }
             }
             

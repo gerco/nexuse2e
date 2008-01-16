@@ -315,7 +315,7 @@ public class PartnerPojo implements java.io.Serializable {
     public Set<Integer> getNxCertificateIds() {
 
 
-        if ( this.certificates != null ) {
+        if ( this.certificates != null && (!this.certificates.isEmpty() || nxCertificateIds == null)) {
             Set<Integer> resultSet = new HashSet<Integer>();
             for ( Iterator<CertificatePojo> certificatesIterator = certificates.iterator(); certificatesIterator
                     .hasNext(); ) {

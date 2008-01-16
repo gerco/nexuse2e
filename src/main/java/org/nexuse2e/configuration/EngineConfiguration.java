@@ -762,6 +762,28 @@ public class EngineConfiguration {
             }
         }
 
+        List<CertificatePojo> obsoleteCertificates = getObsoleteEntries( certificates, current.getCertificates(
+                Constants.CERTIFICATE_TYPE_ALL, null ) );
+        for ( CertificatePojo pojo : obsoleteCertificates ) {
+            configDao.deleteCertificate( pojo, session, transaction );
+        }
+        obsoleteCertificates.clear();
+
+        if ( certificates != null && certificates.size() > 0 ) {
+
+            for ( CertificatePojo certificate : certificates ) {
+                LOG.debug( "Certificate: " + certificate.getNxCertificateId() + " - " + certificate.getName() );
+                if ( certificate.getNxCertificateId() != 0 ) {
+                    certificate.setModifiedDate( new Date() );
+                    configDao.updateCertificate( certificate, session, transaction );
+                } else {
+                    certificate.setCreatedDate( new Date() );
+                    certificate.setModifiedDate( new Date() );
+                    configDao.saveCertificate( certificate, session, transaction );
+                }
+            }
+        }
+
         List<ChoreographyPojo> obsoleteChoreographies = getObsoleteEntries( choreographies, current.getChoreographies() );
         for ( ChoreographyPojo pojo : obsoleteChoreographies ) {
             boolean removeConversations = false;
@@ -842,28 +864,6 @@ public class EngineConfiguration {
                     logger.setCreatedDate( new Date() );
                     logger.setModifiedDate( new Date() );
                     configDao.saveLogger( logger, session, transaction );
-                }
-            }
-        }
-
-        List<CertificatePojo> obsoleteCertificates = getObsoleteEntries( certificates, current.getCertificates(
-                Constants.CERTIFICATE_TYPE_ALL, null ) );
-        for ( CertificatePojo pojo : obsoleteCertificates ) {
-            configDao.deleteCertificate( pojo, session, transaction );
-        }
-        obsoleteCertificates.clear();
-
-        if ( certificates != null && certificates.size() > 0 ) {
-
-            for ( CertificatePojo certificate : certificates ) {
-                LOG.debug( "Certificate: " + certificate.getNxCertificateId() + " - " + certificate.getName() );
-                if ( certificate.getNxCertificateId() != 0 ) {
-                    certificate.setModifiedDate( new Date() );
-                    configDao.updateCertificate( certificate, session, transaction );
-                } else {
-                    certificate.setCreatedDate( new Date() );
-                    certificate.setModifiedDate( new Date() );
-                    configDao.saveCertificate( certificate, session, transaction );
                 }
             }
         }
