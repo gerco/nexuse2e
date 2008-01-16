@@ -1066,6 +1066,17 @@ public class CertificateUtil {
 
         return false;
     } // isCertChainComplete
+    
+    /**
+     * Determines if the given certificate is self-signed.
+     * @param cert The certificate to check.
+     * @return <code>true</code> if and only if the given certificate is self-signed.
+     */
+    public static boolean isSelfSigned( X509Certificate cert ) {
+        X509Principal subject = CertificateUtil.getPrincipalFromCertificate( cert, true );
+        X509Principal issuer = CertificateUtil.getPrincipalFromCertificate( cert, false );
+        return (subject.equals( issuer ));
+    }
 
     public static Certificate[] getCertificateChain(CertificatePojo certificate, List<X509Certificate> certificates) {
         byte[] partnerCertBytes = null;

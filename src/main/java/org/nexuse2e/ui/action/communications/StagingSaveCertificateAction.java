@@ -91,28 +91,31 @@ public class StagingSaveCertificateAction extends NexusE2EAction {
             // check if root certificate is in the CA cert list
             // if not, add it to the CA list
             Certificate[] chain = CertificateUtil.getCertificateChain( jks );
-            if (chain != null && chain.length > 1) {
-                if (CertificateUtil.isCertChainComplete( chain )) {
-                    X509Certificate root = (X509Certificate) chain[chain.length - 1];
-                    String fingerprint = CertificateUtil.getMD5Fingerprint( root );
-                    ConfigurationAccessService cas = Engine.getInstance().getActiveConfigurationAccessService();
-                    boolean caInCaStore = false;
-                    for (CertificatePojo cert : cas.getCertificates( Constants.CERTIFICATE_TYPE_CA, null )) {
-                        data = cert.getBinaryData();
-                        if (data != null) {
-                            X509Certificate x509Certificate = CertificateUtil.getX509Certificate( data );
-                            if (x509Certificate != null) {
-                                String fp = CertificateUtil.getMD5Fingerprint( x509Certificate );
-                                if (fp != null && fp.equals( fingerprint )) {
-                                    caInCaStore = true;
-                                    break;
+            if (chain != null && chain.length > 0) {
+                for (int i = 0; i < chain.length; i++) {
+                    X509Certificate signer = (X509Certificate) chain[i];
+
+                    if (i > 0 || CertificateUtil.isSelfSigned( signer )) {
+                        String fingerprint = CertificateUtil.getMD5Fingerprint( signer );
+                        ConfigurationAccessService cas = Engine.getInstance().getActiveConfigurationAccessService();
+                        boolean caInCaStore = false;
+                        for (CertificatePojo cert : cas.getCertificates( Constants.CERTIFICATE_TYPE_CA, null )) {
+                            data = cert.getBinaryData();
+                            if (data != null) {
+                                X509Certificate x509Certificate = CertificateUtil.getX509Certificate( data );
+                                if (x509Certificate != null) {
+                                    String fp = CertificateUtil.getMD5Fingerprint( x509Certificate );
+                                    if (fp != null && fp.equals( fingerprint )) {
+                                        caInCaStore = true;
+                                        break;
+                                    }
                                 }
                             }
                         }
-                    }
-                    if (!caInCaStore) {
-                        certificates.add( CertificateUtil.createPojoFromX509( root, Constants.CERTIFICATE_TYPE_CA ) );
-
+                        if (!caInCaStore) {
+                            certificates.add( CertificateUtil.createPojoFromX509( signer, Constants.CERTIFICATE_TYPE_CA ) );
+    
+                        }
                     }
                 }
             }
