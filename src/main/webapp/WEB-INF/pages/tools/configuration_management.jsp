@@ -22,7 +22,7 @@
 <html:form action="ImportConfiguration.do" method="post" enctype="multipart/form-data">
 	<table width="100%">
 		<tr>
-			<td colspan="2" class="NEXUSSection">XML configuration</td>
+			<td colspan="2" class="NEXUSSection">Import Configuration</td>
 		</tr>
 		<tr>
 			<td class="NEXUSName">Configuration file</td>
@@ -39,6 +39,20 @@
 				sendFileForm="true" styleClass="button">
 				<img src="images/submit.gif" name="ExportButton" class="button">Import</nexus:submit>
 			</td>
+		</tr>
+	</table>
+	
+	<table width="100%">
+		<tr>
+			<td colspan="2" class="NEXUSSection">Export Configuration</td>
+		</tr>
+		<tr>
+			<td class="NEXUSName" colspan="2"><input  type="radio" checked="checked">Save As...</td>
+		</tr>
+	</table>
+	
+	<table class="NEXUS_BUTTON_TABLE" width="100%">
+		<tr>
 			<td class="BUTTON_RIGHT"><input name="Submit" value="blank"
 				type="hidden"><nobr><a href="ExportConfiguration.do" class="button">
 				<img src="images/submit.gif" name="ImportButton" class="button">Export</a>
@@ -46,6 +60,7 @@
 			</td>
 		</tr>
 	</table>
+	
 </html:form></center>
 <center><logic:messagesPresent>
 	<div class="NexusError"><html:errors /></div>
