@@ -57,7 +57,7 @@ public class PipelinePojo implements java.io.Serializable {
     @XmlElement(name = "Pipelet")
     private Collection<PipeletPojo> pipelets;
     
-    private int                     trpId;
+    private int                     nxTrpId;
 
     // Constructors
 
@@ -233,16 +233,20 @@ public class PipelinePojo implements java.io.Serializable {
      * @return
      */
     @XmlAttribute
-    public int getTrpId() {
+    public int getNxTrpId() {
         if ( this.trp != null ) {
             return this.trp.getNxTRPId();
 
         }
-        return trpId;
+        return nxTrpId;
     }
     
-    public void setTrpId( int trpId ) {
-        this.trpId = trpId;
+    /**
+     * Required for JAXB
+     * @param trpId
+     */
+    public void setNxTrpId( int trpId ) {
+        this.nxTrpId = trpId;
     }
     
     public boolean isFrontendInbound() {

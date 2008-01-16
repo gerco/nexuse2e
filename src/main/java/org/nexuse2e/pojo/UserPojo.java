@@ -51,7 +51,7 @@ public class UserPojo implements java.io.Serializable {
     private boolean           visible;
     private RolePojo          role;
 
-    private int               roleId;
+    private int               nxRoleId;
     
     // Constructors
 
@@ -227,20 +227,20 @@ public class UserPojo implements java.io.Serializable {
      * @return
      */
     @XmlAttribute
-    public int getRoleId() {
+    public int getNxRoleId() {
         if ( this.role != null ) {
             return this.role.getNxRoleId();
 
         }
-        return roleId;
+        return nxRoleId;
     }
     
     /**
      * Required for JAXB
      * @param roleId
      */
-    public void setRoleId( int roleId ) {
-        this.roleId = roleId;
+    public void setNxRoleId( int roleId ) {
+        this.nxRoleId = roleId;
     }
     
     /* (non-Javadoc)

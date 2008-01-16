@@ -52,9 +52,9 @@ public class ParticipantPojo implements java.io.Serializable {
     private String            description;
     private CertificatePojo   localCertificate;
     
-    private int               partnerId;
-    private int               localPartnerId;
-    private int               connectionId;
+    private int               nxPartnerId;
+    private int               nxLocalPartnerId;
+    private int               nxConnectionId;
 
     // Constructors
 
@@ -109,21 +109,21 @@ public class ParticipantPojo implements java.io.Serializable {
      * @return
      */
     @XmlAttribute
-    public int getPartnerId() {
+    public int getNxPartnerId() {
 
         if ( this.partner != null ) {
             return this.partner.getNxPartnerId();
 
         }
-        return partnerId;
+        return nxPartnerId;
     }
     
     /**
      * Required for JAXB
      * @param partnerId
      */
-    public void setPartnerId( int partnerId ) {
-        this.partnerId = partnerId;
+    public void setNxPartnerId( int partnerId ) {
+        this.nxPartnerId = partnerId;
     }
 
     public PartnerPojo getPartner() {
@@ -151,21 +151,21 @@ public class ParticipantPojo implements java.io.Serializable {
      * @return
      */
     @XmlAttribute
-    public int getLocalPartnerId() {
+    public int getNxLocalPartnerId() {
 
         if ( this.localPartner != null ) {
             return this.localPartner.getNxPartnerId();
 
         }
-        return localPartnerId;
+        return nxLocalPartnerId;
     }
     
     /**
      * Required for JAXB
      * @param localPartnerId
      */
-    public void setLocalPartnerId( int localPartnerId ) {
-        this.localPartnerId = localPartnerId;
+    public void setNxLocalPartnerId( int localPartnerId ) {
+        this.nxLocalPartnerId = localPartnerId;
     }
 
     public PartnerPojo getLocalPartner() {
@@ -183,21 +183,21 @@ public class ParticipantPojo implements java.io.Serializable {
      * @return
      */
     @XmlAttribute
-    public int getConnectionId() {
+    public int getNxConnectionId() {
 
         if ( this.connection != null ) {
             return this.connection.getNxConnectionId();
 
         }
-        return connectionId;
+        return nxConnectionId;
     }
     
     /**
      * Required for JAXB
      * @param connectionId
      */
-    public void setConnectionId( int connectionId ) {
-        this.connectionId = connectionId;
+    public void setNxConnectionId( int connectionId ) {
+        this.nxConnectionId = connectionId;
     }
 
     public ConnectionPojo getConnection() {

@@ -55,6 +55,8 @@ public class CertificatePojo implements java.io.Serializable {
     private String            description;
     private byte[]            binaryData;
 
+    private int               nxPartnerId;
+    
     // Constructors
 
     /** default constructor */
@@ -270,5 +272,24 @@ public class CertificatePojo implements java.io.Serializable {
             return true;
         }
         return false;
+    }
+    
+    /**
+     * Required for JAXB
+     */
+    public int getNxPartnerId() {
+        if ( this.partner != null ) {
+            return this.partner.getNxPartnerId();
+
+        }
+        return nxPartnerId;
+    }
+    
+    /**
+     * Required for JAXB
+     * @param nxPartnerId
+     */
+    public void setNxPartnerId( int nxPartnerId ) {
+        this.nxPartnerId = nxPartnerId;
     }
 }

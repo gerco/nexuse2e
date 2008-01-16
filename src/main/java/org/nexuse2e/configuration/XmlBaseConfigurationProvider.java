@@ -144,7 +144,7 @@ public class XmlBaseConfigurationProvider implements BaseConfigurationProvider {
                         if (pipeline.getPipelets() != null) {
                             for (PipeletPojo pipelet : pipeline.getPipelets()) {
                                 pipelet.setPipeline( pipeline );
-                                pipelet.setComponent( componentMap.get( pipelet.getComponentId() ) );
+                                pipelet.setComponent( componentMap.get( pipelet.getNxComponentId() ) );
                                 if (pipelet.getPipeletParams() != null) {
                                     for (PipeletParamPojo param : pipelet.getPipeletParams()) {
                                         param.setPipelet( pipelet );
@@ -156,29 +156,37 @@ public class XmlBaseConfigurationProvider implements BaseConfigurationProvider {
                         } else {
                             pipeline.setPipelets( new ArrayList<PipeletPojo>() );
                         }
-                        pipeline.setTrp( trpMap.get( pipeline.getTrpId() ) );
+                        pipeline.setTrp( trpMap.get( pipeline.getNxTrpId() ) );
                     }
                 }
             }
             
-            // patch connections, patch and map partners and connections
+            // patch connections and certificates, patch and map partners and connections
             Map<Integer, PartnerPojo> partnerMap = new HashMap<Integer, PartnerPojo>();
             Map<Integer, ConnectionPojo> connectionMap = new HashMap<Integer, ConnectionPojo>();
             if (configuration.getPartners() != null) {
                 for (PartnerPojo partner : configuration.getPartners()) {
                     partnerMap.put( partner.getNxPartnerId(), partner );
+                    if (partner.getNxCertificateIds() != null) {
+                        for (Integer nxCertId : partner.getNxCertificateIds()) {
+                            CertificatePojo cert = certificateMap.get( nxCertId );
+                            if (cert != null) {
+                                cert.setPartner( partner );
+                            }
+                        }
+                    }
                     if (partner.getConnections() != null) {
                         for (ConnectionPojo connection : partner.getConnections()) {
                             connectionMap.put( connection.getNxConnectionId(), connection );
-                            connection.setTrp( trpMap.get( connection.getTrpId() ) );
+                            connection.setTrp( trpMap.get( connection.getNxTrpId() ) );
                             connection.setPartner( partner );
                             connection.setNxConnectionId( 0 );
                         }
                     }
                     Set<CertificatePojo> certificateSet = new HashSet<CertificatePojo>();
                     partner.setCertificates( null );
-                    if (partner.getCertificateIds() != null) {
-                        for (Integer id : partner.getCertificateIds()) {
+                    if (partner.getNxCertificateIds() != null) {
+                        for (Integer id : partner.getNxCertificateIds()) {
                             CertificatePojo cert = certificateMap.get( id );
                             if (cert != null) {
                                 cert.setPartner( partner );
@@ -219,9 +227,9 @@ public class XmlBaseConfigurationProvider implements BaseConfigurationProvider {
                     if (choreography.getActions() != null) {
                         for (ActionPojo action : choreography.getActions()) {
                             action.setChoreography( choreography );
-                            action.setInboundPipeline( pipelineMap.get( action.getInboundPipelineId() ) );
-                            action.setOutboundPipeline( pipelineMap.get( action.getOutboundPipelineId() ) );
-                            action.setStatusUpdatePipeline( pipelineMap.get( action.getStatusUpdatePipelineId() ) );
+                            action.setInboundPipeline( pipelineMap.get( action.getInboundNxPipelineId() ) );
+                            action.setOutboundPipeline( pipelineMap.get( action.getOutboundNxPipelineId() ) );
+                            action.setStatusUpdatePipeline( pipelineMap.get( action.getStatusUpdateNxPipelineId() ) );
                             Set<FollowUpActionPojo> followUpActions = new HashSet<FollowUpActionPojo>();
                             Set<FollowUpActionPojo> followedActions = new HashSet<FollowUpActionPojo>();
                             for (int i = 0; i < 2; i++) {
@@ -234,8 +242,8 @@ public class XmlBaseConfigurationProvider implements BaseConfigurationProvider {
                                 if (followActions != null) {
                                     for (FollowUpActionPojo followUpAction : followActions) {
                                         followUpAction = followUpActionMap.get( followUpAction.getNxFollowUpActionId() );
-                                        followUpAction.setFollowUpAction( actionMap.get( followUpAction.getFollowUpActionId() ) );
-                                        followUpAction.setAction( actionMap.get( followUpAction.getActionId() ) );
+                                        followUpAction.setFollowUpAction( actionMap.get( followUpAction.getRefNxFollowUpActionId() ) );
+                                        followUpAction.setAction( actionMap.get( followUpAction.getNxActionId() ) );
                                         if (i == 0) {
                                             followUpActions.add( followUpAction );
                                         } else {
@@ -254,9 +262,9 @@ public class XmlBaseConfigurationProvider implements BaseConfigurationProvider {
                     if (choreography.getParticipants() != null) {
                         for (ParticipantPojo participant : choreography.getParticipants()) {
                             participant.setChoreography( choreography );
-                            participant.setPartner( partnerMap.get( participant.getPartnerId() ) );
-                            participant.setLocalPartner( partnerMap.get( participant.getLocalPartnerId() ) );
-                            participant.setConnection( connectionMap.get( participant.getConnectionId() ) );
+                            participant.setPartner( partnerMap.get( participant.getNxPartnerId() ) );
+                            participant.setLocalPartner( partnerMap.get( participant.getNxLocalPartnerId() ) );
+                            participant.setConnection( connectionMap.get( participant.getNxConnectionId() ) );
                             participant.setNxParticipantId( 0 );
                         }
                     } else {
@@ -287,7 +295,7 @@ public class XmlBaseConfigurationProvider implements BaseConfigurationProvider {
             // patch users
             if (configuration.getUsers() != null) {
                 for (UserPojo user : configuration.getUsers()) {
-                    user.setRole( roleMap.get( user.getRoleId() ) );
+                    user.setRole( roleMap.get( user.getNxRoleId() ) );
                     user.setNxUserId( 0 );
                 }
             }
@@ -295,7 +303,7 @@ public class XmlBaseConfigurationProvider implements BaseConfigurationProvider {
             // patch loggers
             if (configuration.getLoggers() != null) {
                 for (LoggerPojo logger : configuration.getLoggers()) {
-                    logger.setComponent( componentMap.get( logger.getComponentId() ) );
+                    logger.setComponent( componentMap.get( logger.getNxComponentId() ) );
                     logger.setNxLoggerId( 0 );
                     if (logger.getLoggerParams() != null) {
                         for (LoggerParamPojo loggerParam : logger.getLoggerParams()) {
@@ -309,7 +317,7 @@ public class XmlBaseConfigurationProvider implements BaseConfigurationProvider {
             // patch services
             if (configuration.getServices() != null) {
                 for (ServicePojo service : configuration.getServices()) {
-                    service.setComponent( componentMap.get( service.getComponentId() ) );
+                    service.setComponent( componentMap.get( service.getNxComponentId() ) );
                     service.setNxServiceId( 0 );
                     if (service.getServiceParams() != null) {
                         for (ServiceParamPojo serviceParam : service.getServiceParams()) {

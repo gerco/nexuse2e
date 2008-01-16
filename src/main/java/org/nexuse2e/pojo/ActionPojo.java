@@ -61,9 +61,9 @@ public class ActionPojo implements java.io.Serializable {
     @XmlElement(name = "FollowedAction")
     private Set<FollowUpActionPojo> followedActions  = new HashSet<FollowUpActionPojo>( 0 );
 
-    private int statusUpdatePipelineId;
-    private int inboundPipelineId;
-    private int outboundPipelineId;
+    private int statusUpdateNxPipelineId;
+    private int inboundNxPipelineId;
+    private int outboundNxPipelineId;
     
     // Constructors
 
@@ -186,21 +186,21 @@ public class ActionPojo implements java.io.Serializable {
      * @return
      */
     @XmlAttribute
-    public int getInboundPipelineId() {
+    public int getInboundNxPipelineId() {
 
         if ( this.inboundPipeline != null ) {
             return this.inboundPipeline.getNxPipelineId();
 
         }
-        return inboundPipelineId;
+        return inboundNxPipelineId;
     }
     
     /**
      * Required for JAXB
      * @param inboundPipelineId
      */
-    public void setInboundPipelineId( int inboundPipelineId ) {
-        this.inboundPipelineId = inboundPipelineId;
+    public void setInboundNxPipelineId( int inboundPipelineId ) {
+        this.inboundNxPipelineId = inboundPipelineId;
     }
 
     public PipelinePojo getInboundPipeline() {
@@ -218,21 +218,21 @@ public class ActionPojo implements java.io.Serializable {
      * @return
      */
     @XmlAttribute
-    public int getOutboundPipelineId() {
+    public int getOutboundNxPipelineId() {
 
         if ( this.outboundPipeline != null ) {
             return this.outboundPipeline.getNxPipelineId();
 
         }
-        return outboundPipelineId;
+        return outboundNxPipelineId;
     }
     
     /**
      * Required for JAXB
      * @param outboundPipelineId
      */
-    public void setOutboundPipelineId( int outboundPipelineId ) {
-        this.outboundPipelineId = outboundPipelineId;
+    public void setOutboundNxPipelineId( int outboundPipelineId ) {
+        this.outboundNxPipelineId = outboundPipelineId;
     }
 
     public PipelinePojo getOutboundPipeline() {
@@ -311,21 +311,21 @@ public class ActionPojo implements java.io.Serializable {
      * @return
      */
     @XmlAttribute
-    public int getStatusUpdatePipelineId() {
+    public int getStatusUpdateNxPipelineId() {
 
         if ( this.statusUpdatePipeline != null ) {
             return this.statusUpdatePipeline.getNxPipelineId();
 
         }
-        return statusUpdatePipelineId;
+        return statusUpdateNxPipelineId;
     }
     
     /**
      * Required for JAXB
      * @param statusUpdatePipelineId
      */
-    public void setStatusUpdatePipelineId( int statusUpdatePipelineId ) {
-        this.statusUpdatePipelineId = statusUpdatePipelineId;
+    public void setStatusUpdateNxPipelineId( int statusUpdateNxPipelineId ) {
+        this.statusUpdateNxPipelineId = statusUpdateNxPipelineId;
     }
 
     public PipelinePojo getStatusUpdatePipeline() {

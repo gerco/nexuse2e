@@ -63,7 +63,7 @@ public class LoggerPojo implements java.io.Serializable {
 
     private boolean                     running;
 
-    private int                         componentId;
+    private int                         nxComponentId;
     
     // Constructors
 
@@ -128,20 +128,20 @@ public class LoggerPojo implements java.io.Serializable {
      * @return
      */
     @XmlAttribute
-    public int getComponentId() {
+    public int getNxComponentId() {
 
         if ( this.component != null ) {
             return this.component.getNxComponentId();
         }
-        return componentId;
+        return nxComponentId;
     }
     
     /**
      * Required for JAXB
      * @param componentId
      */
-    public void setComponentId( int componentId ) {
-        this.componentId = componentId;
+    public void setNxComponentId( int componentId ) {
+        this.nxComponentId = componentId;
     }
 
     public Date getCreatedDate() {

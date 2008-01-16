@@ -61,7 +61,7 @@ public class PipeletPojo implements java.io.Serializable {
     @XmlElement(name = "PipeletParam")
     private List<PipeletParamPojo> pipeletParams    = new Vector<PipeletParamPojo>( 0 );
 
-    private int                    componentId;
+    private int                    nxComponentId;
     
     // Constructors
 
@@ -127,17 +127,21 @@ public class PipeletPojo implements java.io.Serializable {
      * @return
      */
     @XmlAttribute
-    public int getComponentId() {
+    public int getNxComponentId() {
 
         if ( this.component != null ) {
             return this.component.getNxComponentId();
 
         }
-        return componentId;
+        return nxComponentId;
     }
     
-    public void setComponentId( int componentId ) {
-        this.componentId = componentId;
+    /**
+     * Required for JAXB 
+     * @param componentId
+     */
+    public void setNxComponentId( int componentId ) {
+        this.nxComponentId = componentId;
     }
 
     public ComponentPojo getComponent() {

@@ -54,8 +54,8 @@ public class FollowUpActionPojo implements java.io.Serializable {
     private Date              modifiedDate;
     private int               modifiedNxUserId;
 
-    private int               actionId;
-    private int               followUpActionId;
+    private int               nxActionId;
+    private int               refNxFollowUpActionId;
     
     // Constructors
 
@@ -144,20 +144,20 @@ public class FollowUpActionPojo implements java.io.Serializable {
      * @return
      */
     @XmlAttribute
-    public int getActionId() {
+    public int getNxActionId() {
 
         if ( this.action != null ) {
             return this.action.getNxActionId();
         }
-        return actionId;
+        return nxActionId;
     }
     
     /**
      * Required for JAXB
      * @param actionId
      */
-    public void setActionId( int actionId ) {
-        this.actionId = actionId;
+    public void setNxActionId( int actionId ) {
+        this.nxActionId = actionId;
     }
 
     /**
@@ -165,21 +165,21 @@ public class FollowUpActionPojo implements java.io.Serializable {
      * @return
      */
     @XmlAttribute
-    public int getFollowUpActionId() {
+    public int getRefNxFollowUpActionId() {
 
         if ( this.followUpAction != null ) {
             return this.followUpAction.getNxActionId();
         }
 
-        return followUpActionId;
+        return refNxFollowUpActionId;
     }
     
     /**
      * Required for JAXB
      * @param followUpActionId
      */
-    public void setFollowUpActionId( int followUpActionId ) {
-        this.followUpActionId = followUpActionId;
+    public void setRefNxFollowUpActionId( int followUpActionId ) {
+        this.refNxFollowUpActionId = followUpActionId;
     }
 
     /* (non-Javadoc)

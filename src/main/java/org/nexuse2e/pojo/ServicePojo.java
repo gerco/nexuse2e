@@ -58,7 +58,7 @@ public class ServicePojo implements java.io.Serializable {
     @XmlElement(name = "ServiceParam")
     private List<ServiceParamPojo> serviceParams    = new ArrayList<ServiceParamPojo>( 0 );
 
-    private int                    componentId;
+    private int                    nxComponentId;
     
     // Constructors
 
@@ -117,20 +117,20 @@ public class ServicePojo implements java.io.Serializable {
      * @return
      */
     @XmlAttribute
-    public int getComponentId() {
+    public int getNxComponentId() {
 
         if ( this.component != null ) {
             return this.component.getNxComponentId();
         }
-        return componentId;
+        return nxComponentId;
     }
     
     /**
      * Required for JAXB
      * @param componentId
      */
-    public void setComponentId( int componentId ) {
-        this.componentId = componentId;
+    public void setNxComponentId( int componentId ) {
+        this.nxComponentId = componentId;
     }
 
     public void setComponent( ComponentPojo component ) {

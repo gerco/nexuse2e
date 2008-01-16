@@ -64,8 +64,8 @@ public class ConnectionPojo implements java.io.Serializable {
     private String               description;
     private Set<ParticipantPojo> partcipants      = new HashSet<ParticipantPojo>( 0 );
     
-    private int                  trpId;
-    private int                  certificateId;
+    private int                  nxTrpId;
+    private int                  nxCertificateId;
 
     // Constructors
 
@@ -140,21 +140,21 @@ public class ConnectionPojo implements java.io.Serializable {
      * @return
      */
     @XmlAttribute
-    public int getCertificateId() {
+    public int getNxCertificateId() {
 
         if ( this.certificate != null ) {
             return this.certificate.getNxCertificateId();
 
         }
-        return certificateId;
+        return nxCertificateId;
     }
     
     /**
      * Required for JAXB
      * @param certificateId
      */
-    public void setCertificateId( int certificateId ) {
-        this.certificateId = certificateId;
+    public void setNxCertificateId( int certificateId ) {
+        this.nxCertificateId = certificateId;
     }
 
     public CertificatePojo getCertificate() {
@@ -172,20 +172,20 @@ public class ConnectionPojo implements java.io.Serializable {
      * @return
      */
     @XmlAttribute
-    public int getTrpId() {
+    public int getNxTrpId() {
 
         if ( this.trp != null ) {
             return this.trp.getNxTRPId();
 
         }
-        return trpId;
+        return nxTrpId;
     }
     
     /**
      * Required for JAXB
      */
-    public void setTrpId( int trpId ) {
-        this.trpId = trpId;
+    public void setNxTrpId( int trpId ) {
+        this.nxTrpId = trpId;
     }
 
     public TRPPojo getTrp() {

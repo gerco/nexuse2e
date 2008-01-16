@@ -71,7 +71,7 @@ public class PartnerPojo implements java.io.Serializable {
     private Set<ConnectionPojo>   connections      = new HashSet<ConnectionPojo>( 0 );
     private List<ParticipantPojo> participants     = new ArrayList<ParticipantPojo>( 0 );
 
-    private Set<Integer>          certificateIds;
+    private Set<Integer>          nxCertificateIds;
     
     // Constructors
 
@@ -310,9 +310,9 @@ public class PartnerPojo implements java.io.Serializable {
      * Required for JAXB
      * @return
      */
-    @XmlElementWrapper(name = "Certificates")
-    @XmlElement(name = "CertificateId")
-    public Set<Integer> getCertificateIds() {
+    @XmlElementWrapper(name = "CertificateReferences")
+    @XmlElement(name = "NxCertificateId")
+    public Set<Integer> getNxCertificateIds() {
 
 
         if ( this.certificates != null ) {
@@ -324,15 +324,15 @@ public class PartnerPojo implements java.io.Serializable {
             }
             return resultSet;
         }
-        return certificateIds;
+        return nxCertificateIds;
     }
     
     /**
      * Required for JAXB
      * @param certificateIds
      */
-    public void setCertificateIds( Set<Integer> certificateIds ) {
-        this.certificateIds = certificateIds;
+    public void setNxCertificateIds( Set<Integer> certificateIds ) {
+        this.nxCertificateIds = certificateIds;
     }
 
     public Set<CertificatePojo> getCertificates() {
