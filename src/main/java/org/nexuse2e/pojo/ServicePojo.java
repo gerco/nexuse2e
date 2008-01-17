@@ -241,7 +241,7 @@ public class ServicePojo implements java.io.Serializable {
         return nxServiceId;
     }
 
-    
+    @XmlAttribute
     public boolean isAutostart() {
     
         return autostart;
