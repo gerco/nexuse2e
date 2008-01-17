@@ -29,7 +29,7 @@
 		<copy todir="${basedir}/target/integration.http/src/org/nexuse2e/pojo" file="${basedir}/src/main/java/org/nexuse2e/pojo/ChoreographyPojo.java" />
 		<copy todir="${basedir}/target/integration.http/src/org/nexuse2e/pojo" file="${basedir}/src/main/java/org/nexuse2e/pojo/ConversationPojo.java" />
         -->
-		<javac srcdir="${basedir}/target/integration.http/src" destdir="${basedir}/target/integration.http/classes" debug="false" optimize="true" target="1.4">
+		<javac srcdir="${basedir}/target/integration.http/src" destdir="${basedir}/target/integration.http/classes" debug="false" optimize="true" source="1.4" target="1.4">
 			<classpath refid="project.class.path" />
 		</javac>
 	</target>

@@ -48,7 +48,7 @@ public class HttpIntegrationClient {
     public static final String PARAM_CONTENT                = "content";
     public static final String PARAM_PRIMARY_KEY            = "primaryKey";
 
-    private static final int   SOCKET_TIMEOUT               = 120000;
+    private static final int   SOCKET_TIMEOUT               = 1000 * 60 * 15; // 15 minutes
 
     /**
      * @param args
@@ -65,6 +65,13 @@ public class HttpIntegrationClient {
         String content = null;
         boolean newConversation = false;
         URL url = null;
+
+        /*
+        System.setProperty( "org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog" );
+        System.setProperty( "org.apache.commons.logging.simplelog.showdatetime", "true" );
+        System.setProperty( "org.apache.commons.logging.simplelog.log.httpclient.wire", "debug" );
+        System.setProperty( "org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "debug" );
+        */
 
         if ( args.length < 5 ) {
             System.err.println( "Wrong number of arguments, usage: com.tamgroup.nexus.shared.NexusRemote " );
@@ -103,7 +110,8 @@ public class HttpIntegrationClient {
                     if ( fileSize >= memory ) {
                         String msg = "Not Enough memory to transfer data of " + fileSize / 1024
                                 + " Kbytes. Available memory is " + memory / 1024 + " Kbytes";
-                        System.err.println( "WARNING: " + msg + " (operating system might still increase memory alocation upon request)" );
+                        System.err.println( "WARNING: " + msg
+                                + " (operating system might still increase memory alocation upon request)" );
                         // throw new Exception( msg );
                     }
 
@@ -127,7 +135,8 @@ public class HttpIntegrationClient {
             System.exit( 0 );
         }
 
-        System.out.println( "Creating request" );
+        System.out.println( "Creating request: choreography - " + choreographyId + ", participant - " + participantId
+                + ", action - " + actionId + ", file - " + fileName );
 
         HostConfiguration configuration = new HostConfiguration();
         configuration.setHost( new HttpHost( url.getHost(), url.getPort(), Protocol.getProtocol( url.getProtocol() ) ) );
