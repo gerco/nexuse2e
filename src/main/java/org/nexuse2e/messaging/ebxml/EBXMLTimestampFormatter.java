@@ -41,32 +41,37 @@ public class EBXMLTimestampFormatter implements TimestampFormatter {
             DateTime date = new DateTime( time );
             return date.toDate();
         } catch ( ParseException e ) {
-            throw new NexusException( "Error while parsing timestamp:", e );
+            try {
+                SimpleDateFormat ebXMLDateFormat = new SimpleDateFormat( "yyyyMMdd'T'HHmmss.SSS'Z'" );
+                return ebXMLDateFormat.parse( time );
+            } catch ( ParseException pe3 ) {
+                throw new NexusException( "Error while parsing timestamp:", e );
+            }
         }
 
-//        try {
-//            SimpleDateFormat ebXMLDateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss'Z'" );
-//            return ebXMLDateFormat.parse( time );
-//        } catch ( ParseException pe1 ) {
-//            try {
-//
-//                SimpleDateFormat ebXMLDateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" );
-//                return ebXMLDateFormat.parse( time );
-//            } catch ( ParseException pe2 ) {
-//                try {
-//
-//                    SimpleDateFormat ebXMLDateFormat = new SimpleDateFormat( "yyyyMMdd'T'HHmmss.SSS'Z'" );
-//                    return ebXMLDateFormat.parse( time );
-//                } catch ( ParseException pe3 ) {
-//                    try {
-//                        SimpleDateFormat ebXMLDateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss" );
-//                        return ebXMLDateFormat.parse( time );
-//                    } catch ( ParseException pe4 ) {
-//                        throw new NexusException( "Error while parsing timestamp:", pe4 );
-//                    }
-//                }
-//            }
-//        }
+        //        try {
+        //            SimpleDateFormat ebXMLDateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss'Z'" );
+        //            return ebXMLDateFormat.parse( time );
+        //        } catch ( ParseException pe1 ) {
+        //            try {
+        //
+        //                SimpleDateFormat ebXMLDateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" );
+        //                return ebXMLDateFormat.parse( time );
+        //            } catch ( ParseException pe2 ) {
+        //                try {
+        //
+        //                    SimpleDateFormat ebXMLDateFormat = new SimpleDateFormat( "yyyyMMdd'T'HHmmss.SSS'Z'" );
+        //                    return ebXMLDateFormat.parse( time );
+        //                } catch ( ParseException pe3 ) {
+        //                    try {
+        //                        SimpleDateFormat ebXMLDateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss" );
+        //                        return ebXMLDateFormat.parse( time );
+        //                    } catch ( ParseException pe4 ) {
+        //                        throw new NexusException( "Error while parsing timestamp:", pe4 );
+        //                    }
+        //                }
+        //            }
+        //        }
     }
 
     /**
