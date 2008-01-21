@@ -259,6 +259,7 @@ public class XmlBaseConfigurationProvider implements BaseConfigurationProvider {
                             participant.setChoreography( choreography );
                             participant.setPartner( partnerMap.get( participant.getNxPartnerId() ) );
                             participant.setLocalPartner( partnerMap.get( participant.getNxLocalPartnerId() ) );
+                            participant.setLocalCertificate( certificateMap.get( participant.getNxLocalCertificateId() ) );
                             participant.setConnection( connectionMap.get( participant.getNxConnectionId() ) );
                             participant.setNxParticipantId( 0 );
                         }

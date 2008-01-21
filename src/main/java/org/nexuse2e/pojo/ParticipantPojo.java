@@ -55,6 +55,7 @@ public class ParticipantPojo implements java.io.Serializable {
     private int               nxPartnerId;
     private int               nxLocalPartnerId;
     private int               nxConnectionId;
+    private int               nxLocalCertificateId;
 
     // Constructors
 
@@ -198,6 +199,26 @@ public class ParticipantPojo implements java.io.Serializable {
      */
     public void setNxConnectionId( int connectionId ) {
         this.nxConnectionId = connectionId;
+    }
+    
+    /**
+     * Required for JAXB 
+     * @return
+     */
+    @XmlAttribute
+    public int getNxLocalCertificateId() {
+        if (this.localCertificate != null) {
+            return this.localCertificate.getNxCertificateId();
+        }
+        return nxLocalCertificateId;
+    }
+    
+    /**
+     * Required for JAXB
+     * @param nxLocalCertificateId
+     */
+    public void setNxLocalCertificateId( int nxLocalCertificateId ) {
+        this.nxLocalCertificateId = nxLocalCertificateId;
     }
 
     public ConnectionPojo getConnection() {
