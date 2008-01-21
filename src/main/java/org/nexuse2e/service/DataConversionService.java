@@ -57,6 +57,7 @@ public class DataConversionService extends AbstractService {
     public final static String REPLACE_STRING          = "replaceString";
     public final static String FILL_LEFT               = "fillLeft";
     public final static String FILL_RIGHT              = "fillRight";
+    public final static String STRIP_LEADING           = "stripLeading";
     public final static String CONCAT                  = "concat";
 
     @Override
@@ -227,6 +228,9 @@ public class DataConversionService extends AbstractService {
         } else if ( name.equals( FILL_RIGHT ) ) {
             LOG.trace( "dispatching: fillRight" );
             return processFill( false, params, definition, additionalValues );
+        } else if ( name.equals( STRIP_LEADING ) ) {
+            LOG.trace( "dispatching: stripLeading" );
+            return processStripLeading( params, definition, additionalValues );
         } else if (name.equals( CONCAT )) {
             LOG.trace( "dispatching: concat" );
             return processConcat( xPath, document, params, definition, additionalValues );
@@ -478,6 +482,29 @@ public class DataConversionService extends AbstractService {
             LOG.error( "Error while " + n + ": " + e );
         }
         return null;
+    }
+
+    private String processStripLeading( String[] params, MappingDefinition definition,
+            Map<String, String> aditionalValues ) {
+        if ( params == null || params.length < 1 ) {
+            LOG.error( "stripLeading requires at least one parameters: stripLeading[char]" );
+            return null;
+        }
+
+        String value = aditionalValues.get( "$value" );
+        if (value != null) {
+            String character = stripParameter( params[0] );
+            if (StringUtils.isEmpty( character )) {
+                LOG.error( "stripLeading: char parameter must not be empty" );
+                return null;
+            }
+            char c = character.charAt( 0 );
+            int offset;
+            char[] chars = value.toCharArray();
+            for (offset = 0; offset < chars.length && chars[offset] == c; offset++);
+            value = new String( chars, offset, chars.length - offset );
+        }
+        return value;
     }
 
     private String processConcat(
