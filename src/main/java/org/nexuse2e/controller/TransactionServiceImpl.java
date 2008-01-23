@@ -579,7 +579,7 @@ public class TransactionServiceImpl implements TransactionService {
             }
             processingMessages.remove( id );
         } else {
-            new Exception().printStackTrace();
+            //new Exception().printStackTrace();
         }
     } // deregisterProcessingMessage
 
