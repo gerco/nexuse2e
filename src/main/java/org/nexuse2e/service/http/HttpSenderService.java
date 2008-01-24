@@ -182,18 +182,42 @@ public class HttpSenderService extends AbstractService implements SenderAware {
             // Support for HTTP plain
             TRPPojo trpPojo = messageContext.getMessagePojo().getTRP();
             if ( trpPojo.getProtocol().equalsIgnoreCase( org.nexuse2e.Constants.PROTOCOL_ID_EBXML ) ) {
+
+                String contentTypeString = null;
+
+                /* No bug with wrapping the content type, see section 2.2 of http://www.ietf.org/rfc/rfc2616.txt */
                 ContentType contentType = new ContentType( "multipart/related" );
                 contentType.setParameter( "type", "text/xml" );
                 contentType.setParameter( "boundary", "MIME_boundary" );
                 contentType.setParameter( "start", messageContext.getMessagePojo().getMessageId()
                         + messageContext.getMessagePojo().getTRP().getProtocol() + "-Header" );
 
+                // LOG.trace( "********* Content-Type:" + contentType.toString() );
+                contentTypeString = contentType.toString();
+
+                /* Alternative implementation for content type
+                StringBuffer buffer = new StringBuffer( "multipart/related" );
+                ParameterFormatter tempParameterFormatter = new ParameterFormatter();
+                buffer.append( "; " );
+                tempParameterFormatter.format( buffer, new NameValuePair( "type", "text/xml" ) );
+                buffer.append( "; " );
+                tempParameterFormatter.format( buffer, new NameValuePair( "boundary", "MIME_boundary" ) );
+                buffer.append( "; " );
+                tempParameterFormatter.format( buffer, new NameValuePair( "start", messageContext.getMessagePojo()
+                        .getMessageId()
+                        + messageContext.getMessagePojo().getTRP().getProtocol() + "-Header" ) );
+
+                contentTypeString = buffer.toString();
+                 */
+
+                // LOG.trace( "********* NEW Content-Type:" + contentTypeString );
                 RequestEntity requestEntity = new ByteArrayRequestEntity( (byte[]) messageContext.getData(),
-                        "Content-Type:" + contentType.toString() );
+                        "Content-Type:" + contentTypeString );
+
                 method.setRequestEntity( requestEntity );
 
                 method.setRequestHeader( "SOAPAction", "\"ebXML\"" );
-                method.setRequestHeader( "Content-Type", contentType.toString() );
+                method.setRequestHeader( "Content-Type", contentTypeString );
             } else if ( trpPojo.getProtocol().equalsIgnoreCase( org.nexuse2e.Constants.PROTOCOL_ID_HTTP_PLAIN ) ) {
                 StringBuffer uriParams = new StringBuffer();
                 uriParams.append( "ChoreographyID="
@@ -227,8 +251,8 @@ public class HttpSenderService extends AbstractService implements SenderAware {
                         messageContext.getMessagePojo() ) );
                 throw new NexusException( "Message submission failed, server responded with status: " + statusCode );
             } else if ( statusCode < 200 ) {
-                LOG.warn( new LogMessage( "Partner server responded with status: " + statusCode,
-                        messageContext.getMessagePojo() ) );
+                LOG.warn( new LogMessage( "Partner server responded with status: " + statusCode, messageContext
+                        .getMessagePojo() ) );
             }
 
             httpReply = getHTTPReply( method );
