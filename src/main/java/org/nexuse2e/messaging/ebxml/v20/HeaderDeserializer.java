@@ -36,13 +36,16 @@ import javax.xml.soap.SOAPMessage;
 import javax.xml.soap.SOAPPart;
 import javax.xml.soap.Text;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.messaging.TimestampFormatter;
 import org.nexuse2e.pojo.MessagePojo;
+import org.w3c.dom.NodeList;
 
 /**
  * @author mbreilmann
@@ -155,6 +158,11 @@ public class HeaderDeserializer extends AbstractPipelet {
                     }
                 }
             }
+
+            if ( StringUtils.equalsIgnoreCase( messagePojo.getAction().getName(), "MessageError" ) ) {
+                messagePojo.setType( org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ERROR );
+            }
+
             LOG.trace( "unmarshall done" );
         } catch ( NexusException e ) {
             // e.printStackTrace();
@@ -303,6 +311,12 @@ public class HeaderDeserializer extends AbstractPipelet {
                                     }
                                     messagePojo.setCreatedDate( createdDate );
                                     messagePojo.setModifiedDate( createdDate );
+                                } else if ( innerElement.getElementName().getLocalName().equals( "RefToMessageId" ) ) {
+                                    String refToMessageId = innerElement.getValue();
+                                    LOG.trace( "RefToMessageId:" + refToMessageId );
+                                    MessagePojo refMessage = Engine.getInstance().getTransactionService().getMessage(
+                                            refToMessageId );
+                                    messagePojo.setReferencedMessage( refMessage );
                                 }
                             }
                         }
@@ -418,6 +432,30 @@ public class HeaderDeserializer extends AbstractPipelet {
 
         LOG.trace( "enter EbXMLV20HeaderDeserializer.unmarshallErrorList" );
         messagePojo.setType( org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ERROR );
+
+        SOAPElement element = null;
+        Node node = null;
+        // SOAPElement innerElement = null;
+        // Iterator innerElements = null;
+        Iterator errorElements = errorList.getChildElements();
+        while ( errorElements.hasNext() ) {
+            node = (Node) errorElements.next();
+            
+            if ( node instanceof SOAPElement ) {
+                NodeList descNodes = node.getChildNodes();
+                
+                
+                for ( int i = 0; i < descNodes.getLength(); i++ ) {
+                    org.w3c.dom.Node desc = descNodes.item( i );
+                    LOG.error( new LogMessage( "RefId: "+messagePojo.getReferencedMessage().getMessageId()+" - "+desc.getFirstChild(), messagePojo ));
+                }
+                
+                
+            }
+            
+        }
+        
+        
         LOG.trace( "leave EbXMLV20HeaderDeserializer.unmarshallErrorList" );
     } // unmarshallErrorList
 

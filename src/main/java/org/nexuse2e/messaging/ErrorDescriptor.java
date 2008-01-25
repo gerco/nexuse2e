@@ -38,7 +38,7 @@ public class ErrorDescriptor implements Serializable {
     private String            description      = "Unknown error occured";
     private String            location         = "Unknown error location";
     private int               errorCode;
-    private Severity          severity;
+    private Severity          severity = Severity.ERROR;
     private Exception         cause;
 
     /**

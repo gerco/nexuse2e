@@ -78,15 +78,27 @@ public class FrontendPipeline extends AbstractPipeline implements ProtocolSpecif
             messageContext.setOriginalMessagePojo( messageContext.getMessagePojo() );
         }
 
-        for ( int i = 0; i < forwardPipelets.length; i++ ) {
-            MessageProcessor messagePipelet = forwardPipelets[i];
+        try {
+            for ( int i = 0; i < forwardPipelets.length; i++ ) {
+                MessageProcessor messagePipelet = forwardPipelets[i];
 
-            messageContext = messagePipelet.processMessage( messageContext );
+                messageContext = messagePipelet.processMessage( messageContext );
+            }
+    
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            
+            if( messageContext.getErrors() == null || messageContext.getErrors().size() == 0) {
+                messageContext.addError( new ErrorDescriptor("Pipelet processing aborted: "+e) );
+            }
+            
+        }
+                
+        // Set conversation on context, should be available now
+        if(messageContext.getMessagePojo() != null) {
+            messageContext.setConversation( messageContext.getMessagePojo().getConversation() );
         }
         
-        // Set conversation on context, should be available now
-        messageContext.setConversation( messageContext.getMessagePojo().getConversation() );
-
         messageContext = pipelineEndpoint.processMessage( messageContext );
 
         if ( returnPipelets != null ) {

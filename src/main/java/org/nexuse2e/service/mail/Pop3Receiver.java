@@ -57,7 +57,7 @@ public class Pop3Receiver extends AbstractService implements ReceiverAware, Runn
     public static final String PORT_PARAM_NAME          = "port";
     public static final String USER_PARAM_NAME          = "user";
     public static final String PASSWORD_PARAM_NAME      = "password";
-//    public static final String AUTOPOLL_PARAM_NAME      = "autopoll";
+    //    public static final String AUTOPOLL_PARAM_NAME      = "autopoll";
     public static final String POLL_INTERVAL_PARAM_NAME = "pollInterval";
 
     private TransportReceiver  transportReceiver;
@@ -76,11 +76,11 @@ public class Pop3Receiver extends AbstractService implements ReceiverAware, Runn
                 "Authentication user name", "" ) );
         parameterMap.put( PASSWORD_PARAM_NAME, new ParameterDescriptor( ParameterType.PASSWORD, "Password",
                 "Authentication user password", "" ) );
-        
-// obsolete, service polls automatically when started. Method poll is available when service is active.
-        
-//        parameterMap.put( AUTOPOLL_PARAM_NAME, new ParameterDescriptor( ParameterType.BOOLEAN, "Poll automatically",
-//                "Automatically check for new emails", Boolean.TRUE ) );
+
+        // obsolete, service polls automatically when started. Method poll is available when service is active.
+
+        //        parameterMap.put( AUTOPOLL_PARAM_NAME, new ParameterDescriptor( ParameterType.BOOLEAN, "Poll automatically",
+        //                "Automatically check for new emails", Boolean.TRUE ) );
         parameterMap.put( POLL_INTERVAL_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING,
                 "Polling interval (sec)", "Polling interval in seconds", "300" ) );
     }
@@ -105,10 +105,10 @@ public class Pop3Receiver extends AbstractService implements ReceiverAware, Runn
 
             int intervalSeconds = Integer.parseInt( (String) getParameter( POLL_INTERVAL_PARAM_NAME ) );
             pollingInterval = intervalSeconds * 1000;
-            
+
             thread = new Thread( this, "MailPolling" );
             thread.start();
-        
+
             LOG.debug( "Pop3Receiver service started" );
         }
     }
@@ -203,10 +203,15 @@ public class Pop3Receiver extends AbstractService implements ReceiverAware, Runn
                 try {
                     MessageContext messageContext = new MessageContext();
                     messageContext.setData( msgs[msgNum] );
-                    transportReceiver.processMessage( messageContext );
+                    MessageContext responseContext = transportReceiver.processMessage( messageContext );
+                    if ( responseContext != null ) {
+
+                        LOG.trace( "ResponseContent:" + responseContext.getData() );
+                        LOG.error( "no synchronous message transmission available for email connections!" );
+                    }
                 } catch ( Exception e ) {
                     LOG.warn( "Error processing email message: " + e );
-                    // e.printStackTrace();
+                    e.printStackTrace();
                 }
                 msgs[msgNum].setFlag( Flags.Flag.DELETED, true );
             }
@@ -270,11 +275,11 @@ public class Pop3Receiver extends AbstractService implements ReceiverAware, Runn
 
                 // Get new messages
                 poll();
-                
+
             }
         } catch ( Exception ioe ) {
             LOG.error( "Email polling was interrupted!" );
-            if( LOG.isDebugEnabled() ) {
+            if ( LOG.isDebugEnabled() ) {
                 ioe.printStackTrace();
             }
             // Ignore errors here, intentionally interupted

@@ -22,7 +22,7 @@ package org.nexuse2e.messaging.ebxml.v20;
 import java.io.ByteArrayOutputStream;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.Name;
@@ -134,7 +134,7 @@ public class HeaderSerializer extends AbstractPipelet {
                     ack = true;
                 }
                 if ( messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ERROR ) {
-                    error = false;
+                    error = true;
                 }
 
                 // ENVELOPE ATTRS ------------------------------------------------------
@@ -289,7 +289,7 @@ public class HeaderSerializer extends AbstractPipelet {
                             from, fromIdType );
                 } else if ( error ) { // error
                     createErrorList( soapFactory, soapHeader, messagePojo.getReferencedMessage().getMessageId(),
-                            (Vector<ErrorDescriptor>) messageContext.getData() );
+                            messageContext.getErrors() );
                 } else { // regular message
                     // QUALITY OF SERVICE---------------------------------------------------
                     if ( messagePojo.getParticipant().getConnection().isReliable() ) {
@@ -412,47 +412,49 @@ public class HeaderSerializer extends AbstractPipelet {
      </eb:ErrorList> 
      */
     private SOAPElement createErrorList( SOAPFactory soapFactory, SOAPHeader soapHeader, String refMessageId,
-            Vector<ErrorDescriptor> errors ) throws SOAPException {
+            List<ErrorDescriptor> errors ) throws SOAPException {
 
         Name name = soapFactory.createName( "ErrorList", Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE );
         SOAPHeaderElement errorListEl = soapHeader.addHeaderElement( name );
         //errorListEl.setActor( Constants.SOAPACTOR );
         errorListEl.setMustUnderstand( true );
-        errorListEl.addAttribute( soapFactory.createName( Constants.VERSION, Constants.EBXML_NAMESPACE_PREFIX,
-                Constants.EBXML_NAMESPACE ), Constants.EBXMLVERSION );
-        errorListEl.addAttribute( soapFactory.createName( "id", Constants.EBXML_NAMESPACE_PREFIX,
-                Constants.EBXML_NAMESPACE ), "unknown" );
+        errorListEl.addAttribute( soapFactory.createName( Constants.EBXML_NAMESPACE_PREFIX + ":" + Constants.VERSION ),
+                Constants.EBXMLVERSION );
+        errorListEl.addAttribute( soapFactory.createName( Constants.EBXML_NAMESPACE_PREFIX + ":id" ), "unknown" );
         Severity severity = Severity.INFO;
         String highestSeverity = "nothing";
         if ( errors != null ) {
             Iterator<ErrorDescriptor> i = errors.iterator();
             while ( i.hasNext() ) {
                 ErrorDescriptor ed = i.next();
-                if ( ed.getSeverity().ordinal() > severity.ordinal() ) {
+                if ( ed.getSeverity() != null && ed.getSeverity().ordinal() > severity.ordinal() ) {
                     severity = ed.getSeverity();
                     highestSeverity = ed.getSeverity().name();
                 }
             }
         }
 
-        errorListEl.addAttribute( soapFactory.createName( "highestSeverity", Constants.EBXML_NAMESPACE_PREFIX,
-                Constants.EBXML_NAMESPACE ), highestSeverity );
+        errorListEl.addAttribute( soapFactory.createName( Constants.EBXML_NAMESPACE_PREFIX + ":highestSeverity" ),
+                highestSeverity );
 
         if ( errors != null ) {
             Iterator<ErrorDescriptor> i = errors.iterator();
             while ( i.hasNext() ) {
                 ErrorDescriptor ed = i.next();
-                SOAPElement soapEl = soapFactory.createElement( "Error", Constants.EBXML_NAMESPACE_PREFIX,
-                        Constants.EBXML_NAMESPACE );
-                soapEl.addAttribute( soapFactory.createName( "errorCode", Constants.EBXML_NAMESPACE_PREFIX,
-                        Constants.EBXML_NAMESPACE ), "" + ed.getErrorCode() );
+                SOAPElement soapEl = soapFactory.createElement( Constants.EBXML_NAMESPACE_PREFIX + ":Error" );
+                soapEl.addAttribute( soapFactory.createName( Constants.EBXML_NAMESPACE_PREFIX + ":errorCode" ), ""
+                        + ed.getErrorCode() );
                 severity = ed.getSeverity();
 
-                soapEl.addAttribute( soapFactory.createName( "severity", Constants.EBXML_NAMESPACE_PREFIX,
-                        Constants.EBXML_NAMESPACE ), severity.name() );
-                soapEl.addAttribute( soapFactory.createName( "location", Constants.EBXML_NAMESPACE_PREFIX,
-                        Constants.EBXML_NAMESPACE ), ed.getLocation() );
+                soapEl.addAttribute( soapFactory.createName( Constants.EBXML_NAMESPACE_PREFIX + ":severity" ), severity
+                        .name() );
+                soapEl.addAttribute( soapFactory.createName( Constants.EBXML_NAMESPACE_PREFIX + ":location" ), ed
+                        .getLocation() );
 
+                SOAPElement soapElDesc = soapFactory.createElement( Constants.EBXML_NAMESPACE_PREFIX + ":Description" );
+                soapElDesc.addAttribute( soapFactory.createName( "xml:lang" ), "en-US" );
+                soapElDesc.addTextNode( "" + ed.getDescription() );
+                soapEl.addChildElement( soapElDesc );
                 errorListEl.addChildElement( soapEl );
             }
         }

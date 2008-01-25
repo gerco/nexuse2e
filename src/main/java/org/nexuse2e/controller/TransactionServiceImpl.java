@@ -382,7 +382,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         message.setTRP( participant.getConnection().getTrp() );
         ActionPojo action = null;
-        if ( message.getType() != Constants.INT_MESSAGE_TYPE_ACK ) {
+        if ( message.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
             action = Engine.getInstance().getActiveConfigurationAccessService().getActionFromChoreographyByActionId(
                     choreography, actionId );
             if ( action == null ) {
@@ -390,7 +390,9 @@ public class TransactionServiceImpl implements TransactionService {
                         + choreography.getName() );
             }
 
-        } else {
+        } else if ( message.getType() == Constants.INT_MESSAGE_TYPE_ACK ) {
+            action = new ActionPojo( choreography, new Date(), new Date(), 0, false, false, null, null, actionId );
+        } else { // error message
             action = new ActionPojo( choreography, new Date(), new Date(), 0, false, false, null, null, actionId );
         }
 
@@ -401,13 +403,16 @@ public class TransactionServiceImpl implements TransactionService {
             conversation = new ConversationPojo();
             conversation.setPartner( partner );
             conversation.setChoreography( choreography );
-            if ( action != null && !action.isStart() && ( message.getType() != Constants.INT_MESSAGE_TYPE_ACK ) ) {
+            if ( action != null && !action.isStart() && ( message.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) ) {
                 throw new NexusException( "action:" + action.getName() + " is not a valid starting action!" );
             }
             //conversation.setCurrentAction( action );
             conversation.setConversationId( conversationId );
             conversation.setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_CREATED );
         }
+        
+        
+        
         message.setConversation( conversation );
         message.setAction( action );
 

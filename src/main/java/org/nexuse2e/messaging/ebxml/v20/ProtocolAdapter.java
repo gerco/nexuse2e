@@ -117,74 +117,62 @@ public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
     public MessageContext createErrorAcknowledgement( Constants.ErrorMessageReasonCode reasonCode,
             ChoreographyPojo choreography, MessageContext messageContext, Vector<ErrorDescriptor> errorMessages ) {
 
-        //        String currentMessageId = messageContext.getMessagePojo().getMessageKey().getMessageId();
-        //        String currentConversationId = messageContext.getMessagePojo().getMessageKey()
-        //                .getConversationId();
-        //        String currentChoreographyId = messageContext.getMessagePojo().getMessageKey()
-        //                .getChoreographyId();
-        //        String currentPartnerId = messageContext.getMessagePojo().getMessageKey().getPartnerId();
-        //
-        //        MessagePojo errrorNotification = new MessagePojo();
-        //
-        //        errrorNotification.setCreatedDate( DateWrapper.getNOWdatabaseString() );
-        //        errrorNotification.setLastModifiedDate( DateWrapper.getNOWdatabaseString() );
-        //
-        //        errrorNotification.setCommunicationProtocolId( "ebXML" );
-        //        errrorNotification.setCommunicationProtocolVersion( "2.0" );
-        //
-        //        errrorNotification.setAction( messageContext.getMessagePojo().getAction() );
-        //        errrorNotification.setMessageType( Constants.MESSAGE_TYPE_ERROR );
-        //        errrorNotification.setOutbound( true );
-        //
-        //        String messageId = null;
-        //        try {
-        //            messageId = Engine.getInstance().getIdGenerator( "messageId" ).getId();
-        //        } catch ( NexusException e ) {
-        //            LOG.fatal( "unable to create ErrorMessageId for message:" + currentMessageId );
-        //            e.printStackTrace();
-        //            messageContext.setMessagePojo( null );
-        //            return messageContext;
-        //        }
-        //
-        //        errrorNotification.setMessageKey( new MessageKey( currentChoreographyId, currentConversationId, messageId,
-        //                currentPartnerId ) );
-        //        errrorNotification.setReferenceMessageId( currentMessageId );
-        //
-        //        List<CommunicationPartnerPojo> partners = Engine.getInstance().getCurrentConfiguration().getPartners();
-        //        Iterator<CommunicationPartnerPojo> i = partners.iterator();
-        //        CommunicationPartnerPojo partner = null;
-        //        while ( i.hasNext() ) {
-        //            CommunicationPartnerPojo tempPartner = i.next();
-        //            if ( tempPartner.getPartnerId().equals( currentPartnerId ) ) {
-        //                partner = tempPartner;
-        //            }
-        //        }
-        //        if ( partner == null ) {
-        //            messageContext.setMessagePojo( null );
-        //            LOG.error( "no partner entry found for partnerId:" + currentPartnerId );
-        //            return messageContext;
-        //        }
-        //
-        //        errrorNotification.getCustomParameters().put( Constants.PROTOCOLSPECIFIC_TOIDTYPE, partner.getPartnerType() );
-        //
-        //        String from = null;
-        //        String fromIdType = null;
-        //        if ( choreography == null ) {
-        //            from = messageContext.getMessagePojo().getCustomParameters().get(
-        //                    Constants.PROTOCOLSPECIFIC_TO );
-        //            fromIdType = messageContext.getMessagePojo().getCustomParameters().get(
-        //                    Constants.PROTOCOLSPECIFIC_TOIDTYPE );
-        //        } else {
-        //            from = choreography.getLocalPartnerId();
-        //            fromIdType = choreography.getLocalPartnerIdType();
-        //        }
-        //        errrorNotification.getCustomParameters()
-        //                .put( Constants.PROTOCOLSPECIFIC_FROM, from );
-        //        errrorNotification.getCustomParameters().put( Constants.PROTOCOLSPECIFIC_FROMIDTYPE, fromIdType );
-        //        errrorNotification.getCustomParameters().put( Constants.PROTOCOLSPECIFIC_SERVICE,
-        //                "uri:" + messageContext.getMessagePojo().getAction() );
-        //        messageContext.setMessagePojo( errrorNotification );
+        System.out.println( "--------------- create error -----------------" );
 
+        String currentMessageId = messageContext.getMessagePojo().getMessageId();
+        String currentConversationId = messageContext.getMessagePojo().getConversation().getConversationId();
+        String currentChoreographyId = messageContext.getMessagePojo().getConversation().getChoreography().getName();
+        String currentPartnerId = messageContext.getMessagePojo().getConversation().getPartner().getPartnerId();
+
+        MessagePojo errorNotification = new MessagePojo();
+
+        errorNotification.setCreatedDate( new Date() );
+        errorNotification.setModifiedDate( new Date() );
+
+        errorNotification.setTRP( messageContext.getMessagePojo().getTRP() );
+
+        errorNotification.setAction( messageContext.getMessagePojo().getAction() );
+        errorNotification.setType( org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ERROR );
+        errorNotification.setOutbound( true );
+
+        String messageId = null;
+        try {
+            messageId = Engine.getInstance().getIdGenerator( "messageId" ).getId();
+        } catch ( NexusException e ) {
+            LOG.fatal( "unable to create ErrorMessageId for message:" + currentMessageId );
+            e.printStackTrace();
+            messageContext.setMessagePojo( null );
+            return messageContext;
+        }
+
+        errorNotification.setMessageId( messageId );
+        errorNotification.setReferencedMessage( messageContext.getMessagePojo() );
+
+        String from = null;
+        String fromIdType = null;
+
+        errorNotification.getCustomParameters().put(
+                Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_TOIDTYPE,
+                messageContext.getMessagePojo().getConversation().getPartner().getPartnerIdType() );
+        errorNotification.getCustomParameters().put(
+                Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_FROM,
+                messageContext.getMessagePojo().getParticipant().getLocalPartner().getPartnerId() );
+        errorNotification.getCustomParameters().put(
+                Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_FROMIDTYPE,
+                messageContext.getMessagePojo().getParticipant().getLocalPartner().getPartnerIdType() );
+
+        errorNotification.getCustomParameters().put( Constants.PROTOCOLSPECIFIC_FROM, from );
+        errorNotification.getCustomParameters().put( Constants.PROTOCOLSPECIFIC_FROMIDTYPE, fromIdType );
+        errorNotification.getCustomParameters().put( Constants.PROTOCOLSPECIFIC_SERVICE,
+                "uri:" + messageContext.getMessagePojo().getAction() );
+        messageContext.setMessagePojo( errorNotification );
+
+        errorNotification.setConversation( messageContext.getConversation() );
+        errorNotification.setOutbound( true );
+        errorNotification.setErrors( messageContext.getMessagePojo().getErrors() );
+        messageContext.setMessagePojo( errorNotification );
+        
+        
         return messageContext;
     }
 
