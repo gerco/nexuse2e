@@ -22,6 +22,12 @@ package org.nexuse2e.integration;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
+import javax.jws.WebMethod;
+import javax.jws.WebParam;
+import javax.jws.WebResult;
+import javax.jws.WebService;
+import javax.jws.soap.SOAPBinding;
+
 import org.nexuse2e.NexusException;
 
 /**
@@ -29,6 +35,8 @@ import org.nexuse2e.NexusException;
  *
  * @author mbreilmann
  */
+@WebService(name="NEXUSe2eInterface", targetNamespace = "http://integration.nexuse2e.org")
+@SOAPBinding(style = SOAPBinding.Style.DOCUMENT, use = SOAPBinding.Use.LITERAL, parameterStyle = SOAPBinding.ParameterStyle.WRAPPED)
 public interface NEXUSe2eInterface extends Remote {
 
     /**
@@ -39,6 +47,7 @@ public interface NEXUSe2eInterface extends Remote {
      * 
      * @deprecated Method is not required any more. Use sendNewStringMessage when sending the first message in conversation.
      */
+    @WebMethod(exclude=true)
     public String createConversation( String choreographyId, String businessPartnerId ) throws RemoteException, NexusException;
 
     /**
@@ -50,8 +59,18 @@ public interface NEXUSe2eInterface extends Remote {
      * 
      * @deprecated Method is not required any more. Use sendNewStringMessage when sending the first message in conversation.
      */
-    public String createConversation( String choreographyId, String businessPartnerId, String conversationId )
-            throws RemoteException, NexusException;
+    @WebMethod(operationName = "createConversation", action = "http://integration.nexuse2e.org/NEXUSe2eInterface/createConversation")
+    @WebResult(name = "createConversationResponse", targetNamespace = "")
+    public String createConversation(
+            @WebParam(name = "choreographyId", targetNamespace = "")
+            String choreographyId,
+            @WebParam(name = "businessPartnerId", targetNamespace = "")
+            String businessPartnerId,
+            @WebParam(name = "conversationId", targetNamespace = "")
+            String conversationId )
+            throws
+            RemoteException,
+            NexusException;
 
     /**
      * Trigger sending a message by providing some sort of primary key that allows the <code>Pipelet</code>
@@ -62,7 +81,15 @@ public interface NEXUSe2eInterface extends Remote {
      * @return TRUE if the message was submitted to the engine successfully (i.e. a message could be created 
      * and was persisted).
      */
-    public boolean triggerSendingMessage( String conversationId, String actionId, Object primaryKey )
+    @WebMethod(operationName = "triggerSendingMessage", action = "http://integration.nexuse2e.org/NEXUSe2eInterface/triggerSendingMessage")
+    @WebResult(name = "triggerSendingMessageResponse", targetNamespace = "")
+    public boolean triggerSendingMessage(
+            @WebParam(name = "conversationId", targetNamespace = "")
+            String conversationId,
+            @WebParam(name = "actionId", targetNamespace = "")
+            String actionId,
+            @WebParam(name = "primaryKey", targetNamespace = "")
+            Object primaryKey )
             throws RemoteException, NexusException;
 
     /**
@@ -73,7 +100,15 @@ public interface NEXUSe2eInterface extends Remote {
      * @return TRUE if the message was submitted to the engine successfully (i.e. a message could be created 
      * and was persisted).
      */
-    public boolean sendStringMessage( String conversationId, String actionId, String payload ) throws RemoteException, NexusException;
+    @WebMethod(operationName = "sendStringMessage", action = "http://integration.nexuse2e.org/NEXUSe2eInterface/sendStringMessage")
+    @WebResult(name = "sendStringMessageResponse", targetNamespace = "")
+    public boolean sendStringMessage(
+            @WebParam(name = "conversationId", targetNamespace = "")
+            String conversationId,
+            @WebParam(name = "actionId", targetNamespace = "")
+            String actionId,
+            @WebParam(name = "payload", targetNamespace = "")
+            String payload ) throws RemoteException, NexusException;
 
     /**
      * Trigger sending a message by providing some sort of primary key that allows the <code>Pipelet</code>
@@ -85,6 +120,7 @@ public interface NEXUSe2eInterface extends Remote {
      * @param primaryKey The primary key used to retrieve/create the payload.
      * @return The ID of the conversation that was created for this message.
      */
+    @WebMethod(exclude = true)
     public String triggerSendingNewMessage( String choreographyId, String businessPartnerId, String actionId,
             Object primaryKey ) throws RemoteException, NexusException;
 
@@ -99,8 +135,18 @@ public interface NEXUSe2eInterface extends Remote {
      * @param primaryKey The primary key used to retrieve/create the payload.
      * @return The ID of the conversation that was created for this message.
      */
-    public String triggerSendingNewMessage( String choreographyId, String businessPartnerId, String actionId,
-            String conversationId, Object primaryKey ) throws RemoteException, NexusException;
+    @WebMethod(operationName = "triggerSendingNewMessage", action = "http://integration.nexuse2e.org/NEXUSe2eInterface/triggerSendingNewMessage")
+    @WebResult(name = "triggerSendingNewMessageResponse", targetNamespace = "")
+    public String triggerSendingNewMessage(
+            @WebParam(name = "choreographyId", targetNamespace = "")
+            String choreographyId,
+            @WebParam(name = "businessPartnerId", targetNamespace = "")
+            String businessPartnerId,
+            @WebParam(name = "actionId", targetNamespace = "")
+            String actionId,
+            @WebParam(name = "conversationId", targetNamespace = "")
+            String conversationId,
+            Object primaryKey ) throws RemoteException, NexusException;
 
     /**
      * Send a message with a String payload (e.g. XML or plain text) while also creating
@@ -111,7 +157,17 @@ public interface NEXUSe2eInterface extends Remote {
      * @param payload The single payload of the message.
      * @return The ID of the conversation that was created for this message.
      */
-    public String sendNewStringMessage( String choreographyId, String businessPartnerId, String actionId, String payload )
+    @WebMethod(operationName = "sendNewStringMessage", action = "http://integration.nexuse2e.org/NEXUSe2eInterface/sendNewStringMessage")
+    @WebResult(name = "sendNewStringMessageResponse", targetNamespace = "")
+    public String sendNewStringMessage(
+            @WebParam(name = "choreographyId", targetNamespace = "")
+            String choreographyId,
+            @WebParam(name = "businessPartnerId", targetNamespace = "")
+            String businessPartnerId,
+            @WebParam(name = "actionId", targetNamespace = "")
+            String actionId,
+            @WebParam(name = "payload", targetNamespace = "")
+            String payload )
             throws RemoteException, NexusException;
 
     /**
@@ -124,7 +180,18 @@ public interface NEXUSe2eInterface extends Remote {
      * @param payload The single payload of the message.
      * @return The ID of the conversation that was created for this message.
      */
-    public String sendNewStringMessage( String choreographyId, String businessPartnerId, String actionId,
-            String conversationId, String payload ) throws RemoteException, NexusException;
+    @WebMethod(operationName = "sendNewStringMessage1", action = "http://integration.nexuse2e.org/NEXUSe2eInterface/sendNewStringMessage1")
+    @WebResult(name = "sendNewStringMessage1Response", targetNamespace = "")
+    public String sendNewStringMessage(
+            @WebParam(name = "choreographyId", targetNamespace = "")
+            String choreographyId,
+            @WebParam(name = "businessPartnerId", targetNamespace = "")
+            String businessPartnerId,
+            @WebParam(name = "actionId", targetNamespace = "")
+            String actionId,
+            @WebParam(name = "conversationId", targetNamespace = "")
+            String conversationId,
+            @WebParam(name = "payload", targetNamespace = "")
+            String payload ) throws RemoteException, NexusException;
 
 } // NEXUSe2eInterface

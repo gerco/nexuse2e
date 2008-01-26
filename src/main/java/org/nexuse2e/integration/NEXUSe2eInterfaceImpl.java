@@ -19,6 +19,8 @@
  */
 package org.nexuse2e.integration;
 
+import javax.jws.WebService;
+
 import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
@@ -28,6 +30,10 @@ import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ConversationPojo;
 
+@WebService(
+        serviceName = "NEXUSe2eInterface",
+        portName="NEXUSe2eInterfacePort",
+        endpointInterface="org.nexuse2e.integration.NEXUSe2eInterface")
 public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
 
     private static Logger LOG = Logger.getLogger( NEXUSe2eInterfaceImpl.class );

@@ -20,10 +20,13 @@
 
 package org.nexuse2e.integration;
 
+import javax.xml.ws.WebFault;
+
 /**
  * Indicates a processing error on an inbound message.
  * @author jonas.reese
  */
+@WebFault(name = "ProcessInboundMessageException", targetNamespace="http://integration.nexuse2e.org")
 public class ProcessInboundMessageException extends Exception {
 
     private static final long serialVersionUID = 1L;

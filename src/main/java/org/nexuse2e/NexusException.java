@@ -19,6 +19,9 @@
  */
 package org.nexuse2e;
 
+import javax.xml.ws.WebFault;
+
+@WebFault(name = "NexusException", targetNamespace="http://integration.nexuse2e.org")
 public class NexusException extends Exception {
 
     private int               severity;

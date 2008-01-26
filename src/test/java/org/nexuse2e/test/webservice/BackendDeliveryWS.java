@@ -1,5 +1,7 @@
 package org.nexuse2e.test.webservice;
 
+import javax.jws.WebService;
+
 import org.apache.log4j.Logger;
 import org.nexuse2e.integration.BackendDeliveryInterface;
 import org.nexuse2e.integration.ProcessInboundMessageException;
@@ -11,6 +13,7 @@ import org.nexuse2e.integration.ProcessInboundMessageException;
  * @author jonas.reese
  * @version $LastChangedRevision$ - $LastChangedDate$ by $LastChangedBy$
  */
+@WebService(endpointInterface="org.nexuse2e.integration.BackendDeliveryInterface")
 public class BackendDeliveryWS implements BackendDeliveryInterface {
     
     private static Logger LOG = Logger.getLogger( BackendDeliveryWS.class );

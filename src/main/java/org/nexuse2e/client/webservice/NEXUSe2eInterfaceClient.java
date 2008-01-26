@@ -26,9 +26,9 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
-import org.codehaus.xfire.client.XFireProxyFactory;
-import org.codehaus.xfire.service.Service;
-import org.codehaus.xfire.service.binding.ObjectServiceFactory;
+import org.apache.cxf.interceptor.LoggingInInterceptor;
+import org.apache.cxf.interceptor.LoggingOutInterceptor;
+import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.nexuse2e.integration.NEXUSe2eInterface;
 
 public class NEXUSe2eInterfaceClient {
@@ -39,7 +39,7 @@ public class NEXUSe2eInterfaceClient {
     public final static String ACTION           = "a";
     public final static String FILENAME         = "f";
 
-    private static String      serviceURLString = "http://localhost:8080/NexusE2EServerNG/webservice/NEXUSe2eInterface";
+    private static String      serviceURLString = "http://localhost:8080/NEXUSe2e/cxf/NEXUSe2eInterface";
 
     /**
      * @param args
@@ -84,11 +84,17 @@ public class NEXUSe2eInterfaceClient {
             System.out.println( "partnerId: " + partnerId );
             System.out.println( "actionId: " + actionId );
 
-            ObjectServiceFactory objectServiceFactory = new ObjectServiceFactory();
-            Service serviceModel = objectServiceFactory.create( NEXUSe2eInterface.class );
-            NEXUSe2eInterface service = (NEXUSe2eInterface) new XFireProxyFactory()
-                    .create( serviceModel, webServiceURL );
-
+            //QName serviceName = new QName( "http://integration.nexuse2e.org", "NEXUSe2eInterface" );
+            //QName portName = new QName( "http://integration.nexuse2e.org", "NEXUSe2eInterfacePort" );
+            
+            JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
+            factory.getInInterceptors().add(new LoggingInInterceptor());
+            factory.getOutInterceptors().add(new LoggingOutInterceptor());
+            factory.setServiceClass(NEXUSe2eInterface.class);
+            factory.setAddress(webServiceURL);
+            NEXUSe2eInterface nexuse2eInterface = (NEXUSe2eInterface) factory.create();
+            
+            
             // String result = service.createConversation( "GenericFile", "torino8080" );
             // String result = service.sendNewStringMessage( "GenericFile", "torino8080", "SendFile", "<test who=\"roma\" />" );
 
@@ -97,12 +103,12 @@ public class NEXUSe2eInterfaceClient {
             fis.read( buffer );
             fis.close();
 
-            String result = service.sendNewStringMessage( choreographyId, partnerId, actionId, new String( buffer ) );
+            String result = nexuse2eInterface.sendNewStringMessage( choreographyId, partnerId, actionId, new String( buffer ) );
 
             System.out.println( "NEXUSe2EInterfaceService done: " + result );
-        } catch ( Exception e ) {
+        } catch ( Throwable t ) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            t.printStackTrace();
         }
 
     }
