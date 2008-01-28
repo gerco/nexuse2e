@@ -20,11 +20,9 @@
 
 package org.nexuse2e.test.webservice;
 
-import java.net.MalformedURLException;
-
-import org.codehaus.xfire.client.XFireProxyFactory;
-import org.codehaus.xfire.service.Service;
-import org.codehaus.xfire.service.binding.ObjectServiceFactory;
+import org.apache.cxf.interceptor.LoggingInInterceptor;
+import org.apache.cxf.interceptor.LoggingOutInterceptor;
+import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.nexuse2e.integration.NEXUSe2eInterface;
 
 /**
@@ -37,18 +35,14 @@ public class NEXUSe2eInterfaceWSClient {
      */
     public static void main( String[] args ) throws Exception {
 
-        Service serviceModel = new ObjectServiceFactory().create( NEXUSe2eInterface.class );
-        try {
-            NEXUSe2eInterface service = (NEXUSe2eInterface) new XFireProxyFactory().create( serviceModel,
-                    "http://localhost:8080/NEXUSe2e/webservice/NEXUSe2eInterface" );
-            String result = service.sendNewStringMessage( "GenericFile", "asdf", "SendFile", "<test></test>" );
-
-            System.out.println( "Result: " + result );
-        } catch ( MalformedURLException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
+        JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
+        factory.getInInterceptors().add( new LoggingInInterceptor() );
+        factory.getOutInterceptors().add( new LoggingOutInterceptor() );
+        factory.setServiceClass( NEXUSe2eInterface.class );
+        factory.setAddress( "http://localhost:8080/NEXUSe2e/webservice/NEXUSe2eInterface" );
+        NEXUSe2eInterface nexuse2eInterface = (NEXUSe2eInterface) factory.create();
+        String result = nexuse2eInterface.sendNewStringMessage( "GenericFile", "asdf", "SendFile", "<test></test>" );
+        System.out.println( "Result: " + result );
     }
 
 }

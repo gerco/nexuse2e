@@ -65,6 +65,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.bouncycastle.asn1.DERBMPString;
@@ -82,7 +83,6 @@ import org.bouncycastle.openssl.PEMReader;
 import org.bouncycastle.openssl.PEMWriter;
 import org.bouncycastle.openssl.PasswordFinder;
 import org.bouncycastle.util.encoders.Hex;
-import org.codehaus.xfire.util.Base64;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.pojo.CertificatePojo;
@@ -583,7 +583,7 @@ public class CertificateUtil {
      */
     public static String getPemData( X509Certificate x509Certificate ) throws CertificateEncodingException {
 
-        String pem = Base64.encode( x509Certificate.getEncoded() );
+        String pem = new String( Base64.encodeBase64( x509Certificate.getEncoded() ) );
         byte[] pembytes = pem.getBytes();
         StringBuffer buffer = new StringBuffer();
         buffer.append( "-----BEGIN CERTIFICATE-----\n" );

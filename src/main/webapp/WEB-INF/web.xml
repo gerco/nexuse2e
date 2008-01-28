@@ -8,7 +8,7 @@
 
   <context-param>
     <param-name>contextConfigLocation</param-name>
-    <param-value>/WEB-INF/config/beans.xml classpath:org/codehaus/xfire/spring/xfire.xml /WEB-INF/cxf-config.xml</param-value>
+    <param-value>/WEB-INF/config/beans.xml /WEB-INF/cxf-config.xml</param-value>
   </context-param>
   <context-param>    <param-name>log4jConfigLocation</param-name>    <param-value>/WEB-INF/config/log4j.properties</param-value>  </context-param>
 
@@ -28,19 +28,13 @@
   </servlet>
   <servlet>
     <servlet-name>NexusWebServiceDispatcher</servlet-name>
-    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
     <load-on-startup>3</load-on-startup>
   </servlet>
   <servlet>
     <servlet-name>NexusIntegrationDispatcher</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <load-on-startup>4</load-on-startup>
-  </servlet>
-
-  <servlet>
-    <servlet-name>CXFWebServiceDispatcher</servlet-name>
-    <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
-    <load-on-startup>5</load-on-startup>
   </servlet>
 
   <servlet>
@@ -94,10 +88,6 @@
   <servlet-mapping>
     <servlet-name>NexusIntegrationDispatcher</servlet-name>
     <url-pattern>/integration/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>CXFWebServiceDispatcher</servlet-name>
-    <url-pattern>/cxf/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>DataSaveAs</servlet-name>

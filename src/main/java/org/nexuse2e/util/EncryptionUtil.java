@@ -19,7 +19,7 @@
  */
 package org.nexuse2e.util;
 
-import org.codehaus.xfire.util.Base64;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  * @author gesch
@@ -35,7 +35,7 @@ public class EncryptionUtil {
     public static String encryptString( String plainText ) {
 
         if ( plainText != null ) {
-            return Base64.encode( plainText.getBytes() );
+            return new String( Base64.encodeBase64( plainText.getBytes() ) );
         }
 
         return null;
@@ -49,7 +49,7 @@ public class EncryptionUtil {
     public static String decryptString( String secureText ) {
 
         if ( secureText != null ) {
-            return new String( Base64.decode( secureText ) );
+            return new String( Base64.decodeBase64( secureText.getBytes() ) );
         }
         return null;
     } // encryptString

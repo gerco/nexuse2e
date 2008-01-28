@@ -20,11 +20,9 @@
 
 package org.nexuse2e.test.webservice;
 
-import java.net.MalformedURLException;
-
-import org.codehaus.xfire.client.XFireProxyFactory;
-import org.codehaus.xfire.service.Service;
-import org.codehaus.xfire.service.binding.ObjectServiceFactory;
+import org.apache.cxf.interceptor.LoggingInInterceptor;
+import org.apache.cxf.interceptor.LoggingOutInterceptor;
+import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.nexuse2e.integration.EngineStatusInterface;
 
 /**
@@ -36,20 +34,18 @@ public class EngineStatusWSClient {
     /**
      * @param args
      */
-    public static void main( String[] args ) {
+    public static void main( String[] args ) throws Exception {
 
-        Service serviceModel = new ObjectServiceFactory().create( EngineStatusInterface.class );
-        try {
-            EngineStatusInterface service = (EngineStatusInterface) new XFireProxyFactory().create( serviceModel,
-                    "http://localhost:8080/NEXUSe2e/webservice/EngineStatusInterface" );
-            String engineStatus = service.getEngineStatus();
+        JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
+        factory.getInInterceptors().add( new LoggingInInterceptor() );
+        factory.getOutInterceptors().add( new LoggingOutInterceptor() );
+        factory.setServiceClass( EngineStatusInterface.class );
+        factory.setAddress( "http://localhost:8080/NEXUSe2e/webservice/EngineStatusInterface" );
+        EngineStatusInterface service = (EngineStatusInterface) factory.create();
 
-            System.out.println( "EngineStatusSummary: " + engineStatus );
-        } catch ( MalformedURLException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        String engineStatus = service.getEngineStatus();
 
+        System.out.println( "EngineStatusSummary: " + engineStatus );
     }
 
 }

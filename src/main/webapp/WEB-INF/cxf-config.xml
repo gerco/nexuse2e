@@ -15,9 +15,9 @@ http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
       address="/NEXUSe2eInterface" />
 	  
     <jaxws:endpoint 
-      id="backendDeliveryInterface" 
-      implementor="org.nexuse2e.test.webservice.BackendDeliveryWS" 
-      address="/BackendDeliveryInterface" />
+      id="engineStatusInterface" 
+      implementor="#engineStatusInterfaceBean" 
+      address="/EngineStatusInterface" />
 
 
     <bean id="logInbound" class="org.apache.cxf.interceptor.LoggingInInterceptor"/>

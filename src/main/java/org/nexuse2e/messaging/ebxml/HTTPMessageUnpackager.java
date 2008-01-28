@@ -34,8 +34,8 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
-import org.codehaus.xfire.util.Base64;
 import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.messaging.AbstractPipelet;
@@ -231,8 +231,7 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
      */
     private final byte[] retrieveBinaryContent( InputStream newInputStream ) throws Exception {
 
-        char buf[] = retrieveCharArray( newInputStream );
-        byte[] returnBuffer = Base64.decode( buf, 0, buf.length );
+        byte[] returnBuffer = Base64.decodeBase64( retrieveContent( newInputStream ) );
         return returnBuffer;
     }
 

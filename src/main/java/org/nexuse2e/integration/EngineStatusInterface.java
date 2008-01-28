@@ -20,12 +20,21 @@
 
 package org.nexuse2e.integration;
 
+import javax.jws.WebMethod;
+import javax.jws.WebResult;
+import javax.jws.WebService;
+import javax.jws.soap.SOAPBinding;
+
 
 /**
  * @author mbreilmann
  *
  */
+@WebService(name="EngineStatusInterface", targetNamespace = "http://integration.nexuse2e.org")
+@SOAPBinding(style = SOAPBinding.Style.DOCUMENT, use = SOAPBinding.Use.LITERAL, parameterStyle = SOAPBinding.ParameterStyle.WRAPPED)
 public interface EngineStatusInterface {
 
+    @WebMethod(operationName = "getEngineStatus", action = "http://integration.nexuse2e.org/EngineStatusInterface/getEngineStatus")
+    @WebResult(name = "getEngineStatusResponse", targetNamespace = "")
     public String getEngineStatus();
 } // EngineStatusInterface

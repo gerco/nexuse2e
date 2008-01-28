@@ -36,11 +36,10 @@ import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.MessagePayloadPojo;
 import org.nexuse2e.pojo.MessagePojo;
-import org.nexuse2e.transport.WebServiceGenericXMLDocumentReceiver;
 
 public class CIDXDummyHeaderBuilder extends AbstractPipelet {
 
-    private static Logger       LOG = Logger.getLogger( WebServiceGenericXMLDocumentReceiver.class );
+    private static Logger       LOG = Logger.getLogger( CIDXDummyHeaderBuilder.class );
 
     
     /**

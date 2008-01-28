@@ -28,7 +28,7 @@ import javax.activation.ActivationDataFlavor;
 import javax.activation.DataContentHandler;
 import javax.activation.DataSource;
 
-import org.codehaus.xfire.util.Base64;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  * @author mbreilmann
@@ -63,7 +63,7 @@ public class binary_base64 implements DataContentHandler {
         // use myDF.equals to be sure to get ActivationDataFlavor.equals,
         // which properly ignores Content-Type parameters in comparison
         if ( getDF().equals( df ) ) {
-            return Base64.encode( (byte[]) getContent( ds ) );
+            return Base64.encodeBase64( (byte[]) getContent( ds ) );
         } else {
             return null;
         }
@@ -83,7 +83,7 @@ public class binary_base64 implements DataContentHandler {
             buf = tbuf;
         }
 
-        byte[] returnBuffer = Base64.decode( buf, 0, buf.length );
+        byte[] returnBuffer = Base64.encodeBase64( new String( buf ).getBytes() );
 
         return returnBuffer;
     }
@@ -96,7 +96,7 @@ public class binary_base64 implements DataContentHandler {
                     + "was given object of type " + obj.getClass().toString() );
         }
         byte[] byteArray = (byte[]) obj;
-        byte[] encodedByteArray = Base64.encode( byteArray ).getBytes();
+        byte[] encodedByteArray = Base64.encodeBase64( byteArray );
         os.write( encodedByteArray, 0, encodedByteArray.length );
         os.flush();
     }
