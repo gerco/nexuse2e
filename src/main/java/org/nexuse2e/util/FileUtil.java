@@ -19,6 +19,11 @@
  */
 package org.nexuse2e.util;
 
+import java.io.File;
+import java.io.FilenameFilter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Utility class for file-related operations.
  *
@@ -59,5 +64,46 @@ public class FileUtil {
         return pattern;
     }
 
+    /**
+     * Returns a <code>FilenameFilter</code> for the given DOS-style file name pattern.
+     * @param dosStylePattern The DOS-style file name pattern (e.g. *.xml, *.?ml, ???.bin).
+     * @return A <code>FilenameFilter</code> implementation.
+     */
+    public static FilenameFilter getFilenameFilterForPattern( String dosStylePattern ) {
+        final Pattern p = Pattern.compile( dosStyleToRegEx( dosStylePattern ) );
+        return new FilenameFilter() {
+            public boolean accept( File dir, String name ) {
+                Matcher m = p.matcher( name );
+                return m.matches();
+            }
+        };
+    }
+    
+    /**
+     * Returns <code>true</code> if and only if the given path contains a DOS-style filename
+     * pattern.
+     * @param path The path to check.
+     * @return <code>true</code> if file pattern is contained, <code>false</code> otherwise.
+     */
+    public static boolean containsDosStylePattern( String path ) {
+        if (path == null) {
+            return false;
+        }
+        return path.indexOf( '*' ) >= 0 || path.indexOf( '?' ) >= 0;
+    }
 
+    /**
+     * Gets the leaf (the deepest element from the given path). This also works for
+     * paths that contain DOS-style patterns, e.g. "c:/temp/*.xml".
+     * @param path The path.
+     * @return The leaf. In our example, "*.xml".
+     */
+    public static String getLeaf( String path ) {
+        String p = path.replace( File.separatorChar, '/' );
+        int index = p.lastIndexOf( '/' );
+        if (index >= 0) {
+            return path.substring( index + 1 );
+        }
+        return path;
+    }
 }

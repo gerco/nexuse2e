@@ -728,6 +728,10 @@
     <action path="/ProvisioningSubmission" name="provisioningSubmissionForm" type="org.nexuse2e.ui.action.tools.ProvisioningSubmissionAction">
       <forward name="success" path="/WEB-INF/pages/communications/provisioning_submission.jsp"/>
     </action>
+    <action path="/FileDownload" type="org.nexuse2e.ui.action.tools.FileDownloadAction">
+      <forward name="success" path="/WEB-INF/pages/tools/file_download.jsp"/>
+    </action>
+    <action path="/DownloadFile" type="org.nexuse2e.ui.action.tools.DownloadFileAction"/>
     <action path="/ConfigurationManagement" name="configurationManagementForm" type="org.nexuse2e.ui.action.tools.ConfigurationManagementAction">
       <forward name="success" path="/WEB-INF/pages/tools/configuration_management.jsp"/>
     </action>
