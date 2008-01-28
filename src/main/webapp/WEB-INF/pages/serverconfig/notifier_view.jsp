@@ -188,9 +188,20 @@
 					value="<%= ParameterType.SERVICE.toString() %>">
 					<tr>
 						<td class="NEXUSValue">${parameter.label}</td>
-						<td class="NEXUSValue"><nexus:select name="<%= key %>">
-							<nexus:options collection="service_collection" value="${parameter.value}"
-								property="name" labelProperty="name" />
+						<td class="NEXUSValue"><nexus:select name="${key}">
+							<logic:iterate id="service" name="service_collection">
+								<%
+								org.nexuse2e.pojo.LoggerParamPojo prm = (org.nexuse2e.pojo.LoggerParamPojo) pageContext.getAttribute( "parameter" );
+								org.nexuse2e.pojo.ServicePojo srv = (org.nexuse2e.pojo.ServicePojo) pageContext.getAttribute( "service" );
+								if (!(prm.getParameterDescriptor().getDefaultValue() instanceof Class) ||
+								        (srv.getComponent() != null
+								                && srv.getComponent().isSubtypeOf( (Class<?>) prm.getParameterDescriptor().getDefaultValue() ))) {
+								%>
+								<nexus:option name="service" value="${parameter.value}" property="name" labelProperty="name" />
+								<%
+								}
+								%>
+							</logic:iterate>
 						</nexus:select></td>
 						<td class="NEXUSValue">${parameter.parameterDescriptor.description}</td>
 					</tr>
