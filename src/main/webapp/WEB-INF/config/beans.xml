@@ -60,30 +60,6 @@
   <bean id="nexusE2EInterfaceBean" class="org.nexuse2e.integration.NEXUSe2eInterfaceImpl" />
   <bean id="engineStatusInterfaceBean" class="org.nexuse2e.integration.EngineStatusInterfaceImpl" />
 
-  <!-- Generic Web services interface (XFire) -->
-  <!--
-    <bean id="wsGenericReceiver" class="org.nexuse2e.transport.WebServiceGenericXMLDocumentReceiver">
-    <property name="key">
-    <bean class="org.nexuse2e.ProtocolSpecificKey">
-    <property name="communicationProtocolId" value="ws-generic" />
-    <property name="communicationProtocolVersion" value="0.1" />
-    <property name="transportProtocolId" value="soap" />
-    </bean>
-    </property>
-    <property name="XFire" ref="xfire" />
-    <property name="frontendPipeline" ref="wsGenericInboundPipeline" />
-    <property name="synchronous" value="true" />
-    </bean>
-    <bean id="wsGenericSender" class="org.nexuse2e.transport.WebServiceGenericXMLDocumentSender">
-    <property name="key">
-    <bean class="org.nexuse2e.ProtocolSpecificKey">
-    <property name="communicationProtocolId" value="ws-generic" />
-    <property name="communicationProtocolVersion" value="0.1" />
-    <property name="transportProtocolId" value="soap" />
-    </bean>
-    </property>
-    </bean>
-  -->
 
   <!-- Sample for Web services, needs other header parser
     <bean id="wsGenericInboundPipeline" class="org.nexuse2e.messaging.FrontendPipeline">
