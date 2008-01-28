@@ -4,7 +4,7 @@
   <groupId>org.nexuse2e</groupId>
   <artifactId>nexuse2e-server</artifactId>
   <packaging>war</packaging>
-  <version>4.0.13</version>
+  <version>4.1.0</version>
   <name>NEXUSe2e Server</name>
   <url>http://www.nexuse2e.org</url>
   <repositories>
@@ -528,13 +528,6 @@
       <version>1.6.1</version>
       <scope>compile</scope>
     </dependency>
-    <!--		<dependency>
-      <groupId>xfire</groupId>
-      <artifactId>wss4j</artifactId>
-      <version>1.1</version>
-      <version>1.5.0</version> 
-      <scope>compile</scope>
-      </dependency>-->
     <dependency>
       <groupId>org.apache.xbean</groupId>
       <artifactId>xbean-kernel</artifactId>
@@ -548,126 +541,17 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.xfire</groupId>
-      <artifactId>xfire-aegis</artifactId>
-      <version>1.2.4</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.xfire</groupId>
-      <artifactId>xfire-annotations</artifactId>
-      <version>1.2.4</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.xfire</groupId>
-      <artifactId>xfire-core</artifactId>
-      <version>1.2.4</version>
-      <exclusions>
-        <exclusion>
-          <groupId>xalan</groupId>
-          <artifactId>xalan</artifactId>
-        </exclusion>
-      </exclusions>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.xfire</groupId>
-      <artifactId>xfire-generator</artifactId>
-      <version>1.2.4</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.xfire</groupId>
-      <artifactId>xfire-java5</artifactId>
-      <version>1.2.4</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.xfire</groupId>
-      <artifactId>xfire-jaxb2</artifactId>
-      <version>1.2.4</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.xfire</groupId>
-      <artifactId>xfire-jaxws</artifactId>
-      <version>1.2.4</version>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.xml</groupId>
-          <artifactId>saaj-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>xfire</groupId>
-          <artifactId>saaj-impl</artifactId>
-        </exclusion>
-      </exclusions>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.xfire</groupId>
-      <artifactId>xfire-spring</artifactId>
-      <version>1.2.4</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.xfire</groupId>
-      <artifactId>xfire-ws-security</artifactId>
-      <version>1.2.4</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.codehaus.xfire</groupId>
-          <artifactId>bcprov-jdk15</artifactId>
-        </exclusion>
-      </exclusions>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.xfire</groupId>
-      <artifactId>xfire-xmlbeans</artifactId>
-      <version>1.2.4</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>jgroups</groupId>
       <artifactId>jgroups-all</artifactId>
       <version>2.5.ga</version>
       <scope>compile</scope>
     </dependency>
-    <!-- 
-      <dependency>
-      <groupId>xml-apis</groupId>
-      <artifactId>xml-apis</artifactId>
-      <version>2.0.2</version>
-      <scope>compile</scope>
-      </dependency>
-    -->
     <dependency>
       <groupId>xml-security</groupId>
       <artifactId>xmlsec</artifactId>
       <version>1.2.1</version>
       <scope>compile</scope>
     </dependency>
-    <!-- <dependency>
-      <groupId>tomcat</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>5.5.15</version>
-      <scope>compile</scope>
-      </dependency> -->
-    <!--
-      <dependency>
-      <groupId>org.codehaus.xfire</groupId>
-      <artifactId>xfire-all</artifactId>
-      <version>1.2.4</version>
-      <scope>compile</scope>
-      </dependency>
-      <dependency>
-      <groupId>xfire</groupId>
-      <artifactId>xfire-core</artifactId>
-      <version>1.0-M5</version>
-      </dependency>
-    -->
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
