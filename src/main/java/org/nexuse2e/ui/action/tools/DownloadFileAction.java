@@ -3,6 +3,8 @@ package org.nexuse2e.ui.action.tools;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.OutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,6 +41,8 @@ public class DownloadFileAction extends NexusE2EAction {
         if (filename == null || filename.length() == 0) {
             return null;
         }
+        
+        boolean compress = Boolean.TRUE.toString().equals( request.getParameter( "compress" ) );
 
         File file = new File( filename );
         boolean allow = false;
@@ -55,15 +59,26 @@ public class DownloadFileAction extends NexusE2EAction {
         }
         
         response.setContentType( "application/octet-stream" );
-        response.setHeader( "Content-Disposition", "attachment; filename=" + file.getName() );
+        response.setHeader( "Content-Disposition", "attachment; filename=" + file.getName() + (compress ? ".zip" : "") );
         JAXBContext jaxbContext = JAXBContext.newInstance( EngineConfiguration.class );
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setProperty( Marshaller.JAXB_FORMATTED_OUTPUT, true );
         OutputStream os = response.getOutputStream();
+        if (compress) {
+            ZipOutputStream zos = new ZipOutputStream( os );
+            zos.putNextEntry( new ZipEntry( file.getName() ) );
+            os = zos;
+        }
+        
         FileInputStream fin = FileUtils.openInputStream( file );
+        
         IOUtils.copy( fin, os );
         fin.close();
         os.flush();
+        if (compress) {
+            ((ZipOutputStream) os).closeEntry();
+            ((ZipOutputStream) os).close();
+        }
         
         return null;
     }
