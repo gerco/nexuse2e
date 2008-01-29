@@ -21,7 +21,7 @@
 				<li>${dir.name}
 				<blockquote>
 					<c:forEach var="file" items="${dir.files}">
-						<li><a href="DownloadFile.do?file=${file}">${file.name}</a>
+						<li><a href="DownloadFile.do?file=${file}">${file.name}</a> [<a href="DownloadFile.do?file=${file}&compress=true">ZIP</a>]
 					</c:forEach>
 				</blockquote>
 				</c:forEach>
