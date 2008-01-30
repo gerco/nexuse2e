@@ -1,13 +1,17 @@
 package org.nexuse2e.service.ws;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.jws.WebService;
 import javax.xml.ws.Endpoint;
 
 import org.apache.log4j.Logger;
+import org.nexuse2e.Constants;
 import org.nexuse2e.DynamicWSDispatcherServlet;
+import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Layer;
@@ -15,6 +19,7 @@ import org.nexuse2e.configuration.ListParameter;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.messaging.MessageContext;
+import org.nexuse2e.pojo.MessagePayloadPojo;
 import org.nexuse2e.pojo.MessagePojo;
 import org.nexuse2e.service.AbstractService;
 import org.nexuse2e.service.ReceiverAware;
@@ -80,7 +85,7 @@ public class WSDispatcherService extends AbstractService implements ReceiverAwar
                         serviceTypeDrowdown ) );
         parameterMap.put( URL_PARAM_NAME,
                 new ParameterDescriptor(
-                        ParameterType.STRING, "Web service URL", "The last part of the web service URL (e.g. /sayHello)", "" ) );
+                        ParameterType.STRING, "Web service URL", "The last part of the web service URL (e.g. /sendMessage)", "" ) );
     }
 
     @Override
@@ -132,20 +137,45 @@ public class WSDispatcherService extends AbstractService implements ReceiverAwar
 
     private static void process(
             TransportReceiver transportReceiver,
-            String choreography, String action, String partner, Object payload ) {
+            String choreography,
+            String action,
+            String partner,
+            String conversationId,
+            String messageId,
+            String document ) {
         MessageContext messageContext = new MessageContext();
 
+        byte[] payload = (document != null ? document.getBytes() : null);
+        
         TransportReceiver receiver = transportReceiver;
         if (receiver != null) {
             messageContext.setData( payload );
             if ( LOG.isTraceEnabled() ) {
-                LOG.trace( "Inbound message:\n" + new String( (byte[]) messageContext.getData() ) );
+                LOG.trace( "Inbound message:\n" + document );
             }
-            messageContext.setMessagePojo( new MessagePojo() );
-            messageContext.setOriginalMessagePojo( messageContext.getMessagePojo() );
+            
+            MessagePojo messagePojo = new MessagePojo();
+            
+            messageContext.setMessagePojo( messagePojo );
+            messageContext.setOriginalMessagePojo( messagePojo );
             messageContext.getMessagePojo().setCustomParameters( new HashMap<String, String>() );
 
             try {
+                if (choreography != null && action != null && partner != null && conversationId != null && messageId != null) {
+                    Engine.getInstance().getTransactionService().initializeMessage( 
+                            messagePojo, messageId, conversationId, action, partner, choreography );
+                    
+
+                    MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo();
+                    messagePayloadPojo.setMessage( messagePojo );
+                    messagePayloadPojo.setContentId(
+                            Engine.getInstance().getIdGenerator( Constants.ID_GENERATOR_MESSAGE_PAYLOAD ).getId() );
+                    messagePayloadPojo.setMimeType( "text/xml" );
+                    messagePayloadPojo.setPayloadData( payload );
+                    List<MessagePayloadPojo> messagePayloads = new ArrayList<MessagePayloadPojo>( 1 );
+                    messagePayloads.add( messagePayloadPojo );
+                    messagePojo.setMessagePayloads( messagePayloads );
+                }
                 receiver.processMessage( messageContext );
             } catch (NexusException nex) {
                 nex.printStackTrace();
@@ -162,8 +192,20 @@ public class WSDispatcherService extends AbstractService implements ReceiverAwar
         private TransportReceiver transportReceiver;
         
         public void processXmlDocument(
-                String choreography, String action, String partner, String xmlPayload) {
-            process( transportReceiver, choreography, action, partner, (xmlPayload != null ? xmlPayload.getBytes() : null) );
+                String choreography,
+                String action,
+                String partner,
+                String conversationId,
+                String messageId,
+                String xmlPayload ) {
+            process(
+                    transportReceiver,
+                    choreography,
+                    action,
+                    partner,
+                    conversationId,
+                    messageId,
+                    xmlPayload );
         }
 
         public TransportReceiver getTransportReceiver() {
@@ -173,6 +215,26 @@ public class WSDispatcherService extends AbstractService implements ReceiverAwar
         public void setTransportReceiver(TransportReceiver transportReceiver) {
             this.transportReceiver = transportReceiver;
         }
+    }
+    
+    
+    @WebService(
+            portName="XmlDocumentServicePort",
+            endpointInterface="org.nexuse2e.service.ws.XmlDocumentService")
+    public static class CidxDocumentServiceImpl implements CidxDocumentService, ReceiverAware {
+
+        private TransportReceiver transportReceiver;
         
+        public TransportReceiver getTransportReceiver() {
+            return transportReceiver;
+        }
+
+        public void setTransportReceiver(TransportReceiver transportReceiver) {
+            this.transportReceiver = transportReceiver;
+        }
+
+        public void processCidxDocument( String document ) {
+            process( transportReceiver, null, null, null, null, null, document );
+        }
     }
 }

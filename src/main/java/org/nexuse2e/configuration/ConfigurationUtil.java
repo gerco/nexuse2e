@@ -96,8 +96,8 @@ public class ConfigurationUtil {
     }
 
     // pojo-independent helper method for a single configuration parameter
-    private static void configure( Configurable configurable, Map<String, ParameterDescriptor> map, String key,
-            String value, String label ) {
+    private static void configure(
+            Configurable configurable, Map<String, ParameterDescriptor> map, String key, String value, String label ) {
 
         ParameterDescriptor pd = map.get( key );
         if ( pd != null ) {
@@ -203,6 +203,36 @@ public class ConfigurationUtil {
         }
         return value.toString();
     }
+    
+    
+    private static PipeletParamPojo getPipeletParam(
+            PipeletPojo pipeletPojo, ParameterDescriptor pd, int sequenceNum, String key, String enumKey ) {
+        PipeletParamPojo pipeletParam = null;
+        if ( pipeletPojo.getPipeletParams() != null ) {
+            for ( PipeletParamPojo pp : pipeletPojo.getPipeletParams() ) {
+                if ( pp.getParamName() != null && pp.getParamName().equals( key )
+                        && (pd.getParameterType() != ParameterType.ENUMERATION || enumKey.equals( pp.getLabel() )) ) {
+                    pipeletParam = pp;
+                    break;
+                }
+            }
+        }
+        if ( pipeletParam == null ) {
+            pipeletParam = new PipeletParamPojo();
+            if (pd.getParameterType() != ParameterType.ENUMERATION) {
+                pipeletParam.setLabel( pd.getLabel() );
+            } else {
+                pipeletParam.setLabel( null );
+            }
+            pipeletParam.setParamName( key );
+            pipeletParam.setCreatedDate( new Date() );
+        }
+        pipeletParam.setPipelet( pipeletPojo );
+        pipeletParam.setParameterDescriptor( pd );
+        pipeletParam.setModifiedDate( new Date() );
+        pipeletParam.setSequenceNumber( sequenceNum );
+        return pipeletParam;
+    }
 
     /**
      * Gets a <code>List</code> of <code>PipeletParamPojo</code> objects for the given
@@ -221,41 +251,43 @@ public class ConfigurationUtil {
             int sequenceNum = 0;
             for ( String key : params.keySet() ) {
                 ParameterDescriptor pd = params.get( key );
-                PipeletParamPojo pipeletParam = null;
-                if ( pipeletPojo.getPipeletParams() != null ) {
-                    for ( PipeletParamPojo pp : pipeletPojo.getPipeletParams() ) {
-                        if ( pp.getParamName() != null && pp.getParamName().equals( key ) ) {
-                            pipeletParam = pp;
-                            break;
+                if (pd.getParameterType() == ParameterType.ENUMERATION) {
+                    EnumerationParameter enumeration = configurable.getParameter( key );
+                    if (enumeration == null) {
+                        enumeration = pd.getDefaultValue();
+                    }
+                    Map<String, String> map = enumeration.getElements();
+                    for (String enumKey : map.keySet()) {
+                        if (enumKey != null) {
+                            PipeletParamPojo pipeletParam = getPipeletParam( pipeletPojo, pd, sequenceNum++, key, enumKey );
+                            pipeletParam.setLabel( enumKey );
+                            pipeletParam.setValue( map.get( enumKey ) );
+                            result.add( pipeletParam );
                         }
                     }
-                }
-                if ( pipeletParam == null ) {
-                    pipeletParam = new PipeletParamPojo();
-                }
-                pipeletParam.setParameterDescriptor( pd );
-                pipeletParam.setCreatedDate( new Date() );
-                pipeletParam.setModifiedDate( new Date() );
-                pipeletParam.setLabel( pd.getLabel() );
-                pipeletParam.setParamName( key );
-                pipeletParam.setPipelet( pipeletPojo );
-                pipeletParam.setSequenceNumber( sequenceNum++ );
-                if ( pd.getParameterType() == ParameterType.LIST ) {
-                    ListParameter dropdown = configurable.getParameter( key );
-                    if ( dropdown != null ) {
-                        setParameterStringValue( pipeletParam, dropdown.getSelectedValue() );// pipeletParam.setValue( dropdown.getSelectedValue() );
-                    }
-                } else if ( pd.getParameterType() == ParameterType.ENUMERATION ) {
-                    // TODO: implement this
+                    // add a single pojo with null label/value representing the placeholder for new entries
+                    PipeletParamPojo pipeletParam = new PipeletParamPojo();
+                    pipeletParam.setParamName( key );
+                    pipeletParam.setPipelet( pipeletPojo );
+                    pipeletParam.setParameterDescriptor( pd );
+                    result.add( pipeletParam );
                 } else {
-                    Object value = configurable.getParameter( key );
-                    if ( value == null ) {
-                        setParameterStringValue( pipeletParam, toString( pd.getDefaultValue() ) );// pipeletParam.setValue( toString( pd.getDefaultValue() ) );
+                    PipeletParamPojo pipeletParam = getPipeletParam( pipeletPojo, pd, sequenceNum++, key, null );
+                    if ( pd.getParameterType() == ParameterType.LIST ) {
+                        ListParameter dropdown = configurable.getParameter( key );
+                        if ( dropdown != null ) {
+                            setParameterStringValue( pipeletParam, dropdown.getSelectedValue() );
+                        }
                     } else {
-                        setParameterStringValue( pipeletParam, toString( value ) );// pipeletParam.setValue( toString( value ) );
+                        Object value = configurable.getParameter( key );
+                        if ( value == null ) {
+                            setParameterStringValue( pipeletParam, toString( pd.getDefaultValue() ) );
+                        } else {
+                            setParameterStringValue( pipeletParam, toString( value ) );
+                        }
                     }
+                    result.add( pipeletParam );
                 }
-                result.add( pipeletParam );
             }
         }
         return result;

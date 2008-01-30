@@ -92,6 +92,9 @@ public class PipelineForm extends ActionForm {
 
     private int                     sortaction         = 0;
 
+    private String                  key                = null;
+    private String                  value              = null;
+    
     /**
      * @param component
      */
@@ -234,7 +237,7 @@ public class PipelineForm extends ActionForm {
             }
         } else {
         }
-        pipeletParamValues = new HashMap<String, String>();
+        //pipeletParamValues = new HashMap<String, String>();
         
     }
 
@@ -413,6 +416,22 @@ public class PipelineForm extends ActionForm {
     public void setSortaction( int sortaction ) {
 
         this.sortaction = sortaction;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+    
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     /**

@@ -18,9 +18,11 @@ public interface XmlDocumentService {
 
     /**
      * Process an XML document for the given choreography, action and partner.
-     * @param choreography The choreography.
-     * @param action The action.
-     * @param partner The partner.
+     * @param choreography The choreography. Must not be <code>null</code>.
+     * @param action The action. Must not be <code>null</code>.
+     * @param partner The partner. Must not be <code>null</code>.
+     * @param conversationId The conversation ID. Must not be <code>null</code>.
+     * @param messageId The message ID. Must not be <code>null</code>.
      * @param xmlPayload The payload (XML document).
      */
     @WebMethod(operationName = "processXmlDocument", action = "http://integration.nexuse2e.org/XmlDocumentService/processXmlDocument")
@@ -32,6 +34,10 @@ public interface XmlDocumentService {
             String action,
             @WebParam(name = "partner", targetNamespace = "")
             String partner,
+            @WebParam(name = "conversationId", targetNamespace = "")
+            String conversationId,
+            @WebParam(name = "messageId", targetNamespace = "")
+            String messageId,
             @WebParam(name = "xmlPayload", targetNamespace = "")
             String xmlPayload );
 }

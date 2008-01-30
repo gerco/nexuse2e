@@ -1753,7 +1753,7 @@ public class ConfigurationAccessService {
                     param.setValue( dropdown.getSelectedValue() );
                 }
             } else if ( pd.getParameterType() == ParameterType.ENUMERATION ) {
-                // TODO: implement this
+                // TODO: Implement this!
             } else {
                 Object value = values.get( name );
                 if ( value == null ) {
