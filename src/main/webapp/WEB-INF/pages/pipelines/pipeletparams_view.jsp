@@ -3,7 +3,7 @@
 <%@ taglib uri="/tags/struts-nested" prefix="nested"%>
 <%@ taglib uri="/tags/struts-tiles" prefix="tiles"%>
 <%@ taglib uri="/tags/struts-logic" prefix="logic"%>
-<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="/tags/nexus" prefix="nexus"%>
 <%@ taglib uri="/tags/struts-html-el" prefix="html-el"%>
 
@@ -58,33 +58,42 @@
 						<td class="NEXUSValue">${parameter.parameterDescriptor.description}</td>
 					</tr>
 				</logic:equal>
-				<logic:equal name="parameter"
-					property="parameterDescriptor.parameterType"
-					value="<%= ParameterType.ENUMERATION.toString() %>">
-					<logic:equal name="parameter" property="sequenceNumber" value="0">
-						<tr>
-							<td class="NEXUSValue" colspan="2"><nexus:submit
-								onClick="javascript:document.forms['pipelineForm'].paramName.value='${parameter.paramName}';document.forms['pipelineForm'].submitaction.value='add';">
-								<img src="images/submit.gif" name="add">
-							</nexus:submit>${parameter.name}</td>
-
-							<td class="NEXUSValue">${parameter.parameterDescriptor.description}</td>
-						</tr>
-					</logic:equal>
-					<logic:greaterThan name="parameter" property="sequenceNumber"
-						value="0">
-						<bean:define id="valueKey"
-							value="paramValue(${parameter.paramName})" />
-						<tr>
-							<td class="NEXUSValue"><nexus:submit
-								onClick="javascript:document.forms['pipelineForm'].paramName.value='${parameter.paramName}';document.forms['pipelineForm'].actionNxId.value=${parameter.sequenceNumber};document.forms['pipelineForm'].submitaction.value='delete';">
-								<img src="images/submit.gif" name="delete">
-							</nexus:submit> ${parameter.label}</td>
-							<td class="NEXUSValue"><html:text property="${valueKey}"
-								size="30" /></td>
-							<td class="NEXUSValue"></td>
-						</tr>
-					</logic:greaterThan>
+				<logic:equal name="parameter" property="parameterDescriptor.parameterType" value="<%= ParameterType.ENUMERATION.toString() %>">
+						<td class="NEXUSValue">
+							<c:choose>
+								<c:when test="${parameter.label != null}">
+									<input type="text" size="20" value="${parameter.label}" disabled="disabled">
+								</c:when>
+								<c:otherwise>
+									<html:text property="key" size="20"/>
+								</c:otherwise>
+							</c:choose>
+						</td>
+						<td class="NEXUSValue">
+							<c:choose>
+								<c:when test="${parameter.label != null}">
+									<input type="text" size="35" value="${parameter.value}" disabled="disabled">
+								</c:when>
+								<c:otherwise>
+									<html:text property="value" size="35"/>
+								</c:otherwise>
+							</c:choose>
+						</td>
+						<td class="NEXUSValue">
+							<c:choose>
+								<c:when test="${parameter.label != null}">
+									<nexus:submit onClick="javascript:document.forms['pipelineForm'].paramName.value='${parameter.paramName}';document.forms['pipelineForm'].actionNxId.value=${parameter.sequenceNumber};document.forms['pipelineForm'].submitaction.value='delete';">
+										<img src="images/delete.gif" name="delete" class="button">
+									</nexus:submit>
+ 								</c:when>
+ 								<c:otherwise>
+ 									<nexus:submit onClick="javascript:document.forms['pipelineForm'].paramName.value='${parameter.paramName}';document.forms['pipelineForm'].submitaction.value='add';">
+										<img src="images/submit.gif" name="add" class="button">
+									</nexus:submit>${parameter.parameterDescriptor.description}
+ 								</c:otherwise>
+							</c:choose>
+						</td>
+					</tr>
 				</logic:equal>
 
 				<logic:equal name="parameter"

@@ -36,6 +36,11 @@
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <load-on-startup>4</load-on-startup>
   </servlet>
+  <servlet>
+    <servlet-name>NexusDynamicWebServiceDispatcher</servlet-name>
+    <servlet-class>org.nexuse2e.DynamicWSDispatcherServlet</servlet-class>
+    <load-on-startup>5</load-on-startup>
+  </servlet>
 
   <servlet>
     <servlet-name>DataSaveAs</servlet-name>
@@ -88,6 +93,10 @@
   <servlet-mapping>
     <servlet-name>NexusIntegrationDispatcher</servlet-name>
     <url-pattern>/integration/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>NexusDynamicWebServiceDispatcher</servlet-name>
+    <url-pattern>/wshandler/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>DataSaveAs</servlet-name>

@@ -620,7 +620,7 @@
     </action>
     <action path="/PipeletParamsUpdate" name="pipelineForm" type="org.nexuse2e.ui.action.pipelines.PipeletParamsUpdateAction">
       <forward name="update" path="/PipelineView.do"/>
-      <forward name="view" path="/PipeletParamsView.do"/>
+      <forward name="view" path="/WEB-INF/pages/pipelines/pipeletparams_view.jsp"/>
     </action>
     
    
