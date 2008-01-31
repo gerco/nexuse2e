@@ -128,7 +128,7 @@ public class WSClientService extends AbstractService implements SenderAware {
             for ( MessagePayloadPojo payload : messageContext.getMessagePojo().getMessagePayloads() ) {
                 LOG.trace( "Calling web service at: " + receiverURL );
                 theXmlDocumentService.processXmlDocument( messageContext.getChoreography().getName(), messageContext
-                        .getActionSpecificKey().getActionId(), messageContext.getParticipant().getPartner()
+                        .getActionSpecificKey().getActionId(), messageContext.getParticipant().getLocalPartner()
                         .getPartnerId(), messageContext.getConversation().getConversationId(), messageContext
                         .getMessagePojo().getMessageId(), new String( payload.getPayloadData() ) );
             }
