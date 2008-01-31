@@ -410,9 +410,7 @@ public class TransactionServiceImpl implements TransactionService {
             conversation.setConversationId( conversationId );
             conversation.setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_CREATED );
         }
-        
-        
-        
+
         message.setConversation( conversation );
         message.setAction( action );
 
@@ -552,14 +550,37 @@ public class TransactionServiceImpl implements TransactionService {
     } // updateMessage
 
     /* (non-Javadoc)
+     * @see org.nexuse2e.controller.TransactionService#isProcessingMessage(java.lang.String)
+     */
+    public boolean isProcessingMessage( String id ) {
+
+        boolean result = false;
+
+        synchronized ( processingMessages ) {
+            result = processingMessages.containsKey( id );
+        }
+
+        return result;
+    }
+
+    /* (non-Javadoc)
      * @see org.nexuse2e.controller.TransactionService#registerProcessingMessage(java.lang.String, java.util.concurrent.ScheduledFuture)
      */
     public void registerProcessingMessage( String id, ScheduledFuture<?> handle, ScheduledExecutorService scheduler ) {
 
         LOG.debug( "registerProcessingMessage: " + id );
 
-        processingMessages.put( id, handle );
-        schedulers.put( id, scheduler );
+        synchronized ( processingMessages ) {
+            if ( !processingMessages.containsKey( id ) ) {
+                processingMessages.put( id, handle );
+                schedulers.put( id, scheduler );
+            } else {
+                handle.cancel( false );
+                scheduler.shutdownNow();
+                LOG.warn( "Request to process message that was already being processed: " + id );
+                new Exception().printStackTrace();
+            }
+        }
     } // registerProcessingMessage
 
     /* (non-Javadoc)
@@ -569,22 +590,24 @@ public class TransactionServiceImpl implements TransactionService {
 
         LOG.debug( "deregisterProcessingMessage: " + id );
 
-        ScheduledFuture<?> handle = processingMessages.get( id );
-        if ( handle != null ) {
-            handle.cancel( false );
-            LOG.debug( "deregisterProcessingMessage - processing cancelled!" );
-            try {
-                ScheduledExecutorService scheduler = schedulers.remove( id );
-                if ( scheduler != null ) {
-                    LOG.debug( "Shutting down scheduler..." );
-                    scheduler.shutdownNow();
+        synchronized ( processingMessages ) {
+            ScheduledFuture<?> handle = processingMessages.get( id );
+            if ( handle != null ) {
+                handle.cancel( false );
+                LOG.debug( "deregisterProcessingMessage - processing cancelled!" );
+                try {
+                    ScheduledExecutorService scheduler = schedulers.remove( id );
+                    if ( scheduler != null ) {
+                        LOG.debug( "Shutting down scheduler..." );
+                        scheduler.shutdownNow();
+                    }
+                } catch ( Exception e ) {
+                    e.printStackTrace();
                 }
-            } catch ( Exception e ) {
-                e.printStackTrace();
+                processingMessages.remove( id );
+            } else {
+                LOG.warn( "No handle found when trying to deregister processing message: " + id );
             }
-            processingMessages.remove( id );
-        } else {
-            //new Exception().printStackTrace();
         }
     } // deregisterProcessingMessage
 

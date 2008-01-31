@@ -69,8 +69,8 @@ public class ModifyMessageAction extends NexusE2EAction {
             ActionMessage errorMessage = new ActionMessage( "generic.error", "can't modify message status" );
             errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
         }
-        LOG.debug( "Modify Message Action: "+action);
-        
+        LOG.debug( "Modify Message Action: " + action );
+
         if ( action.equals( "requeue" ) ) {
 
             if ( outbound ) {
@@ -114,6 +114,16 @@ public class ModifyMessageAction extends NexusE2EAction {
             }
 
         }
+
+        // Make sure form selection criteria is reset
+        reportingPropertiesForm.setParticipantId( null );
+        reportingPropertiesForm.setMessageId( null );
+        reportingPropertiesForm.setConversationId( null );
+        reportingPropertiesForm.setChoreographyId( null );
+
+        reportingPropertiesForm.setConversationEnabled( false );
+        reportingPropertiesForm.setMessageEnabled( false );
+
         return success;
     }
 } // ModifyMessageAction

@@ -246,6 +246,13 @@ public interface TransactionService extends Manageable {
     public abstract void updateConversation( ConversationPojo conversationPojo ) throws NexusException; // updateMessage
 
     /**
+     * Determine whether a message is being processed.
+     * @param id The message ID
+     * @return TRUE if the message is being processed.
+     */
+    public abstract boolean isProcessingMessage( String id );
+
+    /**
      * Register a <code>ScheduledFuture</code> for a message that is being processed so that it can be 
      * stopped in case an acknowledgment is received.
      * @param id The message ID

@@ -111,7 +111,7 @@
 					onClick="document.forms[0].sortaction.value=${index};document.forms[0].submitaction.value='delete';">
 					<img src="images/delete.gif" class="button" alt="Delete" id="deletePipelet"><span dojoType="tooltip" connectId="deletePipelet" toggle="explode">Delete Pipelet</span>
 				</nexus:submit> 
-				<logic:notEqual name="pipelet" property="nxPipeletId" value="">
+				<logic:notEqual name="pipelet" property="nxPipeletId" value="0">
 				<nexus:submit
 					onClick="document.forms[0].sortaction.value=${index};document.forms[0].submitaction.value='config';">
 					<img src="images/submit.gif" class="button" alt="Configure" id="configurePipelet"><span dojoType="tooltip" connectId="configurePipelet" toggle="explode">Configure Pipelet</span>

@@ -957,9 +957,6 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
 
             }
 
-            // Recover any pending messages...
-            currentConfiguration.getStaticBeanContainer().getBackendOutboundDispatcher().recoverMessages();
-
             LOG.info( "***** Nexus E2E engine activated. *****" );
         } else {
             LOG.error( "Failed to start Engine, no configuration found!" );

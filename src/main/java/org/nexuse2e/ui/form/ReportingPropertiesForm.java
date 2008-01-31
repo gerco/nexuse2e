@@ -291,6 +291,7 @@ public class ReportingPropertiesForm extends ActionForm {
         setStartEnabled( true );
         setEndEnabled( true );
         setConversationEnabled( false );
+        setMessageEnabled( false );
 
         setNextActive( false );
         setLastActive( false );

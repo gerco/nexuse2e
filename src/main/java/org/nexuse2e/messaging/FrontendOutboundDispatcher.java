@@ -89,13 +89,19 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
 
         final Runnable messageSender = new MessageSender( pipeline, messageContext, ( reliable ? retries : 0 ) );
         if ( messageContext.getMessagePojo().getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
-            ScheduledExecutorService scheduler = Executors.newScheduledThreadPool( 1 );
+            if ( !Engine.getInstance().getTransactionService().isProcessingMessage(
+                    messageContext.getMessagePojo().getMessageId() ) ) {
+                ScheduledExecutorService scheduler = Executors.newScheduledThreadPool( 1 );
 
-            ScheduledFuture<?> handle = scheduler.scheduleAtFixedRate( messageSender, 0, interval, TimeUnit.SECONDS );
-            LOG.debug( new LogMessage( "Waiting " + interval + " seconds until message resend...", messageContext
-                    .getMessagePojo() ) );
-            Engine.getInstance().getTransactionService().registerProcessingMessage(
-                    messageContext.getMessagePojo().getMessageId(), handle, scheduler );
+                ScheduledFuture<?> handle = scheduler
+                        .scheduleAtFixedRate( messageSender, 0, interval, TimeUnit.SECONDS );
+                LOG.debug( new LogMessage( "Waiting " + interval + " seconds until message resend...", messageContext
+                        .getMessagePojo() ) );
+                Engine.getInstance().getTransactionService().registerProcessingMessage(
+                        messageContext.getMessagePojo().getMessageId(), handle, scheduler );
+            } else {
+                LOG.warn( "Message is already being processed: " + messageContext.getMessagePojo().getMessageId() );
+            }
         } else {
             new Thread( messageSender, messageContext.getMessagePojo().getMessageId() ).start();
         }
@@ -220,10 +226,11 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                                 && ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_PROCESSING ) ) {
                             conversationPojo.setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_SENDING_ACK );
                         } else if ( messagePojo.getEndDate() != null ) {
-                            
+
                             // If message has been ack'ed while we were waiting do nothing
-                            LOG.info( "Cancelled sending message (ack was just received): " + messagePojo.getMessageId() );
-                            cancelRetrying();
+                            LOG.info( "Cancelled sending message (ack was just received): "
+                                    + messagePojo.getMessageId() );
+                            cancelRetrying( false );
                             return;
                         }
 
@@ -276,7 +283,8 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                                 LOG.debug( new LogMessage(
                                         "Received ack message, backend still processing - conversation ID: "
                                                 + conversationPojo.getConversationId(), messagePojo ) );
-                            } else if ( conversationPojo.getStatus() != org.nexuse2e.Constants.CONVERSATION_STATUS_COMPLETED ) {
+                            } else if ( ( conversationPojo.getStatus() != org.nexuse2e.Constants.CONVERSATION_STATUS_COMPLETED )
+                                    || ( conversationPojo.getStatus() != org.nexuse2e.Constants.CONVERSATION_STATUS_ERROR ) ) {
                                 LOG.error( new LogMessage( "Unexpected conversation state after sending ack message: "
                                         + conversationPojo.getStatus(), messagePojo ) );
                             }
@@ -316,22 +324,33 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
         } // run
 
         /**
-         * 
+         * Stop the thread for resending the message based on its reliability parameters
          */
         private void cancelRetrying() {
+
+            cancelRetrying( true );
+        }
+
+        /**
+         * Stop the thread for resending the message based on its reliability parameters. If updateStatus is true also
+         * set the message to failed and the conversation to error.
+         */
+        private void cancelRetrying( boolean updateStatus ) {
 
             MessagePojo messagePojo = messageContext.getMessagePojo();
             synchronized ( messagePojo.getConversation() ) {
 
                 // if ( messagePojo.getStatus() != org.nexuse2e.Constants.MESSAGE_STATUS_SENT ) {
-                messagePojo.setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_FAILED );
-                messagePojo.getConversation().setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_ERROR );
-                try {
-                    Engine.getInstance().getTransactionService().updateTransaction( messagePojo.getConversation() );
-                } catch ( NexusException e ) {
-                    LOG.error( new LogMessage( "Error updating conversation/message on failed atempt message!",
-                            messagePojo ) );
-                    e.printStackTrace();
+                if ( updateStatus ) {
+                    messagePojo.setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_FAILED );
+                    messagePojo.getConversation().setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_ERROR );
+                    try {
+                        Engine.getInstance().getTransactionService().updateTransaction( messagePojo.getConversation() );
+                    } catch ( NexusException e ) {
+                        LOG.error( new LogMessage( "Error updating conversation/message on failed atempt message!",
+                                messagePojo ) );
+                        e.printStackTrace();
+                    }
                 }
                 // }
                 Engine.getInstance().getTransactionService().deregisterProcessingMessage(
