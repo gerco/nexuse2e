@@ -1,0 +1,2 @@
+Please download Apache CXF 2.0.4 from http://incubator.apache.org/cxf/
+and copy the library to this folder (<project_root>/lib).

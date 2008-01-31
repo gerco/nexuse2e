@@ -48,7 +48,7 @@
 	<classpathentry kind="var" path="TOMCAT_HOME/lib/el-api.jar"/>
 	<classpathentry kind="var" path="TOMCAT_HOME/lib/annotations-api.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/derby/derby/10.3.1.4/derby-10.3.1.4.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/apache/cxf/apache-cxf/2.0.3-incubator/apache-cxf-2.0.3-incubator.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/apache/cxf/apache-cxf/2.0.4-incubator/apache-cxf-2.0.4-incubator.jar"/>
 	<classpathentry kind="var" path="M2_REPO/xml-security/xmlsec/1.2.1/xmlsec-1.2.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/wsdl4j/wsdl4j/1.5.3/wsdl4j-1.5.3.jar"/>
 	<classpathentry kind="var" path="M2_REPO/wss4j/wss4j/1.5.0/wss4j-1.5.0.jar"/>

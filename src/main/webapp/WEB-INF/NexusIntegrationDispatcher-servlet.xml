@@ -1,21 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
-	<bean id="sapHttpIntegrationController" class="org.xioma.nexuse2e.terra.pipelets.SAPHTTPIntegrationController">
-		<property name="choreographyActionMap">
-			<map>
-				<entry key="*"><value>GenericFile/SendFile</value></entry>
-				<entry key="ORDERS05"><value>CNOrder/OrderResponse</value></entry>
-				<entry key="INVOIC02"><value>CNInvoice/Invoice</value></entry>
-                <entry key="DESADV01"><value>CNShipNotice/ShipNotice</value></entry>
-			</map>
-		</property>
-	</bean>
-  
 	<bean id="nexusIntegrationDispatcherMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="mappings">
             <value>
-                /saphttp=sapHttpIntegrationController
                 /http=httpIntegrationController
                 /debug=debugController
                 /engineStatus=engineStatusController
