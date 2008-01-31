@@ -78,7 +78,8 @@
         <ref bean="ebxml10Adapter" />
         <ref bean="ebxml20Adapter" />
         <ref bean="httpPlainAdapter" />
-        <ref bean="articleImportAdapter" />
+        <ref bean="wsPlainAdapter" />
+        <ref bean="wsCIDXAdapter" />
       </list>
     </property>
   </bean>
@@ -91,7 +92,8 @@
         <ref bean="ebxml10Adapter" />
         <ref bean="ebxml20Adapter" />
         <ref bean="httpPlainAdapter" />
-        <ref bean="articleImportAdapter" />
+        <ref bean="wsPlainAdapter" />
+        <ref bean="wsCIDXAdapter" />
       </list>
     </property>
   </bean>
@@ -99,11 +101,6 @@
   <bean id="frontendOutboundDispatcher" class="org.nexuse2e.messaging.FrontendOutboundDispatcher">
     <property name="frontendOutboundPipelines">
       <list>
-        <!--
-          <ref bean="ebXML20HttpOutboundPipeline" />
-          <ref bean="ebXML20SmtpOutboundPipeline" />
-          <ref bean="httpPlainOutboundPipeline" />
-        -->
       </list>
     </property>
   </bean>
@@ -138,27 +135,24 @@
       </bean>
     </property>
   </bean>
-  <bean id="articleImportAdapter" class="org.nexuse2e.messaging.ebxml.v20.ProtocolAdapter">
+  <bean id="wsPlainAdapter" class="org.nexuse2e.messaging.ebxml.v20.ProtocolAdapter">
     <property name="key">
       <bean class="org.nexuse2e.ProtocolSpecificKey">
-        <property name="communicationProtocolId" value="article_master" />
+        <property name="communicationProtocolId" value="wsplain" />
         <property name="communicationProtocolVersion" value="1.0" />
-        <property name="transportProtocolId" value="ftp" />
+        <property name="transportProtocolId" value="http" />
       </bean>
     </property>
   </bean>
-
-  <!-- misc  -->
-  <!--
-    <bean id="directoryScanner" class="org.nexuse2e.backend.DummyDirectoryScanner">
-    <property name="directory" value="${scanner.directory}" />
-    <property name="interval" value="${scanner.interval}" />
-    <property name="backendPipelineDispatcher" ref="backendPipelineDispatcher" />
-    <property name="partnerId" value="${scanner.partnerId}" />
-    <property name="choreographyId" value="${scanner.choreographyId}" />
-    <property name="actionId" value="${scanner.actionId}" />
-    </bean>
-  -->
+  <bean id="wsCIDXAdapter" class="org.nexuse2e.messaging.ebxml.v20.ProtocolAdapter">
+    <property name="key">
+      <bean class="org.nexuse2e.ProtocolSpecificKey">
+        <property name="communicationProtocolId" value="wscidx" />
+        <property name="communicationProtocolVersion" value="1.0" />
+        <property name="transportProtocolId" value="http" />
+      </bean>
+    </property>
+  </bean>
 
   <!--  DatabaseConfig -->
   <bean id="internal" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
