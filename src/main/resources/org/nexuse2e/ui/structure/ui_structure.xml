@@ -168,10 +168,13 @@
           <nxs:command target="DatabasePurge.do?type=select" label="Execute" icon="images/tree/TreeDot.gif"/>
         </nxs:page>
         <nxs:page target="MappingMaintenance.do" label="Mapping Maintenance" icon="images/tree/collaborativepartners.gif">
-          <nxs:command target="DatabasePurge.do" label="Execute" icon="images/tree/TreeDot.gif"/>
+          <nxs:command target="MappingMaintenance.do" label="Execute" icon="images/tree/TreeDot.gif"/>
+        </nxs:page>
+        <nxs:page target="FileDownload.do" label="File Download" icon="images/tree/reports.gif">
+          <nxs:command target="FileDownload.do" label="Execute" icon="images/tree/TreeDot.gif"/>
         </nxs:page>
         <nxs:page target="ConfigurationManagement.do" label="Configuration Management" icon="images/tree/businessprocesses.gif">
-          <nxs:command target="DatabasePurge.do" label="Execute" icon="images/tree/TreeDot.gif"/>
+          <nxs:command target="ConfigurationManagement.do" label="Execute" icon="images/tree/TreeDot.gif"/>
         </nxs:page>
       </nxs:page>
       <nxs:page target="CollaborationPartners.do?type=2" label="Collaboration Partners" icon="images/tree/collaborativepartners.gif">

@@ -63,6 +63,7 @@ public class PipelineForm extends ActionForm {
     private List<ComponentPojo>     availableTemplates = null;
 
     private List<PipeletParamPojo>  parameters         = new ArrayList<PipeletParamPojo>();
+    private List<PipeletParamPojo>  obsoleteParameters = new ArrayList<PipeletParamPojo>();
     private List<TRPPojo>           trps               = null;
 
     private boolean                 frontend           = false;
@@ -195,7 +196,12 @@ public class PipelineForm extends ActionForm {
             for ( PipeletParamPojo param : getParameters() ) {
                 ParameterDescriptor pd = configurable.getParameterMap().get( param.getParamName() );
                 if ( pd != null ) {
-                    String value = pipeletParamValues.get( param.getParamName() );
+                    String value;
+                    if (pd.getParameterType() == ParameterType.ENUMERATION) {
+                        value = param.getLabel();
+                    } else {
+                        value = pipeletParamValues.get( param.getParamName() );
+                    }
                     if ( pd.getParameterType() == ParameterType.BOOLEAN ) {
                         if ( "on".equalsIgnoreCase( value ) ) {
                             value = Boolean.TRUE.toString();
@@ -237,8 +243,7 @@ public class PipelineForm extends ActionForm {
             }
         } else {
         }
-        //pipeletParamValues = new HashMap<String, String>();
-        
+        pipeletParamValues = new HashMap<String, String>();
     }
 
     /**
@@ -508,6 +513,15 @@ public class PipelineForm extends ActionForm {
         this.parameters = parameters;
     }
 
+    public List<PipeletParamPojo> getObsoleteParameters() {
+        return obsoleteParameters;
+    }
+    
+    public void setObsoleteParameters( List<PipeletParamPojo> obsoleteParameters ) {
+        this.obsoleteParameters = obsoleteParameters;
+    }
+
+    
     public boolean isFrontend() {
 
         return frontend;

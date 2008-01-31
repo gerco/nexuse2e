@@ -267,6 +267,7 @@ public class ConfigurationUtil {
                     }
                     // add a single pojo with null label/value representing the placeholder for new entries
                     PipeletParamPojo pipeletParam = new PipeletParamPojo();
+                    pipeletParam.setSequenceNumber( 1000000000 );
                     pipeletParam.setParamName( key );
                     pipeletParam.setPipelet( pipeletPojo );
                     pipeletParam.setParameterDescriptor( pd );

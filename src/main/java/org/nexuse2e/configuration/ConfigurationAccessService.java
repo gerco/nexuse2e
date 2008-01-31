@@ -873,24 +873,20 @@ public class ConfigurationAccessService {
             e.printStackTrace();
         }
     }
-
+    
     /**
      * @param pipeline
      */
-    public void updatePipeline( PipelinePojo pipeline ) {
+    public void updatePipeline( PipelinePojo pipeline ) throws NexusException {
 
-        try {
-            PipelinePojo oldPipeline = getPipelinePojoByNxPipelineId( pipeline.getNxPipelineId() );
-            if ( oldPipeline != null ) {
-                getBackendPipelinePojos( Constants.PIPELINE_TYPE_ALL, null ).remove( oldPipeline );
-            }
-            getBackendPipelinePojos( Constants.PIPELINE_TYPE_ALL, null ).add( pipeline );
-
-            //engineConfig.saveConfigurationToDB();
-            applyConfiguration();
-        } catch ( NexusException e ) {
-            e.printStackTrace();
+        PipelinePojo oldPipeline = getPipelinePojoByNxPipelineId( pipeline.getNxPipelineId() );
+        if ( oldPipeline != null ) {
+            getBackendPipelinePojos( Constants.PIPELINE_TYPE_ALL, null ).remove( oldPipeline );
         }
+        getBackendPipelinePojos( Constants.PIPELINE_TYPE_ALL, null ).add( pipeline );
+
+        //engineConfig.saveConfigurationToDB();
+        applyConfiguration();
     }
 
     /**

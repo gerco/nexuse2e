@@ -91,6 +91,21 @@ public class PipelinePojo implements java.io.Serializable {
         this.name = name;
         this.pipelets = pipelets;
     }
+    
+    /**
+     * Creates a <code>PipelinePojo</code> that is a copy of the given pipeline.
+     * @param pipeline The object to create a copy of.
+     */
+    public PipelinePojo( PipelinePojo pipeline ) {
+        this(
+                pipeline.outbound,
+                pipeline.createdDate,
+                pipeline.modifiedDate,
+                pipeline.modifiedNxUserId,
+                pipeline.description,
+                pipeline.name,
+                pipeline.pipelets );
+    }
 
     // Property accessors
     @XmlAttribute

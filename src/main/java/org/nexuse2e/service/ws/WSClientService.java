@@ -30,7 +30,6 @@ public class WSClientService extends AbstractService implements SenderAware {
     private static final String SERVICE_TYPE_PARAM_NAME = "serviceType";
 
     private TransportSender     transportSender;
-    private XmlDocumentService  xmlDocumentService;
 
     public enum FrontendWebServiceType {
 
@@ -74,38 +73,6 @@ public class WSClientService extends AbstractService implements SenderAware {
         return Layer.INBOUND_PIPELINES;
     }
 
-    public void start() {
-
-        if ( getStatus() == BeanStatus.STARTED ) {
-            return;
-        }
-        xmlDocumentService = null;
-        ListParameter parameter = getParameter( SERVICE_TYPE_PARAM_NAME );
-        FrontendWebServiceType wsType = null;
-        if ( parameter != null ) {
-            wsType = FrontendWebServiceType.valueOf( parameter.getSelectedValue() );
-        }
-        try {
-            if ( wsType == FrontendWebServiceType.XML_DOCUMENT ) {
-
-                JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
-                factory.setServiceClass( XmlDocumentService.class );
-                factory.setAddress( (String) getParameter( URL_PARAM_NAME ) );
-                xmlDocumentService = (XmlDocumentService) factory.create();
-
-                super.start();
-            }
-        } catch ( Exception ex ) {
-            ex.printStackTrace();
-            LOG.error( ex );
-        }
-    }
-
-    public void stop() {
-
-        super.stop();
-    }
-
     public TransportSender getTransportSender() {
 
         return transportSender;
@@ -120,11 +87,17 @@ public class WSClientService extends AbstractService implements SenderAware {
         String receiverURL = messageContext.getParticipant().getConnection().getUri();
 
         JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
-        factory.setServiceClass( XmlDocumentService.class );
-        factory.setAddress( receiverURL );
-        XmlDocumentService theXmlDocumentService = (XmlDocumentService) factory.create();
+        ListParameter parameter = getParameter( SERVICE_TYPE_PARAM_NAME );
+        FrontendWebServiceType wsType = null;
+        if ( parameter != null ) {
+            wsType = FrontendWebServiceType.valueOf( parameter.getSelectedValue() );
+        }
 
-        if ( theXmlDocumentService != null ) {
+        if (wsType == FrontendWebServiceType.XML_DOCUMENT) {
+            factory.setServiceClass( XmlDocumentService.class );
+            factory.setAddress( receiverURL );
+            XmlDocumentService theXmlDocumentService = (XmlDocumentService) factory.create();
+
             for ( MessagePayloadPojo payload : messageContext.getMessagePojo().getMessagePayloads() ) {
                 LOG.trace( "Calling web service at: " + receiverURL );
                 theXmlDocumentService.processXmlDocument( messageContext.getChoreography().getName(), messageContext
@@ -132,10 +105,15 @@ public class WSClientService extends AbstractService implements SenderAware {
                         .getPartnerId(), messageContext.getConversation().getConversationId(), messageContext
                         .getMessagePojo().getMessageId(), new String( payload.getPayloadData() ) );
             }
+        } else if (wsType == FrontendWebServiceType.CIDX_DOCUMENT) {
+            factory.setServiceClass( CidxDocumentService.class );
+            factory.setAddress( receiverURL );
+            CidxDocumentService theCidxDocumentService = (CidxDocumentService) factory.create();
 
-        } else {
-            LOG.error( "Could not create WS client for partner: "
-                    + messageContext.getParticipant().getPartner().getPartnerId() );
+            for ( MessagePayloadPojo payload : messageContext.getMessagePojo().getMessagePayloads() ) {
+                LOG.trace( "Calling web service at: " + receiverURL );
+                theCidxDocumentService.processCidxDocument( new String( payload.getPayloadData() ) );
+            }
         }
     }
 

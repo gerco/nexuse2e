@@ -19,9 +19,7 @@
  */
 package org.nexuse2e.ui.action.pipelines;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -61,29 +59,39 @@ public class PipeletParamsUpdateAction extends NexusE2EAction {
 
         PipelineForm form = (PipelineForm) actionForm;
 
-//        request.setAttribute( "keepData", "true" );
-        //request.getSession().setAttribute( Crumbs.CURRENT_LOCATION, Crumbs.PIPELINE_VIEW + "_" + form.getNxPipelineId() );
-
+        
         String action = form.getSubmitaction();
 
         LOG.trace( "submitaction: " + action );
 
         if ( action.equals( "add" ) ) {
-            form.fillPojosFromParameterMap();
             String paramName = form.getParamName();
             LOG.trace( "paramName: " + paramName );
             int maxsqn = 0;
             PipeletParamPojo headerLine = null;
             for (PipeletParamPojo param : form.getParameters()) {
                 if ( param.getParamName().equals( paramName ) ) {
-                    if ( param.getSequenceNumber() == 0 ) {
+                    if ( param.getLabel() == null ) {
                         headerLine = param;
+                    } else {
+                        maxsqn = param.getSequenceNumber();
                     }
-                    maxsqn = param.getSequenceNumber();
                 }
             }
 
-            if ( headerLine != null ) {
+            boolean alreadyIn;
+            if (form.getKey() != null) {
+                alreadyIn = false;
+                for (PipeletParamPojo param : form.getParameters()) {
+                    if (form.getKey().equals( param.getLabel() )) {
+                        alreadyIn = true;
+                        break;
+                    }
+                }
+            } else {
+                alreadyIn = true;
+            }
+            if ( headerLine != null && !alreadyIn ) {
                 PipeletParamPojo newParam = new PipeletParamPojo();
                 newParam.setParamName( headerLine.getParamName() );
                 newParam.setModifiedDate( new Date() );
@@ -100,8 +108,10 @@ public class PipeletParamsUpdateAction extends NexusE2EAction {
                 enumeration.putElement( form.getKey(), form.getValue() );
                 newParam.setSequenceNumber( maxsqn + 1 );
                 newParam.setParameterDescriptor( pd );
-                form.getParameters().add( newParam );
+                form.getParameters().add( form.getParameters().size() - 1, newParam );
             }
+            form.setKey( "" );
+            form.setValue( "" );
 
             return view;
         }
@@ -113,7 +123,7 @@ public class PipeletParamsUpdateAction extends NexusE2EAction {
             LOG.trace( "sqn: " + sqn );
 
             PipeletParamPojo obsoleteParam = null;
-            for (PipeletParamPojo param : form.getCurrentPipelet().getPipeletParams()) {
+            for (PipeletParamPojo param : form.getParameters()) {
                 if ( param.getParamName().equals( paramName ) && param.getSequenceNumber() == sqn ) {
                     obsoleteParam = param;
                 }
@@ -127,13 +137,18 @@ public class PipeletParamsUpdateAction extends NexusE2EAction {
                 if (enumeration != null) {
                     enumeration.removeElement( obsoleteParam.getLabel() );
                 }
+                if (obsoleteParam.getNxPipeletParamId() != 0) {
+                    form.getObsoleteParameters().add( obsoleteParam );
+                }
             }
             return view;
         }
 
         if ( action.equals( "update" ) ) {
-            PipelinePojo pipelinePojo = Engine.getInstance().getActiveConfigurationAccessService()
-                    .getPipelinePojoByNxPipelineId( form.getNxPipelineId() );
+            PipelinePojo pipelinePojo =
+                Engine.getInstance().getActiveConfigurationAccessService().getPipelinePojoByNxPipelineId(
+                            form.getNxPipelineId() );
+            pipelinePojo.setNxPipelineId( form.getNxPipelineId() );
             PipeletPojo pipeletPojo = null;
             if ( form.getCurrentPipelet().getNxPipeletId() == 0 ) {
                 pipeletPojo = form.getCurrentPipelet();
@@ -154,15 +169,16 @@ public class PipeletParamsUpdateAction extends NexusE2EAction {
                     return error;
                 }
                 form.fillPojosFromParameterMap();
-                List<PipeletParamPojo> paramPojos = form.getParameters();
-                List<PipeletParamPojo> copiedParamPojos = new ArrayList<PipeletParamPojo>();
-                for ( PipeletParamPojo param : paramPojos ) {
-                    if (param.getLabel() != null && param.getValue() != null) {
+                for ( PipeletParamPojo param : form.getParameters() ) {
+                    if (param.getLabel() != null && param.getValue() != null && param.getNxPipeletParamId() == 0) {
                         param.setPipelet( pipeletPojo );
-                        copiedParamPojos.add( param );
+                        pipeletPojo.getPipeletParams().add( param );
                     }
                 }
-                pipeletPojo.setPipeletParams( copiedParamPojos );
+                for ( PipeletParamPojo param : form.getObsoleteParameters() ) {
+                    pipeletPojo.getPipeletParams().remove( param );
+                    param.setPipelet( null );
+                }
 
                 if ( pipeletPojo.getNxPipeletId() != 0 ) {
                     Engine.getInstance().getActiveConfigurationAccessService().updatePipeline( pipelinePojo );

@@ -9,7 +9,7 @@
             <generator class="native" />
         </id>
         
-        <many-to-one foreign-key="fk__pipelet_param__pipelet_id" name="pipelet" column="nx_pipelet_id" class="org.nexuse2e.pojo.PipeletPojo" not-null="true" index="ix_pipelet_param_1"/>
+        <many-to-one foreign-key="fk__pipelet_param__pipelet_id" name="pipelet" column="nx_pipelet_id" class="org.nexuse2e.pojo.PipeletPojo" not-null="false" index="ix_pipelet_param_1"/>
         
         <property name="createdDate" type="timestamp">
             <column name="created_date" not-null="true">

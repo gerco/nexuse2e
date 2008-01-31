@@ -31,10 +31,9 @@ public class DynamicWSDispatcherServlet extends CXFNonSpringServlet {
     }
     
     public void init( ServletConfig servletConfig ) throws ServletException {
-        this.servletConfig = servletConfig;
         super.init( servletConfig );
-        
-        Bus bus = DynamicWSDispatcherServlet.getInstance().getBus();
+        this.servletConfig = servletConfig;
+        Bus bus = getBus();
         if (bus != null) {
             BusFactory.setDefaultBus( bus );
         } else {

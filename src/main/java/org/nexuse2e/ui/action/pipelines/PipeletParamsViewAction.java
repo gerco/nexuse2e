@@ -69,6 +69,7 @@ public class PipeletParamsViewAction extends NexusE2EAction {
         }
 
         form.setCurrentPipelet( pipeletPojo );
+        form.getObsoleteParameters().clear();
 
         Object componentInst = Class.forName( pipeletPojo.getComponent().getClassName() ).newInstance();
         if ( componentInst == null || !( componentInst instanceof Configurable ) ) {
