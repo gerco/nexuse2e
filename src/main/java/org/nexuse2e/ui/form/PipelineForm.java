@@ -198,7 +198,7 @@ public class PipelineForm extends ActionForm {
                 if ( pd != null ) {
                     String value;
                     if (pd.getParameterType() == ParameterType.ENUMERATION) {
-                        value = param.getLabel();
+                        value = param.getValue();
                     } else {
                         value = pipeletParamValues.get( param.getParamName() );
                     }
