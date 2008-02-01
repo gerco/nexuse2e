@@ -44,7 +44,7 @@ public class WSDispatcherService extends AbstractService implements ReceiverAwar
     public enum FrontendWebServiceType {
 
         XML_DOCUMENT("Generic XML document (with routing information)", XmlDocumentServiceImpl.class), CIDX_DOCUMENT(
-                "CIDX business document (no routing information)", XmlDocumentServiceImpl.class);
+                "CIDX business document (no routing information)", CidxDocumentServiceImpl.class);
 
         private String   name;
         private Class<?> seiClass;
