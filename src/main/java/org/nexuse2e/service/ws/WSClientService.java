@@ -26,7 +26,6 @@ public class WSClientService extends AbstractService implements SenderAware {
 
     private static Logger       LOG                     = Logger.getLogger( WSClientService.class );
 
-    private static final String URL_PARAM_NAME          = "url";
     private static final String SERVICE_TYPE_PARAM_NAME = "serviceType";
 
     private TransportSender     transportSender;
@@ -63,8 +62,6 @@ public class WSClientService extends AbstractService implements SenderAware {
         }
         parameterMap.put( SERVICE_TYPE_PARAM_NAME, new ParameterDescriptor( ParameterType.LIST, "Web service type",
                 "The type of web service to connect to", serviceTypeDrowdown ) );
-        parameterMap.put( URL_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "Web service URL",
-                "The fully qualified web service URL (e.g. http://foo.org/bar)", "" ) );
     }
 
     @Override
@@ -93,7 +90,7 @@ public class WSClientService extends AbstractService implements SenderAware {
             wsType = FrontendWebServiceType.valueOf( parameter.getSelectedValue() );
         }
 
-        if (wsType == FrontendWebServiceType.XML_DOCUMENT) {
+        if ( wsType == FrontendWebServiceType.XML_DOCUMENT ) {
             factory.setServiceClass( XmlDocumentService.class );
             factory.setAddress( receiverURL );
             XmlDocumentService theXmlDocumentService = (XmlDocumentService) factory.create();
@@ -105,7 +102,7 @@ public class WSClientService extends AbstractService implements SenderAware {
                         .getPartnerId(), messageContext.getConversation().getConversationId(), messageContext
                         .getMessagePojo().getMessageId(), new String( payload.getPayloadData() ) );
             }
-        } else if (wsType == FrontendWebServiceType.CIDX_DOCUMENT) {
+        } else if ( wsType == FrontendWebServiceType.CIDX_DOCUMENT ) {
             factory.setServiceClass( CidxDocumentService.class );
             factory.setAddress( receiverURL );
             CidxDocumentService theCidxDocumentService = (CidxDocumentService) factory.create();
