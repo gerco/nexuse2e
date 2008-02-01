@@ -78,7 +78,7 @@ public class CidxRoutingPipelet extends AbstractPipelet {
             if (root == null) {
                 throw new NexusException( "Received XML document does not contain a root element" );
             }
-            String rootName = root.getNodeValue();
+            String rootName = root.getNodeName();
             EnumerationParameter enumeration = getParameter( ACTION_MAP_PARAMETER_NAME );
             String choreographyAndAction = enumeration.getElements().get( rootName );
             if (choreographyAndAction == null) {
