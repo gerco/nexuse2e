@@ -49,11 +49,11 @@ public class CidxRoutingPipelet extends AbstractPipelet {
     @Override
     public Map<String, ParameterDescriptor> getParameterMap() {
         parameterMap.put(
+                CONVERSATION_ID_XPATH_PARAMETER_NAME,
+                new ParameterDescriptor( ParameterType.STRING, "XPath statement to conversation ID", "XPath statement to the XML element that shall be used as conversation ID.", "" ) );
+        parameterMap.put(
                 ACTION_MAP_PARAMETER_NAME,
                 new ParameterDescriptor( ParameterType.ENUMERATION, "", "Map CIDX document root to choreography/action. Example: name=\"OrderCreate\", value=\"CNOrder/OrderCreate\"", new EnumerationParameter() ) );
-        parameterMap.put(
-                CONVERSATION_ID_XPATH_PARAMETER_NAME,
-                new ParameterDescriptor( ParameterType.STRING, "XPath statement to conversation ID", "XPath statement (without document root) pointing to the XML element that shall be used as conversation ID.", "" ) );
         return parameterMap;
     }
 
@@ -118,7 +118,7 @@ public class CidxRoutingPipelet extends AbstractPipelet {
             String conversationXPath = getParameter( CONVERSATION_ID_XPATH_PARAMETER_NAME );
             String conversationId = null;
             if (!StringUtils.isEmpty( conversationXPath )) {
-                conversationId = xPath.evaluate( conversationXPath, root );
+                conversationId = xPath.evaluate( conversationXPath, document );
                 if (StringUtils.isEmpty( conversationId )) {
                     conversationId = null;
                 }
