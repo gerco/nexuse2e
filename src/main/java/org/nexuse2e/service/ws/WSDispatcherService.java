@@ -211,7 +211,7 @@ public class WSDispatcherService extends AbstractService implements ReceiverAwar
         }
     }
 
-    @WebService(portName = "XmlDocumentServicePort", endpointInterface = "org.nexuse2e.service.ws.XmlDocumentService")
+    @WebService(portName = "CidxDocumentServicePort", endpointInterface = "org.nexuse2e.service.ws.CidxDocumentService")
     public static class CidxDocumentServiceImpl implements CidxDocumentService, ReceiverAware {
 
         private TransportReceiver transportReceiver;
