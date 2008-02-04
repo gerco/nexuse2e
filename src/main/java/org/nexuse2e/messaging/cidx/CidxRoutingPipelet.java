@@ -124,6 +124,16 @@ public class CidxRoutingPipelet extends AbstractPipelet {
                 }
             }
             
+            MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo();
+            messagePayloadPojo.setMessage( messagePojo );
+            messagePayloadPojo.setContentId( Engine.getInstance().getIdGenerator(
+                    Constants.ID_GENERATOR_MESSAGE_PAYLOAD ).getId() );
+            messagePayloadPojo.setMimeType( "text/xml" );
+            List<MessagePayloadPojo> messagePayloads = new ArrayList<MessagePayloadPojo>( 1 );
+            messagePayloads.add( messagePayloadPojo );
+            messagePayloadPojo.setPayloadData( data );
+            messagePojo.setMessagePayloads( messagePayloads );
+
             Engine.getInstance().getTransactionService().initializeMessage(
                     messagePojo,
                     messageId,
@@ -132,14 +142,6 @@ public class CidxRoutingPipelet extends AbstractPipelet {
                     partnerId,
                     choreographyId );
 
-            MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo();
-            messagePayloadPojo.setMessage( messagePojo );
-            messagePayloadPojo.setContentId( Engine.getInstance().getIdGenerator(
-                    Constants.ID_GENERATOR_MESSAGE_PAYLOAD ).getId() );
-            messagePayloadPojo.setMimeType( "text/xml" );
-            List<MessagePayloadPojo> messagePayloads = new ArrayList<MessagePayloadPojo>( 1 );
-            messagePayloads.add( messagePayloadPojo );
-            messagePojo.setMessagePayloads( messagePayloads );
         } catch (ParserConfigurationException e) {
             throw new NexusException( e );
         } catch (SAXException e) {

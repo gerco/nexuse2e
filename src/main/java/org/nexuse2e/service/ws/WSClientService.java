@@ -1,20 +1,36 @@
 package org.nexuse2e.service.ws;
 
+import java.security.KeyStore;
 import java.util.Map;
 
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.TrustManager;
+
+import org.apache.cxf.configuration.jsse.TLSClientParameters;
+import org.apache.cxf.configuration.security.FiltersType;
+import org.apache.cxf.endpoint.Client;
+import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
+import org.apache.cxf.transport.http.HTTPConduit;
+import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.apache.log4j.Logger;
+import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Layer;
+import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.configuration.ListParameter;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.messaging.MessageContext;
+import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.pojo.MessagePayloadPojo;
+import org.nexuse2e.pojo.MessagePojo;
 import org.nexuse2e.service.AbstractService;
 import org.nexuse2e.service.SenderAware;
 import org.nexuse2e.transport.TransportSender;
+import org.nexuse2e.util.CertificateUtil;
+import org.nexuse2e.util.EncryptionUtil;
 
 /**
  * Generic service that acts as a web service client.
@@ -90,6 +106,8 @@ public class WSClientService extends AbstractService implements SenderAware {
             wsType = FrontendWebServiceType.valueOf( parameter.getSelectedValue() );
         }
 
+        MessagePojo messagePojo = messageContext.getMessagePojo();
+
         if ( wsType == FrontendWebServiceType.XML_DOCUMENT ) {
             factory.setServiceClass( XmlDocumentService.class );
             factory.setAddress( receiverURL );
@@ -97,17 +115,52 @@ public class WSClientService extends AbstractService implements SenderAware {
 
             for ( MessagePayloadPojo payload : messageContext.getMessagePojo().getMessagePayloads() ) {
                 LOG.trace( "Calling web service at: " + receiverURL );
-                theXmlDocumentService.processXmlDocument( messageContext.getChoreography().getName(), messageContext
-                        .getActionSpecificKey().getActionId(), messageContext.getParticipant().getLocalPartner()
-                        .getPartnerId(), messageContext.getConversation().getConversationId(), messageContext
-                        .getMessagePojo().getMessageId(), new String( payload.getPayloadData() ) );
+                theXmlDocumentService.processXmlDocument( messagePojo.getConversation().getChoreography().getName(),
+                        messageContext.getActionSpecificKey().getActionId(), messagePojo.getParticipant()
+                                .getLocalPartner().getPartnerId(), messagePojo.getConversation().getConversationId(),
+                        messagePojo.getMessageId(), new String( payload.getPayloadData() ) );
             }
         } else if ( wsType == FrontendWebServiceType.CIDX_DOCUMENT ) {
             factory.setServiceClass( CidxDocumentService.class );
             factory.setAddress( receiverURL );
             CidxDocumentService theCidxDocumentService = (CidxDocumentService) factory.create();
 
-            for ( MessagePayloadPojo payload : messageContext.getMessagePojo().getMessagePayloads() ) {
+            Client cxfClient = ClientProxy.getClient( theCidxDocumentService );
+
+            HTTPConduit httpConduit = (HTTPConduit) cxfClient.getConduit();
+
+            HTTPClientPolicy httpClientPolicy = new HTTPClientPolicy();
+            httpClientPolicy.setConnectionTimeout( messagePojo.getParticipant().getConnection().getTimeout() );
+            httpConduit.setClient( httpClientPolicy );
+
+            // Enable SSL, see also http://cwiki.apache.org/confluence/display/CXF20DOC/Client+HTTP+Transport+%28including+SSL+support%29
+            try {
+                CertificatePojo localCert = Engine.getInstance().getActiveConfigurationAccessService()
+                        .getCertificateByNxCertificateId( Constants.CERTIFICATE_TYPE_LOCAL,
+                                messagePojo.getParticipant().getLocalCertificate().getNxCertificateId() );
+                KeyStore privateKeyChain = CertificateUtil.getPKCS12KeyStore( localCert );
+                KeyManager[] keyManagers = CertificateUtil.createKeyManagers( privateKeyChain, EncryptionUtil
+                        .decryptString( localCert.getPassword() ) );
+                TrustManager[] trustManagers = CertificateUtil.createTrustManagers( Engine.getInstance()
+                        .getActiveConfigurationAccessService().getCacertsKeyStore() );
+
+                FiltersType filters = new FiltersType();
+                filters.getInclude().add( ".*_EXPORT_.*" );
+                filters.getInclude().add( ".*_EXPORT1024_.*" );
+                filters.getInclude().add( ".*_WITH_DES_.*" );
+
+                TLSClientParameters tlsClientParameters = new TLSClientParameters();
+                tlsClientParameters.setCipherSuitesFilter( filters );
+                tlsClientParameters.setTrustManagers( trustManagers );
+                tlsClientParameters.setKeyManagers( keyManagers );
+
+                httpConduit.setTlsClientParameters( tlsClientParameters );
+
+            } catch ( Exception e ) {
+                throw new NexusException( e );
+            }
+
+            for ( MessagePayloadPojo payload : messagePojo.getMessagePayloads() ) {
                 LOG.trace( "Calling web service at: " + receiverURL );
                 theCidxDocumentService.processCidxDocument( new String( payload.getPayloadData() ) );
             }
