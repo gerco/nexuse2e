@@ -22,6 +22,8 @@ package org.nexuse2e.ui.form;
 import java.util.Date;
 
 import org.apache.struts.action.ActionForm;
+import org.nexuse2e.Engine;
+import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.pojo.MessagePojo;
 import org.nexuse2e.util.DateUtil;
 
@@ -51,7 +53,6 @@ public class ReportMessageEntryForm extends ActionForm {
     private String            retries          = null;
     private String            protocol         = null;
     private String            direction        = null;
-    private String            timezone         = null;
     private boolean           outbound         = false;
 
     public void setMessageProperties( MessagePojo messagePojo ) {
@@ -127,12 +128,17 @@ public class ReportMessageEntryForm extends ActionForm {
         }
     }
 
+    private static String getTimezone() {
+        return (String) Engine.getInstance().getActiveConfigurationAccessService().getGenericParameter(
+                "log_display_configuration", ReportingPropertiesForm.PARAM_NAME_TIMEZONE, ParameterType.STRING, null );
+    }
+    
     public String getCreatedDate() {
 
         if ( createdDate == null || createdDate.equals( "" ) ) {
             return "";
         }
-        return DateUtil.localTimeToTimezone( createdDate, timezone, null );
+        return DateUtil.localTimeToTimezone( createdDate, getTimezone(), null );
     }
 
     public String getMessageId() {
@@ -255,22 +261,14 @@ public class ReportMessageEntryForm extends ActionForm {
         this.direction = direction;
     }
 
-    public String getTimezone() {
-
-        return timezone;
-    }
-
-    public void setTimezone( String timezone ) {
-
-        this.timezone = timezone;
-    }
-
     /**
      * @return the endDate
      */
-    public Date getEndDate() {
-
-        return endDate;
+    public String getEndDate() {
+        if ( endDate == null || endDate.equals( "" ) ) {
+            return "";
+        }
+        return DateUtil.localTimeToTimezone( endDate, getTimezone(), null );
     }
 
     /**

@@ -1677,7 +1677,7 @@ public class ConfigurationAccessService {
                     if ( ( ( value.getTag() == null && tag == null ) || ( value.getTag() != null && value.getTag()
                             .equals( tag ) ) )
                             && value.getParamName().equals( name ) ) {
-                        resultMap.put( value.getParamName(), getParameterValue( descriptor, value.getValue() ) );
+                        resultMap.put( value.getParamName(), getParameterValue( descriptor.getParameterType(), value.getValue() ) );
                         isUpdated = true;
                     }
                 }
@@ -1690,6 +1690,27 @@ public class ConfigurationAccessService {
         }
 
         return resultMap;
+    }
+    
+    /**
+     * Gets the generic parameter for the given category and tag, or the default value
+     * if not found.
+     * @param category The category string. Not <code>null</code>.
+     * @param tag The tag (parameter name). Not <code>null</code>.
+     * @param type The parameter type. Not <code>null</code>.
+     * @param defaultValue The default value. Can be <code>null</code>.
+     * @return The value object, or <code>defaultValue</code> if no such parameter was found.
+     */
+    public Object getGenericParameter( String category, String tag, ParameterType type, Object defaultValue ) {
+        List<GenericParamPojo> values = engineConfig.getGenericParameters().get( category );
+        if ( values != null ) {
+            for (GenericParamPojo param : values) {
+                if (param.getParamName().equals( tag )) {
+                    return getParameterValue( type, param.getValue() );
+                }
+            }
+        }
+        return defaultValue;
     }
 
     /**
@@ -1806,14 +1827,14 @@ public class ConfigurationAccessService {
     /**
      * Converts a <code>String</code> parameter value into an object
      * of it's domain type.
-     * 
-     * @param pd The <code>ParameterDescriptor</code> that contains the type.
+     *
+     * @param type The parameter type.
      * @param value The <code>String</code> representation to be converted.
      * @return The domain type, except for types ENUMERATION and DROPDOWN
      */
-    private static Object getParameterValue( ParameterDescriptor pd, String value ) {
+    private static Object getParameterValue( ParameterType type, String value ) {
 
-        switch ( pd.getParameterType() ) {
+        switch ( type ) {
             case UNKNOWN:
             case STRING:
             case PASSWORD:

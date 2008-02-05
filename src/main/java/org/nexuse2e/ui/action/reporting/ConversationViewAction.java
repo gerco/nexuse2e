@@ -77,10 +77,6 @@ public class ConversationViewAction extends NexusE2EAction {
         LOG.trace( "form: " + form );
         form.setValues( cPojo );
 
-        //TODO timezone handling
-        //        form.setTimezone( ( (ReportingPropertiesForm) request.getSession().getAttribute( "reportingPropertiesForm" ) )
-        //                .getTimezone() );
-
         ArrayList<Object> reportMessages = new ArrayList<Object>();
 
         List<MessagePojo> messagePojos = cPojo.getMessages();
@@ -88,7 +84,6 @@ public class ConversationViewAction extends NexusE2EAction {
         for (MessagePojo pojo : messagePojos) {
             ReportMessageEntryForm entry = new ReportMessageEntryForm();
             entry.setMessageProperties( pojo );
-            entry.setTimezone( form.getTimezone() );
             reportMessages.add( entry );
         }
         request.setAttribute( ATTRIBUTE_COLLECTION, reportMessages );

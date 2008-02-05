@@ -19,13 +19,12 @@
  */
 package org.nexuse2e.ui.action.reporting;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,7 +48,6 @@ import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.ReportConversationEntryForm;
 import org.nexuse2e.ui.form.ReportMessageEntryForm;
 import org.nexuse2e.ui.form.ReportingPropertiesForm;
-import org.nexuse2e.util.DateUtil;
 
 /**
  * @author guido.esch
@@ -163,9 +161,9 @@ public class ProcessConversationReportAction extends NexusE2EAction {
                     addRedirect( request, URL, TIMEOUT );
                     continue;
                 }
-                String participant = st.nextToken();
-                String choreography = st.nextToken();
-                String conversation = st.nextToken();
+                st.nextToken(); // participant
+                st.nextToken(); // choreography
+                st.nextToken(); // conversation
                 String message = st.nextToken();
 
                 try {
@@ -236,19 +234,8 @@ public class ProcessConversationReportAction extends NexusE2EAction {
         if ( messageActive && form.getMessageId() != null && !form.getMessageId().equals( "" ) ) {
             messageId = form.getMessageId();
         }
-        boolean startActive = form.isStartEnabled();
-        boolean endActive = form.isEndEnabled();
-
-        String startDate = null;
-        if ( startActive ) {
-            startDate = DateUtil.localTimeToTimezone( getStartDate( form ), null, null );
-        }
-        String endDate = null;
-        if ( endActive ) {
-            endDate = DateUtil.localTimeToTimezone( getEndDate( form ), null, null );
-        }
         int items = 0;
-        List logItems = new Vector();
+        List<Object> logItems = new ArrayList<Object>();
 
         int nxPartnerId = 0;
         int nxChoreographyId = 0;
@@ -270,13 +257,11 @@ public class ProcessConversationReportAction extends NexusE2EAction {
 
         if ( searchFor != null && searchFor.equals( "message" ) ) {
 
-            MessagePojo message = new MessagePojo();
-
             items = Engine.getInstance().getTransactionService().getMessagesCount( status, nxChoreographyId,
                     nxPartnerId, conversationId, messageId, getStartDate( form ), getEndDate( form ) );
 
             form.setAllItemsCount( items );
-            List reportMessages = null;
+            List<MessagePojo> reportMessages = null;
             if ( command == null || command.equals( "" ) || command.equals( "first" ) || command.equals( "transaction" ) ) {
                 int pos = form.getStartCount();
                 if ( pos == 0 || !command.equals( "transaction" ) ) {
@@ -359,20 +344,15 @@ public class ProcessConversationReportAction extends NexusE2EAction {
                 form.setEndCount( items );
             }
             if ( reportMessages != null ) {
-                Iterator i = reportMessages.iterator();
-                while ( i.hasNext() ) {
-                    MessagePojo pojo = (MessagePojo) i.next();
+                for (MessagePojo pojo : reportMessages) {
                     ReportMessageEntryForm entry = new ReportMessageEntryForm();
                     entry.setMessageProperties( pojo );
-                    entry.setTimezone( timezone );
                     logItems.add( entry );
 
                 }
             }
 
         } else {
-
-            ConversationPojo conv = new ConversationPojo();
 
             items = Engine.getInstance().getTransactionService().getConversationsCount( status, nxChoreographyId,
                     nxPartnerId, conversationId, getStartDate( form ), getEndDate( form ), TransactionDAO.SORT_CREATED,
@@ -464,9 +444,7 @@ public class ProcessConversationReportAction extends NexusE2EAction {
                 form.setEndCount( items );
             }
             if ( conversations != null ) {
-                Iterator i = conversations.iterator();
-                while ( i.hasNext() ) {
-                    ConversationPojo pojo = (ConversationPojo) i.next();
+                for (ConversationPojo pojo : conversations) {
                     ReportConversationEntryForm entry = new ReportConversationEntryForm();
                     entry.setValues( pojo );
                     entry.setTimezone( timezone );
