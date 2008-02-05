@@ -22,6 +22,7 @@ package org.nexuse2e.messaging.ebxml;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 import org.nexuse2e.NexusException;
 import org.nexuse2e.messaging.TimestampFormatter;
@@ -32,6 +33,7 @@ public class EBXMLTimestampFormatter implements TimestampFormatter {
     public String getTimestamp( Date time ) {
 
         SimpleDateFormat ebXMLDateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss'Z'" );
+        ebXMLDateFormat.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
         return ebXMLDateFormat.format( time );
     }
 
