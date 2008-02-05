@@ -526,12 +526,6 @@
       <forward name="success" redirect="true" path="/ProcessConversationReport.do?noReset&amp;command=first"/>
     </action>
 
-<!-- 
-	<action path="/ReportingSaveConfigFields" name="reportingPropertiesForm" type="org.nexuse2e.ui.action.reporting.SaveConfigFieldsAction">
-      <forward name="success" path="/Reporting.do"/>
-    </action>
-     -->
-    
     <action path="/DatabasePurge" name="databasePurgeForm" type="org.nexuse2e.ui.action.tools.DatabasePurgeAction">
       <forward name="success" path="/WEB-INF/pages/tools/database_purge.jsp"/>
     </action>
@@ -540,22 +534,6 @@
       <forward name="success" path="/WEB-INF/pages/tools/mapping_maintenance.jsp"/>
     </action>
     
-    <!-- 
-      <forward name="save" path="/ReportingSaveConfigFields.do"/>
-    
-    <action path="/ServerCertificateDelete" type="org.nexuse2e.ui.action.communications.ServerCertDeleteAction">
-      <forward name="success" path="/Certificates.do"/>
-    </action>
-    <action path="/ModifyMessage" type="org.nexuse2e.ui.action.reporting.ModifyMessageAction">
-      <forward name="success" path="/ProcessConversationReport.do"/>
-    </action>
-    <action path="/ServerCertificateExport" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.ServerCertExportAction">
-      <forward name="success" path="/WEB-INF/pages/communications/server_certificate_export.jsp"/>
-    </action>
-    <action path="/ServerCertificateSaveToDisk" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.ServerCertSaveToDiskAction">
-      <forward name="success" path="/ServerCertificateView.do"/>
-    </action>
-    -->
     <action path="/RequestImportBackup" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.RequestImportBackupAction">
       <forward name="success" path="/WEB-INF/pages/communications/request_import_backup.jsp"/>
     </action>
