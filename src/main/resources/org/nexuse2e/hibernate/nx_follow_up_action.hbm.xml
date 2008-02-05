@@ -9,9 +9,9 @@
             <generator class="native" />
         </id>
         
-        <many-to-one foreign-key="fk__fua__action_id" name="action" column="nx_action_id" class="org.nexuse2e.pojo.ActionPojo" not-null="true" index="ix_follow_up_action_1" cascade="persist,save-update"/>
+        <many-to-one foreign-key="fk__fua__action_id" name="action" column="nx_action_id" class="org.nexuse2e.pojo.ActionPojo" not-null="false" index="ix_follow_up_action_1"/>
         
-        <many-to-one foreign-key="fk__fua__follow_up_action_id" name="followUpAction" column="follow_up_nx_action_id" class="org.nexuse2e.pojo.ActionPojo" not-null="true" index="ix_follow_up_action_2" cascade="persist,save-update"/>
+        <many-to-one foreign-key="fk__fua__follow_up_action_id" name="followUpAction" column="follow_up_nx_action_id" class="org.nexuse2e.pojo.ActionPojo" not-null="false" index="ix_follow_up_action_2"/>
         
         <property name="createdDate" type="timestamp">
             <column name="created_date" not-null="true">
