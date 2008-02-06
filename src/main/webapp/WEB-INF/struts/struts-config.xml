@@ -463,6 +463,7 @@
       <forward name="success" path="/StagingList.do"/>
     </action>
     <action path="/StagingPromoteCertificate" name="certificatePromotionForm" type="org.nexuse2e.ui.action.communications.StagingPromoteCertificateAction">
+      <forward name="changeServerIdentity" path="/WEB-INF/pages/communications/staging_certificate_view.jsp"/>
       <forward name="success" path="/StagingList.do"/>
       <forward name="error" path="/WEB-INF/pages/error.jsp"/>
     </action>

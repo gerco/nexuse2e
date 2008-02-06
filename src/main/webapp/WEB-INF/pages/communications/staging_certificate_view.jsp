@@ -5,6 +5,7 @@
 <%@ taglib uri="/tags/struts-logic" prefix="logic" %>
 <%@ taglib uri="/tags/nexus" prefix="nexus" %>
 <%@ taglib uri="/tags/struts-html-el" prefix="html-el"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <nexus:helpBar helpDoc="documentation/SSL.htm"/>
 
@@ -99,15 +100,29 @@
         </table>
         </logic:iterate>
         
-        <html:form action="/StagingPromoteCertificate.do?seqNo=${seqNo}" method="POST"> 
+        <html:form action="/StagingPromoteCertificate.do" method="POST"> 
 		<table class="NEXUS_TABLE" width="100%">
 			<tr><td class="NEXUSName">
 			
-			<html:select property="localNxPartnerId">
+			Promote to
+			<html:select property="localNxPartnerId" onchange="var f = document.forms['certificatePromotionForm']; f.actionName.value='changeServerIdentity'; submitForm( f )">
 				<logic:iterate name="certificatePromotionForm" property="localPartners" id="localpartner">
 					<html-el:option value="${localpartner.nxPartnerId}">${localpartner.partnerId}</html-el:option>
+					<c:if test="${certificatePromotionForm.localNxPartnerId == localpartner.nxPartnerId || empty selectedPartner}">
+						<c:set var="selectedPartner" value="${localpartner}"/>
+					</c:if>
 				</logic:iterate>
-			</html:select> 
+			</html:select>
+			<html:select property="replaceNxCertificateId">
+				<logic:notEmpty name="selectedPartner">
+					<html:option value="0">as new certificate</html:option>
+					<logic:iterate name="selectedPartner" property="certificates" id="certificate">
+						<html-el:option value="${certificate.nxCertificateId}">replacing ${certificate.name}
+						<c:if test="${!empty certificate.description}">(${certificate.description})</c:if></html-el:option>
+					</logic:iterate>
+				</logic:notEmpty>
+			</html:select>
+			<html:hidden property="actionName" value="promote"/>
 			</td>
 			<td class="NexusHeaderLink" width="100%"><nexus:submit>
 			<img src="images/submit.gif" name="SUBMIT" class="button">Promote Certificate</nexus:submit>

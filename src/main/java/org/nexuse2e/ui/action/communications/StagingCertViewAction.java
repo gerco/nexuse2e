@@ -87,7 +87,7 @@ public class StagingCertViewAction extends NexusE2EAction {
                     cPojo.getPassword() ).toCharArray() );
             if ( jks != null ) {
 
-                Enumeration aliases = jks.aliases();
+                Enumeration<String> aliases = jks.aliases();
                 if ( !aliases.hasMoreElements() ) {
                     ActionMessage errorMessage = new ActionMessage( "generic.error", "No certificate aliases found" );
                     errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
@@ -116,7 +116,6 @@ public class StagingCertViewAction extends NexusE2EAction {
             }
             form.setCertificateParts( certificateParts );
             form.setLocalPartners( localPartners );
-            request.setAttribute( "seqNo", "" + cPojo.getNxCertificateId() );
             //request.setAttribute( ATTRIBUTE_COLLECTION, certs );
 
         } catch ( Exception e ) {

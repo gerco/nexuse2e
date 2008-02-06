@@ -55,65 +55,71 @@ public class StagingPromoteCertificateAction extends NexusE2EAction {
             HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
-        ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
-        ActionForward error = actionMapping.findForward( ACTION_FORWARD_FAILURE );
 
         CertificatePromotionForm form = (CertificatePromotionForm) actionForm;
 
-        String seqNoStr = request.getParameter( "seqNo" );
-        if ( seqNoStr == null ) {
-            ActionMessage errorMessage = new ActionMessage( "generic.error",
-                    "missing SeqNo. No Certificate found to promote" );
-            errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
-            addRedirect( request, URL, TIMEOUT );
-            return error;
+        if ("changeServerIdentity".equals( form.getActionName() )) {
+            form.setActionName( "promote" );
+            return actionMapping.findForward( "changeServerIdentity" );
+        } else {
+            int certificateId = form.getNxCertificateId();
+            if (certificateId <= 0) {
+                ActionMessage errorMessage = new ActionMessage( "generic.error", "invalid certificate ID (" + certificateId
+                        + "). No Certificate found to promote" );
+                errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
+                addRedirect( request, URL, TIMEOUT );
+                return actionMapping.findForward( ACTION_FORWARD_FAILURE );
+            }
+    
+            PartnerPojo localPartner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByNxPartnerId(
+                    form.getLocalNxPartnerId() );
+    
+            if ( localPartner == null ) {
+                ActionMessage errorMessage = new ActionMessage( "generic.error", "invalid localNxpartnerId("
+                        + form.getLocalNxPartnerId() + "), no partner found to promote" );
+                errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
+                addRedirect( request, URL, TIMEOUT );
+                return actionMapping.findForward( ACTION_FORWARD_FAILURE );
+            }
+    
+            CertificatePojo stagedCert = Engine.getInstance().getActiveConfigurationAccessService()
+                    .getCertificateByNxCertificateId( Constants.CERTIFICATE_TYPE_STAGING, certificateId );
+    
+            if ( stagedCert == null ) {
+                ActionMessage errorMessage = new ActionMessage( "generic.error",
+                        "invalid SeqNo. No Certificate found to promote" );
+                errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
+                addRedirect( request, URL, TIMEOUT );
+                return actionMapping.findForward( ACTION_FORWARD_FAILURE );
+            }
+    
+            CertificatePojo certificate;
+            if (form.getReplaceNxCertificateId() <= 0) {
+                certificate = new CertificatePojo();
+            } else {
+                certificate = Engine.getInstance().getActiveConfigurationAccessService().getCertificateByNxCertificateId(
+                        Constants.CERTIFICATE_TYPE_ALL, form.getReplaceNxCertificateId() );
+                if (certificate == null) {
+                    ActionMessage errorMessage = new ActionMessage( "generic.error",
+                        "invalid certificate ID. Replaced certificate not found." );
+                    errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
+                    addRedirect( request, URL, TIMEOUT );
+                    return actionMapping.findForward( ACTION_FORWARD_FAILURE );
+                }
+            }
+            
+            certificate.setType( Constants.CERTIFICATE_TYPE_LOCAL );
+            certificate.setName( stagedCert.getName() );
+            certificate.setModifiedDate( new Date() );
+            certificate.setCreatedDate( new Date() );
+            certificate.setBinaryData( stagedCert.getBinaryData() );
+            certificate.setPassword( stagedCert.getPassword() );
+            certificate.setPartner( localPartner );
+            localPartner.getCertificates().add( certificate );
+            Engine.getInstance().getActiveConfigurationAccessService().updateCertificate( certificate );
         }
-        int seqNo = 0;
-        try {
-            seqNo = Integer.parseInt( seqNoStr );
-        } catch ( NumberFormatException e ) {
-            ActionMessage errorMessage = new ActionMessage( "generic.error", "invalid SeqNo Format (" + seqNoStr
-                    + "). No Certificate found to promote" );
-            errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
-            addRedirect( request, URL, TIMEOUT );
-            return error;
-        }
 
-        PartnerPojo localPartner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByNxPartnerId(
-                form.getLocalNxPartnerId() );
-
-        if ( localPartner == null ) {
-            ActionMessage errorMessage = new ActionMessage( "generic.error", "invalid localNxpartnerId("
-                    + form.getLocalNxPartnerId() + "), no partner found to promote" );
-            errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
-            addRedirect( request, URL, TIMEOUT );
-            return error;
-        }
-
-        CertificatePojo stagedCert = Engine.getInstance().getActiveConfigurationAccessService()
-                .getCertificateByNxCertificateId( Constants.CERTIFICATE_TYPE_STAGING, seqNo );
-
-        if ( stagedCert == null ) {
-            ActionMessage errorMessage = new ActionMessage( "generic.error",
-                    "invalid SeqNo. No Certificate found to promote" );
-            errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
-            addRedirect( request, URL, TIMEOUT );
-            return error;
-        }
-
-        CertificatePojo certificate = new CertificatePojo();
-        certificate.setType( Constants.CERTIFICATE_TYPE_LOCAL );
-        certificate.setName( stagedCert.getName() );
-        certificate.setCreatedDate( new Date() );
-        certificate.setModifiedDate( new Date() );
-        certificate.setBinaryData( stagedCert.getBinaryData() );
-        certificate.setPassword( stagedCert.getPassword() );
-        certificate.setPartner( localPartner );
-        localPartner.getCertificates().add( certificate );
-
-        Engine.getInstance().getActiveConfigurationAccessService().updateCertificate( certificate );
-
-        return success;
+        return actionMapping.findForward( ACTION_FORWARD_SUCCESS );
     }
 
 }

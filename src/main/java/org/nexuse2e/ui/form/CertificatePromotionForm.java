@@ -39,6 +39,8 @@ public class CertificatePromotionForm extends ActionForm {
     private List<CertificatePropertiesForm> certificateParts;
     private int                             localNxPartnerId;
     private int                             nxCertificateId  = 0;
+    private String                          actionName;
+    private int                             replaceNxCertificateId;
 
     /**
      * @return the localNxPartnerId
@@ -96,6 +98,22 @@ public class CertificatePromotionForm extends ActionForm {
     public void setNxCertificateId( int nxCertificateId ) {
 
         this.nxCertificateId = nxCertificateId;
+    }
+
+    public int getReplaceNxCertificateId() {
+        return replaceNxCertificateId;
+    }
+
+    public void setReplaceNxCertificateId(int replaceNxCertificateId) {
+        this.replaceNxCertificateId = replaceNxCertificateId;
+    }
+
+    public String getActionName() {
+        return actionName;
+    }
+    
+    public void setActionName( String action ) {
+        this.actionName = action;
     }
 
 }
