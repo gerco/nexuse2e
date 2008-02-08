@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.naming.NameNotFoundException;
 import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -138,7 +139,12 @@ public class BirtReportServlet extends HttpServlet {
         BirtEngine.initBirtConfig();
         try {
             Context i = new InitialContext();
-            Context e = i.createSubcontext( "birt" );
+            Context e;
+            try {
+                e = (Context) i.lookup( "birt" );
+            } catch (NameNotFoundException nnfex) {
+                e = i.createSubcontext( "birt" );
+            }
             e.rebind("jdbc", Engine.getInstance().getBeanFactory().getBean( "internal" ) );
         } catch (BeansException bex) {
             throw new ServletException( bex );
