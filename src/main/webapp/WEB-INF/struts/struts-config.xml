@@ -489,15 +489,6 @@
       <forward name="error" path="/StagingExportCertificate.do"/>
     </action>
 
-<!-- 
-    <action path="/Reporting" name="reportingPropertiesForm" type="org.nexuse2e.ui.action.reporting.ReportingForwardAction">
-      <forward name="success" path="/WEB-INF/pages/reporting.jsp"/>
-    </action>
-	<action path="/Reporting" type="org.nexuse2e.ui.action.NoOpAction">
-      <forward name="success" path="/WEB-INF/pages/reporting.jsp"/>
-    </action>
- -->
-
     <action path="/ProcessConversationReport" name="reportingPropertiesForm" type="org.nexuse2e.ui.action.reporting.ProcessConversationReportAction" scope="session">
       <forward name="success" path="/WEB-INF/pages/reporting/transaction_report.jsp"/>
     </action>
@@ -521,6 +512,7 @@
       <forward name="view" path="/WEB-INF/pages/reporting.jsp"/>
       <forward name="error" path="/WEB-INF/pages/reporting.jsp"/>
       <forward name="save" path="/WEB-INF/pages/reporting.jsp"/>
+      <forward name="statistics" path="/WEB-INF/pages/reporting/statistics.jsp"/>
     </action>
     
     <action path="/ModifyMessage" name="reportingPropertiesForm" type="org.nexuse2e.ui.action.reporting.ModifyMessageAction">

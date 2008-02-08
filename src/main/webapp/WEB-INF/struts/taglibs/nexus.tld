@@ -265,4 +265,50 @@
       <rtexprvalue>true</rtexprvalue>
     </attribute>    
   </tag>
+
+  <!-- Reporting availability check -->
+  <tag>
+    <name>reportsAvailable</name>
+    <tag-class>org.nexuse2e.ui.taglib.ReportsAvailable</tag-class>
+    <description>Evaluates the body if reporting is available.</description>
+  </tag>
+
+  <!-- Reporting availability check -->
+  <tag>
+    <name>reportsUnavailable</name>
+    <tag-class>org.nexuse2e.ui.taglib.ReportsUnavailable</tag-class>
+    <description>Evaluates the body if reporting is not available.</description>
+  </tag>
+
+  <!-- Display a report -->
+  <tag>
+    <name>report</name>
+    <tag-class>org.nexuse2e.ui.taglib.Report</tag-class>
+    <description>Embeds a report.</description>
+    <attribute>
+      <name>name</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>The name of the report file (relative to base directory)</description>
+    </attribute>
+  </tag>
+
+  <!-- Pass a parameter to a report -->
+  <tag>
+    <name>reportParam</name>
+    <tag-class>org.nexuse2e.ui.taglib.ReportParam</tag-class>
+    <description>Passes a parameter to a report.</description>
+    <attribute>
+      <name>name</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>The parameter name</description>
+    </attribute>
+    <attribute>
+      <name>value</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <description>The parameter value</description>
+    </attribute>
+  </tag>
 </taglib>
