@@ -25,5 +25,10 @@ mvn install:install-file -DgroupId=org.apache.incubator -DartifactId=ftpserver -
 mvn install:install-file -DgroupId=javax.xml.bind -DartifactId=jaxb-impl -Dversion=2.0.5 -Dpackaging=jar -Dfile=lib/jaxb-impl.jar
 mvn install:install-file -DgroupId=org.apache.cxf -DartifactId=apache-cxf -Dversion=2.0.4-incubator -Dpackaging=jar -Dfile=lib/cxf-2.0.4-incubator.jar
 
+mvn install:install-file -DgroupId=org.eclipse.birt -DartifactId=coreapi -Dversion=2.2.1 -Dpackaging=jar -Dfile=lib/coreapi.jar
+mvn install:install-file -DgroupId=org.eclipse.birt -DartifactId=engineapi -Dversion=2.2.1 -Dpackaging=jar -Dfile=lib/engineapi.jar
+mvn install:install-file -DgroupId=org.eclipse.birt -DartifactId=scriptapi -Dversion=2.2.1 -Dpackaging=jar -Dfile=lib/scriptapi.jar
+mvn install:install-file -DgroupId=org.eclipse.birt -DartifactId=modelapi -Dversion=2.2.1 -Dpackaging=jar -Dfile=lib/modelapi.jar
+
 # jgroups
 mvn install:install-file -DgroupId=jgroups -DartifactId=jgroups-all -Dversion=2.5.ga -Dpackaging=jar -Dfile=lib/jgroups-all.jar

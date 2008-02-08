@@ -17,19 +17,6 @@
         <enabled>false</enabled>
       </snapshots>
     </repository>
-    <!--
-      <repository>
-      <snapshots>
-      <enabled>true</enabled>
-      <updatePolicy>never</updatePolicy>
-      <checksumPolicy>fail</checksumPolicy>
-      </snapshots>
-      <id>codehausSnapshots</id>
-      <name>Codehaus Snapshots</name>
-      <url>http://snapshots.maven.codehaus.org/maven2</url>
-      <layout>default</layout>
-      </repository>
-    -->
   </repositories>
   <dependencies>
     <dependency>
@@ -44,12 +31,6 @@
       <version>1.1</version>
       <scope>compile</scope>
     </dependency>
-    <!-- <dependency>
-      <groupId>org.apache.ant</groupId>
-      <artifactId>ant</artifactId>
-      <version>1.7.0</version>
-      <scope>compile</scope>
-      </dependency> -->
     <dependency>
       <groupId>antlr</groupId>
       <artifactId>antlr</artifactId>
@@ -68,12 +49,6 @@
       <version>137</version>
       <scope>compile</scope>
     </dependency>
-    <!-- <dependency>
-      <groupId>cglib</groupId>
-      <artifactId>cglib</artifactId>
-      <version>2.1_3</version>
-      <scope>compile</scope>
-      </dependency> -->
     <dependency>
       <groupId>commons-attributes</groupId>
       <artifactId>commons-attributes-api</artifactId>
@@ -211,66 +186,18 @@
       <version>3.2.5.ga</version>
       <scope>compile</scope>
     </dependency>
-    <!-- 
-      <dependency>
-      <groupId>tomcat</groupId>
-      <artifactId>jasper-compiler</artifactId>
-      <version>5.5.15</version>
-      <scope>provided</scope>
-      </dependency>
-      <dependency>
-      <groupId>tomcat</groupId>
-      <artifactId>jasper-compiler-jdt</artifactId>
-      <version>5.5.15</version>
-      <scope>provided</scope>
-      </dependency>
-      <dependency>
-      <groupId>tomcat</groupId>
-      <artifactId>jasper-runtime</artifactId>
-      <version>5.5.15</version>
-      <scope>provided</scope>
-      </dependency>
-    -->
     <dependency>
       <groupId>jaxen</groupId>
       <artifactId>jaxen</artifactId>
       <version>1.1</version>
       <scope>compile</scope>
     </dependency>
-    <!-- <dependency>
-      <groupId>javax.xml</groupId>
-      <artifactId>jaxrpc-api</artifactId>
-      <version>1.1.3</version>
-      <scope>compile</scope>
-      </dependency> -->
-    <!--
-      <dependency>
-      <groupId>com.sun.xml.rpc</groupId>
-      <artifactId>jaxrpc-impl</artifactId>
-      <version>1.1.3_01</version>
-      <scope>compile</scope>
-      </dependency>
-    -->
     <dependency>
       <groupId>jdom</groupId>
       <artifactId>jdom</artifactId>
       <version>1.0</version>
       <scope>compile</scope>
     </dependency>
-    <!-- 
-      <dependency>
-      <groupId>jetty</groupId>
-      <artifactId>jetty</artifactId>
-      <version>6.0.2</version>
-      <scope>compile</scope>
-      </dependency>
-      <dependency>
-      <groupId>jetty</groupId>
-      <artifactId>jetty-util</artifactId>
-      <version>6.0.2</version>
-      <scope>compile</scope>
-      </dependency>
-    -->
     <dependency>
       <groupId>org.jibx</groupId>
       <artifactId>jibx-run</artifactId>
@@ -290,14 +217,6 @@
       <version>6.0.2</version>
       <scope>provided</scope>
     </dependency>
-    <!--  
-      <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>jsp-api</artifactId>
-      <version>2.0</version>
-      <scope>compile</scope>
-      </dependency>
-    -->
     <dependency>
       <groupId>jstl</groupId>
       <artifactId>jstl</artifactId>
@@ -430,20 +349,6 @@
       </exclusions>
       <scope>compile</scope>
     </dependency>
-    <!-- 
-      <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-dao</artifactId>
-      <version>2.0.5</version>
-      <scope>compile</scope>
-      </dependency>
-      <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-hibernate3</artifactId>
-      <version>2.0.5</version>
-      <scope>compile</scope>
-      </dependency>
-    -->
     <dependency>
       <groupId>taglibs</groupId>
       <artifactId>standard</artifactId>
@@ -468,18 +373,6 @@
       <version>20040917</version>
       <scope>compile</scope>
     </dependency>
-    <!-- 
-      <dependency>
-      <groupId>struts</groupId>
-      <artifactId>struts</artifactId>
-      <version>1.2.9</version>
-      </dependency>
-      <dependency>
-      <groupId>struts</groupId>
-      <artifactId>struts-el</artifactId>
-      <version>1.2.9</version>
-      </dependency>
-    -->
     <dependency>
       <groupId>org.apache.incubator</groupId>
       <artifactId>ftpserver</artifactId>
@@ -564,15 +457,6 @@
       <version>8.2-504.jdbc3</version>
       <scope>run</scope>
     </dependency>
-    <!--
-      <dependency>
-      <groupId>org.nexuse2e</groupId>
-      <artifactId>nexuse2e_legacy</artifactId>
-      <version>3.6.5</version>
-      <scope>compile</scope>
-      </dependency>
-    -->
-    <!-- <type>zip</type> -->
     <dependency>
       <groupId>com.jcraft</groupId>
       <artifactId>jsch</artifactId>
@@ -621,6 +505,42 @@
       <version>1.1</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.eclipse.birt</groupId>
+      <artifactId>coreapi</artifactId>
+      <version>2.2.1</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.birt</groupId>
+      <artifactId>engineapi</artifactId>
+      <version>2.2.1</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.birt</groupId>
+      <artifactId>scriptapi</artifactId>
+      <version>2.2.1</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.birt</groupId>
+      <artifactId>modelapi</artifactId>
+      <version>2.2.1</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.ibm.icu</groupId>
+      <artifactId>icu4j</artifactId>
+      <version>3.6.1</version>
+      <scope>run</scope>
+    </dependency>
+    <dependency>
+      <groupId>rhino</groupId>
+      <artifactId>js</artifactId>
+      <version>1.6R7</version>
+      <scope>run</scope>
+    </dependency>
   </dependencies>
   <distributionManagement>
     <site>
@@ -655,7 +575,7 @@
           <archiveClasses>true</archiveClasses>
           <warName>NEXUSe2e</warName>
           <warSourceExcludes>
-            **/saaj-api-1.3.jar,**/XmlSchema-1.1.jar,**/spring*2.0.0.jar,**/ant-1.5.jar,**/antlr-2.7.2.jar,**/cglib-2.1.jar,**/jsp*,**/servlet-api*,**/javax.xml.bind-jaxb-api-2.1.jar,**/xml-apis*,**/xalan-2.6.0.jar,WEB-INF/classes/tldCache.ser,WEB-INF/classes/org/**,WEB-INF/config/database/derby/**,/WEB-INF/config/bean.properties,/WEB-INF/config/database.properties
+            **/icu4j-2.6.1.jar,**/saaj-api-1.3.jar,**/XmlSchema-1.1.jar,**/spring*2.0.0.jar,**/ant-1.5.jar,**/antlr-2.7.2.jar,**/cglib-2.1.jar,**/jsp*,**/servlet-api*,**/javax.xml.bind-jaxb-api-2.1.jar,**/xml-apis*,**/xalan-2.6.0.jar,WEB-INF/classes/tldCache.ser,WEB-INF/classes/org/**,WEB-INF/config/database/derby/**,/WEB-INF/config/bean.properties,/WEB-INF/config/database.properties
           </warSourceExcludes>
           <webResources>
             <resource>
@@ -712,17 +632,6 @@
           </dependency>
 
         </dependencies>
-        <!-- 
-          <dependencies>
-          <dependency>
-          <groupId>sun.jdk</groupId>
-          <artifactId>tools</artifactId>
-          <version>1.5.0</version>
-          <scope>provided</scope>
-          <systemPath>${java.home}/../lib/tools.jar</systemPath>
-          </dependency>
-          </dependencies>
-        -->
         <executions>
           <execution>
             <id>generate-sources</id>
@@ -743,18 +652,6 @@
             <phase>compile</phase>
             <configuration>
               <tasks>
-                <!-- 
-                  <property name="compile_classpath" refid="maven.compile.classpath" />
-                  <property name="runtime_classpath" refid="maven.runtime.classpath" />
-                  <property name="test_classpath" refid="maven.test.classpath" />
-                  <property name="plugin_classpath" refid="maven.plugin.classpath" />
-                  <ant antfile="${basedir}/rmi.xml">
-                  <target name="rmi" />
-                  </ant>
-                  <ant antfile="${basedir}/compile.xml" inheritRefs="true">
-                  <target name="compile" />
-                  </ant>
-                -->
                 <rmic classname="org.nexuse2e.integration.NEXUSe2eInterfaceImpl" base="${basedir}/target/classes" />
               </tasks>
             </configuration>
@@ -763,14 +660,6 @@
             </goals>
           </execution>
         </executions>
-        <!--  
-          <artifactId>maven-antrun-plugin</artifactId>
-          <configuration>
-          <tasks>
-          <ant antfile="${basedir}/nexuse2e-build.xml" target="copy" />
-          </tasks>
-          </configuration>
-        -->
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
