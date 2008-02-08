@@ -55,13 +55,12 @@ public class BirtEngine {
 				config.setLogConfig(configProps.getProperty("logDirectory"), level);
 			}
 
-			config.setEngineHome("");
+			config.setEngineHome( "" );
 			IPlatformContext context = new PlatformServletContext( sc );
 			config.setPlatformContext( context );
 
 
-			try
-			{
+			try {
 				Platform.startup( config );
 			} catch ( BirtException e ) {
 				throw new UnsupportedOperationException( e );
@@ -81,7 +80,6 @@ public class BirtEngine {
 		if (birtEngine == null) {
 			return;
 		}		
-		birtEngine.shutdown();
 		Platform.shutdown();
 		birtEngine = null;
 	}
