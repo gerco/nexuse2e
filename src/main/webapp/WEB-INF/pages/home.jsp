@@ -52,10 +52,6 @@
 		<td class="NEXUSNameNoWidth"><a href="html/lgpl.html" target="#blank">GNU Lesser General Public License</a> (LGPL), Version 2.1</td>
 	</tr>
 </table>
-<!--
-<a href="#" onClick="refreshMenuTree();">Reload</a>
-<div id="log" style="color: #FFFFFF; background-color: #000080; padding: 10px; text-align: left;"><p>DEBUG LOG</p></div>
--->
 
 <center><logic:messagesPresent>
 	<div class="NexusError"><html:errors /></div>
