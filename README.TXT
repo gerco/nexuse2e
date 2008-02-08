@@ -82,6 +82,10 @@ Maven will now install the libraries.
 4.1.2 Finally type "mvn package" and hit return. Maven will now download all the other
 nessessary libraries and build the project.
 
+5. Install Reporting package (optional). Go to http://www.eclipse.org/birt/ and download
+the latest version of the BIRT reporting runtime package. Extract the "ReportEngine"
+directory to the web application's WEB-INF directory and rename it to "platform".
+
 If everything worked right your Eclipse project should not signal any errors or problems
 anymore. If not, try to "Project" > "Clean".
 The built "NEXUSe2e.war" file can be found in the "target" folder under the project root.
