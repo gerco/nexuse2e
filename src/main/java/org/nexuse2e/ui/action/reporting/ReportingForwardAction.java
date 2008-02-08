@@ -19,6 +19,7 @@
  */
 package org.nexuse2e.ui.action.reporting;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -39,6 +40,7 @@ import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.PartnerPojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.ReportingPropertiesForm;
+import org.nexuse2e.util.DateUtil;
 
 /**
  * @author guido.esch
@@ -58,12 +60,6 @@ public class ReportingForwardAction extends NexusE2EAction {
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
             HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
             throws Exception {
-
-        ActionForward engine = actionMapping.findForward( "engine" );
-        ActionForward conversation = actionMapping.findForward( "conversation" );
-        ActionForward save = actionMapping.findForward( "save" );
-        ActionForward view = actionMapping.findForward( "view" );
-        ActionForward error = actionMapping.findForward( ACTION_FORWARD_FAILURE );
 
         ReportingPropertiesForm form = (ReportingPropertiesForm) actionForm;
         String type = request.getParameter( "type" );
@@ -105,7 +101,7 @@ public class ReportingForwardAction extends NexusE2EAction {
                     "log_display_configuration", null, ReportingPropertiesForm.getParameterMap() );
             fillForm( values, form );
 
-            return conversation;
+            return actionMapping.findForward( "conversation" );
         } else if ( form.getCommand() != null && form.getCommand().equals( "engine" ) ) {
 
             Map<String, Object> values = new HashMap<String, Object>();
@@ -113,7 +109,7 @@ public class ReportingForwardAction extends NexusE2EAction {
                     "log_display_configuration", null, ReportingPropertiesForm.getParameterMap() );
             fillForm( values, form );
 
-            return engine;
+            return actionMapping.findForward( "engine" );
 
         } else if ( form.getCommand() != null && form.getCommand().equals( "saveFields" ) ) {
 
@@ -163,7 +159,7 @@ public class ReportingForwardAction extends NexusE2EAction {
             Engine.getInstance().getActiveConfigurationAccessService().setGenericParameters(
                     "log_display_configuration", null, values, ReportingPropertiesForm.getParameterMap(), true );
             form.setCommand( "" );
-            return save;
+            return actionMapping.findForward( "save" );
         } else if ( form.getCommand() != null && form.getCommand().equals( "view" ) ) {
             Map<String, Object> values = Engine
                     .getInstance()
@@ -175,14 +171,22 @@ public class ReportingForwardAction extends NexusE2EAction {
 
             fillForm( values, form );
 
-            return view;
+            return actionMapping.findForward( "view" );
+        } else if (form.getCommand() != null && form.getCommand().equals( "statistics" )) {
+            Calendar cal = Calendar.getInstance();
+            cal.set( Calendar.HOUR_OF_DAY, 0 );
+            cal.set( Calendar.MINUTE, 0 );
+            cal.set( Calendar.SECOND, 0 );
+            cal.set( Calendar.MILLISECOND, 0 );
+            request.setAttribute( "startOfDay", cal.getTime() );
+            return actionMapping.findForward( "statistics" );
         } else {
             LOG.error( "Invalid actionparameter=>" + form.getCommand() + "<" );
             ActionMessage errorMessage = new ActionMessage( "generic.error", "Invalid actionparameter=>"
                     + form.getCommand() + "<" );
             errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
             addRedirect( request, URL, TIMEOUT );
-            return error;
+            return actionMapping.findForward( ACTION_FORWARD_FAILURE );
         }
 
     }
