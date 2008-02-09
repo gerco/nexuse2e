@@ -21,19 +21,24 @@
 	<table width="100%">
 		<tr>
 			<td>
-				<nexus:report name="message_stati_24h.rptdesign">
+				<nexus:report name="message_stati_24h">
 					<nexus:reportParam name="startDate" value="<%=  new java.text.SimpleDateFormat( "yyyy-MM-dd" ).parse( "2008-01-20" ) %>"/>
 				</nexus:report>
 			</td>
 			<td>
-				<nexus:report name="conversation_stati_24h.rptdesign">
+				<nexus:report name="conversation_stati_24h">
 					<nexus:reportParam name="startDate" value="<%=  new java.text.SimpleDateFormat( "yyyy-MM-dd" ).parse( "2008-01-20" ) %>"/>
 				</nexus:report>
 			</td>
 		</tr>
 		<tr>
-			<td colspan="2">
-				<nexus:report name="messages_by_choreography_24h.rptdesign">
+			<td>
+				<nexus:report name="messages_by_choreography_24h">
+					<nexus:reportParam name="startDate" value="<%=  new java.text.SimpleDateFormat( "yyyy-MM-dd" ).parse( "2008-01-20" ) %>"/>
+				</nexus:report>
+			</td>
+			<td>
+				<nexus:report name="messages_per_hour">
 					<nexus:reportParam name="startDate" value="<%=  new java.text.SimpleDateFormat( "yyyy-MM-dd" ).parse( "2008-01-20" ) %>"/>
 				</nexus:report>
 			</td>

@@ -91,7 +91,7 @@ public class Report extends BodyTagSupport {
             };
 
             //Open report design
-            String reportPath = sc.getRealPath("/WEB-INF/reports") + "/" + reportName;
+            String reportPath = sc.getRealPath("/WEB-INF/reports") + "/" + reportName + ".rptdesign";
             design = birtReportEngine.openReportDesign( reportPath );
             //create task to run and render report
             IRunAndRenderTask task = birtReportEngine.createRunAndRenderTask( design );
