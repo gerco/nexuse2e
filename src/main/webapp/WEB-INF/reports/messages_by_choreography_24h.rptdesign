@@ -28,8 +28,8 @@
         <oda-data-set extensionID="org.eclipse.birt.report.data.oda.jdbc.JdbcSelectDataSet" name="Message_Counts" id="7">
             <list-property name="columnHints">
                 <structure>
-                    <property name="columnName">count(nx_message.nx_message_id)</property>
-                    <property name="displayName">count(nx_message.nx_message_id)</property>
+                    <property name="columnName">count(nx_message. nx_message_id)</property>
+                    <property name="displayName">count</property>
                 </structure>
                 <structure>
                     <property name="columnName">name</property>
@@ -40,7 +40,7 @@
                 <list-property name="resultSet">
                     <structure>
                         <property name="position">1</property>
-                        <property name="name">count(nx_message.nx_message_id)</property>
+                        <property name="name">count(nx_message. nx_message_id)</property>
                         <property name="dataType">decimal</property>
                     </structure>
                     <structure>
@@ -64,8 +64,8 @@
             <list-property name="resultSet">
                 <structure>
                     <property name="position">1</property>
-                    <property name="name">count(nx_message.nx_message_id)</property>
-                    <property name="nativeName">count(nx_message.nx_message_id)</property>
+                    <property name="name">count(nx_message. nx_message_id)</property>
+                    <property name="nativeName">count(nx_message. nx_message_id)</property>
                     <property name="dataType">decimal</property>
                     <property name="nativeDataType">-5</property>
                 </structure>
@@ -77,14 +77,14 @@
                     <property name="nativeDataType">12</property>
                 </structure>
             </list-property>
-            <property name="queryText">select count(nx_message.nx_message_id), nx_choreography.name 
-from nx_message 
-join nx_conversation 
-on nx_message.nx_conversation_id = nx_conversation.nx_conversation_id
-join nx_choreography 
-on nx_conversation.nx_choreography_id = nx_choreography.nx_choreography_id
-where nx_message.created_date >= ?
-group by nx_conversation.nx_choreography_id</property>
+            <property name="queryText">select count(nx_message. nx_message_id), nx_choreography.name 
+from nx_choreography 
+left outer join nx_conversation
+on nx_choreography.nx_choreography_id = nx_conversation.nx_choreography_id
+left outer join nx_message
+on nx_conversation.nx_conversation_id = nx_message.nx_conversation_id
+where nx_message.created_date > ? or nx_message.created_date is null
+group by nx_choreography.nx_choreography_id</property>
         </oda-data-set>
     </data-sets>
     <styles>
@@ -357,8 +357,8 @@ group by nx_conversation.nx_choreography_id</property>
     <Bounds>
       <Left>0.0</Left>
       <Top>0.0</Top>
-      <Width>399.75</Width>
-      <Height>249.75</Height>
+      <Width>319.5</Width>
+      <Height>187.5</Height>
     </Bounds>
     <Insets>
       <Top>3.0</Top>
@@ -831,7 +831,7 @@ group by nx_conversation.nx_choreography_id</property>
           <Visible>true</Visible>
         </Label>
         <DataDefinition>
-          <Definition>row[&quot;count(nx_message.nx_message_id)&quot;]</Definition>
+          <Definition>row[&quot;count(nx_message. nx_message_id)&quot;]</Definition>
         </DataDefinition>
         <SeriesIdentifier></SeriesIdentifier>
         <DataPoint>
@@ -962,8 +962,8 @@ group by nx_conversation.nx_choreography_id</property>
             <property name="width">320pt</property>
             <list-property name="boundDataColumns">
                 <structure>
-                    <property name="name">count(nx_message.nx_message_id)</property>
-                    <expression name="expression">dataSetRow["count(nx_message.nx_message_id)"]</expression>
+                    <property name="name">count(nx_message. nx_message_id)</property>
+                    <expression name="expression">dataSetRow["count(nx_message. nx_message_id)"]</expression>
                     <property name="dataType">decimal</property>
                 </structure>
                 <structure>

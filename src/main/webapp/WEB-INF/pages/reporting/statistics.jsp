@@ -17,6 +17,8 @@
 	</tr>
 </table>
 
+${startOfDay}
+
 <nexus:reportsAvailable>
 	<table width="100%">
 		<tr>
@@ -34,7 +36,7 @@
 		<tr>
 			<td>
 				<nexus:report name="messages_by_choreography_24h">
-					<nexus:reportParam name="startDate" value="<%=  new java.text.SimpleDateFormat( "yyyy-MM-dd" ).parse( "2008-01-20" ) %>"/>
+                    <nexus:reportParam name="startDate" value="${startOfDay}"/>
 				</nexus:report>
 			</td>
 			<td>
