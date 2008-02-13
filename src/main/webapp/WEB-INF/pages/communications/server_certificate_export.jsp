@@ -52,7 +52,7 @@
         <table class="NEXUS_BUTTON_TABLE" width="100%">
                 <tr>
                     <td>&nbsp;</td>
-                    <td class="BUTTON_RIGHT"><nexus:submit><img src="images/submit.gif" name="SUBMIT"></nexus:submit></td>
+                    <td class="BUTTON_RIGHT"><nexus:submit><img src="images/icons/tick.png" name="SUBMIT"></nexus:submit></td>
                     <td class="NexusHeaderLink">Export</td>
                 </tr>
             </table>

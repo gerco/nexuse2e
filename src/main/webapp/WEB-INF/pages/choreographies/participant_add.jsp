@@ -103,7 +103,7 @@
 			<td class="BUTTON_RIGHT"><nexus:submit
 				onClick="document.participantForm.submitted.value=true;"
 				styleClass="button">
-				<img src="images/submit.gif" class="button">Create</nexus:submit></td>
+				<img src="images/icons/tick.png" class="button">Create</nexus:submit></td>
 		</tr>
 	</table>
 </html:form></center>

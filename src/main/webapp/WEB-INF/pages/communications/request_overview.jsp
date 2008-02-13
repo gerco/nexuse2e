@@ -36,12 +36,12 @@ window.open('DataSaveAs?type=privatepem','Save as...')
 			value="true">
 			<td class="NEXUSValue"><nexus:link href="RequestCreate.do"
 				styleClass="button">
-				<img src="images/submit.gif" class="button" />Create Request</nexus:link></td>
+				<img src="images/icons/dd.png" class="button" />Create Request</nexus:link></td>
 		</logic:equal>
 		<logic:notEqual name="requestButtonStateForm" property="createRequest"
 			value="true">
 			<td class="NEXUSValue"><font class="NEXUSScreenPathLinkInactive"><img
-				src="images/submit.gif" class="button" />Create Request</font></td>
+				src="images/icons/add.png" class="button" />Create Request</font></td>
 		</logic:notEqual>
 		<td class="NEXUSValue">&nbsp;</td>
 	</tr>
@@ -56,24 +56,24 @@ window.open('DataSaveAs?type=privatepem','Save as...')
 			value="true">
 			<td class="NEXUSValue"><nexus:link href="RequestImportCert.do"
 				styleClass="button">
-				<img src="images/submit.gif" class="button" />Import Certificate</nexus:link></td>
+				<img src="images/icons/server_key.png" class="button" />Import Certificate</nexus:link></td>
 		</logic:equal>
 		<logic:notEqual name="requestButtonStateForm" property="importCert"
 			value="true">
 			<td class="NEXUSValue"><font class="NEXUSScreenPathLinkInactive"><img
-				src="images/submit.gif" class="button" />Import Certificate</font></td>
+				src="images/icons/server_key.png" class="button" />Import Certificate</font></td>
 		</logic:notEqual>
 
 		<logic:equal name="requestButtonStateForm" property="importBackup"
 			value="true">
 			<td class="NEXUSValue"><nexus:link href="RequestImportBackup.do"
 				styleClass="button">
-				<img src="images/submit.gif" class="button" />Import Key Backup</nexus:link></td>
+				<img src="images/icons/server_key.png" class="button" />Import Key Backup</nexus:link></td>
 		</logic:equal>
 		<logic:notEqual name="requestButtonStateForm" property="importBackup"
 			value="true">
 			<td class="NEXUSValue"><font class="NEXUSScreenPathLinkInactive"><img
-				src="images/submit.gif" class="button" />Import Key Backup</font></td>
+				src="images/icons/server_key.png" class="button" />Import Key Backup</font></td>
 		</logic:notEqual>
 
 	</tr>
@@ -89,12 +89,12 @@ window.open('DataSaveAs?type=privatepem','Save as...')
 			value="true">
 			<td class="NEXUSValue"><nexus:link href="RequestShowCSR.do"
 				styleClass="button">
-				<img src="images/submit.gif" class="button" />Show Request</nexus:link></td>
+				<img src="images/icons/magnifier.png" class="button" />Show Request</nexus:link></td>
 		</logic:equal>
 		<logic:notEqual name="requestButtonStateForm" property="showRequest"
 			value="true">
 			<td class="NEXUSValue"><font class="NEXUSScreenPathLinkInactive"><img
-				src="images/submit.gif" class="button" />Show Request</font></td>
+				src="images/icons/magnifier.png" class="button" />Show Request</font></td>
 		</logic:notEqual>
 		<td class="NEXUSValue">&nbsp;</td>
 	</tr>
@@ -110,24 +110,24 @@ window.open('DataSaveAs?type=privatepem','Save as...')
 			value="true">
 			<td class="NEXUSValue"><nexus:link href="RequestExportPKCS12.do"
 				styleClass="button">
-				<img src="images/submit.gif" class="button" />Export Full Key Information (Backup)</nexus:link></td>
+				<img src="images/icons/disk.png" class="button" />Export Full Key Information (Backup)</nexus:link></td>
 		</logic:equal>
 		<logic:notEqual name="requestButtonStateForm" property="exportPKCS12"
 			value="true">
 			<td class="NEXUSValue"><font class="NEXUSScreenPathLinkInactive"><img
-				src="images/submit.gif" class="button" />Export Full Key Information
+				src="images/icons/disk.png" class="button" />Export Full Key Information
 			(Backup)</font></td>
 		</logic:notEqual>
 		<logic:equal name="requestButtonStateForm" property="exportRequest"
 			value="true">
 			<td class="NEXUSValue"><nexus:link href="RequestExportCSR.do"
 				styleClass="button">
-				<img src="images/submit.gif" class="button" />Export Request (CSR)</nexus:link></td>
+				<img src="images/icons/disk.png" class="button" />Export Request (CSR)</nexus:link></td>
 		</logic:equal>
 		<logic:notEqual name="requestButtonStateForm" property="exportRequest"
 			value="true">
 			<td class="NEXUSValue"><font class="NEXUSScreenPathLinkInactive"><img
-				src="images/submit.gif" class="button" />Export Request(CSR)</font></td>
+				src="images/icons/disk.png" class="button" />Export Request(CSR)</font></td>
 		</logic:notEqual>
 	</tr>
 	<tr>
@@ -141,12 +141,12 @@ window.open('DataSaveAs?type=privatepem','Save as...')
 			value="true">
 			<td class="NEXUSValue"><nexus:link href="RequestDelete.do"
 				styleClass="button">
-				<img src="images/submit.gif" class="button" />Delete Request</nexus:link></td>
+				<img src="images/icons/delete.png" class="button" />Delete Request</nexus:link></td>
 		</logic:equal>
 		<logic:notEqual name="requestButtonStateForm" property="deleteRequest"
 			value="true">
 			<td class="NEXUSValue"><font class="NEXUSScreenPathLinkInactive"><img
-				src="images/submit.gif" class="button" />Delete Request</font></td>
+				src="images/icons/delete.png" class="button" />Delete Request</font></td>
 		</logic:notEqual>
 		<td class="NEXUSValue">&nbsp;</td>
 	</tr>

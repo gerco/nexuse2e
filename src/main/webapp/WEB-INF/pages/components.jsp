@@ -43,7 +43,7 @@
 			    	&nbsp;
     			</td>
 	        <td class="BUTTON_RIGHT" style="text-align: right;">
-				    <nexus:link href="ComponentAdd.do?nxComponentId=0" styleClass="button"><img src="images/tree/plus.gif" class="button">Add Component</nexus:link>
+				    <nexus:link href="ComponentAdd.do?nxComponentId=0" styleClass="button"><img src="images/icons/add.png" class="button">Add Component</nexus:link>
     			</td>
       	</tr>
       </table>

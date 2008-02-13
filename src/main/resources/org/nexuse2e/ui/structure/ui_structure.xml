@@ -38,190 +38,193 @@
   <!-- a menu can contain several pages (branches) and commands (leafs) -->
   <nxs:menu>
     <!-- a page is a branch - it contains subpages and commands -->
-    <nxs:page target="Home.do" label="NEXUSe2e" icon="images/tree/nexus.gif">
-      <nxs:page target="ServerConfiguration.do" label="Server Configuration" icon="images/tree/nexus.gif">
-        <nxs:page target="UserMaintenance.do" label="User Maintenance" icon="images/tree/users.gif">
-          <nxs:page target="UserList.do" label="Users" icon="images/tree/users.gif">
-            <nxs:command target="UserAdd.do" label="Add User" icon="images/tree/TreeDot.gif"/>
-            <nxs:page type="provider" provider="userTargetProvider" target="UserEdit.do" label="View User" icon="images/tree/TreeDot.gif">
-              <nxs:command target="UserSave.do" label="Save User" icon="images/tree/TreeDot.gif"/>
-              <nxs:command target="UserDelete.do" label="Delete User" icon="images/tree/TreeDot.gif"/>
+    <nxs:page target="Home.do" label="NEXUSe2e" icon="images/nexuse2e_16x16.gif">
+      <nxs:page target="ServerConfiguration.do" label="Server Configuration" icon="images/icons/server_edit.png">
+        <nxs:page target="UserMaintenance.do" label="User Maintenance" icon="images/icons/user.png">
+          <nxs:page target="UserList.do" label="Users" icon="images/icons/user.png">
+            <nxs:command target="UserAdd.do" label="Add User" icon="images/icons/bullet_orange.png"/>
+            <nxs:page type="provider" provider="userTargetProvider" target="UserEdit.do" label="View User" icon="images/icons/bullet_orange.png">
+              <nxs:command target="UserSave.do" label="Save User" icon="images/icons/bullet_orange.png"/>
+              <nxs:command target="UserDelete.do" label="Delete User" icon="images/icons/bullet_orange.png"/>
             </nxs:page>
           </nxs:page>
-          <nxs:page target="RoleList.do" label="Roles" icon="images/tree/ssl.gif">
-            <nxs:command target="RoleAdd.do" label="Add Role" icon="images/tree/TreeDot.gif"/>
-            <nxs:page type="provider" provider="roleTargetProvider" target="RoleEdit.do" label="View Role" icon="images/tree/TreeDot.gif">
-              <nxs:command target="RoleSave.do" label="Save Role" icon="images/tree/TreeDot.gif"/>
-              <nxs:command target="RoleDelete.do" label="Delete Role" icon="images/tree/TreeDot.gif"/>
+          <nxs:page target="RoleList.do" label="Roles" icon="images/icons/group_link.png">
+            <nxs:command target="RoleAdd.do" label="Add Role" icon="images/icons/bullet_orange.png"/>
+            <nxs:page type="provider" provider="roleTargetProvider" target="RoleEdit.do" label="View Role" icon="images/icons/bullet_orange.png">
+              <nxs:command target="RoleSave.do" label="Save Role" icon="images/icons/bullet_orange.png"/>
+              <nxs:command target="RoleDelete.do" label="Delete Role" icon="images/icons/bullet_orange.png"/>
             </nxs:page>
           </nxs:page>
         </nxs:page>
         <!-- a command is a leaf - it contains no children -->
-        <nxs:page target="ServerIdentities.do?type=1" label="Server Identities" icon="images/tree/collaborativepartners.gif">
-          <nxs:command target="CollaborationPartnerAdd.do?type=1" label="Add Server Identity" icon="images/tree/TreeDot.gif"/>
-          <nxs:command target="CollaborationPartnerCreate.do" label="Save New Server Identity" icon="images/tree/TreeDot.gif"/>
-          <nxs:page type="provider" provider="serverIdentityTargetProvider" target="PartnerInfoView.do" label="View Server Identity" icon="images/tree/TreeDot.gif">
-            <nxs:command target="UpdatePartnerInfo.do" label="Update Partner Info" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="CollaborationPartnerDelete.do" label="Delete Partner" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="PartnerConnectionList.do" label="Connection List" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="PartnerConnectionAdd.do" label="Add Connection" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="PartnerConnectionCreate.do" label="Create Connection" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="PartnerConnectionView.do" label="View Connection" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="PartnerConnectionSave.do" label="Save Connection" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="PartnerConnectionDelete.do" label="Delete Connection" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="PartnerCertificateList.do" label="View Certificate List" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="PartnerCertificateAdd.do" label="Add Certificate" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="PartnerCertificateCreate.do" label="Create Certificate" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="PartnerCertificateView.do" label="Create Certificate" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="PartnerCertificateSave.do" label="Create Certificate" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="PartnerCertificateDelete.do" label="Create Certificate" icon="images/tree/TreeDot.gif"/>
+        <nxs:page target="ServerIdentities.do?type=1" label="Server Identities" icon="images/icons/server.png">
+          <nxs:command target="CollaborationPartnerAdd.do?type=1" label="Add Server Identity" icon="images/icons/bullet_orange.png"/>
+          <nxs:command target="CollaborationPartnerCreate.do" label="Save New Server Identity" icon="images/icons/bullet_orange.png"/>
+          <nxs:page type="provider" provider="serverIdentityTargetProvider" target="PartnerInfoView.do" label="View Server Identity" icon="images/icons/bullet_orange.png">
+            <nxs:command target="UpdatePartnerInfo.do" label="Update Partner Info" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="CollaborationPartnerDelete.do" label="Delete Partner" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="PartnerConnectionList.do" label="Connection List" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="PartnerConnectionAdd.do" label="Add Connection" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="PartnerConnectionCreate.do" label="Create Connection" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="PartnerConnectionView.do" label="View Connection" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="PartnerConnectionSave.do" label="Save Connection" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="PartnerConnectionDelete.do" label="Delete Connection" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="PartnerCertificateList.do" label="View Certificate List" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="PartnerCertificateAdd.do" label="Add Certificate" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="PartnerCertificateCreate.do" label="Create Certificate" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="PartnerCertificateView.do" label="Create Certificate" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="PartnerCertificateSave.do" label="Create Certificate" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="PartnerCertificateDelete.do" label="Create Certificate" icon="images/icons/bullet_orange.png"/>
           </nxs:page>
         </nxs:page>
-        <nxs:page target="Components.do" label="Components" icon="images/tree/components.gif">
+        <nxs:page target="Components.do" label="Components" icon="images/icons/brick.png">
           <nxs:command target="ComponentAdd.do" label="Add Component" icon="images/tree/components.gif"/>
           <nxs:command target="ComponentCreate.do" label="Create Component" icon="images/tree/components.gif"/>
-          <nxs:page type="provider" provider="componentTargetProvider" target="ComponentView.do" label="View Component" icon="images/tree/TreeDot.gif">
-            <nxs:command target="ComponentUpdate.do" label="Save Component" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="ComponentDelete.do" label="Delete Component" icon="images/tree/TreeDot.gif"/>
+          <nxs:page type="provider" provider="componentTargetProvider" target="ComponentView.do" label="View Component" icon="images/icons/bullet_orange.png">
+            <nxs:command target="ComponentUpdate.do" label="Save Component" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="ComponentDelete.do" label="Delete Component" icon="images/icons/bullet_orange.png"/>
           </nxs:page>
         </nxs:page>
-        <nxs:page target="BackendPipelines.do" label="Backend Pipelines" icon="images/tree/businessprocesses.gif">
-          <nxs:command target="PipelineAdd.do?frontend=false" label="Add Pipeline" icon="images/tree/TreeDot.gif"/>
-          <nxs:command target="PipelineCreate.do?frontend=false" label="Create Pipeline" icon="images/tree/TreeDot.gif"/>
-          <nxs:page type="provider" provider="backendPipelineTargetProvider" target="PipelineView.do" label="View Pipeline" icon="images/tree/TreeDot.gif">
-            <nxs:command target="PipelineUpdate.do?frontend=false" label="Update Pipeline" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="PipelineDelete.do?frontend=false" label="Delete Pipeline" icon="images/tree/TreeDot.gif"/>
+        <nxs:page target="BackendPipelines.do" label="Backend Pipelines" icon="images/icons/bricks.png">
+          <nxs:command target="PipelineAdd.do?frontend=false" label="Add Pipeline" icon="images/icons/bullet_orange.png"/>
+          <nxs:command target="PipelineCreate.do?frontend=false" label="Create Pipeline" icon="images/icons/bullet_orange.png"/>
+          <nxs:page type="provider" provider="backendPipelineTargetProvider" target="PipelineView.do" label="View Pipeline" icon="images/icons/bullet_orange.png">
+            <nxs:command target="PipelineUpdate.do?frontend=false" label="Update Pipeline" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="PipelineDelete.do?frontend=false" label="Delete Pipeline" icon="images/icons/bullet_orange.png"/>
           </nxs:page>
         </nxs:page>
-        <nxs:page target="FrontendPipelines.do" label="Frontend Pipelines" icon="images/tree/businessprocesses.gif">
-          <nxs:command target="PipelineAdd.do?frontend=true" label="Add Pipeline" icon="images/tree/TreeDot.gif"/>
-          <nxs:command target="PipelineCreate.do?frontend=true" label="Create Pipeline" icon="images/tree/TreeDot.gif"/>
-          <nxs:page type="provider" provider="frontendPipelineTargetProvider" target="PipelineView.do" label="View Pipeline" icon="images/tree/TreeDot.gif">
-            <nxs:command target="PipelineUpdate.do?frontend=true" label="Update Pipeline" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="PipelineDelete.do?frontend=true" label="Delete Pipeline" icon="images/tree/TreeDot.gif"/>
+        <nxs:page target="FrontendPipelines.do" label="Frontend Pipelines" icon="images/icons/bricks.png">
+          <nxs:command target="PipelineAdd.do?frontend=true" label="Add Pipeline" icon="images/icons/plugin_add.png"/>
+          <nxs:command target="PipelineCreate.do?frontend=true" label="Create Pipeline" icon="images/icons/plugin_add.png"/>
+          <nxs:page type="provider" provider="frontendPipelineTargetProvider" target="PipelineView.do" label="View Pipeline" icon="images/icons/bullet_orange.png">
+            <nxs:command target="PipelineUpdate.do?frontend=true" label="Update Pipeline" icon="images/icons/plugin_edit.png"/>
+            <nxs:command target="PipelineDelete.do?frontend=true" label="Delete Pipeline" icon="images/icons/plugin_delete.png"/>
           </nxs:page>
         </nxs:page>
-        <nxs:page target="ServiceList.do" label="Services" icon="images/tree/businessprocesses.gif">
-          <nxs:command target="ServiceAdd.do" label="Add Service" icon="images/tree/TreeDot.gif"/>
-          <nxs:page type="provider" provider="serviceTargetProvider" target="ServiceView.do" label="View Service" icon="images/tree/TreeDot.gif">
-            <nxs:command target="ServiceUpdate.do" label="Update Service" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="ServiceDelete.do" label="Delete Service" icon="images/tree/TreeDot.gif"/>
+        <nxs:page target="ServiceList.do" label="Services" icon="images/icons/cog.png">
+          <nxs:command target="ServiceAdd.do" label="Add Service" icon="images/icons/bullet_orange.png"/>
+          <nxs:page type="provider" provider="serviceTargetProvider" target="ServiceView.do" label="View Service" icon="images/icons/bullet_orange.png">
+            <nxs:command target="ServiceUpdate.do" label="Update Service" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="ServiceDelete.do" label="Delete Service" icon="images/icons/bullet_orange.png"/>
           </nxs:page>
         </nxs:page>
-        <nxs:page target="NotifierList.do" label="Notifiers" icon="images/tree/notifiers.gif">
-          <nxs:command target="NotifierAdd.do" label="Add Notifier" icon="images/tree/TreeDot.gif"/>
-          <nxs:page type="provider" provider="notifierTargetProvider" target="NotifierView.do" label="View Notifier" icon="images/tree/TreeDot.gif">
-            <nxs:command target="NotifierUpdate.do" label="Update Notifier" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="NotifierDelete.do" label="Delete Notifier" icon="images/tree/TreeDot.gif"/>
+        <nxs:page target="NotifierList.do" label="Notifiers" icon="images/icons/transmit_blue.png">
+          <nxs:command target="NotifierAdd.do" label="Add Notifier" icon="images/icons/bullet_orange.png"/>
+          <nxs:page type="provider" provider="notifierTargetProvider" target="NotifierView.do" label="View Notifier" icon="images/icons/bullet_orange.png">
+            <nxs:command target="NotifierUpdate.do" label="Update Notifier" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="NotifierDelete.do" label="Delete Notifier" icon="images/icons/bullet_orange.png"/>
           </nxs:page>
         </nxs:page>
-        <nxs:page target="Certificates.do" label="Certificates" icon="images/tree/ssl.gif">
-          <nxs:page target="RequestOverview.do" label="Certificate Request" icon="images/tree/importexport.gif">
-            <nxs:command target="RequestCreate.do" label="Create Request" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="RequestImportCert.do" label="Import Certificate" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="RequestImportBackup.do" label="Import Key Backup" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="RequestShowCSR.do" label="Show Request" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="RequestExportPKCS12.do" label="Export Full Key Information (Backup)" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="RequestExportCSR.do" label="Export Request (CSR)" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="RequestDelete.do" label="Delete Request" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="RequestSaveRequest.do" label="Save Request" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="RequestSavePKCS12File" label="Export Temporary KeyStructure" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="RequestVerifyCertChainCert.do" label="Save Certificate" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="RequestSaveCSRFile.do" label="Save CSR File" icon="images/tree/TreeDot.gif"/>
+        <nxs:page target="Certificates.do" label="Certificates" icon="images/icons/medal_silver_3.png">
+          <nxs:page target="RequestOverview.do" label="Certificate Request" icon="images/icons/medal_silver_add.png">
+            <nxs:command target="RequestCreate.do" label="Create Request" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="RequestImportCert.do" label="Import Certificate" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="RequestImportBackup.do" label="Import Key Backup" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="RequestShowCSR.do" label="Show Request" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="RequestExportPKCS12.do" label="Export Full Key Information (Backup)" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="RequestExportCSR.do" label="Export Request (CSR)" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="RequestDelete.do" label="Delete Request" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="RequestSaveRequest.do" label="Save Request" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="RequestSavePKCS12File" label="Export Temporary KeyStructure" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="RequestVerifyCertChainCert.do" label="Save Certificate" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="RequestSaveCSRFile.do" label="Save CSR File" icon="images/icons/bullet_orange.png"/>
           </nxs:page>
-          <nxs:page target="StagingList.do" label="Certificate Staging" icon="images/tree/ssl.gif">
-            <nxs:command target="StagingImportCertificate.do" label="Import Certificate" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="StagingSaveCertificate.do" label="Save Certificate" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="StagingCertificateView.do" label="View Certificate" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="StagingDeleteCertificate.do" label="Delete Certificate" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="StagingExportCertificate.do" label="Export Certificate" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="StagingPromoteCertificate.do" label="Promote Certificate" icon="images/tree/TreeDot.gif"/>
-            <nxs:command target="StagingStoreExported.do" label="Perform Certificate Export " icon="images/tree/TreeDot.gif"/>
+          <nxs:page target="StagingList.do" label="Certificate Staging" icon="images/icons/medal_silver_3.png">
+            <nxs:command target="StagingImportCertificate.do" label="Import Certificate" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="StagingSaveCertificate.do" label="Save Certificate" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="StagingCertificateView.do" label="View Certificate" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="StagingDeleteCertificate.do" label="Delete Certificate" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="StagingExportCertificate.do" label="Export Certificate" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="StagingPromoteCertificate.do" label="Promote Certificate" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="StagingStoreExported.do" label="Perform Certificate Export " icon="images/icons/bullet_orange.png"/>
           </nxs:page>
         </nxs:page>
-        <nxs:page target="CACertificatesList.do" label="CA Certificates" icon="images/tree/fingerprints.gif">
-          <nxs:page target="CACertificateImportKeyStore.do" label="Import Existing Keystore" icon="images/tree/importexport.gif">
-            <nxs:command target="CACertificateSaveKeyStore.do" label="Save CA KeyStore" icon="images/tree/TreeDot.gif"/>
+        <nxs:page target="CACertificatesList.do" label="CA Certificates" icon="images/icons/medal_gold_3.png">
+          <nxs:page target="CACertificateImportKeyStore.do" label="Import Existing Keystore" icon="images/icons/server_add.png">
+            <nxs:command target="CACertificateSaveKeyStore.do" label="Save CA KeyStore" icon="images/icons/bullet_orange.png"/>
           </nxs:page>
-          <nxs:page target="CACertificateAddSingleCert.do" label="Add CA Certificate" icon="images/tree/importexport.gif">
-            <nxs:command target="CACertificateVerifyAddCert.do" label="Import CA Certificate" icon="images/tree/TreeDot.gif"/>
+          <nxs:page target="CACertificateAddSingleCert.do" label="Add CA Certificate" icon="images/icons/medal_gold_add.png">
+            <nxs:command target="CACertificateVerifyAddCert.do" label="Import CA Certificate" icon="images/icons/bullet_orange.png"/>
           </nxs:page>
-          <nxs:page target="CACertificateExportKeyStore.do" label="Export CA Certificate" icon="images/tree/importexport.gif">
-            <nxs:command target="CACertificateFinishExport.do" label="Save CA KeyStore to Filesystem" icon="images/tree/TreeDot.gif"/>
+          <nxs:page target="CACertificateExportKeyStore.do" label="Export CA Certificate" icon="images/icons/disk.png">
+            <nxs:command target="CACertificateFinishExport.do" label="Save CA KeyStore to Filesystem" icon="images/icons/bullet_orange.png"/>
           </nxs:page>
-          <nxs:page target="CACertificateChangePWD.do" label="Change Keystore Password" icon="images/tree/ssl.gif">
-            <nxs:command target="CACertificateSavePWD.do" label="Save Password" icon="images/tree/TreeDot.gif"/>
+          <nxs:page target="CACertificateChangePWD.do" label="Change Keystore Password" icon="images/icons/lock_edit.png">
+            <nxs:command target="CACertificateSavePWD.do" label="Save Password" icon="images/icons/bullet_orange.png"/>
           </nxs:page>
         </nxs:page>
       </nxs:page>
       <!--
         <nxs:command type="provider" target="testTargetProvider" label="TestTargetProviderLabel" icon="images/tree/nexus.gif"/>
       -->
-      <nxs:page target="Tools.do" label="Tools" icon="images/tree/communications.gif">
-        <nxs:page target="MessageSubmission.do" label="Message Submission" icon="images/tree/actions.gif">
-          <nxs:command target="MessageSubmission.do" label="Execute" icon="images/tree/TreeDot.gif"/>
+      <nxs:page target="Tools.do" label="Tools" icon="images/icons/wrench.png">
+        <nxs:page target="MessageSubmission.do" label="Message Submission" icon="images/icons/lorry_go.png">
+          <nxs:command target="MessageSubmission.do" label="Execute" icon="images/icons/bullet_orange.png"/>
         </nxs:page>
-        <nxs:page target="ProvisioningSubmission.do" label="Provisioning" icon="images/tree/ssl.gif">
-          <nxs:command target="ProvisioningSubmission.do" label="Execute" icon="images/tree/TreeDot.gif"/>
+        <nxs:page target="ProvisioningSubmission.do" label="Provisioning" icon="images/icons/television_add.png">
+          <nxs:command target="ProvisioningSubmission.do" label="Execute" icon="images/icons/bullet_orange.png"/>
         </nxs:page>
-        <nxs:page target="DatabasePurge.do?type=select" label="Database Purge" icon="images/delete.gif">
-          <nxs:command target="DatabasePurge.do?type=select" label="Execute" icon="images/tree/TreeDot.gif"/>
+        <nxs:page target="DatabasePurge.do?type=select" label="Database Purge" icon="images/icons/database_lightning.png">
+          <nxs:command target="DatabasePurge.do?type=select" label="Execute" icon="images/icons/bullet_orange.png"/>
         </nxs:page>
-        <nxs:page target="MappingMaintenance.do" label="Mapping Maintenance" icon="images/tree/collaborativepartners.gif">
-          <nxs:command target="MappingMaintenance.do" label="Execute" icon="images/tree/TreeDot.gif"/>
+        <nxs:page target="MappingMaintenance.do" label="Mapping Maintenance" icon="images/icons/database_table.png">
+          <nxs:command target="MappingMaintenance.do" label="Execute" icon="images/icons/bullet_orange.png"/>
         </nxs:page>
-        <nxs:page target="FileDownload.do" label="File Download" icon="images/tree/reports.gif">
-          <nxs:command target="FileDownload.do" label="Execute" icon="images/tree/TreeDot.gif"/>
+        <nxs:page target="FileDownload.do" label="File Download" icon="images/icons/page_save.png">
+          <nxs:command target="FileDownload.do" label="Execute" icon="images/icons/bullet_orange.png"/>
         </nxs:page>
-        <nxs:page target="ConfigurationManagement.do" label="Configuration Management" icon="images/tree/businessprocesses.gif">
-          <nxs:command target="ConfigurationManagement.do" label="Execute" icon="images/tree/TreeDot.gif"/>
-        </nxs:page>
-      </nxs:page>
-      <nxs:page target="CollaborationPartners.do?type=2" label="Collaboration Partners" icon="images/tree/collaborativepartners.gif">
-        <nxs:command target="CollaborationPartnerAdd.do?type=2" label="Add Collaboration Partner" icon="images/tree/TreeDot.gif"/>
-        <nxs:command target="CollaborationPartnerCreate.do" label="Save New Collaboration Partner" icon="images/tree/TreeDot.gif"/>
-        <nxs:page type="provider" provider="collaborationPartnerTargetProvider" target="PartnerInfoView.do" label="View Collaboration Partner" icon="images/tree/TreeDot.gif">
-          <nxs:command target="UpdatePartnerInfo.do" label="Update Collaboration Partner" icon="images/tree/TreeDot.gif"/>
-          <nxs:command target="CollaborationPartnerDelete.do" label="Delete Partner" icon="images/tree/TreeDot.gif"/>
-          <nxs:command target="PartnerConnectionList.do" label="Connection List" icon="images/tree/TreeDot.gif"/>
-          <nxs:command target="PartnerConnectionAdd.do" label="Add Connection" icon="images/tree/TreeDot.gif"/>
-          <nxs:command target="PartnerConnectionCreate.do" label="Create Connection" icon="images/tree/TreeDot.gif"/>
-          <nxs:command target="PartnerConnectionView.do" label="View Connection" icon="images/tree/TreeDot.gif"/>
-          <nxs:command target="PartnerConnectionSave.do" label="Save Connection" icon="images/tree/TreeDot.gif"/>
-          <nxs:command target="PartnerConnectionDelete.do" label="Delete Connection" icon="images/tree/TreeDot.gif"/>
-          <nxs:command target="PartnerCertificateList.do" label="View Certificate List" icon="images/tree/TreeDot.gif"/>
-          <nxs:command target="PartnerCertificateAdd.do" label="Add Certificate" icon="images/tree/TreeDot.gif"/>
-          <nxs:command target="PartnerCertificateCreate.do" label="Create Certificate" icon="images/tree/TreeDot.gif"/>
-          <nxs:command target="PartnerCertificateView.do" label="Create Certificate" icon="images/tree/TreeDot.gif"/>
-          <nxs:command target="PartnerCertificateSave.do" label="Create Certificate" icon="images/tree/TreeDot.gif"/>
-          <nxs:command target="PartnerCertificateDelete.do" label="Create Certificate" icon="images/tree/TreeDot.gif"/>
+        <nxs:page target="ConfigurationManagement.do" label="Configuration Management" icon="images/icons/server_database.png">
+          <nxs:command target="ConfigurationManagement.do" label="Execute" icon="images/icons/bullet_orange.png"/>
         </nxs:page>
       </nxs:page>
-      <nxs:page target="Choreographies.do" label="Choreographies" icon="images/tree/businessprocesses.gif">
-        <nxs:page type="provider" provider="choreographyTargetProvider" target="ChoreographyView.do" label="View Choreography" icon="images/tree/businessprocesses.gif">
-          <nxs:page target="ActionsList.do?nxChoreographyId=${nxChoreographyId}" label="Actions" icon="images/tree/actions.gif">
-            <nxs:page type="provider" provider="actionTargetProvider" target="ActionSettingsView.do" label="View Action" icon="images/tree/TreeDot.gif">
+      <nxs:page target="CollaborationPartners.do?type=2" label="Collaboration Partners" icon="images/icons/group.png">
+        <nxs:command target="CollaborationPartnerAdd.do?type=2" label="Add Collaboration Partner" icon="images/icons/bullet_orange.png"/>
+        <nxs:command target="CollaborationPartnerCreate.do" label="Save New Collaboration Partner" icon="images/icons/bullet_orange.png"/>
+        <nxs:page type="provider" provider="collaborationPartnerTargetProvider" target="PartnerInfoView.do" label="View Collaboration Partner" icon="images/icons/bullet_orange.png">
+          <nxs:command target="UpdatePartnerInfo.do" label="Update Collaboration Partner" icon="images/icons/bullet_orange.png"/>
+          <nxs:command target="CollaborationPartnerDelete.do" label="Delete Partner" icon="images/icons/bullet_orange.png"/>
+          <nxs:command target="PartnerConnectionList.do" label="Connection List" icon="images/icons/bullet_orange.png"/>
+          <nxs:command target="PartnerConnectionAdd.do" label="Add Connection" icon="images/icons/bullet_orange.png"/>
+          <nxs:command target="PartnerConnectionCreate.do" label="Create Connection" icon="images/icons/bullet_orange.png"/>
+          <nxs:command target="PartnerConnectionView.do" label="View Connection" icon="images/icons/bullet_orange.png"/>
+          <nxs:command target="PartnerConnectionSave.do" label="Save Connection" icon="images/icons/bullet_orange.png"/>
+          <nxs:command target="PartnerConnectionDelete.do" label="Delete Connection" icon="images/icons/bullet_orange.png"/>
+          <nxs:command target="PartnerCertificateList.do" label="View Certificate List" icon="images/icons/bullet_orange.png"/>
+          <nxs:command target="PartnerCertificateAdd.do" label="Add Certificate" icon="images/icons/bullet_orange.png"/>
+          <nxs:command target="PartnerCertificateCreate.do" label="Create Certificate" icon="images/icons/bullet_orange.png"/>
+          <nxs:command target="PartnerCertificateView.do" label="Create Certificate" icon="images/icons/bullet_orange.png"/>
+          <nxs:command target="PartnerCertificateSave.do" label="Create Certificate" icon="images/icons/bullet_orange.png"/>
+          <nxs:command target="PartnerCertificateDelete.do" label="Create Certificate" icon="images/icons/bullet_orange.png"/>
+        </nxs:page>
+      </nxs:page>
+      <nxs:page target="Choreographies.do" label="Choreographies" icon="images/icons/arrow_switch.png">
+        <nxs:page type="provider" provider="choreographyTargetProvider" target="ChoreographyView.do" label="View Choreography" icon="images/icons/arrow_right.png">
+          <nxs:page target="ActionsList.do?nxChoreographyId=${nxChoreographyId}" label="Actions" icon="images/icons/lightning.png">
+            <nxs:page type="provider" provider="actionTargetProvider" target="ActionSettingsView.do" label="View Action" icon="images/icons/bullet_orange.png">
             </nxs:page>
           </nxs:page>
-          <nxs:page target="ParticipantList.do?nxChoreographyId=${nxChoreographyId}" label="Participants" icon="images/tree/collaborativepartners.gif">
-            <nxs:page type="provider" provider="participantTargetProvider" target="ParticipantView.do" label="View Participant" icon="images/tree/TreeDot.gif">
-               <nxs:command target="ParticipantUpdate.do" label="Update Participant" icon="images/tree/TreeDot.gif"/>
-               <nxs:command target="ParticipantDelete.do" label="Delete Participant" icon="images/tree/TreeDot.gif"/>
+          <!-- 
+          <nxs:page target="NotifierList.do?nxChoreographyId=${nxChoreographyId}" label="Notifiers" icon="images/tree/notifiers.gif"/>
+           -->
+          <nxs:page target="ParticipantList.do?nxChoreographyId=${nxChoreographyId}" label="Participants" icon="images/icons/group.png">
+            <nxs:page type="provider" provider="participantTargetProvider" target="ParticipantView.do" label="View Participant" icon="images/icons/bullet_orange.png">
+               <nxs:command target="ParticipantUpdate.do" label="Update Participant" icon="images/icons/bullet_orange.png"/>
+               <nxs:command target="ParticipantDelete.do" label="Delete Participant" icon="images/icons/bullet_orange.png"/>
             </nxs:page>
           </nxs:page>
-          <nxs:page target="ReportingForward.do?nxChoreographyId=${nxChoreographyId}" label="Reports" icon="images/tree/reports.gif">
-            <nxs:command target="ProcessConversationReport.do" label="Process Conversation Report" icon="images/tree/TreeDot.gif"/> 
+          <nxs:page target="ReportingForward.do?nxChoreographyId=${nxChoreographyId}" label="Reports" icon="images/icons/chart_curve.png">
+            <nxs:command target="ProcessConversationReport.do" label="Process Conversation Report" icon="images/icons/bullet_orange.png"/> 
           </nxs:page>
         </nxs:page>
       </nxs:page>
-      <nxs:page target="ReportingStatistics.do" label="Reporting" icon="images/tree/reports.gif">
-        <nxs:page target="ProcessConversationReport.do?command=first" label="Transaction Reporting" icon="images/tree/TreeDot.gif">
-          <nxs:command target="ProcessConversationReport.do" label="Process Conversation Report" icon="images/tree/TreeDot.gif"/> 
+      <nxs:page target="ReportingStatistics.do" label="Reporting" icon="images/icons/chart_curve.png">
+        <nxs:page target="ProcessConversationReport.do?command=first" label="Transaction Reporting" icon="images/icons/report.png">
+          <nxs:command target="ProcessConversationReport.do" label="Process Conversation Report" icon="images/icons/bullet_orange.png"/> 
         </nxs:page>
-        <nxs:page target="ProcessEngineLog.do" label="Engine Log" icon="images/tree/TreeDot.gif">
-          <nxs:command target="ProcessEngineLog.do?noReset=true" label="Process Engine Log" icon="images/tree/TreeDot.gif"/> 
+        <nxs:page target="ProcessEngineLog.do" label="Engine Log" icon="images/icons/server_chart.png">
+          <nxs:command target="ProcessEngineLog.do?noReset=true" label="Process Engine Log" icon="images/bullet_orange.png"/> 
         </nxs:page>
-        <nxs:page target="ReportingSettingsView.do" label="Settings" icon="images/tree/TreeDot.gif"/>
+        <nxs:page target="ReportingSettingsView.do" label="Settings" icon="images/icons/chart_curve_edit.png"/>
       </nxs:page>
     </nxs:page>
   </nxs:menu>

@@ -165,7 +165,7 @@
 		<tr>
 			<td>&nbsp;</td>
 			<td class="BUTTON_RIGHT"><nexus:submit>
-				<img src="images/submit.gif" name="SUBMIT">
+				<img src="images/icons/tick.png" name="SUBMIT">
 			</nexus:submit></td>
 			<td class="NexusHeaderLink">Accept</td>
 		</tr>

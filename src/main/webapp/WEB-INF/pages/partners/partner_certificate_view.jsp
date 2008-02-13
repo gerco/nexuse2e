@@ -113,8 +113,8 @@
                width="100%">
             <tr>
                 <td>&nbsp;</td>
-                <td class="NexusHeaderLink"><nexus:submit><img src="images/submit.gif" class="button" name="SUBMIT">Update</nexus:submit></td>
-                <td class="NexusHeaderLink"><nexus:link href="PartnerCertificateDelete.do?nxPartnerId=${partnerCertificateForm.nxPartnerId}&nxCertificateId=${partnerCertificateForm.nxCertificateId}" precondition="confirmDelete('Are you sure you want to delete this Certificate?')" styleClass="button"><img src="images/delete.gif" class="button">Delete</nexus:link></td>
+                <td class="NexusHeaderLink"><nexus:submit><img src="images/icons/tick.png" class="button" name="SUBMIT">Update</nexus:submit></td>
+                <td class="NexusHeaderLink"><nexus:link href="PartnerCertificateDelete.do?nxPartnerId=${partnerCertificateForm.nxPartnerId}&nxCertificateId=${partnerCertificateForm.nxCertificateId}" precondition="confirmDelete('Are you sure you want to delete this Certificate?')" styleClass="button"><img src="images/icons/delete.png" class="button">Delete</nexus:link></td>
             </tr>
         </table>
         

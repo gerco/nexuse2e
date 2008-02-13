@@ -21,7 +21,7 @@
 	<tr>
 		<td class="NEXUSIcon"><nexus:link styleClass="NexusImgLink"
 			href="UserMaintenance.do">
-			<img border="0" src="images/tree/users_g.gif">
+			<img border="0" src="images/icons/user.png">
 		</nexus:link></td>
 		<td class="NEXUSNameNoWidth"><nexus:link styleClass="NexusLink"
 			href="UserMaintenance.do">User Maintenance</nexus:link></td>
@@ -29,7 +29,7 @@
 	<tr>
 		<td class="NEXUSIcon"><nexus:link styleClass="NexusImgLink"
 			href="ServerIdentities.do">
-			<img border="0" src="images/tree/reports_g.gif">
+			<img border="0" src="images/icons/server.png">
 		</nexus:link></td>
 		<td class="NEXUSNameNoWidth"><nexus:link styleClass="NexusLink"
 			href="ServerIdentities.do">Server Identities</nexus:link></td>
@@ -37,7 +37,7 @@
 	<tr>
 		<td class="NEXUSIcon"><nexus:link styleClass="NexusImgLink"
 			href="Components.do">
-			<img border="0" src="images/tree/components_g.gif">
+			<img border="0" src="images/icons/brick.png">
 		</nexus:link></td>
 		<td class="NEXUSNameNoWidth"><nexus:link styleClass="NexusLink"
 			href="Components.do">Components</nexus:link></td>
@@ -45,7 +45,7 @@
 	<tr>
 		<td class="NEXUSIcon"><nexus:link styleClass="NexusImgLink"
 			href="BackendPipelines.do">
-			<img border="0" src="images/tree/components_g.gif">
+			<img border="0" src="images/icons/bricks.png">
 		</nexus:link></td>
 		<td class="NEXUSNameNoWidth"><nexus:link styleClass="NexusLink"
 			href="BackendPipelines.do">Backend Pipelines</nexus:link></td>
@@ -53,7 +53,7 @@
 	<tr>
 		<td class="NEXUSIcon"><nexus:link styleClass="NexusImgLink"
 			href="FrontendPipelines.do">
-			<img border="0" src="images/tree/components_g.gif">
+			<img border="0" src="images/icons/bricks.png">
 		</nexus:link></td>
 		<td class="NEXUSNameNoWidth"><nexus:link styleClass="NexusLink"
 			href="FrontendPipelines.do">Frontend Pipelines</nexus:link></td>
@@ -61,7 +61,7 @@
 	<tr>
 		<td class="NEXUSIcon"><nexus:link styleClass="NexusImgLink"
 			href="ServiceList.do">
-			<img border="0" src="images/tree/components_g.gif">
+			<img border="0" src="images/icons/cog.png">
 		</nexus:link></td>
 		<td class="NEXUSNameNoWidth"><nexus:link styleClass="NexusLink"
 			href="ServiceList.do">Services</nexus:link></td>
@@ -69,7 +69,7 @@
 	<tr>
 		<td class="NEXUSIcon"><nexus:link styleClass="NexusImgLink"
 			href="NotifierList.do">
-			<img border="0" src="images/tree/components_g.gif">
+			<img border="0" src="images/icons/transmit_blue.png">
 		</nexus:link></td>
 		<td class="NEXUSNameNoWidth"><nexus:link styleClass="NexusLink"
 			href="NotifierList.do">Logger</nexus:link></td>
@@ -77,7 +77,7 @@
 	<tr>
 		<td class="NEXUSIcon"><nexus:link styleClass="NexusImgLink"
 			href="Certificates.do">
-			<img border="0" src="images/tree/components_g.gif">
+			<img border="0" src="images/icons/medal_silver_3.png">
 		</nexus:link></td>
 		<td class="NEXUSNameNoWidth"><nexus:link styleClass="NexusLink"
 			href="Certificates.do">Certificates</nexus:link></td>
@@ -85,7 +85,7 @@
 	<tr>
 		<td class="NEXUSIcon"><nexus:link styleClass="NexusImgLink"
 			href="CACertificatesList.do">
-			<img border="0" src="images/tree/components_g.gif">
+			<img border="0" src="images/icons/medal_gold_3.png">
 		</nexus:link></td>
 		<td class="NEXUSNameNoWidth"><nexus:link styleClass="NexusLink"
 			href="CACertificatesList.do">Certificate Authority Certificates</nexus:link></td>

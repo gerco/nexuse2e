@@ -42,7 +42,7 @@
 				&nbsp;
 			</td>
 	    <td class="NexusHeaderLink" style="text-align: right;">
-				<nexus:link href="RoleAdd.do" styleClass="button"><img src="images/tree/plus.gif" class="button">Add Role</nexus:link>
+				<nexus:link href="RoleAdd.do" styleClass="button"><img src="images/icons/add.png" class="button">Add Role</nexus:link>
 			</td>
 	</tr>
 </table>

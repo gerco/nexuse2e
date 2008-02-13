@@ -41,7 +41,7 @@
             <tr>
                 <td>&nbsp;</td>
                 <td class="BUTTON_RIGHT"><nexus:link href="ParticipantAdd.do?nxChoreographyId=${choreographyForm.nxChoreographyId}"
-                   styleClass="button"><img src="images/tree/plus.gif" border="0" alt="" class="button">Add Participant</nexus:link></td>
+                   styleClass="button"><img src="images/icons/add.png" border="0" alt="" class="button">Add Participant</nexus:link></td>
             </tr>
         </table>
     </center>

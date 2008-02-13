@@ -269,6 +269,9 @@
 			<td class="NEXUSValue" align="left"><html:select
 				onchange="javascript: scriptScope.disableLinks();"
 				property="startYear">
+                <html:option value="2012" />
+                <html:option value="2011" />
+                <html:option value="2010" />
 				<html:option value="2009" />
 				<html:option value="2008" />
 				<html:option value="2007" />
@@ -366,6 +369,9 @@
 			<td class="NEXUSValue" align="left"><html:select
 				onchange="javascript: scriptScope.disableLinks();"
 				property="endYear">
+                <html:option value="2012" />
+                <html:option value="2011" />
+                <html:option value="2010" />
 				<html:option value="2009" />
 				<html:option value="2008" />
 				<html:option value="2007" />
@@ -462,23 +468,23 @@
 
 	<table class="NEXUS_BUTTON_TABLE" width="100%">
 		<tr>
-			<td class="BUTTON_LEFT"><nobr><a class="NexusHeaderLink"
+			<td class="BUTTON_LEFT"><nobr><a class="button"
 				href="#"
 				onclick="javascript: scriptScope.Clear(); scriptScope.disableLinks();"><img
-				src="images/reset.gif" name="clearButton" class="button">Reset
+				src="images/icons/arrow_rotate_anticlockwise.png" name="clearButton" class="button">Reset
 			Fields</a></nobr></td>
-			<td width="100%">
+			<td class="button" width="100%">
 			<center><logic:equal name="reportingPropertiesForm"
 				property="firstActive" value="true">
 				<nexus:submit id="startLink"
 					onClick="document.forms['reportingPropertiesForm'].command.value='first';"
-					styleClass="NexusLink">Start</nexus:submit>
+					styleClass="NexusHeaderLink">Start</nexus:submit>
 			</logic:equal> <logic:equal name="reportingPropertiesForm" property="firstActive"
 				value="false">Start</logic:equal> | <logic:equal
 				name="reportingPropertiesForm" property="prevActive" value="true">
 				<nexus:submit id="previousLink"
 					onClick="document.forms['reportingPropertiesForm'].command.value='back';"
-					styleClass="NexusLink">Previous</nexus:submit>
+					styleClass="NexusHeaderLink">Previous</nexus:submit>
 			</logic:equal> <logic:equal name="reportingPropertiesForm" property="prevActive"
 				value="false">Previous</logic:equal> | <bean:write
 				name="reportingPropertiesForm" property="startCount" /> - <bean:write
@@ -487,20 +493,20 @@
 				name="reportingPropertiesForm" property="nextActive" value="true">
 				<nexus:submit id="nextLink"
 					onClick="document.forms['reportingPropertiesForm'].command.value='next';"
-					styleClass="NexusLink">Next</nexus:submit>
+					styleClass="NexusHeaderLink">Next</nexus:submit>
 			</logic:equal> <logic:equal name="reportingPropertiesForm" property="nextActive"
 				value="false">Next</logic:equal> | <logic:equal
 				name="reportingPropertiesForm" property="lastActive" value="true">
 				<nexus:submit id="endLink"
 					onClick="document.forms['reportingPropertiesForm'].command.value='last';"
-					styleClass="NexusLink">End</nexus:submit>
+					styleClass="NexusHeaderLink">End</nexus:submit>
 			</logic:equal> <logic:equal name="reportingPropertiesForm" property="lastActive"
 				value="false">End</logic:equal></center>
 			</td>
 			<td class="BUTTON_RIGHT">
 				<nobr>
 					<nexus:submit onClick="javascript: document.forms['reportingPropertiesForm'].command.value='first'; scriptScope.enableLinks();">
-						<img src="images/submit.gif" name="resultsButton" class="button" />Refresh Results
+						<img src="images/icons/tick.png" name="resultsButton" class="button" />Refresh Results
 					</nexus:submit>
 				</nobr>
 			</td>
@@ -606,11 +612,11 @@
 						all</a></td>
 						<td class="BUTTON_RIGHT"><nobr><nexus:submit
 							onClick="document.forms['reportingPropertiesForm'].command.value='requeue';">
-							<img src="images/submit.gif" name="clearButton" class="button">
+							<img src="images/icons/tick.png" name="clearButton" class="button">
 							Re-Queue</nexus:submit></nobr></td>
 						<td class="BUTTON_RIGHT"><nobr><nexus:submit
 							onClick="document.forms['reportingPropertiesForm'].command.value='stop';">
-							<img src="images/reset.gif" name="clearButton" class="button">
+							<img src="images/icons/arrow_rotate_anticlockwise.png" name="clearButton" class="button">
 							Stop</nexus:submit></nobr></td>
 					</tr>
 				</table>
@@ -709,7 +715,7 @@
 						</a></td>
 						<td  class="BUTTON_RIGHT"><nexus:submit
 							onClick="document.forms['reportingPropertiesForm'].command.value='delete';">
-							<img src="images/reset.gif" name="clearButton" class="button">
+							<img src="images/icons/delete.png" name="clearButton" class="button">
 						Delete</nexus:submit></td>
 					</tr>
 				</table>

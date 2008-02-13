@@ -58,7 +58,7 @@ window.open('<bean:write name="redirectUrl"/>','Save as...')
 		<td>&nbsp;</td>
 		<td class="BUTTON_RIGHT" style="text-align: right;"><nexus:link
 			href="StagingImportCertificate.do" styleClass="button">
-			<image src="images/submit.gif" class="button" />Import Certificate</nexus:link></td>
+			<image src="images/icons/tick.png" class="button" />Import Certificate</nexus:link></td>
 	</tr>
 
 </table>

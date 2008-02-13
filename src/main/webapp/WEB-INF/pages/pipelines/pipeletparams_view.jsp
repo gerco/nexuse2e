@@ -83,12 +83,12 @@
 							<c:choose>
 								<c:when test="${parameter.label != null}">
 									<nexus:submit onClick="javascript:document.forms['pipelineForm'].paramName.value='${parameter.paramName}';document.forms['pipelineForm'].actionNxId.value=${parameter.sequenceNumber};document.forms['pipelineForm'].submitaction.value='delete';">
-										<img src="images/delete.gif" name="delete" class="button">
+										<img src="images/icons/delete.png" name="delete" class="button">
 									</nexus:submit>
  								</c:when>
  								<c:otherwise>
  									<nexus:submit onClick="javascript:document.forms['pipelineForm'].paramName.value='${parameter.paramName}';document.forms['pipelineForm'].submitaction.value='add';">
-										<img src="images/submit.gif" name="add" class="button">
+										<img src="images/icons/tick.png" name="add" class="button">
 									</nexus:submit>${parameter.parameterDescriptor.description}
  								</c:otherwise>
 							</c:choose>
@@ -152,10 +152,10 @@
 			<td class="NexusHeaderLink" style="text-align: right;"><nexus:submit
 				onClick="javascript:document.forms['pipelineForm'].submitaction.value='update';"
 				styleClass="button">
-				<img src="images/submit.gif" class="button">Save</nexus:submit></td>
+				<img src="images/icons/tick.png" class="button">Save</nexus:submit></td>
 			<td class="NexusHeaderLink" style="text-align: right;"><nexus:submit
 				onClick="javascript:document.forms['pipelineForm'].submitaction.value='back';">
-				<img src="images/delete.gif" class="button">Cancel</nexus:submit></td>
+				<img src="images/icons/delete.png" class="button">Cancel</nexus:submit></td>
 		</tr>
 	</table>
 </html:form>

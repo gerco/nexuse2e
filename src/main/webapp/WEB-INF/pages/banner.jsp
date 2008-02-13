@@ -1,3 +1,3 @@
 <p style="color:#ffffff;font-size:20pt">
-<%@ include file="../config/machine_name.txt" %>
+<%@ include file="../config/machine_name.txt" %>&nbsp;&nbsp;
 </p>

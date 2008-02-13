@@ -125,7 +125,7 @@
 			<html:hidden property="actionName" value="promote"/>
 			</td>
 			<td class="NexusHeaderLink" width="100%"><nexus:submit>
-			<img src="images/submit.gif" name="SUBMIT" class="button">Promote Certificate</nexus:submit>
+			<img src="images/icons/tick.png" name="SUBMIT" class="button">Promote Certificate</nexus:submit>
 			</td></tr>
 		</table>
 		</html:form>
@@ -134,9 +134,9 @@
         <table class="NEXUS_BUTTON_TABLE" width="100%">
             <tr>
                 <td class="BUTTON_RIGHT"><nexus:link href="StagingExportCertificate.do?nxCertificateId=${seqNo}" styleClass="NexusHeaderLink">
-                <nobr><img src="images/submit.gif" class="button"/>Export this Certificate</nexus:link></nobr></td>
+                <nobr><img src="images/icons/disk.png" class="button"/>Export this Certificate</nexus:link></nobr></td>
                 <td class="BUTTON_RIGHT"><nexus:link href="StagingDeleteCertificate.do?nxCertificateId=${seqNo}" styleClass="NexusHeaderLink">
-                <nobr><img src="images/delete.gif" class="button"/>Delete this Certificate</nexus:link></nobr></td>
+                <nobr><img src="images/icons/delete.png" class="button"/>Delete this Certificate</nexus:link></nobr></td>
             </tr>
         </table>
     </center>

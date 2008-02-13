@@ -44,8 +44,8 @@
 	<table class="NEXUS_BUTTON_TABLE" width="100%">
 		<tr>
 			<td class="BUTTON_RIGHT"><input name="Submit" value="blank"
-				src="images/submit.gif" type="hidden"> <input
-				src="images/submit.gif" name="SubmitButton" value="Submit"
+				src="images/icons/tick.png" type="hidden"> <input
+				src="images/icons/tick.png" name="SubmitButton" value="Submit"
 				type="image" onClick="setSubmitValue( 'Submit' )"></td>
 
 			<td class="NexusHeaderLink">Execute</td>

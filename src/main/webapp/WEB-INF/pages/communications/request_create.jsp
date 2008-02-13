@@ -75,7 +75,7 @@
                 <tr>
                     <td>&nbsp;</td>
                     <td class="NexusHeaderLink" style="text-align: right;">
-                    	<nexus:submit><img src="images/submit.gif" class="button">Create Request</nexus:submit>
+                    	<nexus:submit><img src="images/icons/tick.png" class="button">Create Request</nexus:submit>
                     </td>
                 </tr>
             </table>

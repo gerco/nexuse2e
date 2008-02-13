@@ -41,7 +41,7 @@
           &nbsp;
         </td>
         <td class="NexusHeaderLink" style="text-align: right;">
- 	  	    <nexus:link href="PipelineAdd.do?frontend=${pipeline.frontend}" styleClass="button"><img src="images/tree/plus.gif" class="button">Add Pipeline</nexus:link>
+ 	  	    <nexus:link href="PipelineAdd.do?frontend=${pipeline.frontend}" styleClass="button"><img src="images/icons/add.png" class="button">Add Pipeline</nexus:link>
         </td>
       </tr>
     </table>

@@ -56,7 +56,7 @@
           &nbsp;
         </td>
         <td class="BUTTON_RIGHT" style="text-align: right;">
-          <nexus:link href="PartnerConnectionAdd.do?partnerId=${collaborationPartnerForm.partnerId}" styleClass="button"><img src="images/tree/plus.gif" class="button">Add Connection</nexus:link>
+          <nexus:link href="PartnerConnectionAdd.do?partnerId=${collaborationPartnerForm.partnerId}" styleClass="button"><img src="images/icons/add.png" class="button">Add Connection</nexus:link>
         </td>
       </tr>
     </table>

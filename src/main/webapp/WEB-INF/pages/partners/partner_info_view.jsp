@@ -95,7 +95,7 @@
 					property="choreographies">
 					<tr>
 						<td class="NEXUSIcon"><img
-							src="images/tree/businessprocesses_g.gif" alts=""></td>
+							src="images/icons/arrow_switch.png" alts=""></td>
 						<td class="NEXUSNameNoWidth"><nexus:link
 							href="ChoreographyView.do?choreographyName=${choreography}"
 							styleClass="NexusLink">
@@ -119,18 +119,18 @@
 			<td>&nbsp;</td>
 			<td class="NexusHeaderLink" style="text-align: right;"><nexus:submit
 				styleClass="button">
-				<img src="images/submit.gif" class="button">Save</nexus:submit></td>
+				<img src="images/icons/tick.png" class="button">Save</nexus:submit></td>
         <logic:equal name="collaborationPartnerForm" property="type" value="1">
             <td class="NexusHeaderLink" style="text-align: right;"><nexus:link
                 href="ServerIdentityDelete.do?nxPartnerId=${collaborationPartnerForm.nxPartnerId}"
                 styleClass="button">
-                <img src="images/delete.gif" class="button">Delete</nexus:link></td>
+                <img src="images/icons/delete.png" class="button">Delete</nexus:link></td>
         </logic:equal>
         <logic:notEqual name="collaborationPartnerForm" property="type" value="1">
             <td class="NexusHeaderLink" style="text-align: right;"><nexus:link
                 href="CollaborationPartnerDelete.do?nxPartnerId=${collaborationPartnerForm.nxPartnerId}"
                 styleClass="button">
-                <img src="images/delete.gif" class="button">Delete</nexus:link></td>
+                <img src="images/icons/delete.png" class="button">Delete</nexus:link></td>
         </logic:notEqual>
 		</tr>
 	</table>

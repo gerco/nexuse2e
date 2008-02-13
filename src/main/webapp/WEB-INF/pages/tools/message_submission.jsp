@@ -104,7 +104,7 @@
 				type="hidden"> <nexus:submit
 				onClick="document.messageSubmissionForm.Submit.value='Submit';"
 				sendFileForm="true" styleClass="button">
-				<img src="images/submit.gif" name="SubmitButton" class="button">Execute</nexus:submit>
+				<img src="images/icons/tick.png" name="SubmitButton" class="button">Execute</nexus:submit>
 			</td>
 		</tr>
 	</table>

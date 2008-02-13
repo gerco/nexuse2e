@@ -138,7 +138,7 @@
 						<tr>
 							<td class="NEXUSValue" colspan="2"><nexus:submit
 								onClick="javascript:document.forms['pipelineForm'].paramName.value='${parameter.paramName}';document.forms['pipelineForm'].submitaction.value='add';">
-								<img src="images/submit.gif" name="add">
+								<img src="images/icons/tick.png" name="add">
 							</nexus:submit>${parameter.name}</td>
 
 							<td class="NEXUSValue">${parameter.parameterDescriptor.description}</td>
@@ -151,7 +151,7 @@
 						<tr>
 							<td class="NEXUSValue"><nexus:submit
 								onClick="javascript:document.forms['pipelineForm'].paramName.value='${parameter.paramName}';document.forms['pipelineForm'].actionNxId.value=${parameter.sequenceNumber};document.forms['pipelineForm'].submitaction.value='delete';">
-								<img src="images/submit.gif" name="delete">
+								<img src="images/icons/tick.png" name="delete">
 							</nexus:submit> ${parameter.label}</td>
 							<td class="NEXUSValue"><html:text property="${valueKey}"
 								size="30" /></td>
@@ -215,12 +215,12 @@
 			<td class="NexusHeaderLink" style="text-align: right;"><nexus:submit
 				onClick="document.forms['loggerForm'].submitted.value='true';"
 				styleClass="button">
-				<img src="images/submit.gif" class="button">Save</nexus:submit></td>
+				<img src="images/icons/tick.png" class="button">Save</nexus:submit></td>
 			<logic:notEqual name="loggerForm" property="nxLoggerId" value="0">
 				<td class="NexusHeaderLink" style="text-align: right;"><nexus:link
 					href="NotifierDelete.do?nxLoggerId=${loggerForm.nxLoggerId}"
 					styleClass="button">
-					<img src="images/delete.gif" class="button">Delete</nexus:link></td>
+					<img src="images/icons/delete.png" class="button">Delete</nexus:link></td>
 			</logic:notEqual>
 		</tr>
 	</table>

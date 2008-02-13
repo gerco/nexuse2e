@@ -44,6 +44,6 @@
         <tr>
             <td>&nbsp;</td>
             <td class="BUTTON_RIGHT"><nexus:link href="ActionAdd.do?nxChoreographyId=${nxChoreographyId}" styleClass="NexusHeaderLink">
-              <img src="images/tree/plus.gif" border="0" alt="" class="button">Add Action</nexus:link></td>
+              <img src="images/icons/add.png" border="0" alt="" class="button">Add Action</nexus:link></td>
         </tr>
     </table>

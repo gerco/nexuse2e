@@ -28,6 +28,7 @@ a:active {
 a:hover {
 	color: #000000;
 	text-decoration: none
+    font-style: italic;
 }
 
 form {
@@ -38,14 +39,14 @@ form {
 	position: absolute;
 	top: 0px;
 	left: 0px;
-	background-color: #80C050;
+	background-color: #F0CD90;
 	height: 80px;
 	width: 100%;
 	text-align: right;
 	vertical-align: bottom;
 	color: #FFFFFF;
 	font-weight: bold;
-	background-image: url(../images/strip.jpg);
+	background-image: url(../images/nexuse2e_banner.png);
 	background-repeat: no-repeat;
 	background-position: 0px 0px;
 }
@@ -73,21 +74,21 @@ form {
 
 div.helpBar {
 	text-align: right;
-	padding-top: 5px;
+	padding-top: 2px;
 	padding-right: 10px;
-	padding-bottom: 5px;
-	margin-bottom: 10px;
-	background-color: #000080;
-	color: #A0D13A;
+	padding-bottom: 2px;
+	margin-bottom: 5px;
+	background-color: #FFFFFF;
+	color: #E56009;
 }
 
 a.helpBar {
 	font-weight: bold;
-	color: #A0D13A;
+	color: #E56009;
 }
 
 a.helpBar:visited {
-	color: #A0D13A;
+	color: #E56009;
 }
 
 img.helpBar {
@@ -105,7 +106,7 @@ img.button {
 
 a.button {
 	text-decoration: none;
-	color: #000080;
+	color: #E56009;
 	font-weight: bold;
 	font-style: oblique;
 }
@@ -135,7 +136,7 @@ TABLE.NEXUS_TABLE {
 
 TABLE.NEXUS_BUTTON_TABLE {
 	background: #FFFFFF;
-	color: #000080;
+	color: #E56009;
 }
 
 TD {
@@ -229,17 +230,17 @@ TD.BUTTON_RIGHT {
 }
 
 .NEXUSScreenName {
-	background: #DDDDDD;
+	background: #EEEEEE;
 	font-size: 12pt;
 	font-weight: bold;
 	font-family: arial;
-	color: #000080;
+	color: #E56009;
 	font-style: oblique;
 	white-space: nowrap;
 }
 
 .NEXUSScreenPath {
-	background: #EEEEEE;
+	background: #F8F8F8;
 	font-size: 10pt;
 	font-weight: bold;
 	font-family: arial;
@@ -254,6 +255,7 @@ TD.BUTTON_RIGHT {
 	font-weight: bold;
 	font-family: arial;
 	color: #000000;
+    background: #F0F0F0;
 	font-style: oblique;
 }
 
@@ -276,30 +278,30 @@ TD.BUTTON_RIGHT {
 }
 
 .NEXUSSection {
-	background: #CCCCCC;
+	background: #E0E0E0;
 	font-weight: bold;
 	white-space: nowrap;
 }
 
 .NEXUSName {
-	background: #DDDDDD;
+	background: #E8E8E8;
 	width: 25%;
 	white-space: nowrap;
 }
 
 .NEXUSNameNoWidth {
-	background: #DDDDDD;
+	background: #E8E8E8;
 	white-space: nowrap;
 }
 
 .NEXUSIcon {
-	background: #DDDDDD;
+	background: #E8E8E8;
 	white-space: nowrap;
 	width: 24px;
 }
 
 .NEXUSValue {
-	background: #DDDDDD;
+	background: #E8E8E8;
 	color: #000000;
 	white-space: nowrap;
 }
@@ -311,21 +313,25 @@ TD.BUTTON_RIGHT {
 }
 
 .NEXUSValueDisabled {
-	background: #DDDDDD;
+	background: #E8E8E8;
 	color: #aaaaaa;
 	white-space: nowrap;
 }
 
-.NexusHeaderLink {
+a.NexusHeaderLink {
 	text-decoration: none;
-	color: #000080;
+	color: #E56009;
 	font-weight: bold;
-	font-style: oblique;
+	font-style: normal;
 	width: 140px;
 }
 
+a.NexusHeaderLink:hover {
+    font-style: oblique;
+}
+
 .NexusLink:link {
-    background-image: url(../images/link.gif);
+    background-image: url(../images/icons/bullet_orange.png);
     background-repeat: no-repeat;
 	text-decoration: underline;
 	border-width: 0pt;
@@ -356,7 +362,7 @@ TD.BUTTON_RIGHT {
 	text-decoration: none;
 	border-width: 0pt;
 	font-family: verdana, garamond;
-	color: #000080;
+	color: #E56009;
 	font-size: 10pt;
 	padding-top: 1pt;
 	padding-bottom: 1pt;
@@ -368,7 +374,7 @@ TD.BUTTON_RIGHT {
 	text-decoration: underline;
 	font-family: verdana, garamond;
 	font-size: 10pt;
-	color: #000080;
+	color: #E56009;
 	border-width: 0pt;
 	padding-top: 1pt;
 	padding-bottom: 1pt;
@@ -378,7 +384,7 @@ TD.BUTTON_RIGHT {
 
 .NexusDrillDownLink {
 	text-decoration: none;
-	color: #000080;
+	color: #E56009;
 	font-style: oblique;
 	font-family: verdana, garamond;
 	font-size: 10pt;
@@ -386,7 +392,7 @@ TD.BUTTON_RIGHT {
 
 .NexusDrillDownLink:HOVER {
 	text-decoration: underline;
-	color: #000080;
+	color: #E56009;
 	font-family: verdana, garamond;
 	font-size: 10pt;
 	font-style: oblique;

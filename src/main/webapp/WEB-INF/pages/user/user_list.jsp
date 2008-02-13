@@ -56,7 +56,7 @@
 				&nbsp;
 			</td>
 	    <td class="NexusHeaderLink" style="text-align: right;">
-				<nexus:link href="UserAdd.do" styleClass="button"><img src="images/tree/plus.gif" class="button">Add User</nexus:link>
+				<nexus:link href="UserAdd.do" styleClass="button"><img src="images/icons/add.png" class="button">Add User</nexus:link>
 			</td>
 	</tr>
 </table>

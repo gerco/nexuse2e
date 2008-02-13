@@ -86,7 +86,7 @@
         <table width="100%">
       		<tr>
                 <td class="BUTTON_RIGHT">
-                <nobr><nexus:link href="ProcessConversationReport.do?noReset=true"><img src="images/back.gif" name="resultsButton" class="button"/>Back</nexus:link></nobr></td>
+                <nobr><nexus:link href="ProcessConversationReport.do?noReset=true" styleClass="NexusHeaderLink"><img src="images/icons/resultset_previous.png" name="resultsButton" class="button"/>Back</nexus:link></nobr></td>
             </tr>
         </table>
     </center>

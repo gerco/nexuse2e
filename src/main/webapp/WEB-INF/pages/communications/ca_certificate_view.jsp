@@ -91,7 +91,7 @@
                 <tr>
                     <td>&nbsp;</td>
                     <td class="BUTTON_RIGHT">
-                    	<nexus:submit precondition="confirmDelete('Are you sure you want to delete this Certificate?')"><img src="images/submit.gif" class="button">Delete</nexus:submit>
+                    	<nexus:submit precondition="confirmDelete('Are you sure you want to delete this Certificate?')"><img src="images/icons/tick.png" class="button">Delete</nexus:submit>
                     </td>
                 </tr>
             </table>

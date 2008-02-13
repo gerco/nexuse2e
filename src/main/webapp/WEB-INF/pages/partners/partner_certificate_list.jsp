@@ -89,7 +89,7 @@
 			<nexus:link
 				href="PartnerCertificateAdd.do?partnerId=${collaborationPartnerForm.partnerId}"
 				styleClass="button">
-				<img src="images/tree/plus.gif" class="button">Add Certificate</nexus:link>
+				<img src="images/icons/add.png" class="button">Add Certificate</nexus:link>
 		</logic:equal></td>
 	</tr>
 </table>

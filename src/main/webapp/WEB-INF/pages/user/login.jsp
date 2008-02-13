@@ -38,7 +38,7 @@
 		</td>
 		<td><input type="submit" style="display: none;"> <a
 			href="#" onClick="document.forms['loginForm'].submit();"
-			class="button"><img src="images/submit.gif" class="button">Log
+			class="button"><img src="images/icons/tick.png" class="button">Log
 		in</a></td>
 	</tr>
 </table>

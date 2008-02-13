@@ -86,12 +86,12 @@
 			<td class="NexusHeaderLink"><nexus:submit
 				onClick="document.forms['participantForm'].submitted.value=true;"
 				styleClass="button">
-				<img src="images/submit.gif" name="SUBMIT" class="button">Update</nexus:submit></td>
+				<img src="images/icons/tick.png" name="SUBMIT" class="button">Update</nexus:submit></td>
 			<td class="NexusHeaderLink"><nexus:link
 				href="ParticipantDelete.do?nxChoreographyId=${participantForm.nxChoreographyId}&nxPartnerId=${participantForm.nxPartnerId}"
 				precondition="confirmDelete('Are you sure you want to delete this Participant?')"
 				styleClass="button">
-				<img src="images/delete.gif" class="button">Delete</nexus:link></td>
+				<img src="images/icons/delete.png" class="button">Delete</nexus:link></td>
 		</tr>
 	</table>
 </html:form></center>

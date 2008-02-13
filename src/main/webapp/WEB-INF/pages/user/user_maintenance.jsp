@@ -21,7 +21,7 @@
 	<tr>
 		<td class="NEXUSIcon"><nexus:link styleClass="NexusImgLink"
 			href="UserList.do">
-			<img border="0" src="images/tree/users_g.gif">
+			<img border="0" src="images/icons/user.png">
 		</nexus:link></td>
 		<td class="NEXUSNameNoWidth"><nexus:link styleClass="NexusLink"
 			href="UserList.do">Users</nexus:link></td>
@@ -29,7 +29,7 @@
 	<tr>
 		<td class="NEXUSIcon"><nexus:link styleClass="NexusImgLink"
 			href="RoleList.do">
-			<img border="0" src="images/tree/ssl_g.gif">
+			<img border="0" src="images/icons/group_link.png">
 		</nexus:link></td>
 		<td class="NEXUSNameNoWidth"><nexus:link styleClass="NexusLink"
 			href="RoleList.do">Roles</nexus:link></td>

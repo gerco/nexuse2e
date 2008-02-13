@@ -85,7 +85,7 @@
 			<td>&nbsp;</td>
 			<td class="NexusHeaderLink" style="text-align: right;"><nexus:submit
 				precondition="true /*commPartnerCheckFields()*/" styleClass="button">
-				<img src="images/submit.gif" class="button">Save</nexus:submit></td>
+				<img src="images/icons/tick.png" class="button">Save</nexus:submit></td>
 		</tr>
 	</table>
 </html:form>

@@ -91,11 +91,11 @@
 
 	<table class="NEXUS_BUTTON_TABLE" width="100%">
 		<tr>
-			<td class="BUTTON_RIGHT"><nobr><nexus:submit form="document.forms[0]"><img src="images/submit.gif" class="button">Update</nexus:submit></nobr><nobr></td>
+			<td class="BUTTON_RIGHT"><nobr><nexus:submit form="document.forms[0]"><img src="images/icons/tick.png" class="button">Update</nexus:submit></nobr><nobr></td>
 
 			<td class="BUTTON_RIGHT">
 				<nobr>
-				<nexus:submit onClick="document.forms[0].action='ActionDelete.do'; document.forms[0].nxChoreographyId=${choreographyActionForm.nxChoreographyId}; document.forms[0].nxActionId=${choreographyActionForm.nxActionId};" precondition="confirmDelete('Are you sure you want to delete this Action?')" form="document.forms[0]"><img src="images/submit.gif" class="button">Delete</nexus:submit>
+				<nexus:submit onClick="document.forms[0].action='ActionDelete.do'; document.forms[0].nxChoreographyId=${choreographyActionForm.nxChoreographyId}; document.forms[0].nxActionId=${choreographyActionForm.nxActionId};" precondition="confirmDelete('Are you sure you want to delete this Action?')" form="document.forms[0]"><img src="images/icons/delete.png" class="button">Delete</nexus:submit>
 				</nobr>
 			</td>
 		</tr>

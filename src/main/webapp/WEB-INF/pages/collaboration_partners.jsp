@@ -45,7 +45,7 @@
       &nbsp;
     </td>
     <td class="NexusHeaderLink">
-      <nexus:link href="CollaborationPartnerAdd.do?type=${TYPE}" styleClass="button"><span style="white-space: nowrap;"><img src="images/tree/plus.gif" class="button"><bean:write name="BUTTONTEXT"/></span></nexus:link>
+      <nexus:link href="CollaborationPartnerAdd.do?type=${TYPE}" styleClass="button"><span style="white-space: nowrap;"><img src="images/icons/add.png" class="button"><bean:write name="BUTTONTEXT"/></span></nexus:link>
     </td>
   </tr>
 </table>

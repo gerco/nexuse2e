@@ -61,11 +61,11 @@
               &nbsp;
             </td>
             <td class="NexusHeaderLink" style="text-align: right;">
-              <nexus:submit styleClass="button"><img src="images/submit.gif" class="button">Save</nexus:submit>
+              <nexus:submit styleClass="button"><img src="images/icons/tick.png" class="button">Save</nexus:submit>
             </td>
           <logic:notEqual name="componentForm" property="nxComponentId" value="0">
             <td class="NexusHeaderLink" style="text-align: right;">
-              <nexus:link href="ComponentDelete.do?nxComponentId=${componentForm.nxComponentId}" styleClass="button"><img src="images/delete.gif" class="button">Delete</nexus:link>
+              <nexus:link href="ComponentDelete.do?nxComponentId=${componentForm.nxComponentId}" styleClass="button"><img src="images/icons/delete.png" class="button">Delete</nexus:link>
             </td>
           </logic:notEqual>
           </tr>

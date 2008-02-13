@@ -37,7 +37,7 @@
 				precondition="confirm('Your current configuration will be replaced by the imported one.\nPlease create a backup of your configuration before proceeding. Confirm to proceed now.')"
 				onClick="document.configurationManagementForm.Submit.value='Submit';"
 				sendFileForm="true" styleClass="button">
-				<img src="images/submit.gif" name="ExportButton" class="button">Import</nexus:submit>
+				<img src="images/icons/tick.png" name="ExportButton" class="button">Import</nexus:submit>
 			</td>
 		</tr>
 	</table>
@@ -55,7 +55,7 @@
 		<tr>
 			<td class="BUTTON_RIGHT"><input name="Submit" value="blank"
 				type="hidden"><nobr><a href="ExportConfiguration.do" class="button">
-				<img src="images/submit.gif" name="ImportButton" class="button">Export</a>
+				<img src="images/icons/disk.png" name="ImportButton" class="button">Export</a>
 				</nobr>
 			</td>
 		</tr>

@@ -15,7 +15,7 @@
 	<tr>
 		<td class="NEXUSIcon"><nexus:link styleClass="NexusImgLink"
 			href="RequestOverview.do">
-			<img border="0" src="images/tree/importexport_g.gif">
+			<img border="0" src="images/icons/medal_silver_add.png">
 		</nexus:link></td>
 		<td class="NEXUSNameNoWidth"><nexus:link styleClass="NexusLink"
 			href="RequestOverview.do">Certificate Request</nexus:link></td>
@@ -23,7 +23,7 @@
 	<tr>
 		<td class="NEXUSIcon"><nexus:link styleClass="NexusImgLink"
 			href="StagingList.do">
-			<img border="0" src="images/tree/ssl_g.gif">
+			<img border="0" src="images/icons/medal_silver_3.png">
 		</nexus:link></td>
 		<td class="NEXUSNameNoWidth"><nexus:link styleClass="NexusLink"
 			href="StagingList.do">Certificate Staging</nexus:link></td>

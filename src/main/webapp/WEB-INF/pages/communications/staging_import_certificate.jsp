@@ -44,7 +44,7 @@
 			<td>&nbsp;</td>
 			<td class="NexusHeaderLink" style="text-align: right;"><nexus:submit
 				sendFileForm="true" styleClass="button">
-				<img src="images/submit.gif" class="button">Import</nexus:submit></td>
+				<img src="images/icons/tick.png" class="button">Import</nexus:submit></td>
 		</tr>
 	</table>
 </html:form></center>

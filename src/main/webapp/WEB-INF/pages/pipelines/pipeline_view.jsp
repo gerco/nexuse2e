@@ -91,30 +91,30 @@
 				<logic:greaterThan name="index" value="0">
 				  <nexus:submit
 					onClick="document.forms[0].sortaction.value=${index};document.forms[0].submitaction.value='sort';document.forms['pipelineForm'].sortingDirection.value=1;">
-					<img src="images/arrow_up.gif" class="button" alt="Move up"
+					<img src="images/icons/bullet_arrow_up.png" class="button" alt="Move up"
 						id="moveUp"><span dojoType="tooltip" connectId="moveUp" toggle="explode">Move up</span>
 				</nexus:submit></logic:greaterThan>
 				<logic:lessEqual name="index" value="0">
-					<img src="images/arrow_up.gif" class="button">
+					<img src="images/icons/bullet_arrow_up.png" class="button">
 				</logic:lessEqual>
 				<logic:lessThan name="index" value="${pipelineForm.pipeletCount - 1}">
 				<nexus:submit
 					onClick="document.forms[0].sortaction.value=${index};document.forms[0].submitaction.value='sort';document.forms['pipelineForm'].sortingDirection.value=2;">
-					<img src="images/arrow_down.gif" class="button" value="Submit"
+					<img src="images/icons/bullet_arrow_up.png" class="button" value="Submit"
 						alt="Move down" id="moveDown"><span dojoType="tooltip" connectId="moveDown" toggle="explode">Move down</span>
 				</nexus:submit>
 				</logic:lessThan>
 				<logic:greaterEqual name="index" value="${pipelineForm.pipeletCount - 1}">
-					<img src="images/arrow_down.gif" class="button" value="Submit" alt="Move down" id="moveDown">
+					<img src="images/icons/bullet_arrow_down.png" class="button" value="Submit" alt="Move down" id="moveDown">
 				</logic:greaterEqual>
 				<nexus:submit
 					onClick="document.forms[0].sortaction.value=${index};document.forms[0].submitaction.value='delete';">
-					<img src="images/delete.gif" class="button" alt="Delete" id="deletePipelet"><span dojoType="tooltip" connectId="deletePipelet" toggle="explode">Delete Pipelet</span>
+					<img src="images/icons/delete.png" class="button" alt="Delete" id="deletePipelet"><span dojoType="tooltip" connectId="deletePipelet" toggle="explode">Delete Pipelet</span>
 				</nexus:submit> 
 				<logic:notEqual name="pipelet" property="nxPipeletId" value="0">
 				<nexus:submit
 					onClick="document.forms[0].sortaction.value=${index};document.forms[0].submitaction.value='config';">
-					<img src="images/submit.gif" class="button" alt="Configure" id="configurePipelet"><span dojoType="tooltip" connectId="configurePipelet" toggle="explode">Configure Pipelet</span>
+					<img src="images/icons/tick.png" class="button" alt="Configure" id="configurePipelet"><span dojoType="tooltip" connectId="configurePipelet" toggle="explode">Configure Pipelet</span>
 				</nexus:submit>
 				</logic:notEqual>
 				</td>
@@ -130,7 +130,7 @@
 				</logic:iterate>
 			</html:select> <nexus:submit
 				onClick="document.forms['pipelineForm'].submitaction.value='add';" form="document.forms['pipelineForm']">
-				<img src="images/submit.gif" class="button">
+				<img src="images/icons/add.png" class="button">
 			</nexus:submit></td>
 			<td class="NEXUSSection"></td>
 		</tr>
@@ -161,11 +161,11 @@
 			<td class="NexusHeaderLink" style="text-align: right;"><nexus:submit
 				onClick="document.forms['pipelineForm'].submitaction.value='update';"
 				styleClass="button">
-				<img src="images/submit.gif" class="button">Save</nexus:submit></td>
+				<img src="images/icons/tick.png" class="button">Save</nexus:submit></td>
 			<td class="NexusHeaderLink" style="text-align: right;"><nexus:link
 				href="PipelineDelete.do?nxPipelineId=${pipelineForm.nxPipelineId}"
 				styleClass="button">
-				<img src="images/delete.gif" class="button">Delete</nexus:link></td>
+				<img src="images/icons/delete.png" class="button">Delete</nexus:link></td>
 		</tr>
 	</table>
 </html:form>

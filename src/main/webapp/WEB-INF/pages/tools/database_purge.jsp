@@ -279,10 +279,10 @@
 			<input name="type" value="blank" type="hidden">
 			<td class="BUTTON_RIGHT">
 				<logic:equal name="databasePurgeForm" property="type" value="select">
-					<nexus:submit onClick="document.databasePurgeForm.type.value='preview';" styleClass="button"><img src="images/submit.gif" class="button">Preview</nexus:submit>
+					<nexus:submit onClick="document.databasePurgeForm.type.value='preview';" styleClass="button"><img src="images/icons/tick.png" class="button">Preview</nexus:submit>
 				</logic:equal>
 				<logic:equal name="databasePurgeForm" property="type" value="preview">
-					<nexus:submit onClick="document.databasePurgeForm.type.value='remove';" styleClass="button"><img src="images/submit.gif" class="button">Delete</nexus:submit>
+					<nexus:submit onClick="document.databasePurgeForm.type.value='remove';" styleClass="button"><img src="images/icons/tick.png" class="button">Delete</nexus:submit>
 				</logic:equal>
 			</td>
 		</tr>

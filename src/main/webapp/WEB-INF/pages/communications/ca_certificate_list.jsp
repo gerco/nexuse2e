@@ -55,15 +55,15 @@ window.open('DataSaveAs?type=cacerts','Save as...')
 	<tr>
 		<td class="NexusHeaderLink" style="text-align: right;"><nexus:link
 			href="CACertificateAddSingleCert.do" styleClass="button">
-			<img src="images/tree/plus.gif" class="button">Add CA Certificate</nexus:link>
+			<img src="images/icons/medal_gold_add.png" class="button">Add CA Certificate</nexus:link>
 		</td>
 		<td class="NexusHeaderLink" style="text-align: right;"><nexus:link
 			href="CACertificateImportKeyStore.do" styleClass="button">
-			<img src="images/tree/plus.gif" class="button">Import CA KeyStore</nexus:link>
+			<img src="images/icons/server_key.png" class="button">Import CA KeyStore</nexus:link>
 		</td>
 		<td class="NexusHeaderLink" style="text-align: right;"><nexus:link
 			href="CACertificateExportKeyStore.do" styleClass="button">
-			<img src="images/tree/plus.gif" class="button">Export CA KeyStore to Filesystem</nexus:link>
+			<img src="images/icons/disk.png" class="button">Export CA KeyStore to Filesystem</nexus:link>
 		</td>
 	</tr>
 </table>

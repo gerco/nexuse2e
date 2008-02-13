@@ -112,7 +112,7 @@ window.open('DataSaveAs?type=serverCert','Save as...')
 		<td>&nbsp;</td>
 		<td class="BUTTON_RIGHT"><nexus:link
 			href="ServerCertificateUpdate.do" styleClass="NexusLink">
-			<image src="images/submit.gif" border="0" />
+			<image src="images/icons/tick.png" border="0" />
 		</nexus:link></td>
 		<td class="NexusHeaderLink">Change SSL Certificates</td>
 	</tr>
@@ -120,7 +120,7 @@ window.open('DataSaveAs?type=serverCert','Save as...')
 		<td>&nbsp;</td>
 		<td class="BUTTON_RIGHT"><nexus:link
 			href="ServerCertificateExport.do" styleClass="NexusLink">
-			<image src="images/submit.gif" border="0" />
+			<image src="images/icons/tick.png" border="0" />
 		</nexus:link></td>
 		<td class="NexusHeaderLink">Export this Certificate Chain</td>
 	</tr>

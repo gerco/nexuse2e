@@ -42,7 +42,7 @@
               &nbsp;
             </td>
             <td class="NexusHeaderLink" style="text-align: right;">
-              <nexus:submit precondition="true /*certificateCheckFields()*/" sendFileForm="true" styleClass="button"><img src="images/submit.gif" class="button">Save</nexus:submit>
+              <nexus:submit precondition="true /*certificateCheckFields()*/" sendFileForm="true" styleClass="button"><img src="images/icons/tick.png" class="button">Save</nexus:submit>
             </td>
           </tr>
         </table>

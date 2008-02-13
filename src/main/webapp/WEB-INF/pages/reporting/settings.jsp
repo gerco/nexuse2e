@@ -13,7 +13,7 @@
 		<td><nexus:crumbs /></td>
 	</tr>
 	<tr>
-		<td class="NEXUSScreenName">Reporting</td>
+		<td class="NEXUSScreenName">Result Settings</td>
 	</tr>
 </table>
 
@@ -21,9 +21,6 @@
 <html:form action="ReportingSettingsSave.do">
 
       <table class="NEXUS_TABLE" width="100%">
-          <tr>
-              <td colspan="2" class="NEXUSScreenName">Result Settings</td>
-          </tr>
           <tr>
             <td class="NEXUSValue">Rows per Page <html:select style="width: 100;" property="pageSize">
                 <html:option value="10"/>
@@ -128,7 +125,7 @@
                
                 <td class="BUTTON_RIGHT">
                 
-                	<nexus:submit onClick="document.reportingPropertiesForm.command.value='saveFields';" styleClass="button"><img src="images/submit.gif" class="button">Save Settings</nexus:submit>
+                	<nexus:submit onClick="document.reportingPropertiesForm.command.value='saveFields';" styleClass="button"><img src="images/icons/tick.png" class="button">Save Settings</nexus:submit>
 				
                   
             </td>
