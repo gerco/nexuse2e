@@ -60,7 +60,7 @@
                 <comment></comment>
             </column>
         </property>
-        <property name="createdDate" type="timestamp" not-null="true">
+        <property name="createdDate" type="timestamp" not-null="true" index="ix_message_6">
             <column name="created_date" not-null="true">
                 <comment></comment>
             </column>

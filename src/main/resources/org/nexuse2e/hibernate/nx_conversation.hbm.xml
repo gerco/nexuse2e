@@ -18,7 +18,7 @@
                 <comment>Protocol specific conversation Id</comment>
             </column>
         </property>
-        <property name="createdDate" type="timestamp">
+        <property name="createdDate" type="timestamp" index="ix_conversation_4">
             <column name="created_date" not-null="true">
                 <comment></comment>
             </column>
