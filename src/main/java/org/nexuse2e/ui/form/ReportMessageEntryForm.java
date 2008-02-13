@@ -130,7 +130,7 @@ public class ReportMessageEntryForm extends ActionForm {
 
     private static String getTimezone() {
         return (String) Engine.getInstance().getActiveConfigurationAccessService().getGenericParameter(
-                "log_display_configuration", ReportingPropertiesForm.PARAM_NAME_TIMEZONE, ParameterType.STRING, null );
+                "log_display_configuration", ReportingSettingsForm.PARAM_NAME_TIMEZONE, ParameterType.STRING, null );
     }
     
     public String getCreatedDate() {

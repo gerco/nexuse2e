@@ -35,6 +35,7 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.Engine;
+import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.dao.TransactionDAO;
 import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.BackendActionSerializer;
@@ -44,10 +45,10 @@ import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ConversationPojo;
 import org.nexuse2e.pojo.MessagePojo;
 import org.nexuse2e.pojo.PartnerPojo;
-import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.ReportConversationEntryForm;
 import org.nexuse2e.ui.form.ReportMessageEntryForm;
 import org.nexuse2e.ui.form.ReportingPropertiesForm;
+import org.nexuse2e.ui.form.ReportingSettingsForm;
 
 /**
  * @author guido.esch
@@ -55,7 +56,7 @@ import org.nexuse2e.ui.form.ReportingPropertiesForm;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class ProcessConversationReportAction extends NexusE2EAction {
+public class ProcessConversationReportAction extends ReportingAction {
 
     private static String URL     = "reporting.error.url";
     private static String TIMEOUT = "reporting.error.timeout";
@@ -70,7 +71,26 @@ public class ProcessConversationReportAction extends NexusE2EAction {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
 
+        ReportingSettingsForm reportingSettings = new ReportingSettingsForm();
+        fillForm( reportingSettings );
+
+
         ReportingPropertiesForm form = (ReportingPropertiesForm) actionForm;
+        List<String> participants = new ArrayList<String>();
+        List<PartnerPojo> partners = Engine.getInstance().getActiveConfigurationAccessService().getPartners(
+                Constants.PARTNER_TYPE_PARTNER, Constants.PARTNERCOMPARATOR );
+
+        for (PartnerPojo partner : partners) {
+            participants.add( partner.getPartnerId() );
+        }
+        form.setParticipantIds( participants );
+        List<String> choreographyIds = new ArrayList<String>();
+        List<ChoreographyPojo> choreographies = Engine.getInstance().getActiveConfigurationAccessService().getChoreographies();
+        for (ChoreographyPojo choreography : choreographies) {
+            choreographyIds.add( choreography.getName() );
+        }
+        form.setChoreographyIds( choreographyIds );
+
 
         String command = form.getCommand();
         String refresh = request.getParameter( "refresh" );
@@ -81,16 +101,9 @@ public class ProcessConversationReportAction extends NexusE2EAction {
 
         String searchFor = form.getSearchFor();
 
-        //        form.setConvColSelect( true );
-        //        form.setConvColAction( true );
-        //        form.setConvColChorId( true );
-        //        form.setConvColStatus( true );
-        //        form.setConvColPartId( true );
-        //        form.setConvColCreated( true );
-
         if ( searchFor != null && searchFor.equals( "message" ) && command != null && command.equals( "requeue" ) ) {
-            for ( int i = 0; i < form.getSelectedResults().length; i++ ) {
-                String messageIdent = form.getSelectedResults()[i];
+            for ( int i = 0; i < reportingSettings.getSelectedResults().length; i++ ) {
+                String messageIdent = reportingSettings.getSelectedResults()[i];
                 StringTokenizer st = new StringTokenizer( messageIdent, "|" );
                 if ( st.countTokens() != 4 ) {
                     ActionMessage errorMessage = new ActionMessage( "generic.error", "Can't re-queue Message: >"
@@ -151,8 +164,8 @@ public class ProcessConversationReportAction extends NexusE2EAction {
             command = "transaction";
         }
         if ( searchFor != null && searchFor.equals( "message" ) && command != null && command.equals( "stop" ) ) {
-            for ( int i = 0; i < form.getSelectedResults().length; i++ ) {
-                String messageIdent = form.getSelectedResults()[i];
+            for ( int i = 0; i < reportingSettings.getSelectedResults().length; i++ ) {
+                String messageIdent = reportingSettings.getSelectedResults()[i];
                 StringTokenizer st = new StringTokenizer( messageIdent, "|" );
                 if ( st.countTokens() != 4 ) {
                     ActionMessage errorMessage = new ActionMessage( "generic.error", "cant stop Message: >"
@@ -180,9 +193,9 @@ public class ProcessConversationReportAction extends NexusE2EAction {
         if ( searchFor != null && searchFor.equals( "conversation" ) && command != null && command.equals( "delete" ) ) {
             System.out.println( "deleting conversation" );
 
-            for ( int i = 0; i < form.getSelectedResults().length; i++ ) {
+            for ( int i = 0; i < reportingSettings.getSelectedResults().length; i++ ) {
 
-                String messageIdent = form.getSelectedResults()[i];
+                String messageIdent = reportingSettings.getSelectedResults()[i];
                 StringTokenizer st = new StringTokenizer( messageIdent, "|" );
                 if ( st.countTokens() != 3 ) {
                     ActionMessage errorMessage = new ActionMessage( "generic.error", "Can't delete conversation: >"
@@ -469,6 +482,7 @@ public class ProcessConversationReportAction extends NexusE2EAction {
         }
         // LOG.trace( "process.selected:" + form.isConvColSelect() );
         request.setAttribute( ATTRIBUTE_COLLECTION, logItems );
+        request.setAttribute( "reportingSettingsForm", reportingSettings );
 
         return success;
     }

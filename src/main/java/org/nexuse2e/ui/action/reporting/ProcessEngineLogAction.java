@@ -36,11 +36,11 @@ import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.Engine;
 import org.nexuse2e.dao.LogDAO;
 import org.nexuse2e.pojo.LogPojo;
-import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.ReportEngineEntryForm;
 import org.nexuse2e.ui.form.ReportingPropertiesForm;
+import org.nexuse2e.ui.form.ReportingSettingsForm;
 
-public class ProcessEngineLogAction extends NexusE2EAction {
+public class ProcessEngineLogAction extends ReportingAction {
 
     /* (non-Javadoc)
      * @see org.nexuse2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages, org.apache.struts.action.ActionMessages)
@@ -202,6 +202,9 @@ public class ProcessEngineLogAction extends NexusE2EAction {
                 form.setLastActive( false );
             }
 
+            ReportingSettingsForm reportingSettings = new ReportingSettingsForm();
+            fillForm( reportingSettings );
+            request.setAttribute( "reportingSettingsForm", reportingSettings );
             request.setAttribute( ATTRIBUTE_COLLECTION, logItems );
 
         } catch ( Exception e ) {

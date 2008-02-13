@@ -123,31 +123,7 @@
     	document.forms['reportingPropertiesForm'].messageEnabled.disabled=true;
     	document.forms['reportingPropertiesForm'].messageId.disabled=true;
   	}
-/*  	
-  	this.searchForConversations = function () {
-			var length = document.forms['reportingPropertiesForm'].status.options.length;
-      if(length == 9) {
-        return;
-      }
-      for (x = length ; x >= 0; x--) { 
-					document.forms['reportingPropertiesForm'].status.options[x] = null;
-    	}
-    	document.forms['reportingPropertiesForm'].status.options[0] = new Option('','');
-			document.forms['reportingPropertiesForm'].status.options[2] = new Option('Active','200');
-			document.forms['reportingPropertiesForm'].status.options[5] = new Option('Completed','500');
-			document.forms['reportingPropertiesForm'].status.options[1] = new Option('Created','100');
-			document.forms['reportingPropertiesForm'].status.options[3] = new Option('Error','300');
-			document.forms['reportingPropertiesForm'].status.options[4] = new Option('Stopped','400');
-			document.forms['reportingPropertiesForm'].status.options[6] = new Option('Unkown','0');
-			document.forms['reportingPropertiesForm'].status.options[7] = new Option('#active#','200,100');
-			document.forms['reportingPropertiesForm'].status.options[8] = new Option('#inactive#','500,300,400');
-          
-    	document.getElementById('messageIdText').className='NEXUSValueDisabled';
-    	document.forms['reportingPropertiesForm'].messageEnabled.disabled=true;
-    	document.forms['reportingPropertiesForm'].messageId.disabled=true;
-  	}
-*/
-      
+
     _container_.addOnLoad( function () {  
 			var seqNo = 0;
 			var msg = "";
@@ -182,24 +158,13 @@
 	  	}
 	  }
           
-  	/*
-  	this.testFnkt = function() {
-  		debug("executing");  		
-  	}
-  	*/
-  	
   </script>
 
 <nexus:helpBar helpDoc="html/NoHelpAvailable.html" />
 
-<!--
-<div onClick="scriptScope.testFnkt();">Test</div>
--->
-
 <html:form action="ProcessConversationReport.do">
-	<html:hidden property="command" />
-	<html:hidden property="startCount" />
-	<html:hidden property="endCount" />
+	<html:hidden property="applyProperties" value="true"/>
+	<html:hidden property="command"/>
 
 	<table class="NEXUS_TABLE" width="100%">
 		<tr>
@@ -532,36 +497,15 @@
 			</logic:equal> <logic:equal name="reportingPropertiesForm" property="lastActive"
 				value="false">End</logic:equal></center>
 			</td>
-			<td class="BUTTON_RIGHT"><nobr><nexus:submit
-				onClick="javascript: document.forms['reportingPropertiesForm'].command.value='first'; scriptScope.enableLinks();">
-				<img src="images/submit.gif" name="resultsButton" class="button" />Refresh Results</nexus:submit></nobr></td>
+			<td class="BUTTON_RIGHT">
+				<nobr>
+					<nexus:submit onClick="javascript: document.forms['reportingPropertiesForm'].command.value='first'; scriptScope.enableLinks();">
+						<img src="images/submit.gif" name="resultsButton" class="button" />Refresh Results
+					</nexus:submit>
+				</nobr>
+			</td>
 		</tr>
 	</table>
-	<html:hidden property="convColSelect" />
-	<html:hidden property="convColChorId" />
-	<html:hidden property="convColConId" />
-	<html:hidden property="convColPartId" />
-	<html:hidden property="convColStatus" />
-	<html:hidden property="convColAction" />
-	<html:hidden property="convColCreated" />
-	<html:hidden property="convColTurnaround" />
-
-	<html:hidden property="messColSelect" />
-	<html:hidden property="messColMessageId" />
-	<html:hidden property="messColParticipantId" />
-	<html:hidden property="messColStatus" />
-	<html:hidden property="messColType" />
-	<html:hidden property="messColAction" />
-	<html:hidden property="messColCreated" />
-	<html:hidden property="messColTurnaround" />
-
-	<html:hidden property="engineColSeverity" />
-	<html:hidden property="engineColIssued" />
-	<html:hidden property="engineColDescription" />
-	<html:hidden property="engineColOrigin" />
-	<html:hidden property="engineColClassName" />
-	<html:hidden property="engineColmethodName" />
-
 
 	<logic:messagesPresent>
 		<div class="NexusError"><html:errors /></div>
@@ -573,32 +517,32 @@
 		<logic:notEmpty name="collection">
 			<table class="NEXUS_TABLE" width="100%">
 				<tr>
-					<logic:equal name="reportingPropertiesForm"
+					<logic:equal name="reportingSettingsForm"
 						property="messColSelect" value="true">
 						<th class="NEXUSSection"></th>
 					</logic:equal>
 					<th class="NEXUSSection">Message ID</th>
-					<logic:equal name="reportingPropertiesForm"
+					<logic:equal name="reportingSettingsForm"
 						property="messColParticipantId" value="true">
 						<th class="NEXUSSection">Participant ID</th>
 					</logic:equal>
-					<logic:equal name="reportingPropertiesForm"
+					<logic:equal name="reportingSettingsForm"
 						property="messColStatus" value="true">
 						<th class="NEXUSSection">Status</th>
 					</logic:equal>
-					<logic:equal name="reportingPropertiesForm" property="messColType"
+					<logic:equal name="reportingSettingsForm" property="messColType"
 						value="true">
 						<th class="NEXUSSection">Message Type</th>
 					</logic:equal>
-					<logic:equal name="reportingPropertiesForm"
+					<logic:equal name="reportingSettingsForm"
 						property="messColAction" value="true">
 						<th class="NEXUSSection">Action</th>
 					</logic:equal>
-					<logic:equal name="reportingPropertiesForm"
+					<logic:equal name="reportingSettingsForm"
 						property="messColCreated" value="true">
 						<th class="NEXUSSection">Date Created</th>
 					</logic:equal>
-					<logic:equal name="reportingPropertiesForm"
+					<logic:equal name="reportingSettingsForm"
 						property="messColTurnaround" value="true">
 						<th class="NEXUSSection">Turnaround Time</th>
 					</logic:equal>
@@ -606,42 +550,42 @@
 				<logic:iterate indexId="counter" id="message" name="collection">
 					<tr>
 
-						<logic:equal name="reportingPropertiesForm"
+						<logic:equal name="reportingSettingsForm"
 							property="messColSelect" value="true">
 							<td class="NEXUSValue"><html-el:multibox
-								name="reportingPropertiesForm" property="selected"
+								name="reportingSettingsForm" property="selected"
 								value="${message.participantId}|${message.choreographyId}|${message.conversationId}|${message.messageId}" /></td>
 						</logic:equal>
 						<td class="NEXUSValue"><nexus:link
 							href="MessageView.do?mId=${message.messageId}&convId=${message.conversationId}&chorId=${message.choreographyId}&partnerId=${message.participantId}">
 							<bean:write name="message" property="messageId" />
 						</nexus:link></td>
-						<logic:equal name="reportingPropertiesForm"
+						<logic:equal name="reportingSettingsForm"
 							property="messColParticipantId" value="true">
 							<td class="NEXUSValue"><bean:write name="message"
 								property="participantId" /></td>
 						</logic:equal>
-						<logic:equal name="reportingPropertiesForm"
+						<logic:equal name="reportingSettingsForm"
 							property="messColStatus" value="true">
 							<td class="NEXUSValue"><bean:write name="message"
 								property="status" /></td>
 						</logic:equal>
-						<logic:equal name="reportingPropertiesForm" property="messColType"
+						<logic:equal name="reportingSettingsForm" property="messColType"
 							value="true">
 							<td class="NEXUSValue"><bean:write name="message"
 								property="type" /></td>
 						</logic:equal>
-						<logic:equal name="reportingPropertiesForm"
+						<logic:equal name="reportingSettingsForm"
 							property="messColAction" value="true">
 							<td class="NEXUSValue"><bean:write name="message"
 								property="action" /></td>
 						</logic:equal>
-						<logic:equal name="reportingPropertiesForm"
+						<logic:equal name="reportingSettingsForm"
 							property="messColCreated" value="true">
 							<td class="NEXUSValue"><bean:write name="message"
 								property="createdDate" /></td>
 						</logic:equal>
-						<logic:equal name="reportingPropertiesForm"
+						<logic:equal name="reportingSettingsForm"
 							property="messColTurnaround" value="true">
 							<td class="NEXUSValue"><bean:write name="message"
 								property="turnaroundTime" /></td>
@@ -649,7 +593,7 @@
 					</tr>
 				</logic:iterate>
 			</table>
-			<logic:equal name="reportingPropertiesForm" property="messColSelect"
+			<logic:equal name="reportingSettingsForm" property="messColSelect"
 				value="true">
 				<table class="NEXUS_BUTTON_TABLE" width="100%">
 					<tr>
@@ -660,16 +604,14 @@
 							onclick="javascript: scriptScope.selectAll(false);"
 							class="NexusLink" styleClass="white-space:nowrap;">Deselect
 						all</a></td>
-						<td class="BUTTON_RIGHT"><nexus:submit
+						<td class="BUTTON_RIGHT"><nobr><nexus:submit
 							onClick="document.forms['reportingPropertiesForm'].command.value='requeue';">
-							<img src="images/submit.gif" name="clearButton">
-						</nexus:submit></td>
-						<td class="NexusHeaderLink">Re-Queue</td>
-						<td class="BUTTON_RIGHT"><nexus:submit
+							<img src="images/submit.gif" name="clearButton" class="button">
+							Re-Queue</nexus:submit></nobr></td>
+						<td class="BUTTON_RIGHT"><nobr><nexus:submit
 							onClick="document.forms['reportingPropertiesForm'].command.value='stop';">
-							<img src="images/reset.gif" name="clearButton">
-						</nexus:submit></td>
-						<td class="NexusHeaderLink">Stop</td>
+							<img src="images/reset.gif" name="clearButton" class="button">
+							Stop</nexus:submit></nobr></td>
 					</tr>
 				</table>
 			</logic:equal>
@@ -680,45 +622,45 @@
 		<logic:notEmpty name="collection">
 			<table class="NEXUS_TABLE" width="100%">
 				<tr>
-					<logic:equal name="reportingPropertiesForm"
+					<logic:equal name="reportingSettingsForm"
 						property="convColSelect" value="true">
 						<th class="NEXUSSection"></th>
 					</logic:equal>
-					<logic:equal name="reportingPropertiesForm"
+					<logic:equal name="reportingSettingsForm"
 						property="convColChorId" value="true">
 						<th class="NEXUSSection">Choreography ID</th>
 					</logic:equal>
 					<th class="NEXUSSection">Conversation ID</th>
-					<logic:equal name="reportingPropertiesForm"
+					<logic:equal name="reportingSettingsForm"
 						property="convColPartId" value="true">
 						<th class="NEXUSSection">Participant ID</th>
 					</logic:equal>
-					<logic:equal name="reportingPropertiesForm"
+					<logic:equal name="reportingSettingsForm"
 						property="convColStatus" value="true">
 						<th class="NEXUSSection">Status</th>
 					</logic:equal>
-					<logic:equal name="reportingPropertiesForm"
+					<logic:equal name="reportingSettingsForm"
 						property="convColAction" value="true">
 						<th class="NEXUSSection">Current Action</th>
 					</logic:equal>
-					<logic:equal name="reportingPropertiesForm"
+					<logic:equal name="reportingSettingsForm"
 						property="convColCreated" value="true">
 						<th class="NEXUSSection">Date Created</th>
 					</logic:equal>
-					<logic:equal name="reportingPropertiesForm"
+					<logic:equal name="reportingSettingsForm"
 						property="convColTurnaround" value="true">
 						<th class="NEXUSSection">Turnaround Time</th>
 					</logic:equal>
 				</tr>
 				<logic:iterate indexId="counter" id="conv" name="collection">
 					<tr>
-						<logic:equal name="reportingPropertiesForm"
+						<logic:equal name="reportingSettingsForm"
 							property="convColSelect" value="true">
 							<td class="NEXUSValue"><html-el:multibox
-								name="reportingPropertiesForm" property="selected"
+								name="reportingSettingsForm" property="selected"
 								value="${conv.participantId}|${conv.choreographyId}|${conv.conversationId}" /></td>
 						</logic:equal>
-						<logic:equal name="reportingPropertiesForm"
+						<logic:equal name="reportingSettingsForm"
 							property="convColChorId" value="true">
 							<td class="NEXUSValue"><bean:write name="conv"
 								property="choreographyId" /></td>
@@ -727,27 +669,27 @@
 							href="ConversationView.do?convId=${conv.conversationId}&choreographyId=${conv.choreographyId}&partnerId=${conv.participantId}">
 							<bean:write name="conv" property="conversationId" />
 						</nexus:link></td>
-						<logic:equal name="reportingPropertiesForm"
+						<logic:equal name="reportingSettingsForm"
 							property="convColPartId" value="true">
 							<td class="NEXUSValue"><bean:write name="conv"
 								property="participantId" /></td>
 						</logic:equal>
-						<logic:equal name="reportingPropertiesForm"
+						<logic:equal name="reportingSettingsForm"
 							property="convColStatus" value="true">
 							<td class="NEXUSValue"><bean:write name="conv"
 								property="status" /></td>
 						</logic:equal>
-						<logic:equal name="reportingPropertiesForm"
+						<logic:equal name="reportingSettingsForm"
 							property="convColAction" value="true">
 							<td class="NEXUSValue"><bean:write name="conv"
 								property="action" /></td>
 						</logic:equal>
-						<logic:equal name="reportingPropertiesForm"
+						<logic:equal name="reportingSettingsForm"
 							property="convColCreated" value="true">
 							<td class="NEXUSValue"><bean:write name="conv"
 								property="createdDate" /></td>
 						</logic:equal>
-						<logic:equal name="reportingPropertiesForm"
+						<logic:equal name="reportingSettingsForm"
 							property="convColTurnaround" value="true">
 							<td class="NEXUSValue"><bean:write name="conv"
 								property="turnaroundTime" /></td>
@@ -755,8 +697,7 @@
 					</tr>
 				</logic:iterate>
 			</table>
-			<logic:equal name="reportingPropertiesForm" property="convColSelect"
-				value="true">
+			<logic:equal name="reportingSettingsForm" property="convColSelect" value="true">
 				<table class="NEXUS_BUTTON_TABLE" width="100%" border="1">
 					<tr>
 						<td class="BUTTON_LEFT" width="75px"><a href=#" id="startLink"
@@ -768,9 +709,8 @@
 						</a></td>
 						<td  class="BUTTON_RIGHT"><nexus:submit
 							onClick="document.forms['reportingPropertiesForm'].command.value='delete';">
-							<img src="images/reset.gif" name="clearButton">
-						</nexus:submit></td>
-						<td style="width: 50px">Delete</td>
+							<img src="images/reset.gif" name="clearButton" class="button">
+						Delete</nexus:submit></td>
 					</tr>
 				</table>
 			</logic:equal>

@@ -8,15 +8,12 @@
 <%@ taglib uri="/tags/struts-html-el" prefix="html-el" %>
 <%@ taglib uri="/tags/nexus" prefix="nexus" %>
 
-<%@ page import="org.nexuse2e.ui.form.ReportingPropertiesForm" %>
-
 <nexus:helpBar helpDoc="documentation/Engine_Reporting.htm"/>
 
 <html:form action="ProcessEngineLog.do">
 
         <html:hidden property="command"/>
-        <html:hidden property="startCount"/>
-        <html:hidden property="endCount"/>
+        <html:hidden property="applyProperties" value="true"/>
 
         <table class="NEXUS_TABLE" width="100%">
             <tr>
@@ -240,8 +237,12 @@
     
         <table class="NEXUS_BUTTON_TABLE" width="100%">
             <tr>                
-                <td class="BUTTON_LEFT"><img src="images/reset.gif" onclick="javascript: scriptScope.Clear(); scriptScope.disableLinks();" name="clearButton"></td>
-                <td class="NexusHeaderLink">Reset Fields</td>
+				<td class="BUTTON_LEFT"><nobr><a class="NexusHeaderLink"
+					href="#"
+					onclick="javascript: scriptScope.Clear(); scriptScope.disableLinks();"><img
+					src="images/reset.gif" name="clearButton" class="button">Reset
+					Fields</a></nobr>
+				</td>
                 <td width="100%"><center>
                 <logic:equal name="reportingPropertiesForm" property="firstActive" value="true"><nexus:submit id="startLink" onClick="document.forms['reportingPropertiesForm'].command.value='first';" styleClass="NexusLink">Start</nexus:submit></logic:equal>
                 <logic:equal name="reportingPropertiesForm" property="firstActive" value="false">Start</logic:equal>
@@ -255,12 +256,13 @@
                 <logic:equal name="reportingPropertiesForm" property="lastActive" value="true"><nexus:submit id="endLink" onClick="document.forms['reportingPropertiesForm'].command.value='last';" styleClass="NexusLink">End</nexus:submit></logic:equal>
                 <logic:equal name="reportingPropertiesForm" property="lastActive" value="false">End</logic:equal>
                 </center></td>
-                <td class="BUTTON_RIGHT">
-                <nexus:submit onClick="document.forms['reportingPropertiesForm'].command.value='first';"><img src="images/submit.gif" name="resultsButton" class="button"/></nexus:submit></td>
-                <!--
-                <nexus:submit onClick="document.forms['reportingPropertiesForm'].command.value='first'; scriptScope.enableLinks();"><img src="images/submit.gif" name="resultsButton" /></nexus:submit></td>
-                -->
-                <td class="NexusHeaderLink">Refresh Results</td>
+				<td class="BUTTON_RIGHT">
+					<nobr>
+						<nexus:submit onClick="javascript: document.forms['reportingPropertiesForm'].command.value='first'; scriptScope.enableLinks();">
+							<img src="images/submit.gif" name="resultsButton" class="button" />Refresh Results
+						</nexus:submit>
+					</nobr>
+				</td>
             </tr>
         </table>
         <script language="JavaScript" type="text/javascript">
@@ -316,52 +318,27 @@
         _container_.scriptScope.enableLink(document.getElementById('endLink'));
       }
       </script> 
-        
-        <html:hidden property="convColSelect"/>
-        <html:hidden property="convColChorId"/>
-        <html:hidden property="convColConId"/>
-        <html:hidden property="convColPartId"/>
-        <html:hidden property="convColStatus"/>
-        <html:hidden property="convColAction"/>
-        <html:hidden property="convColCreated"/>
-        <html:hidden property="convColTurnaround"/>
-        
-        <html:hidden property="messColSelect"/>
-        <html:hidden property="messColMessageId"/>
-        <html:hidden property="messColParticipantId"/>
-        <html:hidden property="messColStatus"/>
-        <html:hidden property="messColType"/>
-        <html:hidden property="messColAction"/>
-        <html:hidden property="messColCreated"/>
-        <html:hidden property="messColTurnaround"/>
-        
-        <html:hidden property="engineColSeverity"/>
-        <html:hidden property="engineColIssued"/>
-        <html:hidden property="engineColDescription"/>
-        <html:hidden property="engineColOrigin"/>
-        <html:hidden property="engineColClassName"/>
-        <html:hidden property="engineColmethodName"/>
    </html:form> 
   
 
 <logic:notEmpty name="collection">
   <table class="NEXUS_TABLE" width="100%">
         <tr>
-            <logic:equal name="reportingPropertiesForm" property="engineColSeverity" value="true"><th class="NEXUSSection">Severity</th></logic:equal>
-            <logic:equal name="reportingPropertiesForm" property="engineColIssued" value="true"><th class="NEXUSSection">Issued Date</th></logic:equal>
+            <logic:equal name="reportingSettingsForm" property="engineColSeverity" value="true"><th class="NEXUSSection">Severity</th></logic:equal>
+            <logic:equal name="reportingSettingsForm" property="engineColIssued" value="true"><th class="NEXUSSection">Issued Date</th></logic:equal>
             <th class="NEXUSSection">Description</th>
-            <logic:equal name="reportingPropertiesForm" property="engineColOrigin" value="true"><th class="NEXUSSection">Origin</th></logic:equal>
-            <logic:equal name="reportingPropertiesForm" property="engineColClassName" value="true"><th class="NEXUSSection">Class Name</th></logic:equal>
-            <logic:equal name="reportingPropertiesForm" property="engineColmethodName" value="true"><th class="NEXUSSection">Method Name</th></logic:equal>
+            <logic:equal name="reportingSettingsForm" property="engineColOrigin" value="true"><th class="NEXUSSection">Origin</th></logic:equal>
+            <logic:equal name="reportingSettingsForm" property="engineColClassName" value="true"><th class="NEXUSSection">Class Name</th></logic:equal>
+            <logic:equal name="reportingSettingsForm" property="engineColmethodName" value="true"><th class="NEXUSSection">Method Name</th></logic:equal>
         </tr>
     <logic:iterate indexId="counter" id="conv" name="collection">
         <tr>                  
-            <logic:equal name="reportingPropertiesForm" property="engineColSeverity" value="true"><td class="NEXUSValue"><bean:write name="conv" property="severity"/></td></logic:equal>
-            <logic:equal name="reportingPropertiesForm" property="engineColIssued" value="true"><td class="NEXUSValue"><bean:write name="conv" property="issuedDate"/></td></logic:equal>
+            <logic:equal name="reportingSettingsForm" property="engineColSeverity" value="true"><td class="NEXUSValue"><bean:write name="conv" property="severity"/></td></logic:equal>
+            <logic:equal name="reportingSettingsForm" property="engineColIssued" value="true"><td class="NEXUSValue"><bean:write name="conv" property="issuedDate"/></td></logic:equal>
             <td class="NEXUSValue"><bean:write name="conv" property="description"/></td>
-            <logic:equal name="reportingPropertiesForm" property="engineColOrigin" value="true"><td class="NEXUSValue"></td></logic:equal>
-            <logic:equal name="reportingPropertiesForm" property="engineColClassName" value="true"><td class="NEXUSValue"><bean:write name="conv" property="className"/></td></logic:equal>
-            <logic:equal name="reportingPropertiesForm" property="engineColmethodName" value="true"><td class="NEXUSValue"><bean:write name="conv" property="methodName"/></td></logic:equal>
+            <logic:equal name="reportingSettingsForm" property="engineColOrigin" value="true"><td class="NEXUSValue"></td></logic:equal>
+            <logic:equal name="reportingSettingsForm" property="engineColClassName" value="true"><td class="NEXUSValue"><bean:write name="conv" property="className"/></td></logic:equal>
+            <logic:equal name="reportingSettingsForm" property="engineColmethodName" value="true"><td class="NEXUSValue"><bean:write name="conv" property="methodName"/></td></logic:equal>
         </tr>
     </logic:iterate>
   </table>

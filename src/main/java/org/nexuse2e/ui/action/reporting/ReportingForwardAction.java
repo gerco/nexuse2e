@@ -19,12 +19,12 @@
  */
 package org.nexuse2e.ui.action.reporting;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,8 +39,7 @@ import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.PartnerPojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
-import org.nexuse2e.ui.form.ReportingPropertiesForm;
-import org.nexuse2e.util.DateUtil;
+import org.nexuse2e.ui.form.ReportingSettingsForm;
 
 /**
  * @author guido.esch
@@ -53,52 +52,49 @@ public class ReportingForwardAction extends NexusE2EAction {
     private static String URL     = "reporting.error.url";
     private static String TIMEOUT = "reporting.error.timeout";
 
-    /* (non-Javadoc)
-     * @see com.tamgroup.nexus.e2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages)
-     */
+
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
             HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
-        ReportingPropertiesForm form = (ReportingPropertiesForm) actionForm;
+        ReportingSettingsForm form = (ReportingSettingsForm) actionForm;
         String type = request.getParameter( "type" );
         if ( type != null ) {
             LOG.trace( "----- form: " + form );
             form.setCommand( type );
         }
-        //        System.out.println("---------------- Reporting Forward:"+form.getCommand());
         form.setStartCount( 0 );
         form.setEndCount( 0 );
 
         if ( form.getCommand() != null && form.getCommand().equals( "transaction" ) ) {
-            Vector participants = new Vector();
+            List<String> participants = new ArrayList<String>();
 
-            List partners = Engine.getInstance().getActiveConfigurationAccessService().getPartners(
+            List<PartnerPojo> partners = Engine.getInstance().getActiveConfigurationAccessService().getPartners(
                     Constants.PARTNER_TYPE_PARTNER, Constants.PARTNERCOMPARATOR );
             Iterator<PartnerPojo> partnerI = partners.iterator();
             LOG.trace( "PartnerCount: " + partners.size() );
             while ( partnerI.hasNext() ) {
                 PartnerPojo partner = partnerI.next();
-                participants.addElement( partner.getPartnerId() );
+                participants.add( partner.getPartnerId() );
 
             }
             form.setParticipantIds( participants );
 
-            Vector choreographyIds = new Vector();
+            List<String> choreographyIds = new ArrayList<String>();
 
-            List choreographies = Engine.getInstance().getActiveConfigurationAccessService().getChoreographies();
+            List<ChoreographyPojo> choreographies = Engine.getInstance().getActiveConfigurationAccessService().getChoreographies();
 
             Iterator<ChoreographyPojo> choreographyI = choreographies.iterator();
             while ( choreographyI.hasNext() ) {
                 ChoreographyPojo choreography = choreographyI.next();
-                choreographyIds.addElement( choreography.getName() );
+                choreographyIds.add( choreography.getName() );
             }
             form.setChoreographyIds( choreographyIds );
 
             Map<String, Object> values = new HashMap<String, Object>();
             values = Engine.getInstance().getActiveConfigurationAccessService().getGenericParameters(
-                    "log_display_configuration", null, ReportingPropertiesForm.getParameterMap() );
+                    "log_display_configuration", null, form.getParameterMap() );
             fillForm( values, form );
 
             return actionMapping.findForward( "conversation" );
@@ -106,7 +102,7 @@ public class ReportingForwardAction extends NexusE2EAction {
 
             Map<String, Object> values = new HashMap<String, Object>();
             values = Engine.getInstance().getActiveConfigurationAccessService().getGenericParameters(
-                    "log_display_configuration", null, ReportingPropertiesForm.getParameterMap() );
+                    "log_display_configuration", null, form.getParameterMap() );
             fillForm( values, form );
 
             return actionMapping.findForward( "engine" );
@@ -118,56 +114,52 @@ public class ReportingForwardAction extends NexusE2EAction {
 
             Map<String, Object> values = new HashMap<String, Object>();
 
-            values.put( ReportingPropertiesForm.PARAM_NAME_ENGCOL_SEVERITY, Boolean
+            values.put( ReportingSettingsForm.PARAM_NAME_ENGCOL_SEVERITY, Boolean
                     .valueOf( form.isEngineColSeverity() ) );
-            values.put( ReportingPropertiesForm.PARAM_NAME_ENGCOL_CLASSNAME, Boolean.valueOf( form
+            values.put( ReportingSettingsForm.PARAM_NAME_ENGCOL_CLASSNAME, Boolean.valueOf( form
                     .isEngineColClassName() ) );
-            values.put( ReportingPropertiesForm.PARAM_NAME_ENGCOL_DESCRIPTION, Boolean.valueOf( form
+            values.put( ReportingSettingsForm.PARAM_NAME_ENGCOL_DESCRIPTION, Boolean.valueOf( form
                     .isEngineColDescription() ) );
-            values.put( ReportingPropertiesForm.PARAM_NAME_ENGCOL_ISSUEDDATE, Boolean
+            values.put( ReportingSettingsForm.PARAM_NAME_ENGCOL_ISSUEDDATE, Boolean
                     .valueOf( form.isEngineColIssued() ) );
-            values.put( ReportingPropertiesForm.PARAM_NAME_ENGCOL_METHODNAME, Boolean.valueOf( form
+            values.put( ReportingSettingsForm.PARAM_NAME_ENGCOL_METHODNAME, Boolean.valueOf( form
                     .isEngineColmethodName() ) );
-            values.put( ReportingPropertiesForm.PARAM_NAME_ENGCOL_ORIGIN, Boolean.valueOf( form.isEngineColOrigin() ) );
+            values.put( ReportingSettingsForm.PARAM_NAME_ENGCOL_ORIGIN, Boolean.valueOf( form.isEngineColOrigin() ) );
 
-            values.put( ReportingPropertiesForm.PARAM_NAME_CONVCOL_ACTION, Boolean.valueOf( form.isConvColAction() ) );
-            values.put( ReportingPropertiesForm.PARAM_NAME_CONVCOL_CHOREOGRAPHYID, Boolean.valueOf( form
+            values.put( ReportingSettingsForm.PARAM_NAME_CONVCOL_ACTION, Boolean.valueOf( form.isConvColAction() ) );
+            values.put( ReportingSettingsForm.PARAM_NAME_CONVCOL_CHOREOGRAPHYID, Boolean.valueOf( form
                     .isConvColChorId() ) );
-            values.put( ReportingPropertiesForm.PARAM_NAME_CONVCOL_CONVID, Boolean.valueOf( form.isConvColConId() ) );
-            values.put( ReportingPropertiesForm.PARAM_NAME_CONVCOL_CREATED, Boolean.valueOf( form.isConvColCreated() ) );
-            values.put( ReportingPropertiesForm.PARAM_NAME_CONVCOL_PARTICIPANTID, Boolean.valueOf( form
+            values.put( ReportingSettingsForm.PARAM_NAME_CONVCOL_CONVID, Boolean.valueOf( form.isConvColConId() ) );
+            values.put( ReportingSettingsForm.PARAM_NAME_CONVCOL_CREATED, Boolean.valueOf( form.isConvColCreated() ) );
+            values.put( ReportingSettingsForm.PARAM_NAME_CONVCOL_PARTICIPANTID, Boolean.valueOf( form
                     .isConvColPartId() ) );
-            values.put( ReportingPropertiesForm.PARAM_NAME_CONVCOL_SELECT, Boolean.valueOf( form.isConvColSelect() ) );
-            values.put( ReportingPropertiesForm.PARAM_NAME_CONVCOL_STATUS, Boolean.valueOf( form.isConvColStatus() ) );
-            values.put( ReportingPropertiesForm.PARAM_NAME_CONVCOL_TURNAROUND, Boolean.valueOf( form
+            values.put( ReportingSettingsForm.PARAM_NAME_CONVCOL_SELECT, Boolean.valueOf( form.isConvColSelect() ) );
+            values.put( ReportingSettingsForm.PARAM_NAME_CONVCOL_STATUS, Boolean.valueOf( form.isConvColStatus() ) );
+            values.put( ReportingSettingsForm.PARAM_NAME_CONVCOL_TURNAROUND, Boolean.valueOf( form
                     .isConvColTurnaround() ) );
 
-            values.put( ReportingPropertiesForm.PARAM_NAME_MSGCOL_ACTION, Boolean.valueOf( form.isMessColAction() ) );
-            values.put( ReportingPropertiesForm.PARAM_NAME_MSGCOL_CREATED, Boolean.valueOf( form.isMessColCreated() ) );
-            values.put( ReportingPropertiesForm.PARAM_NAME_MSGCOL_MSGID, Boolean.valueOf( form.isMessColMessageId() ) );
-            values.put( ReportingPropertiesForm.PARAM_NAME_MSGCOL_PARTICIPANTID, Boolean.valueOf( form
+            values.put( ReportingSettingsForm.PARAM_NAME_MSGCOL_ACTION, Boolean.valueOf( form.isMessColAction() ) );
+            values.put( ReportingSettingsForm.PARAM_NAME_MSGCOL_CREATED, Boolean.valueOf( form.isMessColCreated() ) );
+            values.put( ReportingSettingsForm.PARAM_NAME_MSGCOL_MSGID, Boolean.valueOf( form.isMessColMessageId() ) );
+            values.put( ReportingSettingsForm.PARAM_NAME_MSGCOL_PARTICIPANTID, Boolean.valueOf( form
                     .isMessColParticipantId() ) );
-            values.put( ReportingPropertiesForm.PARAM_NAME_MSGCOL_SELECT, Boolean.valueOf( form.isMessColSelect() ) );
-            values.put( ReportingPropertiesForm.PARAM_NAME_MSGCOL_STATUS, Boolean.valueOf( form.isMessColStatus() ) );
-            values.put( ReportingPropertiesForm.PARAM_NAME_MSGCOL_TURNAROUND, Boolean.valueOf( form
+            values.put( ReportingSettingsForm.PARAM_NAME_MSGCOL_SELECT, Boolean.valueOf( form.isMessColSelect() ) );
+            values.put( ReportingSettingsForm.PARAM_NAME_MSGCOL_STATUS, Boolean.valueOf( form.isMessColStatus() ) );
+            values.put( ReportingSettingsForm.PARAM_NAME_MSGCOL_TURNAROUND, Boolean.valueOf( form
                     .isMessColTurnaround() ) );
-            values.put( ReportingPropertiesForm.PARAM_NAME_MSGCOL_TYPE, Boolean.valueOf( form.isMessColType() ) );
+            values.put( ReportingSettingsForm.PARAM_NAME_MSGCOL_TYPE, Boolean.valueOf( form.isMessColType() ) );
 
-            values.put( ReportingPropertiesForm.PARAM_NAME_TIMEZONE, form.getTimezone() );
-            values.put( ReportingPropertiesForm.PARAM_NAME_ROWCOUNT, "" + form.getPageSize() );
+            values.put( ReportingSettingsForm.PARAM_NAME_TIMEZONE, form.getTimezone() );
+            values.put( ReportingSettingsForm.PARAM_NAME_ROWCOUNT, "" + form.getPageSize() );
 
             Engine.getInstance().getActiveConfigurationAccessService().setGenericParameters(
-                    "log_display_configuration", null, values, ReportingPropertiesForm.getParameterMap(), true );
+                    "log_display_configuration", null, values, form.getParameterMap(), true );
             form.setCommand( "" );
             return actionMapping.findForward( "save" );
         } else if ( form.getCommand() != null && form.getCommand().equals( "view" ) ) {
-            Map<String, Object> values = Engine
-                    .getInstance()
-                    .getActiveConfigurationAccessService()
-                    .getGenericParameters( "log_display_configuration", null, ReportingPropertiesForm.getParameterMap() );
-
-            //            System.out.println("Severity: "+values.get( ReportingPropertiesForm.PARAM_NAME_ENGCOL_SEVERITY ));            
-            //            System.out.println("ClassName: "+values.get( ReportingPropertiesForm.PARAM_NAME_ENGCOL_CLASSNAME ));            
+            Map<String, Object> values =
+                Engine.getInstance().getActiveConfigurationAccessService().getGenericParameters(
+                        "log_display_configuration", null, form.getParameterMap() );
 
             fillForm( values, form );
 
@@ -195,48 +187,48 @@ public class ReportingForwardAction extends NexusE2EAction {
      * @param values
      * @param form
      */
-    private void fillForm( Map<String, Object> values, ReportingPropertiesForm form ) {
+    private void fillForm( Map<String, Object> values, ReportingSettingsForm form ) {
 
-        form.setEngineColSeverity( getBooleanValue( values, ReportingPropertiesForm.PARAM_NAME_ENGCOL_SEVERITY, true ) );
+        form.setEngineColSeverity( getBooleanValue( values, ReportingSettingsForm.PARAM_NAME_ENGCOL_SEVERITY, true ) );
         form
-                .setEngineColClassName( getBooleanValue( values, ReportingPropertiesForm.PARAM_NAME_ENGCOL_CLASSNAME,
+                .setEngineColClassName( getBooleanValue( values, ReportingSettingsForm.PARAM_NAME_ENGCOL_CLASSNAME,
                         true ) );
-        form.setEngineColDescription( getBooleanValue( values, ReportingPropertiesForm.PARAM_NAME_ENGCOL_DESCRIPTION,
+        form.setEngineColDescription( getBooleanValue( values, ReportingSettingsForm.PARAM_NAME_ENGCOL_DESCRIPTION,
                 true ) );
-        form.setEngineColIssued( getBooleanValue( values, ReportingPropertiesForm.PARAM_NAME_ENGCOL_ISSUEDDATE, true ) );
-        form.setEngineColmethodName( getBooleanValue( values, ReportingPropertiesForm.PARAM_NAME_ENGCOL_METHODNAME,
+        form.setEngineColIssued( getBooleanValue( values, ReportingSettingsForm.PARAM_NAME_ENGCOL_ISSUEDDATE, true ) );
+        form.setEngineColmethodName( getBooleanValue( values, ReportingSettingsForm.PARAM_NAME_ENGCOL_METHODNAME,
                 true ) );
-        form.setEngineColOrigin( getBooleanValue( values, ReportingPropertiesForm.PARAM_NAME_ENGCOL_ORIGIN, true ) );
+        form.setEngineColOrigin( getBooleanValue( values, ReportingSettingsForm.PARAM_NAME_ENGCOL_ORIGIN, true ) );
 
-        form.setConvColAction( getBooleanValue( values, ReportingPropertiesForm.PARAM_NAME_CONVCOL_ACTION, true ) );
+        form.setConvColAction( getBooleanValue( values, ReportingSettingsForm.PARAM_NAME_CONVCOL_ACTION, true ) );
         form
-                .setConvColChorId( getBooleanValue( values, ReportingPropertiesForm.PARAM_NAME_CONVCOL_CHOREOGRAPHYID,
+                .setConvColChorId( getBooleanValue( values, ReportingSettingsForm.PARAM_NAME_CONVCOL_CHOREOGRAPHYID,
                         true ) );
-        form.setConvColConId( getBooleanValue( values, ReportingPropertiesForm.PARAM_NAME_CONVCOL_CONVID, true ) );
-        form.setConvColCreated( getBooleanValue( values, ReportingPropertiesForm.PARAM_NAME_CONVCOL_CREATED, true ) );
+        form.setConvColConId( getBooleanValue( values, ReportingSettingsForm.PARAM_NAME_CONVCOL_CONVID, true ) );
+        form.setConvColCreated( getBooleanValue( values, ReportingSettingsForm.PARAM_NAME_CONVCOL_CREATED, true ) );
         form
-                .setConvColPartId( getBooleanValue( values, ReportingPropertiesForm.PARAM_NAME_CONVCOL_PARTICIPANTID,
+                .setConvColPartId( getBooleanValue( values, ReportingSettingsForm.PARAM_NAME_CONVCOL_PARTICIPANTID,
                         true ) );
-        form.setConvColSelect( getBooleanValue( values, ReportingPropertiesForm.PARAM_NAME_CONVCOL_SELECT, true ) );
-        form.setConvColStatus( getBooleanValue( values, ReportingPropertiesForm.PARAM_NAME_CONVCOL_STATUS, true ) );
+        form.setConvColSelect( getBooleanValue( values, ReportingSettingsForm.PARAM_NAME_CONVCOL_SELECT, true ) );
+        form.setConvColStatus( getBooleanValue( values, ReportingSettingsForm.PARAM_NAME_CONVCOL_STATUS, true ) );
         form
-                .setConvColTurnaround( getBooleanValue( values, ReportingPropertiesForm.PARAM_NAME_CONVCOL_TURNAROUND,
+                .setConvColTurnaround( getBooleanValue( values, ReportingSettingsForm.PARAM_NAME_CONVCOL_TURNAROUND,
                         true ) );
 
-        form.setMessColAction( getBooleanValue( values, ReportingPropertiesForm.PARAM_NAME_MSGCOL_ACTION, true ) );
-        form.setMessColCreated( getBooleanValue( values, ReportingPropertiesForm.PARAM_NAME_MSGCOL_CREATED, true ) );
-        form.setMessColMessageId( getBooleanValue( values, ReportingPropertiesForm.PARAM_NAME_MSGCOL_MSGID, true ) );
-        form.setMessColParticipantId( getBooleanValue( values, ReportingPropertiesForm.PARAM_NAME_MSGCOL_PARTICIPANTID,
+        form.setMessColAction( getBooleanValue( values, ReportingSettingsForm.PARAM_NAME_MSGCOL_ACTION, true ) );
+        form.setMessColCreated( getBooleanValue( values, ReportingSettingsForm.PARAM_NAME_MSGCOL_CREATED, true ) );
+        form.setMessColMessageId( getBooleanValue( values, ReportingSettingsForm.PARAM_NAME_MSGCOL_MSGID, true ) );
+        form.setMessColParticipantId( getBooleanValue( values, ReportingSettingsForm.PARAM_NAME_MSGCOL_PARTICIPANTID,
                 true ) );
-        form.setMessColSelect( getBooleanValue( values, ReportingPropertiesForm.PARAM_NAME_MSGCOL_SELECT, true ) );
-        form.setMessColStatus( getBooleanValue( values, ReportingPropertiesForm.PARAM_NAME_MSGCOL_STATUS, true ) );
+        form.setMessColSelect( getBooleanValue( values, ReportingSettingsForm.PARAM_NAME_MSGCOL_SELECT, true ) );
+        form.setMessColStatus( getBooleanValue( values, ReportingSettingsForm.PARAM_NAME_MSGCOL_STATUS, true ) );
         form
-                .setMessColTurnaround( getBooleanValue( values, ReportingPropertiesForm.PARAM_NAME_MSGCOL_TURNAROUND,
+                .setMessColTurnaround( getBooleanValue( values, ReportingSettingsForm.PARAM_NAME_MSGCOL_TURNAROUND,
                         true ) );
-        form.setMessColType( getBooleanValue( values, ReportingPropertiesForm.PARAM_NAME_MSGCOL_TYPE, true ) );
+        form.setMessColType( getBooleanValue( values, ReportingSettingsForm.PARAM_NAME_MSGCOL_TYPE, true ) );
 
-        form.setTimezone( getStringValue( values, ReportingPropertiesForm.PARAM_NAME_TIMEZONE, "" ) );
-        form.setPageSize( getIntValue( values, ReportingPropertiesForm.PARAM_NAME_ROWCOUNT, 20 ) );
+        form.setTimezone( getStringValue( values, ReportingSettingsForm.PARAM_NAME_TIMEZONE, "" ) );
+        form.setPageSize( getIntValue( values, ReportingSettingsForm.PARAM_NAME_ROWCOUNT, 20 ) );
 
     }
 

@@ -203,9 +203,6 @@
             <nxs:page type="provider" provider="actionTargetProvider" target="ActionSettingsView.do" label="View Action" icon="images/tree/TreeDot.gif">
             </nxs:page>
           </nxs:page>
-          <!-- 
-          <nxs:page target="NotifierList.do?nxChoreographyId=${nxChoreographyId}" label="Notifiers" icon="images/tree/notifiers.gif"/>
-           -->
           <nxs:page target="ParticipantList.do?nxChoreographyId=${nxChoreographyId}" label="Participants" icon="images/tree/collaborativepartners.gif">
             <nxs:page type="provider" provider="participantTargetProvider" target="ParticipantView.do" label="View Participant" icon="images/tree/TreeDot.gif">
                <nxs:command target="ParticipantUpdate.do" label="Update Participant" icon="images/tree/TreeDot.gif"/>
@@ -217,14 +214,14 @@
           </nxs:page>
         </nxs:page>
       </nxs:page>
-      <nxs:page target="ReportingForward.do?command=statistics" label="Reporting" icon="images/tree/reports.gif">
-        <nxs:page target="ReportingForward.do?command=transaction&amp;noReset=true" label="Transaction Reporting" icon="images/tree/TreeDot.gif">
-          <nxs:command target="ProcessConversationReport.do?noReset=true" label="Process Conversation Report" icon="images/tree/TreeDot.gif"/> 
+      <nxs:page target="ReportingStatistics.do" label="Reporting" icon="images/tree/reports.gif">
+        <nxs:page target="ProcessConversationReport.do?command=first" label="Transaction Reporting" icon="images/tree/TreeDot.gif">
+          <nxs:command target="ProcessConversationReport.do" label="Process Conversation Report" icon="images/tree/TreeDot.gif"/> 
         </nxs:page>
-        <nxs:page target="ReportingForward.do?command=engine&amp;noReset=true" label="Engine Log" icon="images/tree/TreeDot.gif">
+        <nxs:page target="ProcessEngineLog.do" label="Engine Log" icon="images/tree/TreeDot.gif">
           <nxs:command target="ProcessEngineLog.do?noReset=true" label="Process Engine Log" icon="images/tree/TreeDot.gif"/> 
         </nxs:page>
-        <nxs:page target="ReportingForward.do?command=view" label="Settings" icon="images/tree/TreeDot.gif"/>
+        <nxs:page target="ReportingSettingsView.do" label="Settings" icon="images/tree/TreeDot.gif"/>
       </nxs:page>
     </nxs:page>
   </nxs:menu>

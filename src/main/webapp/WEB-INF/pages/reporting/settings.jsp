@@ -18,22 +18,8 @@
 </table>
 
 
-<html:form action="ReportingForward.do">
-    <!--
-    <table class="NEXUS_TABLE" width="100%">
-        <tr>
-            <td class="NEXUSSection">Reporting Tools</td>
-        </tr>
-        <tr>
-            <td class="NEXUSName"><a class="NexusLink" href="" onclick="javascript: document.reportingPropertiesForm.command.value='transaction'; document.reportingPropertiesForm.noReset.value='true'; document.reportingPropertiesForm.submit()">Transaction Reporting</a></td>
-        </tr>
-        <tr>
-            <td class="NEXUSName"><a class="NexusLink" href="" onclick="javascript: document.reportingPropertiesForm.command.value='engine'; document.reportingPropertiesForm.noReset.value='true'; document.reportingPropertiesForm.submit()">Engine Logging</a></td>
-        </tr>
-    </table>
-         -->
- 
-  
+<html:form action="ReportingSettingsSave.do">
+
       <table class="NEXUS_TABLE" width="100%">
           <tr>
               <td colspan="2" class="NEXUSScreenName">Result Settings</td>
@@ -149,10 +135,6 @@
             
       		</tr>
         </table>
-    	<html:hidden property="command"/>
-        <html:hidden property="startEnabled"/>
-        <html:hidden property="endEnabled"/>
-        <html:hidden property="noReset" value="false"/>
   </html:form>
 
 <center><logic:messagesPresent>
