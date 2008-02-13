@@ -34,7 +34,7 @@
 		<td class="NexusHeaderLink"><input type="reset"
 			style="display: none;"> <a
 			href="javascript: document.forms['loginForm'].reset();"
-			class="button"><img src="images/reset.gif" class="button">Reset</a>
+			class="button"><img src="images/icons/arrow_rotate_anticlockwise.png" class="button">Reset</a>
 		</td>
 		<td><input type="submit" style="display: none;"> <a
 			href="#" onClick="document.forms['loginForm'].submit();"
