@@ -19,8 +19,8 @@
  */
 package org.nexuse2e.ui.action.reporting;
 
-import java.util.Iterator;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -84,17 +84,15 @@ public class MessageViewAction extends NexusE2EAction {
         //        form.setTimezone( ( (ReportingPropertiesForm) request.getSession().getAttribute( "reportingPropertiesForm" ) )
         //                .getTimezone() );
 
-        Vector<String> parts = new Vector<String>();
-        Iterator i;
+        List<String> parts = new ArrayList<String>();
         try {
-            i = Engine.getInstance().getTransactionService().getMessagePayloadsFromMessage( message ).iterator();
+            List<MessagePayloadPojo> list = Engine.getInstance().getTransactionService().getMessagePayloadsFromMessage( message );
+            for (MessagePayloadPojo payload : list) {
+                String type = payload.getMimeType();
+                parts.add( type );
+            }
         } catch ( LazyInitializationException e ) {
             throw new NexusException( e );
-        }
-        while ( i.hasNext() ) {
-            MessagePayloadPojo payload = (MessagePayloadPojo) i.next();
-            String type = payload.getMimeType();
-            parts.addElement( type );
         }
 
         request.setAttribute( ATTRIBUTE_COLLECTION, parts );
