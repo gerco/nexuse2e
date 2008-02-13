@@ -4,15 +4,7 @@
   <data-sources>
   </data-sources>
   <form-beans>
-  	<!--  
-    <form-bean name="registeredComponentForm" type="org.nexuse2e.ui.form.RegisteredComponentForm"/>
-    <form-bean name="registeredDatabaseForm" type="org.nexuse2e.ui.form.RegisteredDatabaseForm"/>
-    <form-bean name="nexusUserForm" type="org.nexuse2e.ui.form.NexusUserForm"/>
-    <form-bean name="notifierForm" type="org.nexuse2e.ui.form.NotifierForm"/>
-    <form-bean name="requestButtonStateForm" type="org.nexuse2e.ui.form.RequestButtonStateForm"/>
-    <form-bean name="partnerContactForm" type="org.nexuse2e.ui.form.PartnerContactForm"/>
-    -->
-    
+
     <form-bean name="partnerCertificateForm" type="org.nexuse2e.ui.form.PartnerCertificateForm"/>
     <form-bean name="requestButtonStateForm" type="org.nexuse2e.ui.form.RequestButtonStateForm"/>
     <form-bean name="certificateRequestForm" type="org.nexuse2e.ui.form.CertificateRequestForm"/>
@@ -30,6 +22,7 @@
     <form-bean name="participantForm" type="org.nexuse2e.ui.form.ParticipantForm"/>
     <form-bean name="partnerConnectionForm" type="org.nexuse2e.ui.form.PartnerConnectionForm"/>
     
+    <form-bean name="reportingSettingsForm" type="org.nexuse2e.ui.form.ReportingSettingsForm"/>
     <form-bean name="reportingPropertiesForm" type="org.nexuse2e.ui.form.ReportingPropertiesForm"/>
     <form-bean name="reportConversationEntryForm" type="org.nexuse2e.ui.form.ReportConversationEntryForm"/>
     <form-bean name="reportMessageEntryForm" type="org.nexuse2e.ui.form.ReportMessageEntryForm"/>
@@ -489,7 +482,7 @@
       <forward name="error" path="/StagingExportCertificate.do"/>
     </action>
 
-    <action path="/ProcessConversationReport" name="reportingPropertiesForm" type="org.nexuse2e.ui.action.reporting.ProcessConversationReportAction" scope="session">
+    <action path="/ProcessConversationReport" name="reportingPropertiesForm" type="org.nexuse2e.ui.action.reporting.ProcessConversationReportAction">
       <forward name="success" path="/WEB-INF/pages/reporting/transaction_report.jsp"/>
     </action>
     
@@ -506,17 +499,20 @@
       <forward name="success" path="/WEB-INF/pages/reporting/engine_logging.jsp"/>
     </action>
     
-    <action path="/ReportingForward" name="reportingPropertiesForm" type="org.nexuse2e.ui.action.reporting.ReportingForwardAction">
-      <forward name="conversation" path="/ProcessConversationReport.do"/>
-      <forward name="engine" path="/ProcessEngineLog.do"/>
-      <forward name="view" path="/WEB-INF/pages/reporting.jsp"/>
-      <forward name="error" path="/WEB-INF/pages/reporting.jsp"/>
-      <forward name="save" path="/WEB-INF/pages/reporting.jsp"/>
-      <forward name="statistics" path="/WEB-INF/pages/reporting/statistics.jsp"/>
+    <action path="/ReportingSettingsView" name="reportingSettingsForm" type="org.nexuse2e.ui.action.reporting.ReportingSettingsViewAction">
+      <forward name="success" path="/WEB-INF/pages/reporting/settings.jsp"/>
+    </action>
+    
+    <action path="/ReportingSettingsSave" name="reportingSettingsForm" type="org.nexuse2e.ui.action.reporting.ReportingSettingsSaveAction">
+      <forward name="success" path="/WEB-INF/pages/reporting/settings.jsp"/>
+    </action>
+    
+    <action path="/ReportingStatistics" type="org.nexuse2e.ui.action.reporting.ReportingStatisticsAction">
+      <forward name="success" path="/WEB-INF/pages/reporting/statistics.jsp"/>
     </action>
     
     <action path="/ModifyMessage" name="reportingPropertiesForm" type="org.nexuse2e.ui.action.reporting.ModifyMessageAction">
-      <forward name="success" redirect="true" path="/ProcessConversationReport.do?noReset&amp;command=first"/>
+      <forward name="success" redirect="true" path="/ProcessConversationReport.do?command=first"/>
     </action>
 
     <action path="/DatabasePurge" name="databasePurgeForm" type="org.nexuse2e.ui.action.tools.DatabasePurgeAction">
