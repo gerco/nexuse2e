@@ -56,24 +56,24 @@ window.open('DataSaveAs?type=privatepem','Save as...')
 			value="true">
 			<td class="NEXUSValue"><nexus:link href="RequestImportCert.do"
 				styleClass="button">
-				<img src="images/icons/server_key.png" class="button" />Import Certificate</nexus:link></td>
+				<img src="images/icons/key_add.png" class="button" />Import Certificate</nexus:link></td>
 		</logic:equal>
 		<logic:notEqual name="requestButtonStateForm" property="importCert"
 			value="true">
 			<td class="NEXUSValue"><font class="NEXUSScreenPathLinkInactive"><img
-				src="images/icons/server_key.png" class="button" />Import Certificate</font></td>
+				src="images/icons/key_add.png" class="button" />Import Certificate</font></td>
 		</logic:notEqual>
 
 		<logic:equal name="requestButtonStateForm" property="importBackup"
 			value="true">
 			<td class="NEXUSValue"><nexus:link href="RequestImportBackup.do"
 				styleClass="button">
-				<img src="images/icons/server_key.png" class="button" />Import Key Backup</nexus:link></td>
+				<img src="images/icons/key_add.png" class="button" />Import Key Backup</nexus:link></td>
 		</logic:equal>
 		<logic:notEqual name="requestButtonStateForm" property="importBackup"
 			value="true">
 			<td class="NEXUSValue"><font class="NEXUSScreenPathLinkInactive"><img
-				src="images/icons/server_key.png" class="button" />Import Key Backup</font></td>
+				src="images/icons/key_add.png" class="button" />Import Key Backup</font></td>
 		</logic:notEqual>
 
 	</tr>

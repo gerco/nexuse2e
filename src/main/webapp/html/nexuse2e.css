@@ -318,7 +318,7 @@ TD.BUTTON_RIGHT {
 	white-space: nowrap;
 }
 
-a.NexusHeaderLink {
+.NexusHeaderLink {
 	text-decoration: none;
 	color: #E56009;
 	font-weight: bold;
@@ -326,17 +326,15 @@ a.NexusHeaderLink {
 	width: 140px;
 }
 
-a.NexusHeaderLink:hover {
+.NexusHeaderLink:hover {
     font-style: oblique;
 }
 
 .NexusLink:link {
-    background-image: url(../images/icons/bullet_orange.png);
-    background-repeat: no-repeat;
-	text-decoration: underline;
+	text-decoration: none;
 	border-width: 0pt;
 	font-family: verdana, garamond;
-	color: #000000;
+	color: #E56009;
 	font-size: 10pt;
 	padding-top: 1pt;
 	padding-bottom: 1pt;
@@ -345,12 +343,10 @@ a.NexusHeaderLink:hover {
 }
 
 .NexusLink:visited {
-    background-image: url(../images/link.gif);
-    background-repeat: no-repeat;
-	text-decoration: underline;
+	text-decoration: none;
 	border-width: 0pt;
 	font-family: verdana, garamond;
-	color: #000000;
+	color: #E56009;
 	font-size: 10pt;
 	padding-top: 1pt;
 	padding-bottom: 1pt;
@@ -371,15 +367,16 @@ a.NexusHeaderLink:hover {
 }
 
 .NexusLink:hover {
-	text-decoration: underline;
+	text-decoration: none;
 	font-family: verdana, garamond;
+	font-style: italic;
 	font-size: 10pt;
 	color: #E56009;
 	border-width: 0pt;
 	padding-top: 1pt;
 	padding-bottom: 1pt;
 	padding-right: 3pt;
-	padding-left: 12pt;
+	padding-left: 10pt;
 }
 
 .NexusDrillDownLink {

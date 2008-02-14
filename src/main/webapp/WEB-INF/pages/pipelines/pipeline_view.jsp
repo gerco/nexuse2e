@@ -114,7 +114,7 @@
 				<logic:notEqual name="pipelet" property="nxPipeletId" value="0">
 				<nexus:submit
 					onClick="document.forms[0].sortaction.value=${index};document.forms[0].submitaction.value='config';">
-					<img src="images/icons/tick.png" class="button" alt="Configure" id="configurePipelet"><span dojoType="tooltip" connectId="configurePipelet" toggle="explode">Configure Pipelet</span>
+					<img src="images/icons/brick_edit.png" class="button" alt="Configure" id="configurePipelet"><span dojoType="tooltip" connectId="configurePipelet" toggle="explode">Configure Pipelet</span>
 				</nexus:submit>
 				</logic:notEqual>
 				</td>

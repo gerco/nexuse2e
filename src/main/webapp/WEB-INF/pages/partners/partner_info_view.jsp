@@ -95,7 +95,7 @@
 					property="choreographies">
 					<tr>
 						<td class="NEXUSIcon"><img
-							src="images/icons/arrow_switch.png" alts=""></td>
+							src="images/icons/arrow_refresh_small.png" alts=""></td>
 						<td class="NEXUSNameNoWidth"><nexus:link
 							href="ChoreographyView.do?choreographyName=${choreography}"
 							styleClass="NexusLink">
