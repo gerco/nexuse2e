@@ -22,24 +22,24 @@
 		<tr>
 			<td>
 				<nexus:report name="message_stati_24h">
-					<nexus:reportParam name="startDate" value="${startOfDay}"/>
+					<nexus:reportParam name="startDate" value="${last24Hours}"/>
 				</nexus:report>
 			</td>
 			<td>
 				<nexus:report name="conversation_stati_24h">
-					<nexus:reportParam name="startDate" value="${startOfDay}"/>
+					<nexus:reportParam name="startDate" value="${last24Hours}"/>
 				</nexus:report>
 			</td>
 		</tr>
 		<tr>
 			<td>
 				<nexus:report name="messages_by_choreography_24h">
-                    <nexus:reportParam name="startDate" value="${startOfDay}"/>
+                    <nexus:reportParam name="startDate" value="${last24Hours}"/>
 				</nexus:report>
 			</td>
 			<td>
 				<nexus:report name="messages_per_hour">
-					<nexus:reportParam name="startDate" value="${startOfDay}"/>
+					<nexus:reportParam name="startDate" value="${last24Hours}"/>
 				</nexus:report>
 			</td>
 		</tr>

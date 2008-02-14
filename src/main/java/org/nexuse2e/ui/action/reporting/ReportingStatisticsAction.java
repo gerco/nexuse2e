@@ -26,11 +26,8 @@ public class ReportingStatisticsAction extends NexusE2EAction {
             ActionMessages messages ) throws Exception {
 
         Calendar cal = Calendar.getInstance();
-        cal.set( Calendar.HOUR_OF_DAY, 0 );
-        cal.set( Calendar.MINUTE, 0 );
-        cal.set( Calendar.SECOND, 0 );
-        cal.set( Calendar.MILLISECOND, 0 );
-        request.setAttribute( "startOfDay", cal.getTime() );
+        cal.add( Calendar.DATE, -1 );
+        request.setAttribute( "last24Hours", cal.getTime() );
 
         return actionMapping.findForward( ACTION_FORWARD_SUCCESS );
     }
