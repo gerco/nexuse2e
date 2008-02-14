@@ -63,7 +63,7 @@ public class HelpBar extends TagSupport {
             // if helpDoc was defined
             if ( helpDoc != null ) {
                 writer.print( "<a href=\"javascript: dojo.widget.byId('" + widgetId + "').setUrl('" + helpDoc
-                        + "');\" class=\"" + styleClass + "\"><img src=\"images/questions.gif\" class=\"" + styleClass
+                        + "');\" class=\"" + styleClass + "\"><img src=\"images/icons/help.png\" class=\"" + styleClass
                         + "\"></a>&nbsp;<a href=\"javascript: dojo.widget.byId('" + widgetId + "').setUrl('" + helpDoc
                         + "');\" class=\"" + styleClass + "\">Help</a>" );
                 printDelimiter = true;

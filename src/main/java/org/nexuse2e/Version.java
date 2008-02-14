@@ -21,8 +21,8 @@ package org.nexuse2e;
 
 public class Version {
 
-    private static final String  SUBVERSION_REVISION = "458";
-    private static final String  SUBVERSION_DATE     = "2008/01/30 20:43:27";
+    private static final String  SUBVERSION_REVISION = "499";
+    private static final String  SUBVERSION_DATE     = "2008/02/11 13:52:52";
     private static final boolean BETA                = true;
     private static final int     BETA_VERSION        = 1;
     private static final boolean RC                  = false;
