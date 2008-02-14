@@ -17,19 +17,17 @@
 	</tr>
 </table>
 
-${startOfDay}
-
 <nexus:reportsAvailable>
 	<table width="100%">
 		<tr>
 			<td>
 				<nexus:report name="message_stati_24h">
-					<nexus:reportParam name="startDate" value="<%=  new java.text.SimpleDateFormat( "yyyy-MM-dd" ).parse( "2008-01-20" ) %>"/>
+					<nexus:reportParam name="startDate" value="${startOfDay}"/>
 				</nexus:report>
 			</td>
 			<td>
 				<nexus:report name="conversation_stati_24h">
-					<nexus:reportParam name="startDate" value="<%=  new java.text.SimpleDateFormat( "yyyy-MM-dd" ).parse( "2008-01-20" ) %>"/>
+					<nexus:reportParam name="startDate" value="${startOfDay}"/>
 				</nexus:report>
 			</td>
 		</tr>
@@ -41,7 +39,7 @@ ${startOfDay}
 			</td>
 			<td>
 				<nexus:report name="messages_per_hour">
-					<nexus:reportParam name="startDate" value="<%=  new java.text.SimpleDateFormat( "yyyy-MM-dd" ).parse( "2008-01-20" ) %>"/>
+					<nexus:reportParam name="startDate" value="${startOfDay}"/>
 				</nexus:report>
 			</td>
 		</tr>
