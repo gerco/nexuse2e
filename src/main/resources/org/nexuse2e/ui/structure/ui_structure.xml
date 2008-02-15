@@ -77,7 +77,7 @@
             <nxs:command target="PartnerCertificateDelete.do" label="Create Certificate" icon="images/icons/bullet_orange.png"/>
           </nxs:page>
         </nxs:page>
-        <nxs:page target="TrpMaintenance.do" label="Transport/Routing/Packaging" icon="images/icons/user.png">
+        <nxs:page target="TrpMaintenance.do" label="Transport/Routing/Packaging" icon="images/icons/package.png">
         </nxs:page>
         <nxs:page target="Components.do" label="Components" icon="images/icons/brick.png">
           <nxs:command target="ComponentAdd.do" label="Add Component" icon="images/tree/components.gif"/>
@@ -200,7 +200,7 @@
         </nxs:page>
       </nxs:page>
       <nxs:page target="Choreographies.do" label="Choreographies" icon="images/icons/arrow_switch.png">
-        <nxs:page type="provider" provider="choreographyTargetProvider" target="ChoreographyView.do" label="View Choreography" icon="images/icons/arrow_right.png">
+        <nxs:page type="provider" provider="choreographyTargetProvider" target="ChoreographyView.do" label="View Choreography" icon="images/icons/arrow_refresh_small.png">
           <nxs:page target="ActionsList.do?nxChoreographyId=${nxChoreographyId}" label="Actions" icon="images/icons/lightning.png">
             <nxs:page type="provider" provider="actionTargetProvider" target="ActionSettingsView.do" label="View Action" icon="images/icons/bullet_orange.png">
             </nxs:page>
