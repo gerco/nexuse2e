@@ -11,6 +11,8 @@
     <form-bean name="certificatePropertiesForm" type="org.nexuse2e.ui.form.CertificatePropertiesForm"/>
     <form-bean name="protectedFileAccessForm" type="org.nexuse2e.ui.form.ProtectedFileAccessForm"/>
     
+    <form-bean name="trpMaintenanceForm" type="org.nexuse2e.ui.form.TrpMaintenanceForm"/>
+    
     <form-bean name="serviceForm" type="org.nexuse2e.ui.form.ServiceForm"/>
     <form-bean name="loggerForm" type="org.nexuse2e.ui.form.LoggerForm"/>
     
@@ -43,20 +45,11 @@
     <form-bean name="certificateChainImportForm" type="org.nexuse2e.ui.form.CertificateChainImportForm"/>
     
     
-    <!-- 
-    <form-bean name="mailSettingsForm" type="org.nexuse2e.ui.form.MailSettingsForm"/>
-    <form-bean name="transportForm" type="org.nexuse2e.ui.form.TransportForm"/>
-    <form-bean name="componentForm" type="org.nexuse2e.ui.form.ComponentForm"/>
-    <form-bean name="dashboardForm" type="org.nexuse2e.ui.form.DashboardForm"/>
-    <form-bean name="importExportForm" type="org.nexuse2e.ui.form.ImportExportForm"/>
-    -->
   </form-beans>
   <global-exceptions>
   </global-exceptions>
   <global-forwards>
-    <!--
-    <forward name="welcome" path="/Welcome.do"/>
-    -->
+
     <forward name="login" path="/WEB-INF/pages/user/login_forward.jsp"/>
     <forward name="error" path="/WEB-INF/pages/error.jsp"/>
     <forward name="accessDenied" path="/WEB-INF/pages/error.jsp"/>
@@ -108,17 +101,6 @@
     <action path="/NexusE2EAdmin" type="org.nexuse2e.ui.action.NoOpAction">
       <forward name="success" path="admin.page"/>
     </action>
-    <!--
-    <action path="/Dashboard" name="dashboardForm" type="org.nexuse2e.ui.action.DashboardAction">
-      <forward name="success" path="/WEB-INF/pages/dashboard.jsp"/>
-    </action>
-    <action path="/DashboardSettings" name="dashboardForm" type="org.nexuse2e.ui.action.DashboardSettingsAction">
-      <forward name="success" path="/WEB-INF/pages/dashboard_settings.jsp"/>
-    </action>
-    <action path="/Logout" type="org.nexuse2e.ui.action.LogoutAction">
-      <forward name="success" redirect="true" path="/NexusE2EAdmin.do"/>
-    </action>
-    -->
 
     <action path="/UserMaintenance" type="org.nexuse2e.ui.action.NoOpAction">
       <forward name="success" path="/WEB-INF/pages/user/user_maintenance.jsp"/>
@@ -220,65 +202,11 @@
         <forward name="success" path="/RoleList.do" />
         <forward name="error" path="/WEB-INF/pages/error.jsp" />
     </action>
-    
-    <!-- 
-    <action path="/RegisteredComponentList" name="registeredComponentForm" type="org.nexuse2e.ui.action.serverconfig.RegisteredComponentListAction">
-      <forward name="success" path="/WEB-INF/pages/serverconfig/registered_component_list.jsp"/>
+
+    <action path="/TrpMaintenance" name="trpMaintenanceForm" type="org.nexuse2e.ui.action.trp.TrpMaintenanceAction">
+      <forward name="success" path="/WEB-INF/pages/trp/trp_maintenance.jsp"/>
     </action>
-    <action path="/RegisteredComponentAdd" name="registeredComponentForm" type="org.nexuse2e.ui.action.serverconfig.RegisteredComponentAddAction">
-      <forward name="success" path="/WEB-INF/pages/serverconfig/registered_component_add.jsp"/>
-    </action>
-    <action path="/RegisteredComponentView" name="registeredComponentForm" type="org.nexuse2e.ui.action.serverconfig.RegisteredComponentViewAction">
-      <forward name="success" path="/WEB-INF/pages/serverconfig/registered_component_view.jsp"/>
-    </action>
-    <action path="/RegisteredComponentSave" name="registeredComponentForm" type="org.nexuse2e.ui.action.serverconfig.RegisteredComponentSaveAction">
-      <forward name="success" path="/RegisteredComponentList.do"/>
-      <forward name="error" path="/WEB-INF/pages/error.jsp"/>
-    </action>
-    <action path="/RegisteredComponentDelete" name="registeredComponentForm" type="org.nexuse2e.ui.action.serverconfig.RegisteredComponentDeleteAction">
-      <forward name="success" path="/RegisteredComponentList.do"/>
-      <forward name="error" path="/WEB-INF/pages/error.jsp"/>
-    </action>
-    <action path="/NexusUserList" name="nexusUserForm" type="org.nexuse2e.ui.action.serverconfig.NexusUserListAction" validate="false">
-      <forward name="success" path="/WEB-INF/pages/serverconfig/nexus_user_list.jsp"/>
-    </action>
-    <action path="/NexusUserAdd" name="nexusUserForm" type="org.nexuse2e.ui.action.serverconfig.NexusUserAddAction" validate="false">
-      <forward name="success" path="/WEB-INF/pages/serverconfig/nexus_user_add.jsp"/>
-    </action>
-    <action path="/NexusUserView" name="nexusUserForm" type="org.nexuse2e.ui.action.serverconfig.NexusUserViewAction" validate="false">
-      <forward name="success" path="/WEB-INF/pages/serverconfig/nexus_user_view.jsp"/>
-    </action>
-    <action path="/NexusUserCreate" name="nexusUserForm" type="org.nexuse2e.ui.action.serverconfig.NexusUserSaveAction" input="/WEB-INF/pages/serverconfig/nexus_user_add.jsp">
-      <forward name="success" path="/NexusUserList.do"/>
-      <forward name="error" path="/WEB-INF/pages/error.jsp"/>
-    </action>
-    <action path="/NexusUserSave" name="nexusUserForm" type="org.nexuse2e.ui.action.serverconfig.NexusUserSaveAction" input="/WEB-INF/pages/serverconfig/nexus_user_view.jsp">
-      <forward name="success" path="/NexusUserList.do"/>
-      <forward name="error" path="/WEB-INF/pages/error.jsp"/>
-    </action>
-    <action path="/NexusUserDelete" name="nexusUserForm" type="org.nexuse2e.ui.action.serverconfig.NexusUserDeleteAction" validate="false">
-      <forward name="success" path="/NexusUserList.do"/>
-      <forward name="error" path="/WEB-INF/pages/error.jsp"/>
-    </action>
-    <action path="/RegisteredDatabaseList" name="registeredDatabaseForm" type="org.nexuse2e.ui.action.serverconfig.RegisteredDatabaseListAction">
-      <forward name="success" path="/WEB-INF/pages/serverconfig/registered_database_list.jsp"/>
-    </action>
-    <action path="/RegisteredDatabaseAdd" name="registeredDatabaseForm" type="org.nexuse2e.ui.action.serverconfig.RegisteredDatabaseAddAction">
-      <forward name="success" path="/WEB-INF/pages/serverconfig/registered_database_add.jsp"/>
-    </action>
-    <action path="/RegisteredDatabaseView" name="registeredDatabaseForm" type="org.nexuse2e.ui.action.serverconfig.RegisteredDatabaseViewAction">
-      <forward name="success" path="/WEB-INF/pages/serverconfig/registered_database_view.jsp"/>
-    </action>
-    <action path="/RegisteredDatabaseSave" name="registeredDatabaseForm" type="org.nexuse2e.ui.action.serverconfig.RegisteredDatabaseSaveAction">
-      <forward name="success" path="/RegisteredDatabaseList.do"/>
-      <forward name="error" path="/WEB-INF/pages/error.jsp"/>
-    </action>
-    <action path="/RegisteredDatabaseDelete" name="registeredDatabaseForm" type="org.nexuse2e.ui.action.serverconfig.RegisteredDatabaseDeleteAction">
-      <forward name="success" path="/RegisteredDatabaseList.do"/>
-      <forward name="error" path="/WEB-INF/pages/error.jsp"/>
-    </action>
-    -->
-    
+
     <action path="/ServiceList" name="serviceForm" type="org.nexuse2e.ui.action.ServicesAction">
       <forward name="success" path="/WEB-INF/pages/services.jsp"/>
     </action>
