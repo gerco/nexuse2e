@@ -175,6 +175,8 @@ public class RolePojo implements java.io.Serializable {
     /**
      * Required for JAXB
      */
+    @XmlElementWrapper(name = "Grants")
+    @XmlElement(name = "Grant")
     public void setGrantCollection( List<GrantPojo> grantList ) {
         Map<String, GrantPojo> grants = new HashMap<String, GrantPojo>();
         for (GrantPojo grant : grantList) {
