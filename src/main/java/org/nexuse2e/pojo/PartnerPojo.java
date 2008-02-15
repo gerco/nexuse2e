@@ -70,7 +70,8 @@ public class PartnerPojo implements java.io.Serializable {
     @XmlElement(name = "Connection")
     private Set<ConnectionPojo>   connections      = new HashSet<ConnectionPojo>( 0 );
     private List<ParticipantPojo> participants     = new ArrayList<ParticipantPojo>( 0 );
-
+    @XmlElementWrapper(name = "CertificateReferences")
+    @XmlElement(name = "NxCertificateId")
     private Set<Integer>          nxCertificateIds;
     
     // Constructors
@@ -310,8 +311,6 @@ public class PartnerPojo implements java.io.Serializable {
      * Required for JAXB
      * @return
      */
-    @XmlElementWrapper(name = "CertificateReferences")
-    @XmlElement(name = "NxCertificateId")
     public Set<Integer> getNxCertificateIds() {
 
 
