@@ -36,7 +36,7 @@ window.open('DataSaveAs?type=privatepem','Save as...')
 			value="true">
 			<td class="NEXUSValue"><nexus:link href="RequestCreate.do"
 				styleClass="button">
-				<img src="images/icons/dd.png" class="button" />Create Request</nexus:link></td>
+				<img src="images/icons/add.png" class="button" />Create Request</nexus:link></td>
 		</logic:equal>
 		<logic:notEqual name="requestButtonStateForm" property="createRequest"
 			value="true">
