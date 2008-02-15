@@ -1,320 +1,315 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <NEXUSe2eConfiguration>
-  <Choreographies>
-    <Choreography nxChoreographyId="229376" name="GenericFile" description="GenericFile">
-      <Participants>
-        <Participant nxPartnerId="163841" nxParticipantId="262144" nxLocalPartnerId="163840" nxLocalCertificateId="0" nxConnectionId="196608"
-          description="XiomaHttp" />
-        <Participant nxPartnerId="163842" nxParticipantId="262145" nxLocalPartnerId="163840" nxLocalCertificateId="0" nxConnectionId="196609"
-          description="roma9080" />
-        <Participant nxPartnerId="655360" nxParticipantId="720896" nxLocalPartnerId="163840" nxLocalCertificateId="0" nxConnectionId="688128"
-          description="palermo" />
-      </Participants>
-      <Actions>
-        <Action statusUpdateNxPipelineId="0" start="true" outboundNxPipelineId="65537" nxActionId="294912" name="SendFile" inboundNxPipelineId="65536"
-          end="true">
-          <FollowUpActions />
-          <FollowedActions />
-        </Action>
-      </Actions>
-    </Choreography>
-  </Choreographies>
-  <Certificates>
-    <Certificate type="3" nxCertificateId="557057" name="Tamgroup">
-      <binaryData>
-        MIICozCCAgwCAQEwDQYJKoZIhvcNAQEEBQAwgZkxETAPBgNVBAMTCFRhbWdyb3VwMQswCQYDVQQGEwJVUzEUMBIGA1UEBxMLU2FuIEFuc2VsbW8xEzARBgNVBAgTCkNhbGlmb3JuaWExETAPBgNVBAoTCFRhbWdyb3VwMRQwEgYDVQQLEwtFbmdpbmVlcmluZzEjMCEGCSqGSIb3DQEJARYUc3VwcG9ydEB0YW1ncm91cC5jb20wHhcNMDMwOTEyMTkwNTI3WhcNMTMwOTA5MTkwNTI3WjCBmTERMA8GA1UEAxMIVGFtZ3JvdXAxCzAJBgNVBAYTAlVTMRQwEgYDVQQHEwtTYW4gQW5zZWxtbzETMBEGA1UECBMKQ2FsaWZvcm5pYTERMA8GA1UEChMIVGFtZ3JvdXAxFDASBgNVBAsTC0VuZ2luZWVyaW5nMSMwIQYJKoZIhvcNAQkBFhRzdXBwb3J0QHRhbWdyb3VwLmNvbTCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEA0oiQoC8upCQZGXVChEHj5Ej4yB9KFvbcNtuuQKg0LEGtyM8frBmDnkKpcpI6Em0gD79AQqKrCeth3AcQYgNeOUJQl/3RCRxpRs5O6paW1keDtWfxgD3PHlohiP9TcfAtEKKLa+qfg30NzVGPaJqjGh2kqj/V87HygpeKYVNecEsCAwEAATANBgkqhkiG9w0BAQQFAAOBgQBw9zFi+/ID8u7RxAUBEhx1QV17F46/tJP1tbI6uLmxHbCu+3pkPgS0p7TnRwHBRryW96D5bqPLGC5Uyotv0cmRvvM291SNo0ATqk3BvKiT8nLcvzAKH8jAhFikA/p+0q50IMm6r8kXwP1mY7jTYiKNHeqjYHX9EPuVBO5xkSzGuw==
-      </binaryData>
-    </Certificate>
-  </Certificates>
-  <Partners>
-    <Partner type="1" partnerIdType="Custom" partnerId="roma" nxPartnerId="163840" name="roma">
-      <Connections />
-      <CertificateReferences />
-    </Partner>
-    <Partner type="2" partnerIdType="Custom" partnerId="Xioma" nxPartnerId="163841" name="Xioma">
-      <Connections>
-        <Connection uri="http://www.nexuse2e.org:9080/NEXUSe2e/handler/ebxml20" timeout="30000" synchronousTimeout="0" synchronous="false" secure="true"
-          retries="3" reliable="true" nxTrpId="2" nxConnectionId="196608" nxCertificateId="0" name="Xioma HTTP" messageInterval="3000" />
-      </Connections>
-      <CertificateReferences />
-    </Partner>
-  </Partners>
-  <FrontendPipelines>
-    <Pipeline outbound="false" nxTrpId="1" nxPipelineId="65538" name="ebXML10InboundPipeline" frontend="true"
-      description="ebXML 1.0 Inbound Pipeline">
-      <Pipelets>
-        <Pipelet position="0" nxPipeletId="98306" nxComponentId="32768" name="ebxml10" description="ebxmlHTTPTransportReceiver">
-          <PipeletParams>
-            <PipeletParam value="HttpReceiverService_ebXML_1.0" sequenceNumber="0" paramName="service" nxPipeletParamId="131073" />
-          </PipeletParams>
-        </Pipelet>
-        <Pipelet position="1" nxPipeletId="98307" nxComponentId="32769" name="ebxmlHttpUnpacker" description="ebxmlHttpUnpacker">
-          <PipeletParams />
-        </Pipelet>
-        <Pipelet position="2" nxPipeletId="98308" nxComponentId="32775" name="ebxml10Deserializer" description="ebxml10Deserializer">
-          <PipeletParams />
-        </Pipelet>
-        <Pipelet position="3" nxPipeletId="98309" nxComponentId="32771" name="ebxmlPatcher" description="ebxmlPatcher">
-          <PipeletParams />
-        </Pipelet>
-      </Pipelets>
-    </Pipeline>
-    <Pipeline outbound="true" nxTrpId="1" nxPipelineId="65539" name="ebXML10OutboundPipeline" frontend="true"
-      description="ebXML 1.0 Outbound Pipeline">
-      <Pipelets>
-        <Pipelet position="0" nxPipeletId="98310" nxComponentId="32776" name="ebxml10Serializer" description="ebxml10Serializer">
-          <PipeletParams />
-        </Pipelet>
-        <Pipelet position="1" nxPipeletId="98311" nxComponentId="32773" name="ebxmlHttpPacker" description="ebxmlHttpPacker">
-          <PipeletParams />
-        </Pipelet>
-        <Pipelet position="2" nxPipeletId="98312" nxComponentId="32774" name="ebxmlHttpTransportSender" description="ebxmlHttpTransportSender">
-          <PipeletParams>
-            <PipeletParam value="HttpSenderService_ebXML_1.0" sequenceNumber="0" paramName="service" nxPipeletParamId="131074" />
-          </PipeletParams>
-        </Pipelet>
-      </Pipelets>
-    </Pipeline>
-    <Pipeline outbound="false" nxTrpId="2" nxPipelineId="65540" name="ebXML20InboundPipeline" frontend="true"
-      description="ebXML 2.0 Inbound Pipeline">
-      <Pipelets>
-        <Pipelet position="0" nxPipeletId="98313" nxComponentId="32768" name="ebxml20" description="ebxmlHTTPTransportReceiver">
-          <PipeletParams>
-            <PipeletParam value="HttpReceiverService" sequenceNumber="0" paramName="service" nxPipeletParamId="131075" />
-          </PipeletParams>
-        </Pipelet>
-        <Pipelet position="1" nxPipeletId="98314" nxComponentId="32769" name="ebxmlHttpUnpacker" description="ebxmlHttpUnpacker">
-          <PipeletParams />
-        </Pipelet>
-        <Pipelet position="2" nxPipeletId="98315" nxComponentId="32770" name="ebxml20Deserializer" description="ebxml20Deserializer">
-          <PipeletParams />
-        </Pipelet>
-        <Pipelet position="3" nxPipeletId="98316" nxComponentId="32771" name="ebxmlPatcher" description="ebxmlPatcher">
-          <PipeletParams />
-        </Pipelet>
-      </Pipelets>
-    </Pipeline>
-    <Pipeline outbound="true" nxTrpId="2" nxPipelineId="65541" name="ebXML20OutboundPipeline" frontend="true"
-      description="ebXML 2.0 Outbound Pipeline">
-      <Pipelets>
-        <Pipelet position="0" nxPipeletId="98317" nxComponentId="32772" name="ebxml20Serializer" description="ebxml20Serializer">
-          <PipeletParams />
-        </Pipelet>
-        <Pipelet position="1" nxPipeletId="98318" nxComponentId="32773" name="ebxmlHttpPacker" description="ebxmlHttpPacker">
-          <PipeletParams />
-        </Pipelet>
-        <Pipelet position="2" nxPipeletId="98319" nxComponentId="32774" name="ebxmlHttpTransportSender" description="ebxmlHttpTransportSender">
-          <PipeletParams>
-            <PipeletParam value="HttpSenderService" sequenceNumber="0" paramName="service" nxPipeletParamId="131076" />
-          </PipeletParams>
-        </Pipelet>
-      </Pipelets>
-    </Pipeline>
-    <Pipeline outbound="false" nxTrpId="3" nxPipelineId="65542" name="ebXML20POP3InboundPipeline" frontend="true"
-      description="ebXML 2.0 POP3 Inbound Pipeline">
-      <Pipelets>
-        <Pipelet position="0" nxPipeletId="98320" nxComponentId="32768" name="ebxml20POP3" description="ebxmlPOP3TransportReceiver">
-          <PipeletParams>
-            <PipeletParam value="Pop3ReceiverService" sequenceNumber="0" paramName="service" nxPipeletParamId="131077" />
-          </PipeletParams>
-        </Pipelet>
-        <Pipelet position="1" nxPipeletId="98321" nxComponentId="32777" name="ebxmlPOP3Unpacker" description="ebxmlPOP3Unpacker">
-          <PipeletParams />
-        </Pipelet>
-        <Pipelet position="2" nxPipeletId="98322" nxComponentId="32770" name="ebxml20Deserializer" description="ebxml20Deserializer">
-          <PipeletParams />
-        </Pipelet>
-        <Pipelet position="3" nxPipeletId="98323" nxComponentId="32771" name="ebxmlPatcher" description="ebxmlPatcher">
-          <PipeletParams />
-        </Pipelet>
-      </Pipelets>
-    </Pipeline>
-    <Pipeline outbound="true" nxTrpId="3" nxPipelineId="65543" name="ebXML20SMTPOutboundPipeline" frontend="true"
-      description="ebXML 2.0 SMTP Outbound Pipeline">
-      <Pipelets>
-        <Pipelet position="0" nxPipeletId="98324" nxComponentId="32772" name="ebxml20SMTPSerializer" description="ebxml20SMTPSerializer">
-          <PipeletParams />
-        </Pipelet>
-        <Pipelet position="1" nxPipeletId="98325" nxComponentId="32778" name="ebxmlSMTPPacker" description="ebxmlSMTPPacker">
-          <PipeletParams />
-        </Pipelet>
-        <Pipelet position="2" nxPipeletId="98326" nxComponentId="32774" name="ebxmlSMTPTransportSender" description="ebxmlSMTPTransportSender">
-          <PipeletParams>
-            <PipeletParam value="SmtpSenderService" sequenceNumber="0" paramName="service" nxPipeletParamId="131078" />
-          </PipeletParams>
-        </Pipelet>
-      </Pipelets>
-    </Pipeline>
-  </FrontendPipelines>
-  <BackendPipeline>
-    <Pipeline outbound="false" nxTrpId="0" nxPipelineId="65536" name="FileSaveInboundPipeline" frontend="false"
-      description="FileSaveInboundPipeline">
-      <Pipelets>
-        <Pipelet position="0" nxPipeletId="98304" nxComponentId="32782" name="FileSave" description="FileSave">
-          <PipeletParams>
-            <PipeletParam value="${nexus.server.root}/temp" sequenceNumber="0" paramName="directory" nxPipeletParamId="131072" />
-          </PipeletParams>
-        </Pipelet>
-      </Pipelets>
-    </Pipeline>
-    <Pipeline outbound="true" nxTrpId="0" nxPipelineId="65537" name="FileLoadOutboundPipeline" frontend="false"
-      description="FileLoadOutboundPipeline">
-      <Pipelets>
-        <Pipelet position="0" nxPipeletId="98305" nxComponentId="32783" name="FileLoad" description="FileLoad">
-          <PipeletParams />
-        </Pipelet>
-      </Pipelets>
-    </Pipeline>
-  </BackendPipeline>
-  <TRPs>
-    <TRP version="1.0" transport="http" protocol="ebxml" nxTRPId="1" />
-    <TRP version="2.0" transport="http" protocol="ebxml" nxTRPId="2" />
-    <TRP version="2.0" transport="mail" protocol="ebxml" nxTRPId="3" />
-    <TRP version="1.0" transport="http" protocol="httpplain" nxTRPId="4" />
-  </TRPs>
-  <Components>
-    <Component type="2" nxComponentId="32791" name="DBLogger" description="Database Root Logger" className="org.nexuse2e.logging.DatabaseLogger" />
-    <Component type="3" nxComponentId="32797" name="DirectoryScannerService" description="Directory Scanner Service"
-      className="org.nexuse2e.service.DirectoryScannerService" />
-    <Component type="1" nxComponentId="32775" name="ebXML10Deserializer" description="ebXML 1.0 Deserializer Pipelet"
-      className="org.nexuse2e.messaging.ebxml.v10.HeaderDeserializer" />
-    <Component type="1" nxComponentId="32776" name="ebXML10Serializer" description="ebXML 1.0 Serializer Pipelet"
-      className="org.nexuse2e.messaging.ebxml.v10.HeaderSerializer" />
-    <Component type="1" nxComponentId="32770" name="ebXML20Deserializer" description="ebXML 2.0 Deserializer Pipelet"
-      className="org.nexuse2e.messaging.ebxml.v20.HeaderDeserializer" />
-    <Component type="1" nxComponentId="32772" name="ebXML20Serializer" description="ebXML 2.0 Serializer Pipelet"
-      className="org.nexuse2e.messaging.ebxml.v20.HeaderSerializer" />
-    <Component type="1" nxComponentId="32773" name="ebXMLHttpPacker" description="ebXMLHttpPacker Pipelet"
-      className="org.nexuse2e.messaging.ebxml.HTTPMessagePackager" />
-    <Component type="1" nxComponentId="32769" name="ebXMLHttpUnpacker" description="ebXMLHttpUnpacker Pipelet"
-      className="org.nexuse2e.messaging.ebxml.HTTPMessageUnpackager" />
-    <Component type="1" nxComponentId="32771" name="ebXMLPatcher" description="ebXMLPatcher Pipelet"
-      className="org.nexuse2e.messaging.ebxml.MessagePojoPatcher" />
-    <Component type="1" nxComponentId="32777" name="ebXMLPop3Unpacker" description="ebXMLPop3Unpacker Pipelet"
-      className="org.nexuse2e.messaging.ebxml.MimeMessageUnpackager" />
-    <Component type="1" nxComponentId="32778" name="ebXMLSmtpPacker" description="ebXMLSmtpPacker Pipelet"
-      className="org.nexuse2e.messaging.ebxml.MimeMessagePackager" />
-    <Component type="2" nxComponentId="32792" name="EmailLogger" description="Email Logger" className="org.nexuse2e.logging.EmailLogger" />
-    <Component type="1" nxComponentId="32783" name="FileSystemLoadPipelet" description="FileSystemLoadPipelet"
-      className="org.nexuse2e.backend.pipelets.FileSystemLoadPipelet" />
-    <Component type="1" nxComponentId="32782" name="FileSystemSavePipelet" description="FileSystemSavePipelet"
-      className="org.nexuse2e.backend.pipelets.FileSystemSavePipelet" />
-    <Component type="3" nxComponentId="32790" name="FtpPollingReceiver" description="The polling receiver service for FTP (client)"
-      className="org.nexuse2e.service.ftp.FtpPollingReceiverService" />
-    <Component type="3" nxComponentId="32789" name="FtpReceiver" description="The receiver service for FTP (server)"
-      className="org.nexuse2e.service.ftp.FtpReceiverService" />
-    <Component type="3" nxComponentId="32788" name="FtpSender" description="The sender service for FTP"
-      className="org.nexuse2e.service.ftp.FtpSenderService" />
-    <Component type="1" nxComponentId="32796" name="HTTPIntegrationPipelet" description="HTTP Integration Pipelet"
-      className="org.nexuse2e.backend.pipelets.HTTPIntegrationPipelet" />
-    <Component type="1" nxComponentId="32780" name="httpPlainHeaderDeserializer" description="httpPlainHeaderDeserializer Pipelet"
-      className="org.nexuse2e.messaging.httpplain.HTTPPlainHeaderDeserializer" />
-    <Component type="1" nxComponentId="32781" name="httpPlainMessagePacker" description="httpPlainMessagePacker Pipelet"
-      className="org.nexuse2e.messaging.httpplain.HTTPPlainMessagePacker" />
-    <Component type="1" nxComponentId="32779" name="httpPlainMessageUnpacker" description="httpPlainMessageUnpacker Pipelet"
-      className="org.nexuse2e.messaging.httpplain.HTTPPlainMessageUnpacker" />
-    <Component type="3" nxComponentId="32785" name="HttpReceiver" description="The receiver service for HTTP"
-      className="org.nexuse2e.service.http.HttpReceiverService" />
-    <Component type="3" nxComponentId="32784" name="HttpSender" description="The sender service for HTTP"
-      className="org.nexuse2e.service.http.HttpSenderService" />
-    <Component type="3" nxComponentId="32787" name="Pop3Receiver" description="The receiver service for POP3"
-      className="org.nexuse2e.service.mail.Pop3Receiver" />
-    <Component type="3" nxComponentId="32793" name="SchedulingService" description="The scheduling service"
-      className="org.nexuse2e.service.SchedulingServiceImpl" />
-    <Component type="3" nxComponentId="32786" name="SmtpSender" description="The sender service for SMTP"
-      className="org.nexuse2e.service.mail.SmtpSender" />
-    <Component type="1" nxComponentId="32768" name="TransportReceiver" description="TransportReceiver"
-      className="org.nexuse2e.transport.TransportReceiver" />
-    <Component type="1" nxComponentId="32774" name="TransportSender" description="TransportSender" className="org.nexuse2e.transport.TransportSender" />
-    <Component type="1" nxComponentId="32794" name="XMLDataMappingPipelet" description="XML Data Mapping Pipelet"
-      className="org.nexuse2e.backend.pipelets.XMLDataMappingPipelet" />
-    <Component type="1" nxComponentId="32795" name="XSLTPipelet" description="XSLT Transformation Pipelet"
-      className="org.nexuse2e.backend.pipelets.XSLTPipelet" />
-  </Components>
-  <Loggers>
-    <Logger nxLoggerId="393216" nxComponentId="32791" name="DB Root Logger" filter="group_core,group_database,group_backend,group_frontend,group_ui"
-      autostart="true">
-      <LoggerParams />
-    </Logger>
-  </Loggers>
-  <Services>
-    <Service position="0" nxServiceId="327691" nxComponentId="32788" name="FtpSenderService" description="The default sender service for FTP"
-      autostart="false">
-      <ServiceParams />
-    </Service>
-    <Service position="0" nxServiceId="327690" nxComponentId="32790" name="FtpPollingReceiverService"
-      description="The default polling receiver service for FTP (client)" autostart="false">
-      <ServiceParams />
-    </Service>
-    <Service position="0" nxServiceId="327689" nxComponentId="32789" name="FtpReceiverService"
-      description="The default receiver service for FTP (server)" autostart="false">
-      <ServiceParams />
-    </Service>
-    <Service position="0" nxServiceId="327688" nxComponentId="32793" name="SchedulingService" description="A service for schduling tasks"
-      autostart="true">
-      <ServiceParams />
-    </Service>
-    <Service position="0" nxServiceId="327687" nxComponentId="32787" name="Pop3ReceiverService" description="The default receiver service for POP3"
-      autostart="false">
-      <ServiceParams>
-        <ServiceParam value="host" sequenceNumber="0" paramName="host" />
-        <ServiceParam value="user" sequenceNumber="0" paramName="user" />
-        <ServiceParam value="password" sequenceNumber="0" paramName="password" />
-        <ServiceParam value="15" sequenceNumber="0" paramName="pollInterval" />
-        <ServiceParam value="false" sequenceNumber="0" paramName="autopoll" />
-      </ServiceParams>
-    </Service>
-    <Service position="0" nxServiceId="327686" nxComponentId="32786" name="SmtpSenderService" description="The default sender service for SMTP"
-      autostart="false">
-      <ServiceParams>
-        <ServiceParam value="host" sequenceNumber="0" paramName="host" />
-        <ServiceParam value="user" sequenceNumber="0" paramName="user" />
-        <ServiceParam value="password" sequenceNumber="0" paramName="password" />
-        <ServiceParam value="email@address.com" sequenceNumber="0" paramName="email" />
-      </ServiceParams>
-    </Service>
-    <Service position="0" nxServiceId="327685" nxComponentId="32785" name="HttpPlainReceiverService"
-      description="The default receiver service for HTTPPlain" autostart="true">
-      <ServiceParams>
-        <ServiceParam value="httpplain" sequenceNumber="0" paramName="logical_name" />
-      </ServiceParams>
-    </Service>
-    <Service position="0" nxServiceId="327684" nxComponentId="32784" name="HttpPlainSenderService"
-      description="The default sender service for HTTPPlain" autostart="true">
-      <ServiceParams />
-    </Service>
-    <Service position="0" nxServiceId="327683" nxComponentId="32785" name="HttpReceiverService" description="The default receiver service for HTTP"
-      autostart="true">
-      <ServiceParams>
-        <ServiceParam value="ebxml20" sequenceNumber="0" paramName="logical_name" />
-      </ServiceParams>
-    </Service>
-    <Service position="0" nxServiceId="327682" nxComponentId="32784" name="HttpSenderService" description="The default sender service for HTTP"
-      autostart="true">
-      <ServiceParams />
-    </Service>
-    <Service position="0" nxServiceId="327681" nxComponentId="32785" name="HttpReceiverService_ebXML_1.0" description="A receiver service for HTTP"
-      autostart="true">
-      <ServiceParams>
-        <ServiceParam value="ebxml10" sequenceNumber="0" paramName="logical_name" />
-      </ServiceParams>
-    </Service>
-    <Service position="0" nxServiceId="327680" nxComponentId="32784" name="HttpSenderService_ebXML_1.0" description="A sender service for HTTP"
-      autostart="true">
-      <ServiceParams />
-    </Service>
-  </Services>
-  <Users>
-    <User visible="true" password="0DPiKuNIrrVmD8IUCuw1hQxNqZc=" nxUserId="491521" nxRoleId="425984" loginName="admin" lastName="User"
-      firstName="Administrator" active="true" />
-    <User visible="false" password="system" nxUserId="491520" nxRoleId="0" loginName="system" lastName="User" firstName="System" active="true" />
-  </Users>
-  <Roles>
-    <Role nxRoleId="425984" name="Admin" description="Administrator Role">
-      <Grants>
-        <Grant target="*" />
-      </Grants>
-    </Role>
-  </Roles>
-  <Mappings />
+    <Choreographies>
+        <Choreography nxChoreographyId="1" name="GenericFile" description="GenericFile">
+            <Participants>
+                <Participant nxPartnerId="2" nxParticipantId="1" nxLocalPartnerId="1" nxLocalCertificateId="0" nxConnectionId="1" description="XiomaHttp"/>
+            </Participants>
+            <Actions>
+                <Action statusUpdateNxPipelineId="0" start="true" outboundNxPipelineId="2" nxActionId="1" name="SendFile" inboundNxPipelineId="1" end="true">
+                    <FollowUpActions/>
+                    <FollowedActions/>
+                </Action>
+            </Actions>
+        </Choreography>
+    </Choreographies>
+    <Certificates/>
+    <Partners>
+        <Partner type="1" partnerIdType="Custom" partnerId="Localhost" nxPartnerId="1" name="Localhost">
+            <Connections/>
+        </Partner>
+        <Partner type="2" partnerIdType="Custom" partnerId="Xioma" nxPartnerId="2" name="Xioma">
+            <Connections>
+                <Connection uri="http://localhost:8080/NEXUSe2e/handler/ebxml20" timeout="30000" synchronousTimeout="0" synchronous="false" secure="true" retries="3" reliable="true" nxTrpId="2" nxConnectionId="1" nxCertificateId="0" name="Xioma HTTP" messageInterval="3000"/>
+            </Connections>
+        </Partner>
+    </Partners>
+    <FrontendPipelines>
+        <Pipeline outbound="false" nxTrpId="1" nxPipelineId="3" name="ebXML10InboundPipeline" frontend="true" description="ebXML 1.0 Inbound Pipeline">
+            <Pipelets>
+                <Pipelet position="0" nxPipeletId="3" nxComponentId="1" name="ebxml10" description="ebxmlHTTPTransportReceiver">
+                    <PipeletParams>
+                        <PipeletParam value="HttpReceiverService_ebXML_1.0" sequenceNumber="0" paramName="service" nxPipeletParamId="2"/>
+                    </PipeletParams>
+                </Pipelet>
+                <Pipelet position="1" nxPipeletId="4" nxComponentId="2" name="ebxmlHttpUnpacker" description="ebxmlHttpUnpacker">
+                    <PipeletParams/>
+                </Pipelet>
+                <Pipelet position="2" nxPipeletId="5" nxComponentId="8" name="ebxml10Deserializer" description="ebxml10Deserializer">
+                    <PipeletParams/>
+                </Pipelet>
+                <Pipelet position="3" nxPipeletId="6" nxComponentId="4" name="ebxmlPatcher" description="ebxmlPatcher">
+                    <PipeletParams/>
+                </Pipelet>
+            </Pipelets>
+        </Pipeline>
+        <Pipeline outbound="true" nxTrpId="1" nxPipelineId="4" name="ebXML10OutboundPipeline" frontend="true" description="ebXML 1.0 Outbound Pipeline">
+            <Pipelets>
+                <Pipelet position="0" nxPipeletId="7" nxComponentId="9" name="ebxml10Serializer" description="ebxml10Serializer">
+                    <PipeletParams/>
+                </Pipelet>
+                <Pipelet position="1" nxPipeletId="8" nxComponentId="6" name="ebxmlHttpPacker" description="ebxmlHttpPacker">
+                    <PipeletParams/>
+                </Pipelet>
+                <Pipelet position="2" nxPipeletId="9" nxComponentId="7" name="ebxmlHttpTransportSender" description="ebxmlHttpTransportSender">
+                    <PipeletParams>
+                        <PipeletParam value="HttpSenderService_ebXML_1.0" sequenceNumber="0" paramName="service" nxPipeletParamId="3"/>
+                    </PipeletParams>
+                </Pipelet>
+            </Pipelets>
+        </Pipeline>
+        <Pipeline outbound="false" nxTrpId="2" nxPipelineId="5" name="ebXML20InboundPipeline" frontend="true" description="ebXML 2.0 Inbound Pipeline">
+            <Pipelets>
+                <Pipelet position="0" nxPipeletId="10" nxComponentId="1" name="ebxml20" description="ebxmlHTTPTransportReceiver">
+                    <PipeletParams>
+                        <PipeletParam value="HttpReceiverService" sequenceNumber="0" paramName="service" nxPipeletParamId="4"/>
+                    </PipeletParams>
+                </Pipelet>
+                <Pipelet position="1" nxPipeletId="11" nxComponentId="2" name="ebxmlHttpUnpacker" description="ebxmlHttpUnpacker">
+                    <PipeletParams/>
+                </Pipelet>
+                <Pipelet position="2" nxPipeletId="12" nxComponentId="3" name="ebxml20Deserializer" description="ebxml20Deserializer">
+                    <PipeletParams/>
+                </Pipelet>
+                <Pipelet position="3" nxPipeletId="13" nxComponentId="4" name="ebxmlPatcher" description="ebxmlPatcher">
+                    <PipeletParams/>
+                </Pipelet>
+            </Pipelets>
+        </Pipeline>
+        <Pipeline outbound="true" nxTrpId="2" nxPipelineId="6" name="ebXML20OutboundPipeline" frontend="true" description="ebXML 2.0 Outbound Pipeline">
+            <Pipelets>
+                <Pipelet position="0" nxPipeletId="14" nxComponentId="5" name="ebxml20Serializer" description="ebxml20Serializer">
+                    <PipeletParams/>
+                </Pipelet>
+                <Pipelet position="1" nxPipeletId="15" nxComponentId="6" name="ebxmlHttpPacker" description="ebxmlHttpPacker">
+                    <PipeletParams/>
+                </Pipelet>
+                <Pipelet position="2" nxPipeletId="16" nxComponentId="7" name="ebxmlHttpTransportSender" description="ebxmlHttpTransportSender">
+                    <PipeletParams>
+                        <PipeletParam value="HttpSenderService" sequenceNumber="0" paramName="service" nxPipeletParamId="5"/>
+                    </PipeletParams>
+                </Pipelet>
+            </Pipelets>
+        </Pipeline>
+        <Pipeline outbound="false" nxTrpId="3" nxPipelineId="7" name="ebXML20POP3InboundPipeline" frontend="true" description="ebXML 2.0 POP3 Inbound Pipeline">
+            <Pipelets>
+                <Pipelet position="0" nxPipeletId="17" nxComponentId="1" name="ebxml20POP3" description="ebxmlPOP3TransportReceiver">
+                    <PipeletParams>
+                        <PipeletParam value="Pop3ReceiverService" sequenceNumber="0" paramName="service" nxPipeletParamId="6"/>
+                    </PipeletParams>
+                </Pipelet>
+                <Pipelet position="1" nxPipeletId="18" nxComponentId="10" name="ebxmlPOP3Unpacker" description="ebxmlPOP3Unpacker">
+                    <PipeletParams/>
+                </Pipelet>
+                <Pipelet position="2" nxPipeletId="19" nxComponentId="3" name="ebxml20Deserializer" description="ebxml20Deserializer">
+                    <PipeletParams/>
+                </Pipelet>
+                <Pipelet position="3" nxPipeletId="20" nxComponentId="4" name="ebxmlPatcher" description="ebxmlPatcher">
+                    <PipeletParams/>
+                </Pipelet>
+            </Pipelets>
+        </Pipeline>
+        <Pipeline outbound="true" nxTrpId="3" nxPipelineId="8" name="ebXML20SMTPOutboundPipeline" frontend="true" description="ebXML 2.0 SMTP Outbound Pipeline">
+            <Pipelets>
+                <Pipelet position="0" nxPipeletId="21" nxComponentId="5" name="ebxml20SMTPSerializer" description="ebxml20SMTPSerializer">
+                    <PipeletParams/>
+                </Pipelet>
+                <Pipelet position="1" nxPipeletId="22" nxComponentId="11" name="ebxmlSMTPPacker" description="ebxmlSMTPPacker">
+                    <PipeletParams/>
+                </Pipelet>
+                <Pipelet position="2" nxPipeletId="23" nxComponentId="7" name="ebxmlSMTPTransportSender" description="ebxmlSMTPTransportSender">
+                    <PipeletParams>
+                        <PipeletParam value="SmtpSenderService" sequenceNumber="0" paramName="service" nxPipeletParamId="7"/>
+                    </PipeletParams>
+                </Pipelet>
+            </Pipelets>
+        </Pipeline>
+        <Pipeline outbound="false" nxTrpId="5" nxPipelineId="9" name="WSPlainInboundPipeline" frontend="true" description="Inbound pipeline for plain web service">
+            <Pipelets>
+                <Pipelet position="0" nxPipeletId="24" nxComponentId="1" name="TransportReceiver" description="TransportReceiver">
+                    <PipeletParams>
+                        <PipeletParam value="WSPlainReceiverService" sequenceNumber="0" paramName="service" nxPipeletParamId="8" label="Service"/>
+                    </PipeletParams>
+                </Pipelet>
+            </Pipelets>
+        </Pipeline>
+        <Pipeline outbound="true" nxTrpId="5" nxPipelineId="10" name="WSPlainOutboundPipeline" frontend="true" description="Outbound pipeline for plain web service">
+            <Pipelets>
+                <Pipelet position="0" nxPipeletId="25" nxComponentId="7" name="TransportSender" description="TransportSender">
+                    <PipeletParams>
+                        <PipeletParam value="WSPlainSenderService" sequenceNumber="0" paramName="service" nxPipeletParamId="9" label="Service"/>
+                    </PipeletParams>
+                </Pipelet>
+            </Pipelets>
+        </Pipeline>
+        <Pipeline outbound="false" nxTrpId="6" nxPipelineId="11" name="WSCIDXInboundPipeline" frontend="true" description="Inbound pipeline for CIDX web service">
+            <Pipelets>
+                <Pipelet position="0" nxPipeletId="26" nxComponentId="1" name="TransportReceiver" description="TransportReceiver">
+                    <PipeletParams>
+                        <PipeletParam value="WSCIDXReceiverService" sequenceNumber="0" paramName="service" nxPipeletParamId="10" label="Service"/>
+                    </PipeletParams>
+                </Pipelet>
+                <Pipelet position="1" nxPipeletId="27" nxComponentId="33" name="CIDXRoutingPipelet" description="Extracts routing information from CIDX documents">
+                    <PipeletParams>
+                        <PipeletParam value="/OrderCreate/Header/ThisDocumentIdentifier/DocumentIdentifier" sequenceNumber="0" paramName="conversationIdXpath" nxPipeletParamId="11" label="XPath statement to conversation ID"/>
+                        <PipeletParam sequenceNumber="1000000000" paramName="actionMap" nxPipeletParamId="12"/>
+                        <PipeletParam value="GenericFile/SendFile" sequenceNumber="1" paramName="actionMap" nxPipeletParamId="13" label="OrderCreate"/>
+                    </PipeletParams>
+                </Pipelet>
+            </Pipelets>
+        </Pipeline>
+        <Pipeline outbound="true" nxTrpId="6" nxPipelineId="12" name="WSCIDXOutboundPipeline" frontend="true" description="Outbound pipeline for CIDX web service">
+            <Pipelets>
+                <Pipelet position="0" nxPipeletId="28" nxComponentId="7" name="TransportSender" description="TransportSender">
+                    <PipeletParams>
+                        <PipeletParam value="WSCIDXSenderService" sequenceNumber="0" paramName="service" nxPipeletParamId="14" label="Service"/>
+                    </PipeletParams>
+                </Pipelet>
+            </Pipelets>
+        </Pipeline>
+    </FrontendPipelines>
+    <BackendPipeline>
+        <Pipeline outbound="false" nxTrpId="0" nxPipelineId="1" name="FileSaveInboundPipeline" frontend="false" description="FileSaveInboundPipeline">
+            <Pipelets>
+                <Pipelet position="0" nxPipeletId="1" nxComponentId="15" name="FileSave" description="FileSave">
+                    <PipeletParams>
+                        <PipeletParam value="${nexus.server.root}/temp" sequenceNumber="0" paramName="directory" nxPipeletParamId="1"/>
+                    </PipeletParams>
+                </Pipelet>
+            </Pipelets>
+        </Pipeline>
+        <Pipeline outbound="true" nxTrpId="0" nxPipelineId="2" name="FileLoadOutboundPipeline" frontend="false" description="FileLoadOutboundPipeline">
+            <Pipelets>
+                <Pipelet position="0" nxPipeletId="2" nxComponentId="16" name="FileLoad" description="FileLoad">
+                    <PipeletParams/>
+                </Pipelet>
+            </Pipelets>
+        </Pipeline>
+    </BackendPipeline>
+    <TRPs>
+        <TRP version="1.0" transport="http" protocol="ebxml" nxTRPId="1"/>
+        <TRP version="2.0" transport="http" protocol="ebxml" nxTRPId="2"/>
+        <TRP version="2.0" transport="mail" protocol="ebxml" nxTRPId="3"/>
+        <TRP version="1.0" transport="http" protocol="httpplain" nxTRPId="4"/>
+        <TRP version="1.0" transport="http" protocol="wsplain" nxTRPId="5"/>
+        <TRP version="1.0" transport="http" protocol="wscidx" nxTRPId="6"/>
+    </TRPs>
+    <Components>
+        <Component type="1" nxComponentId="33" name="CIDXRoutingPipelet" description="Extracts routing information from CIDX documents" className="org.nexuse2e.messaging.cidx.CidxRoutingPipelet"/>
+        <Component type="2" nxComponentId="24" name="DBLogger" description="Database Root Logger" className="org.nexuse2e.logging.DatabaseLogger"/>
+        <Component type="3" nxComponentId="30" name="DirectoryScannerService" description="Directory Scanner Service" className="org.nexuse2e.service.DirectoryScannerService"/>
+        <Component type="1" nxComponentId="8" name="ebXML10Deserializer" description="ebXML 1.0 Deserializer Pipelet" className="org.nexuse2e.messaging.ebxml.v10.HeaderDeserializer"/>
+        <Component type="1" nxComponentId="9" name="ebXML10Serializer" description="ebXML 1.0 Serializer Pipelet" className="org.nexuse2e.messaging.ebxml.v10.HeaderSerializer"/>
+        <Component type="1" nxComponentId="3" name="ebXML20Deserializer" description="ebXML 2.0 Deserializer Pipelet" className="org.nexuse2e.messaging.ebxml.v20.HeaderDeserializer"/>
+        <Component type="1" nxComponentId="5" name="ebXML20Serializer" description="ebXML 2.0 Serializer Pipelet" className="org.nexuse2e.messaging.ebxml.v20.HeaderSerializer"/>
+        <Component type="1" nxComponentId="6" name="ebXMLHttpPacker" description="ebXMLHttpPacker Pipelet" className="org.nexuse2e.messaging.ebxml.HTTPMessagePackager"/>
+        <Component type="1" nxComponentId="2" name="ebXMLHttpUnpacker" description="ebXMLHttpUnpacker Pipelet" className="org.nexuse2e.messaging.ebxml.HTTPMessageUnpackager"/>
+        <Component type="1" nxComponentId="4" name="ebXMLPatcher" description="ebXMLPatcher Pipelet" className="org.nexuse2e.messaging.ebxml.MessagePojoPatcher"/>
+        <Component type="1" nxComponentId="10" name="ebXMLPop3Unpacker" description="ebXMLPop3Unpacker Pipelet" className="org.nexuse2e.messaging.ebxml.MimeMessageUnpackager"/>
+        <Component type="1" nxComponentId="11" name="ebXMLSmtpPacker" description="ebXMLSmtpPacker Pipelet" className="org.nexuse2e.messaging.ebxml.MimeMessagePackager"/>
+        <Component type="2" nxComponentId="25" name="EmailLogger" description="Email Logger" className="org.nexuse2e.logging.EmailLogger"/>
+        <Component type="1" nxComponentId="16" name="FileSystemLoadPipelet" description="FileSystemLoadPipelet" className="org.nexuse2e.backend.pipelets.FileSystemLoadPipelet"/>
+        <Component type="1" nxComponentId="15" name="FileSystemSavePipelet" description="FileSystemSavePipelet" className="org.nexuse2e.backend.pipelets.FileSystemSavePipelet"/>
+        <Component type="3" nxComponentId="23" name="FtpPollingReceiver" description="The polling receiver service for FTP (client)" className="org.nexuse2e.service.ftp.FtpPollingReceiverService"/>
+        <Component type="3" nxComponentId="22" name="FtpReceiver" description="The receiver service for FTP (server)" className="org.nexuse2e.service.ftp.FtpReceiverService"/>
+        <Component type="3" nxComponentId="21" name="FtpSender" description="The sender service for FTP" className="org.nexuse2e.service.ftp.FtpSenderService"/>
+        <Component type="1" nxComponentId="29" name="HTTPIntegrationPipelet" description="HTTP Integration Pipelet" className="org.nexuse2e.backend.pipelets.HTTPIntegrationPipelet"/>
+        <Component type="1" nxComponentId="13" name="httpPlainHeaderDeserializer" description="httpPlainHeaderDeserializer Pipelet" className="org.nexuse2e.messaging.httpplain.HTTPPlainHeaderDeserializer"/>
+        <Component type="1" nxComponentId="14" name="httpPlainMessagePacker" description="httpPlainMessagePacker Pipelet" className="org.nexuse2e.messaging.httpplain.HTTPPlainMessagePacker"/>
+        <Component type="1" nxComponentId="12" name="httpPlainMessageUnpacker" description="httpPlainMessageUnpacker Pipelet" className="org.nexuse2e.messaging.httpplain.HTTPPlainMessageUnpacker"/>
+        <Component type="3" nxComponentId="18" name="HttpReceiver" description="The receiver service for HTTP" className="org.nexuse2e.service.http.HttpReceiverService"/>
+        <Component type="3" nxComponentId="17" name="HttpSender" description="The sender service for HTTP" className="org.nexuse2e.service.http.HttpSenderService"/>
+        <Component type="3" nxComponentId="20" name="Pop3Receiver" description="The receiver service for POP3" className="org.nexuse2e.service.mail.Pop3Receiver"/>
+        <Component type="3" nxComponentId="26" name="SchedulingService" description="The scheduling service" className="org.nexuse2e.service.SchedulingServiceImpl"/>
+        <Component type="3" nxComponentId="19" name="SmtpSender" description="The sender service for SMTP" className="org.nexuse2e.service.mail.SmtpSender"/>
+        <Component type="1" nxComponentId="1" name="TransportReceiver" description="TransportReceiver" className="org.nexuse2e.transport.TransportReceiver"/>
+        <Component type="1" nxComponentId="7" name="TransportSender" description="TransportSender" className="org.nexuse2e.transport.TransportSender"/>
+        <Component type="3" nxComponentId="32" name="WSClientService" description="Client component for frontend web services" className="org.nexuse2e.service.ws.WSClientService"/>
+        <Component type="3" nxComponentId="31" name="WSDispatcherService" description="Dispatcher service for frontend web services" className="org.nexuse2e.service.ws.WSDispatcherService"/>
+        <Component type="1" nxComponentId="27" name="XMLDataMappingPipelet" description="XML Data Mapping Pipelet" className="org.nexuse2e.backend.pipelets.XMLDataMappingPipelet"/>
+        <Component type="1" nxComponentId="28" name="XSLTPipelet" description="XSLT Transformation Pipelet" className="org.nexuse2e.backend.pipelets.XSLTPipelet"/>
+    </Components>
+    <Loggers>
+        <Logger nxLoggerId="1" nxComponentId="24" name="DB Root Logger" filter="group_core,group_database,group_backend,group_frontend,group_ui" autostart="true">
+            <LoggerParams/>
+        </Logger>
+    </Loggers>
+    <Services>
+        <Service position="0" nxServiceId="1" nxComponentId="17" name="HttpSenderService_ebXML_1.0" description="A sender service for HTTP" autostart="true">
+            <ServiceParams/>
+        </Service>
+        <Service position="0" nxServiceId="15" nxComponentId="31" name="WSPlainReceiverService" autostart="true">
+            <ServiceParams>
+                <ServiceParam value="XML_DOCUMENT" sequenceNumber="0" paramName="serviceType" label="Web service type"/>
+                <ServiceParam value="/wsplain" sequenceNumber="1" paramName="url" label="Web service URL"/>
+            </ServiceParams>
+        </Service>
+        <Service position="0" nxServiceId="14" nxComponentId="32" name="WSCIDXSenderService" autostart="true">
+            <ServiceParams>
+                <ServiceParam value="CIDX_DOCUMENT" sequenceNumber="0" paramName="serviceType" label="Web service type"/>
+            </ServiceParams>
+        </Service>
+        <Service position="0" nxServiceId="13" nxComponentId="31" name="WSCIDXReceiverService" autostart="true">
+            <ServiceParams>
+                <ServiceParam value="CIDX_DOCUMENT" sequenceNumber="0" paramName="serviceType" label="Web service type"/>
+                <ServiceParam value="/wscidx" sequenceNumber="1" paramName="url" label="Web service URL"/>
+            </ServiceParams>
+        </Service>
+        <Service position="0" nxServiceId="12" nxComponentId="21" name="FtpSenderService" description="The default sender service for FTP" autostart="false">
+            <ServiceParams/>
+        </Service>
+        <Service position="0" nxServiceId="11" nxComponentId="23" name="FtpPollingReceiverService" description="The default polling receiver service for FTP (client)" autostart="false">
+            <ServiceParams/>
+        </Service>
+        <Service position="0" nxServiceId="10" nxComponentId="22" name="FtpReceiverService" description="The default receiver service for FTP (server)" autostart="false">
+            <ServiceParams/>
+        </Service>
+        <Service position="0" nxServiceId="9" nxComponentId="26" name="SchedulingService" description="A service for schduling tasks" autostart="true">
+            <ServiceParams/>
+        </Service>
+        <Service position="0" nxServiceId="8" nxComponentId="20" name="Pop3ReceiverService" description="The default receiver service for POP3" autostart="false">
+            <ServiceParams/>
+        </Service>
+        <Service position="0" nxServiceId="7" nxComponentId="19" name="SmtpSenderService" description="The default sender service for SMTP" autostart="true">
+            <ServiceParams/>
+        </Service>
+        <Service position="0" nxServiceId="6" nxComponentId="18" name="HttpPlainReceiverService" description="The default receiver service for HTTPPlain" autostart="true">
+            <ServiceParams>
+                <ServiceParam value="httpplain" sequenceNumber="0" paramName="logical_name"/>
+            </ServiceParams>
+        </Service>
+        <Service position="0" nxServiceId="5" nxComponentId="17" name="HttpPlainSenderService" description="The default sender service for HTTPPlain" autostart="true">
+            <ServiceParams/>
+        </Service>
+        <Service position="0" nxServiceId="4" nxComponentId="18" name="HttpReceiverService" description="The default receiver service for HTTP" autostart="true">
+            <ServiceParams>
+                <ServiceParam value="ebxml20" sequenceNumber="0" paramName="logical_name"/>
+            </ServiceParams>
+        </Service>
+        <Service position="0" nxServiceId="3" nxComponentId="17" name="HttpSenderService" description="The default sender service for HTTP" autostart="true">
+            <ServiceParams/>
+        </Service>
+        <Service position="0" nxServiceId="2" nxComponentId="18" name="HttpReceiverService_ebXML_1.0" description="A receiver service for HTTP" autostart="true">
+            <ServiceParams>
+                <ServiceParam value="ebxml10" sequenceNumber="0" paramName="logical_name"/>
+            </ServiceParams>
+        </Service>
+        <Service position="0" nxServiceId="16" nxComponentId="32" name="WSPlainSenderService" autostart="true">
+            <ServiceParams>
+                <ServiceParam value="XML_DOCUMENT" sequenceNumber="0" paramName="serviceType" label="Web service type"/>
+            </ServiceParams>
+        </Service>
+    </Services>
+    <Users>
+        <User visible="true" password="0DPiKuNIrrVmD8IUCuw1hQxNqZc=" nxUserId="2" nxRoleId="1" loginName="admin" lastName="User" firstName="Administrator" active="true"/>
+        <User visible="false" password="system" nxUserId="1" nxRoleId="0" loginName="system" lastName="User" firstName="System" active="true"/>
+    </Users>
+    <Roles>
+        <Role nxRoleId="1" name="Admin" description="Administrator Role">
+            <Grants>
+                <Grant target="*"/>
+            </Grants>
+        </Role>
+    </Roles>
+    <Mappings/>
 </NEXUSe2eConfiguration>
