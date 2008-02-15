@@ -558,6 +558,21 @@ public class EngineConfiguration {
         configDao.deletePipeline( pipeline, null, null );
     }
 
+    public void deleteTrpInDB( TRPPojo trp ) throws NexusException {
+        if (trp == null) {
+            return;
+        }
+        ConfigDAO configDao = null;
+        try {
+            configDao = (ConfigDAO) Engine.getInstance().getDao( "configDao" );
+        } catch ( Exception e ) {
+            NexusException ie = new NexusException( e );
+            ie.setStackTrace( e.getStackTrace() );
+            throw ie;
+        }
+        configDao.deleteTrp( trp, null, null );
+    }
+    
     /**
      * @param component
      * @throws NexusException

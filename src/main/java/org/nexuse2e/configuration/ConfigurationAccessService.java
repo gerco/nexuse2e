@@ -834,6 +834,32 @@ public class ConfigurationAccessService {
         applyConfiguration();
     }
 
+    public void updateTrp( TRPPojo trp ) {
+
+        try {
+            TRPPojo oldTrp = getTrpByNxTrpId( trp.getNxTRPId() );
+            if ( oldTrp != null ) {
+                getTrps().remove( oldTrp );
+            }
+            getTrps().add( trp );
+
+            applyConfiguration();
+        } catch ( NexusException e ) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteTrp( TRPPojo trp ) {
+
+        try {
+            getTrps().remove( trp );
+            engineConfig.deleteTrpInDB( trp );
+            applyConfiguration();
+        } catch ( NexusException e ) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * @param component
      */
