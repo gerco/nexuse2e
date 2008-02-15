@@ -77,6 +77,8 @@
             <nxs:command target="PartnerCertificateDelete.do" label="Create Certificate" icon="images/icons/bullet_orange.png"/>
           </nxs:page>
         </nxs:page>
+        <nxs:page target="TrpMaintenance.do" label="Transport/Routing/Packaging" icon="images/icons/user.png">
+        </nxs:page>
         <nxs:page target="Components.do" label="Components" icon="images/icons/brick.png">
           <nxs:command target="ComponentAdd.do" label="Add Component" icon="images/tree/components.gif"/>
           <nxs:command target="ComponentCreate.do" label="Create Component" icon="images/tree/components.gif"/>
