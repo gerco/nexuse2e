@@ -137,7 +137,7 @@
 							document.forms[0].rightType.value=document.getElementsByName('htmlrightType${counter}')[0].value;
 							document.forms[0].rightValue.value=document.getElementsByName('htmlrightValue${counter}')[0].value;
 					">
-					<img src="images/icons/add.png" class="button" alt="Configure" id="updateMapping"><span dojoType="tooltip" connectId="updateMapping" toggle="explode">Update Mapping Entry</span>
+					<img src="images/icons/tick.png" class="button" alt="Configure" id="updateMapping"><span dojoType="tooltip" connectId="updateMapping" toggle="explode">Update Mapping Entry</span>
 				</nexus:submit>
 				</td>
 			</tr>
