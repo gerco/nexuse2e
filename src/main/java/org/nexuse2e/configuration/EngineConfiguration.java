@@ -54,10 +54,15 @@ import org.nexuse2e.backend.BackendPipelineDispatcher;
 import org.nexuse2e.configuration.Constants.ComponentType;
 import org.nexuse2e.dao.ConfigDAO;
 import org.nexuse2e.messaging.BackendActionSerializer;
+import org.nexuse2e.messaging.BackendInboundDispatcher;
+import org.nexuse2e.messaging.BackendOutboundDispatcher;
 import org.nexuse2e.messaging.BackendPipeline;
 import org.nexuse2e.messaging.FrontendActionSerializer;
+import org.nexuse2e.messaging.FrontendInboundDispatcher;
+import org.nexuse2e.messaging.FrontendOutboundDispatcher;
 import org.nexuse2e.messaging.FrontendPipeline;
 import org.nexuse2e.messaging.Pipelet;
+import org.nexuse2e.messaging.ProtocolAdapter;
 import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
@@ -164,15 +169,15 @@ public class EngineConfiguration {
     private List<ServicePojo>                           services                  = null;
 
     @XmlElementWrapper(name = "Users")
-    @XmlElement(name="User")
+    @XmlElement(name = "User")
     private List<UserPojo>                              users                     = null;
 
     @XmlElementWrapper(name = "Roles")
-    @XmlElement(name="Role")
+    @XmlElement(name = "Role")
     private List<RolePojo>                              roles                     = null;
 
     @XmlElementWrapper(name = "Mappings")
-    @XmlElement(name="Mapping")
+    @XmlElement(name = "Mapping")
     private List<MappingPojo>                           mappings                  = null;
 
     private HashMap<String, List<GenericParamPojo>>     genericParameters         = new HashMap<String, List<GenericParamPojo>>();
@@ -232,6 +237,30 @@ public class EngineConfiguration {
                 throw new InstantiationException( "Error saving base configuration: " + e.getMessage() );
             }
         }
+
+        ProtocolAdapter[] protocolAdapters = new ProtocolAdapter[getTrps().size()];
+        int index = 0;
+        for ( TRPPojo trpPojo : getTrps() ) {
+            String protocolAdapterClass = trpPojo.getAdapterClassName();
+            try {
+                ProtocolAdapter protocolAdapter = (ProtocolAdapter) Class.forName( protocolAdapterClass ).newInstance();
+                ProtocolSpecificKey protocolSpecificKey = new ProtocolSpecificKey( trpPojo.getProtocol(), trpPojo
+                        .getVersion(), trpPojo.getTransport() );
+                protocolAdapter.setKey( protocolSpecificKey );
+                protocolAdapters[index++] = protocolAdapter;
+            } catch ( Exception e ) {
+                LOG.error( "Could not instantiate protocol adapter class: " + protocolAdapterClass + " - " + e );
+                throw new InstantiationException( "Could not instantiate protocol adapter class: "
+                        + protocolAdapterClass + " - " + e );
+            }
+        }
+        FrontendInboundDispatcher frontendInboundDispatcher = (FrontendInboundDispatcher) staticBeanContainer
+                .getManagableBeans().get( org.nexuse2e.Constants.FRONTEND_INBOUND_DISPATCHER );
+        frontendInboundDispatcher.setProtocolAdapters( protocolAdapters );
+
+        BackendOutboundDispatcher backendOutboundDispatcher = (BackendOutboundDispatcher) staticBeanContainer
+                .getManagableBeans().get( org.nexuse2e.Constants.BACKEND_OUTBOUND_DISPATCHER );
+        backendOutboundDispatcher.setProtocolAdapters( protocolAdapters );
 
         initializeLogAppenders();
 
@@ -359,8 +388,21 @@ public class EngineConfiguration {
         HashMap<String, Manageable> beanContainer = new LinkedHashMap<String, Manageable>();
         staticBeanContainer.setManagableBeans( beanContainer );
 
-        Object bean = Engine.getInstance().getBeanFactory()
-                .getBean( org.nexuse2e.Constants.FRONTEND_INBOUND_DISPATCHER );
+
+        staticBeanContainer.getManagableBeans().put( org.nexuse2e.Constants.FRONTEND_INBOUND_DISPATCHER,
+                new FrontendInboundDispatcher() );
+        staticBeanContainer.getManagableBeans().put( org.nexuse2e.Constants.FRONTEND_OUTBOUND_DISPATCHER,
+                new FrontendOutboundDispatcher() );
+        staticBeanContainer.getManagableBeans().put( org.nexuse2e.Constants.BACKEND_INBOUND_DISPATCHER,
+                new BackendInboundDispatcher() );
+        staticBeanContainer.getManagableBeans().put( org.nexuse2e.Constants.BACKEND_OUTBOUND_DISPATCHER,
+                new BackendOutboundDispatcher() );
+        staticBeanContainer.getManagableBeans().put( org.nexuse2e.Constants.BACKEND_PIPELINE_DISPATCHER,
+                new BackendPipelineDispatcher() );
+
+        
+        /*
+        Object bean = Engine.getInstance().getBeanFactory().getBean( org.nexuse2e.Constants.FRONTEND_INBOUND_DISPATCHER );
         if ( bean != null && bean instanceof Manageable ) {
             staticBeanContainer.getManagableBeans().put( org.nexuse2e.Constants.FRONTEND_INBOUND_DISPATCHER,
                     (Manageable) bean );
@@ -405,6 +447,7 @@ public class EngineConfiguration {
             throw new InstantiationException( "BackendPipelineDispatcher Bean not found!" );
 
         }
+        */
 
         skeletonStatus = BeanStatus.INITIALIZED.getValue();
     }
@@ -515,6 +558,24 @@ public class EngineConfiguration {
                 }
             }
 
+            // Fix for database schema update of nx_trp table
+            // Add protocol adapter class name in case it's not there
+
+            for ( TRPPojo trpPojo : getTrps() ) {
+                if ( StringUtils.isEmpty( trpPojo.getAdapterClassName() ) ) {
+                    if ( trpPojo.getProtocol().equalsIgnoreCase( "ebxml" ) ) {
+                        if ( trpPojo.getVersion().equalsIgnoreCase( "1.0" ) ) {
+                            trpPojo.setAdapterClassName( "org.nexuse2e.messaging.ebxml.v10.ProtocolAdapter" );
+                        } else {
+                            trpPojo.setAdapterClassName( "org.nexuse2e.messaging.ebxml.v20.ProtocolAdapter" );
+                        }
+                    } else {
+                        trpPojo.setAdapterClassName( "org.nexuse2e.messaging.DefaultProtocolAdapter" );
+                    }
+                    LOG.trace( "Set adapterClassName to: " + trpPojo.getAdapterClassName() );
+                }
+            }
+
         } catch ( NexusException e ) {
             InstantiationException ie = new InstantiationException( e.getMessage() );
             ie.setStackTrace( e.getStackTrace() );
@@ -559,7 +620,8 @@ public class EngineConfiguration {
     }
 
     public void deleteTrpInDB( TRPPojo trp ) throws NexusException {
-        if (trp == null) {
+
+        if ( trp == null ) {
             return;
         }
         ConfigDAO configDao = null;
@@ -572,7 +634,7 @@ public class EngineConfiguration {
         }
         configDao.deleteTrp( trp, null, null );
     }
-    
+
     /**
      * @param component
      * @throws NexusException

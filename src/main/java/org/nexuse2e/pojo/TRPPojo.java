@@ -45,6 +45,7 @@ public class TRPPojo implements java.io.Serializable {
     private String            protocol;
     private String            version;
     private String            transport;
+    private String            adapterClassName;
     private Date              createdDate;
     private Date              modifiedDate;
     private int               modifiedNxUserId;
@@ -172,6 +173,18 @@ public class TRPPojo implements java.io.Serializable {
         }
 
         return nxTRPId;
+    }
+
+    
+    public String getAdapterClassName() {
+    
+        return adapterClassName;
+    }
+
+    
+    public void setAdapterClassName( String adapterClassName ) {
+    
+        this.adapterClassName = adapterClassName;
     }
     
 }

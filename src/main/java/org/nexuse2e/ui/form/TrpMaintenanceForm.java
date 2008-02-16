@@ -21,7 +21,6 @@ package org.nexuse2e.ui.form;
 
 import org.apache.struts.action.ActionForm;
 
-
 /**
  * Web form for TRP maintenance.
  *
@@ -32,64 +31,71 @@ public class TrpMaintenanceForm extends ActionForm {
 
     private static final long serialVersionUID = -4659594397866558364L;
 
-    private int nxTRPId;
-    private String submitaction;
-    private String protocol;
-    private String transport;
-    private String version;
-    
+    private int               nxTRPId;
+    private String            submitaction;
+    private String            protocol;
+    private String            transport;
+    private String            version;
+    private String            adapterClassName;
+
     public String getProtocol() {
-    
+
         return protocol;
     }
-    
+
     public void setProtocol( String protocol ) {
-    
+
         this.protocol = protocol;
     }
-    
+
     public String getTransport() {
-    
+
         return transport;
     }
-    
+
     public void setTransport( String transport ) {
-    
+
         this.transport = transport;
     }
-    
+
     public String getVersion() {
-    
+
         return version;
     }
-    
+
     public void setVersion( String version ) {
-    
+
         this.version = version;
     }
-    
+
     public String getSubmitaction() {
-    
+
         return submitaction;
     }
 
-    
     public void setSubmitaction( String submitaction ) {
-    
+
         this.submitaction = submitaction;
     }
 
-    
     public int getNxTRPId() {
-    
+
         return nxTRPId;
     }
 
-    
     public void setNxTRPId( int nxTRPId ) {
-    
+
         this.nxTRPId = nxTRPId;
     }
-    
-    
+
+    public String getAdapterClassName() {
+
+        return adapterClassName;
+    }
+
+    public void setAdapterClassName( String adapterClassName ) {
+
+        this.adapterClassName = adapterClassName;
+    }
+
 }

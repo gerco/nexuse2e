@@ -304,7 +304,8 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                 localSessionFactoryBean = (LocalSessionFactoryBean) getBeanFactory().getBean(
                         "&hibernateSessionFactory" );
                 if ( localSessionFactoryBean != null ) {
-                    localSessionFactoryBean.createDatabaseSchema();
+                    // localSessionFactoryBean.createDatabaseSchema();
+                    localSessionFactoryBean.updateDatabaseSchema();
 
                     Configuration configuration = localSessionFactoryBean.getConfiguration();
                     String dialect = configuration.getProperty( "hibernate.dialect" );

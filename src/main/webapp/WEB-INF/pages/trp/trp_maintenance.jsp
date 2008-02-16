@@ -25,6 +25,7 @@
 		<html:hidden property="protocol" value="unknown" />
 		<html:hidden property="transport" value="unknown" />
 		<html:hidden property="version" value="unknown" />
+        <html:hidden property="adapterClassName" value="unknown" />
 		<table width="100%">
 			<tr>
 				<td class="NEXUSName">Transport</td>
@@ -36,6 +37,7 @@
 				<td class="NEXUSName"><input type="text" size="20" name="htmlnewtransport"/></td>
 				<td class="NEXUSName"><input type="text" size="20" name="htmlnewprotocol"/></td>
 				<td class="NEXUSName"><input type="text" size="20" name="htmlnewversion"/></td>
+                <td class="NEXUSName"><input type="text" size="20" name="htmlnewadapterclassname"/></td>
 				<td class="NEXUSName">
 				
 				<nexus:submit
@@ -44,6 +46,7 @@
 							document.forms[0].transport.value=document.getElementsByName('htmlnewtransport')[0].value;
 							document.forms[0].protocol.value=document.getElementsByName('htmlnewprotocol')[0].value;
 							document.forms[0].version.value=document.getElementsByName('htmlnewversion')[0].value;
+                            document.forms[0].version.value=document.getElementsByName('htmlnewadapterclassname')[0].value;
 							">
 					<img src="images/icons/add.png" class="button" alt="Configure" id="addTrp"><span dojoType="tooltip" connectId="addTrp" toggle="explode">Add TRP Entry</span>
 				</nexus:submit>
@@ -58,6 +61,7 @@
 				<td class="NEXUSName"><input type="text" size="20" name="htmltransport${counter}" value="${trp.transport}"/></td>
 				<td class="NEXUSName"><input type="text" size="20" name="htmlprotocol${counter}" value="${trp.protocol}"/></td>
 				<td class="NEXUSName"><input type="text" size="20" name="htmlversion${counter}" value="${trp.version}"/></td>
+                <td class="NEXUSName"><input type="text" size="20" name="htmladapterclassname${counter}" value="${trp.adapterClassName}"/></td>
 				<td class="NEXUSName">
 				<nexus:submit
 					onClick="document.forms[0].submitaction.value='delete'; 
@@ -65,6 +69,7 @@
 							document.forms[0].transport.value=document.getElementsByName('htmltransport${counter}')[0].value;
 							document.forms[0].protocol.value=document.getElementsByName('htmlprotocol${counter}')[0].value;
 							document.forms[0].version.value=document.getElementsByName('htmlversion${counter}')[0].value;
+                            document.forms[0].adapterClassName.value=document.getElementsByName('htmladapterclassname${counter}')[0].value;
 							">
 					<img src="images/icons/delete.png" class="button" alt="Delete" id="deleteTrp"><span dojoType="tooltip" connectId="deleteTrp" toggle="explode">Delete TRP Entry</span>
 				</nexus:submit> 
@@ -74,6 +79,7 @@
 							document.forms[0].transport.value=document.getElementsByName('htmltransport${counter}')[0].value;
 							document.forms[0].protocol.value=document.getElementsByName('htmlprotocol${counter}')[0].value;
 							document.forms[0].version.value=document.getElementsByName('htmlversion${counter}')[0].value;
+                            document.forms[0].adapterClassName.value=document.getElementsByName('htmladapterclassname${counter}')[0].value;
 					">
 					<img src="images/icons/tick.png" class="button" alt="Configure" id="updateTrp"><span dojoType="tooltip" connectId="updateTrp" toggle="explode">Update TRP Entry</span>
 				</nexus:submit>

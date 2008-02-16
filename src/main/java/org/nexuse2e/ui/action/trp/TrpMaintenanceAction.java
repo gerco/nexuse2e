@@ -63,6 +63,7 @@ public class TrpMaintenanceAction extends NexusE2EAction {
                 trp.setProtocol( form.getProtocol() );
                 trp.setTransport( form.getTransport() );
                 trp.setVersion( form.getVersion() );
+                trp.setAdapterClassName( form.getAdapterClassName() );
 
                 Engine.getInstance().getActiveConfigurationAccessService().updateTrp( trp );
             }
@@ -76,6 +77,7 @@ public class TrpMaintenanceAction extends NexusE2EAction {
                     trp.setProtocol( form.getProtocol() );
                     trp.setTransport( form.getTransport() );
                     trp.setVersion( form.getVersion() );
+                    trp.setAdapterClassName( form.getAdapterClassName() );
 
                     Engine.getInstance().getActiveConfigurationAccessService().updateTrp( trp );
                 }

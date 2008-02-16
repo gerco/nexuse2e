@@ -23,6 +23,11 @@
                 <comment></comment>
             </column>
         </property>
+        <property name="adapterClassName" type="string">
+            <column name="adapter_class" length="255" not-null="false">
+                <comment></comment>
+            </column>
+        </property>
         <property name="createdDate" type="timestamp">
             <column name="created_date" not-null="true">
                 <comment></comment>

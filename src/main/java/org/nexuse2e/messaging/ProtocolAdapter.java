@@ -23,6 +23,7 @@ import java.util.Vector;
 
 import org.nexuse2e.NexusException;
 import org.nexuse2e.ProtocolSpecific;
+import org.nexuse2e.ProtocolSpecificKey;
 import org.nexuse2e.pojo.ChoreographyPojo;
 
 /**
@@ -58,4 +59,8 @@ public interface ProtocolAdapter extends ProtocolSpecific {
 
     public void addProtcolSpecificParameters( MessageContext messageContext );
 
+    public ProtocolSpecificKey getKey();
+    
+    public void setKey( ProtocolSpecificKey key );
+    
 } // ProtocolAdapter
