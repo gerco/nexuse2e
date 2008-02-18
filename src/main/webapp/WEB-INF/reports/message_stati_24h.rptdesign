@@ -31,7 +31,7 @@
             <list-property name="computedColumns">
                 <structure>
                     <property name="name">STATE_NAME</property>
-                    <expression name="expression">row["STATUS_ID"].toString().replace("-1","Failed").replace("0","Unknown").replace("1","Retrying").replace("2","Queued").replace("3","Sent").replace("4","Stopped")</expression>
+                    <expression name="expression">row["STATUS_ID"].toString()</expression>
                     <property name="dataType">string</property>
                 </structure>
             </list-property>
@@ -393,20 +393,48 @@
   </Block>
   <Dimension>Two_Dimensional_With_Depth</Dimension>
   <Script>/**&#xD;
- * Called before rendering the title of a Series.&#xD;
+ * Called after populating the series dataset.&#xD;
  * &#xD;
  * @param series&#xD;
  *            Series&#xD;
- * @param label&#xD;
- *            Label&#xD;
+ * @param dataSet&#xD;
+ *            DataSet&#xD;
  * @param icsc&#xD;
  *            IChartScriptContext&#xD;
  */&#xD;
 &#xD;
-function beforeDrawSeriesTitle(series, label, icsc)&#xD;
-{&#xD;
-	if (series.getDataSet().getValues().length == 0) {&#xD;
-		label.getCaption().setValue( 'No data' );&#xD;
+var xMap;&#xD;
+&#xD;
+function afterDataSetFilled(series, dataSet, icsc) {&#xD;
+	if (dataSet.getClass().getSimpleName().indexOf( 'TextDataSet' ) >= 0) {&#xD;
+		originalValues = dataSet.getValues();&#xD;
+		xMap = new Array();&#xD;
+		for (i = 0; i &lt; originalValues.length; i++) {&#xD;
+			idx = originalValues[i];&#xD;
+			xMap['map_' + (++idx)] = originalValues[i];&#xD;
+		}&#xD;
+&#xD;
+		values = java.lang.reflect.Array.newInstance( java.lang.String, 6 );&#xD;
+		values[0] = 'Failed';&#xD;
+		values[1] = 'Unknown';&#xD;
+		values[2] = 'Retrying';&#xD;
+		values[3] = 'Queued';&#xD;
+		values[4] = 'Sent';&#xD;
+		values[5] = 'Stopped';&#xD;
+		dataSet.setValues( values );&#xD;
+	}&#xD;
+	if (dataSet.getClass().getSimpleName().indexOf( 'NumberDataSet' ) >= 0) {&#xD;
+		originalValues = dataSet.getValues();&#xD;
+		values = java.lang.reflect.Array.newInstance( java.lang.Double, 6 );&#xD;
+		i = 0;&#xD;
+		for (h = 0; h &lt; values.length; h++) {&#xD;
+			if (i &lt; originalValues.length &amp;&amp; xMap['map_' + h] != null) {&#xD;
+				values[h] = originalValues[i++];&#xD;
+			} else {&#xD;
+				values[h] = 0;&#xD;
+			}&#xD;
+		}&#xD;
+		dataSet.setValues( values );&#xD;
 	}&#xD;
 }</Script>
   <Units>Points</Units>

@@ -31,7 +31,7 @@
             <list-property name="computedColumns">
                 <structure>
                     <property name="name">STATE_NAME</property>
-                    <expression name="expression">row["STATUS_ID"].toString().replace("-1","Error").replace("0","Unknown").replace("1","Created").replace("2","Processing").replace("3","AwaitingAck").replace("4","Idle").replace("5","SendingAck").replace("6","AckSent_AwaitingBackend").replace("7","AwaitingBackend").replace("8","BackendSent_SendingAck").replace("9","Completed")</expression>
+                    <expression name="expression">row["STATUS_ID"].toString()</expression>
                     <property name="dataType">string</property>
                 </structure>
             </list-property>
@@ -394,22 +394,55 @@
     <Visible>true</Visible>
   </Block>
   <Dimension>Two_Dimensional_With_Depth</Dimension>
-  <Script>/**&#xD;
- * Called before rendering the title of a Series.&#xD;
- * &#xD;
- * @param series&#xD;
- *            Series&#xD;
- * @param label&#xD;
- *            Label&#xD;
- * @param icsc&#xD;
- *            IChartScriptContext&#xD;
- */&#xD;
-&#xD;
-function beforeDrawSeriesTitle(series, label, icsc)&#xD;
-{&#xD;
-	if (series.getDataSet().getValues().length == 0) {&#xD;
-		label.getCaption().setValue( 'No data' );&#xD;
-	}&#xD;
+  <Script>/**
+ * Called after populating the series dataset.
+ * 
+ * @param series
+ *            Series
+ * @param dataSet
+ *            DataSet
+ * @param icsc
+ *            IChartScriptContext
+ */
+
+var xMap;
+
+function afterDataSetFilled(series, dataSet, icsc) {
+	if (dataSet.getClass().getSimpleName().indexOf( 'TextDataSet' ) >= 0) {
+		originalValues = dataSet.getValues();
+		xMap = new Array();
+		for (i = 0; i &lt; originalValues.length; i++) {
+			idx = originalValues[i];
+			xMap['map_' + (++idx)] = originalValues[i];
+		}
+		
+		values = java.lang.reflect.Array.newInstance( java.lang.String, 11 );
+		values[0] = 'Error';
+		values[1] = 'Unknown';
+		values[2] = 'Created';
+		values[3] = 'Processing';
+		values[4] = 'AwaitingAck';
+		values[5] = 'Idle';
+		values[6] = 'SendingAck';
+		values[7] = 'AckSent_AwaitingBackend';
+		values[8] = 'AwaitingBackend';
+		values[9] = 'BackendSent_SendingAck';
+		values[10] = 'Completed';
+		dataSet.setValues( values );
+	}
+	if (dataSet.getClass().getSimpleName().indexOf( 'NumberDataSet' ) >= 0) {
+		originalValues = dataSet.getValues();
+		values = java.lang.reflect.Array.newInstance( java.lang.Double, 11 );
+		i = 0;
+		for (h = 0; h &lt; values.length; h++) {
+			if (i &lt; originalValues.length &amp;&amp; xMap['map_' + h] != null) {
+				values[h] = originalValues[i++];
+			} else {
+				values[h] = 0;
+			}
+		}
+		dataSet.setValues( values );
+	}
 }</Script>
   <Units>Points</Units>
   <SeriesThickness>10.0</SeriesThickness>
