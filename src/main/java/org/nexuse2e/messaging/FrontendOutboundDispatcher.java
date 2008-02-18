@@ -284,7 +284,7 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                                         "Received ack message, backend still processing - conversation ID: "
                                                 + conversationPojo.getConversationId(), messagePojo ) );
                             } else if ( ( conversationPojo.getStatus() != org.nexuse2e.Constants.CONVERSATION_STATUS_COMPLETED )
-                                    || ( conversationPojo.getStatus() != org.nexuse2e.Constants.CONVERSATION_STATUS_ERROR ) ) {
+                                    && ( conversationPojo.getStatus() != org.nexuse2e.Constants.CONVERSATION_STATUS_ERROR ) ) {
                                 LOG.error( new LogMessage( "Unexpected conversation state after sending ack message: "
                                         + conversationPojo.getStatus(), messagePojo ) );
                             }
