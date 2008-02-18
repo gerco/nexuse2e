@@ -691,7 +691,7 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
             adminRole.setDescription( "Administrator Role" );
             Map<String, GrantPojo> grants = new HashMap<String, GrantPojo>();
             grants.put( "*", new GrantPojo( "*", now, now, 1 ) );
-            adminRole.setGrants( grants );
+            adminRole.setGrantMap( grants );
 
             // set admin role
             adminUser.setRole( adminRole );

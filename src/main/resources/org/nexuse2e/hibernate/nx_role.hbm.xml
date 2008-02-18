@@ -38,7 +38,7 @@
             </column>
         </property>
       
-        <map name="grants" lazy="false" cascade="all,delete-orphan">
+        <map name="grantMap" lazy="false" cascade="all,delete-orphan">
             <key column="nxGrantId" not-null="true" foreign-key="fk__grant__grant_id"/>
             <map-key formula="target" type="string"/>
             <one-to-many class="org.nexuse2e.pojo.GrantPojo"/>

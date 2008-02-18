@@ -80,8 +80,8 @@ public class RoleSaveAction extends NexusE2EAction {
             role.setName( roleForm.getName() );
             role.setDescription( roleForm.getDescription() );
             // update grants
-            Map<String,GrantPojo> oldGrants = new HashMap<String,GrantPojo>( role.getGrants() );
-            role.getGrants().clear();
+            Map<String,GrantPojo> oldGrants = new HashMap<String,GrantPojo>( role.getGrantMap() );
+            role.getGrantMap().clear();
             Enumeration<String> paramEnum = request.getParameterNames();
             while ( paramEnum.hasMoreElements() ) {
                 String paramName = (String) paramEnum.nextElement();
@@ -89,10 +89,10 @@ public class RoleSaveAction extends NexusE2EAction {
                     String target = paramName.substring( PARAMETER_NAME_GRANT_PREFIX.length() );
                     // check if grant already exists; grants are identified by the action string only
                     if ( oldGrants.containsKey( target ) ) {
-                        role.getGrants().put( target, oldGrants.get( target ) );
+                        role.getGrantMap().put( target, oldGrants.get( target ) );
                     } else {
                         GrantPojo newGrant = new GrantPojo( target, now, now, modifier );
-                        role.getGrants().put( target, newGrant );
+                        role.getGrantMap().put( target, newGrant );
                     }
                 }
             }
