@@ -187,12 +187,12 @@
         </Pipeline>
     </BackendPipeline>
     <TRPs>
-        <TRP version="1.0" transport="http" protocol="ebxml" nxTRPId="1"/>
-        <TRP version="2.0" transport="http" protocol="ebxml" nxTRPId="2"/>
-        <TRP version="2.0" transport="mail" protocol="ebxml" nxTRPId="3"/>
-        <TRP version="1.0" transport="http" protocol="httpplain" nxTRPId="4"/>
-        <TRP version="1.0" transport="http" protocol="wsplain" nxTRPId="5"/>
-        <TRP version="1.0" transport="http" protocol="wscidx" nxTRPId="6"/>
+        <TRP version="1.0" transport="http" protocol="ebxml" nxTRPId="1" adapterClassName="org.nexuse2e.messaging.ebxml.v10.ProtocolAdapter"/>
+        <TRP version="2.0" transport="http" protocol="ebxml" nxTRPId="2" adapterClassName="org.nexuse2e.messaging.ebxml.v20.ProtocolAdapter"/>
+        <TRP version="2.0" transport="mail" protocol="ebxml" nxTRPId="3" adapterClassName="org.nexuse2e.messaging.ebxml.v20.ProtocolAdapter"/>
+        <TRP version="1.0" transport="http" protocol="httpplain" nxTRPId="4" adapterClassName="org.nexuse2e.messaging.DefaultProtocolAdapter"/>
+        <TRP version="1.0" transport="http" protocol="wsplain" nxTRPId="5" adapterClassName="org.nexuse2e.messaging.DefaultProtocolAdapter"/>
+        <TRP version="1.0" transport="http" protocol="wscidx" nxTRPId="6" adapterClassName="org.nexuse2e.messaging.DefaultProtocolAdapter"/>
     </TRPs>
     <Components>
         <Component type="1" nxComponentId="33" name="CIDXRoutingPipelet" description="Extracts routing information from CIDX documents" className="org.nexuse2e.messaging.cidx.CidxRoutingPipelet"/>

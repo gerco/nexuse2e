@@ -176,6 +176,7 @@ public class TRPPojo implements java.io.Serializable {
     }
 
     
+    @XmlAttribute
     public String getAdapterClassName() {
     
         return adapterClassName;
