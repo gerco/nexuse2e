@@ -1,6 +1,8 @@
 package org.nexuse2e.ui.action.reporting;
 
+import java.sql.Date;
 import java.util.Calendar;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,7 +29,14 @@ public class ReportingStatisticsAction extends NexusE2EAction {
 
         Calendar cal = Calendar.getInstance();
         cal.add( Calendar.DATE, -1 );
-        request.setAttribute( "last24Hours", cal.getTime() );
+        request.setAttribute( "last24Hours", new Date( cal.getTimeInMillis() ) );
+        
+        cal = Calendar.getInstance( TimeZone.getTimeZone( "UTC" ) );
+        cal.set( Calendar.MINUTE, 0 );
+        cal.set( Calendar.SECOND, 0 );
+        cal.set( Calendar.MILLISECOND, 0 );
+        cal.add( Calendar.HOUR, 1 );
+        request.setAttribute( "last24HoursUTC", new Date( cal.getTimeInMillis() ) );
 
         return actionMapping.findForward( ACTION_FORWARD_SUCCESS );
     }
