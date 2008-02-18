@@ -562,7 +562,7 @@
 								name="reportingSettingsForm" property="selected"
 								value="${message.participantId}|${message.choreographyId}|${message.conversationId}|${message.messageId}" /></td>
 						</logic:equal>
-						<td class="NEXUSValue"><nexus:link
+						<td class="NEXUSValue"><nexus:link styleClass="NexusLink"
 							href="MessageView.do?mId=${message.messageId}&convId=${message.conversationId}&chorId=${message.choreographyId}&partnerId=${message.participantId}">
 							<bean:write name="message" property="messageId" />
 						</nexus:link></td>
@@ -671,7 +671,7 @@
 							<td class="NEXUSValue"><bean:write name="conv"
 								property="choreographyId" /></td>
 						</logic:equal>
-						<td class="NEXUSValue"><nexus:link
+						<td class="NEXUSValue"><nexus:link styleClass="NexusLink"
 							href="ConversationView.do?convId=${conv.conversationId}&choreographyId=${conv.choreographyId}&partnerId=${conv.participantId}">
 							<bean:write name="conv" property="conversationId" />
 						</nexus:link></td>

@@ -39,7 +39,7 @@
 	</tr>
 	<tr>
 		<td class="NEXUSName">Conversation ID</td>
-		<td class="NEXUSValue"><nexus:link
+		<td class="NEXUSValue"><nexus:link styleClass="NexusLink"
 			href="ConversationView.do?convId=${reportMessageEntryForm.conversationId}&choreographyId=${reportMessageEntryForm.choreographyId}&partnerId=${reportMessageEntryForm.participantId}">
 			<bean:write name="reportMessageEntryForm" property="conversationId" />
 		</nexus:link></td>
@@ -116,7 +116,7 @@
 	<tr>
 		<td class="NEXUSName">Header</td>
 		<td class="NEXUSValue">text/xml</td>
-		<td class="NEXUSValue"><a
+		<td class="NEXUSValue"><a class="NexusLink"
 			href="DataSaveAs?type=content&choreographyId=${reportMessageEntryForm.choreographyId}&participantId=${reportMessageEntryForm.participantId}&conversationId=${reportMessageEntryForm.conversationId}&messageId=${reportMessageEntryForm.messageId}"
 			target="_blank"> View</a></td>
 	</tr>
@@ -124,7 +124,7 @@
 		<tr>
 			<td class="NEXUSName">Payload <bean:write name="counter" /></td>
 			<td class="NEXUSValue"><bean:write name="payloads" /></td>
-			<td class="NEXUSValue"><a
+			<td class="NEXUSValue"><a class="NexusLink"
 				href="DataSaveAs?type=content&choreographyId=${reportMessageEntryForm.choreographyId}&participantId=${reportMessageEntryForm.participantId}&conversationId=${reportMessageEntryForm.conversationId}&messageId=${reportMessageEntryForm.messageId}&no=${counter}"
 				target="_blank"> View</a></td>
 		</tr>
