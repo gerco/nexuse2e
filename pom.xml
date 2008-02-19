@@ -684,6 +684,38 @@
           </connectors>
         </configuration>
       </plugin>
+      <plugin>
+        <!-- http://www.sagehill.net/docbookxsl/ -->
+        <!-- http://xmlgraphics.apache.org/fop/0.94/hyphenation.html 
+          Copy fop-hyph.jar to <user dir>/.m2/repository/org/apache/xmlgraphics/fop/0.94/
+        -->
+        <!-- http://www.agilejava.com/docbkx/docbkx-maven-plugin/generate-html-mojo.html -->
+        <groupId>com.agilejava.docbkx</groupId>
+        <artifactId>docbkx-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate-html</goal>
+              <goal>generate-pdf</goal>
+              <goal>generate-manpages</goal>
+            </goals>
+            <phase>generate-sources</phase>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.docbook</groupId>
+            <artifactId>docbook-xml</artifactId>
+            <version>4.4</version>
+            <scope>runtime</scope>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <xincludeSupported>true</xincludeSupported>
+          <includes>NEXUSe2e_4_Manual.xml</includes>
+          <chunkedOutput>true</chunkedOutput>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <profiles>

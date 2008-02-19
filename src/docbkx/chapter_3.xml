@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?oxygen RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbookxi.rng" type="xml"?>
+<chapter xmlns="http://docbook.org/ns/docbook" version="5.0">
+    <title>NEXUSe2e Configuration</title>
+    <subtitle>Putting NEXUSe2e to Work</subtitle>
+    <sect1>
+        <title>Defining the Identity of your Server</title>
+        <para> </para>
+    </sect1>
+    <sect1>
+        <title>Adding a Communication Partner</title>
+        <para> </para>
+    </sect1>
+    <sect1>
+        <title>Adding a Business Process (Choreography)</title>
+        <para> </para>
+    </sect1>
+    <sect1>
+        <title>Securing the Communication</title>
+        <para> </para>
+        <sect2>
+            <title>Requesting your own Certificate</title>
+            <para>In order to obtain a certificate you need to create a certificate request. This
+                will contain information about your organization and more sprecifically about the
+                server that is to be authenticated through the certificate. You then need to submit
+                the request to a certificate authority (CA) of your choice. The CA will return your
+                certificate that contains the information that you have provided plus their digital
+                signature that establishes the trust in your certificate.</para>
+            <para>You can use NEXUSe2e to create a certificate request or use third party tools that
+                you might already use or are most familiar with.</para>
+            <figure>
+                <title>Requesting your own Certificate</title>
+                <screenshot>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata width="14cm" fileref="images/chapter_3/cert_request_overview.png" />
+                        </imageobject>
+                    </mediaobject>
+                </screenshot>
+            </figure>
+            <caution>
+                <para>When the certificate request gets created the system also generates the so
+                    called public and private key pair that is the basis for the cryptographic
+                    mechanism on which digital certificates are built. These keys are automatically
+                    associated with the request in the NEXUSe2e system. When you delete the
+                    certificate request these keys will be lost. Any certificate that gets issued by
+                    a CA for such a deleted request will be rendered useless. Creating a new request
+                    with the same information will not create the same key pair again and will not
+                    match the certificate.</para>
+            </caution>
+            <para>To create a new certificate request navigate to NEXUSe2e > Server Configuration >
+                Certificates > Certificate Request > Create Request. The following screen will
+                appear:</para>
+            <figure>
+                <title>Entering the Certificate Request Information</title>
+                <screenshot>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata width="14cm" fileref="images/chapter_3/cert_request_create.png" />
+                        </imageobject>
+                    </mediaobject>
+                </screenshot>
+            </figure>
+            <para>Enter the information for your company and server. The Common Name is the name the
+                server is know under to parnter companies i.e., on the Internet e.g.,
+                b2b.mycompany.com.</para>
+            <caution>
+                <para>Make sure you remember the password you enter on this screen. It will be used
+                    later to protect your certificate. The password will also be applied to any
+                    backups of your certificate that you can create through the NEXUSe2e UI.</para>
+                <para>Once you have entered and saved your certificate request it is a good idea to
+                    create a backup of your data by navigating to the screen 'Export Full Key
+                    Information (Backup)' which will let you save a backup of your request and key
+                    pair to a file.</para>
+            </caution>
+            <para>For submitting the request data to a CA you will need to provide them with your
+                request data in a specific format which is typically pasted to a text area on the CA
+                web page. The required data can be found on the screen 'Show Request' in the field
+                'PEM Encoded Request'.</para>
+            <figure>
+                <title>The Certificate Request Data ready for Submission to a CA</title>
+                <screenshot>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata width="14cm" fileref="images/chapter_3/cert_request_view.png" />
+                        </imageobject>
+                    </mediaobject>
+                </screenshot>
+            </figure>
+            <para>To import the certificate received from the CA navigate to the screen 'Import
+                Certificate'. The screen will allow you to browse to the file on your file system
+                and on confirming the import a screen will appear to verify the information of the
+                loaded certificate.</para>
+            <figure>
+                <title>Importing the Certificate received from the CA</title>
+                <screenshot>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata width="14cm" fileref="images/chapter_3/cert_request_import.png" />
+                        </imageobject>
+                    </mediaobject>
+                </screenshot>
+            </figure>
+            <para>When you accept the import the certificate will be combined with the
+                private/public key pair from the original request and a keystore containing this
+                information will be saved in the 'Certificate Staging' area.</para>
+            <figure>
+                <title>Imported Certificate in Certificate Staging area</title>
+                <screenshot>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata width="14cm" fileref="images/chapter_3/cert_staging_list.png" />
+                        </imageobject>
+                    </mediaobject>
+                </screenshot>
+            </figure>
+        </sect2>
+        <sect2>
+            <title>Importing a Keystore/Certificate created with other Tools</title>
+            <para>To load a new certificate into NEXUSe2e it is recommended that you load it into
+                the certificate staging area first. Navigate to NEXUSe2e -&gt; Communications
+                -&gt; Certificates -&gt; Certificate Staging and select 'Import
+                Certificate'. Select the certificate file to import, provide the password and click
+                'Update' to import. Note that the file has to contain the certificate and your so
+                called private key. The file has to be in PKCS12 format which is typically indicated
+                by a .p12 or .pfx file extension.</para>
+
+            <figure>
+                <title>Importing the new certificate into the staging area</title>
+
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/chapter_3/staging_import.png" />
+                    </imageobject>
+                </mediaobject>
+            </figure>
+
+            <para>Once the required certificate has been imported into the staging area you can
+                promote it to production. Please note that this will replace the previously
+                configured active certificate and that the operation cannot be undone. In order to
+                promote a certificate navigate to NEXUSe2e -&gt; Communications -&gt;
+                Certificates -&gt; Certificate Staging and click on the certificate entry. This
+                will display further details of the certificate and additional operations for it.
+                Select the 'Promote this Certificate' button. To verify that the promotion worked
+                see section 'Check the status of your Certificate'.</para>
+
+            <figure>
+                <title>Promoting the new certificate into production</title>
+
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/chapter_3/promote_certificate.png" />
+                    </imageobject>
+                </mediaobject>
+            </figure>
+        </sect2>
+        <sect2>
+            <title>Configuring CA Certificates</title>
+            <para> </para>
+        </sect2>
+        <sect2>
+            <title>Securing the Web Application Server</title>
+            <subtitle>Synchronize Tomcat Certificate with NexusE2E</subtitle>
+
+            <para>In addition to configuring the NexusE2E application with the new certificate the
+                underlying Tomcat Web application server needs to be configured with it as well.
+                Tomcat requires the certificate to be available as a file in the file system.
+                Identify the file location of the certificate currently configured in Tomcat by
+                reviewing the file &lt;install dir&gt;/conf/server.xml. Find the section
+                that starts with 'Connector port="xxxx"' where xxxx is the SSL enabled port of your
+                Tomcat server. Verify that this file location points to the same file that is
+                defined in the file &lt;install dir&gt;/NexusE2E/WEB-INF/web.xml. The file
+                definition can be found in the section 'PrivateKeyStore'. Additionally the
+                certificate password configured in the server.xml files needs to match the one used
+                when importing the certificate into NexusE2E. In case they differ the server.xml
+                file needs to be updated to reflect the password used in the NexusE2E application.</para>
+
+            <para>In order to export the certificate from NexusE2E to Tomcat navigate to NEXUSe2e
+                -&gt; Communications -&gt; Certificates -&gt; Server Certificate in the
+                web based administration UI and select the button 'Export this Certificate Chain'.
+                Verify that path listed under 'Predefined Path' matches the file location in the
+                server.xml file. If it does not select the radio button in front of 'Different
+                Position' and provide the correct file location in the text field. Click the
+                'Export' button to save the file to the file system.</para>
+
+            <figure>
+                <title>Export the server certificate to Tomcat</title>
+
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="images/chapter_3/export_server_certificate.png" />
+                    </imageobject>
+                </mediaobject>
+            </figure>
+
+            <para>After the file has been successfully exported the Tomcat server needs to be
+                restarted.</para>
+        </sect2>
+    </sect1>
+
+</chapter>

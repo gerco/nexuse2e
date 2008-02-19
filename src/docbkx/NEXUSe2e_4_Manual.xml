@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?oxygen RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbookxi.rng" type="xml"?>
+<book xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0">
+    <info>
+        <title>NEXUSe2e Server Manual</title>
+        <subtitle>Version 4</subtitle>
+        <author>
+            <orgname>X·ioma GmbH</orgname>
+            <address>
+                <city>Hamburg</city>
+                <street>Schulterblatt 36</street>
+                <postcode>20357</postcode>
+                <country>Germany</country>
+            </address>
+            <email>support@xioma.de</email>
+        </author>
+    </info>
+    <preface>
+        <title>Welcome to NEXUSe2e</title>
+        <para> In the most simplified terms, NEXUSe2e allows software applications to communicate
+            with each other and share information.</para>
+        <para>These applications may be in the same network (intranet), or may be separated by
+            departmental, company, or even national boundaries. When computers talk to each other
+            directly the communication is quicker, the transaction is cheaper, and the data is more
+            accurate.</para>
+        <para>The most common use of this application has been to connect two or more trading
+            partners to integrate the supply chain. However, understanding the functionality and
+            flexibility of this product will help you to understand how to fully connect with
+            applications inside and outside of your firewall. This manual is intended to provide a
+            functional and technical understanding of the workings of the NEXUSe2e application.</para>
+        <para>There are 2 Major sections to this manual. The first section 'Before Using NEXUSe2e'
+            is intended to provide you with an understanding of Business Messaging, and how the
+            NEXUSe2e Server works.</para>
+        <para>The second section, 'Using the Web Interface' provides an in depth description of the
+            system, and the functionality of all of the areas of NEXUSe2e.</para>
+        <para>Additionally, there is a 'Frequently Asked Questions' area that links directly to
+            common questions and issues.</para>
+    </preface>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter_1.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter_2.xml"/>
+    <xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="chapter_3.xml"/>
+</book>

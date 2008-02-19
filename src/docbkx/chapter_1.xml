@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?oxygen RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbookxi.rng" type="xml"?>
+<chapter xmlns="http://docbook.org/ns/docbook" version="5.0">
+    <title>Business Messaging Introduction</title>
+    <subtitle>NEXUSe2e Basic Concepts</subtitle>
+    <sect1>
+        <title>System Flexibility</title>
+        <para>The backbone of the NEXUSe2e Server is the dynamic-duo of Java and eXtensible Markup
+            Language (XML). These technologies, both designed for interoperability and the Internet,
+            are highly complementary and offer unparalleled flexibility for the highest degree of
+            platform independence. This means that you can run NEXUSe2e on many platforms, making it
+            easier and faster to connect to the array of different systems used by your trading
+            partners. </para>
+    </sect1>
+    <sect1>
+        <title>Messaging Flexibility</title>
+        <para>Digital Business Messaging is the process of sending electronic documents between
+            computer systems. The computer systems may be in the same network, or they can be in a
+            different network entirely.</para>
+        <para>Typically, some data or document needs to be sent from one computer system to another.
+            The data or document is referred to as the Message Payload. The NEXUSe2e server creates
+            a Message Header, (which includes routing, integrity, security, transactional contexts,
+            etc.) and wraps the Payload and the Header together in a digital envelope to be sent. </para>
+        <sect2>
+            <title>Format of the Message Payload</title>
+            <para>XML compliant data structures are always used for transmitting the message header
+                information.</para>
+            <para>The NEXUSe2e server is capable of wrapping several documents into the message
+                payload.</para>
+            <para>The payload of NEXUSe2e Messages may be of any data format, including structured
+                and unstructured data.</para>
+            <para>Structured data formats may be mapped into XML to allow the handling of multiple
+                data types, including XML, EDI, Flat File formats, Excel Spreadsheets, etc. This
+                will allow you to work with partners that have less advanced messaging capabilities.</para>
+            <para>The allowance for unstructured data, including Images, Sound Files, etc. will
+                allow you to include supporting files like scanned images for proof of delivery with
+                data messages.</para>
+            <para>The NEXUSe2e server provides additional validity checking functionality for XML
+                messages.</para>
+        </sect2>
+        <sect2>
+            <title>Protocol for Transmission of the Message</title>
+            <para>The message format (i.e. the header, payload format and transmission encoding
+                mechanism) used to send and receive messages needs to be understood and supported by
+                all communicating systems. This means that the receiving server should be expecting
+                a message sent from your server using the same communication protocol. Collaboration
+                with each of your trading partners is required so that the proper components can be
+                set-up in their system.</para>
+            <para>The NEXUSe2e server, following a framework-based design, can support multiple
+                standards concurrently. Initially, the ebXML standard is supported; other standard
+                set implementations will follow.</para>
+        </sect2>
+        <sect2>
+            <title>Support for Multiple Business Processes</title>
+            <para>Different business processes can require different messaging semantics. In some
+                cases, a 'fire and forget' approach is sufficient, meaning that a message is sent
+                and no reply is expected. In other cases, the messaging follows a request/response
+                process. More complex processes can require relating a whole set of request/reply
+                exchanges into one transactional unit. These different approaches are also called
+                document or message choreographies. The NEXUSe2e server supports an unlimited number
+                of choreographies simultaneously. For more information, see the Choreography
+                section.</para>
+        </sect2>
+    </sect1>
+    <sect1>
+        <title>Message Delivery</title>
+        <para>A messaging sequence is generally initiated by a back-end system or a built-in service
+            that generates or discovers the data to be sent. The back-end system will notify the
+            NEXUSe2e engine of an event that requires messaging. Once the messaging system has
+            accepted the submission, it is responsible for the proper delivery of the document. The
+            integrity and delivery of the document has to be ensured despite system failures,
+            outages, communication disruptions or similar problems. The messaging system, therefore,
+            must be able to store and recover messages (message persistence) and use communication
+            protocols that indicate whether the communication partner received the message intact
+            (guarantee of delivery).</para>
+        <sect2>
+            <title>Recovery and Message Persistence</title>
+            <para>A message goes through different phases over its life span, (i.e. it is submitted,
+                sent, received, confirmed and eventually completed). The messaging system has to
+                keep track of the message and its state in a way that survives system failures and
+                outages. This means all message-related information needs to be stored persistently,
+                typically in some kind of database. In the event of a system failure, the messaging
+                system has to recover all messages that were not completed from persistent storage
+                and continue, or retry, the processing of messages.</para>
+            <para>The NEXUSe2e server comes pre-configured to use the database that is included with
+                the product (Apache Derby), but any database may be used for storage. The database
+                location is specified in the Server Configuration. It is recommended that you create
+                your own database, since the pre-configured database is not designed for high
+                volume.</para>
+            <para/>
+        </sect2>
+        <sect2>
+            <title>Guarantee of Delivery</title>
+            <para>The robustness of a messaging system depends not only on its capability to recover
+                lost messages but also on the capability to securely identify message loss. This is
+                especially true if communication occurs over unreliable media like the Internet.
+                Message loss is detected by employing communication protocols that incorporate
+                electronic receipts. If no reply has been received in the predefined timeout period,
+                it is likely that the message has been lost. In this case, the original message is
+                resent. The receiving system can detect duplicates caused by erroneous message
+                resends and will ignore them. This approach provides guarantee of delivery of
+                messages in conjunction with message persistence and recovery mechanisms. </para>
+        </sect2>
+    </sect1>
+    <sect1>
+        <title>Security</title>
+        <para>The security of a messaging system depends on the security of the end points of the
+            communication (system security) as well as that of the information in transit (message
+            security).</para>
+        <para>The primary method of security is provided through the use of a Public Key
+            Infrastructure (PKI). PKI refers to the technology, infrastructure, and practices needed
+            to enable use of public-key encryption and/or digital signatures in distributed
+            applications. The main function of PKI is to distribute public keys accurately and
+            reliably to trading partners that need to encrypt messages or verify digital signatures
+            (used to sign transactions or to authenticate people prior to granting access to
+            resources).</para>
+        <sect2>
+            <title>Message Security</title>
+            <para>Message security is achieved by: encrypting and digitally signing the message on
+                the originating side prior to sending, and decrypting the message and signature
+                verification upon receipt. A number of cryptographic mechanisms are available that
+                address the following main aspects of message security:<itemizedlist>
+                    <listitem>
+                        <para>Privacy: no unauthorized third party can read the message.</para>
+                    </listitem>
+                    <listitem>
+                        <para>Authentication: it is verified that the involved parties are who they
+                            claim to be. </para>
+                    </listitem>
+                    <listitem>
+                        <para>Integrity: the message was not tempered with or damaged.</para>
+                    </listitem>
+                    <listitem>
+                        <para>Non-repudiation: the parties involved cannot deny their involvement in
+                            a transaction.</para>
+                    </listitem>
+                </itemizedlist></para>
+
+            <para>The two main approaches are to either establish a secure channel between the
+                communication partners, or to encrypt and sign the message and then sending the
+                encrypted package over an insecure channel. The best-known protocol for the first
+                approach is Netscape's Secure Sockets Layer protocol (SSL), for the second one it is
+                S/MIME (found in secure Email programs).</para>
+            <para>The NEXUSe2e server uses the SSL protocol as a default to establish secure
+                communication. In environments where this is not applicable, S/MIME can be
+            used.</para>
+        </sect2>
+        <sect2>
+            <title>System Security</title>
+            <para>Security of the messaging server can be achieved by limiting access. Access is
+                needed for two reasons: transmitting a message to the server, or administering the
+                server. Both types of access can be controlled with a single mechanism that verifies
+                credentials supplied to the server against a configured list of parties that are
+                allowed to access to the server. This is also known as an Access Control List (ACL).
+                In case of a remote server trying to connect, the credentials should be supplied in
+                form of a digital certificate. In case of a person administering the server, the
+                credentials can be a username and password, or a client digital certificate
+                installed in the Web browser.</para>
+            <para>NEXUSe2e server is supplied with a list of valid business partners for each
+                choreography (i.e. the parties allowed access for sending purchase orders can differ
+                from those who can participate in invoice exchanges). The server also maintains a
+                list of valid administrative users that are allowed to review and change system
+                settings through the browser-based administration interface. </para>
+        </sect2>
+    </sect1>
+    <sect1>
+        <title>Reporting and Auditing</title>
+        <para>NEXUSe2e tracks all messages in the persistence database. A reporting interface has
+            been designed to query this data for the purposes of: <itemizedlist>
+                <listitem>
+                    <para>Analyzing the workload of the messaging server</para>
+                </listitem>
+                <listitem>
+                    <para>Tracking the success and failure rates of message transmissions</para>
+                </listitem>
+                <listitem>
+                    <para>Checking the status of a specific transaction</para>
+                </listitem>
+                <listitem>
+                    <para>Resending of messages</para>
+                </listitem>
+                <listitem>
+                    <para>Viewing of the message header and payload</para>
+                </listitem>
+            </itemizedlist>
+        </para>
+        <para>The NEXUSe2e Server provides browser-based interfaces to review the status of all
+            messages that have been processed by the server, or are currently active. Additionally,
+            the server provides the administrator with the capability to display messages based on
+            different criteria e.g. by recipient, transaction type (purchase orders, invoices), time
+            and status, etc.</para>
+    </sect1>
+</chapter>
