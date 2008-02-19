@@ -230,7 +230,7 @@
         <Component type="1" nxComponentId="28" name="XSLTPipelet" description="XSLT Transformation Pipelet" className="org.nexuse2e.backend.pipelets.XSLTPipelet"/>
     </Components>
     <Loggers>
-        <Logger nxLoggerId="1" nxComponentId="24" name="DB Root Logger" filter="group_core,group_database,group_backend,group_frontend,group_ui" autostart="true">
+        <Logger nxLoggerId="1" nxComponentId="24" name="DB Root Logger" filter="group_core,group_database,group_backend,group_frontend,group_ui" autostart="true" threshold="20000">
             <LoggerParams/>
         </Logger>
     </Loggers>
