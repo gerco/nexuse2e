@@ -84,10 +84,12 @@ div.helpBar {
 
 a.helpBar {
 	font-weight: bold;
+    font-size: 10pt;
 	color: #E56009;
 }
 
 a.helpBar:visited {
+    font-size: 10pt;
 	color: #E56009;
 }
 

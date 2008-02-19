@@ -350,8 +350,8 @@
 <div dojoType="ContentPane" layoutAlign="top" id="top-nav">
 <table style="padding: 0pt; margin: 0px;">
 	<tr>
-		<td style="text-align: left;"><a href="Apply.do" class="helpBar">Apply</a></td>
-		<td style="text-align: right;"><a
+		<td style="text-align: left;;padding-left: 10px"><a href="Apply.do" class="helpBar">Apply</a></td>
+		<td style="text-align: right;padding-right: 10px"><a
 			href="documentation/nexuse2e_help.html" target="_blank"
 			class="helpBar"><img src="images/icons/help.png" class="helpBar">&nbsp;Help</a>&nbsp;|&nbsp;<a
 			href="Logout.do" class="helpBar">Logout</a></td>
