@@ -347,6 +347,11 @@
 	<div dojoType="ContentPane" layoutAlign="top" id="header">
 		<tiles:insert attribute="header"/>
 	</div>
+    <div dojoType="ContentPane" layoutAlign="top" id="top-nav-test">
+    <table><tr>
+    <td style="text-align:left;"><a href="Apply.do" class="helpBar">Apply</a></td>
+    <td style="text-align:right;"><a href="documentation/nexuse2e_help.html" target="_blank" class="helpBar"><img src="images/icons/help.png" class="helpBar">&nbsp;Help</a>&nbsp;|&nbsp;<a href="Logout.do" class="helpBar">Logout</a></td></tr></table>
+    </div>    
 	<div dojoType="ContentPane" layoutAlign="left" style="overflow:auto;" id="navigator" cacheContent="false" preventCache="true" useCache="false">
 		<div id="progressDialog" dojoType="Dialog">
 			<div id="dialogContent" style="background-color: #FFFFFF; padding: 20px;">

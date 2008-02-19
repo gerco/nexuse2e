@@ -1,4 +1,3 @@
-<div class="helpBar">&nbsp;</div>
 <div dojoType="TreeLoadingController" RPCUrl="ajax/menu" widgetId="menuTreeController" DNDController="create"></div>
 <div dojoType="TreeSelector" widgetId="menuTreeSelector"></div>
 <div dojoType="Tree" DNDMode="between" selector="menuTreeSelector" widgetId="menuTree" controller="menuTreeController">
