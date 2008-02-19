@@ -37,9 +37,9 @@
                     <nexus:reportParam name="startDate" value="${last24Hours}"/>
 				</nexus:report>
 			</td>
-			<td>
+			<td>${last24HoursRounded}
 				<nexus:report name="messages_per_hour">
-					<nexus:reportParam name="startDate" value="${last24HoursUTC}"/>
+					<nexus:reportParam name="startDate" value="${last24HoursRounded}"/>
 				</nexus:report>
 			</td>
 		</tr>

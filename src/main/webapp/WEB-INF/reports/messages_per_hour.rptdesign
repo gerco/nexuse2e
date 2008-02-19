@@ -86,7 +86,7 @@ reportContext.setGlobalVariable( 'startTime', reportContext.getParameterValue( '
             </list-property>
             <property name="queryText">SELECT COUNT( message_id ) AS MESSAGE_COUNT, HOUR( created_date ) AS CREATED_HOUR
 FROM nx_message
-WHERE created_date >= '2008-02-18 00:00:00' OR ? IS NOT NULL
+WHERE type = 1 AND created_date >= ?
 GROUP BY HOUR( created_date )</property>
             <xml-property name="designerValues"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <model:DesignValues xmlns:design="http://www.eclipse.org/datatools/connectivity/oda/design" xmlns:model="http://www.eclipse.org/birt/report/model/adapter/odaModel">
@@ -431,7 +431,7 @@ function afterDataSetFilled(series, dataSet, icsc) {
 function shiftTo(hours, dataSet1, dataSet2) {
 	values1 = dataSet1.getValues();
 	values2 = dataSet2.getValues();
-	while (values1[values1.length - 1] != hours) {
+	while (values1[0] != hours) {
 		for (j = 0; j &lt; values1.length - 1; j++) {
 			index = j + 1;
 
@@ -458,7 +458,7 @@ function beforeGeneration(chart, icsc) {
 	var startTime = icsc.getExternalContext().getScriptable().getGlobalVariable( 'startTime' );
 	//out.println( 'startTime = ' + startTime );
 	
-	cal = java.util.Calendar.getInstance( java.util.TimeZone.getTimeZone( 'GMT' ) );
+	cal = java.util.Calendar.getInstance(  );
 	cal.setTime( startTime );
 	hours = cal.get( java.util.Calendar.HOUR_OF_DAY );
 
