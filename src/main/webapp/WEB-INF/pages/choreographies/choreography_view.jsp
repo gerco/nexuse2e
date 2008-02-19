@@ -5,7 +5,7 @@
 <%@ taglib uri="/tags/struts-logic" prefix="logic" %>
 
 
-<nexus:helpBar helpDoc="documentation/Choreography.htm"/>
+<% /*<nexus:helpBar helpDoc="documentation/Choreography.htm"/> */ %>
     
     <html:form action="ChoreographyUpdate">
         <html:hidden property="choreographyName"/>

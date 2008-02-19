@@ -6,7 +6,7 @@
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
 <%@ taglib uri="/tags/nexus" prefix="nexus"%>
 
-<nexus:helpBar helpDoc="documentation/User.htm" />
+<% /*<nexus:helpBar helpDoc="documentation/User.htm" /> */ %>
 
 <table class="NEXUS_TABLE" width="100%">
 	<tr>

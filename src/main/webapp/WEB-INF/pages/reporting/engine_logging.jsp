@@ -8,7 +8,7 @@
 <%@ taglib uri="/tags/struts-html-el" prefix="html-el" %>
 <%@ taglib uri="/tags/nexus" prefix="nexus" %>
 
-<nexus:helpBar helpDoc="documentation/Engine_Reporting.htm"/>
+<% /*<nexus:helpBar helpDoc="documentation/Engine_Reporting.htm"/> */ %>
 
 <html:form action="ProcessEngineLog.do">
 

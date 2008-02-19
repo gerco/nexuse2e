@@ -7,7 +7,7 @@
 <%@ taglib uri="/tags/nexus" prefix="nexus" %>
 <%@ taglib uri="/tags/struts-html-el" prefix="html-el"%>
 
-<nexus:helpBar helpDoc="documentation/Collaboration_Partners.htm"/>
+<% /*<nexus:helpBar helpDoc="documentation/Collaboration_Partners.htm"/> */ %>
 
     <table class="NEXUS_TABLE" width="100%">
         <tr>

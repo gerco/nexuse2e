@@ -15,7 +15,7 @@
 	});
 </script>
 
-<nexus:helpBar helpDoc="documentation/NEXUSe2e.html" />
+<% /*<nexus:helpBar helpDoc="documentation/NEXUSe2e.html" /> */ %>
 
 <table class="NEXUS_TABLE" width="100%">
 	<tr>

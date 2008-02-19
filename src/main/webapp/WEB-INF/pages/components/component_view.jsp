@@ -6,7 +6,7 @@
 <%@ taglib uri="/tags/struts-logic" prefix="logic" %>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %> 
 
-<nexus:helpBar helpDoc="documentation/Collaboration_Partners.htm"/>
+<% /*<nexus:helpBar helpDoc="documentation/Collaboration_Partners.htm"/> */ %>
 
       <c:set var="formAction" value="ComponentCreate"/>
       <c:set var="titleText" value="Add Component"/>

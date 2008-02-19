@@ -10,7 +10,7 @@
 <%@page import="org.nexuse2e.configuration.*"%>
 <%@page import="org.nexuse2e.pojo.ServiceParamPojo"%>
 
-<nexus:helpBar helpDoc="documentation/Service_Listing.htm" />
+<% /*<nexus:helpBar helpDoc="documentation/Service_Listing.htm" /> */ %>
 
 <html:form action="ServiceUpdate.do" method="POST">
 	<html:hidden property="nxServiceId" />

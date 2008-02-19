@@ -10,7 +10,7 @@
 <%@page import="org.nexuse2e.configuration.*"%>
 <%@page import="org.nexuse2e.pojo.LoggerParamPojo"%>
 
-<nexus:helpBar helpDoc="documentation/Notifier_Listing.htm" />
+<% /*<nexus:helpBar helpDoc="documentation/Notifier_Listing.htm" /> */ %>
 
 <html:form action="NotifierUpdate.do" method="POST">
 	<html:hidden property="choreographyId" />

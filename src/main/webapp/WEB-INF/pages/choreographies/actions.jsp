@@ -6,7 +6,7 @@
 <%@ taglib uri="/tags/struts-logic" prefix="logic" %>
 
 
-<nexus:helpBar helpDoc="documentation/Action.htm"/>
+<% /*<nexus:helpBar helpDoc="documentation/Action.htm"/> */ %>
 
   	<table class="NEXUS_TABLE" width="100%">
 		    <tr>

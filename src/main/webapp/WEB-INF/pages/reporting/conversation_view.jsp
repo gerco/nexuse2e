@@ -8,7 +8,7 @@
 
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %> 
 
-<nexus:helpBar helpDoc="documentation/Conversation_Reporting.htm"/>
+<% /*<nexus:helpBar helpDoc="documentation/Conversation_Reporting.htm"/> */ %>
 
     <center>
         <table class="NEXUS_TABLE" width="100%">

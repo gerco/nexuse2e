@@ -9,7 +9,7 @@
 
 <%@page import="org.nexuse2e.configuration.Constants.ParameterType"%>
 
-<nexus:helpBar helpDoc="documentation/Collaboration_Partners.htm" />
+<% /*<nexus:helpBar helpDoc="documentation/Collaboration_Partners.htm" /> */ %>
 
 <table class="NEXUS_TABLE" width="100%">
 	<tr>

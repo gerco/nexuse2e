@@ -7,7 +7,7 @@
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %> 
 <%@ taglib uri="/tags/struts-html-el" prefix="html-el" %>
 
-<nexus:helpBar helpDoc="documentation/Choreography.htm"/>
+<% /*<nexus:helpBar helpDoc="documentation/Choreography.htm"/> */ %>
 
     <html:form action="ChoreographyCreate">
         <center>

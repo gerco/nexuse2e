@@ -6,7 +6,7 @@
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
 <%@ taglib uri="/tags/nexus" prefix="nexus"%>
 
-<nexus:helpBar helpDoc="documentation/SSL.htm" />
+<% /*<nexus:helpBar helpDoc="documentation/SSL.htm" /> */ %>
 
 <logic:notEmpty name="redirectUrl">
 	<logic:notEmpty name="redirectTimeout">

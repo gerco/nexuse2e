@@ -8,7 +8,7 @@
 
 <%@ taglib uri="/tags/struts-html-el" prefix="html-el"%>
 
-<nexus:helpBar helpDoc="documentation/Action.htm"/>
+<% /*<nexus:helpBar helpDoc="documentation/Action.htm"/> */ %>
 
 <html:form
 	action="ActionSettingsUpdate">

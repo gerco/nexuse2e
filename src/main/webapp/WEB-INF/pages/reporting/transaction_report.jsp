@@ -160,7 +160,7 @@
           
   </script>
 
-<nexus:helpBar helpDoc="html/NoHelpAvailable.html" />
+<% /*<nexus:helpBar helpDoc="html/NoHelpAvailable.html" /> */ %>
 
 <html:form action="ProcessConversationReport.do">
 	<html:hidden property="applyProperties" value="true"/>

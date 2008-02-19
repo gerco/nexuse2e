@@ -7,7 +7,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="/tags/struts-html-el" prefix="html-el"%>
 
-<nexus:helpBar helpDoc="documentation/Collaboration_Partners.htm" />
+<% /*<nexus:helpBar helpDoc="documentation/Collaboration_Partners.htm" /> */ %>
 
 <table class="NEXUS_TABLE" width="100%">
 	<tr>
@@ -62,7 +62,7 @@
 		</tr>
 		<tr>
 			<td class="NEXUSName" colspan="3">
-			<logic:equal name="pipelineForm" property="direction" value="0"> <%/* inbound */%>
+			<logic:equal name="pipelineForm" property="direction" value="0"> <%/* inbound */ %>
 				<logic:equal name="pipelineForm" property="frontend" value="true">
 				Partner system
 				</logic:equal>
@@ -70,7 +70,7 @@
 				NEXUSe2e frontend
 				</logic:notEqual>
 			</logic:equal>
-			<logic:equal name="pipelineForm" property="direction" value="1"> <%/* outbound */%>
+			<logic:equal name="pipelineForm" property="direction" value="1"> <%/* outbound */ %>
 				<logic:equal name="pipelineForm" property="frontend" value="true">
 				NEXUSe2e backend
 				</logic:equal>
@@ -136,7 +136,7 @@
 		</tr>
 		<tr>
 			<td class="NEXUSName" colspan="3">
-			<logic:equal name="pipelineForm" property="direction" value="0"> <%/* inbound */%>
+			<logic:equal name="pipelineForm" property="direction" value="0"> <%/* inbound */ %>
 				<logic:equal name="pipelineForm" property="frontend" value="true">
 				NEXUSe2e backend
 				</logic:equal>
@@ -144,7 +144,7 @@
 				Backend system
 				</logic:notEqual>
 			</logic:equal>
-			<logic:equal name="pipelineForm" property="direction" value="1"> <%/* outbound */%>
+			<logic:equal name="pipelineForm" property="direction" value="1"> <%/* outbound */ %>
 				<logic:equal name="pipelineForm" property="frontend" value="true">
 				Partner system
 				</logic:equal>

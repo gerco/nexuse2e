@@ -3,7 +3,7 @@
 <%@ taglib uri="/tags/struts-logic" prefix="logic" %>
 <%@ taglib uri="/tags/c" prefix="c" %>
 
-<nexus:helpBar helpDoc="documentation/Role.htm"/>
+<% /*<nexus:helpBar helpDoc="documentation/Role.htm"/> */ %>
 
 <table class="NEXUS_TABLE" width="100%">
     <tr>

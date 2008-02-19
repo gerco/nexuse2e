@@ -5,7 +5,7 @@
 <%@ taglib uri="/tags/struts-logic" prefix="logic"%>
 <%@ taglib uri="/tags/nexus" prefix="nexus"%>
 
-<nexus:helpBar helpDoc="documentation/SSL.htm" />
+<% /*<nexus:helpBar helpDoc="documentation/SSL.htm" /> */ %>
 
 <center>
 <table class="NEXUS_TABLE" width="100%">

@@ -8,7 +8,7 @@
 <%@ page import="org.nexuse2e.ui.form.*" %>
 <%@ page import="org.nexuse2e.ui.structure.*" %>
 
-<nexus:helpBar helpDoc="documentation/User.htm"/>
+<% /*<nexus:helpBar helpDoc="documentation/User.htm"/> */ %>
 
 <table class="NEXUS_TABLE" width="100%">
     <tr>

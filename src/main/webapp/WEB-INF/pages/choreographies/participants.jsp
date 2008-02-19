@@ -7,7 +7,7 @@
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %> 
 <%@ taglib uri="/tags/struts-html-el" prefix="html-el" %>
 
-<nexus:helpBar helpDoc="documentation/Participants.htm"/>
+<% /*<nexus:helpBar helpDoc="documentation/Participants.htm"/> */ %>
 
     <center>
 
