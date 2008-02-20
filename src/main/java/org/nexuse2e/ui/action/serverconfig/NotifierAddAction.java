@@ -29,9 +29,9 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.ConfigurationUtil;
 import org.nexuse2e.configuration.Constants;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.Constants.ComponentType;
 import org.nexuse2e.logging.LogAppender;
 import org.nexuse2e.pojo.ComponentPojo;
@@ -53,7 +53,7 @@ public class NotifierAddAction extends NexusE2EAction {
      */
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
@@ -62,7 +62,7 @@ public class NotifierAddAction extends NexusE2EAction {
         // List<LoggerPojo> loggers = null;
         LoggerForm loggerForm = (LoggerForm) actionForm;
         if ( loggerForm.getName() != null && loggerForm.getName().trim().length() > 0 ) {
-            LogAppender logger = Engine.getInstance().getActiveConfigurationAccessService().getLogger(
+            LogAppender logger = engineConfiguration.getLogger(
                     loggerForm.getName() );
             if ( logger != null ) {
                 loggerForm.setName( "" );
@@ -71,10 +71,10 @@ public class NotifierAddAction extends NexusE2EAction {
             loggerForm.setName( "" );
         }
 
-        List<ComponentPojo> components = Engine.getInstance().getActiveConfigurationAccessService().getComponents(
+        List<ComponentPojo> components = engineConfiguration.getComponents(
                 ComponentType.LOGGER, Constants.COMPONENTCOMPARATOR );
 
-        List<ComponentPojo> services = Engine.getInstance().getActiveConfigurationAccessService().getComponents(
+        List<ComponentPojo> services = engineConfiguration.getComponents(
                 ComponentType.SERVICE, Constants.COMPONENTCOMPARATOR );
 
         if ( components == null || components.size() == 0 ) {
@@ -89,7 +89,7 @@ public class NotifierAddAction extends NexusE2EAction {
         if ( loggerForm.getNxComponentId() == 0 ) {
             componentPojo = components.iterator().next();
         } else {
-            componentPojo = Engine.getInstance().getActiveConfigurationAccessService().getComponentByNxComponentId(
+            componentPojo = engineConfiguration.getComponentByNxComponentId(
                     loggerForm.getNxComponentId() );
         }
 
@@ -106,7 +106,7 @@ public class NotifierAddAction extends NexusE2EAction {
         }
 
         request.setAttribute( ATTRIBUTE_COLLECTION, components );
-        request.setAttribute( ATTRIBUTE_SERVICE_COLLECTION, Engine.getInstance().getActiveConfigurationAccessService().getServices( ) );
+        request.setAttribute( ATTRIBUTE_SERVICE_COLLECTION, engineConfiguration.getServices( ) );
 
         return success;
     } // executeNexusE2EAction

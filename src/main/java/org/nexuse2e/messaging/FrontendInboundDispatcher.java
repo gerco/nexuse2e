@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
@@ -57,7 +56,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
 
     private ProtocolAdapter[]                         protocolAdapters;
 
-    private HashMap<String, FrontendActionSerializer> frontendActionSerializers = new HashMap<String, FrontendActionSerializer>();
+    private Map<String, FrontendActionSerializer>     frontendActionSerializers = new HashMap<String, FrontendActionSerializer>();
 
     private BeanStatus                                status                    = BeanStatus.UNDEFINED;
 
@@ -152,8 +151,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
 
         if ( headerAccessible ) {
             LOG.error( new LogMessage( "Error processing inbound message.", messagePojo ) );
-            for ( Iterator iter = errorMessages.iterator(); iter.hasNext(); ) {
-                ErrorDescriptor errorDescriptor = (ErrorDescriptor) iter.next();
+            for (ErrorDescriptor errorDescriptor : errorMessages) {
                 LOG.error( new LogMessage( "Error - " + errorDescriptor.getDescription(), messagePojo ) );
             }
             return null;

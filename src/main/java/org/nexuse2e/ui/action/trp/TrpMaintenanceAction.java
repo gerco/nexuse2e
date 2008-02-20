@@ -29,7 +29,7 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
-import org.nexuse2e.Engine;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.pojo.TRPPojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.TrpMaintenanceForm;
@@ -45,7 +45,7 @@ public class TrpMaintenanceAction extends NexusE2EAction {
 
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
@@ -65,12 +65,12 @@ public class TrpMaintenanceAction extends NexusE2EAction {
                 trp.setVersion( form.getVersion() );
                 trp.setAdapterClassName( form.getAdapterClassName() );
 
-                Engine.getInstance().getActiveConfigurationAccessService().updateTrp( trp );
+                engineConfiguration.updateTrp( trp );
             }
         } else if ( !StringUtils.isEmpty( action ) && action.equals( "update" ) ) {
             int nxId = form.getNxTRPId();
             if ( nxId != 0 ) {
-                TRPPojo trp = Engine.getInstance().getActiveConfigurationAccessService()
+                TRPPojo trp = engineConfiguration
                         .getTrpByNxTrpId( nxId );
                 
                 if ( trp != null ) {
@@ -79,19 +79,19 @@ public class TrpMaintenanceAction extends NexusE2EAction {
                     trp.setVersion( form.getVersion() );
                     trp.setAdapterClassName( form.getAdapterClassName() );
 
-                    Engine.getInstance().getActiveConfigurationAccessService().updateTrp( trp );
+                    engineConfiguration.updateTrp( trp );
                 }
             }
         } else if ( !StringUtils.isEmpty( action ) && action.equals( "delete" ) ) {
             int nxId = form.getNxTRPId();
             if ( nxId != 0 ) {
-                TRPPojo trp = Engine.getInstance().getActiveConfigurationAccessService().getTrpByNxTrpId( nxId );
+                TRPPojo trp = engineConfiguration.getTrpByNxTrpId( nxId );
                 if ( trp != null ) { 
-                    Engine.getInstance().getActiveConfigurationAccessService().deleteTrp( trp );
+                    engineConfiguration.deleteTrp( trp );
                 }
             }
         }
-        List<TRPPojo> trps = Engine.getInstance().getActiveConfigurationAccessService().getTrps();
+        List<TRPPojo> trps = engineConfiguration.getTrps();
 
         
 

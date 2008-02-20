@@ -27,8 +27,8 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.ChoreographyForm;
@@ -49,7 +49,7 @@ public class ChoreographyUpdateAction extends NexusE2EAction {
      */
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
@@ -66,7 +66,7 @@ public class ChoreographyUpdateAction extends NexusE2EAction {
             return error;
         }
         try {
-            ChoreographyPojo chor = Engine.getInstance().getActiveConfigurationAccessService().getChoreographyByChoreographyId(
+            ChoreographyPojo chor = engineConfiguration.getChoreographyByChoreographyId(
                     choreographyId );
             if ( chor == null ) {
                 ActionMessage errorMessage = new ActionMessage( "generic.error",
@@ -76,7 +76,7 @@ public class ChoreographyUpdateAction extends NexusE2EAction {
                 return error;
             }
             chor.setDescription( form.getDescription() );
-            Engine.getInstance().getActiveConfigurationAccessService().updateChoreography( chor );
+            engineConfiguration.updateChoreography( chor );
         } catch ( NexusException e ) {
             ActionMessage errorMessage = new ActionMessage( "generic.error", e );
             errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );

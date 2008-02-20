@@ -22,8 +22,8 @@ package org.nexuse2e.ui.action.reporting;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,6 +36,7 @@ import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.Constants;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.dao.TransactionDAO;
 import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.BackendActionSerializer;
@@ -66,18 +67,18 @@ public class ProcessConversationReportAction extends ReportingAction {
      */
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
 
         ReportingSettingsForm reportingSettings = new ReportingSettingsForm();
-        fillForm( reportingSettings );
+        fillForm( engineConfiguration, reportingSettings );
 
 
         ReportingPropertiesForm form = (ReportingPropertiesForm) actionForm;
         List<String> participants = new ArrayList<String>();
-        List<PartnerPojo> partners = Engine.getInstance().getActiveConfigurationAccessService().getPartners(
+        List<PartnerPojo> partners = engineConfiguration.getPartners(
                 Constants.PARTNER_TYPE_PARTNER, Constants.PARTNERCOMPARATOR );
 
         for (PartnerPojo partner : partners) {
@@ -85,7 +86,7 @@ public class ProcessConversationReportAction extends ReportingAction {
         }
         form.setParticipantIds( participants );
         List<String> choreographyIds = new ArrayList<String>();
-        List<ChoreographyPojo> choreographies = Engine.getInstance().getActiveConfigurationAccessService().getChoreographies();
+        List<ChoreographyPojo> choreographies = engineConfiguration.getChoreographies();
         for (ChoreographyPojo choreography : choreographies) {
             choreographyIds.add( choreography.getName() );
         }
@@ -124,7 +125,7 @@ public class ProcessConversationReportAction extends ReportingAction {
                     if ( messageContext.getMessagePojo().isOutbound() ) {
                         LOG.debug( "Re-queueing outbound message " + messageId + " for choreography " + choreographyId
                                 + " and participant " + participantId );
-                        HashMap<String, BackendActionSerializer> backendActionSerializers = Engine.getInstance()
+                        Map<String, BackendActionSerializer> backendActionSerializers = Engine.getInstance()
                                 .getCurrentConfiguration().getBackendActionSerializers();
                         BackendActionSerializer backendActionSerializer = backendActionSerializers.get( choreographyId );
 
@@ -138,7 +139,7 @@ public class ProcessConversationReportAction extends ReportingAction {
                         LOG.debug( "Re-queueing inbound message " + messageId + " for choreography " + choreographyId
                                 + " and participant " + participantId );
 
-                        HashMap<String, FrontendActionSerializer> frontendActionSerializers = Engine.getInstance()
+                        Map<String, FrontendActionSerializer> frontendActionSerializers = Engine.getInstance()
                                 .getCurrentConfiguration().getFrontendActionSerializers();
                         FrontendActionSerializer frontendActionSerializer = frontendActionSerializers
                                 .get( choreographyId );
@@ -254,14 +255,14 @@ public class ProcessConversationReportAction extends ReportingAction {
         int nxChoreographyId = 0;
 
         if ( participantId != null ) {
-            PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByPartnerId(
+            PartnerPojo partner = engineConfiguration.getPartnerByPartnerId(
                     participantId );
             if ( partner != null ) {
                 nxPartnerId = partner.getNxPartnerId();
             }
         }
         if ( choreographyId != null ) {
-            ChoreographyPojo choreography = Engine.getInstance().getActiveConfigurationAccessService()
+            ChoreographyPojo choreography = engineConfiguration
                     .getChoreographyByChoreographyId( choreographyId );
             if ( choreography != null ) {
                 nxChoreographyId = choreography.getNxChoreographyId();

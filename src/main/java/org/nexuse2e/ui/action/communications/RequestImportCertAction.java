@@ -27,8 +27,8 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
 import org.bouncycastle.jce.PKCS10CertificationRequest;
-import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.Constants;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.ProtectedFileAccessForm;
@@ -47,17 +47,17 @@ public class RequestImportCertAction extends NexusE2EAction {
      */
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
         ProtectedFileAccessForm form = (ProtectedFileAccessForm) actionForm;
 
-        CertificatePojo certificateRequest = Engine.getInstance().getActiveConfigurationAccessService()
+        CertificatePojo certificateRequest = engineConfiguration
                 .getFirstCertificateByType( Constants.CERTIFICATE_TYPE_REQUEST, true );
         PKCS10CertificationRequest pkcs10request = CertificateUtil.getPKCS10Request( certificateRequest );
 
-        CertificatePojo certificateKey = Engine.getInstance().getActiveConfigurationAccessService()
+        CertificatePojo certificateKey = engineConfiguration
                 .getCertificateByName( Constants.CERTIFICATE_TYPE_PRIVATE_KEY, certificateRequest.getName() );
 
 //        X509Principal certSubject = CertificateUtil.getMissingCertificateSubjectDNFromKeyStore(pkcs10request, certificateKey );

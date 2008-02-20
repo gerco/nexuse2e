@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(name = "ParticipantType")
 @XmlAccessorType(XmlAccessType.NONE)
-public class ParticipantPojo implements java.io.Serializable {
+public class ParticipantPojo implements NEXUSe2ePojo {
 
     /**
      * 
@@ -105,6 +105,14 @@ public class ParticipantPojo implements java.io.Serializable {
         this.nxParticipantId = nxParticipantId;
     }
 
+    public int getNxId() {
+        return nxParticipantId;
+    }
+    
+    public void setNxId( int nxId ) {
+        this.nxParticipantId = nxId;
+    }
+    
     /**
      * Required for JAXB 
      * @return

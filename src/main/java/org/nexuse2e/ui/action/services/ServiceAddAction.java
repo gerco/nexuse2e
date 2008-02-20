@@ -29,9 +29,9 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.ConfigurationUtil;
 import org.nexuse2e.configuration.Constants;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.Constants.ComponentType;
 import org.nexuse2e.pojo.ComponentPojo;
 import org.nexuse2e.pojo.ServicePojo;
@@ -51,7 +51,7 @@ public class ServiceAddAction extends NexusE2EAction {
 
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
@@ -59,7 +59,7 @@ public class ServiceAddAction extends NexusE2EAction {
 
         ServiceForm serviceForm = (ServiceForm) actionForm;
         if ( serviceForm.getName() != null && serviceForm.getName().trim().length() > 0 ) {
-            Service service = Engine.getInstance().getActiveConfigurationAccessService().getService( serviceForm.getName() );
+            Service service = engineConfiguration.getService( serviceForm.getName() );
             if ( service != null ) {
                 serviceForm.setName( "" );
             }
@@ -67,7 +67,7 @@ public class ServiceAddAction extends NexusE2EAction {
             serviceForm.setName( "" );
         }
 
-        List<ComponentPojo> components = Engine.getInstance().getActiveConfigurationAccessService().getComponents(
+        List<ComponentPojo> components = engineConfiguration.getComponents(
                 ComponentType.SERVICE, Constants.COMPONENTCOMPARATOR );
 
         if ( components == null || components.size() == 0 ) {
@@ -82,7 +82,7 @@ public class ServiceAddAction extends NexusE2EAction {
         if ( serviceForm.getNxComponentId() == 0 ) {
             componentPojo = components.iterator().next();
         } else {
-            componentPojo = Engine.getInstance().getActiveConfigurationAccessService().getComponentByNxComponentId(
+            componentPojo = engineConfiguration.getComponentByNxComponentId(
                     serviceForm.getNxComponentId() );
         }
 
@@ -99,7 +99,7 @@ public class ServiceAddAction extends NexusE2EAction {
         }
         request.setAttribute( REFRESH_TREE, "true" );
         request.setAttribute( ATTRIBUTE_COLLECTION, components );
-        request.setAttribute( ATTRIBUTE_SERVICE_COLLECTION, Engine.getInstance().getActiveConfigurationAccessService().getServices( ) );
+        request.setAttribute( ATTRIBUTE_SERVICE_COLLECTION, engineConfiguration.getServices( ) );
 
         return success;
     }

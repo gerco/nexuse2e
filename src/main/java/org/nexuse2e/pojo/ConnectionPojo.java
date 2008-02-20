@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(name = "ConnectionType")
 @XmlAccessorType(XmlAccessType.NONE)
-public class ConnectionPojo implements java.io.Serializable {
+public class ConnectionPojo implements NEXUSe2ePojo {
 
     /**
      * 
@@ -135,6 +135,14 @@ public class ConnectionPojo implements java.io.Serializable {
         this.nxConnectionId = nxConnectionId;
     }
 
+    public int getNxId() {
+        return nxConnectionId;
+    }
+    
+    public void setNxId( int nxId ) {
+        this.nxConnectionId = nxId;
+    }
+    
     /**
      * Required for JAXB 
      * @return

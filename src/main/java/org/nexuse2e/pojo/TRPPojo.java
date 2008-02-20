@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(name = "TRPType")
 @XmlAccessorType(XmlAccessType.NONE)
-public class TRPPojo implements java.io.Serializable {
+public class TRPPojo implements NEXUSe2ePojo {
 
     /**
      * 
@@ -82,6 +82,14 @@ public class TRPPojo implements java.io.Serializable {
         this.nxTRPId = nxTRPId;
     }
 
+    public int getNxId() {
+        return nxTRPId;
+    }
+    
+    public void setNxId( int nxId ) {
+        this.nxTRPId = nxId;
+    }
+    
     @XmlAttribute
     public String getProtocol() {
 

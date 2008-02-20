@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(name = "MappingType")
 @XmlAccessorType(XmlAccessType.NONE)
-public class MappingPojo implements java.io.Serializable {
+public class MappingPojo implements NEXUSe2ePojo {
 
     /**
      * 
@@ -148,6 +148,14 @@ public class MappingPojo implements java.io.Serializable {
         this.nxMappingId = nxMappingId;
     }
 
+    public int getNxId() {
+        return nxMappingId;
+    }
+    
+    public void setNxId( int nxId ) {
+        this.nxMappingId = nxId;
+    }
+    
     @XmlAttribute
     public int getRightType() {
 

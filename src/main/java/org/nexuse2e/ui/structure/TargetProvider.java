@@ -22,6 +22,8 @@ package org.nexuse2e.ui.structure;
 
 import java.util.List;
 
+import org.nexuse2e.configuration.EngineConfiguration;
+
 /**
  * This interface provides structured data to render the page topology. 
  * 
@@ -33,9 +35,11 @@ public interface TargetProvider {
     /**
      * Returns the instances of a given pattern node.
      * @param pattern The pattern node.
-     * @parem parent The node that will be set as parent of the returned instances.
+     * @param parent The node that will be set as parent of the returned instances.
+     * @param engineConfiguration The applicable engine configuration
      * @return The instances of the given <code>pattern</code>.
      *         The returned instances are expected to be of the same subtype as the given <code>pattern</code>.
      */
-    List<StructureNode> getStructure( StructureNode pattern, ParentalStructureNode parent );
+    List<StructureNode> getStructure(
+            StructureNode pattern, ParentalStructureNode parent, EngineConfiguration engineConfiguration );
 }

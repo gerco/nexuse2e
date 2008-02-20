@@ -63,9 +63,9 @@ public class AjaxServlet extends HttpServlet {
         try {
             String result = null;
             if ( PATH_MENU.equals( request.getPathInfo() ) ) {
-                result = new TreeProvider().handleRequest( request.getParameterMap() );
+                result = new TreeProvider().handleRequest( request );
             } else if ( PATH_COMMANDS.equals( request.getPathInfo() ) ) {
-                result = new TreeProvider().handleRequest( request.getParameterMap() );
+                result = new TreeProvider().handleRequest( request );
             } else {
                 LOG.warn( "Unknown path requested: path=" + request.getPathInfo() );
             }
@@ -123,7 +123,7 @@ public class AjaxServlet extends HttpServlet {
         sb.append( "\n" );
         sb.append( "--- Headers ---" );
         sb.append( "\n" );
-        Enumeration headerNames = request.getHeaderNames();
+        Enumeration<?> headerNames = request.getHeaderNames();
         while ( headerNames.hasMoreElements() ) {
             String currName = (String) headerNames.nextElement();
             sb.append( currName + ": " + request.getHeader( currName ) );
@@ -131,7 +131,7 @@ public class AjaxServlet extends HttpServlet {
         }
         sb.append( "--- Attributes ---" );
         sb.append( "\n" );
-        Enumeration attributeNames = request.getAttributeNames();
+        Enumeration<?> attributeNames = request.getAttributeNames();
         while ( attributeNames.hasMoreElements() ) {
             String currName = (String) attributeNames.nextElement();
             sb.append( currName + ": " + request.getAttribute( currName ) );
@@ -139,7 +139,7 @@ public class AjaxServlet extends HttpServlet {
         }
         sb.append( "--- Parameters ---" );
         sb.append( "\n" );
-        Enumeration paramNames = request.getParameterNames();
+        Enumeration<?> paramNames = request.getParameterNames();
         while ( paramNames.hasMoreElements() ) {
             String currName = (String) paramNames.nextElement();
             sb.append( currName + ": " + request.getParameter( currName ) );

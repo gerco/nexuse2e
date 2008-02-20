@@ -26,7 +26,7 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
-import org.nexuse2e.Engine;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.pojo.LoggerPojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.LoggerForm;
@@ -42,16 +42,16 @@ public class NotifierDeleteAction extends NexusE2EAction {
      */
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
         ActionForward actionForward = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
         LoggerForm notifierForm = (LoggerForm) actionForm;
 
-        LoggerPojo logger = Engine.getInstance().getActiveConfigurationAccessService().getLoggerByNxLoggerId(
+        LoggerPojo logger = engineConfiguration.getLoggerByNxLoggerId(
                 notifierForm.getNxLoggerId() );
         if ( logger != null ) {
-            Engine.getInstance().getActiveConfigurationAccessService().deleteLogger( logger );
+            engineConfiguration.deleteLogger( logger );
         }
 
         if ( !errors.isEmpty() ) {

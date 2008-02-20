@@ -41,6 +41,7 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.Constants;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.CertificateChainImportForm;
@@ -53,7 +54,7 @@ public class RequestImportCertChainAction extends NexusE2EAction {
     @SuppressWarnings("unchecked")
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
         ActionForward accept = actionMapping.findForward( "accept" );
@@ -84,7 +85,7 @@ public class RequestImportCertChainAction extends NexusE2EAction {
             System.out.println( "caimports: " + form.getCaImports() );
 
             try {
-                List<CertificatePojo> privKeys = Engine.getInstance().getActiveConfigurationAccessService()
+                List<CertificatePojo> privKeys = engineConfiguration
                         .getCertificates( Constants.CERTIFICATE_TYPE_PRIVATE_KEY, null );
                 if ( privKeys == null || privKeys.size() == 0 ) {
                     LOG.error( "no private key found in database!" );
@@ -160,7 +161,7 @@ public class RequestImportCertChainAction extends NexusE2EAction {
                     }
                 }
 
-                Engine.getInstance().getActiveConfigurationAccessService().updateCertificates( updateableCertPojos );
+                engineConfiguration.updateCertificates( updateableCertPojos );
 
             } catch ( Exception e ) {
                 // TODO Auto-generated catch block

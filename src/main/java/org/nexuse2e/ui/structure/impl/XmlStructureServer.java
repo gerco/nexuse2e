@@ -31,6 +31,7 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.log4j.Logger;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.ui.structure.ParentalStructureNode;
 import org.nexuse2e.ui.structure.StructureException;
 import org.nexuse2e.ui.structure.StructureNode;
@@ -144,30 +145,32 @@ public class XmlStructureServer implements StructureService {
 
     /**
      * Returns the menu structure if a valid XML structure file has been set.
+     * @param engineConfiguration The applicable engine configuration.
      * @return The menu's structure or an empty list if the specified path or file is invalid.
      * @throws StructureException if an error occurred during the structure build process.
      * @see setSpec(String)
      * @see org.nexuse2e.ui.structure.StructureService#getMenuStructure()
      */
-    public List<StructureNode> getMenuStructure() throws StructureException {
+    public List<StructureNode> getMenuStructure( EngineConfiguration engineConfiguration ) throws StructureException {
 
         synchronized ( this ) {
-            return getStructure( COMPILED_EXPR_MENU, true );
+            return getStructure( COMPILED_EXPR_MENU, true, engineConfiguration );
         }
 
     }
 
     /**
      * Returns the site structure if a valid XML structure file has been set.
+     * @param engineConfiguration The applicable engine configuration.
      * @return The site's structure or an empty list if the specified path or file is invalid.
      * @throws StructureException if an error occurred during the structure build process.
      * @see setSpec(String)
      * @see org.nexuse2e.ui.structure.StructureService#getSiteStructure()
      */
-    public List<StructureNode> getSiteStructure() throws StructureException {
+    public List<StructureNode> getSiteStructure( EngineConfiguration engineConfiguration ) throws StructureException {
 
         synchronized ( this ) {
-            return getStructure( COMPILED_EXPR_SITE, true );
+            return getStructure( COMPILED_EXPR_SITE, true, engineConfiguration );
         }
     }
     
@@ -181,7 +184,7 @@ public class XmlStructureServer implements StructureService {
     public List<StructureNode> getMenuSkeleton() throws StructureException {
 
         synchronized ( this ) {
-            return getStructure( COMPILED_EXPR_MENU, false );
+            return getStructure( COMPILED_EXPR_MENU, false, null );
         }
     }
 
@@ -192,24 +195,27 @@ public class XmlStructureServer implements StructureService {
      * @see setSpec(String)
      * @see org.nexuse2e.ui.structure.StructureService#getMenuStructure()
      */
-    public List<StructureNode> getSiteSkeleton() throws StructureException {
+    public List<StructureNode> getSiteSkeleton( EngineConfiguration engineConfiguration ) throws StructureException {
 
         synchronized ( this ) {
-            return getStructure( COMPILED_EXPR_SITE, false );
+            return getStructure( COMPILED_EXPR_SITE, false, engineConfiguration );
         }
     }
 
     /**
      * Returns the site structure if a valid XML structure file has been set.
      * @param rootPath the xpath under which the structure is located.
-     * @paran Defines wheather to evaluate dynamic nodes (<code>type="provider"</code>) or return the skeleton only.
+     * @param Defines wheather to evaluate dynamic nodes (<code>type="provider"</code>) or return the skeleton only.
+     * @param engineConfiguration The applicable engine configuration.
      * @return The site's structure or an empty list if the specified path or file is invalid.
      * @throws StructureException if an error occurred during the structure build process.
      * @see setSpec(String)
      * @see org.nexuse2e.ui.structure.StructureService#getSiteStructure()
      */
     @SuppressWarnings("unchecked")
-    private List<StructureNode> getStructure( XPathExpression rootPath, boolean evaluateDynamicNodes ) throws StructureException {
+    private List<StructureNode> getStructure(
+            XPathExpression rootPath, boolean evaluateDynamicNodes, EngineConfiguration engineConfiguration )
+            throws StructureException {
 
         List<StructureNode> result = Collections.EMPTY_LIST;
 
@@ -225,9 +231,9 @@ public class XmlStructureServer implements StructureService {
                         for ( int i = 0; i < menuList.getLength(); i++ ) {
                             Node currNode = menuList.item( i );
                             if ( currNode.getNodeName().equals( NODE_NAME_PAGE ) ) {
-                                buildPageStructure( currNode, root, evaluateDynamicNodes );
+                                buildPageStructure( currNode, root, evaluateDynamicNodes, engineConfiguration );
                             } else if ( currNode.getNodeName().equals( NODE_NAME_COMMAND ) ) {
-                                buildCommandStructure( currNode, root, evaluateDynamicNodes );
+                                buildCommandStructure( currNode, root, evaluateDynamicNodes, engineConfiguration );
                             }
                         }
                         result = root.getChildren();
@@ -248,12 +254,17 @@ public class XmlStructureServer implements StructureService {
      * Recursively builds the structure of a given command node without an additional check of the node name.
      * @param commandNode The command node.
      * @param parents The direct parents in the structure to which the built node(s) will be attached as children.
-     * @paran Defines wheather to evaluate dynamic nodes (<code>type="provider"</code>) or return the skeleton only.
+     * @param Defines whether to evaluate dynamic nodes (<code>type="provider"</code>) or return the skeleton only.
+     * @param engineConfiguration The applicable engine configuration.
      * @throws XPathExpressionException if an error occurs during the xpath evaluation.
      * @throws StructureException if no TargetProviderManager is set or a TargetProvider cannot be found for a given
      *         target name.
      */
-    private void buildCommandStructure( Node commandNode, ParentalStructureNode parent, boolean evaluateDynamicNodes )
+    private void buildCommandStructure(
+            Node commandNode,
+            ParentalStructureNode parent,
+            boolean evaluateDynamicNodes,
+            EngineConfiguration engineConfiguration )
             throws XPathExpressionException, StructureException {
 
         if ( commandNode != null && parent != null ) {
@@ -267,6 +278,12 @@ public class XmlStructureServer implements StructureService {
                     .getNodeValue();
             String icon = ( (Node) COMPILED_EXPR_ATTRIBUTE_ICON.evaluate( commandNode, XPathConstants.NODE ) )
                     .getNodeValue();
+
+            parent.setProvider( provider );
+            parent.setChildTarget( target );
+            parent.setChildLabel( label );
+            parent.setChildIcon( icon );
+            
             if ( TYPE_PROVIDER.equalsIgnoreCase( type ) ) {
                 // dynamic node as placeholder for a bunch of nodes
                 StructureNode patternNode = new CommandNode( target, label, icon );
@@ -274,7 +291,7 @@ public class XmlStructureServer implements StructureService {
                     if ( tpManager != null ) {
                         TargetProvider tp = tpManager.getTargetProvider( provider );
                         if ( tp != null ) {
-                            parent.addChildren( tp.getStructure( patternNode, parent ) );
+                            parent.addChildren( tp.getStructure( patternNode, parent, engineConfiguration ) );
                             parent.setDynamicChildren( true );
                         } else {
                             throw new StructureException( "No TargetProvider instance assigned to provider name \"" + provider
@@ -302,12 +319,15 @@ public class XmlStructureServer implements StructureService {
      * Recursively builds the structure of a given page node without an additional check of the node name.
      * @param pageNode The page node.
      * @param parent The direct parent in the structure to which the built node(s) will be attached as children.
-     * @paran Defines wheather to evaluate dynamic nodes (<code>type="provider"</code>) or return the skeleton only.
+     * @param Defines whether to evaluate dynamic nodes (<code>type="provider"</code>) or return the skeleton only.
+     * @param engineConfiguration The applicable engine configuration.
      * @throws XPathExpressionException if an error occurs during the xpath evaluation.
      * @throws StructureException if no TargetProviderManager is set or a TargetProvider cannot be found for a given
      *         target name.
      */
-    private void buildPageStructure( Node pageNode, ParentalStructureNode parent, boolean evaluateDynamicNodes ) throws XPathExpressionException,
+    private void buildPageStructure(
+            Node pageNode, ParentalStructureNode parent, boolean evaluateDynamicNodes, EngineConfiguration engineConfiguration )
+    throws XPathExpressionException,
             StructureException {
 
         if ( pageNode != null && parent != null ) {
@@ -321,6 +341,12 @@ public class XmlStructureServer implements StructureService {
                     .getNodeValue();
             String icon = ( (Node) COMPILED_EXPR_ATTRIBUTE_ICON.evaluate( pageNode, XPathConstants.NODE ) )
                     .getNodeValue();
+
+            parent.setProvider( provider );
+            parent.setChildTarget( target );
+            parent.setChildLabel( label );
+            parent.setChildIcon( icon );
+            
             if ( TYPE_PROVIDER.equalsIgnoreCase( type ) ) {
                 // dynamic node as placeholder for a bunch of nodes
                 StructureNode patternNode = new PageNode( target, label, icon );
@@ -328,7 +354,7 @@ public class XmlStructureServer implements StructureService {
                     if ( tpManager != null ) {
                         TargetProvider tp = tpManager.getTargetProvider( provider );
                         if ( tp != null ) {
-                            List<StructureNode> sNodes = tp.getStructure( patternNode, parent );
+                            List<StructureNode> sNodes = tp.getStructure( patternNode, parent, engineConfiguration );
                             parent.addChildren( sNodes );
                             parent.setDynamicChildren( true );
                             for ( StructureNode sNode : sNodes ) {
@@ -340,9 +366,9 @@ public class XmlStructureServer implements StructureService {
                                         for ( int i = 0; i < children.getLength(); i++ ) {
                                             Node currNode = children.item( i );
                                             if ( currNode.getNodeName().equals( NODE_NAME_PAGE ) ) {
-                                                buildPageStructure( currNode, (ParentalStructureNode) sNode, evaluateDynamicNodes );
+                                                buildPageStructure( currNode, (ParentalStructureNode) sNode, evaluateDynamicNodes, engineConfiguration );
                                             } else if ( currNode.getNodeName().equals( NODE_NAME_COMMAND ) ) {
-                                                buildCommandStructure( currNode, (ParentalStructureNode) sNode, evaluateDynamicNodes );
+                                                buildCommandStructure( currNode, (ParentalStructureNode) sNode, evaluateDynamicNodes, engineConfiguration );
                                             }
                                         }
                                     }
@@ -369,9 +395,9 @@ public class XmlStructureServer implements StructureService {
                         for ( int i = 0; i < children.getLength(); i++ ) {
                             Node currNode = children.item( i );
                             if ( currNode.getNodeName().equals( NODE_NAME_PAGE ) ) {
-                                buildPageStructure( currNode, (ParentalStructureNode) patternNode, evaluateDynamicNodes );
+                                buildPageStructure( currNode, (ParentalStructureNode) patternNode, evaluateDynamicNodes, engineConfiguration );
                             } else if ( currNode.getNodeName().equals( NODE_NAME_COMMAND ) ) {
-                                buildCommandStructure( currNode, (ParentalStructureNode) patternNode, evaluateDynamicNodes );
+                                buildCommandStructure( currNode, (ParentalStructureNode) patternNode, evaluateDynamicNodes, engineConfiguration );
                             }
                         }
                     }
@@ -387,9 +413,9 @@ public class XmlStructureServer implements StructureService {
                     for ( int i = 0; i < children.getLength(); i++ ) {
                         Node currNode = children.item( i );
                         if ( currNode.getNodeName().equals( NODE_NAME_PAGE ) ) {
-                            buildPageStructure( currNode, sNode, evaluateDynamicNodes );
+                            buildPageStructure( currNode, sNode, evaluateDynamicNodes, engineConfiguration );
                         } else if ( currNode.getNodeName().equals( NODE_NAME_COMMAND ) ) {
-                            buildCommandStructure( currNode, sNode, evaluateDynamicNodes );
+                            buildCommandStructure( currNode, sNode, evaluateDynamicNodes, engineConfiguration );
                         }
                     }
                 }

@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(name = "ComponentType")
 @XmlAccessorType(XmlAccessType.NONE)
-public class ComponentPojo implements java.io.Serializable {
+public class ComponentPojo implements NEXUSe2ePojo {
 
     /**
      * 
@@ -95,6 +95,14 @@ public class ComponentPojo implements java.io.Serializable {
         this.nxComponentId = nxComponentId;
     }
 
+    public int getNxId() {
+        return nxComponentId;
+    }
+    
+    public void setNxId( int nxId ) {
+        this.nxComponentId = nxId;
+    }
+    
     public Date getCreatedDate() {
 
         return this.createdDate;

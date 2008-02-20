@@ -35,7 +35,7 @@ import org.nexuse2e.configuration.ParameterDescriptor;
  */
 @XmlType(name = "PipeletParamType")
 @XmlAccessorType(XmlAccessType.NONE)
-public class PipeletParamPojo implements java.io.Serializable {
+public class PipeletParamPojo implements NEXUSe2ePojo {
 
     /**
      * 
@@ -102,6 +102,14 @@ public class PipeletParamPojo implements java.io.Serializable {
         this.nxPipeletParamId = nxPipeletParamId;
     }
 
+    public int getNxId() {
+        return nxPipeletParamId;
+    }
+    
+    public void setNxId( int nxId ) {
+        this.nxPipeletParamId = nxId;
+    }
+    
     public PipeletPojo getPipelet() {
 
         return this.pipelet;

@@ -22,8 +22,8 @@ package org.nexuse2e.ui.structure.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.Constants;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.pojo.PipelinePojo;
 import org.nexuse2e.ui.structure.ParentalStructureNode;
 import org.nexuse2e.ui.structure.StructureNode;
@@ -38,19 +38,17 @@ public class PipelineTargetProvider implements TargetProvider {
 
     private boolean frontend = false;
 
-    /* (non-Javadoc)
-     * @see org.nexuse2e.ui.structure.TargetProvider#getStructure(org.nexuse2e.ui.structure.StructureNode)
-     */
-    public List<StructureNode> getStructure( StructureNode pattern, ParentalStructureNode parent ) {
+    public List<StructureNode> getStructure(
+            StructureNode pattern, ParentalStructureNode parent, EngineConfiguration engineConfiguration ) {
 
         List<StructureNode> list = new ArrayList<StructureNode>();
         List<PipelinePojo> pipelinePojos = null;
 
         if ( frontend ) {
-            pipelinePojos = Engine.getInstance().getActiveConfigurationAccessService().getFrontendPipelinePojos(
+            pipelinePojos = engineConfiguration.getFrontendPipelinePojos(
                     Constants.PIPELINE_TYPE_ALL, Constants.PIPELINECOMPARATOR );
         } else {
-            pipelinePojos = Engine.getInstance().getActiveConfigurationAccessService().getBackendPipelinePojos(
+            pipelinePojos = engineConfiguration.getBackendPipelinePojos(
                     Constants.PIPELINE_TYPE_ALL, Constants.PIPELINECOMPARATOR );
         }
 

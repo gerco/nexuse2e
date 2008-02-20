@@ -39,7 +39,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(name = "ChoreographyType")
 @XmlAccessorType(XmlAccessType.NONE)
-public class ChoreographyPojo implements java.io.Serializable {
+public class ChoreographyPojo implements NEXUSe2ePojo {
 
     /**
      * 
@@ -102,6 +102,14 @@ public class ChoreographyPojo implements java.io.Serializable {
         this.nxChoreographyId = nxChoreographyId;
     }
 
+    public int getNxId() {
+        return nxChoreographyId;
+    }
+    
+    public void setNxId( int nxId ) {
+        this.nxChoreographyId = nxId;
+    }
+    
     @XmlAttribute
     public String getDescription() {
 

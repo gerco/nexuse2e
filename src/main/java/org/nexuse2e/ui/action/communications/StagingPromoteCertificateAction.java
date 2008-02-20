@@ -29,8 +29,8 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.Constants;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.pojo.PartnerPojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
@@ -52,7 +52,7 @@ public class StagingPromoteCertificateAction extends NexusE2EAction {
      */
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
 
@@ -71,7 +71,7 @@ public class StagingPromoteCertificateAction extends NexusE2EAction {
                 return actionMapping.findForward( ACTION_FORWARD_FAILURE );
             }
     
-            PartnerPojo localPartner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByNxPartnerId(
+            PartnerPojo localPartner = engineConfiguration.getPartnerByNxPartnerId(
                     form.getLocalNxPartnerId() );
     
             if ( localPartner == null ) {
@@ -82,7 +82,7 @@ public class StagingPromoteCertificateAction extends NexusE2EAction {
                 return actionMapping.findForward( ACTION_FORWARD_FAILURE );
             }
     
-            CertificatePojo stagedCert = Engine.getInstance().getActiveConfigurationAccessService()
+            CertificatePojo stagedCert = engineConfiguration
                     .getCertificateByNxCertificateId( Constants.CERTIFICATE_TYPE_STAGING, certificateId );
     
             if ( stagedCert == null ) {
@@ -97,7 +97,7 @@ public class StagingPromoteCertificateAction extends NexusE2EAction {
             if (form.getReplaceNxCertificateId() <= 0) {
                 certificate = new CertificatePojo();
             } else {
-                certificate = Engine.getInstance().getActiveConfigurationAccessService().getCertificateByNxCertificateId(
+                certificate = engineConfiguration.getCertificateByNxCertificateId(
                         Constants.CERTIFICATE_TYPE_ALL, form.getReplaceNxCertificateId() );
                 if (certificate == null) {
                     ActionMessage errorMessage = new ActionMessage( "generic.error",
@@ -116,7 +116,7 @@ public class StagingPromoteCertificateAction extends NexusE2EAction {
             certificate.setPassword( stagedCert.getPassword() );
             certificate.setPartner( localPartner );
             localPartner.getCertificates().add( certificate );
-            Engine.getInstance().getActiveConfigurationAccessService().updateCertificate( certificate );
+            engineConfiguration.updateCertificate( certificate );
         }
 
         return actionMapping.findForward( ACTION_FORWARD_SUCCESS );

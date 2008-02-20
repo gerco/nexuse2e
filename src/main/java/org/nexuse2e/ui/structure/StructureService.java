@@ -21,6 +21,8 @@ package org.nexuse2e.ui.structure;
 
 import java.util.List;
 
+import org.nexuse2e.configuration.EngineConfiguration;
+
 /**
  * Interface for the service that builds and maintains the page topology information.
  * @author Sebastian Schulze
@@ -30,22 +32,24 @@ public interface StructureService {
 
     /**
      * Returns the topology of the page's menu.
-     * @return A list containing the hierarchic structure of the menu.
+     * @param engineConfiguration The applicable engine configuration.
+     * @return A list containing the hierarchical structure of the menu.
      * @throws StructureException 
      */
-    List<StructureNode> getMenuStructure() throws StructureException;
+    List<StructureNode> getMenuStructure( EngineConfiguration engineConfiguration ) throws StructureException;
 
     /**
      * Returns the topology of the page (all nodes not included in the menu).
-     * @return A list containing the hierarchic structure of the page.
+     * @param engineConfiguration The applicable engine configuration.
+     * @return A list containing the hierarchical structure of the page.
      * @throws StructureException 
      */
-    List<StructureNode> getSiteStructure() throws StructureException;
+    List<StructureNode> getSiteStructure( EngineConfiguration engineConfiguration ) throws StructureException;
     
     /**
      * Returns the exact definition of the page's menu without evaluating
      * dynamic nodes (<code>type="provider"</code>), but with pattern nodes instead.
-     * @return A list containing the skeleton of the hierarchic structure
+     * @return A list containing the skeleton of the hierarchical structure
      *          definition of the menu.
      * @throws StructureException 
      */
@@ -55,9 +59,10 @@ public interface StructureService {
      * Returns the exact definition of the page (all nodes not included in
      * the menu) without evaluating dynamic nodes (<code>type="provider"</code>),
      * but with pattern nodes instead.
-     * @return A list containing the skeleton of the hierarchic structure
+     * @param engineConfiguration The applicable engine configuration.
+     * @return A list containing the skeleton of the hierarchical structure
      *          definition of the page.
      * @throws StructureException 
      */
-    List<StructureNode> getSiteSkeleton() throws StructureException;
+    List<StructureNode> getSiteSkeleton( EngineConfiguration engineConfiguration ) throws StructureException;
 }

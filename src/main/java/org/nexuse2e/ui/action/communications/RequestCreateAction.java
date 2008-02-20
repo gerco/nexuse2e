@@ -29,8 +29,8 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.Constants;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.CertificateRequestForm;
@@ -49,7 +49,7 @@ public class RequestCreateAction extends NexusE2EAction {
 
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
@@ -58,7 +58,7 @@ public class RequestCreateAction extends NexusE2EAction {
 
         form.reset( actionMapping, request );
 
-        List<CertificatePojo> list = Engine.getInstance().getActiveConfigurationAccessService().getCertificates(
+        List<CertificatePojo> list = engineConfiguration.getCertificates(
                 Constants.CERTIFICATE_TYPE_PRIVATE_KEY, null );
         if ( list != null && list.size() > 0 ) {
             ActionMessage errorMessage = new ActionMessage( "generic.error",
@@ -66,7 +66,7 @@ public class RequestCreateAction extends NexusE2EAction {
             errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
             return error;
         }
-        list = Engine.getInstance().getActiveConfigurationAccessService().getCertificates(
+        list = engineConfiguration.getCertificates(
                 Constants.CERTIFICATE_TYPE_REQUEST, null );
         if ( list != null && list.size() > 0 ) {
             ActionMessage errorMessage = new ActionMessage( "generic.error",

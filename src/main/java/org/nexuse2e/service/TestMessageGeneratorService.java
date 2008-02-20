@@ -201,8 +201,9 @@ public class TestMessageGeneratorService extends AbstractService implements Sche
                     "SchedulingService is not properly configured (schedulingServiceObj == null)!" );
         }
 
-        backendPipelineDispatcher = (BackendPipelineDispatcher) Engine.getInstance().getBeanFactory().getBean(
-                "backendPipelineDispatcher" );
+        backendPipelineDispatcher =
+            (BackendPipelineDispatcher)
+            Engine.getInstance().getCurrentConfiguration().getStaticBeanContainer().getBackendPipelineDispatcher();
 
         super.initialize( config );
     }

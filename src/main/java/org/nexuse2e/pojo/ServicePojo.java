@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(name = "ServiceType")
 @XmlAccessorType(XmlAccessType.NONE)
-public class ServicePojo implements java.io.Serializable {
+public class ServicePojo implements NEXUSe2ePojo {
 
     /**
      * 
@@ -107,6 +107,14 @@ public class ServicePojo implements java.io.Serializable {
         this.nxServiceId = nxServiceId;
     }
 
+    public int getNxId() {
+        return nxServiceId;
+    }
+    
+    public void setNxId( int nxId ) {
+        this.nxServiceId = nxId;
+    }
+    
     public ComponentPojo getComponent() {
 
         return this.component;

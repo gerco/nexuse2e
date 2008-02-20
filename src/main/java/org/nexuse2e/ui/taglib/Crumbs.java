@@ -26,6 +26,7 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import org.apache.commons.lang.RandomStringUtils;
+import org.nexuse2e.configuration.EngineConfiguration;
 
 /**
  * Generates the crumbs navigation bar.
@@ -61,6 +62,8 @@ public class Crumbs extends TagSupport {
     public int doStartTag() throws JspException {
 
         JspWriter writer = pageContext.getOut();
+        EngineConfiguration engineConfiguration =
+            (EngineConfiguration) pageContext.getRequest().getAttribute( "engineConfiguration" );
         try {
             // div container
             // first we need a UID as DOM id (in order to support multiple usage of this tag on one page) 
@@ -69,6 +72,9 @@ public class Crumbs extends TagSupport {
             writer.write( "<script>\n" );
             writer.write( "\tdojo.addOnLoad(function() {\n" );
             writer.print( "\t\trefreshMenuTree();\n" );
+            if (engineConfiguration != null) {
+                writer.print( "\t\tcheckForChangedConfiguration(" + engineConfiguration.isChanged() + ");\n" );
+            }
             writer.write( "\t\tvar crumbsElement = document.getElementById('" + containerId + "');\n" );
             writer.write( "\t\tcrumbsElement.innerHTML = getCrumbs();\n" );
             writer.write( "\t});\n" );

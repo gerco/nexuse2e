@@ -64,7 +64,7 @@ public class BinaryBlobType implements UserType {
         return new int[] { Types.BLOB};
     } // sqlTypes
 
-    public Class returnedClass() {
+    public Class<?> returnedClass() {
 
         return byte[].class;
     } // returnedClass
@@ -117,13 +117,13 @@ public class BinaryBlobType implements UserType {
                         // then you have access to the oracle.sql.BLOB class
 
                         // First get the oracle blob class
-                        Class oracleBlobClass = Class.forName( "oracle.sql.BLOB" );
+                        Class<?> oracleBlobClass = Class.forName( "oracle.sql.BLOB" );
 
                         // Get the oracle connection class for checking
-                        Class oracleConnectionClass = Class.forName( "oracle.jdbc.OracleConnection" );
+                        Class<?> oracleConnectionClass = Class.forName( "oracle.jdbc.OracleConnection" );
 
                         // now get the static factory method
-                        Class partypes[] = new Class[3];
+                        Class<?> partypes[] = new Class[3];
                         partypes[0] = Connection.class;
                         partypes[1] = Boolean.TYPE;
                         partypes[2] = Integer.TYPE;

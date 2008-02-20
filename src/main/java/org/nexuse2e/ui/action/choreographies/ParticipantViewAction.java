@@ -29,8 +29,8 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.Constants;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ParticipantPojo;
 import org.nexuse2e.pojo.PartnerPojo;
@@ -53,7 +53,7 @@ public class ParticipantViewAction extends NexusE2EAction {
      */
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
@@ -69,14 +69,14 @@ public class ParticipantViewAction extends NexusE2EAction {
             return error;
         }
 
-        ChoreographyPojo choreography = Engine.getInstance().getActiveConfigurationAccessService()
+        ChoreographyPojo choreography = engineConfiguration
                 .getChoreographyByNxChoreographyId( nxChoreographyId );
 
-        List<PartnerPojo> localPartnerList = Engine.getInstance().getActiveConfigurationAccessService().getPartners(
+        List<PartnerPojo> localPartnerList = engineConfiguration.getPartners(
                 Constants.PARTNER_TYPE_LOCAL, Constants.PARTNERCOMPARATOR );
         form.setLocalPartners( localPartnerList );
 
-        ParticipantPojo participant = Engine.getInstance().getActiveConfigurationAccessService()
+        ParticipantPojo participant = engineConfiguration
                 .getParticipantFromChoreographyByNxPartnerId( choreography, form.getNxPartnerId() );
         form.setProperties( participant );
         form.setPartnerDisplayName( participant.getPartner().getPartnerId() );

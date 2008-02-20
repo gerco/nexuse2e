@@ -29,8 +29,8 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.Constants;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.ProtectedFileAccessForm;
@@ -50,7 +50,7 @@ public class CACertSaveSingleCertAction extends NexusE2EAction {
      */
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
@@ -84,7 +84,7 @@ public class CACertSaveSingleCertAction extends NexusE2EAction {
                 return error;
             }
 
-            CertificatePojo certificate = Engine.getInstance().getActiveConfigurationAccessService().getCertificateByName(
+            CertificatePojo certificate = engineConfiguration.getCertificateByName(
                     Constants.CERTIFICATE_TYPE_CA, alias );
             if ( certificate == null ) {
 
@@ -96,12 +96,12 @@ public class CACertSaveSingleCertAction extends NexusE2EAction {
 
                 certificate.setModifiedDate( new Date() );
                 certificate.setBinaryData( data );
-                Engine.getInstance().getActiveConfigurationAccessService().updateCertificate( certificate );
+                engineConfiguration.updateCertificate( certificate );
 
             } else {
                 certificate.setModifiedDate( new Date() );
                 certificate.setBinaryData( data );
-                Engine.getInstance().getActiveConfigurationAccessService().updateCertificate( certificate );
+                engineConfiguration.updateCertificate( certificate );
             }
 
         } catch ( Exception e ) {

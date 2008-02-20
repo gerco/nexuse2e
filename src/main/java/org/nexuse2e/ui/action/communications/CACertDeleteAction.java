@@ -27,8 +27,8 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.Constants;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.CertificatePropertiesForm;
@@ -48,7 +48,7 @@ public class CACertDeleteAction extends NexusE2EAction {
      */
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
@@ -58,11 +58,11 @@ public class CACertDeleteAction extends NexusE2EAction {
         int nxCertificateId = form.getNxCertificateId();
 
         try {
-            CertificatePojo cPojo = Engine.getInstance().getActiveConfigurationAccessService().getCertificateByNxCertificateId(
+            CertificatePojo cPojo = engineConfiguration.getCertificateByNxCertificateId(
                     Constants.CERTIFICATE_TYPE_ALL, nxCertificateId );
 
             if ( cPojo != null ) {
-                Engine.getInstance().getActiveConfigurationAccessService().deleteCertificate( cPojo );
+                engineConfiguration.deleteCertificate( cPojo );
 
             } else {
                 ActionMessage errorMessage = new ActionMessage( "cacerts.certnotfound", nxCertificateId );

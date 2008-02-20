@@ -29,8 +29,8 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.Constants;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.Constants.ComponentType;
 import org.nexuse2e.pojo.ComponentPojo;
 import org.nexuse2e.pojo.ServiceParamPojo;
@@ -49,7 +49,7 @@ public class ServiceUpdateAction extends NexusE2EAction {
 
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
         ActionForward refresh = actionMapping.findForward( "refresh" );
@@ -58,7 +58,7 @@ public class ServiceUpdateAction extends NexusE2EAction {
 
         ServiceForm form = (ServiceForm) actionForm;
 
-        List<ComponentPojo> components = Engine.getInstance().getActiveConfigurationAccessService().getComponents(
+        List<ComponentPojo> components = engineConfiguration.getComponents(
                 ComponentType.SERVICE, Constants.COMPONENTCOMPARATOR );
         if ( components == null || components.size() == 0 ) {
             LOG.trace( "no service components found" );
@@ -68,9 +68,9 @@ public class ServiceUpdateAction extends NexusE2EAction {
             return error;
         }
         request.setAttribute( ATTRIBUTE_COLLECTION, components );
-        request.setAttribute( ATTRIBUTE_SERVICE_COLLECTION, Engine.getInstance().getActiveConfigurationAccessService().getServices( ) );
+        request.setAttribute( ATTRIBUTE_SERVICE_COLLECTION, engineConfiguration.getServices( ) );
 
-        ServicePojo originalService = Engine.getInstance().getActiveConfigurationAccessService().getServicePojoByNxServiceId(
+        ServicePojo originalService = engineConfiguration.getServicePojoByNxServiceId(
                 form.getNxServiceId() );
 
         ComponentPojo component = null;
@@ -93,7 +93,7 @@ public class ServiceUpdateAction extends NexusE2EAction {
             }
         }
         if ( component == null ) {
-            component = Engine.getInstance().getActiveConfigurationAccessService().getComponentByNxComponentId(
+            component = engineConfiguration.getComponentByNxComponentId(
                     form.getNxComponentId() );
         }
 
@@ -126,14 +126,14 @@ public class ServiceUpdateAction extends NexusE2EAction {
             }
 
             if ( !originalService.getName().equals( form.getName() ) ) {
-                Engine.getInstance().getActiveConfigurationAccessService().renameService( originalService.getName(), form.getName() );
+                engineConfiguration.renameService( originalService.getName(), form.getName() );
                 originalService.setName( form.getName() );
                 request.setAttribute( REFRESH_TREE, "true" );
             }
             originalService.setServiceParams( list );
 
-            Engine.getInstance().getActiveConfigurationAccessService().updateService( originalService );
-            form.setServiceInstance( Engine.getInstance().getActiveConfigurationAccessService().getService(
+            engineConfiguration.updateService( originalService );
+            form.setServiceInstance( engineConfiguration.getService(
                     originalService.getName() ) );
 
             return update;

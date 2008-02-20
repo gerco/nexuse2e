@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.GenericComparator;
 import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
@@ -40,17 +40,15 @@ import org.nexuse2e.ui.structure.TargetProvider;
  */
 public class ActionTargetProvider implements TargetProvider {
 
-    /* (non-Javadoc)
-     * @see org.nexuse2e.ui.structure.TargetProvider#getStructure(org.nexuse2e.ui.structure.StructureNode, org.nexuse2e.ui.structure.ParentalStructureNode)
-     */
     @SuppressWarnings("unchecked")
-    public List<StructureNode> getStructure( StructureNode pattern, ParentalStructureNode parent ) {
+    public List<StructureNode> getStructure(
+            StructureNode pattern, ParentalStructureNode parent, EngineConfiguration engineConfiguration ) {
 
         List<StructureNode> list = new ArrayList<StructureNode>();
 
         try {
-            ChoreographyPojo choreographyPojo = Engine.getInstance().getActiveConfigurationAccessService()
-                    .getChoreographyByNxChoreographyId( Integer.parseInt( parent.getProperty( "nxChoreographyId" ) ) );
+            ChoreographyPojo choreographyPojo = engineConfiguration.getChoreographyByNxChoreographyId(
+                    Integer.parseInt( parent.getProperty( "nxChoreographyId" ) ) );
             if ( choreographyPojo != null ) {
                 Set<ActionPojo> actions = choreographyPojo.getActions();
 

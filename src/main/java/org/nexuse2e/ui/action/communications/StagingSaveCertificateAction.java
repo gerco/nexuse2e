@@ -34,9 +34,9 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.ConfigurationAccessService;
 import org.nexuse2e.configuration.Constants;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.ProtectedFileAccessForm;
@@ -56,7 +56,7 @@ public class StagingSaveCertificateAction extends NexusE2EAction {
      */
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
@@ -97,7 +97,7 @@ public class StagingSaveCertificateAction extends NexusE2EAction {
 
                     if (i > 0 || CertificateUtil.isSelfSigned( signer )) {
                         String fingerprint = CertificateUtil.getMD5Fingerprint( signer );
-                        ConfigurationAccessService cas = Engine.getInstance().getActiveConfigurationAccessService();
+                        ConfigurationAccessService cas = engineConfiguration;
                         boolean caInCaStore = false;
                         for (CertificatePojo cert : cas.getCertificates( Constants.CERTIFICATE_TYPE_CA, null )) {
                             data = cert.getBinaryData();
@@ -119,7 +119,7 @@ public class StagingSaveCertificateAction extends NexusE2EAction {
                     }
                 }
             }
-            Engine.getInstance().getActiveConfigurationAccessService().updateCertificates( certificates );
+            engineConfiguration.updateCertificates( certificates );
         } catch ( Exception e ) {
             ActionMessage errorMessage = new ActionMessage( "generic.error", e.getMessage() );
             errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );

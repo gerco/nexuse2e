@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(name = "UserType")
 @XmlAccessorType(XmlAccessType.NONE)
-public class UserPojo implements java.io.Serializable {
+public class UserPojo implements NEXUSe2ePojo {
 
     private static final long serialVersionUID = 4646298773705177406L;
 
@@ -105,6 +105,14 @@ public class UserPojo implements java.io.Serializable {
         this.nxUserId = nxUserId;
     }
 
+    public int getNxId() {
+        return nxUserId;
+    }
+    
+    public void setNxId( int nxId ) {
+        this.nxUserId = nxId;
+    }
+    
     @XmlAttribute
     public String getLoginName() {
 

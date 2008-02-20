@@ -27,9 +27,9 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.Constants;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ConnectionPojo;
@@ -52,7 +52,7 @@ public class ParticipantUpdateAction extends NexusE2EAction {
      */
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
         ActionForward update = actionMapping.findForward( "update" );
@@ -82,9 +82,9 @@ public class ParticipantUpdateAction extends NexusE2EAction {
             form.setNxLocalPartnerId( localPartnerId );
             form.setDescription( description );
 
-            form.setPartners( Engine.getInstance().getActiveConfigurationAccessService().getPartners(
+            form.setPartners( engineConfiguration.getPartners(
                     Constants.PARTNER_TYPE_PARTNER, Constants.PARTNERCOMPARATOR ) );
-            form.setLocalPartners( Engine.getInstance().getActiveConfigurationAccessService().getPartners(
+            form.setLocalPartners( engineConfiguration.getPartners(
                     Constants.PARTNER_TYPE_LOCAL, Constants.PARTNERCOMPARATOR ) );
 
             if ( form.getPartners() == null || form.getPartners().size() == 0 ) {
@@ -106,7 +106,7 @@ public class ParticipantUpdateAction extends NexusE2EAction {
             }
 
             try {
-                PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByNxPartnerId(
+                PartnerPojo partner = engineConfiguration.getPartnerByNxPartnerId(
                         form.getNxPartnerId() );
                 form.setPartnerDisplayName( partner.getPartnerId() );
                 LOG.debug( "connections.size: " + partner.getConnections().size() );
@@ -121,7 +121,7 @@ public class ParticipantUpdateAction extends NexusE2EAction {
             if ( form.getNxLocalPartnerId() == 0 ) {
                 form.setLocalCertificates( form.getLocalPartners().get( 0 ).getCertificates() );
             } else {
-                PartnerPojo localPartner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByNxPartnerId(
+                PartnerPojo localPartner = engineConfiguration.getPartnerByNxPartnerId(
                         form.getNxLocalPartnerId() );
                 form.setLocalCertificates( localPartner.getCertificates() );
 
@@ -133,13 +133,13 @@ public class ParticipantUpdateAction extends NexusE2EAction {
             LOG.debug( "Updating Particpant pojo..." );
 
             try {
-                ChoreographyPojo choreography = Engine.getInstance().getActiveConfigurationAccessService()
+                ChoreographyPojo choreography = engineConfiguration
                         .getChoreographyByNxChoreographyId( nxChoreographyId );
-                PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByNxPartnerId(
+                PartnerPojo partner = engineConfiguration.getPartnerByNxPartnerId(
                         form.getNxPartnerId() );
-                PartnerPojo localPartner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByNxPartnerId(
+                PartnerPojo localPartner = engineConfiguration.getPartnerByNxPartnerId(
                         form.getNxLocalPartnerId() );
-                participant = Engine.getInstance().getActiveConfigurationAccessService()
+                participant = engineConfiguration
                         .getParticipantFromChoreographyByNxPartnerId( choreography, partner.getNxPartnerId() );
                 if ( participant == null ) {
                     ActionMessage errorMessage = new ActionMessage( "generic.error",
@@ -152,7 +152,7 @@ public class ParticipantUpdateAction extends NexusE2EAction {
 
                 if ( form.getNxLocalCertificateId() != 0 ) {
                     LOG.debug( "Setting local certificate" );
-                    CertificatePojo localCertificate = Engine.getInstance().getActiveConfigurationAccessService()
+                    CertificatePojo localCertificate = engineConfiguration
                             .getCertificateFromPartnerByNxCertificateId( localPartner, form.getNxLocalCertificateId() );
                     participant.setLocalCertificate( localCertificate );
                 } else {
@@ -161,7 +161,7 @@ public class ParticipantUpdateAction extends NexusE2EAction {
 
                 if ( form.getNxConnectionId() != 0 ) {
                     LOG.debug( "Setting connection" );
-                    ConnectionPojo connectionPojo = Engine.getInstance().getActiveConfigurationAccessService()
+                    ConnectionPojo connectionPojo = engineConfiguration
                             .getConnectionFromPartnerByNxConnectionId( partner, form.getNxConnectionId() );
                     participant.setConnection( connectionPojo );
                 } else {
@@ -176,7 +176,7 @@ public class ParticipantUpdateAction extends NexusE2EAction {
                 participant.setLocalPartner( localPartner );
 
                 LOG.debug( "updating choreography" );
-                Engine.getInstance().getActiveConfigurationAccessService().updateChoreography( choreography );
+                engineConfiguration.updateChoreography( choreography );
             } catch ( NexusException e ) {
                 ActionMessage errorMessage = new ActionMessage( "generic.error", e.getMessage() );
                 errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );

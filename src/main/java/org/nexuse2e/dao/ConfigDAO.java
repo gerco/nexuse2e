@@ -21,19 +21,31 @@ package org.nexuse2e.dao;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.configuration.ConfigurationAccessService;
+import org.nexuse2e.configuration.Constants;
+import org.nexuse2e.configuration.EngineConfiguration;
+import org.nexuse2e.configuration.Constants.ComponentType;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ComponentPojo;
 import org.nexuse2e.pojo.ConnectionPojo;
+import org.nexuse2e.pojo.ConversationPojo;
 import org.nexuse2e.pojo.GenericParamPojo;
 import org.nexuse2e.pojo.LoggerPojo;
 import org.nexuse2e.pojo.MappingPojo;
+import org.nexuse2e.pojo.NEXUSe2ePojo;
 import org.nexuse2e.pojo.PartnerPojo;
 import org.nexuse2e.pojo.PipelinePojo;
 import org.nexuse2e.pojo.RolePojo;
@@ -47,6 +59,9 @@ import org.nexuse2e.pojo.UserPojo;
  */
 public class ConfigDAO extends BasicDAO {
 
+    private static Logger LOG = Logger.getLogger( ConfigDAO.class );
+
+    
     /**
      * @param trp
      * @param session
@@ -773,4 +788,508 @@ public class ConfigDAO extends BasicDAO {
         }
     }
 
+    /**
+     * Determines if the configuration database has been created or not.
+     * @return <code>true</code> if and only if the database has been created and contains
+     * a configuration.
+     * @throws NexusException if the database could not be accessed for some reason.
+     */
+    public boolean isDatabasePopulated() throws NexusException {
+
+        List<TRPPojo> tempTRPs = getTrps( null, null );
+        return ( tempTRPs != null ) && ( tempTRPs.size() != 0 );
+    }
+
+    /**
+     * Fills the given <code>EngineConfiguration</code> object with the configuration
+     * in the database.
+     * @param configuration The <code>EngineConfiguration</code> object to be filled
+     * with the configuration in the database.
+     * @throws NexusException If something went wrong (e.g., no DB connection).
+     */
+    public void loadDatafromDB( EngineConfiguration configuration ) throws NexusException {
+
+        Session session = getDBSession();
+        List<ChoreographyPojo> tempChoreographies = getChoreographies( session, null );
+        if ( tempChoreographies == null ) {
+            LOG.debug( "No choreographies available in database!" );
+        } else {
+            LOG.trace( "ChoreographyCount:" + tempChoreographies.size() );
+        }
+        configuration.setChoreographies( tempChoreographies );
+
+        List<PartnerPojo> tempPartners = getPartners( session, null );
+        if ( tempPartners == null ) {
+            LOG.debug( "No partners available in database!" );
+        } else {
+            LOG.trace( "PartnerCount:" + tempPartners.size() );
+        }
+        configuration.setPartners( tempPartners );
+
+        List<CertificatePojo> allCertificates = getCertificates( session, null );
+        if ( allCertificates == null || allCertificates.size() == 0 ) {
+            LOG.debug( "No certificates available in database!" );
+        }
+        configuration.setCertificates( allCertificates );
+
+        List<PipelinePojo> pipelines = getFrontendPipelines( session, null );
+        if ( pipelines == null || pipelines.size() == 0 ) {
+            LOG.debug( "No frontend pipelines available in database!" );
+        }
+        configuration.setFrontendPipelineTemplates( pipelines );
+
+        pipelines = getBackendPipelines( session, null );
+        if ( pipelines == null || pipelines.size() == 0 ) {
+            LOG.debug( "No backend pipelines available in database!" );
+        }
+        configuration.setBackendPipelineTemplates( pipelines );
+
+        List<TRPPojo> tempTRPs = getTrps( session, null );
+        configuration.setTrps( tempTRPs );
+
+        List<ComponentPojo> tempComponents = getComponents( session, null );
+        configuration.setComponents( tempComponents );
+
+        List<LoggerPojo> loggers = getLoggers( session, null );
+        configuration.setLoggers( loggers );
+
+        List<ServicePojo> services = getServices( session, null );
+        configuration.setServices( services );
+
+        List<UserPojo> users = getUsers( session, null );
+        configuration.setUsers( users );
+
+        List<RolePojo> roles = getRoles( session, null );
+        configuration.setRoles( roles );
+
+        List<MappingPojo> mappings = getMappings( session, null );
+        configuration.setMappings( mappings );
+
+        configuration.setGenericParameters( new HashMap<String, List<GenericParamPojo>>() );
+        List<GenericParamPojo> tempParams = getGenericParameters( session, null );
+        if ( tempParams != null && tempParams.size() > 0 ) {
+            for ( GenericParamPojo pojo : tempParams ) {
+                List<GenericParamPojo> catParams = configuration.getGenericParameters().get( pojo.getCategory() );
+                if ( catParams == null ) {
+                    catParams = new ArrayList<GenericParamPojo>();
+                    configuration.getGenericParameters().put( pojo.getCategory(), catParams );
+                }
+                catParams.add( pojo );
+            }
+        }
+
+        // Fix for database schema update of nx_trp table
+        // Add protocol adapter class name in case it's not there
+
+        for ( TRPPojo trpPojo : configuration.getTrps() ) {
+            if ( StringUtils.isEmpty( trpPojo.getAdapterClassName() ) ) {
+                if ( trpPojo.getProtocol().equalsIgnoreCase( "ebxml" ) ) {
+                    if ( trpPojo.getVersion().equalsIgnoreCase( "1.0" ) ) {
+                        trpPojo.setAdapterClassName( "org.nexuse2e.messaging.ebxml.v10.ProtocolAdapter" );
+                    } else {
+                        trpPojo.setAdapterClassName( "org.nexuse2e.messaging.ebxml.v20.ProtocolAdapter" );
+                    }
+                } else {
+                    trpPojo.setAdapterClassName( "org.nexuse2e.messaging.DefaultProtocolAdapter" );
+                }
+                LOG.trace( "Set adapterClassName to: " + trpPojo.getAdapterClassName() );
+            }
+        }
+        configuration.init();
+
+        releaseDBSession( session );
+    } // loadDataFromDB
+    
+    /**
+     * Saves the difference between the current configuration and the given configuration.
+     * @param configuration The configuration containing the changes that shall apply.
+     * @throws NexusException If the delta could not be saved.
+     */
+    public void saveDelta( EngineConfiguration configuration ) throws NexusException {
+
+        Session session = getDBSession();
+        Transaction transaction = session.beginTransaction();
+
+        try {
+            // patch records that got a temporary (negative) ID
+            for (NEXUSe2ePojo record : configuration.getUpdateList()) {
+                if (record.getNxId() < 0) {
+                    record.setNxId( 0 );
+                }
+            }
+            for (NEXUSe2ePojo record : configuration.getImplicitUpdateList()) {
+                if (record.getNxId() < 0) {
+                    record.setNxId( 0 );
+                }
+            }
+            // save records
+            for (NEXUSe2ePojo record : configuration.getUpdateList()) {
+                saveRecord( record, session, transaction );
+            }
+            // delete records
+            for (NEXUSe2ePojo record : configuration.getDeleteList()) {
+                deleteRecord( record, session, transaction );
+            }
+            
+            transaction.commit();
+        } catch (Exception ex) {
+            transaction.rollback();
+            
+            if (ex instanceof NexusException) {
+                throw (NexusException) ex;
+            }
+            throw new NexusException( ex );
+        }
+    }
+    
+    /**
+     * @throws NexusException
+     */
+    public void saveConfigurationToDB( EngineConfiguration configuration ) throws NexusException {
+
+        ConfigurationAccessService current = Engine.getInstance().getActiveConfigurationAccessService();
+
+        Session session = getDBSession();
+
+        Transaction transaction = session.beginTransaction();
+
+        List<TRPPojo> trps = configuration.getTrps();
+        List<ComponentPojo> components = configuration.getComponents();
+        List<PipelinePojo> backendPipelineTemplates = configuration.getBackendPipelineTemplates();
+        List<PipelinePojo> frontendPipelineTemplates = configuration.getFrontendPipelineTemplates();
+        List<PartnerPojo> partners = configuration.getPartners();
+        List<CertificatePojo> certificates = configuration.getCertificates();
+        List<ChoreographyPojo> choreographies = configuration.getChoreographies();
+        List<ServicePojo> services = configuration.getServices();
+        List<LoggerPojo> loggers = configuration.getLoggers();
+        List<RolePojo> roles = configuration.getRoles();
+        List<UserPojo> users = configuration.getUsers();
+        Map<String, List<GenericParamPojo>> genericParameters = configuration.getGenericParameters();
+        List<MappingPojo> mappings = configuration.getMappings();
+        
+        List<TRPPojo> obsoleteTRPs = getObsoleteEntries( trps, current.getTrps() );
+        for ( TRPPojo pojo : obsoleteTRPs ) {
+            deleteTrp( pojo, session, transaction );
+        }
+        obsoleteTRPs.clear();
+
+        if ( trps != null && trps.size() > 0 ) {
+
+            Iterator<TRPPojo> i = trps.iterator();
+            while ( i.hasNext() ) {
+                TRPPojo pojo = i.next();
+                LOG.debug( "TRP: " + pojo.getNxTRPId() + " - " + pojo.getProtocol() + " - " + pojo.getVersion() + " - "
+                        + pojo.getTransport() );
+                if ( pojo.getNxTRPId() != 0 ) {
+                    updateTRP( pojo, session, transaction );
+                } else {
+                    saveTRP( pojo, session, transaction );
+                }
+            }
+        }
+
+        List<ComponentPojo> obsoleteComponents = getObsoleteEntries( components, current.getComponents(
+                ComponentType.ALL, null ) );
+        for ( ComponentPojo pojo : obsoleteComponents ) {
+            deleteComponent( pojo, session, transaction );
+        }
+        obsoleteComponents.clear();
+
+        if ( components != null && components.size() > 0 ) {
+
+            for ( ComponentPojo pojo : components ) {
+                LOG.debug( "Component: " + pojo.getNxComponentId() + " - " + pojo.getType() + " - " + pojo.getName() );
+                if ( pojo.getNxComponentId() != 0 ) {
+                    pojo.setModifiedDate( new Date() );
+                    updateComponent( pojo, session, transaction );
+                } else {
+                    pojo.setCreatedDate( new Date() );
+                    pojo.setModifiedDate( new Date() );
+                    saveComponent( pojo, session, transaction );
+                }
+            }
+        }
+
+        List<PipelinePojo> obsoleteBackendPipelineTemplates = getObsoleteEntries( backendPipelineTemplates, current
+                .getBackendPipelinePojos( Constants.PIPELINE_TYPE_ALL, null ) );
+        for ( PipelinePojo pojo : obsoleteBackendPipelineTemplates ) {
+            deletePipeline( pojo, session, transaction );
+        }
+        obsoleteBackendPipelineTemplates.clear();
+
+        if ( backendPipelineTemplates != null && backendPipelineTemplates.size() > 0 ) {
+
+            for ( PipelinePojo pojo : backendPipelineTemplates ) {
+                LOG.debug( "BackendPipeline: " + pojo.getNxPipelineId() + " - " + pojo.getName() );
+                if ( pojo.getNxPipelineId() != 0 ) {
+                    pojo.setModifiedDate( new Date() );
+                    updatePipeline( pojo, session, transaction );
+                } else {
+                    pojo.setCreatedDate( new Date() );
+                    pojo.setModifiedDate( new Date() );
+                    savePipeline( pojo, session, transaction );
+                }
+            }
+        }
+
+        List<PipelinePojo> obsoleteFrontendPipelineTemplates = getObsoleteEntries( frontendPipelineTemplates, current
+                .getFrontendPipelinePojos( Constants.PIPELINE_TYPE_ALL, null ) );
+        for ( PipelinePojo pojo : obsoleteBackendPipelineTemplates ) {
+            deletePipeline( pojo, session, transaction );
+        }
+        obsoleteFrontendPipelineTemplates.clear();
+
+        if ( frontendPipelineTemplates != null && frontendPipelineTemplates.size() > 0 ) {
+
+            for ( PipelinePojo pojo : frontendPipelineTemplates ) {
+                LOG.debug( "FrontendPipeline: " + pojo.getNxPipelineId() + " - " + pojo.getName() );
+                if ( pojo.getNxPipelineId() != 0 ) {
+                    pojo.setModifiedDate( new Date() );
+                    updatePipeline( pojo, session, transaction );
+                } else {
+                    pojo.setCreatedDate( new Date() );
+                    pojo.setModifiedDate( new Date() );
+                    savePipeline( pojo, session, transaction );
+                }
+            }
+        }
+
+        if ( partners != null && partners.size() > 0 ) {
+
+            Iterator<PartnerPojo> i = partners.iterator();
+            while ( i.hasNext() ) {
+                PartnerPojo pojo = i.next();
+                LOG.debug( "Partner: " + pojo.getNxPartnerId() + " - " + pojo.getPartnerId() + " - " + pojo.getName() );
+
+                if ( pojo.getNxPartnerId() != 0 ) {
+                    pojo.setModifiedDate( new Date() );
+                    updatePartner( pojo, session, transaction );
+                } else {
+                    pojo.setCreatedDate( new Date() );
+                    pojo.setModifiedDate( new Date() );
+                    savePartner( pojo, session, transaction );
+                }
+            }
+        }
+
+        List<CertificatePojo> obsoleteCertificates = getObsoleteEntries( certificates, current.getCertificates(
+                Constants.CERTIFICATE_TYPE_ALL, null ) );
+        for ( CertificatePojo pojo : obsoleteCertificates ) {
+            deleteCertificate( pojo, session, transaction );
+        }
+        obsoleteCertificates.clear();
+
+        if ( certificates != null && certificates.size() > 0 ) {
+
+            for ( CertificatePojo certificate : certificates ) {
+                LOG.debug( "Certificate: " + certificate.getNxCertificateId() + " - " + certificate.getName() );
+                if ( certificate.getNxCertificateId() != 0 ) {
+                    certificate.setModifiedDate( new Date() );
+                    updateCertificate( certificate, session, transaction );
+                } else {
+                    certificate.setCreatedDate( new Date() );
+                    certificate.setModifiedDate( new Date() );
+                    saveCertificate( certificate, session, transaction );
+                }
+            }
+        }
+
+        List<ChoreographyPojo> obsoleteChoreographies = getObsoleteEntries( choreographies, current.getChoreographies() );
+        for ( ChoreographyPojo pojo : obsoleteChoreographies ) {
+            boolean removeConversations = false;
+
+            List<ConversationPojo> conversations = Engine.getInstance().getTransactionService()
+                    .getConversationsByChoreography( pojo, session, transaction );
+            if ( conversations == null || conversations.size() == 0 ) {
+                deleteChoreography( pojo, session, transaction );
+            } else if ( removeConversations ) {
+                for ( ConversationPojo conv : conversations ) {
+                    Engine.getInstance().getTransactionService().deleteConversation( conv, session, transaction );
+                }
+                deleteChoreography( pojo, session, transaction );
+            }
+        }
+        obsoleteChoreographies.clear();
+
+        if ( choreographies != null && choreographies.size() > 0 ) {
+
+            Iterator<ChoreographyPojo> i = choreographies.iterator();
+            while ( i.hasNext() ) {
+
+                ChoreographyPojo pojo = i.next();
+                LOG.debug( "Choreography: " + pojo.getNxChoreographyId() + " - " + pojo.getName() );
+
+                if ( pojo.getNxChoreographyId() != 0 ) {
+                    pojo.setModifiedDate( new Date() );
+                    updateChoreography( pojo, session, transaction );
+                } else {
+                    pojo.setCreatedDate( new Date() );
+                    pojo.setModifiedDate( new Date() );
+                    saveChoreography( pojo, session, transaction );
+                }
+            }
+        }
+
+        List<PartnerPojo> obsoletePartners = getObsoleteEntries( partners, current.getPartners(
+                Constants.PARTNER_TYPE_ALL, null ) );
+        for ( PartnerPojo pojo : obsoletePartners ) {
+            deletePartner( pojo, session, transaction );
+        }
+        obsoletePartners.clear();
+
+        List<ServicePojo> obsoleteServices = getObsoleteEntries( services, current.getServices() );
+        for ( ServicePojo pojo : obsoleteServices ) {
+            deleteService( pojo, session, transaction );
+        }
+        obsoleteServices.clear();
+
+        if ( services != null && services.size() > 0 ) {
+            for ( ServicePojo pojo : services ) {
+                LOG.debug( "Service: " + pojo.getNxServiceId() + " - " + pojo.getName() );
+                if ( pojo.getNxServiceId() != 0 ) {
+                    pojo.setModifiedDate( new Date() );
+                    updateService( pojo, session, transaction );
+                } else {
+                    pojo.setCreatedDate( new Date() );
+                    pojo.setModifiedDate( new Date() );
+                    saveService( pojo, session, transaction );
+                }
+            }
+        }
+
+        List<LoggerPojo> obsoleteLoggers = getObsoleteEntries( loggers, current.getLoggers() );
+        for ( LoggerPojo pojo : obsoleteLoggers ) {
+            deleteLogger( pojo, session, transaction );
+        }
+        obsoleteLoggers.clear();
+
+        if ( loggers != null && loggers.size() > 0 ) {
+
+            for ( LoggerPojo logger : loggers ) {
+                LOG.debug( "Logger: " + logger.getNxLoggerId() + " - " + logger.getName() );
+                if ( logger.getNxLoggerId() != 0 ) {
+                    logger.setModifiedDate( new Date() );
+                    updateLogger( logger, session, transaction );
+                } else {
+                    logger.setCreatedDate( new Date() );
+                    logger.setModifiedDate( new Date() );
+                    saveLogger( logger, session, transaction );
+                }
+            }
+        }
+
+        /*
+         * User configuration
+         */
+        List<RolePojo> obsoleteRoles = getObsoleteEntries( roles, current.getRoles( null ) );
+        for ( RolePojo pojo : obsoleteRoles ) {
+            deleteRole( pojo, session, transaction );
+        }
+        obsoleteRoles.clear();
+
+        // save roles first to ensure referential integrity
+        if ( roles != null && roles.size() > 0 ) {
+
+            for ( RolePojo role : roles ) {
+                LOG.debug( "Role: " + role.getNxRoleId() + " - " + role.getName() );
+                if ( role.getNxRoleId() != 0 ) {
+                    role.setModifiedDate( new Date() );
+                    updateRole( role, session, transaction );
+                } else {
+                    role.setCreatedDate( new Date() );
+                    role.setModifiedDate( new Date() );
+                    saveRole( role, session, transaction );
+                }
+            }
+        }
+
+        List<UserPojo> obsoleteUsers = getObsoleteEntries( users, current.getUsers( null ) );
+        for ( UserPojo pojo : obsoleteUsers ) {
+            deleteUser( pojo, session, transaction );
+        }
+        obsoleteUsers.clear();
+
+        if ( users != null && users.size() > 0 ) {
+
+            for ( UserPojo user : users ) {
+                LOG.debug( "User: " + user.getNxUserId() + " - " + user.getLoginName() );
+                if ( user.getNxUserId() != 0 ) {
+                    user.setModifiedDate( new Date() );
+                    updateUser( user, session, transaction );
+                } else {
+                    user.setCreatedDate( new Date() );
+                    user.setModifiedDate( new Date() );
+                    saveUser( user, session, transaction );
+                }
+            }
+        }
+
+        List<GenericParamPojo> tempList = new ArrayList<GenericParamPojo>();
+        for ( String name : genericParameters.keySet() ) {
+            List<GenericParamPojo> values = genericParameters.get( name );
+            tempList.addAll( values );
+        }
+
+        if ( tempList != null && tempList.size() > 0 ) {
+
+            for ( GenericParamPojo param : tempList ) {
+                LOG.debug( "Parameter: " + param.getNxGenericParamId() + " - (" + param.getCategory() + "/"
+                        + param.getTag() + "):" + param.getParamName() + "=" + param.getValue() );
+                if ( param.getNxGenericParamId() != 0 ) {
+                    param.setModifiedDate( new Date() );
+                    updateGenericParameter( param, session, transaction );
+                } else {
+                    param.setCreatedDate( new Date() );
+                    param.setModifiedDate( new Date() );
+                    saveGenericParameter( param, session, transaction );
+                }
+            }
+        }
+
+        List<MappingPojo> obsoleteMappingEntries = getObsoleteEntries( mappings, current.getMappings( null ) );
+        for ( MappingPojo pojo : obsoleteMappingEntries ) {
+            deleteMapping( pojo, session, transaction );
+        }
+        obsoleteMappingEntries.clear();
+
+        if ( mappings != null && mappings.size() > 0 ) {
+
+            for ( MappingPojo pojo : mappings ) {
+                LOG.debug( "Mapping: " + pojo.getNxMappingId() + " - " + pojo.getCategory() + " - "
+                        + pojo.getLeftValue() + " - " + pojo.getRightValue() );
+                if ( pojo.getNxMappingId() != 0 ) {
+                    pojo.setModifiedDate( new Date() );
+                    updateMapping( pojo, session, transaction );
+                } else {
+                    pojo.setCreatedDate( new Date() );
+                    pojo.setModifiedDate( new Date() );
+                    saveMapping( pojo, session, transaction );
+                }
+            }
+        }
+
+        transaction.commit();
+        releaseDBSession( session );
+    } // saveConfigurationToDB
+
+    /**
+     * @param newObjects 
+     * @param oldObjects
+     * @return
+     */
+    private <T> List<T> getObsoleteEntries( List<T> newObjects, List<T> oldObjects ) {
+
+        List<T> obsoleteObjects = new ArrayList<T>();
+        if ( newObjects == null ) {
+            newObjects = new ArrayList<T>();
+        }
+        if ( oldObjects != null ) {
+            for ( T oldPojo : oldObjects ) {
+                if ( !newObjects.contains( oldPojo ) ) {
+                    obsoleteObjects.add( oldPojo );
+                }
+            }
+        }
+        return obsoleteObjects;
+    }
 } // CommunicationPartnerDAO

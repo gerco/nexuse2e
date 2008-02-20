@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(name = "GrantType")
 @XmlAccessorType(XmlAccessType.NONE )
-public class GrantPojo implements java.io.Serializable {
+public class GrantPojo implements NEXUSe2ePojo {
 
     // Fields    
 
@@ -75,6 +75,14 @@ public class GrantPojo implements java.io.Serializable {
         this.nxGrantId = nxGrantId;
     }
 
+    public int getNxId() {
+        return nxGrantId;
+    }
+    
+    public void setNxId( int nxId ) {
+        this.nxGrantId = nxId;
+    }
+    
     @XmlAttribute
     public String getTarget() {
 

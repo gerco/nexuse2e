@@ -40,7 +40,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(name = "PartnerType")
 @XmlAccessorType(XmlAccessType.NONE)
-public class PartnerPojo implements java.io.Serializable {
+public class PartnerPojo implements NEXUSe2ePojo {
 
     // Fields    
 
@@ -135,6 +135,14 @@ public class PartnerPojo implements java.io.Serializable {
         this.nxPartnerId = nxPartnerId;
     }
 
+    public int getNxId() {
+        return nxPartnerId;
+    }
+    
+    public void setNxId( int nxId ) {
+        this.nxPartnerId = nxId;
+    }
+    
     @XmlAttribute
     public int getType() {
 

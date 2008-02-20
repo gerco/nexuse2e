@@ -35,7 +35,7 @@ import org.nexuse2e.configuration.ParameterDescriptor;
  */
 @XmlType(name = "LoggerParamType")
 @XmlAccessorType(XmlAccessType.NONE)
-public class LoggerParamPojo implements java.io.Serializable {
+public class LoggerParamPojo implements NEXUSe2ePojo {
 
     private static final long   serialVersionUID = 1L;
 
@@ -99,6 +99,14 @@ public class LoggerParamPojo implements java.io.Serializable {
         this.nxLoggerParamId = nxLoggerParamId;
     }
 
+    public int getNxId() {
+        return nxLoggerParamId;
+    }
+    
+    public void setNxId( int nxId ) {
+        this.nxLoggerParamId = nxId;
+    }
+    
     public LoggerPojo getLogger() {
 
         return this.logger;

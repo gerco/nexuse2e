@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
-import org.nexuse2e.Engine;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.GenericComparator;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ParticipantPojo;
@@ -40,17 +40,15 @@ public class ParticipantTargetProvider implements TargetProvider {
 
     private static Logger LOG = Logger.getLogger( ParticipantTargetProvider.class );
 
-    /* (non-Javadoc)
-     * @see org.nexuse2e.ui.structure.TargetProvider#getStructure(org.nexuse2e.ui.structure.StructureNode)
-     */
     @SuppressWarnings("unchecked")
-    public List<StructureNode> getStructure( StructureNode pattern, ParentalStructureNode parent ) {
+    public List<StructureNode> getStructure(
+            StructureNode pattern, ParentalStructureNode parent, EngineConfiguration engineConfiguration ) {
 
         List<StructureNode> list = new ArrayList<StructureNode>();
 
         try {
-            ChoreographyPojo choreographyPojo = Engine.getInstance().getActiveConfigurationAccessService()
-                    .getChoreographyByNxChoreographyId( Integer.parseInt( parent.getProperty( "nxChoreographyId" ) ) );
+            ChoreographyPojo choreographyPojo = engineConfiguration.getChoreographyByNxChoreographyId(
+                    Integer.parseInt( parent.getProperty( "nxChoreographyId" ) ) );
             if ( choreographyPojo != null ) {
                 List<ParticipantPojo> participants = choreographyPojo.getParticipants();
                 TreeSet<ParticipantPojo> sortedParticipants = new TreeSet<ParticipantPojo>( new GenericComparator(

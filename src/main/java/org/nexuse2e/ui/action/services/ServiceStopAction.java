@@ -27,8 +27,8 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.nexuse2e.Engine;
 import org.nexuse2e.Constants.BeanStatus;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.pojo.ServicePojo;
 import org.nexuse2e.service.Service;
 import org.nexuse2e.ui.action.NexusE2EAction;
@@ -38,16 +38,16 @@ public class ServiceStopAction extends NexusE2EAction {
 
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
         ActionForward actionForward = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
         ServiceForm serviceForm = (ServiceForm) actionForm;
 
-        ServicePojo servicePojo = Engine.getInstance().getActiveConfigurationAccessService()
+        ServicePojo servicePojo = engineConfiguration
                 .getServicePojoByNxServiceId( serviceForm.getNxServiceId() );
         if ( servicePojo != null ) {
-            Service service = Engine.getInstance().getActiveConfigurationAccessService().getService(
+            Service service = engineConfiguration.getService(
                     servicePojo.getName() );
             if ( ( service != null ) && ( service.getStatus() == BeanStatus.STARTED ) ) {
                 service.stop();

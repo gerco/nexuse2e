@@ -29,8 +29,8 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.pojo.ConnectionPojo;
 import org.nexuse2e.pojo.PartnerPojo;
@@ -54,7 +54,7 @@ public class PartnerConnectionCreateAction extends NexusE2EAction {
      */
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
@@ -65,22 +65,22 @@ public class PartnerConnectionCreateAction extends NexusE2EAction {
         String partnerId = form.getPartnerId();
 
         try {
-            PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByPartnerId(
+            PartnerPojo partner = engineConfiguration.getPartnerByPartnerId(
                     partnerId );
             ConnectionPojo connection = new ConnectionPojo();
             form.getProperties( connection );
             int nxCertificateId = form.getNxCertificateId();
-            CertificatePojo certificate = Engine.getInstance().getActiveConfigurationAccessService()
+            CertificatePojo certificate = engineConfiguration
                     .getCertificateFromPartnerByNxCertificateId( partner, nxCertificateId );
             connection.setCertificate( certificate );
-            TRPPojo trp = Engine.getInstance().getActiveConfigurationAccessService()
+            TRPPojo trp = engineConfiguration
                     .getTrpByNxTrpId( form.getNxTrpId() );
             connection.setTrp( trp );
             connection.setPartner( partner );
             connection.setCreatedDate( new Date() );
             connection.setModifiedDate( new Date() );
             partner.getConnections().add( connection );
-            Engine.getInstance().getActiveConfigurationAccessService().updatePartner( partner );
+            engineConfiguration.updatePartner( partner );
         } catch ( NexusException e ) {
             ActionMessage errorMessage = new ActionMessage( "generic.error", e.getMessage() );
             errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );

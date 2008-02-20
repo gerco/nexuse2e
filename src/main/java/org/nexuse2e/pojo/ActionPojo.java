@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(name = "ActionType")
 @XmlAccessorType(XmlAccessType.NONE)
-public class ActionPojo implements java.io.Serializable {
+public class ActionPojo implements NEXUSe2ePojo {
 
     /**
      * 
@@ -119,6 +119,14 @@ public class ActionPojo implements java.io.Serializable {
         this.nxActionId = nxActionId;
     }
 
+    public int getNxId() {
+        return nxActionId;
+    }
+    
+    public void setNxId( int nxId ) {
+        this.nxActionId = nxId;
+    }
+    
     public ChoreographyPojo getChoreography() {
 
         return this.choreography;

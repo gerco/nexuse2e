@@ -19,7 +19,7 @@
  */
 package org.nexuse2e.ui.action.reporting;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,6 +31,7 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.Engine;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.messaging.BackendActionSerializer;
 import org.nexuse2e.messaging.FrontendActionSerializer;
 import org.nexuse2e.ui.action.NexusE2EAction;
@@ -49,7 +50,7 @@ public class ModifyMessageAction extends NexusE2EAction {
      * @see org.nexuse2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages, org.apache.struts.action.ActionMessages)
      */
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
@@ -76,7 +77,7 @@ public class ModifyMessageAction extends NexusE2EAction {
             if ( outbound ) {
                 LOG.debug( "Requeueing outbound message " + messageId + " for choreography " + choreographyId
                         + " and participant " + participantId );
-                HashMap<String, BackendActionSerializer> backendActionSerializers = Engine.getInstance()
+                Map<String, BackendActionSerializer> backendActionSerializers = Engine.getInstance()
                         .getCurrentConfiguration().getBackendActionSerializers();
                 BackendActionSerializer backendActionSerializer = backendActionSerializers.get( choreographyId );
 
@@ -90,7 +91,7 @@ public class ModifyMessageAction extends NexusE2EAction {
                 LOG.debug( "Requeueing inbound message " + messageId + " for choreography " + choreographyId
                         + " and participant " + participantId );
 
-                HashMap<String, FrontendActionSerializer> frontendActionSerializers = Engine.getInstance()
+                Map<String, FrontendActionSerializer> frontendActionSerializers = Engine.getInstance()
                         .getCurrentConfiguration().getFrontendActionSerializers();
                 FrontendActionSerializer frontendActionSerializer = frontendActionSerializers.get( choreographyId );
 

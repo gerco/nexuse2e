@@ -35,7 +35,7 @@ import org.nexuse2e.configuration.ParameterDescriptor;
  */
 @XmlType(name = "ServiceParamType")
 @XmlAccessorType(XmlAccessType.NONE)
-public class ServiceParamPojo implements java.io.Serializable {
+public class ServiceParamPojo implements NEXUSe2ePojo {
 
     /**
      * 
@@ -101,6 +101,14 @@ public class ServiceParamPojo implements java.io.Serializable {
         this.nxServiceParamId = nxServiceParamId;
     }
 
+    public int getNxId() {
+        return nxServiceParamId;
+    }
+    
+    public void setNxId( int nxId ) {
+        this.nxServiceParamId = nxId;
+    }
+    
     public ServicePojo getService() {
 
         return this.service;

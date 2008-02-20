@@ -24,11 +24,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.nexuse2e.Engine;
+import org.nexuse2e.configuration.EngineConfiguration;
+import org.nexuse2e.pojo.UserPojo;
+import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.ajax.AjaxRequestHandler;
 import org.nexuse2e.ui.structure.ParentalStructureNode;
 import org.nexuse2e.ui.structure.StructureException;
@@ -58,9 +63,18 @@ public class TreeProvider implements AjaxRequestHandler {
 
     private static final String BEAN_STRUCTURE_SERVICE = "structureService";
 
-    public String handleRequest( Map params ) throws JSONException {
+    public String handleRequest( HttpServletRequest request ) throws JSONException {
 
-        //LOG.debug( "HANDLE REQUEST");
+        // get applicable engine configuration
+        UserPojo user = (UserPojo) request.getSession().getAttribute( NexusE2EAction.ATTRIBUTE_USER );
+        EngineConfiguration engineConfiguration;
+        if (user != null) {
+            engineConfiguration = Engine.getInstance().getConfiguration( user.getNxUserId() );
+        } else {
+            engineConfiguration = Engine.getInstance().getCurrentConfiguration();
+        }
+
+        Map<?, ?> params = request.getParameterMap();
         
         String result = "";
         String action = ( (String[]) params.get( "action" ) )[0];
@@ -69,7 +83,7 @@ public class TreeProvider implements AjaxRequestHandler {
             // parse JSON request data
             JSONObject jsonData = new JSONObject( data );
             if ( ACTION_GET_CHILDREN.equals( action ) ) {
-                result = getChildren( jsonData ).toString();
+                result = getChildren( jsonData, engineConfiguration ).toString();
             }
         } else {
             LOG.warn( "Invalid request parameter: action=" + action + ", data=" + data );
@@ -80,7 +94,7 @@ public class TreeProvider implements AjaxRequestHandler {
         return result;
     }
 
-    protected JSONArray getChildren( JSONObject data ) throws JSONException {
+    protected JSONArray getChildren( JSONObject data, EngineConfiguration engineConfiguration ) throws JSONException {
 
         //LOG.debug( "GET CHILDREN");
         
@@ -88,10 +102,11 @@ public class TreeProvider implements AjaxRequestHandler {
 
         BeanFactory beanFactory = Engine.getInstance().getBeanFactory();
         StructureService strSrv = (StructureService) beanFactory.getBean( BEAN_STRUCTURE_SERVICE );
+        
         if ( strSrv != null ) {
             try {
                 //LOG.debug( "GET MENU STRUCTURE" );
-                List<StructureNode> nodes = strSrv.getMenuStructure();
+                List<StructureNode> nodes = strSrv.getMenuStructure( engineConfiguration );
                 //LOG.debug( "GOT MENU STRUCTURE" );
                 Map<String, StructureNode> nodeMap = buildNodeCatalog( nodes );
                 JSONObject parentJSONNode = data.getJSONObject( DOJO_NODE );
@@ -136,7 +151,7 @@ public class TreeProvider implements AjaxRequestHandler {
             if ( ignoreCommands ) {
                 List<StructureNode> children = ( (ParentalStructureNode) node ).getChildren();
                 boolean isFolder = false;
-                for ( Iterator childIter = children.iterator(); childIter.hasNext() && !isFolder; ) {
+                for ( Iterator<StructureNode> childIter = children.iterator(); childIter.hasNext() && !isFolder; ) {
                     if ( childIter.next() instanceof PageNode ) {
                         dojoNode.put( "isFolder", true );
                         isFolder = true;

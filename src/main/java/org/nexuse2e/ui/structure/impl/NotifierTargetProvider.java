@@ -22,7 +22,7 @@ package org.nexuse2e.ui.structure.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nexuse2e.Engine;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.pojo.LoggerPojo;
 import org.nexuse2e.ui.structure.ParentalStructureNode;
 import org.nexuse2e.ui.structure.StructureNode;
@@ -35,13 +35,11 @@ import org.nexuse2e.ui.structure.TargetProvider;
  */
 public class NotifierTargetProvider implements TargetProvider {
 
-    /* (non-Javadoc)
-     * @see org.nexuse2e.ui.structure.TargetProvider#getStructure(org.nexuse2e.ui.structure.StructureNode)
-     */
-    public List<StructureNode> getStructure( StructureNode pattern, ParentalStructureNode parent ) {
+    public List<StructureNode> getStructure(
+            StructureNode pattern, ParentalStructureNode parent, EngineConfiguration engineConfiguration ) {
 
         List<StructureNode> list = new ArrayList<StructureNode>();
-        List<LoggerPojo> loggers = Engine.getInstance().getActiveConfigurationAccessService().getLoggers();
+        List<LoggerPojo> loggers = engineConfiguration.getLoggers();
         for ( LoggerPojo loggerPojo : loggers ) {
             StructureNode sn = new PageNode( pattern.getTarget() + "?nxLoggerId=" + loggerPojo.getNxLoggerId(), loggerPojo
                     .getName(), pattern.getIcon() );

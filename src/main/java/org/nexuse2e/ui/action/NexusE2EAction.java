@@ -33,7 +33,9 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
+import org.nexuse2e.Engine;
 import org.nexuse2e.Version;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.pojo.UserPojo;
 import org.nexuse2e.ui.security.AccessController;
 
@@ -57,6 +59,7 @@ public abstract class NexusE2EAction extends Action {
     public static final String    ATTRIBUTE_TREE_NODES         = "treeNodes";
     public static final String    ATTRIBUTE_WEB_APP_PATH       = "webAppPath";
     public static final String    ATTRIBUTE_USER               = "nxUser";
+    public static final String    ATTRIBUTE_CONFIGURATION      = "engineConfiguration";
 
     public static final String    ATTRIBUTE_COLLECTION         = "collection";
 
@@ -107,7 +110,10 @@ public abstract class NexusE2EAction extends Action {
             // check access
             if ( AccessController.hasAccess( user, request ) ) {
                 // execute action
-                actionForward = executeNexusE2EAction( actionMapping, actionForm, request, response, errors, messages );
+                EngineConfiguration config = Engine.getInstance().getConfiguration( user.getNxUserId() );
+                request.setAttribute( ATTRIBUTE_CONFIGURATION, config );
+                actionForward = executeNexusE2EAction(
+                        actionMapping, actionForm, request, response, config, errors, messages );
             } else {
                 errors.add( ActionMessages.GLOBAL_MESSAGE, new ActionMessage( "access.denied" ) );
                 actionForward = actionMapping.findForward( ACTION_FORWARD_ACCESS_DENIED );
@@ -141,43 +147,14 @@ public abstract class NexusE2EAction extends Action {
         request.setAttribute( "redirectUrl", url.toString() );
     }
 
-    /*
-     public void addErrorMessage( String msgCode, String urlCode, String timeCode ) {
-
-     addErrorMessage( msgCode, url, time );
-     }
-
-     public void addErrorMessage( ActionMessage error, String urlCode, String timeCode ) {
-
-     int time = Integer.parseInt( getResources( request ).getMessage( timeCode ) );
-     String url = getResources( request ).getMessage( urlCode );
-     addErrorMessage( error, url, time );
-     }
-
-     public void addErrorMessage( String msgCode, String redirectUrl, int timeout ) {
-
-     ActionMessage error = new ActionMessage( msgCode );
-     addErrorMessage( error, redirectUrl, timeout );
-     }
-
-     public void addErrorMessage( ActionMessage error, String redirectUrl, int timeout ) {
-
-     errors.add( ActionMessages.GLOBAL_MESSAGE, error );
-     }
-
-     public void addMessage( String msgCode ) {
-
-     messages.add( ActionMessages.GLOBAL_MESSAGE, new ActionMessage( msgCode ) );
-     }
-
-     public void addMessage( ActionMessage message ) {
-
-     messages.add( ActionMessages.GLOBAL_MESSAGE, message );
-     }
-     */
-
-    public abstract ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+    public abstract ActionForward executeNexusE2EAction(
+            ActionMapping actionMapping,
+            ActionForm actionForm,
+            HttpServletRequest request,
+            HttpServletResponse response,
+            EngineConfiguration engineConfiguration,
+            ActionMessages errors,
+            ActionMessages messages )
             throws Exception;
 
 } // NexusE2EAction

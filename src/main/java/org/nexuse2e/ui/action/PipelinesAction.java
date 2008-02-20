@@ -30,8 +30,8 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
-import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.Constants;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.pojo.PipelinePojo;
 import org.nexuse2e.ui.form.PipelineForm;
 
@@ -46,7 +46,7 @@ public class PipelinesAction extends NexusE2EAction {
      */
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
@@ -57,10 +57,10 @@ public class PipelinesAction extends NexusE2EAction {
         String parameter = actionMapping.getParameter();
 
         if ( "frontend".equalsIgnoreCase( parameter ) ) {
-            pipelinePojos = Engine.getInstance().getActiveConfigurationAccessService().getFrontendPipelinePojos(
+            pipelinePojos = engineConfiguration.getFrontendPipelinePojos(
                     Constants.PIPELINE_TYPE_ALL, Constants.PIPELINECOMPARATOR );
         } else {
-            pipelinePojos = Engine.getInstance().getActiveConfigurationAccessService().getBackendPipelinePojos(
+            pipelinePojos = engineConfiguration.getBackendPipelinePojos(
                     Constants.PIPELINE_TYPE_ALL, Constants.PIPELINECOMPARATOR );
         }
         if ( pipelinePojos != null && pipelinePojos.size() > 0 ) {

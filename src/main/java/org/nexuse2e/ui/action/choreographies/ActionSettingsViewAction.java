@@ -32,9 +32,9 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.Constants;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.FollowUpActionPojo;
@@ -57,7 +57,7 @@ public class ActionSettingsViewAction extends NexusE2EAction {
      */
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
@@ -82,9 +82,9 @@ public class ActionSettingsViewAction extends NexusE2EAction {
         ActionPojo action = null;
         ChoreographyPojo choreography = null;
         try {
-            choreography = Engine.getInstance().getActiveConfigurationAccessService().getChoreographyByNxChoreographyId(
+            choreography = engineConfiguration.getChoreographyByNxChoreographyId(
                     nxChoreographyId );
-            action = Engine.getInstance().getActiveConfigurationAccessService().getActionFromChoreographyByNxActionId( choreography,
+            action = engineConfiguration.getActionFromChoreographyByNxActionId( choreography,
                     nxActionId );
         } catch ( NexusException e ) {
             ActionMessage errorMessage = new ActionMessage( "generic.error", e.getMessage() );
@@ -122,11 +122,11 @@ public class ActionSettingsViewAction extends NexusE2EAction {
         form.setFollowups( followUpArray );
         form.setFollowupActions( followUpVector );
 
-        form.setBackendInboundPipelines( Engine.getInstance().getActiveConfigurationAccessService().getBackendPipelinePojos(
+        form.setBackendInboundPipelines( engineConfiguration.getBackendPipelinePojos(
                 Constants.PIPELINE_TYPE_INBOUND, Constants.PIPELINECOMPARATOR ) );
-        form.setStatusUpdatePipelines( Engine.getInstance().getActiveConfigurationAccessService().getBackendPipelinePojos(
+        form.setStatusUpdatePipelines( engineConfiguration.getBackendPipelinePojos(
                 Constants.PIPELINE_TYPE_INBOUND, Constants.PIPELINECOMPARATOR ) );
-        form.setBackendOutboundPipelines( Engine.getInstance().getActiveConfigurationAccessService().getBackendPipelinePojos(
+        form.setBackendOutboundPipelines( engineConfiguration.getBackendPipelinePojos(
                 Constants.PIPELINE_TYPE_OUTBOUND, Constants.PIPELINECOMPARATOR ) );
         
         //request.getSession().setAttribute( Crumbs.CURRENT_LOCATION, Crumbs.ACTION+"_"+choreographyId+"_"+actionId );

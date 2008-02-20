@@ -24,7 +24,6 @@ import java.util.Date;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.nexuse2e.Engine;
-import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.dao.LogDAO;
@@ -106,13 +105,7 @@ public class DatabaseLogger extends AbstractLogger {
 
             // LogDAO logDao = null;
             if ( logDao == null ) {
-                try {
-                    logDao = (LogDAO) Engine.getInstance().getDao( "logDao" );
-                } catch ( Exception e ) {
-                    NexusException ie = new NexusException( e );
-                    ie.setStackTrace( e.getStackTrace() );
-                    throw ie;
-                }
+                logDao = Engine.getInstance().getLogDAO();
             }
             logDao.saveLog( pojo, null, null );
         } catch ( Exception ex ) {

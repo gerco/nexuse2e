@@ -21,7 +21,7 @@ package org.nexuse2e.ui.action.reporting;
 
 import java.util.Map;
 
-import org.nexuse2e.Engine;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.ReportingSettingsForm;
 
@@ -33,9 +33,9 @@ import org.nexuse2e.ui.form.ReportingSettingsForm;
  */
 public abstract class ReportingAction extends NexusE2EAction {
 
-    protected void fillForm( ReportingSettingsForm form ) {
+    protected void fillForm( EngineConfiguration engineConfiguration, ReportingSettingsForm form ) {
         Map<String, Object> values =
-            Engine.getInstance().getActiveConfigurationAccessService().getGenericParameters(
+            engineConfiguration.getGenericParameters(
                     "log_display_configuration", null, form.getParameterMap() );
         fillForm( values, form );
     }

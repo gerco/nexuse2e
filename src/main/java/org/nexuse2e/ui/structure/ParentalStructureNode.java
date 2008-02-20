@@ -38,6 +38,11 @@ public interface ParentalStructureNode extends StructureNode {
      * @param children List of children to add.
      */
     public abstract void addChildren( List<StructureNode> children );
+    
+    /**
+     * Removes all children from this <code>ParentalStructureNode</code>.
+     */
+    public abstract void removeChildren();
 
     /**
      * Returns the child nodes of the current instance.
@@ -76,6 +81,55 @@ public interface ParentalStructureNode extends StructureNode {
      *          <code>false</code> if the property is unknown. 
      */
     public abstract boolean hasProperty( String name );
+
+    /**
+     * Sets the provider key.
+     * @param provider The provider key.
+     */
+    public abstract void setProvider( String provider );
+    
+    /**
+     * Gets the provider key.
+     * @return The provider key, or <code>null</code> if none is set
+     * (i.e., if the node is not dynamic).
+     */
+    public abstract String getProvider();
+    
+    /**
+     * Sets the target for this node's children.
+     * @param childTarget The child target.
+     */
+    public abstract void setChildTarget( String childTarget );
+    
+    /**
+     * Gets target for this node's children.
+     * @return The child target.
+     */
+    public abstract String getChildTarget();
+    
+    /**
+     * Sets the icon for children.
+     * @param childIcon The icon for this node's children.
+     */
+    public abstract void setChildIcon( String childIcon );
+
+    /**
+     * Gets the icon for children.
+     * @return The children's icon.
+     */
+    public abstract String getChildIcon();
+
+    /**
+     * Sets the label for children.
+     * @param childLabel The label for this node's children.
+     */
+    public abstract void setChildLabel( String childLabel );
+
+    /**
+     * Gets the label for children.
+     * @return The children's label.
+     */
+    public abstract String getChildLabel();
 
     /**
      * Sets a property.

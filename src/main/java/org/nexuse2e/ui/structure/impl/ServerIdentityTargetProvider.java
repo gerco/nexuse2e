@@ -22,9 +22,9 @@ package org.nexuse2e.ui.structure.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.Constants;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.pojo.PartnerPojo;
 import org.nexuse2e.ui.structure.ParentalStructureNode;
 import org.nexuse2e.ui.structure.StructureNode;
@@ -36,14 +36,12 @@ import org.nexuse2e.ui.structure.TargetProvider;
  */
 public class ServerIdentityTargetProvider implements TargetProvider {
 
-    /* (non-Javadoc)
-     * @see org.nexuse2e.ui.structure.TargetProvider#getStructure(org.nexuse2e.ui.structure.StructureNode)
-     */
-    public List<StructureNode> getStructure( StructureNode pattern, ParentalStructureNode parent ) {
+    public List<StructureNode> getStructure(
+            StructureNode pattern, ParentalStructureNode parent, EngineConfiguration engineConfiguration ) {
 
         List<StructureNode> list = new ArrayList<StructureNode>();
         try {
-            List<PartnerPojo> partnerPojos = Engine.getInstance().getActiveConfigurationAccessService().getPartners(
+            List<PartnerPojo> partnerPojos = engineConfiguration.getPartners(
                     Constants.PARTNER_TYPE_LOCAL, Constants.PARTNERCOMPARATOR );
             if ( partnerPojos != null ) {
                 for ( PartnerPojo partnerPojo : partnerPojos ) {

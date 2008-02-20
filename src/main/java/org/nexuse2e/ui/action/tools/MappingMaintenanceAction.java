@@ -31,8 +31,8 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
-import org.nexuse2e.Engine;
 import org.nexuse2e.Constants.MappingType;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.pojo.MappingPojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.MappingMaintenanceForm;
@@ -42,7 +42,7 @@ public class MappingMaintenanceAction extends NexusE2EAction {
 
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
@@ -71,7 +71,7 @@ public class MappingMaintenanceAction extends NexusE2EAction {
                 mapping.setLeftValue( form.getLeftValue() );
                 mapping.setRightValue( form.getRightValue() );
 
-                Engine.getInstance().getActiveConfigurationAccessService().updateMapping( mapping );
+                engineConfiguration.updateMapping( mapping );
             }
 
         } else if ( !StringUtils.isEmpty( action ) && action.equals( "update" ) ) {
@@ -83,7 +83,7 @@ public class MappingMaintenanceAction extends NexusE2EAction {
                     e.printStackTrace();
                 }
                 if ( nxId != 0 ) {
-                    MappingPojo mapping = Engine.getInstance().getActiveConfigurationAccessService()
+                    MappingPojo mapping = engineConfiguration
                             .getMappingByNxMappingId( nxId );
                     
                     if ( mapping != null ) {
@@ -94,7 +94,7 @@ public class MappingMaintenanceAction extends NexusE2EAction {
                         mapping.setLeftValue( form.getLeftValue() );
                         mapping.setRightValue( form.getRightValue() );
 
-                        Engine.getInstance().getActiveConfigurationAccessService().updateMapping( mapping );
+                        engineConfiguration.updateMapping( mapping );
                     }
                 }
             }
@@ -107,15 +107,15 @@ public class MappingMaintenanceAction extends NexusE2EAction {
                     e.printStackTrace();
                 }
                 if ( nxId != 0 ) {
-                    MappingPojo mapping = Engine.getInstance().getActiveConfigurationAccessService()
+                    MappingPojo mapping = engineConfiguration
                             .getMappingByNxMappingId( nxId );
                     if ( mapping != null ) { 
-                        Engine.getInstance().getActiveConfigurationAccessService().deleteMapping( mapping );
+                        engineConfiguration.deleteMapping( mapping );
                     }
                 }
             }
         }
-        List<MappingPojo> mappings = Engine.getInstance().getActiveConfigurationAccessService().getMappings( null );
+        List<MappingPojo> mappings = engineConfiguration.getMappings( null );
 
         
 

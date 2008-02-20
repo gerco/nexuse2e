@@ -211,8 +211,9 @@ public class DirectoryScannerService extends AbstractService implements Schedule
             throw new InstantiationException( "SchedulingService is not properly configured (schedulingServiceObj == null)!" );
         }
 
-        backendPipelineDispatcher = (BackendPipelineDispatcher) Engine.getInstance().getBeanFactory().getBean(
-                "backendPipelineDispatcher" );
+        backendPipelineDispatcher =
+            (BackendPipelineDispatcher)
+            Engine.getInstance().getCurrentConfiguration().getStaticBeanContainer().getBackendPipelineDispatcher();
 
         super.initialize( config );
     }

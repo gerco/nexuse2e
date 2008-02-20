@@ -7,6 +7,7 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.ui.action.NexusE2EAction;
 
 /**
@@ -22,7 +23,9 @@ public class ConfigurationManagementAction extends NexusE2EAction {
     public ActionForward executeNexusE2EAction(
             ActionMapping actionMapping,
             ActionForm actionForm, HttpServletRequest request,
-            HttpServletResponse response, ActionMessages errors,
+            HttpServletResponse response,
+            EngineConfiguration engineConfiguration,
+            ActionMessages errors,
             ActionMessages messages ) throws Exception {
         
         return actionMapping.findForward( ACTION_FORWARD_SUCCESS );

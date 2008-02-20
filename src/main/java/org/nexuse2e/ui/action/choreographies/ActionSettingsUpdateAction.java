@@ -30,8 +30,8 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.FollowUpActionPojo;
@@ -54,7 +54,7 @@ public class ActionSettingsUpdateAction extends NexusE2EAction {
      */
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
@@ -78,9 +78,9 @@ public class ActionSettingsUpdateAction extends NexusE2EAction {
             ActionPojo actionPojo;
             ChoreographyPojo choreography;
             try {
-                choreography = Engine.getInstance().getActiveConfigurationAccessService().getChoreographyByNxChoreographyId(
+                choreography = engineConfiguration.getChoreographyByNxChoreographyId(
                         nxChoreographyId );
-                actionPojo = Engine.getInstance().getActiveConfigurationAccessService().getActionFromChoreographyByNxActionId(
+                actionPojo = engineConfiguration.getActionFromChoreographyByNxActionId(
                         choreography, nxActionId );
                 form.getProperties( actionPojo );
                 for ( int i = 0; i < selectedFollowUps.length; i++ ) {
@@ -95,7 +95,7 @@ public class ActionSettingsUpdateAction extends NexusE2EAction {
                         }
                     }
                     if ( !exists ) {
-                        ActionPojo followAction = Engine.getInstance().getActiveConfigurationAccessService()
+                        ActionPojo followAction = engineConfiguration
                                 .getActionFromChoreographyByActionId( choreography, selectedFollowUps[i] );
                         followAction.setModifiedDate( new Date() );
                         FollowUpActionPojo newFollowUp = new FollowUpActionPojo();
@@ -125,7 +125,7 @@ public class ActionSettingsUpdateAction extends NexusE2EAction {
                         followI.remove();
                     }
                 }
-                Engine.getInstance().getActiveConfigurationAccessService().updateChoreography( choreography );
+                engineConfiguration.updateChoreography( choreography );
     
             } catch ( NexusException e ) {
                 e.printStackTrace();

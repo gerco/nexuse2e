@@ -20,8 +20,8 @@
 package org.nexuse2e.backend;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.nexuse2e.ActionSpecificKey;
@@ -47,7 +47,7 @@ import org.springframework.beans.factory.InitializingBean;
 public class BackendPipelineDispatcher implements Manageable, InitializingBean {
 
     private Constants.BeanStatus                status    = Constants.BeanStatus.UNDEFINED;
-    HashMap<ActionSpecificKey, BackendPipeline> pipelines = null;
+    Map<ActionSpecificKey, BackendPipeline>     pipelines = null;
     private static Logger                       LOG       = Logger.getLogger( BackendPipelineDispatcher.class );
 
     /**

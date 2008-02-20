@@ -27,8 +27,8 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.pojo.ConnectionPojo;
 import org.nexuse2e.pojo.PartnerPojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
@@ -50,7 +50,7 @@ public class PartnerConnectionSaveAction extends NexusE2EAction {
      */
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
@@ -67,14 +67,14 @@ public class PartnerConnectionSaveAction extends NexusE2EAction {
         }
 
         try {
-            PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByNxPartnerId(
+            PartnerPojo partner = engineConfiguration.getPartnerByNxPartnerId(
                     form.getNxPartnerId() );
 
             if ( partner != null ) {
-                ConnectionPojo connection = Engine.getInstance().getActiveConfigurationAccessService()
+                ConnectionPojo connection = engineConfiguration
                         .getConnectionFromPartnerByNxConnectionId( partner, form.getNxConnectionId() );
                 form.getProperties( connection );
-                Engine.getInstance().getActiveConfigurationAccessService().updatePartner( partner );
+                engineConfiguration.updatePartner( partner );
             } else {
                 ActionMessage errorMessage = new ActionMessage( "generic.error", "No partner found: "
                         + form.getNxPartnerId() );

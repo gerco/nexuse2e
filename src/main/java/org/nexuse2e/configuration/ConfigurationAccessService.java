@@ -20,34 +20,20 @@
 package org.nexuse2e.configuration;
 
 import java.security.KeyStore;
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
-import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.backend.BackendPipelineDispatcher;
 import org.nexuse2e.configuration.Constants.ComponentType;
 import org.nexuse2e.configuration.Constants.ParameterType;
-import org.nexuse2e.messaging.Pipelet;
 import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ComponentPojo;
 import org.nexuse2e.pojo.ConnectionPojo;
-import org.nexuse2e.pojo.ConversationPojo;
-import org.nexuse2e.pojo.GenericParamPojo;
 import org.nexuse2e.pojo.LoggerPojo;
 import org.nexuse2e.pojo.MappingPojo;
 import org.nexuse2e.pojo.ParticipantPojo;
@@ -58,215 +44,67 @@ import org.nexuse2e.pojo.ServicePojo;
 import org.nexuse2e.pojo.TRPPojo;
 import org.nexuse2e.pojo.UserPojo;
 import org.nexuse2e.service.Service;
-import org.nexuse2e.util.CertificateUtil;
-import org.nexuse2e.util.EncryptionUtil;
 
 /**
  * @author gesch
  *
  */
-public class ConfigurationAccessService {
-
-    Logger                      LOG                = Logger.getLogger( ConfigurationAccessService.class );
-    private EngineConfiguration engineConfig;
-    private boolean             validConfiguration = false;
-
-    /**
-     * @param engineConfig
-     */
-    public ConfigurationAccessService( EngineConfiguration engineConfig ) {
-
-        if ( engineConfig != null ) {
-            this.engineConfig = engineConfig;
-            validConfiguration = true;
-        }
-    }
+public interface ConfigurationAccessService {
 
     /**
      * @param nxPipelineId
      * @return
      */
-    public PipelinePojo getPipelinePojoByNxPipelineId( int nxPipelineId ) {
-
-        PipelinePojo pipeline = null;
-
-        List<PipelinePojo> pipelines = getBackendPipelinePojos( Constants.PIPELINE_TYPE_ALL, null );
-        Iterator<PipelinePojo> pipelineI = pipelines.iterator();
-        while ( pipelineI.hasNext() ) {
-            pipeline = pipelineI.next();
-            if ( pipeline.getNxPipelineId() == nxPipelineId ) {
-                return pipeline;
-            }
-        }
-
-        pipelines = getFrontendPipelinePojos( Constants.PIPELINE_TYPE_ALL, null );
-        pipelineI = pipelines.iterator();
-        while ( pipelineI.hasNext() ) {
-            pipeline = pipelineI.next();
-            if ( pipeline.getNxPipelineId() == nxPipelineId ) {
-                return pipeline;
-            }
-        }
-        return null;
-    }
+    public abstract PipelinePojo getPipelinePojoByNxPipelineId(int nxPipelineId);
 
     /**
      * @param name
      * @return
      */
-    public PipelinePojo getPipelineByName( String name ) {
-
-        PipelinePojo pipeline = null;
-
-        List<PipelinePojo> pipelines = getBackendPipelinePojos( Constants.PIPELINE_TYPE_ALL, null );
-        Iterator<PipelinePojo> pipelineI = pipelines.iterator();
-        while ( pipelineI.hasNext() ) {
-            pipeline = pipelineI.next();
-            if ( pipeline.getName().equals( name ) ) {
-                return pipeline;
-            }
-        }
-        pipelines = getFrontendPipelinePojos( Constants.PIPELINE_TYPE_ALL, null );
-        pipelineI = pipelines.iterator();
-        while ( pipelineI.hasNext() ) {
-            pipeline = pipelineI.next();
-            if ( pipeline.getName().equals( name ) ) {
-                return pipeline;
-            }
-        }
-        return null;
-    }
+    public abstract PipelinePojo getPipelineByName(String name);
 
     /**
      * @param nxServiceId
      * @return
      */
-    public ServicePojo getServicePojoByNxServiceId( int nxServiceId ) {
-
-        for ( ServicePojo service : engineConfig.getServices() ) {
-            if ( service.getNxServiceId() == nxServiceId ) {
-                return service;
-            }
-        }
-        return null;
-    }
+    public abstract ServicePojo getServicePojoByNxServiceId(int nxServiceId);
 
     /**
      * @param name
      * @return
      */
-    public ServicePojo getServicePojoName( String name ) {
-
-        for ( ServicePojo service : engineConfig.getServices() ) {
-            if ( service.getName().equals( name ) ) {
-                return service;
-            }
-        }
-        return null;
-    }
+    public abstract ServicePojo getServicePojoName(String name);
 
     /**
      * Return the BackendPipelineDispatcher instance
      * @return The BackendPipelineDispatcher instance
      */
-    public BackendPipelineDispatcher getBackendPipelineDispatcher() {
-
-        if ( engineConfig != null ) {
-            return engineConfig.getBackendPipelineDispatcher();
-        }
-        return null;
-    } // getBackendPipelineDispatcher
+    public abstract BackendPipelineDispatcher getBackendPipelineDispatcher(); // getBackendPipelineDispatcher
 
     /**
      * @return
      */
     @SuppressWarnings("unchecked")
-    public List<PipelinePojo> getFrontendPipelinePojos( int type, GenericComparator comparator ) {
-
-        if ( engineConfig == null ) {
-            return null;
-        }
-
-        List<PipelinePojo> filteredList = null;
-        if ( type != Constants.PIPELINE_TYPE_ALL ) {
-            filteredList = new ArrayList<PipelinePojo>();
-            Iterator<PipelinePojo> i = engineConfig.getFrontendPipelineTemplates().iterator();
-            while ( i.hasNext() ) {
-                PipelinePojo pipeline = i.next();
-                if ( type == Constants.PIPELINE_TYPE_INBOUND && !pipeline.isOutbound() ) {
-                    filteredList.add( pipeline );
-                } else if ( type == Constants.PIPELINE_TYPE_OUTBOUND && pipeline.isOutbound() ) {
-                    filteredList.add( pipeline );
-                }
-            }
-        } else {
-            filteredList = engineConfig.getFrontendPipelineTemplates();
-        }
-        if ( comparator != null ) {
-            Collections.sort( filteredList, comparator );
-        }
-        return filteredList;
-    }
+    public abstract List<PipelinePojo> getFrontendPipelinePojos(int type,
+            GenericComparator comparator);
 
     /**
      * @return
      */
     @SuppressWarnings("unchecked")
-    public List<PipelinePojo> getBackendPipelinePojos( int type, GenericComparator comparator ) {
-
-        if ( engineConfig == null ) {
-            return null;
-        }
-        List<PipelinePojo> filteredList = null;
-        if ( type != Constants.PIPELINE_TYPE_ALL ) {
-            filteredList = new ArrayList<PipelinePojo>();
-            Iterator<PipelinePojo> i = engineConfig.getBackendPipelineTemplates().iterator();
-            while ( i.hasNext() ) {
-                PipelinePojo pipeline = i.next();
-                if ( type == Constants.PIPELINE_TYPE_INBOUND && !pipeline.isOutbound() ) {
-                    filteredList.add( pipeline );
-                } else if ( type == Constants.PIPELINE_TYPE_OUTBOUND && pipeline.isOutbound() ) {
-                    filteredList.add( pipeline );
-                }
-            }
-        } else {
-            filteredList = engineConfig.getBackendPipelineTemplates();
-        }
-        if ( comparator != null ) {
-            Collections.sort( filteredList, comparator );
-        }
-        return filteredList;
-    }
+    public abstract List<PipelinePojo> getBackendPipelinePojos(int type,
+            GenericComparator comparator);
 
     /**
      * @return
      */
-    public List<TRPPojo> getTrps() {
-
-        if ( engineConfig != null ) {
-            return engineConfig.getTrps();
-        }
-        return null;
-    }
+    public abstract List<TRPPojo> getTrps();
 
     /**
      * @param nxTrpId
      * @return
      */
-    public TRPPojo getTrpByNxTrpId( int nxTrpId ) {
-
-        TRPPojo trp = null;
-
-        List<TRPPojo> trps = getTrps();
-        Iterator<TRPPojo> trpI = trps.iterator();
-        while ( trpI.hasNext() ) {
-            trp = trpI.next();
-            if ( trp.getNxTRPId() == nxTrpId ) {
-                return trp;
-            }
-        }
-        return null;
-    }
+    public abstract TRPPojo getTrpByNxTrpId(int nxTrpId);
 
     /**
      * @param protocol
@@ -274,151 +112,55 @@ public class ConfigurationAccessService {
      * @param transport
      * @return
      */
-    public TRPPojo getTrpByProtocolVersionAndTransport( String protocol, String version, String transport ) {
-
-        List<TRPPojo> trps = getTrps();
-        for ( TRPPojo trp : trps ) {
-            if ( StringUtils.equals( trp.getProtocol(), protocol ) && StringUtils.equals( trp.getVersion(), version )
-                    && StringUtils.equals( trp.getTransport(), transport ) ) {
-                return trp;
-            }
-        }
-
-        return null;
-    }
+    public abstract TRPPojo getTrpByProtocolVersionAndTransport(
+            String protocol, String version, String transport);
 
     /**
      * @param nxPartnerId
      * @return
      * @throws NexusException
      */
-    public PartnerPojo getPartnerByNxPartnerId( int nxPartnerId ) throws NexusException {
-
-        if ( !validConfiguration ) {
-            throw new NexusException( "Configuration Invalid!" );
-        }
-        List<PartnerPojo> partners = engineConfig.getPartners();
-        if ( partners != null && partners.size() > 0 ) {
-            Iterator<PartnerPojo> i = partners.iterator();
-            while ( i.hasNext() ) {
-                PartnerPojo partner = i.next();
-                if ( partner.getNxPartnerId() == nxPartnerId ) {
-                    return partner;
-                }
-            }
-        }
-        return null;
-    }
+    public abstract PartnerPojo getPartnerByNxPartnerId(int nxPartnerId)
+            throws NexusException;
 
     /**
      * @param nxComponentId
      * @return
      * @throws NexusException
      */
-    public ComponentPojo getComponentByNxComponentId( int nxComponentId ) throws NexusException {
-
-        if ( !validConfiguration ) {
-            throw new NexusException( "Configuration Invalid!" );
-        }
-        List<ComponentPojo> components = engineConfig.getComponents();
-        if ( components != null && components.size() > 0 ) {
-            Iterator<ComponentPojo> i = components.iterator();
-            while ( i.hasNext() ) {
-                ComponentPojo component = i.next();
-                if ( component.getNxComponentId() == nxComponentId ) {
-                    return component;
-                }
-            }
-        }
-        return null;
-    }
+    public abstract ComponentPojo getComponentByNxComponentId(int nxComponentId)
+            throws NexusException;
 
     /**
      * @param partnerId
      * @return
      * @throws NexusException
      */
-    public PartnerPojo getPartnerByPartnerId( String partnerId ) throws NexusException {
-
-        if ( !validConfiguration ) {
-            throw new NexusException( "Configuration Invalid!" );
-        }
-        List<PartnerPojo> partners = engineConfig.getPartners();
-        if ( partners != null && partners.size() > 0 ) {
-            Iterator<PartnerPojo> i = partners.iterator();
-            while ( i.hasNext() ) {
-                PartnerPojo partner = i.next();
-                if ( partner.getPartnerId().equals( partnerId ) ) {
-                    return partner;
-                }
-            }
-        }
-        return null;
-    }
+    public abstract PartnerPojo getPartnerByPartnerId(String partnerId)
+            throws NexusException;
 
     /**
      * @param partner
      * @param nxCertificateId
      * @return
      */
-    public CertificatePojo getCertificateFromPartnerByNxCertificateId( PartnerPojo partner, int nxCertificateId ) {
-
-        if ( partner == null ) {
-            return null;
-        }
-        CertificatePojo certificate = null;
-        Set<CertificatePojo> certificates = partner.getCertificates();
-        if ( certificates == null || certificates.size() == 0 ) {
-            return null;
-        }
-        Iterator<CertificatePojo> certificateI = certificates.iterator();
-        while ( certificateI.hasNext() ) {
-            certificate = certificateI.next();
-            if ( certificate.getNxCertificateId() == nxCertificateId ) {
-                return certificate;
-            }
-        }
-
-        return null;
-    }
+    public abstract CertificatePojo getCertificateFromPartnerByNxCertificateId(
+            PartnerPojo partner, int nxCertificateId);
 
     /**
      * @param partner
      * @param nxConnectionId
      * @return
      */
-    public ConnectionPojo getConnectionFromPartnerByNxConnectionId( PartnerPojo partner, int nxConnectionId ) {
-
-        if ( partner == null ) {
-            return null;
-        }
-        ConnectionPojo connection = null;
-        Set<ConnectionPojo> connections = partner.getConnections();
-        if ( connections == null || connections.size() == 0 ) {
-            return null;
-        }
-        Iterator<ConnectionPojo> connectionI = connections.iterator();
-        while ( connectionI.hasNext() ) {
-            connection = connectionI.next();
-            if ( connection.getNxConnectionId() == nxConnectionId ) {
-                return connection;
-            }
-        }
-
-        return null;
-    }
+    public abstract ConnectionPojo getConnectionFromPartnerByNxConnectionId(
+            PartnerPojo partner, int nxConnectionId);
 
     /**
      * @return
      * @throws NexusException
      */
-    public List<ChoreographyPojo> getChoreographies() throws NexusException {
-
-        if ( engineConfig != null ) {
-            return engineConfig.getChoreographies();
-        }
-        return null;
-    }
+    public abstract List<ChoreographyPojo> getChoreographies()
+            throws NexusException;
 
     /**
      * @param type
@@ -427,57 +169,12 @@ public class ConfigurationAccessService {
      * @throws NexusException
      */
     @SuppressWarnings("unchecked")
-    public List<ComponentPojo> getComponents( ComponentType type, Comparator comparator ) throws NexusException {
-
-        if ( engineConfig == null ) {
-            return null;
-        }
-        List<ComponentPojo> filteredList = null;
-        if ( type != ComponentType.ALL ) {
-            filteredList = new ArrayList<ComponentPojo>();
-            for ( ComponentPojo component : engineConfig.getComponents() ) {
-                if ( type.getValue() == component.getType() ) {
-                    filteredList.add( component );
-                }
-            }
-        } else {
-            filteredList = engineConfig.getComponents();
-        }
-        if ( comparator != null ) {
-            Collections.sort( filteredList, comparator );
-        }
-        return filteredList;
-    }
+    public abstract List<ComponentPojo> getComponents(ComponentType type,
+            Comparator comparator) throws NexusException;
 
     @SuppressWarnings("unchecked")
-    public List<ComponentPojo> getPipelets( boolean frontend ) throws NexusException {
-
-        Pipelet pipelet = null;
-        List<ComponentPojo> components = getComponents( ComponentType.PIPELET, Constants.COMPONENTCOMPARATOR );
-        List<ComponentPojo> filteredList = new ArrayList<ComponentPojo>();
-        for ( Iterator iter = components.iterator(); iter.hasNext(); ) {
-            ComponentPojo componentPojo = (ComponentPojo) iter.next();
-            try {
-                Object tempObject = Class.forName( componentPojo.getClassName() ).newInstance();
-                if ( tempObject instanceof Pipelet ) {
-                    pipelet = (Pipelet) tempObject;
-                    LOG.trace( "Pipelet " + componentPojo.getClassName() + " - is frontend: "
-                            + pipelet.isFrontendPipelet() );
-                    if ( pipelet.isFrontendPipelet() == frontend ) {
-                        filteredList.add( componentPojo );
-                    }
-                }
-            } catch ( InstantiationException e ) {
-                LOG.error( "Problem instantiating class: " + componentPojo.getClassName() );
-            } catch ( IllegalAccessException e ) {
-                LOG.error( "Problem instantiating/accessing class: " + componentPojo.getClassName() );
-            } catch ( ClassNotFoundException e ) {
-                LOG.error( "Could not find class: " + componentPojo.getClassName() );
-            }
-        }
-
-        return filteredList;
-    }
+    public abstract List<ComponentPojo> getPipelets(boolean frontend)
+            throws NexusException;
 
     /**
      * @param type 0=all, 1=local, 2=partner
@@ -486,30 +183,8 @@ public class ConfigurationAccessService {
      * @throws NexusException
      */
     @SuppressWarnings("unchecked")
-    public List<PartnerPojo> getPartners( int type, Comparator comparator ) throws NexusException {
-
-        if ( engineConfig == null ) {
-            return null;
-        }
-        List<PartnerPojo> filteredList = null;
-        if ( type != Constants.PARTNER_TYPE_ALL ) {
-            filteredList = new ArrayList<PartnerPojo>();
-            Iterator<PartnerPojo> i = engineConfig.getPartners().iterator();
-            while ( i.hasNext() ) {
-                PartnerPojo partner = i.next();
-
-                if ( type == partner.getType() ) {
-                    filteredList.add( partner );
-                }
-            }
-        } else {
-            filteredList = engineConfig.getPartners();
-        }
-        if ( comparator != null ) {
-            Collections.sort( filteredList, comparator );
-        }
-        return filteredList;
-    }
+    public abstract List<PartnerPojo> getPartners(int type,
+            Comparator comparator) throws NexusException;
 
     /**
      * @param type 0=all, 1=local, 2=partner
@@ -518,28 +193,8 @@ public class ConfigurationAccessService {
      * @throws NexusException
      */
     @SuppressWarnings("unchecked")
-    public List<CertificatePojo> getCertificates( int type, Comparator comparator ) throws NexusException {
-
-        if ( engineConfig == null ) {
-            return null;
-        }
-        List<CertificatePojo> filteredList = null;
-        if ( type != 0 ) {
-            filteredList = new ArrayList<CertificatePojo>();
-            for ( CertificatePojo certificate : engineConfig.getCertificates() ) {
-
-                if ( type == Constants.CERTIFICATE_TYPE_ALL || type == certificate.getType() ) {
-                    filteredList.add( certificate );
-                }
-            }
-        } else {
-            filteredList = engineConfig.getCertificates();
-        }
-        if ( comparator != null ) {
-            Collections.sort( filteredList, comparator );
-        }
-        return filteredList;
-    }
+    public abstract List<CertificatePojo> getCertificates(int type,
+            Comparator comparator) throws NexusException;
 
     /**
      * @param type
@@ -547,16 +202,8 @@ public class ConfigurationAccessService {
      * @return
      * @throws NexusException
      */
-    public CertificatePojo getCertificateByName( int type, String name ) throws NexusException {
-
-        List<CertificatePojo> certificates = getCertificates( type, null );
-        for ( CertificatePojo certificate : certificates ) {
-            if ( certificate.getName().equals( name ) ) {
-                return certificate;
-            }
-        }
-        return null;
-    }
+    public abstract CertificatePojo getCertificateByName(int type, String name)
+            throws NexusException;
 
     /**
      * @param type
@@ -564,16 +211,8 @@ public class ConfigurationAccessService {
      * @return
      * @throws NexusException
      */
-    public CertificatePojo getCertificateByNxCertificateId( int type, int nxCertificateId ) throws NexusException {
-
-        List<CertificatePojo> certificates = getCertificates( type, null );
-        for ( CertificatePojo certificate : certificates ) {
-            if ( certificate.getNxCertificateId() == nxCertificateId ) {
-                return certificate;
-            }
-        }
-        return null;
-    }
+    public abstract CertificatePojo getCertificateByNxCertificateId(int type,
+            int nxCertificateId) throws NexusException;
 
     /**
      * @param type certificate type, defined in configuration.constants. 
@@ -581,198 +220,68 @@ public class ConfigurationAccessService {
      * @return
      * @throws NexusException
      */
-    public CertificatePojo getFirstCertificateByType( int type, boolean isUnique ) throws NexusException {
-
-        List<CertificatePojo> certificates = getCertificates( type, null );
-        if ( certificates == null || certificates.size() == 0 ) {
-            return null;
-        }
-        if ( isUnique && certificates.size() > 1 ) {
-            throw new NexusException( "There is more than one certificate of type: " + type + " in database" );
-        }
-        return certificates.get( 0 );
-    }
+    public abstract CertificatePojo getFirstCertificateByType(int type,
+            boolean isUnique) throws NexusException;
 
     /**
      * @param choreographyId
      * @return
      * @throws NexusException
      */
-    public ChoreographyPojo getChoreographyByChoreographyId( String choreographyId ) throws NexusException {
-
-        if ( !validConfiguration ) {
-            throw new NexusException( "Configuration Invalid!" );
-        }
-        List<ChoreographyPojo> choreographies = engineConfig.getChoreographies();
-        if ( choreographies != null && choreographies.size() > 0 ) {
-            Iterator<ChoreographyPojo> i = choreographies.iterator();
-            while ( i.hasNext() ) {
-                ChoreographyPojo choreography = i.next();
-                if ( choreography.getName().equals( choreographyId ) ) {
-                    return choreography;
-                }
-            }
-        }
-        return null;
-    }
+    public abstract ChoreographyPojo getChoreographyByChoreographyId(
+            String choreographyId) throws NexusException;
 
     /**
      * @param nxChoreographyId
      * @return
      * @throws NexusException
      */
-    public ChoreographyPojo getChoreographyByNxChoreographyId( int nxChoreographyId ) throws NexusException {
-
-        if ( !validConfiguration ) {
-            throw new NexusException( "Configuration Invalid!" );
-        }
-        List<ChoreographyPojo> choreographies = engineConfig.getChoreographies();
-        if ( choreographies != null && choreographies.size() > 0 ) {
-            Iterator<ChoreographyPojo> i = choreographies.iterator();
-            while ( i.hasNext() ) {
-                ChoreographyPojo choreography = i.next();
-                if ( choreography.getNxChoreographyId() == nxChoreographyId ) {
-                    return choreography;
-                }
-            }
-        }
-        return null;
-    }
+    public abstract ChoreographyPojo getChoreographyByNxChoreographyId(
+            int nxChoreographyId) throws NexusException;
 
     /**
      * @param choreography
      * @param participantId
      * @return
      */
-    public ParticipantPojo getParticipantFromChoreographyByNxPartnerId( ChoreographyPojo choreography, int nxPartnerId ) {
-
-        List<ParticipantPojo> participants = choreography.getParticipants();
-        ParticipantPojo participant = null;
-        Iterator<ParticipantPojo> i = participants.iterator();
-        while ( i.hasNext() ) {
-            participant = i.next();
-            if ( participant.getPartner().getNxPartnerId() == nxPartnerId ) {
-                return participant;
-            }
-        }
-        return null;
-    }
+    public abstract ParticipantPojo getParticipantFromChoreographyByNxPartnerId(
+            ChoreographyPojo choreography, int nxPartnerId);
 
     /**
      * @param choreography
      * @param nxActionId
      * @return
      */
-    public ActionPojo getActionFromChoreographyByNxActionId( ChoreographyPojo choreography, int nxActionId ) {
-
-        Set<ActionPojo> actions = choreography.getActions();
-        if ( actions != null && actions.size() > 0 ) {
-            Iterator<ActionPojo> i = actions.iterator();
-            while ( i.hasNext() ) {
-                ActionPojo action = i.next();
-                if ( action.getNxActionId() == nxActionId ) {
-                    return action;
-                }
-            }
-        }
-        return null;
-    }
+    public abstract ActionPojo getActionFromChoreographyByNxActionId(
+            ChoreographyPojo choreography, int nxActionId);
 
     /**
      * @param choreography
      * @param actionId
      * @return
      */
-    public ActionPojo getActionFromChoreographyByActionId( ChoreographyPojo choreography, String actionId ) {
-
-        Set<ActionPojo> actions = choreography.getActions();
-        if ( actions != null && actions.size() > 0 ) {
-            Iterator<ActionPojo> i = actions.iterator();
-            while ( i.hasNext() ) {
-                ActionPojo action = i.next();
-                if ( action.getName().equals( actionId ) ) {
-                    return action;
-                }
-            }
-        }
-        return null;
-    }
+    public abstract ActionPojo getActionFromChoreographyByActionId(
+            ChoreographyPojo choreography, String actionId);
 
     /**
      * @param choreography
      * @param partner
      * @return
      */
-    public ParticipantPojo getParticipantFromChoreographyByPartner( ChoreographyPojo choreography, PartnerPojo partner ) {
-
-        List<ParticipantPojo> participants = choreography.getParticipants();
-        if ( participants != null && participants.size() > 0 ) {
-            Iterator<ParticipantPojo> i = participants.iterator();
-            while ( i.hasNext() ) {
-                ParticipantPojo participant = i.next();
-
-                if ( participant.getPartner().getNxPartnerId() == partner.getNxPartnerId() ) {
-                    return participant;
-                }
-            }
-        }
-        return null;
-    }
+    public abstract ParticipantPojo getParticipantFromChoreographyByPartner(
+            ChoreographyPojo choreography, PartnerPojo partner);
 
     /**
      * @return the engineConfig
      */
-    public EngineConfiguration getEngineConfig() {
+    public abstract EngineConfiguration getEngineConfig();
 
-        return engineConfig;
-    }
-
-    /**
-     * @return the validConfiguration
-     */
-    public boolean isValidConfiguration() {
-
-        return validConfiguration;
-    }
-
-    public void updatePartner( PartnerPojo partner ) {
-        updatePartner( partner, true );
-    }
-
-    private void updatePartner( PartnerPojo partner, boolean applyConfiguration ) {
-
-        try {
-            PartnerPojo oldPartner = getPartnerByNxPartnerId( partner.getNxPartnerId() );
-            if ( oldPartner != null ) {
-                getPartners( 0, null ).remove( oldPartner );
-            }
-            getPartners( 0, null ).add( partner );
-
-            //engineConfig.saveConfigurationToDB();
-            applyConfiguration();
-        } catch ( NexusException e ) {
-            e.printStackTrace();
-        }
-    }
+    public abstract void updatePartner(PartnerPojo partner) throws NexusException ;
 
     /**
      * @param choreography
      */
-    public void updateChoreography( ChoreographyPojo choreography ) {
-
-        try {
-            ChoreographyPojo oldChoreography = getChoreographyByChoreographyId( choreography.getName() );
-            if ( oldChoreography != null ) {
-                getChoreographies().remove( oldChoreography );
-            }
-            getChoreographies().add( choreography );
-
-            //engineConfig.saveConfigurationToDB();
-            applyConfiguration();
-        } catch ( NexusException e ) {
-            e.printStackTrace();
-        }
-    }
+    public abstract void updateChoreography(ChoreographyPojo choreography) throws NexusException;
 
     /**
      * @param choreography
@@ -780,20 +289,8 @@ public class ConfigurationAccessService {
      * one or more conversations.
      * @throws NexusException if something else went wrong.
      */
-    public void deleteChoreography( ChoreographyPojo choreography ) throws ReferencedChoreographyException, NexusException {
-
-        ChoreographyPojo oldChoreography = getChoreographyByChoreographyId( choreography.getName() );
-        List<ConversationPojo> conversations = Engine.getInstance().getTransactionService().getConversationsByChoreography(
-                choreography, null, null );
-        if (conversations != null && !conversations.isEmpty()) {
-            throw new ReferencedChoreographyException( conversations );
-        }
-        if ( oldChoreography != null ) {
-            getChoreographies().remove( oldChoreography );
-        }
-        engineConfig.deleteChoreographyInDB( choreography );
-        applyConfiguration();
-    }
+    public abstract void deleteChoreography(ChoreographyPojo choreography)
+            throws ReferencedChoreographyException, NexusException;
 
     /**
      * Removes a partner from the configuration.
@@ -802,118 +299,36 @@ public class ConfigurationAccessService {
      * one or more participants.
      * @throws NexusException if something else went wrong.
      */
-    public void deletePartner( PartnerPojo partner ) throws ReferencedPartnerException, NexusException {
-
-        PartnerPojo oldPartner = getPartnerByNxPartnerId( partner.getNxPartnerId() );
-        if ( oldPartner != null ) {
-            // check references
-            if (!oldPartner.getParticipants().isEmpty()) {
-                throw new ReferencedPartnerException( oldPartner.getParticipants() );
-            }
-            
-            getPartners( 0, null ).remove( oldPartner );
-
-            getCertificates( Constants.CERTIFICATE_TYPE_ALL, null ).removeAll( partner.getCertificates() );
-            
-            engineConfig.deletePartnerInDB( partner );
-        }
-
-        applyConfiguration();
-    }
+    public abstract void deletePartner(PartnerPojo partner)
+            throws ReferencedPartnerException, NexusException;
 
     /**
      * Removes a connection from the configuration.
      * @param connection The connection to be removed.
      * @throws NexusException if something else went wrong.
      */
-    public void deleteConnection( ConnectionPojo connection ) throws NexusException {
-        
-        connection.getPartner().getConnections().remove( connection );
-        engineConfig.deleteConnectionInDB( connection );
+    public abstract void deleteConnection(ConnectionPojo connection)
+            throws NexusException;
 
-        applyConfiguration();
-    }
+    public abstract void updateTrp(TRPPojo trp) throws NexusException;
 
-    public void updateTrp( TRPPojo trp ) {
-
-        try {
-            TRPPojo oldTrp = getTrpByNxTrpId( trp.getNxTRPId() );
-            if ( oldTrp != null ) {
-                getTrps().remove( oldTrp );
-            }
-            getTrps().add( trp );
-
-            applyConfiguration();
-        } catch ( NexusException e ) {
-            e.printStackTrace();
-        }
-    }
-
-    public void deleteTrp( TRPPojo trp ) {
-
-        try {
-            getTrps().remove( trp );
-            engineConfig.deleteTrpInDB( trp );
-            applyConfiguration();
-        } catch ( NexusException e ) {
-            e.printStackTrace();
-        }
-    }
+    public abstract void deleteTrp(TRPPojo trp) throws NexusException;
 
     /**
      * @param component
      */
-    public void updateComponent( ComponentPojo component ) {
-
-        try {
-            ComponentPojo oldComponent = getComponentByNxComponentId( component.getNxComponentId() );
-            if ( oldComponent != null ) {
-                getComponents( ComponentType.ALL, null ).remove( oldComponent );
-            }
-            getComponents( ComponentType.ALL, null ).add( component );
-
-            //engineConfig.saveConfigurationToDB();
-            applyConfiguration();
-        } catch ( NexusException e ) {
-            e.printStackTrace();
-        }
-    }
+    public abstract void updateComponent(ComponentPojo component) throws NexusException;
 
     /**
      * @param component
      */
-    public void deleteComponent( ComponentPojo component ) {
+    public abstract void deleteComponent(ComponentPojo component) throws NexusException;
 
-        try {
-            ComponentPojo oldComponent = getComponentByNxComponentId( component.getNxComponentId() );
-            if ( oldComponent != null ) {
-                getComponents( ComponentType.ALL, null ).remove( oldComponent );
-            }
-            try {
-                engineConfig.deleteComponentInDB( component );
-            } catch ( Exception e ) {
-                LOG.error( "Error deleting component: " + e );
-            }
-            applyConfiguration();
-        } catch ( NexusException e ) {
-            e.printStackTrace();
-        }
-    }
-    
     /**
      * @param pipeline
      */
-    public void updatePipeline( PipelinePojo pipeline ) throws NexusException {
-
-        PipelinePojo oldPipeline = getPipelinePojoByNxPipelineId( pipeline.getNxPipelineId() );
-        if ( oldPipeline != null ) {
-            getBackendPipelinePojos( Constants.PIPELINE_TYPE_ALL, null ).remove( oldPipeline );
-        }
-        getBackendPipelinePojos( Constants.PIPELINE_TYPE_ALL, null ).add( pipeline );
-
-        //engineConfig.saveConfigurationToDB();
-        applyConfiguration();
-    }
+    public abstract void updatePipeline(PipelinePojo pipeline)
+            throws NexusException;
 
     /**
      * @param pipeline
@@ -921,37 +336,8 @@ public class ConfigurationAccessService {
      * one or more actions.
      * @throws NexusException if something else went wrong.
      */
-    public void deletePipeline( PipelinePojo pipeline ) throws ReferencedPipelineException, NexusException {
-
-        // check if backend pipeline is being referenced
-        if (!pipeline.isFrontend()) {
-            int id = pipeline.getNxPipelineId();
-            List<ActionPojo> referrers = new ArrayList<ActionPojo>();
-            for (ChoreographyPojo choreography : getChoreographies()) {
-                for (ActionPojo action : choreography.getActions()) {
-                    if (action != null &&
-                            ((action.getInboundPipeline() != null && action.getInboundPipeline().getNxPipelineId() == id) ||
-                            (action.getOutboundPipeline() != null && action.getOutboundPipeline().getNxPipelineId() == id))) {
-                        referrers.add( action );
-                    }
-                }
-            }
-            if (!referrers.isEmpty()) {
-                throw new ReferencedPipelineException( referrers );
-            }
-        }
-        
-        PipelinePojo oldPipeline = getPipelinePojoByNxPipelineId( pipeline.getNxPipelineId() );
-        if ( oldPipeline != null ) {
-            getBackendPipelinePojos( Constants.PIPELINE_TYPE_ALL, null ).remove( oldPipeline );
-        }
-        try {
-            engineConfig.deletePipelineInDB( pipeline );
-        } catch ( Exception e ) {
-            LOG.error( "Error deleting pipeline: " + e );
-        }
-        applyConfiguration();
-    }
+    public abstract void deletePipeline(PipelinePojo pipeline)
+            throws ReferencedPipelineException, NexusException;
 
     /**
      * Convenience method that allows to  update a <code>Service</code>
@@ -960,195 +346,40 @@ public class ConfigurationAccessService {
      * @param name The name for the service. If the name could not be
      * resolved, this method does nothing.
      */
-    public void updateService( String name ) {
-
-        Service service = getService( name );
-        if ( service != null ) {
-            for ( ServicePojo servicePojo : engineConfig.getServices() ) {
-                if ( servicePojo.getName().equals( name ) ) {
-                    servicePojo.setServiceParams( ConfigurationUtil.getConfiguration( service, servicePojo ) );
-                    updateService( servicePojo );
-                    break;
-                }
-            }
-        }
-    }
+    public abstract void updateService(String name) throws NexusException;
 
     /**
      * Updates or saves a service.
      * @param servicePojo The service to be updated or saved.
      */
-    public void updateService( ServicePojo servicePojo ) {
-
-        if ( servicePojo.getName() == null || servicePojo.getName().trim().length() == 0 ) {
-            throw new IllegalArgumentException( "Service name must not be empty" );
-        }
-
-        try {
-            List<ServicePojo> services = engineConfig.getServices();
-            ServicePojo oldServicePojo = getServicePojoByNxServiceId( servicePojo.getNxServiceId() );
-            Service service = null;
-            if ( oldServicePojo != null ) {
-                service = getService( oldServicePojo.getName() );
-                services.remove( oldServicePojo );
-                // service has been renamed
-                if ( !oldServicePojo.getName().equals( servicePojo.getName() ) ) {
-                    renameService( oldServicePojo.getName(), servicePojo.getName() );
-                }
-                if ( servicePojo.getServiceParams() != null ) {
-                    ConfigurationUtil.configureService( service, servicePojo.getServiceParams() );
-                }
-            } else {
-                service = (Service) Class.forName( servicePojo.getComponent().getClassName() ).newInstance();
-                if ( servicePojo.getServiceParams() != null ) {
-                    ConfigurationUtil.configureService( service, servicePojo.getServiceParams() );
-                }
-                service.initialize( engineConfig );
-                service.activate();
-                if ( service.isAutostart() ) {
-                    service.start();
-                }
-                engineConfig.getStaticBeanContainer().getManagableBeans().put( servicePojo.getName(), service );
-            }
-            services.add( servicePojo );
-
-            //engineConfig.saveConfigurationToDB();
-            applyConfiguration();
-        } catch ( Exception e ) {
-            e.printStackTrace();
-        }
-    }
+    public abstract void updateService(ServicePojo servicePojo) throws NexusException;
 
     /**
      * Deletes a service.
      * @param servicePojo The service to be deleted.
      */
-    public void deleteService( ServicePojo servicePojo ) {
-
-        try {
-            List<ServicePojo> services = engineConfig.getServices();
-            ServicePojo oldServicePojo = getServicePojoByNxServiceId( servicePojo.getNxServiceId() );
-            if ( oldServicePojo != null ) {
-                Service oldService = getService( oldServicePojo.getName() );
-                if ( oldService != null ) {
-                    if ( oldService.getStatus() == BeanStatus.STARTED ) {
-                        oldService.stop();
-                    }
-                    if ( oldService.getStatus() == BeanStatus.ACTIVATED ) {
-                        oldService.deactivate();
-                    }
-                    getServiceInstances().remove( oldService );
-                }
-                Service service = getService( servicePojo.getName() );
-                if ( service != null ) {
-                    if ( service.getStatus() == BeanStatus.STARTED ) {
-                        service.stop();
-                    }
-                    if ( service.getStatus() == BeanStatus.ACTIVATED ) {
-                        service.deactivate();
-                    }
-                    engineConfig.getStaticBeanContainer().getManagableBeans().remove( servicePojo.getName() );
-                }
-                services.remove( oldServicePojo );
-                try {
-                    engineConfig.deleteServiceInDB( oldServicePojo );
-                } catch ( Exception e ) {
-                    LOG.error( "Error deleting service: " + e );
-                }
-                applyConfiguration();
-            }
-        } catch ( NexusException e ) {
-            e.printStackTrace();
-        }
-    }
+    public abstract void deleteService(ServicePojo servicePojo) throws NexusException;
 
     /**
      * @param loggerPojo
      */
-    public void updateLogger( LoggerPojo loggerPojo ) {
-
-        if ( loggerPojo.getName() == null || loggerPojo.getName().trim().length() == 0 ) {
-            throw new IllegalArgumentException( "Logger name must not be empty" );
-        }
-
-        try {
-            List<LoggerPojo> loggers = engineConfig.getLoggers();
-            LoggerPojo oldLoggerPojo = getLoggerByNxLoggerId( loggerPojo.getNxLoggerId() );
-            org.nexuse2e.logging.LogAppender logger = null;
-            if ( oldLoggerPojo != null ) {
-                logger = getLogger( oldLoggerPojo.getName() );
-                loggers.remove( oldLoggerPojo );
-                // service has been renamed
-                if ( !oldLoggerPojo.getName().equals( loggerPojo.getName() ) ) {
-                    renameLogger( oldLoggerPojo.getName(), loggerPojo.getName() );
-                }
-                if ( loggerPojo.getLoggerParams() != null ) {
-                    ConfigurationUtil.configureLogger( logger, loggerPojo.getLoggerParams() );
-                }
-            } else {
-                logger = (org.nexuse2e.logging.LogAppender) Class.forName( loggerPojo.getComponent().getClassName() )
-                        .newInstance();
-                if ( loggerPojo.getLoggerParams() != null ) {
-                    ConfigurationUtil.configureLogger( logger, loggerPojo.getLoggerParams() );
-                }
-                logger.initialize( engineConfig );
-                logger.activate();
-                engineConfig.getStaticBeanContainer().getManagableBeans().put( loggerPojo.getName(), logger );
-            }
-            loggers.add( loggerPojo );
-
-            //engineConfig.saveConfigurationToDB();
-            applyConfiguration();
-        } catch ( Exception e ) {
-            e.printStackTrace();
-        }
-    }
+    public abstract void updateLogger(LoggerPojo loggerPojo) throws NexusException;
 
     /**
      * @param logger
      */
-    public void deleteLogger( LoggerPojo logger ) {
-
-        try {
-            LoggerPojo oldLogger = getLoggerByNxLoggerId( logger.getNxLoggerId() );
-            if ( oldLogger != null ) {
-                getLoggers().remove( oldLogger );
-            }
-            try {
-                engineConfig.deleteLoggerInDB( logger );
-            } catch ( Exception e ) {
-                LOG.error( "Error deleting logger: " + e );
-            }
-            applyConfiguration();
-        } catch ( NexusException e ) {
-            e.printStackTrace();
-        }
-    }
+    public abstract void deleteLogger(LoggerPojo logger) throws NexusException;
 
     /**
      * @return
      */
-    public List<LoggerPojo> getLoggers() {
-
-        if ( engineConfig != null ) {
-            return engineConfig.getLoggers();
-        }
-        return null;
-    }
+    public abstract List<LoggerPojo> getLoggers();
 
     /**
      * @param nxLoggerId
      * @return
      */
-    public LoggerPojo getLoggerByNxLoggerId( int nxLoggerId ) {
-
-        for ( LoggerPojo logger : engineConfig.getLoggers() ) {
-            if ( logger.getNxLoggerId() == nxLoggerId ) {
-                return logger;
-            }
-        }
-        return null;
-    }
+    public abstract LoggerPojo getLoggerByNxLoggerId(int nxLoggerId);
 
     /**
      * Gets a logger by it's unique name.
@@ -1156,13 +387,7 @@ public class ConfigurationAccessService {
      * @return A <code>Logger</code> instance, or <code>null</code>
      * if no logger with the given name exists.
      */
-    public org.nexuse2e.logging.LogAppender getLogger( String name ) {
-
-        if ( engineConfig != null ) {
-            return engineConfig.getStaticBeanContainer().getLogger( name );
-        }
-        return null;
-    }
+    public abstract org.nexuse2e.logging.LogAppender getLogger(String name);
 
     /**
      * Renames a logger.
@@ -1172,13 +397,8 @@ public class ConfigurationAccessService {
      * @throws NexusException if <code>oldName</code> was not found or <code>newName</code>
      * already exists.
      */
-    public org.nexuse2e.logging.LogAppender renameLogger( String oldName, String newName ) throws NexusException {
-
-        if ( engineConfig != null ) {
-            return engineConfig.getStaticBeanContainer().renameLogger( oldName, newName );
-        }
-        return null;
-    }
+    public abstract org.nexuse2e.logging.LogAppender renameLogger(
+            String oldName, String newName) throws NexusException;
 
     /**
      * Gets a service by it's unique name.
@@ -1186,13 +406,7 @@ public class ConfigurationAccessService {
      * @return A <code>Service</code> instance, or <code>null</code>
      * if no service with the given name exists.
      */
-    public Service getService( String name ) {
-
-        if ( engineConfig != null ) {
-            return engineConfig.getStaticBeanContainer().getService( name );
-        }
-        return null;
-    }
+    public abstract Service getService(String name);
 
     /**
      * Renames a service.
@@ -1202,38 +416,20 @@ public class ConfigurationAccessService {
      * @throws NexusException if <code>oldName</code> was not found or <code>newName</code>
      * already exists.
      */
-    public Service renameService( String oldName, String newName ) throws NexusException {
-
-        if ( engineConfig != null ) {
-            return engineConfig.getStaticBeanContainer().renameService( oldName, newName );
-        }
-        return null;
-    }
+    public abstract Service renameService(String oldName, String newName)
+            throws NexusException;
 
     /**
      * Gets a list of all services that are registered.
      * @return A copied list of all services. Can be empty, but not <code>null</code>.
      */
-    public List<Service> getServiceInstances() {
-
-        if ( engineConfig != null ) {
-            return engineConfig.getStaticBeanContainer().getServices();
-        }
-        return null;
-    }
+    public abstract List<Service> getServiceInstances();
 
     /**
      * Gets a list of all services, represented as <code>ServicePojo</code>s.
      * @return A list of all services, as <code>ServicePojo</code> objects.
      */
-    public List<ServicePojo> getServices() {
-
-        if ( engineConfig != null ) {
-            return engineConfig.getServices();
-        }
-        return null;
-    }
-
+    public abstract List<ServicePojo> getServices();
 
     /**
      * Removes the given certificate from the configuration.
@@ -1242,40 +438,8 @@ public class ConfigurationAccessService {
      * one or more connections.
      * @throws NexusException if something else went wrong.
      */
-    public void deleteCertificate( CertificatePojo certificate )
-    throws ReferencedCertificateException, NexusException {
-        deleteCertificate( certificate, true );
-    }
-    
-    private void deleteCertificate( CertificatePojo certificate, boolean applyConfiguration )
-    throws ReferencedCertificateException, NexusException {
-
-        // check if certificate is referenced by any connection
-        List<PartnerPojo> partners = getPartners( Constants.PARTNER_TYPE_ALL, null );
-        List<ConnectionPojo> referringObjects = new ArrayList<ConnectionPojo>();
-        for (PartnerPojo partner : partners) {
-            for (ConnectionPojo connection : partner.getConnections()) {
-                CertificatePojo cert = connection.getCertificate();
-                if (cert != null && cert.getNxCertificateId() == certificate.getNxCertificateId()) {
-                    referringObjects.add( connection );
-                }
-            }
-        }
-        if (!referringObjects.isEmpty()) {
-            throw new ReferencedCertificateException( referringObjects );
-        }
-        
-        CertificatePojo oldCertificate = getCertificateByNxCertificateId(
-                Constants.CERTIFICATE_TYPE_ALL, certificate.getNxCertificateId() );
-        if ( oldCertificate != null ) {
-            getCertificates( Constants.CERTIFICATE_TYPE_ALL, null ).remove( oldCertificate );
-        }
-        
-        engineConfig.deleteCertificateInDB( certificate );
-        if (applyConfiguration) {
-            applyConfiguration();
-        }
-    }
+    public abstract void deleteCertificate(CertificatePojo certificate)
+            throws ReferencedCertificateException, NexusException;
 
     /**
      * Removes a list of certificates from the configuration.
@@ -1284,85 +448,23 @@ public class ConfigurationAccessService {
      * one or more connections.
      * @throws NexusException if something else went wrong.
      */
-    public void deleteCertificates( Collection<CertificatePojo> certificates )
-    throws NexusException, ReferencedCertificateException {
-        deleteCertificates( certificates, true );
-    }
-
-    public void deleteCertificates( Collection<CertificatePojo> certificates, boolean applyConfiguration )
-    throws NexusException, ReferencedCertificateException {
-
-        for (CertificatePojo certificate : certificates) {
-            deleteCertificate( certificate, false );
-        }
-
-        if (applyConfiguration) {
-            applyConfiguration();
-        }
-    }
+    public abstract void deleteCertificates(
+            Collection<CertificatePojo> certificates) throws NexusException,
+            ReferencedCertificateException;
 
     /**
      * Updates a certificate.
      * @param certificate The certificate to be updated.
      * @throws NexusException if something went wrong.
      */
-    public void updateCertificate( CertificatePojo certificate ) throws NexusException {
-
-        CertificatePojo oldCertificate = getCertificateByNxCertificateId(
-                Constants.CERTIFICATE_TYPE_ALL, certificate.getNxCertificateId() );
-        if ( oldCertificate != null ) {
-            getCertificates( Constants.CERTIFICATE_TYPE_ALL, null ).remove( oldCertificate );
-        }
-
-        getCertificates( Constants.CERTIFICATE_TYPE_ALL, null ).add( certificate );
-
-        //engineConfig.saveConfigurationToDB();
-        applyConfiguration();
-    }
+    public abstract void updateCertificate(CertificatePojo certificate)
+            throws NexusException;
 
     /**
      * @return
      * @throws NexusException
      */
-    public KeyStore getCacertsKeyStore() throws NexusException {
-
-        try {
-            CertificatePojo key = getFirstCertificateByType( Constants.CERTIFICATE_TYPE_CACERT_METADATA, true );
-            String cacertspwd = "changeit";
-            if ( key == null ) {
-                key = new CertificatePojo();
-                key.setName( "CaKeyStoreData" );
-                key.setType( Constants.CERTIFICATE_TYPE_CACERT_METADATA );
-                key.setBinaryData( new byte[0] );
-                key.setPassword( EncryptionUtil.encryptString( cacertspwd ) );
-                updateCertificate( key );
-            } else {
-                cacertspwd = EncryptionUtil.decryptString( key.getPassword() );
-            }
-            KeyStore keyStore = KeyStore.getInstance( "JKS" );
-            keyStore.load( null, cacertspwd.toCharArray() );
-            List<CertificatePojo> certs = getCertificates( Constants.CERTIFICATE_TYPE_CA, null );
-            // log.debug( "getCACertificates - count: " + certs.size() );
-            for ( CertificatePojo tempCert : certs ) {
-                byte[] data = tempCert.getBinaryData();
-                if ( ( data != null ) && ( data.length != 0 ) ) {
-                    try {
-                        X509Certificate x509Certificate = CertificateUtil.getX509Certificate( data );
-                        // log.debug( "cert: " + x509Certificate.getSubjectDN() + " - " + tempCert.getCertificateId() );
-                        keyStore.setCertificateEntry( tempCert.getName(), x509Certificate );
-                    } catch ( Exception e ) {
-                        LOG.error( "Error importing certificate " + tempCert.getName() + ": " + e.getMessage() );
-                    }
-                }
-
-            }
-            return keyStore;
-        } catch ( Exception e ) {
-            LOG.error( "Error initializing Certificate store.  Exception:  " + e.getMessage() );
-            e.printStackTrace();
-        }
-        return null;
-    }
+    public abstract KeyStore getCacertsKeyStore() throws NexusException;
 
     /**
      * Returns a sorted list of all users.
@@ -1370,17 +472,7 @@ public class ConfigurationAccessService {
      *          If <code>comparator</code> is <code>null</code> an unsorted list will be returned. 
      * @return a sorted list of all users.
      */
-    public List<UserPojo> getUsers( Comparator<UserPojo> comparator ) {
-
-        if ( engineConfig == null ) {
-            return null;
-        }
-        List<UserPojo> users = engineConfig.getUsers();
-        if ( comparator != null ) {
-            Collections.sort( users, comparator );
-        }
-        return users;
-    }
+    public abstract List<UserPojo> getUsers(Comparator<UserPojo> comparator);
 
     /**
      * Returns the user with the given login name.
@@ -1388,17 +480,7 @@ public class ConfigurationAccessService {
      * @return the user with the given <code>loginName</code> or <code>null</code>
      *          if no such user exists.
      */
-    public UserPojo getUserByLoginName( String loginName ) {
-
-        if ( loginName != null ) {
-            for ( UserPojo user : engineConfig.getUsers() ) {
-                if ( loginName.equals( user.getLoginName() ) ) {
-                    return user;
-                }
-            }
-        }
-        return null;
-    }
+    public abstract UserPojo getUserByLoginName(String loginName);
 
     /**
      * Returns the user with the given id.
@@ -1406,76 +488,26 @@ public class ConfigurationAccessService {
      * @return the user with the given <code>nxUserId</code> or <code>null</code>
      *          if no such user exists.
      */
-    public UserPojo getUserByNxUserId( int nxUserId ) {
-
-        if ( engineConfig == null ) {
-            return null;
-        }
-        for ( UserPojo user : engineConfig.getUsers() ) {
-            if ( nxUserId == user.getNxUserId() ) {
-                return user;
-            }
-        }
-        return null;
-    }
+    public abstract UserPojo getUserByNxUserId(int nxUserId);
 
     /**
      * Updates the given user or adds her to the list if she is new.
      * @param user User to add or update.
      */
-    public void updateUser( UserPojo user ) {
-
-        try {
-            UserPojo oldUser = getUserByNxUserId( user.getNxUserId() );
-            if ( oldUser != null ) {
-                getUsers( null ).remove( oldUser );
-            }
-            getUsers( null ).add( user );
-
-            applyConfiguration();
-        } catch ( NexusException e ) {
-            e.printStackTrace();
-        }
-    }
+    public abstract void updateUser(UserPojo user) throws NexusException;
 
     /**
      * Deletes the given user.
      * @param user User to delete.
      */
-    public void deleteUser( UserPojo user ) {
-
-        try {
-            UserPojo oldUser = getUserByNxUserId( user.getNxUserId() );
-            if ( oldUser != null ) {
-                getUsers( null ).remove( oldUser );
-            }
-            try {
-                engineConfig.deleteUserInDB( user );
-            } catch ( Exception e ) {
-                LOG.error( "Error deleting user: " + e );
-            }
-            applyConfiguration();
-        } catch ( NexusException e ) {
-            e.printStackTrace();
-        }
-    }
+    public abstract void deleteUser(UserPojo user) throws NexusException;
 
     /**
      * Returns a sorted list of all roles.
      * @param comparator The comperator to sort with.
      * @return a sorted list of all roles.
      */
-    public List<RolePojo> getRoles( Comparator<RolePojo> comparator ) {
-
-        if ( engineConfig == null ) {
-            return null;
-        }
-        List<RolePojo> roles = engineConfig.getRoles();
-        if ( comparator != null ) {
-            Collections.sort( roles, comparator );
-        }
-        return roles;
-    }
+    public abstract List<RolePojo> getRoles(Comparator<RolePojo> comparator);
 
     /**
      * Returns the role with the given id.
@@ -1483,15 +515,7 @@ public class ConfigurationAccessService {
      * @return the role with the given <code>nxRoleId</code> or <code>null</code>
      *          if no such role exists.
      */
-    public RolePojo getRoleByNxRoleId( int nxRoleId ) {
-
-        for ( RolePojo role : engineConfig.getRoles() ) {
-            if ( nxRoleId == role.getNxRoleId() ) {
-                return role;
-            }
-        }
-        return null;
-    }
+    public abstract RolePojo getRoleByNxRoleId(int nxRoleId);
 
     /**
      * Returns the role with the given <code>name</code>.
@@ -1499,88 +523,32 @@ public class ConfigurationAccessService {
      * @return the role with the given <code>name</code> or <code>null</code>
      *          if no such role exists.
      */
-    public RolePojo getRoleByName( String name ) {
-
-        if ( name != null ) {
-            for ( RolePojo role : engineConfig.getRoles() ) {
-                if ( name.equals( role.getName() ) ) {
-                    return role;
-                }
-            }
-        }
-        return null;
-    }
+    public abstract RolePojo getRoleByName(String name);
 
     /**
      * Updates the given role or adds it to the list if it is new.
      * @param role Role to add or update.
      */
-    public void updateRole( RolePojo role ) {
-
-        try {
-            RolePojo oldRole = getRoleByNxRoleId( role.getNxRoleId() );
-            if ( oldRole != null ) {
-                getRoles( null ).remove( oldRole );
-            }
-            getRoles( null ).add( role );
-
-            applyConfiguration();
-        } catch ( NexusException e ) {
-            e.printStackTrace();
-        }
-    }
+    public abstract void updateRole(RolePojo role) throws NexusException;
 
     /**
      * Deletes the given role.
      * @param role Role to delete.
      */
-    public void deleteRole( RolePojo role ) {
-
-        try {
-            RolePojo oldRole = getRoleByNxRoleId( role.getNxRoleId() );
-            if ( oldRole != null ) {
-                getRoles( null ).remove( oldRole );
-            }
-            try {
-                engineConfig.deleteRoleInDB( role );
-            } catch ( Exception e ) {
-                LOG.error( "Error deleting role: " + e );
-            }
-            applyConfiguration();
-        } catch ( NexusException e ) {
-            e.printStackTrace();
-        }
-    }
+    public abstract void deleteRole(RolePojo role) throws NexusException;
 
     /**
      * @param comparator
      * @return
      */
-    public List<MappingPojo> getMappings( Comparator<MappingPojo> comparator ) {
-
-        if ( engineConfig == null ) {
-            return null;
-        }
-        List<MappingPojo> mappings = engineConfig.getMappings();
-        if ( comparator != null ) {
-            Collections.sort( mappings, comparator );
-        }
-        return mappings;
-    }
+    public abstract List<MappingPojo> getMappings(
+            Comparator<MappingPojo> comparator);
 
     /**
      * @param nxMappingId
      * @return
      */
-    public MappingPojo getMappingByNxMappingId( int nxMappingId ) {
-
-        for ( MappingPojo mapping : engineConfig.getMappings() ) {
-            if ( nxMappingId == mapping.getNxMappingId() ) {
-                return mapping;
-            }
-        }
-        return null;
-    }
+    public abstract MappingPojo getMappingByNxMappingId(int nxMappingId);
 
     /**
      * @param category
@@ -1588,91 +556,28 @@ public class ConfigurationAccessService {
      * @param key
      * @return
      */
-    public MappingPojo getMappingByCategoryDirectionAndKey( String category, boolean left, String key ) {
-
-        if ( category != null && key != null ) {
-            if ( engineConfig != null && engineConfig.getMappings() != null ) {
-                for ( MappingPojo mapping : engineConfig.getMappings() ) {
-                    if ( category.equals( mapping.getCategory() ) ) {
-                        String tempKey = left ? mapping.getLeftValue() : mapping.getRightValue();
-                        if ( tempKey.equals( key ) ) {
-                            return mapping;
-                        }
-                    }
-                }
-            } else {
-                LOG.error( "engine config is not initalized! No mapping available" );
-            }
-
-        }
-        return null;
-    }
+    public abstract MappingPojo getMappingByCategoryDirectionAndKey(
+            String category, boolean left, String key);
 
     /**
      * @param mapping
      * @throws NexusException 
      */
-    public void updateMapping( MappingPojo mapping ) throws NexusException {
-
-        MappingPojo oldMapping = getMappingByNxMappingId( mapping.getNxMappingId() );
-        if ( oldMapping != null ) {
-            getMappings( null ).remove( oldMapping );
-        }
-        getMappings( null ).add( mapping );
-
-        applyConfiguration();
-    }
+    public abstract void updateMapping(MappingPojo mapping)
+            throws NexusException;
 
     /**
      * @param mapping
      */
-    public void updateMappings( List<MappingPojo> addMappings, List<MappingPojo> removeMappings ) throws NexusException {
-
-        for (MappingPojo mapping : removeMappings) {
-            MappingPojo oldMapping = getMappingByNxMappingId( mapping.getNxMappingId() );
-            if ( oldMapping != null ) {
-                getMappings( null ).remove( oldMapping );
-                engineConfig.deleteMappingInDB( mapping );
-            }
-        }
-
-        for (MappingPojo mapping : addMappings) {
-            MappingPojo oldMapping = null;
-            if (mapping.getNxMappingId() != 0) {
-                oldMapping = getMappingByNxMappingId( mapping.getNxMappingId() );
-            }
-            if ( oldMapping != null ) {
-                getMappings( null ).remove( oldMapping );
-            }
-            getMappings( null ).add( mapping );
-        }
-
-        applyConfiguration();
-    }
+    public abstract void updateMappings(List<MappingPojo> addMappings,
+            List<MappingPojo> removeMappings) throws NexusException;
 
     /**
      * @param mapping
      * @throws NexusException 
      */
-    public void deleteMapping( MappingPojo mapping ) throws NexusException {
-
-        MappingPojo oldMapping = getMappingByNxMappingId( mapping.getNxMappingId() );
-        if ( oldMapping != null ) {
-            getMappings( null ).remove( oldMapping );
-            engineConfig.deleteMappingInDB( oldMapping );
-        }
-        applyConfiguration();
-    }
-    
-    /**
-     * Applies the current configuration and updates the engine.
-     * @throws NexusException if the configuration update failed.
-     */
-    public void applyConfiguration() throws NexusException {
-
-        // TODO: swap configurations
-        Engine.getInstance().setCurrentConfiguration( engineConfig );
-    }
+    public abstract void deleteMapping(MappingPojo mapping)
+            throws NexusException;
 
     /**
      * @param category any subsystem selects its own category id to avoid parameter naming conflicts. 
@@ -1680,44 +585,9 @@ public class ConfigurationAccessService {
      * @param descriptors 
      * @return
      */
-    public Map<String, Object> getGenericParameters( String category, String tag,
-            Map<String, ParameterDescriptor> descriptors ) {
+    public abstract Map<String, Object> getGenericParameters(String category,
+            String tag, Map<String, ParameterDescriptor> descriptors);
 
-        if ( StringUtils.isEmpty( category ) ) {
-            return null;
-        }
-        if ( descriptors == null || descriptors.size() == 0 ) {
-            return null;
-        }
-        Map<String, Object> resultMap = new HashMap<String, Object>();
-        List<GenericParamPojo> values = engineConfig.getGenericParameters().get( category );
-        if ( values == null ) {
-            values = new ArrayList<GenericParamPojo>();
-        }
-        boolean isUpdated = false;
-        for ( String name : descriptors.keySet() ) {
-            ParameterDescriptor descriptor = descriptors.get( name );
-            if ( descriptor != null ) {
-                isUpdated = false;
-                for ( GenericParamPojo value : values ) {
-                    if ( ( ( value.getTag() == null && tag == null ) || ( value.getTag() != null && value.getTag()
-                            .equals( tag ) ) )
-                            && value.getParamName().equals( name ) ) {
-                        resultMap.put( value.getParamName(), getParameterValue( descriptor.getParameterType(), value.getValue() ) );
-                        isUpdated = true;
-                    }
-                }
-                if ( !isUpdated ) {
-                    if ( descriptor.getDefaultValue() != null ) {
-                        resultMap.put( name, descriptor.getDefaultValue() );
-                    }
-                }
-            }
-        }
-
-        return resultMap;
-    }
-    
     /**
      * Gets the generic parameter for the given category and tag, or the default value
      * if not found.
@@ -1727,17 +597,8 @@ public class ConfigurationAccessService {
      * @param defaultValue The default value. Can be <code>null</code>.
      * @return The value object, or <code>defaultValue</code> if no such parameter was found.
      */
-    public Object getGenericParameter( String category, String tag, ParameterType type, Object defaultValue ) {
-        List<GenericParamPojo> values = engineConfig.getGenericParameters().get( category );
-        if ( values != null ) {
-            for (GenericParamPojo param : values) {
-                if (param.getParamName().equals( tag )) {
-                    return getParameterValue( type, param.getValue() );
-                }
-            }
-        }
-        return defaultValue;
-    }
+    public abstract Object getGenericParameter(String category, String tag,
+            ParameterType type, Object defaultValue);
 
     /**
      * @param category
@@ -1745,75 +606,12 @@ public class ConfigurationAccessService {
      * @param values Name, Value pairs you want to set. Values for missing descriptors are ingnored while changing configuration.
      * @param descriptors Map containing the matching ParameterDescriptors and Names, If there is no matching value for one
      * if the descriptors, the default value(specified in descriptor) is used.  
-     * @param persistToDB if true, the engine is stoped, Configuration is Saved to database and engine is started again.
      * @throws NexusException Thrown on various database problems.
      */
-    public void setGenericParameters( String category, String tag, Map<String, Object> values,
-            Map<String, ParameterDescriptor> descriptors, boolean persistToDB ) throws NexusException {
-
-        if ( StringUtils.isEmpty( category ) ) {
-            return;
-        }
-        if ( StringUtils.isEmpty( tag ) ) {
-            tag = null;
-        }
-        if ( values == null || descriptors == null || values.size() == 0 || descriptors.size() == 0 ) {
-            return;
-        }
-        List<GenericParamPojo> oldValues = engineConfig.getGenericParameters().get( category );
-        if ( oldValues == null ) {
-            oldValues = new ArrayList<GenericParamPojo>();
-            engineConfig.getGenericParameters().put( category, oldValues );
-        }
-        int seqNo = 0;
-        for ( String name : values.keySet() ) {
-            ParameterDescriptor pd = descriptors.get( name );
-            if ( pd == null ) {
-                continue;
-            }
-            GenericParamPojo param = null;
-            for ( GenericParamPojo pojo : oldValues ) {
-                if ( pojo.getParamName().equals( name ) ) {
-                    if ( ( pojo.getTag() == null && tag == null ) || ( pojo.getTag() != null && pojo.equals( tag ) ) ) {
-                        param = pojo;
-                    }
-                }
-            }
-            if ( param == null ) {
-                param = new GenericParamPojo();
-                param.setCreatedDate( new Date() );
-                param.setModifiedDate( new Date() );
-                param.setParamName( name );
-                param.setLabel( pd.getLabel() );
-                param.setSequenceNumber( seqNo++ );
-                param.setTag( tag );
-                param.setCategory( category );
-                oldValues.add( param );
-            }
-            if ( pd.getParameterType() == ParameterType.LIST ) {
-                ListParameter dropdown = (ListParameter) values.get( name );
-                if ( dropdown != null ) {
-                    param.setValue( dropdown.getSelectedValue() );
-                }
-            } else if ( pd.getParameterType() == ParameterType.ENUMERATION ) {
-                // TODO: Implement this!
-            } else {
-                Object value = values.get( name );
-                if ( value == null ) {
-                    param.setValue( toString( pd.getDefaultValue() ) );
-                } else {
-                    param.setValue( toString( value ) );
-                }
-            }
-
-        }
-
-        if ( persistToDB ) {
-            applyConfiguration();
-
-        }
-
-    }
+    public abstract void setGenericParameters(String category, String tag,
+            Map<String, Object> values,
+            Map<String, ParameterDescriptor> descriptors )
+            throws NexusException;
 
     /**
      * Might be used to determine whether parameters are available for this category and tag or even not.
@@ -1823,73 +621,13 @@ public class ConfigurationAccessService {
      * @param tag optional identifier for seprating different values for one category.
      * @return
      */
-    public boolean containsParameters( String category, String tag ) {
-
-        List<GenericParamPojo> values = engineConfig.getGenericParameters().get( category );
-        if ( values != null ) {
-            for ( GenericParamPojo pojo : values ) {
-                if ( ( tag == null && pojo.getTag() == null ) || ( tag != null && tag.equals( pojo.getTag() ) ) ) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * encapsulates the required checks for NULL values.
-     * 
-     * @param value
-     * @return
-     */
-    private static String toString( Object value ) {
-
-        if ( value == null ) {
-            return null;
-        }
-        return value.toString();
-    }
-
-    /**
-     * Converts a <code>String</code> parameter value into an object
-     * of it's domain type.
-     *
-     * @param type The parameter type.
-     * @param value The <code>String</code> representation to be converted.
-     * @return The domain type, except for types ENUMERATION and DROPDOWN
-     */
-    private static Object getParameterValue( ParameterType type, String value ) {
-
-        switch ( type ) {
-            case UNKNOWN:
-            case STRING:
-            case PASSWORD:
-            case SERVICE:
-                return value;
-            case BOOLEAN:
-                return Boolean.valueOf( value );
-            default:
-                return null;
-        }
-    }
+    public abstract boolean containsParameters(String category, String tag);
 
     /**
      * @param certs
      * @throws NexusException 
      */
-    public void updateCertificates( List<CertificatePojo> certs ) throws NexusException {
-
-        for ( CertificatePojo certificate : certs ) {
-            CertificatePojo oldCertificate = getCertificateByNxCertificateId( Constants.CERTIFICATE_TYPE_ALL,
-                    certificate.getNxCertificateId() );
-            if ( oldCertificate != null ) {
-                getCertificates( Constants.CERTIFICATE_TYPE_ALL, null );
-            }
-
-            getCertificates( Constants.CERTIFICATE_TYPE_ALL, null ).add( certificate );
-        }
-        applyConfiguration();
-
-    }
+    public abstract void updateCertificates(List<CertificatePojo> certs)
+            throws NexusException;
 
 }

@@ -27,8 +27,8 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ReferencedChoreographyException;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ConversationPojo;
@@ -51,7 +51,7 @@ public class ChoreographyDeleteAction extends NexusE2EAction {
      */
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
@@ -68,9 +68,9 @@ public class ChoreographyDeleteAction extends NexusE2EAction {
             return error;
         }
         try {
-            ChoreographyPojo choreography = Engine.getInstance().getActiveConfigurationAccessService()
+            ChoreographyPojo choreography = engineConfiguration
                     .getChoreographyByChoreographyId( choreographyId );
-            Engine.getInstance().getActiveConfigurationAccessService().deleteChoreography( choreography );
+            engineConfiguration.deleteChoreography( choreography );
         } catch (ReferencedChoreographyException rcex) {
             for (ConversationPojo conversation : rcex.getReferringObjects()) {
                 ActionMessage errorMessage = new ActionMessage(

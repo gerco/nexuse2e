@@ -34,7 +34,7 @@ import org.nexuse2e.configuration.Constants;
  */
 @XmlType(name = "CertificateType")
 @XmlAccessorType(XmlAccessType.NONE)
-public class CertificatePojo implements java.io.Serializable {
+public class CertificatePojo implements NEXUSe2ePojo {
 
     //    Logger                    LOG              = Logger.getLogger( CertificatePojo.class );
 
@@ -106,6 +106,14 @@ public class CertificatePojo implements java.io.Serializable {
         this.nxCertificateId = nxCertificateId;
     }
 
+    public int getNxId() {
+        return nxCertificateId;
+    }
+    
+    public void setNxId( int nxId ) {
+        this.nxCertificateId = nxId;
+    }
+    
     @XmlAttribute
     public int getType() {
 

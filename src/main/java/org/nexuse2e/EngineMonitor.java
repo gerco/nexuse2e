@@ -110,7 +110,7 @@ public class EngineMonitor {
         // LOG.debug( "EngineMonitor probing..." );
         ConfigDAO configDao = null;
         try {
-            configDao = (ConfigDAO) Engine.getInstance().getDao( "configDao" );
+            configDao = Engine.getInstance().getConfigDAO();
         } catch ( Exception e ) {
             summary.setCause( "Error while searching configDao: " + e );
             summary.setStatus( Status.ERROR );
@@ -165,7 +165,7 @@ public class EngineMonitor {
                     try {
                         shutdownInitiated = true;
                         Engine.getInstance().changeStatus( BeanStatus.INSTANTIATED );
-                        LOG.info( "Engine shutdown triggered" );
+                        LOG.info( "Engine shutdown triggered (cause: " + summary.getCause() + ")" );
                     } catch ( InstantiationException e ) {
                         LOG.error( "Error while handling error: (cause: " + summary.getCause() + "): " + e );
                     }

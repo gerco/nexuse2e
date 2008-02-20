@@ -31,8 +31,8 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
-import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.Constants;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.GenericComparator;
 import org.nexuse2e.pojo.PartnerPojo;
 import org.nexuse2e.ui.form.CollaborationPartnerForm;
@@ -51,7 +51,7 @@ public class CollaborationPartnersAction extends NexusE2EAction {
     @Override
     @SuppressWarnings("unchecked")
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
@@ -66,11 +66,11 @@ public class CollaborationPartnersAction extends NexusE2EAction {
         List<CollaborationPartnerForm> partners = new ArrayList<CollaborationPartnerForm>();
         List<PartnerPojo> partnerPojos = null;
         if ( ( type != null ) && type.equals( "1" ) ) {
-            partnerPojos = Engine.getInstance().getActiveConfigurationAccessService().getPartners(
+            partnerPojos = engineConfiguration.getPartners(
                     Constants.PARTNER_TYPE_LOCAL, Constants.PARTNERCOMPARATOR );
 
         } else {
-            partnerPojos = Engine.getInstance().getActiveConfigurationAccessService().getPartners(
+            partnerPojos = engineConfiguration.getPartners(
                     Constants.PARTNER_TYPE_PARTNER, Constants.PARTNERCOMPARATOR );
         }
         TreeSet<PartnerPojo> sortedPartners = new TreeSet<PartnerPojo>( new GenericComparator( PartnerPojo.class,

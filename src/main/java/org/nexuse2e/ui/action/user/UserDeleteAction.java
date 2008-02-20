@@ -27,8 +27,8 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.ConfigurationAccessService;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.pojo.UserPojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.UserForm;
@@ -44,11 +44,11 @@ public class UserDeleteAction extends NexusE2EAction {
      */
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
         int nxUserId = ( (UserForm) actionForm ).getNxUserId();
-        ConfigurationAccessService cas = Engine.getInstance().getActiveConfigurationAccessService();
+        ConfigurationAccessService cas = engineConfiguration;
         UserPojo user = cas.getUserByNxUserId( nxUserId );
         if ( user != null ) {
             cas.deleteUser( user );

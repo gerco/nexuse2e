@@ -6,8 +6,8 @@ package org.nexuse2e.ui.structure.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.Constants;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.pojo.UserPojo;
 import org.nexuse2e.ui.structure.ParentalStructureNode;
 import org.nexuse2e.ui.structure.StructureNode;
@@ -20,16 +20,13 @@ import org.nexuse2e.ui.structure.TargetProvider;
  */
 public class UserTargetProvider implements TargetProvider {
 
-    /* (non-Javadoc)
-     * @see org.nexuse2e.ui.structure.TargetProvider#getStructure(org.nexuse2e.ui.structure.StructureNode, org.nexuse2e.ui.structure.ParentalStructureNode)
-     */
     @SuppressWarnings("unchecked")
-    public List<StructureNode> getStructure( StructureNode pattern, ParentalStructureNode parent ) {
+    public List<StructureNode> getStructure(
+            StructureNode pattern, ParentalStructureNode parent, EngineConfiguration engineConfiguration ) {
 
         List<StructureNode> list = new ArrayList<StructureNode>();
 
-        List<UserPojo> users = Engine.getInstance().getActiveConfigurationAccessService().getUsers(
-                Constants.COMPARATOR_USER_BY_NAME );
+        List<UserPojo> users = engineConfiguration.getUsers( Constants.COMPARATOR_USER_BY_NAME );
 
         for ( UserPojo user : users ) {
             if ( user.isVisible() ) {

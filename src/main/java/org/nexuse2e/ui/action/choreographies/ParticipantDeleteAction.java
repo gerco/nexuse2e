@@ -27,8 +27,8 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ParticipantPojo;
 import org.nexuse2e.pojo.PartnerPojo;
@@ -51,7 +51,7 @@ public class ParticipantDeleteAction extends NexusE2EAction {
      */
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
@@ -68,17 +68,17 @@ public class ParticipantDeleteAction extends NexusE2EAction {
         }
         ParticipantPojo participant;
         try {
-            ChoreographyPojo choreography = Engine.getInstance().getActiveConfigurationAccessService()
+            ChoreographyPojo choreography = engineConfiguration
                     .getChoreographyByNxChoreographyId( nxChoreographyId );
-            PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByNxPartnerId(
+            PartnerPojo partner = engineConfiguration.getPartnerByNxPartnerId(
                     form.getNxPartnerId() );
-            participant = Engine.getInstance().getActiveConfigurationAccessService().getParticipantFromChoreographyByNxPartnerId(
+            participant = engineConfiguration.getParticipantFromChoreographyByNxPartnerId(
                     choreography, partner.getNxPartnerId() );
             participant.getConnection().getPartcipants().remove( participant );
             partner.getParticipants().remove( participant );
             choreography.getParticipants().remove( participant );
 
-            Engine.getInstance().getActiveConfigurationAccessService().updateChoreography( choreography );
+            engineConfiguration.updateChoreography( choreography );
         } catch ( NexusException e ) {
             ActionMessage errorMessage = new ActionMessage( "generic.error", e.getMessage() );
             errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );

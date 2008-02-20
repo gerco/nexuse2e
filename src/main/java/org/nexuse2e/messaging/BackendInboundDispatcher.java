@@ -20,6 +20,7 @@
 package org.nexuse2e.messaging;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.nexuse2e.ActionSpecificKey;
@@ -45,7 +46,7 @@ public class BackendInboundDispatcher implements InitializingBean, Manageable {
 
     private BeanStatus                                  status                  = BeanStatus.UNDEFINED;
 
-    private HashMap<ActionSpecificKey, BackendPipeline> backendInboundPipelines = new HashMap<ActionSpecificKey, BackendPipeline>();
+    private Map<ActionSpecificKey, BackendPipeline> backendInboundPipelines = new HashMap<ActionSpecificKey, BackendPipeline>();
 
     /**
      * Dispatch a message to the correct backend inbound pipeline.

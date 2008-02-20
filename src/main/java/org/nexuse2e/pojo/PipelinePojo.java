@@ -36,7 +36,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(name = "PipelineType")
 @XmlAccessorType(XmlAccessType.NONE)
-public class PipelinePojo implements java.io.Serializable {
+public class PipelinePojo implements NEXUSe2ePojo {
 
     /**
      * 
@@ -119,6 +119,14 @@ public class PipelinePojo implements java.io.Serializable {
         this.nxPipelineId = nxPipelineId;
     }
 
+    public int getNxId() {
+        return nxPipelineId;
+    }
+    
+    public void setNxId( int nxId ) {
+        this.nxPipelineId = nxId;
+    }
+    
     @XmlAttribute
     public boolean isOutbound() {
 

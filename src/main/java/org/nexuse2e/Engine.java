@@ -52,12 +52,15 @@ import org.nexuse2e.controller.TransactionService;
 import org.nexuse2e.controller.TransactionServiceImpl;
 import org.nexuse2e.dao.BasicDAO;
 import org.nexuse2e.dao.ConfigDAO;
+import org.nexuse2e.dao.LogDAO;
+import org.nexuse2e.dao.TransactionDAO;
 import org.nexuse2e.integration.NEXUSe2eInterface;
 import org.nexuse2e.integration.NEXUSe2eInterfaceImpl;
 import org.nexuse2e.messaging.TimestampFormatter;
 import org.nexuse2e.messaging.ebxml.EBXMLTimestampFormatter;
 import org.nexuse2e.messaging.mime.binary_base64;
 import org.nexuse2e.service.Service;
+import org.nexuse2e.ui.structure.StructureService;
 import org.nexuse2e.ui.structure.impl.CachedXmlStructureServer;
 import org.nexuse2e.util.CertificateUtil;
 import org.nexuse2e.util.XMLUtil;
@@ -270,13 +273,6 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
      */
     public void initialize() throws InstantiationException {
 
-        /*
-         String[] names = getWebApplicationContext().getBeanDefinitionNames();
-         for ( String name : names ) {
-         LOG.trace( "Bean name: " + name );
-         }
-         */
-
         try {
             // undefined - no db connection, spring not configured.
             // instanciated - db connected, string config loaded.
@@ -320,13 +316,6 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                 } else {
                     LOG.error( "No Hibernate session factory found in configuration, exiting..." );
                 }
-
-                /*
-                Object dsObject = getBeanFactory().getBean( "internal" );
-                if ( ( dsObject != null ) && ( dsObject instanceof org.apache.commons.dbcp.BasicDataSource ) ) {
-
-                }
-                */
             } catch ( Exception e1 ) {
                 LOG.error( "Problem with database configuration, exiting..." );
                 e1.printStackTrace();
@@ -349,7 +338,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
             // create new Config
             if ( currentConfiguration == null ) {
                 try {
-                    currentConfiguration = createEngineConfiguration();
+                    createEngineConfiguration();
                 } catch ( InstantiationException e ) {
                     LOG.error( "Problem creating Engine configuration, exiting..." );
                     e.printStackTrace();
@@ -386,10 +375,11 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
             }
 
             // update menu tree
-            CachedXmlStructureServer cachedStructureServer = (CachedXmlStructureServer) Engine.getInstance()
-                    .getBeanFactory().getBean( "structureService" );
-            cachedStructureServer.cacheMenuStructure();
-
+            
+            StructureService structureService = (StructureService) beanFactory.getBean( "structureService" );
+            if (structureService instanceof CachedXmlStructureServer) {
+                ((CachedXmlStructureServer) structureService).cacheMenuStructure( currentConfiguration );
+            }
         } catch ( RuntimeException rex ) {
             rex.printStackTrace();
             LOG.error( "Error initializing Engine: " + rex );
@@ -681,22 +671,18 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     }
 
     /**
-     * @param daoName
-     * @return
+     * Gets the data access object with the given bean name.
+     * @param daoName The bean name.
+     * @return The <code>BasicDAO</code> implementation instance, or <code>null</code>
+     * if <code>daoName</code> is <code>null</code>.
+     * @throws NexusException if the given bean name does not exist or has an invalid type.
      */
-    public BasicDAO getDao( String daoName ) throws Exception {
+    public BasicDAO getDao( String daoName ) throws NexusException {
 
         if ( daoName != null ) {
             if ( getBeanFactory().containsBean( daoName ) ) {
                 Object daoBean = null;
-                try {
-                    daoBean = getBeanFactory().getBean( daoName );
-                } catch ( Exception e ) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch ( Error e ) {
-                    e.printStackTrace();
-                }
+                daoBean = getBeanFactory().getBean( daoName );
 
                 if ( daoBean instanceof BasicDAO ) {
                     return (BasicDAO) daoBean;
@@ -704,53 +690,84 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                     throw new NexusException( "invalid Object Type:" + daoBean.getClass().getName() );
                 }
             } else {
-                throw new InstantiationException( "Requested daoBean: " + daoName + " not found!" );
+                throw new NexusException( "Requested daoBean: " + daoName + " not found!" );
             }
         }
         return null;
     }
-
+    
     /**
-     * 
+     * Convenience method to get the configuration DAO.
+     * @return The configuration DAO.
+     * @throws NexusException If the configuration DAO is not available.
      */
+    public ConfigDAO getConfigDAO() throws NexusException {
+        return (ConfigDAO) getDao( "configDao" );
+    }
+    
+    /**
+     * Convenience method to get the transaction DAO.
+     * @return The transaction DAO.
+     * @throws NexusException If the transaction DAO is not available.
+     */
+    public TransactionDAO getTransactionDAO() throws NexusException {
+        return (TransactionDAO) getDao( "transactionDao" );
+    }
+    
+    /**
+     * Convenience method to get the log DAO.
+     * @return The log DAO.
+     * @throws NexusException If the log DAO is not available.
+     */
+    public LogDAO getLogDAO() throws NexusException {
+        return (LogDAO) getDao( "logDao" );
+    }
+
+
     @SuppressWarnings("unchecked")
-    private EngineConfiguration createEngineConfiguration() throws InstantiationException {
+    private void createEngineConfiguration() throws InstantiationException {
 
         try {
-            if ( ( baseConfigurationProvider == null || !baseConfigurationProvider.isConfigurationAvailable() )
-                    && ( baseConfigurationProviderClass != null ) ) {
-                try {
-                    Class theClass = Class.forName( baseConfigurationProviderClass );
-                    baseConfigurationProvider = (BaseConfigurationProvider) theClass.newInstance();
-                } catch ( InstantiationException iEx ) {
-                    LOG.error( "Base configuration class '" + baseConfigurationProviderClass
-                            + "' could not be instantiated: " + iEx );
+            ConfigDAO configDAO = getConfigDAO();
+            currentConfiguration = new EngineConfiguration();
+            if (configDAO.isDatabasePopulated()) {
+                configDAO.loadDatafromDB( currentConfiguration );
+            } else {
+                LOG.info( "Empty database detected, creating and saving base configuration of type: "
+                        + baseConfigurationProvider.getClass() );
+                if ( ( baseConfigurationProvider == null || !baseConfigurationProvider.isConfigurationAvailable() )
+                        && ( baseConfigurationProviderClass != null ) ) {
+                    try {
+                        Class theClass = Class.forName( baseConfigurationProviderClass );
+                        baseConfigurationProvider = (BaseConfigurationProvider) theClass.newInstance();
+                    } catch ( InstantiationException iEx ) {
+                        LOG.error( "Base configuration class '" + baseConfigurationProviderClass
+                                + "' could not be instantiated: " + iEx );
+                    }
                 }
+                if (baseConfigurationProvider == null || !baseConfigurationProvider.isConfigurationAvailable()) {
+                    String message = "No base configuration available from BaseConfigurationProvider "
+                        + baseConfigurationProvider;
+                    LOG.error( message );
+                    throw new InstantiationException( message );
+                }
+                currentConfiguration.createBaseConfiguration( baseConfigurationProvider );
+                configDAO.saveConfigurationToDB( currentConfiguration );
             }
-            if (baseConfigurationProvider == null || !baseConfigurationProvider.isConfigurationAvailable()) {
-                String message = "No base configuration available from BaseConfigurationProvider "
-                    + baseConfigurationProvider;
-                LOG.error( message );
-                throw new InstantiationException( message );
-            }
-            EngineConfiguration config = new EngineConfiguration( baseConfigurationProvider );
-            config.init();
 
-            return config;
         } catch ( Exception e ) {
             if (e instanceof InstantiationException) {
                 throw (InstantiationException) e;
             }
             e.printStackTrace();
         }
-        return null;
     }
 
     public TransactionService getTransactionService() {
 
         return transactionService;
     }
-    
+
     /**
      * Imports the configuration from the given XML input stream and sets it as the
      * current configuration. This method should be called with care because it deletes
@@ -764,9 +781,9 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
         try {
             ConfigDAO configDao = (ConfigDAO) Engine.getInstance().getDao( "configDao" );
             configDao.deleteAll();
-            EngineConfiguration newConfig = new EngineConfiguration( provider );
+            EngineConfiguration newConfig = new EngineConfiguration();
+            newConfig.createBaseConfiguration( provider );
             currentConfiguration = null;
-            newConfig.init();
             currentConfiguration = newConfig;
             initialize();
         } catch (Exception ex) {
@@ -803,14 +820,14 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
             try {
                 changeStatus( BeanStatus.INSTANTIATED );
                 LOG.debug( "Saving configuration..." );
-                newConfiguration.saveConfigurationToDB();
+                getConfigDAO().saveDelta( newConfiguration );
             } catch ( Exception e ) {
                 LOG.error( "Error saving configuration: " + e );
                 e.printStackTrace();
             }
             try {
                 LOG.debug( "Re-load  configuration to make sure it's consistent" );
-                newConfiguration.loadDatafromDB();
+                getConfigDAO().loadDatafromDB( newConfiguration );
             } catch ( Exception e ) {
                 LOG.error( "Error loading configuration: " + e );
                 e.printStackTrace();
@@ -1101,23 +1118,31 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
      */
     public ConfigurationAccessService getActiveConfigurationAccessService() {
 
-        return new ConfigurationAccessService( currentConfiguration );
+        return currentConfiguration;
     }
 
     /**
-     * @param key
-     * @return
+     * Gets an <code>EngineConfiguration</code> for the specified key.
+     * If no engine configuration exists for the given key, a copy of the current
+     * configuration will be created and associated with the key.
+     * @param key The key. Can be any object with proper hashValue() and equals()
+     * method implementations.
+     * @return An <code>EngineConfiguration</code> object. Not <code>null</code>.
      */
-    public ConfigurationAccessService getConfigurationAccessService( Object key ) {
+    public EngineConfiguration getConfiguration( Object key ) {
 
         EngineConfiguration configuration = configurations.get( key );
         if ( configuration == null ) {
-            configuration = EngineConfiguration.cloneConfiguration( currentConfiguration );
+            configuration = new EngineConfiguration( currentConfiguration );
             configurations.put( key, configuration );
         }
-        return new ConfigurationAccessService( configuration );
+        return configuration;
     }
 
+    /**
+     * Detaches the engine configuration that is associated with the given key.
+     * @param key The key.
+     */
     public void invalidateConfiguration( Object key ) {
 
         if ( configurations != null ) {

@@ -27,8 +27,8 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ReferencedPartnerException;
 import org.nexuse2e.pojo.ParticipantPojo;
 import org.nexuse2e.pojo.PartnerPojo;
@@ -51,7 +51,7 @@ public class PartnerDeleteAction extends NexusE2EAction {
      */
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
@@ -60,10 +60,10 @@ public class PartnerDeleteAction extends NexusE2EAction {
         CollaborationPartnerForm form = (CollaborationPartnerForm) actionForm;
 
         try {
-            PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByNxPartnerId(
+            PartnerPojo partner = engineConfiguration.getPartnerByNxPartnerId(
                     form.getNxPartnerId() );
             if (partner != null) {
-                Engine.getInstance().getActiveConfigurationAccessService().deletePartner( partner );
+                engineConfiguration.deletePartner( partner );
             }
         } catch ( ReferencedPartnerException e ) {
             for (ParticipantPojo participant : e.getReferringObjects()) {

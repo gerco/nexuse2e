@@ -34,7 +34,9 @@ public class DownloadFileAction extends NexusE2EAction {
     public ActionForward executeNexusE2EAction(
             ActionMapping actionMapping,
             ActionForm actionForm, HttpServletRequest request,
-            HttpServletResponse response, ActionMessages errors,
+            HttpServletResponse response,
+            EngineConfiguration engineConfiguration,
+            ActionMessages errors,
             ActionMessages messages) throws Exception {
         
         String filename = request.getParameter( "file" );

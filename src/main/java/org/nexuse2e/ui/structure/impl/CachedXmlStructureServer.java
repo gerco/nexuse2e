@@ -25,9 +25,12 @@ import java.util.Map;
 
 import javax.xml.xpath.XPathExpressionException;
 
+import org.nexuse2e.configuration.EngineConfiguration;
+import org.nexuse2e.ui.structure.ParentalStructureNode;
 import org.nexuse2e.ui.structure.StructureException;
 import org.nexuse2e.ui.structure.StructureNode;
 import org.nexuse2e.ui.structure.StructureService;
+import org.nexuse2e.ui.structure.TargetProvider;
 import org.w3c.dom.Document;
 
 /**
@@ -83,13 +86,33 @@ public class CachedXmlStructureServer extends XmlStructureServer {
     }
     
     
+    private void patchNodes( List<StructureNode> nodes, EngineConfiguration engineConfiguration ) {
+        for (StructureNode node : nodes) {
+            if (node instanceof ParentalStructureNode) {
+                ParentalStructureNode psn = (ParentalStructureNode) node;
+                if (psn != null && psn.hasDynamicChildren() && psn.getProvider() != null && tpManager != null) {
+                    TargetProvider tp = tpManager.getTargetProvider( psn.getProvider() );
+                    if (tp != null) {
+                        StructureNode patternNode = new CommandNode(
+                                psn.getChildTarget(), psn.getChildLabel(), psn.getChildIcon() );
+                        List<StructureNode> children = tp.getStructure( patternNode, psn, engineConfiguration );
+                        psn.removeChildren();
+                        psn.addChildren( children );
+                    }
+                } else {
+                    patchNodes( psn.getChildren(), engineConfiguration );
+                }
+            }
+        }
+    }
+    
 
     
     /* (non-Javadoc)
      * @see org.nexuse2e.ui.structure.impl.XmlStructureServer#getMenuStructure()
      */
     @Override
-    public List<StructureNode> getMenuStructure() throws StructureException {
+    public List<StructureNode> getMenuStructure( EngineConfiguration engineConfiguration ) throws StructureException {
 
         synchronized ( this ) {
             List<StructureNode> result = null;
@@ -97,9 +120,12 @@ public class CachedXmlStructureServer extends XmlStructureServer {
             if ( menuStructureCache.containsKey( spec ) ) {
                 // get structure from cache
                 result = menuStructureCache.get( spec );
+                
+                // patch dynamic nodes
+                patchNodes( result, engineConfiguration );
             } else {
                 // parse spec
-                result = super.getMenuStructure();
+                result = super.getMenuStructure( engineConfiguration );
                 menuStructureCache.put( spec, result );
             }
 
@@ -113,7 +139,7 @@ public class CachedXmlStructureServer extends XmlStructureServer {
      * @see org.nexuse2e.ui.structure.impl.XmlStructureServer#getSiteSkeleton()
      */
     @Override
-    public List<StructureNode> getSiteSkeleton() throws StructureException {
+    public List<StructureNode> getSiteSkeleton( EngineConfiguration engineConfiguration ) throws StructureException {
 
         synchronized ( this ) {
             List<StructureNode> result = null;
@@ -123,7 +149,7 @@ public class CachedXmlStructureServer extends XmlStructureServer {
                 result = siteSkeletonCache.get( spec );
             } else {
                 // parse spec
-                result = super.getSiteSkeleton();
+                result = super.getSiteSkeleton( engineConfiguration );
                 siteSkeletonCache.put( spec, result );
             }
 
@@ -137,7 +163,7 @@ public class CachedXmlStructureServer extends XmlStructureServer {
      * @see org.nexuse2e.ui.structure.impl.XmlStructureServer#getSiteStructure()
      */
     @Override
-    public List<StructureNode> getSiteStructure() throws StructureException {
+    public List<StructureNode> getSiteStructure( EngineConfiguration engineConfiguration ) throws StructureException {
 
         synchronized ( this ) {
             List<StructureNode> result = null;
@@ -147,7 +173,7 @@ public class CachedXmlStructureServer extends XmlStructureServer {
                 result = siteStructureCache.get( spec );
             } else {
                 // parse spec
-                result = super.getSiteStructure();
+                result = super.getSiteStructure( engineConfiguration );
                 siteStructureCache.put( spec, result );
             }
 
@@ -207,10 +233,10 @@ public class CachedXmlStructureServer extends XmlStructureServer {
     /**
      * Pre-Caches the menu structure based of the currently set structure specification.
      */
-    public void cacheMenuStructure() throws StructureException {
+    public void cacheMenuStructure( EngineConfiguration engineConfiguration ) throws StructureException {
 
         synchronized ( this ) {
-            List<StructureNode> result = super.getMenuStructure();
+            List<StructureNode> result = super.getMenuStructure( engineConfiguration );
                 menuStructureCache.put( spec, result );
         }
     }
@@ -220,10 +246,10 @@ public class CachedXmlStructureServer extends XmlStructureServer {
     /**
      * Pre-Caches the site skeleton based of the currently set structure specification.
      */
-    public void cacheSiteSkeleton() throws StructureException {
+    public void cacheSiteSkeleton( EngineConfiguration engineConfiguration ) throws StructureException {
 
         synchronized ( this ) {
-            List<StructureNode> result = super.getSiteSkeleton();
+            List<StructureNode> result = super.getSiteSkeleton( engineConfiguration );
                 siteSkeletonCache.put( spec, result );
         }
     }
@@ -232,10 +258,10 @@ public class CachedXmlStructureServer extends XmlStructureServer {
     /**
      * Pre-Caches the site structure based of the currently set structure specification.
      */
-    public void cacheSiteStructure() throws StructureException {
+    public void cacheSiteStructure( EngineConfiguration engineConfiguration ) throws StructureException {
 
         synchronized ( this ) {
-            List<StructureNode> result = super.getSiteStructure();
+            List<StructureNode> result = super.getSiteStructure( engineConfiguration );
                 siteStructureCache.put( spec, result );
         }
     }

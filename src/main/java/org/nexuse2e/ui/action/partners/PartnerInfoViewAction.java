@@ -30,8 +30,8 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ParticipantPojo;
 import org.nexuse2e.pojo.PartnerPojo;
@@ -54,7 +54,7 @@ public class PartnerInfoViewAction extends NexusE2EAction {
      */
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
@@ -65,14 +65,14 @@ public class PartnerInfoViewAction extends NexusE2EAction {
         int nxPartnerId = form.getNxPartnerId();
 
         try {
-            PartnerPojo partnerPojo = Engine.getInstance().getActiveConfigurationAccessService()
+            PartnerPojo partnerPojo = engineConfiguration
                     .getPartnerByNxPartnerId( nxPartnerId );
 
             if ( partnerPojo != null ) {
                 form.setProperties( partnerPojo );
 
                 form.setChoreographies( new Vector() );
-                List<ChoreographyPojo> choreographies = Engine.getInstance().getActiveConfigurationAccessService()
+                List<ChoreographyPojo> choreographies = engineConfiguration
                         .getChoreographies();
                 for ( ChoreographyPojo choreographyPojo : choreographies ) {
                     List<ParticipantPojo> participants = choreographyPojo.getParticipants();

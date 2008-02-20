@@ -32,10 +32,10 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.ConfigurationAccessService;
 import org.nexuse2e.configuration.Constants;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ConnectionPojo;
@@ -60,7 +60,7 @@ public class ParticipantAddAction extends NexusE2EAction {
      */
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
         ActionForward reload = actionMapping.findForward( "reload" );
@@ -83,8 +83,8 @@ public class ParticipantAddAction extends NexusE2EAction {
             form.setNxLocalPartnerId( localPartnerId );
             form.setDescription( description );
 
-            ConfigurationAccessService cas = Engine.getInstance().getActiveConfigurationAccessService();
-            ChoreographyPojo choreography = Engine.getInstance().getActiveConfigurationAccessService()
+            ConfigurationAccessService cas = engineConfiguration;
+            ChoreographyPojo choreography = engineConfiguration
                                                     .getChoreographyByNxChoreographyId( nxChoreographyId );
             if ( choreography == null ) {
                 ActionMessage errorMessage = new ActionMessage( "generic.error", "ChoreographyId must not be null!" );
@@ -102,7 +102,7 @@ public class ParticipantAddAction extends NexusE2EAction {
                 }
             }
             form.setPartners( unboundPartners );
-            form.setLocalPartners( Engine.getInstance().getActiveConfigurationAccessService().getPartners(
+            form.setLocalPartners( engineConfiguration.getPartners(
                     Constants.PARTNER_TYPE_LOCAL, Constants.PARTNERCOMPARATOR ) );
 
             LOG.trace( "Partners: " + form.getPartners().size() );
@@ -134,7 +134,7 @@ public class ParticipantAddAction extends NexusE2EAction {
             }
 
             try {
-                PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByNxPartnerId(
+                PartnerPojo partner = engineConfiguration.getPartnerByNxPartnerId(
                         form.getNxPartnerId() );
                 form.setPartnerDisplayName( partner.getPartnerId() );
                 LOG.trace( "connections.size: " + partner.getConnections().size() );
@@ -149,7 +149,7 @@ public class ParticipantAddAction extends NexusE2EAction {
             if ( form.getNxLocalPartnerId() == 0 ) {
                 form.setLocalCertificates( form.getLocalPartners().get( 0 ).getCertificates() );
             } else {
-                PartnerPojo localPartner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByNxPartnerId(
+                PartnerPojo localPartner = engineConfiguration.getPartnerByNxPartnerId(
                         form.getNxLocalPartnerId() );
                 form.setLocalCertificates( localPartner.getCertificates() );
 
@@ -176,14 +176,14 @@ public class ParticipantAddAction extends NexusE2EAction {
             ParticipantPojo participant = new ParticipantPojo();
             participant.setDescription( form.getDescription() );
             try {
-                ChoreographyPojo choreography = Engine.getInstance().getActiveConfigurationAccessService()
+                ChoreographyPojo choreography = engineConfiguration
                         .getChoreographyByNxChoreographyId( nxChoreographyId );
                 participant.setChoreography( choreography );
-                PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByNxPartnerId(
+                PartnerPojo partner = engineConfiguration.getPartnerByNxPartnerId(
                         form.getNxPartnerId() );
-                PartnerPojo localPartner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByNxPartnerId(
+                PartnerPojo localPartner = engineConfiguration.getPartnerByNxPartnerId(
                         form.getNxLocalPartnerId() );
-                CertificatePojo localCertificate = Engine.getInstance().getActiveConfigurationAccessService()
+                CertificatePojo localCertificate = engineConfiguration
                         .getCertificateFromPartnerByNxCertificateId( partner, form.getNxLocalCertificateId() );
                 participant.setPartner( partner );
                 
@@ -211,7 +211,7 @@ public class ParticipantAddAction extends NexusE2EAction {
                     return error;
                 } else {
                     choreography.getParticipants().add( participant );
-                    Engine.getInstance().getActiveConfigurationAccessService().updateChoreography( choreography );
+                    engineConfiguration.updateChoreography( choreography );
                 }
 
             } catch ( NexusException e ) {

@@ -39,7 +39,7 @@ import org.apache.log4j.Level;
  */
 @XmlType(name = "LoggerType")
 @XmlAccessorType(XmlAccessType.NONE)
-public class LoggerPojo implements java.io.Serializable {
+public class LoggerPojo implements NEXUSe2ePojo {
 
     // Fields    
 
@@ -111,6 +111,14 @@ public class LoggerPojo implements java.io.Serializable {
         return this.nxLoggerId;
     }
 
+    public int getNxId() {
+        return nxLoggerId;
+    }
+    
+    public void setNxId( int nxId ) {
+        this.nxLoggerId = nxId;
+    }
+    
     public void setNxLoggerId( int nxLoggerId ) {
 
         this.nxLoggerId = nxLoggerId;

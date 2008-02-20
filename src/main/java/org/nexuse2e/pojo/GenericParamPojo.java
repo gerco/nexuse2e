@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlType;
 
 @XmlType(name = "GenericParamType")
 @XmlAccessorType(XmlAccessType.NONE)
-public class GenericParamPojo implements java.io.Serializable {
+public class GenericParamPojo implements NEXUSe2ePojo {
 
     /**
      * 
@@ -210,6 +210,13 @@ public class GenericParamPojo implements java.io.Serializable {
         this.nxGenericParamId = nxGenericParamId;
     }
 
+    public int getNxId() {
+        return nxGenericParamId;
+    }
+    
+    public void setNxId( int nxId ) {
+        this.nxGenericParamId = nxId;
+    }
     
     /**
      * @return the category

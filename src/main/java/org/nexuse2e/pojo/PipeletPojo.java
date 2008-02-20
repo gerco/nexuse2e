@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(name = "PipeletType")
 @XmlAccessorType(XmlAccessType.NONE)
-public class PipeletPojo implements java.io.Serializable {
+public class PipeletPojo implements NEXUSe2ePojo {
 
     /**
      * 
@@ -112,6 +112,14 @@ public class PipeletPojo implements java.io.Serializable {
         this.nxPipeletId = nxPipeletId;
     }
 
+    public int getNxId() {
+        return nxPipeletId;
+    }
+    
+    public void setNxId( int nxId ) {
+        this.nxPipeletId = nxId;
+    }
+    
     public PipelinePojo getPipeline() {
 
         return this.pipeline;

@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(name = "FollowUpActionType")
 @XmlAccessorType(XmlAccessType.NONE)
-public class FollowUpActionPojo implements java.io.Serializable {
+public class FollowUpActionPojo implements NEXUSe2ePojo {
 
     //    public class FollowUpActionPojo implements java.io.Serializable, com.sun.xml.bind.CycleRecoverable {
 
@@ -89,6 +89,14 @@ public class FollowUpActionPojo implements java.io.Serializable {
         this.nxFollowUpActionId = nxFollowUpActionId;
     }
 
+    public int getNxId() {
+        return nxFollowUpActionId;
+    }
+    
+    public void setNxId( int nxId ) {
+        this.nxFollowUpActionId = nxId;
+    }
+    
     public ActionPojo getAction() {
 
         return this.action;

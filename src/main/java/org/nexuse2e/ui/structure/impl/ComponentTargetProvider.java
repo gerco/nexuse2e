@@ -22,9 +22,9 @@ package org.nexuse2e.ui.structure.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.Constants;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.Constants.ComponentType;
 import org.nexuse2e.pojo.ComponentPojo;
 import org.nexuse2e.ui.structure.ParentalStructureNode;
@@ -38,14 +38,12 @@ import org.nexuse2e.ui.structure.TargetProvider;
  */
 public class ComponentTargetProvider implements TargetProvider {
 
-    /* (non-Javadoc)
-     * @see org.nexuse2e.ui.structure.TargetProvider#getStructure(org.nexuse2e.ui.structure.StructureNode)
-     */
-    public List<StructureNode> getStructure( StructureNode pattern, ParentalStructureNode parent ) {
+    public List<StructureNode> getStructure(
+            StructureNode pattern, ParentalStructureNode parent, EngineConfiguration engineConfiguration ) {
 
         List<StructureNode> list = new ArrayList<StructureNode>();
         try {
-            List<ComponentPojo> componentPojos = Engine.getInstance().getActiveConfigurationAccessService().getComponents(
+            List<ComponentPojo> componentPojos = engineConfiguration.getComponents(
                     ComponentType.ALL, Constants.COMPONENT_NAME_COMPARATOR );
             for ( ComponentPojo componentPojo : componentPojos ) {
                 StructureNode sn = new PageNode( pattern.getTarget() + "?nxComponentId=" + componentPojo.getNxComponentId(),

@@ -27,8 +27,8 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.Constants.ComponentType;
 import org.nexuse2e.pojo.ComponentPojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
@@ -50,7 +50,7 @@ public class ComponentDeleteAction extends NexusE2EAction {
      */
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
@@ -59,11 +59,11 @@ public class ComponentDeleteAction extends NexusE2EAction {
         ComponentForm form = (ComponentForm) actionForm;
 
         try {
-            ComponentPojo component = Engine.getInstance().getActiveConfigurationAccessService()
+            ComponentPojo component = engineConfiguration
                     .getComponentByNxComponentId( form.getNxComponentId() );
-            Engine.getInstance().getActiveConfigurationAccessService().getComponents( ComponentType.ALL, null ).remove(
+            engineConfiguration.getComponents( ComponentType.ALL, null ).remove(
                     component );
-            Engine.getInstance().getActiveConfigurationAccessService().deleteComponent( component );
+            engineConfiguration.deleteComponent( component );
         } catch ( NexusException e ) {
             ActionMessage errorMessage = new ActionMessage( "generic.error", e.getMessage() );
             errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );

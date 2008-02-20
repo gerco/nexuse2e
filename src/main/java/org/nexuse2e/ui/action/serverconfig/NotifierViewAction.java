@@ -21,6 +21,7 @@ package org.nexuse2e.ui.action.serverconfig;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +34,7 @@ import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.ConfigurationUtil;
 import org.nexuse2e.configuration.Constants;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.Constants.ComponentType;
 import org.nexuse2e.logging.LogAppender;
 import org.nexuse2e.pojo.ComponentPojo;
@@ -54,18 +56,18 @@ public class NotifierViewAction extends NexusE2EAction {
      */
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, ActionMessages errors, ActionMessages messages )
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
 
         LoggerForm loggerForm = (LoggerForm) actionForm;
 
-        LoggerPojo loggerPojo = Engine.getInstance().getActiveConfigurationAccessService().getLoggerByNxLoggerId(
+        LoggerPojo loggerPojo = engineConfiguration.getLoggerByNxLoggerId(
                 loggerForm.getNxLoggerId() );
 
         loggerForm.setProperties( loggerPojo );
-        LogAppender logger = Engine.getInstance().getActiveConfigurationAccessService()
+        LogAppender logger = engineConfiguration
                 .getLogger( loggerPojo.getName() );
         for ( LoggerParamPojo loggerParam : loggerPojo.getLoggerParams() ) {
             loggerParam.setParameterDescriptor( logger.getParameterMap().get( loggerParam.getParamName() ) );
@@ -75,11 +77,7 @@ public class NotifierViewAction extends NexusE2EAction {
         loggerForm.setLoggerInstance( logger );
         loggerForm.setComponentName( loggerPojo.getComponent().getName() );
 
-        // Filtergroup Fake
-
-        //        String[] groups = new String[] { "core", "inbound", "outbound", "mail", "http"};
-
-        HashMap<String, List<String>> logCategories = Engine.getInstance().getCurrentConfiguration().getLogCategories();
+        Map<String, List<String>> logCategories = Engine.getInstance().getCurrentConfiguration().getLogCategories();
 
         loggerForm.getGroupNames().clear();
         HashMap<String, String> tempFilterValues = new HashMap<String, String>();
@@ -115,10 +113,10 @@ public class NotifierViewAction extends NexusE2EAction {
             loggerForm.setFilterJavaPackagePattern( filterBuffer.toString() );
         }
 
-        List<ComponentPojo> components = Engine.getInstance().getActiveConfigurationAccessService().getComponents(
+        List<ComponentPojo> components = engineConfiguration.getComponents(
                 ComponentType.LOGGER, Constants.COMPONENTCOMPARATOR );
         request.setAttribute( ATTRIBUTE_COLLECTION, components );
-        request.setAttribute( ATTRIBUTE_SERVICE_COLLECTION, Engine.getInstance().getActiveConfigurationAccessService().getServices( ) );
+        request.setAttribute( ATTRIBUTE_SERVICE_COLLECTION, engineConfiguration.getServices( ) );
 
         loggerForm.getLogFilterValues().clear();
         loggerForm.setLogFilterValues( tempFilterValues );

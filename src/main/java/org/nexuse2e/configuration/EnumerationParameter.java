@@ -19,6 +19,7 @@
  */
 package org.nexuse2e.configuration;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -29,7 +30,9 @@ import java.util.Map;
  * 
  * @author jonas.reese
  */
-public class EnumerationParameter {
+public class EnumerationParameter implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private Map<String, String> enumMap;
 

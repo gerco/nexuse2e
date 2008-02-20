@@ -43,7 +43,7 @@ import org.nexuse2e.ui.security.AccessController.ParsedRequest;
  */
 @XmlType(name = "RoleType")
 @XmlAccessorType(XmlAccessType.NONE )
-public class RolePojo implements java.io.Serializable {
+public class RolePojo implements NEXUSe2ePojo {
 
     // Fields    
 
@@ -99,6 +99,14 @@ public class RolePojo implements java.io.Serializable {
         this.nxRoleId = nxRoleId;
     }
 
+    public int getNxId() {
+        return nxRoleId;
+    }
+    
+    public void setNxId( int nxId ) {
+        this.nxRoleId = nxId;
+    }
+    
     @XmlAttribute
     public String getName() {
 

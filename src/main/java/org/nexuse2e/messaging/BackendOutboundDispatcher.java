@@ -50,7 +50,7 @@ public class BackendOutboundDispatcher extends StateMachineExecutor implements P
                                                                                         .getLogger( BackendOutboundDispatcher.class );
 
     private ProtocolAdapter[]                        protocolAdapters;
-    private HashMap<String, BackendActionSerializer> backendActionSerializers   = new HashMap<String, BackendActionSerializer>();
+    private Map<String, BackendActionSerializer> backendActionSerializers   = new HashMap<String, BackendActionSerializer>();
 
     private FrontendInboundDispatcher                frontendInboundDispatcher  = null;
     private FrontendOutboundDispatcher               frontendOutboundDispatcher = null;
@@ -261,7 +261,7 @@ public class BackendOutboundDispatcher extends StateMachineExecutor implements P
     /**
      * @return the backendActionSerializers
      */
-    public HashMap<String, BackendActionSerializer> getBackendActionSerializers() {
+    public Map<String, BackendActionSerializer> getBackendActionSerializers() {
 
         return backendActionSerializers;
     }

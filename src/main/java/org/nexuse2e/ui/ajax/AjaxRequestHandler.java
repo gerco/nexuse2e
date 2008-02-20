@@ -19,7 +19,7 @@
  */
 package org.nexuse2e.ui.ajax;
 
-import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 
 import org.json.JSONException;
 
@@ -32,10 +32,10 @@ public interface AjaxRequestHandler {
 
     /**
      * Handles an Ajax request.
-     * @param params Request parameters from the HTTP request.
+     * @param request The HTTP request.
      * @return JSON encoded response data.
      * @throws JSONException there is a problem with the JSON encoding.
      */
-    String handleRequest( Map<String, String> params ) throws JSONException;
+    String handleRequest( HttpServletRequest request ) throws JSONException;
 
 }

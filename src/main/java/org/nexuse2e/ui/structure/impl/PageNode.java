@@ -35,6 +35,10 @@ public class PageNode extends AbstractStructureNode implements ParentalStructure
 
     protected List<StructureNode>     children           = null;
     private boolean                   hasDynamicChildren = false;
+    private String                    provider           = null;
+    private String                    childTarget        = null;
+    private String                    childIcon          = null;
+    private String                    childLabel         = null;
     protected HashMap<String, String> properties;
 
     /**
@@ -69,6 +73,10 @@ public class PageNode extends AbstractStructureNode implements ParentalStructure
         }
         this.children.addAll( children );
     }
+    
+    public void removeChildren() {
+        children.clear();
+    }
 
     /* (non-Javadoc)
      * @see org.nexuse2e.ui.structure.impl.ParentalStructureNode#getChildren()
@@ -102,6 +110,38 @@ public class PageNode extends AbstractStructureNode implements ParentalStructure
     public boolean hasDynamicChildren() {
 
         return hasDynamicChildren;
+    }
+    
+    public String getProvider() {
+        return provider;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
+
+    public String getChildTarget() {
+        return childTarget;
+    }
+
+    public void setChildTarget(String childTarget) {
+        this.childTarget = childTarget;
+    }
+
+    public String getChildIcon() {
+        return childIcon;
+    }
+
+    public void setChildIcon(String childIcon) {
+        this.childIcon = childIcon;
+    }
+
+    public String getChildLabel() {
+        return childLabel;
+    }
+
+    public void setChildLabel(String childLabel) {
+        this.childLabel = childLabel;
     }
 
     /* (non-Javadoc)
