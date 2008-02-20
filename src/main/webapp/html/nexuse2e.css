@@ -88,6 +88,11 @@ a.helpBar {
 	color: #E56009;
 }
 
+a.helpBarDisabled {
+	font-weight: bold;
+	color: #B0B0B0;
+}
+
 a.helpBar:visited {
     font-size: 10pt;
 	color: #E56009;
@@ -117,6 +122,8 @@ a.button {
 	border-width: 0px;
 	border-style: none;
 }
+
+
 
 /*
  * ================
