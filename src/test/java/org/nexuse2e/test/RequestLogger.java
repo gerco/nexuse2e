@@ -22,7 +22,7 @@ import org.springframework.web.servlet.mvc.Controller;
  */
 public class RequestLogger implements Controller, ApplicationContextAware {
 
-    public ModelAndView handleRequest( HttpServletRequest request, HttpServletResponse response ) {
+    public ModelAndView handleRequest( HttpServletRequest request, HttpServletResponse response ) throws IOException {
         try {
             List<?> l = IOUtils.readLines( request.getInputStream() );
             for (Object s : l) {
@@ -32,6 +32,14 @@ public class RequestLogger implements Controller, ApplicationContextAware {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+
+        //response.setContentType( "text/xml;charset=UTF-8" );
+        response.setContentType( null );
+        response.getOutputStream().println(
+                "<SOAP:Envelope xmlns:SOAP=\"http://schemas.xmlsoap.org/soap/envelope/\"><SOAP:Header/><SOAP:Body/></SOAP:Envelope>" );
+        
+        //response.getOutputStream().println( "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><soap:Body><processInboundMessageResponse xmlns=\"http://integration.nexuse2e.org/BackendDeliveryInterface/\"><statusResponse xmlns=\"http://integration.nexuse2e.org/BackendDeliveryInterface/\">success</statusResponse></processInboundMessageResponse></soap:Body></soap:Envelope>" );
+        
         return null;
     }
 
