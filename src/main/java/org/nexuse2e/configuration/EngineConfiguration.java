@@ -1839,6 +1839,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
         }
         getBackendPipelinePojos( Constants.PIPELINE_TYPE_ALL, null ).add( pipeline );
         addToUpdateList( pipeline );
+        addToImplicitUpdateList( pipeline.getPipelets() );
     }
     
     /* (non-Javadoc)
