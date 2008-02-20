@@ -1,5 +1,6 @@
 <%@ taglib uri="/tags/nexus" prefix="nexus" %>
 <%@ taglib uri="/tags/struts-tiles" prefix="tiles" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <script type="text/javascript">
    var djConfig = {isDebug: true };
@@ -157,12 +158,27 @@
   	alert(message);
 	hideProgressBarDialog();
   }
-    
+  
+  function checkForChangedConfiguration(changed) {
+  	if (changed) {
+  	  document.getElementById('applyConfiguration').className='helpBar';
+  	  document.getElementById('applyConfiguration').href='ApplyConfiguration.do';
+  	  document.getElementById('revertConfiguration').className='helpBar';
+  	  document.getElementById('revertConfiguration').href='RevertConfiguration.do';
+  	} else {
+  	  document.getElementById('applyConfiguration').className='helpBarDisabled';
+  	  document.getElementById('applyConfiguration').href='#';
+  	  document.getElementById('revertConfiguration').className='helpBarDisabled';
+  	  document.getElementById('revertConfiguration').href='#';
+  	}
+  }
+  
   /*
    * Refreshes all expanded dynamic nodes in the tree. 
    */
   function refreshMenuTree() {
-  	var rootNode = getTreeNode('Home.do');
+  	
+	var rootNode = getTreeNode('Home.do');
 		//debug("Attempting to refresh the tree ...");
 		//debug("Root node expandend: " + rootNode.isExpanded);
 		//debug("Root has children: " + rootNode.children.length);
@@ -350,7 +366,10 @@
 <div dojoType="ContentPane" layoutAlign="top" id="top-nav">
 <table style="padding: 0pt; margin: 0px;">
 	<tr>
-		<td style="text-align: left;;padding-left: 10px"><a href="Apply.do" class="helpBar">Apply</a></td>
+		<td style="text-align: left;padding-left: 10px">
+		<nexus:link id="applyConfiguration" href="" styleClass="helpBarDisabled"><img class="helpBar" alt="" src="images/icons/server_go.png">Apply</nexus:link>
+		|
+		<nexus:link id="revertConfiguration" href="" styleClass="helpBarDisabled"><img class="helpBar" alt="" src="images/icons/arrow_rotate_anticlockwise.png">Revert</nexus:link></td>
 		<td style="text-align: right;padding-right: 10px"><a
 			href="documentation/nexuse2e_help.html" target="_blank"
 			class="helpBar"><img src="images/icons/help.png" class="helpBar">&nbsp;Help</a>&nbsp;|&nbsp;<a

@@ -3,7 +3,7 @@
 <%@ taglib uri="/tags/struts-nested" prefix="nested" %>
 <%@ taglib uri="/tags/struts-tiles" prefix="tiles" %>
 <%@ taglib uri="/tags/struts-logic" prefix="logic" %>
-<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %> 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %> 
 <%@ taglib uri="/tags/nexus" prefix="nexus" %>
 
 <% /*<nexus:helpBar helpDoc="documentation/Service_Listing.htm"/> */ %>
@@ -40,26 +40,33 @@
             <bean:write name="service" property="componentName"/>
           </td>
           <td class="NEXUSValue">
-            <logic:equal name="service" property="serviceInstance.autostart" value="true">
+            <c:if test="${service.autostart}">
               Yes
-            </logic:equal>
-            <logic:notEqual name="service" property="serviceInstance.autostart" value="true">
+            </c:if>
+            <c:if test="${!service.autostart}">
               No
-            </logic:notEqual>
+            </c:if>
+          </td>
+        <c:if test="${service.nxServiceId <= 0}">
+          <td class="NEXUSValue" colspan="2">
+			<i>Please save your configuration</i>
+          </td>
+        </c:if>
+        <c:if test="${service.nxServiceId > 0}">
+          <td class="NEXUSValue">
+            ${service.serviceInstance.status}
           </td>
           <td class="NEXUSValue">
-            <bean:write name="service" property="serviceInstance.status"/>
-          </td>
-          <td class="NEXUSValue">
-            <logic:equal name="service" property="serviceInstance.status" value="STARTED">
+            <c:if test="${service.serviceInstance.status == 'STARTED'}">
               <nexus:link href="ServiceStop.do?nxServiceId=${service.nxServiceId}"><img width="16" height="16" src="images/icons/stop.png" class="button" alt="Stop" id="stop"><span dojoType="tooltip" connectId="stop" toggle="explode">Stop Service</span></nexus:link>
-            </logic:equal>
-            <logic:notEqual name="service" property="serviceInstance.status" value="STARTED">
-            <logic:notEqual name="service" property="serviceInstance.status" value="ERROR">
+            </c:if>
+            <c:if test="${service.serviceInstance.status != 'STARTED'}">
+            <c:if test="${service.serviceInstance.status != 'ERROR'}">
               <nexus:link href="ServiceStart.do?nxServiceId=${service.nxServiceId}"><img width="16" height="16" src="images/icons/resultset_next.png" class="button" alt="Start" id="start"><span dojoType="tooltip" connectId="start" toggle="explode">Start Service</span></nexus:link>
-            </logic:notEqual>
-            </logic:notEqual>
+            </c:if>
+            </c:if>
           </td>
+        </c:if>
         </tr>
       </logic:iterate>
 
