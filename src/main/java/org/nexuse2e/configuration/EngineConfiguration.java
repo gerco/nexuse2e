@@ -115,7 +115,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
     
     private int                                         recentNxId                = -1;
     private List<NEXUSe2ePojo>                          updateList                = new ArrayList<NEXUSe2ePojo>();
-    private List<NEXUSe2ePojo>                          implicitUpdateList        = new ArrayList<NEXUSe2ePojo>();
+    private Map<NEXUSe2ePojo, List<NEXUSe2ePojo>>       implicitUpdateList        = new HashMap<NEXUSe2ePojo, List<NEXUSe2ePojo>>();
     private List<NEXUSe2ePojo>                          deleteList                = new ArrayList<NEXUSe2ePojo>();
 
     
@@ -244,7 +244,11 @@ public class EngineConfiguration implements ConfigurationAccessService {
     }
     
     public List<NEXUSe2ePojo> getImplicitUpdateList() {
-        return implicitUpdateList;
+        List<NEXUSe2ePojo> l = new ArrayList<NEXUSe2ePojo>();
+        for (List<NEXUSe2ePojo> list : implicitUpdateList.values()) {
+            l.addAll( list );
+        }
+        return l;
     }
     
     /**
@@ -1695,12 +1699,35 @@ public class EngineConfiguration implements ConfigurationAccessService {
         }
     }
     
-    protected void addToImplicitUpdateList( Collection<? extends NEXUSe2ePojo> list ) {
+    /**
+     * Adds the given pojo to the delete list.
+     * @param pojo The pojo to be deleted.
+     */
+    protected void addToDeleteList( NEXUSe2ePojo pojo ) {
+        implicitUpdateList.remove( pojo );
+        if (updateList.remove( pojo ) && pojo.getNxId() < 0) {
+            // nothing to do because a newly created object was deleted
+        } else {
+            deleteList.add( pojo );
+        }
+    }
+    
+    /**
+     * Adds the given pojo list to the list of implicitly updated pojos.
+     * @param parent The parent pojo.
+     * @param list The child pojos that will implicitly be updated.
+     */
+    protected void addToImplicitUpdateList( NEXUSe2ePojo parent, Collection<? extends NEXUSe2ePojo> list ) {
         if (list != null) {
             for (NEXUSe2ePojo pojo : list) {
                 if (pojo.getNxId() == 0) {
                     pojo.setNxId( recentNxId-- );
-                    implicitUpdateList.add( pojo );
+                    List<NEXUSe2ePojo> l = implicitUpdateList.get( parent );
+                    if (l == null) {
+                        l = new ArrayList<NEXUSe2ePojo>();
+                    }
+                    l.add( pojo );
+                    implicitUpdateList.put( parent, l );
                 }
             }
         }
@@ -1715,8 +1742,8 @@ public class EngineConfiguration implements ConfigurationAccessService {
         }
         getPartners( 0, null ).add( partner );
         addToUpdateList( partner );
-        addToImplicitUpdateList( partner.getCertificates() );
-        addToImplicitUpdateList( partner.getConnections() );
+        addToImplicitUpdateList( partner, partner.getCertificates() );
+        addToImplicitUpdateList( partner, partner.getConnections() );
     }
     
     /* (non-Javadoc)
@@ -1730,8 +1757,8 @@ public class EngineConfiguration implements ConfigurationAccessService {
         }
         getChoreographies().add( choreography );
         addToUpdateList( choreography );
-        addToImplicitUpdateList( choreography.getActions() );
-        addToImplicitUpdateList( choreography.getParticipants() );
+        addToImplicitUpdateList( choreography, choreography.getActions() );
+        addToImplicitUpdateList( choreography, choreography.getParticipants() );
     }
     
     /* (non-Javadoc)
@@ -1748,7 +1775,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
         if ( oldChoreography != null ) {
             getChoreographies().remove( oldChoreography );
         }
-        deleteList.add( choreography );
+        addToDeleteList( choreography );
     }
     
     /* (non-Javadoc)
@@ -1767,7 +1794,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
     
             getCertificates( Constants.CERTIFICATE_TYPE_ALL, null ).removeAll( partner.getCertificates() );
             
-            deleteList.add( oldPartner );
+            addToDeleteList( oldPartner );
         }
     }
     
@@ -1777,7 +1804,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
     public void deleteConnection( ConnectionPojo connection ) throws NexusException {
         
         if (connection.getPartner().getConnections().remove( connection )) {
-            deleteList.add( connection );
+            addToDeleteList( connection );
         }
     }
     
@@ -1800,7 +1827,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
     public void deleteTrp( TRPPojo trp ) throws NexusException {
     
         if (getTrps().remove( trp )) {
-            deleteList.add( trp );
+            addToDeleteList( trp );
         }
     }
     
@@ -1825,7 +1852,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
         if ( oldComponent != null ) {
             getComponents( ComponentType.ALL, null ).remove( oldComponent );
         }
-        deleteList.add( component );
+        addToDeleteList( component );
     }
     
     /* (non-Javadoc)
@@ -1839,7 +1866,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
         }
         getBackendPipelinePojos( Constants.PIPELINE_TYPE_ALL, null ).add( pipeline );
         addToUpdateList( pipeline );
-        addToImplicitUpdateList( pipeline.getPipelets() );
+        addToImplicitUpdateList( pipeline, pipeline.getPipelets() );
     }
     
     /* (non-Javadoc)
@@ -1868,7 +1895,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
         PipelinePojo oldPipeline = getPipelinePojoByNxPipelineId( pipeline.getNxPipelineId() );
         if ( oldPipeline != null ) {
             getBackendPipelinePojos( Constants.PIPELINE_TYPE_ALL, null ).remove( oldPipeline );
-            deleteList.add( oldPipeline );
+            addToDeleteList( oldPipeline );
         }
     }
     
@@ -1963,7 +1990,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
                 getStaticBeanContainer().getManagableBeans().remove( servicePojo.getName() );
             }
             services.remove( oldServicePojo );
-            deleteList.add( oldServicePojo );
+            addToDeleteList( oldServicePojo );
         }
     }
     
@@ -2019,7 +2046,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
         LoggerPojo oldLogger = getLoggerByNxLoggerId( logger.getNxLoggerId() );
         if ( oldLogger != null ) {
             getLoggers().remove( oldLogger );
-            deleteList.add( oldLogger );
+            addToDeleteList( oldLogger );
         }
     }
     
@@ -2101,7 +2128,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
                 Constants.CERTIFICATE_TYPE_ALL, certificate.getNxCertificateId() );
         if ( oldCertificate != null ) {
             getCertificates( Constants.CERTIFICATE_TYPE_ALL, null ).remove( oldCertificate );
-            deleteList.add( oldCertificate );
+            addToDeleteList( oldCertificate );
         }
     }
     
@@ -2252,7 +2279,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
         UserPojo oldUser = getUserByNxUserId( user.getNxUserId() );
         if ( oldUser != null ) {
             getUsers( null ).remove( oldUser );
-            deleteList.add( oldUser );
+            addToDeleteList( oldUser );
         }
     }
     
@@ -2317,7 +2344,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
         RolePojo oldRole = getRoleByNxRoleId( role.getNxRoleId() );
         if ( oldRole != null ) {
             getRoles( null ).remove( oldRole );
-            deleteList.add( oldRole );
+            addToDeleteList( oldRole );
         }
     }
     
@@ -2391,7 +2418,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
             MappingPojo oldMapping = getMappingByNxMappingId( mapping.getNxMappingId() );
             if ( oldMapping != null ) {
                 getMappings( null ).remove( oldMapping );
-                deleteList.add( oldMapping );
+                addToDeleteList( oldMapping );
             }
         }
     
@@ -2416,7 +2443,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
         MappingPojo oldMapping = getMappingByNxMappingId( mapping.getNxMappingId() );
         if ( oldMapping != null ) {
             getMappings( null ).remove( oldMapping );
-            deleteList.add( oldMapping );
+            addToDeleteList( oldMapping );
         }
     }
     

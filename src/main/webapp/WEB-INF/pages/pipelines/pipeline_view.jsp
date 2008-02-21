@@ -100,7 +100,7 @@
 				<logic:lessThan name="index" value="${pipelineForm.pipeletCount - 1}">
 				<nexus:submit
 					onClick="document.forms[0].sortaction.value=${index};document.forms[0].submitaction.value='sort';document.forms['pipelineForm'].sortingDirection.value=2;">
-					<img src="images/icons/bullet_arrow_up.png" class="button" value="Submit"
+					<img src="images/icons/bullet_arrow_down.png" class="button" value="Submit"
 						alt="Move down" id="moveDown"><span dojoType="tooltip" connectId="moveDown" toggle="explode">Move down</span>
 				</nexus:submit>
 				</logic:lessThan>

@@ -74,8 +74,7 @@ public class PipelineUpdateAction extends NexusE2EAction {
         int actionNxId = form.getActionNxId();
         LOG.trace( "actionNxId: " + actionNxId );
 
-        PipelinePojo pipeline = engineConfiguration
-                .getPipelinePojoByNxPipelineId( form.getNxPipelineId() );
+        PipelinePojo pipeline = engineConfiguration.getPipelinePojoByNxPipelineId( form.getNxPipelineId() );
 
         if ( pipeline == null ) {
             ActionMessage errorMessage = new ActionMessage( "generic.error", "No pipeline found for id: "
@@ -86,8 +85,7 @@ public class PipelineUpdateAction extends NexusE2EAction {
         }
 
         if ( action.equals( "add" ) ) {
-            ComponentPojo component = engineConfiguration
-                    .getComponentByNxComponentId( actionNxId );
+            ComponentPojo component = engineConfiguration.getComponentByNxComponentId( actionNxId );
             if ( component != null ) {
                 PipeletPojo pipelet = new PipeletPojo();
                 pipelet.setComponent( component );
@@ -117,7 +115,7 @@ public class PipelineUpdateAction extends NexusE2EAction {
                 }
 
                 form.getPipelets().add( pipelet );
-                //pipeline.getPipelets().add( pipelet );
+                
                 LOG.trace( "size: " + form.getPipelets().size() );
             }
             request.setAttribute( "keepData", "true" );
@@ -166,20 +164,8 @@ public class PipelineUpdateAction extends NexusE2EAction {
             return config;
         }
 
-        if ( action.equals( "update" ) ) {
-            form.getProperties( pipeline );
-            // debug
-            
-//                PipeletPojo p = pipeline.getPipelets().iterator().next();
-//                
-//                for ( PipeletParamPojo param : p.getPipeletParams() ) {
-//                    System.out.println("param:"+param.getLabel()+" - "+param.getValue());
-//                }
-                
-            
-            //
-            engineConfiguration.updatePipeline( pipeline );
-        }
+        form.getProperties( pipeline );
+        engineConfiguration.updatePipeline( pipeline );
 
         form.setSubmitaction( "" );
 
