@@ -29,6 +29,7 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
+import org.nexuse2e.configuration.ConfigurationUtil;
 import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.Constants.ComponentType;
@@ -133,8 +134,7 @@ public class ServiceUpdateAction extends NexusE2EAction {
             originalService.setServiceParams( list );
 
             engineConfiguration.updateService( originalService );
-            form.setServiceInstance( engineConfiguration.getService(
-                    originalService.getName() ) );
+            ConfigurationUtil.configureService( form.getServiceInstance(), list );
 
             return update;
         }

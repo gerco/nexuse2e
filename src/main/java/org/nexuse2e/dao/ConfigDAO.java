@@ -924,7 +924,7 @@ public class ConfigDAO extends BasicDAO {
             }
             // save records
             for (NEXUSe2ePojo record : configuration.getUpdateList()) {
-                saveRecord( record, session, transaction );
+                saveOrUpdateRecord( record, session, transaction );
             }
             // delete records
             for (NEXUSe2ePojo record : configuration.getDeleteList()) {

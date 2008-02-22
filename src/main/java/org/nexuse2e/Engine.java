@@ -806,6 +806,28 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                 changeStatus( BeanStatus.INSTANTIATED );
                 LOG.debug( "Saving configuration..." );
                 getConfigDAO().saveDelta( newConfiguration );
+//                if ( oldServicePojo != null ) {
+//                    service = getService( oldServicePojo.getName() );
+//                    services.remove( oldServicePojo );
+//                    // service has been renamed
+//                    if ( !oldServicePojo.getName().equals( servicePojo.getName() ) ) {
+//                        renameService( oldServicePojo.getName(), servicePojo.getName() );
+//                    }
+//                    if ( servicePojo.getServiceParams() != null ) {
+//                        ConfigurationUtil.configureService( service, servicePojo.getServiceParams() );
+//                    }
+//                } else {
+//                    service = (Service) Class.forName( servicePojo.getComponent().getClassName() ).newInstance();
+//                    if ( servicePojo.getServiceParams() != null ) {
+//                        ConfigurationUtil.configureService( service, servicePojo.getServiceParams() );
+//                    }
+//                    service.initialize( this );
+//                    service.activate();
+//                    if ( service.isAutostart() ) {
+//                        service.start();
+//                    }
+//                    getStaticBeanContainer().getManagableBeans().put( servicePojo.getName(), service );
+//                }
             } catch ( Exception e ) {
                 LOG.error( "Error saving configuration: " + e );
                 e.printStackTrace();

@@ -45,36 +45,24 @@ public class ServiceViewAction extends NexusE2EAction {
             HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
-        ActionForward success;
-        try {
-            success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
 
-            ServiceForm serviceForm = (ServiceForm) actionForm;
+        ServiceForm serviceForm = (ServiceForm) actionForm;
 
-            ServicePojo servicePojo = engineConfiguration.getServicePojoByNxServiceId(
-                    serviceForm.getNxServiceId() );
+        ServicePojo servicePojo = engineConfiguration.getServicePojoByNxServiceId(
+                serviceForm.getNxServiceId() );
 
-            serviceForm.setProperties( servicePojo );
-            Service service = engineConfiguration.getService( servicePojo.getName() );
-            for ( ServiceParamPojo serviceParam : servicePojo.getServiceParams() ) {
-                serviceParam.setParameterDescriptor( service.getParameterMap().get( serviceParam.getParamName() ) );
-            }
-            serviceForm.setParameters( ConfigurationUtil.getConfiguration( service, servicePojo ) );
-            serviceForm.createParameterMapFromPojos();
-            serviceForm.setServiceInstance( service );
-            
-            request.setAttribute( ATTRIBUTE_SERVICE_COLLECTION, engineConfiguration.getServices( ) );
-            return success;
-            
-        } catch ( Exception e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            throw e;
-        }catch ( Error e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            throw e;
+        serviceForm.setProperties( servicePojo );
+        Service service = engineConfiguration.getServiceInstanceFromPojo( servicePojo );
+        for ( ServiceParamPojo serviceParam : servicePojo.getServiceParams() ) {
+            serviceParam.setParameterDescriptor( service.getParameterMap().get( serviceParam.getParamName() ) );
         }
+        serviceForm.setParameters( ConfigurationUtil.getConfiguration( service, servicePojo ) );
+        serviceForm.createParameterMapFromPojos();
+        serviceForm.setServiceInstance( service );
+        
+        request.setAttribute( ATTRIBUTE_SERVICE_COLLECTION, engineConfiguration.getServices( ) );
+        return actionMapping.findForward( ACTION_FORWARD_SUCCESS );
+        
     }
 
 }
