@@ -107,11 +107,11 @@
     </action>
 
     <action path="/ApplyConfiguration" type="org.nexuse2e.ui.action.configuration.ApplyAction">
-      <forward name="success" path="admin.page"/>
+      <forward name="success" path="/WEB-INF/pages/home.jsp"/>
     </action>
 
     <action path="/RevertConfiguration" type="org.nexuse2e.ui.action.configuration.RevertAction">
-      <forward name="success" path="admin.page"/>
+      <forward name="success" path="/WEB-INF/pages/home.jsp"/>
     </action>
 
     <action
