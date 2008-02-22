@@ -47,8 +47,12 @@ public class ActionTargetProvider implements TargetProvider {
         List<StructureNode> list = new ArrayList<StructureNode>();
 
         try {
-            ChoreographyPojo choreographyPojo = engineConfiguration.getChoreographyByNxChoreographyId(
-                    Integer.parseInt( parent.getProperty( "nxChoreographyId" ) ) );
+            String val = parent.getProperty( "nxChoreographyId" );
+            int id = 0;
+            if (val != null) {
+                id = Integer.parseInt( val );
+            }
+            ChoreographyPojo choreographyPojo = engineConfiguration.getChoreographyByNxChoreographyId( id );
             if ( choreographyPojo != null ) {
                 Set<ActionPojo> actions = choreographyPojo.getActions();
 

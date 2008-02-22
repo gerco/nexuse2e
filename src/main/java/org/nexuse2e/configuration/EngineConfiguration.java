@@ -108,9 +108,6 @@ public class EngineConfiguration implements ConfigurationAccessService {
     private Map<String, BackendActionSerializer>        backendActionSerializers  = new HashMap<String, BackendActionSerializer>();
     private StaticBeanContainer                         staticBeanContainer       = null;
 
-    private int                                         skeletonStatus            = BeanStatus.UNDEFINED.getValue();
-    private int                                         dataStatus                = BeanStatus.UNDEFINED.getValue();
-    private int                                         structureStatus           = BeanStatus.UNDEFINED.getValue();
     private long                                        timestamp;
     
     private int                                         recentNxId                = -1;
@@ -463,8 +460,6 @@ public class EngineConfiguration implements ConfigurationAccessService {
                 new BackendOutboundDispatcher() );
         staticBeanContainer.getManagableBeans().put( org.nexuse2e.Constants.BACKEND_PIPELINE_DISPATCHER,
                 new BackendPipelineDispatcher() );
-
-        skeletonStatus = BeanStatus.INITIALIZED.getValue();
     }
 
     /**
@@ -837,30 +832,6 @@ public class EngineConfiguration implements ConfigurationAccessService {
     public void setStaticBeanContainer( StaticBeanContainer skeletonContainer ) {
 
         this.staticBeanContainer = skeletonContainer;
-    }
-
-    /**
-     * @return the dataStatus
-     */
-    public int getDataStatus() {
-
-        return dataStatus;
-    }
-
-    /**
-     * @return the skeletonStatus
-     */
-    public int getSkeletonStatus() {
-
-        return skeletonStatus;
-    }
-
-    /**
-     * @return the structureStatus
-     */
-    public int getStructureStatus() {
-
-        return structureStatus;
     }
 
     /**

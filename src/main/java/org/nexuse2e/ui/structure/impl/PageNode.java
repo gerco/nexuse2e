@@ -74,6 +74,10 @@ public class PageNode extends AbstractStructureNode implements ParentalStructure
         this.children.addAll( children );
     }
     
+    public boolean removeChild( StructureNode child ) {
+        return children.remove( child );
+    }
+    
     public void removeChildren() {
         children.clear();
     }
@@ -85,6 +89,17 @@ public class PageNode extends AbstractStructureNode implements ParentalStructure
 
         return children;
 
+    }
+    
+    public List<ParentalStructureNode> getChildPages() {
+        
+        List<ParentalStructureNode> childPages = new ArrayList<ParentalStructureNode>();
+        for (StructureNode sn : children) {
+            if (sn instanceof ParentalStructureNode) {
+                childPages.add( (ParentalStructureNode) sn );
+            }
+        }
+        return childPages;
     }
 
     /* (non-Javadoc)
@@ -176,6 +191,22 @@ public class PageNode extends AbstractStructureNode implements ParentalStructure
         return result;
     }
 
+    public PageNode createCopy() {
+        PageNode pn = new PageNode( target, label, icon );
+        pn.setChildIcon( childIcon );
+        pn.setChildLabel( childLabel );
+        pn.setChildTarget( childTarget );
+        pn.setDynamicChildren( hasDynamicChildren );
+        pn.setParentNode( parent );
+        pn.setPattern( pattern );
+        pn.setProvider( provider );
+        for (StructureNode child : children) {
+            pn.addChild( child.createCopy() );
+        }
+        pn.properties = new HashMap<String, String>( properties );
+        return pn;
+    }
+    
     /* (non-Javadoc)
      * @see org.nexuse2e.ui.structure.impl.AbstractStructureNode#toString()
      */

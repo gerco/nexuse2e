@@ -120,8 +120,10 @@ public class TreeProvider implements AjaxRequestHandler {
                     if ( parentNode instanceof PageNode ) {
                         List<StructureNode> children = ( (ParentalStructureNode) parentNode ).getChildren();
                         for ( StructureNode currChild : children ) {
-                            if ( !ignoreCommands || currChild instanceof PageNode ) {
-                                result.put( convert2DojoNode( currChild, ignoreCommands ) );
+                            if ( !currChild.isPattern() ) {
+                                if ( !ignoreCommands || currChild instanceof PageNode ) {
+                                    result.put( convert2DojoNode( currChild, ignoreCommands ) );
+                                }
                             }
                         }
                     }
@@ -199,7 +201,7 @@ public class TreeProvider implements AjaxRequestHandler {
         
         for ( StructureNode currNode : nodes ) {
             map.put( currNode.getTarget(), currNode );
-            if ( currNode instanceof PageNode && ( (ParentalStructureNode) currNode ).hasChildren() ) {
+            if ( currNode instanceof PageNode && ( (ParentalStructureNode) currNode ).hasChildren() && !currNode.isPattern() ) {
                 addToMap( ( (ParentalStructureNode) currNode ).getChildren(), map );
             }
         }

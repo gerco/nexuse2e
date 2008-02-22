@@ -54,5 +54,17 @@ public interface StructureNode {
      * Returns the parent node of this node.
      * @return This node's parent node or <code>null</code> if this node has no parent.
      */
-    StructureNode getParentNode();
+    ParentalStructureNode getParentNode();
+    
+    /**
+     * Returns <code>true</code> if and only if this is a pattern node for a dynamic parent.
+     * @return The pattern node flag.
+     */
+    boolean isPattern();
+    
+    /**
+     * Creates a copy of this <code>StructureNode</code>.
+     * @return A copied node.
+     */
+    StructureNode createCopy();
 }

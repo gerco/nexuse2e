@@ -154,7 +154,7 @@ public class XmlStructureServer implements StructureService {
     public List<StructureNode> getMenuStructure( EngineConfiguration engineConfiguration ) throws StructureException {
 
         synchronized ( this ) {
-            return getStructure( COMPILED_EXPR_MENU, true, engineConfiguration );
+            return getStructure( COMPILED_EXPR_MENU, (engineConfiguration != null), engineConfiguration );
         }
 
     }
@@ -170,7 +170,7 @@ public class XmlStructureServer implements StructureService {
     public List<StructureNode> getSiteStructure( EngineConfiguration engineConfiguration ) throws StructureException {
 
         synchronized ( this ) {
-            return getStructure( COMPILED_EXPR_SITE, true, engineConfiguration );
+            return getStructure( COMPILED_EXPR_SITE, (engineConfiguration != null), engineConfiguration );
         }
     }
     
@@ -195,10 +195,10 @@ public class XmlStructureServer implements StructureService {
      * @see setSpec(String)
      * @see org.nexuse2e.ui.structure.StructureService#getMenuStructure()
      */
-    public List<StructureNode> getSiteSkeleton( EngineConfiguration engineConfiguration ) throws StructureException {
+    public List<StructureNode> getSiteSkeleton() throws StructureException {
 
         synchronized ( this ) {
-            return getStructure( COMPILED_EXPR_SITE, false, engineConfiguration );
+            return getStructure( COMPILED_EXPR_SITE, false, null );
         }
     }
 
@@ -286,13 +286,14 @@ public class XmlStructureServer implements StructureService {
             
             if ( TYPE_PROVIDER.equalsIgnoreCase( type ) ) {
                 // dynamic node as placeholder for a bunch of nodes
-                StructureNode patternNode = new CommandNode( target, label, icon );
+                CommandNode patternNode = new CommandNode( target, label, icon );
+                patternNode.setPattern( true );
+                parent.setDynamicChildren( true );
                 if ( evaluateDynamicNodes ) {
                     if ( tpManager != null ) {
                         TargetProvider tp = tpManager.getTargetProvider( provider );
                         if ( tp != null ) {
                             parent.addChildren( tp.getStructure( patternNode, parent, engineConfiguration ) );
-                            parent.setDynamicChildren( true );
                         } else {
                             throw new StructureException( "No TargetProvider instance assigned to provider name \"" + provider
                                     + "\"!" );
@@ -349,14 +350,15 @@ public class XmlStructureServer implements StructureService {
             
             if ( TYPE_PROVIDER.equalsIgnoreCase( type ) ) {
                 // dynamic node as placeholder for a bunch of nodes
-                StructureNode patternNode = new PageNode( target, label, icon );
+                PageNode patternNode = new PageNode( target, label, icon );
+                patternNode.setPattern( true );
+                parent.setDynamicChildren( true );
                 if ( evaluateDynamicNodes ) {
                     if ( tpManager != null ) {
                         TargetProvider tp = tpManager.getTargetProvider( provider );
                         if ( tp != null ) {
                             List<StructureNode> sNodes = tp.getStructure( patternNode, parent, engineConfiguration );
                             parent.addChildren( sNodes );
-                            parent.setDynamicChildren( true );
                             for ( StructureNode sNode : sNodes ) {
                                 if ( sNode instanceof PageNode ) {
                                     // search for children of the new page node

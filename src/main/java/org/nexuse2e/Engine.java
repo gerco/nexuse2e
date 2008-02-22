@@ -60,8 +60,6 @@ import org.nexuse2e.messaging.TimestampFormatter;
 import org.nexuse2e.messaging.ebxml.EBXMLTimestampFormatter;
 import org.nexuse2e.messaging.mime.binary_base64;
 import org.nexuse2e.service.Service;
-import org.nexuse2e.ui.structure.StructureService;
-import org.nexuse2e.ui.structure.impl.CachedXmlStructureServer;
 import org.nexuse2e.util.CertificateUtil;
 import org.nexuse2e.util.XMLUtil;
 import org.springframework.beans.BeansException;
@@ -351,12 +349,6 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
             currentConfiguration.getStaticBeanContainer().getManagableBeans().put( Constants.TRANSACTION_SERVICE,
                     transactionService );
 
-            // init skeleton
-
-            if ( currentConfiguration.getSkeletonStatus() != BeanStatus.INITIALIZED.getValue() ) {
-                status = BeanStatus.ERROR;
-            }
-
             for ( Manageable bean : currentConfiguration.getStaticBeanContainer().getManagableBeans().values() ) {
                 if ( bean.getStatus().getValue() < BeanStatus.INITIALIZED.getValue() ) {
                     LOG.trace( "Initializing bean: " + bean.getClass().getName() );
@@ -372,13 +364,6 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                 } else if ( !( bean instanceof org.nexuse2e.logging.LogAppender ) ) {
                     LOG.error( "Bean already initialized: " + bean.getClass().getName() );
                 }
-            }
-
-            // update menu tree
-            
-            StructureService structureService = (StructureService) beanFactory.getBean( "structureService" );
-            if (structureService instanceof CachedXmlStructureServer) {
-                ((CachedXmlStructureServer) structureService).cacheMenuStructure( currentConfiguration );
             }
         } catch ( RuntimeException rex ) {
             rex.printStackTrace();

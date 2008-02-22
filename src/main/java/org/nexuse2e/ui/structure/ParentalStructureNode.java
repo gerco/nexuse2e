@@ -45,10 +45,23 @@ public interface ParentalStructureNode extends StructureNode {
     public abstract void removeChildren();
 
     /**
+     * Removes a single child from this node.
+     * @param child The child to be removed.
+     * @return <code>true</code> if and only if the child has been removed.
+     */
+    public abstract boolean removeChild( StructureNode child );
+    
+    /**
      * Returns the child nodes of the current instance.
      * @return List of child nodes.
      */
     public abstract List<StructureNode> getChildren();
+    
+    /**
+     * Returns a copied list that contains all child pages.
+     * @return A child pages list.
+     */
+    public abstract List<ParentalStructureNode> getChildPages();
 
     /**
      * Returns the current instance has children.

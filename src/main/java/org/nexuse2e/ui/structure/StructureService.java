@@ -59,10 +59,9 @@ public interface StructureService {
      * Returns the exact definition of the page (all nodes not included in
      * the menu) without evaluating dynamic nodes (<code>type="provider"</code>),
      * but with pattern nodes instead.
-     * @param engineConfiguration The applicable engine configuration.
      * @return A list containing the skeleton of the hierarchical structure
      *          definition of the page.
      * @throws StructureException 
      */
-    List<StructureNode> getSiteSkeleton( EngineConfiguration engineConfiguration ) throws StructureException;
+    List<StructureNode> getSiteSkeleton() throws StructureException;
 }

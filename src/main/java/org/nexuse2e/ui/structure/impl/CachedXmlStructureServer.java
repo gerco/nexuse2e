@@ -85,23 +85,64 @@ public class CachedXmlStructureServer extends XmlStructureServer {
         }
     }
     
+    private List<StructureNode> getDynamicChildren(
+            TargetProvider tp,
+            ParentalStructureNode parent,
+            StructureNode patternNode,
+            EngineConfiguration engineConfiguration ) {
+
+        List<StructureNode> children;
+        if (hasPatternParent( parent )) {
+            children = parent.getChildren();
+        } else {
+            children = tp.getStructure( patternNode, parent, engineConfiguration );
+        }
+
+        if (patternNode instanceof ParentalStructureNode) {
+            ParentalStructureNode patternPsn = (ParentalStructureNode) patternNode;
+            for (StructureNode sn : children) {
+                if (sn instanceof ParentalStructureNode) {
+                    ParentalStructureNode childPsn = (ParentalStructureNode) sn;
+                    int i = 0;
+                    for (StructureNode child : patternPsn.getChildren()) {
+                        StructureNode copy = child.createCopy();
+                        childPsn.getChildren().add( i++, copy );
+                        copy.setParentNode( childPsn );
+                    }
+                }
+            }
+        }
+        return children;
+    }
+    
+    private boolean hasPatternParent( ParentalStructureNode psn ) {
+        while (psn != null) {
+            if (psn.isPattern()) {
+                return true;
+            }
+            psn = psn.getParentNode();
+        }
+        return false;
+    }
     
     private void patchNodes( List<StructureNode> nodes, EngineConfiguration engineConfiguration ) {
         for (StructureNode node : nodes) {
             if (node instanceof ParentalStructureNode) {
                 ParentalStructureNode psn = (ParentalStructureNode) node;
-                if (psn != null && psn.hasDynamicChildren() && psn.getProvider() != null && tpManager != null) {
+                if (!psn.isPattern() && psn.hasDynamicChildren() && psn.getProvider() != null && tpManager != null) {
                     TargetProvider tp = tpManager.getTargetProvider( psn.getProvider() );
-                    if (tp != null) {
-                        StructureNode patternNode = new CommandNode(
-                                psn.getChildTarget(), psn.getChildLabel(), psn.getChildIcon() );
-                        List<StructureNode> children = tp.getStructure( patternNode, psn, engineConfiguration );
-                        psn.removeChildren();
-                        psn.addChildren( children );
+                    List<ParentalStructureNode> childPages = psn.getChildPages();
+                    if (tp != null && !childPages.isEmpty()) {
+                        StructureNode patternNode = childPages.get( 0 );
+                        if (patternNode.isPattern()) {
+                            psn.removeChildren();
+                            List<StructureNode> children = getDynamicChildren( tp, psn, patternNode, engineConfiguration );
+                            psn.addChild( patternNode );
+                            psn.addChildren( children );
+                        }
                     }
-                } else {
-                    patchNodes( psn.getChildren(), engineConfiguration );
                 }
+                patchNodes( psn.getChildren(), engineConfiguration );
             }
         }
     }
@@ -120,14 +161,14 @@ public class CachedXmlStructureServer extends XmlStructureServer {
             if ( menuStructureCache.containsKey( spec ) ) {
                 // get structure from cache
                 result = menuStructureCache.get( spec );
-                
-                // patch dynamic nodes
-                patchNodes( result, engineConfiguration );
             } else {
                 // parse spec
-                result = super.getMenuStructure( engineConfiguration );
+                result = super.getMenuStructure( null );
                 menuStructureCache.put( spec, result );
             }
+
+            // patch dynamic nodes
+            patchNodes( result, engineConfiguration );
 
             return result;
         }
@@ -139,7 +180,7 @@ public class CachedXmlStructureServer extends XmlStructureServer {
      * @see org.nexuse2e.ui.structure.impl.XmlStructureServer#getSiteSkeleton()
      */
     @Override
-    public List<StructureNode> getSiteSkeleton( EngineConfiguration engineConfiguration ) throws StructureException {
+    public List<StructureNode> getSiteSkeleton() throws StructureException {
 
         synchronized ( this ) {
             List<StructureNode> result = null;
@@ -149,7 +190,7 @@ public class CachedXmlStructureServer extends XmlStructureServer {
                 result = siteSkeletonCache.get( spec );
             } else {
                 // parse spec
-                result = super.getSiteSkeleton( engineConfiguration );
+                result = super.getSiteSkeleton();
                 siteSkeletonCache.put( spec, result );
             }
 
@@ -233,10 +274,10 @@ public class CachedXmlStructureServer extends XmlStructureServer {
     /**
      * Pre-Caches the menu structure based of the currently set structure specification.
      */
-    public void cacheMenuStructure( EngineConfiguration engineConfiguration ) throws StructureException {
+    public void cacheMenuStructure() throws StructureException {
 
         synchronized ( this ) {
-            List<StructureNode> result = super.getMenuStructure( engineConfiguration );
+            List<StructureNode> result = super.getMenuStructure( null );
                 menuStructureCache.put( spec, result );
         }
     }
@@ -246,10 +287,10 @@ public class CachedXmlStructureServer extends XmlStructureServer {
     /**
      * Pre-Caches the site skeleton based of the currently set structure specification.
      */
-    public void cacheSiteSkeleton( EngineConfiguration engineConfiguration ) throws StructureException {
+    public void cacheSiteSkeleton() throws StructureException {
 
         synchronized ( this ) {
-            List<StructureNode> result = super.getSiteSkeleton( engineConfiguration );
+            List<StructureNode> result = super.getSiteSkeleton();
                 siteSkeletonCache.put( spec, result );
         }
     }

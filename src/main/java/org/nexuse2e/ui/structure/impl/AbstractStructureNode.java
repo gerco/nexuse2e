@@ -42,6 +42,7 @@ public abstract class AbstractStructureNode implements StructureNode {
     protected String                icon;
     protected ParentalStructureNode parent;
     protected StrSubstitutor        substitutor;
+    protected boolean               pattern;
 
     public AbstractStructureNode( String target, String label, String icon ) {
 
@@ -126,5 +127,13 @@ public abstract class AbstractStructureNode implements StructureNode {
     public String toString() {
 
         return super.toString() + "[target=" + target + ",label=" + label + ",icon=" + icon + "]";
+    }
+    
+    public boolean isPattern() {
+        return pattern;
+    }
+    
+    public void setPattern( boolean pattern ) {
+        this.pattern = pattern;
     }
 }

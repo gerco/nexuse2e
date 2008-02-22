@@ -19,6 +19,7 @@
  */
 package org.nexuse2e.ui.structure.impl;
 
+
 /**
  * Defines the interface of a command node.
  * @author Sebastian Schulze
@@ -35,5 +36,12 @@ public class CommandNode extends AbstractStructureNode {
     public CommandNode( String target, String label, String icon ) {
 
         super( target, label, icon );
+    }
+    
+    public CommandNode createCopy() {
+        CommandNode cm = new CommandNode( target, label, icon );
+        cm.setParentNode( parent );
+        cm.setPattern( pattern );
+        return cm;
     }
 }
