@@ -21,7 +21,8 @@ package org.nexuse2e;
 
 import org.apache.log4j.Logger;
 import org.nexuse2e.Constants.BeanStatus;
-import org.nexuse2e.service.AbstractControllerService;
+import org.nexuse2e.messaging.Pipelet;
+import org.nexuse2e.service.Service;
 
 /**
  * @author mbreilmann
@@ -80,22 +81,36 @@ public class EngineController {
     } // initialize
 
     /**
-     * Return a controller wrapper for the specified controller ID.
+     * Return a TransportReceiver for the specified controller ID.
      * The call will be handled by the <code>EngineControllerStub</code>.
      * @param controllerId The ID of the controller to wrap.
      * @return The wrapper for the specified controller.
      */
-    public AbstractControllerService getControllerWrapper( String controllerId, AbstractControllerService controller ) {
+    public Pipelet getTransportReceiver( String controllerId, String className ) {
 
-        AbstractControllerService wrapper = null;
+        Pipelet receiver = null;
 
         if ( engineControllerStub != null ) {
-            wrapper = engineControllerStub.getControllerWrapper( controllerId, controller );
+            receiver = engineControllerStub.getTransportReceiver( controllerId, className );
         }
 
-        return wrapper;
+        return receiver;
     }
 
+    /**
+     * @param transportService
+     * @return
+     */
+    public Service getServiceWrapper(Service transportService) {
+        
+        Service service = null;
+
+        if ( engineControllerStub != null ) {
+            service = engineControllerStub.getServiceWrapper( transportService );
+        }
+        return service;
+    }
+    
     /**
      * 
      */

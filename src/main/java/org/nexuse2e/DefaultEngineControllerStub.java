@@ -23,7 +23,10 @@ package org.nexuse2e;
 import java.net.UnknownHostException;
 
 import org.apache.log4j.Logger;
-import org.nexuse2e.service.AbstractControllerService;
+import org.nexuse2e.messaging.MessageContext;
+import org.nexuse2e.messaging.Pipelet;
+import org.nexuse2e.service.Service;
+import org.nexuse2e.transport.TransportReceiver;
 
 /**
  * @author mbreilmann
@@ -33,34 +36,63 @@ public class DefaultEngineControllerStub implements EngineControllerStub {
 
     private static Logger LOG = Logger.getLogger( DefaultEngineControllerStub.class );
 
+    /**
+     * 
+     */
     public DefaultEngineControllerStub() {
 
         LOG.debug( "In constructor..." );
     } // default constructor
 
     /* (non-Javadoc)
-     * @see org.nexuse2e.EngineControllerStub#getControllerWrapper(java.lang.String)
+     * @see org.nexuse2e.EngineControllerStub#getTransportReceiver(java.lang.String, org.nexuse2e.messaging.Pipelet)
      */
-    public AbstractControllerService getControllerWrapper( String controllerId, AbstractControllerService controller ) {
-        LOG.trace( "Returning controller: " + controller );
+    public Pipelet getTransportReceiver( String controllerId, String className ) {
 
-        return controller;
+        TransportReceiver transportReceiver = null;
+        try {
+            transportReceiver = (TransportReceiver) Class.forName( className ).newInstance();
+            LOG.trace( "Returning transportReceiver: " + transportReceiver );
+        } catch ( Exception e ) {
+            LOG.error( e.getClass().getName() + ": unable to create Instance of " + className );
+            e.printStackTrace();
+        }
+
+        return transportReceiver;
     }
 
     /* (non-Javadoc)
      * @see org.nexuse2e.EngineControllerStub#initialize()
      */
     public void initialize() {
-        
+
     }
 
+    /* (non-Javadoc)
+     * @see org.nexuse2e.EngineControllerStub#getMachineId()
+     */
     public String getMachineId() {
 
         try {
             return java.net.InetAddress.getLocalHost().getHostName();
         } catch ( UnknownHostException e ) {
-            LOG.error( "Unable to determine MachineId: "+e);
-        } 
+            LOG.error( "Unable to determine MachineId: " + e );
+        }
         return "*unknown";
     }
-} // DefaultEngineControllerStub
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.EngineControllerStub#getServiceWrapper(org.nexuse2e.service.Service)
+     */
+    public Service getServiceWrapper( Service service ) {
+
+        return service;
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.EngineControllerStub#broadcastAck(org.nexuse2e.messaging.MessageContext)
+     */
+    public void broadcastAck( MessageContext message ) {
+        
+    }
+}

@@ -504,7 +504,8 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     public String getFileExtensionFromMime( String mimeType ) {
 
         MimeMapping tempMimeMapping = mimeMappings.get( mimeType );
-
+        
+        
         if ( tempMimeMapping != null ) {
             return tempMimeMapping.fileExtension;
         }
@@ -1059,6 +1060,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
         } else {
             LOG.error( "Failed to teardown Engine, no configuration found!" );
         }
+        currentConfiguration = null;
 
     } // deactivate
 

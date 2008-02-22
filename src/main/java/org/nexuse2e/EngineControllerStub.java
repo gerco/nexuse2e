@@ -19,21 +19,34 @@
  */
 package org.nexuse2e;
 
-import org.nexuse2e.service.AbstractControllerService;
+import org.nexuse2e.messaging.MessageContext;
+import org.nexuse2e.messaging.Pipelet;
+import org.nexuse2e.service.Service;
 
 public interface EngineControllerStub {
 
     /**
-     * Return a controller wrapper for the specified controller ID.
-     * @param controllerId The ID of the controller to wrap.
+     * Return a Transport Receiver for the specified controller ID.
+     * @param receiverId The ID of the receiver to wrap.
      * @return The wrapper for the specified controller.
      */
-    public AbstractControllerService getControllerWrapper( String controllerId, AbstractControllerService controller );
+    public Pipelet getTransportReceiver( String receiverId, String className );
 
+    /**
+     * @param service
+     * @return
+     */
+    public Service getServiceWrapper(Service service);
     /**
      * is called before using the underlying stub implementation
      */
     public void initialize();
+    
+    /**
+     * @param message
+     */
+    public void broadcastAck(MessageContext message);
+    
     
     public String getMachineId();
     

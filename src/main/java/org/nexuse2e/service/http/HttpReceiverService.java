@@ -87,7 +87,7 @@ public class HttpReceiverService extends AbstractControllerService implements Re
         try {
             LOG.debug( "HTTPService: " + this );
             
-            if ( status != BeanStatus.STARTED ) {
+            if ( getStatus() != BeanStatus.STARTED ) {
                 response.setStatus( HttpServletResponse.SC_SERVICE_UNAVAILABLE );
                 return null;
             }

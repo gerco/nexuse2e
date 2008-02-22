@@ -467,7 +467,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
         int pos = 0;
         Pipelet[] pipelets = null;
         BackendPipeline backendPipeline = null;
-        Map<String, AbstractControllerService> mappings = new HashMap<String, AbstractControllerService>();
+        Map<String, Service> mappings = new HashMap<String, Service>();
         UpdateableUrlHandlerMapping updateableUrlHandlerMapping = null;
 
         backendInboundPipelines = new HashMap<ActionSpecificKey, BackendPipeline>();
@@ -615,12 +615,20 @@ public class EngineConfiguration implements ConfigurationAccessService {
                     for ( PipeletPojo pipeletPojo : pipelinePojo.getPipelets() ) {
                         LOG.trace( "Pipelet: " + pipeletPojo.getName() + " - " + pipeletPojo.getPosition() + " - "
                                 + pipeletPojo.getClass() );
+                        Pipelet pipelet = getPipeletInstanceFromPojo( pipeletPojo );
+                        
                         if ( i >= 0 ) {
-                            Pipelet pipelet = getPipeletInstanceFromPojo( pipeletPojo );
                             forwardPipelets[i] = pipelet;
                         } else {
-                            TransportReceiver transportReceiver = (TransportReceiver) Class.forName(
-                                    pipeletPojo.getComponent().getClassName() ).newInstance();
+                            String urlAppendix = ""+pipeletPojo.getNxPipeletId();
+                            if ( urlAppendix == null ) {
+                                urlAppendix = pipeletPojo.getName();
+                            }
+                            
+                            TransportReceiver transportReceiver = (TransportReceiver) Engine.getInstance().getEngineController().getTransportReceiver( 
+                                    urlAppendix,pipeletPojo.getComponent().getClassName());
+                            
+                            
                             transportReceiver.setFrontendPipeline( frontendPipeline );
                             transportReceiver.setKey( frontendPipeline.getKey() );
                             ConfigurationUtil.configurePipelet( transportReceiver, pipeletPojo.getPipeletParams() );
@@ -644,16 +652,10 @@ public class EngineConfiguration implements ConfigurationAccessService {
                     frontendPipeline.setPipelineEndpoint( getStaticBeanContainer().getFrontendInboundDispatcher() );
                 }
 
-            } catch (InstantiationException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 throw new NexusException( e );
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-                throw new NexusException( e );
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-                throw new NexusException( e );
-            }
+            } 
 
         }
         FrontendPipeline[] frontendOutboundPipelinesArray = new FrontendPipeline[getFrontendOutboundPipelines().size()];
@@ -669,19 +671,25 @@ public class EngineConfiguration implements ConfigurationAccessService {
             for ( ServicePojo servicePojo : getServices() ) {
                 try {
                     Service service = getServiceInstanceFromPojo( servicePojo );
-                    staticBeanContainer.getManagableBeans().put( servicePojo.getName(), service );
-
+                    
                     // Register Controller for inbound HTTP messages
                     if ( service instanceof AbstractControllerService ) {
                         String urlAppendix = service.getParameter( "logical_name" );
                         if ( urlAppendix == null ) {
                             urlAppendix = servicePojo.getName();
                         }
-                        AbstractControllerService controller = Engine.getInstance().getEngineController()
-                                .getControllerWrapper( urlAppendix, (AbstractControllerService) service );
-                        LOG.trace( "Registering controller: " + urlAppendix + " - " + controller );
-                        mappings.put( urlAppendix, controller );
+                        Service wrappedService = Engine.getInstance().getEngineController()
+                                .getServiceWrapper( service );
+                        LOG.trace( "Registering controller: " + urlAppendix + " - " + service );
+                        
+                        mappings.put( urlAppendix, service );
+                        
+                        service = wrappedService;
                     }
+                    
+                    staticBeanContainer.getManagableBeans().put( servicePojo.getName(), service );
+                    
+                    
                     if ( service instanceof ApplicationObjectSupport ) {
                         ( (ApplicationObjectSupport) service ).setApplicationContext( Engine.getInstance()
                                 .getApplicationContext() );
