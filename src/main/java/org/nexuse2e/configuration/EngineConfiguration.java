@@ -19,6 +19,7 @@
  */
 package org.nexuse2e.configuration;
 
+import java.io.IOException;
 import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -209,18 +210,14 @@ public class EngineConfiguration implements ConfigurationAccessService {
 
         this();
         
-        staticBeanContainer = config.staticBeanContainer;
-        choreographies = new ArrayList<ChoreographyPojo>( config.choreographies );
-        certificates = new ArrayList<CertificatePojo>( config.certificates );
-        partners = new ArrayList<PartnerPojo>( config.partners );
-        frontendPipelineTemplates = new ArrayList<PipelinePojo>( config.frontendPipelineTemplates );
-        backendPipelineTemplates = new ArrayList<PipelinePojo>( config.backendPipelineTemplates );
-        trps = new ArrayList<TRPPojo>( config.trps );
-        components = new ArrayList<ComponentPojo>( config.components );
-        loggers = new ArrayList<LoggerPojo>( config.loggers );
-        services = new ArrayList<ServicePojo>( config.services );
-        users = new ArrayList<UserPojo>( config.users );
-        roles = new ArrayList<RolePojo>( config.roles );
+        try {
+            CloneContainer container = new CloneContainer( config );
+            container.copy( this );
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -746,7 +743,13 @@ public class EngineConfiguration implements ConfigurationAccessService {
         }
     }
 
-    private Service getServiceInstanceFromPojo( ServicePojo pojo ) throws NexusException {
+    /**
+     * Creates a temporary <code>Service</code> instance from the given <code>ServicePojo</code>.
+     * @param pojo The service pojo.
+     * @return A <code>Service</code> object.
+     * @throws NexusException If the service instance could not be created.
+     */
+    public Service getServiceInstanceFromPojo( ServicePojo pojo ) throws NexusException {
 
         try {
             Object newService = Class.forName( pojo.getComponent().getClassName() ).newInstance();
@@ -1896,40 +1899,13 @@ public class EngineConfiguration implements ConfigurationAccessService {
             throw new IllegalArgumentException( "Service name must not be empty" );
         }
     
-        try {
-            List<ServicePojo> services = getServices();
-            ServicePojo oldServicePojo = getServicePojoByNxServiceId( servicePojo.getNxServiceId() );
-            Service service = null;
-            if ( oldServicePojo != null ) {
-                service = getService( oldServicePojo.getName() );
-                services.remove( oldServicePojo );
-                // service has been renamed
-                if ( !oldServicePojo.getName().equals( servicePojo.getName() ) ) {
-                    renameService( oldServicePojo.getName(), servicePojo.getName() );
-                }
-                if ( servicePojo.getServiceParams() != null ) {
-                    ConfigurationUtil.configureService( service, servicePojo.getServiceParams() );
-                }
-            } else {
-                service = (Service) Class.forName( servicePojo.getComponent().getClassName() ).newInstance();
-                if ( servicePojo.getServiceParams() != null ) {
-                    ConfigurationUtil.configureService( service, servicePojo.getServiceParams() );
-                }
-                service.initialize( this );
-                service.activate();
-                if ( service.isAutostart() ) {
-                    service.start();
-                }
-                getStaticBeanContainer().getManagableBeans().put( servicePojo.getName(), service );
-            }
-            services.add( servicePojo );
-            addToUpdateList( servicePojo );
-        } catch ( Exception e ) {
-            if (e instanceof NexusException) {
-                throw (NexusException) e;
-            }
-            throw new NexusException( e );
+        ServicePojo oldServicePojo = getServicePojoByNxServiceId( servicePojo.getNxServiceId() );
+        if (oldServicePojo != null) {
+            services.remove( oldServicePojo );
         }
+        services.add( servicePojo );
+        addToUpdateList( servicePojo );
+        addToImplicitUpdateList( servicePojo, servicePojo.getServiceParams() );
     }
     
     /* (non-Javadoc)
