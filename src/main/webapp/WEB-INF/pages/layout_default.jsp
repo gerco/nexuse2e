@@ -242,7 +242,7 @@
         	} else {
         		//debug(result[i].widgetId + " (" + result[i].objectId + ")" + " is new");
         		var newChild = dojo.widget.createWidget(node.widgetType, result[i]);
-      			node.addChild(newChild);
+      			node.addChild(newChild, i);
         	}
         }
       },
