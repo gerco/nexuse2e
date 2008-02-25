@@ -7,7 +7,7 @@
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
 <%@ taglib uri="/tags/struts-html-el" prefix="html-el"%>
 
-<nexus:helpBar />
+<% /* <nexus:helpBar /> */ %>
 
 <center><script language="JavaScript" type="text/javascript">
       	this.clearConvId = function () {

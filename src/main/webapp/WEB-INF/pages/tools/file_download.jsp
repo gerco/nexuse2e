@@ -7,13 +7,21 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="/tags/struts-html-el" prefix="html-el"%>
 
-<nexus:helpBar />
+<% /* <nexus:helpBar /> */ %>
 
 <center>
 
+	<table class="NEXUS_TABLE" width="100%">
+		<tr>
+			<td><nexus:crumbs styleClass="NEXUSScreenPathLink"></nexus:crumbs></td>
+		</tr>
+		<tr>
+			<td class="NEXUSScreenName">File Download</td>
+		</tr>
+	</table>
 	<table width="100%">
 		<tr>
-			<td colspan="2" class="NEXUSSection">File Download</td>
+			<td colspan="2" class="NEXUSSection">File List</td>
 		</tr>
 		<tr>
 			<td class="NEXUSValue">

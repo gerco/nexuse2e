@@ -1,6 +1,6 @@
 <%@ taglib uri="/tags/nexus" prefix="nexus"%>
 
-<nexus:helpBar />
+<% /* <nexus:helpBar /> */ %>
 
 <table class="NEXUS_TABLE" width="100%">
 	<tr>

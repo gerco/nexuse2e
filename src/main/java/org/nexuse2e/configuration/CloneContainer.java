@@ -12,6 +12,7 @@ import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ComponentPojo;
 import org.nexuse2e.pojo.LoggerPojo;
+import org.nexuse2e.pojo.MappingPojo;
 import org.nexuse2e.pojo.PartnerPojo;
 import org.nexuse2e.pojo.PipelinePojo;
 import org.nexuse2e.pojo.RolePojo;
@@ -41,6 +42,7 @@ public class CloneContainer implements Serializable {
     private List<ServicePojo>      services;
     private List<UserPojo>         users;
     private List<RolePojo>         roles;
+    private List<MappingPojo>      mappings;
 
     public CloneContainer( EngineConfiguration config ) {
 
@@ -55,6 +57,7 @@ public class CloneContainer implements Serializable {
         services = config.getServices();
         users = config.getUsers();
         roles = config.getRoles();
+        mappings = config.getMappings();
 
     }
 
@@ -90,6 +93,7 @@ public class CloneContainer implements Serializable {
         dest.setCertificates( newContainer.getCertificates() );
         dest.setUsers( newContainer.getUsers() );
         dest.setRoles( newContainer.getRoles() );
+        dest.setMappings( newContainer.getMappings() );
     }
     
     
@@ -267,6 +271,16 @@ public class CloneContainer implements Serializable {
     public void setUsers( List<UserPojo> users ) {
 
         this.users = users;
+    }
+
+    public List<MappingPojo> getMappings() {
+
+        return mappings;
+    }
+
+    public void setMappings( List<MappingPojo> mappings ) {
+
+        this.mappings = mappings;
     }
 
 };

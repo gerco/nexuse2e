@@ -20,6 +20,7 @@
 package org.nexuse2e.ui.action.tools;
 
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
@@ -117,9 +118,13 @@ public class MappingMaintenanceAction extends NexusE2EAction {
         }
         List<MappingPojo> mappings = engineConfiguration.getMappings( null );
 
+        if (mappings == null) {
+            request.setAttribute( ATTRIBUTE_COLLECTION, Collections.EMPTY_LIST );
+        } else {
+            request.setAttribute( ATTRIBUTE_COLLECTION, mappings );
+        }
         
 
-        request.setAttribute( ATTRIBUTE_COLLECTION, mappings );
 
         List<String> typenames = new Vector<String>();
         for ( MappingType type : MappingType.values() ) {
