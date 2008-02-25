@@ -232,7 +232,7 @@
     </property>
   </bean>
 
-  <bean id="structureService" class="org.nexuse2e.ui.structure.impl.CachedXmlStructureServer">
+  <bean id="structureService" class="org.nexuse2e.ui.structure.impl.CachedXmlStructureServer" init-method="cacheMenuStructure">
     <property name="spec">
       <value>${struct.spec}</value>
     </property>
