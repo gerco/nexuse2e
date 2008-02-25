@@ -895,8 +895,7 @@ public class ConfigDAO extends BasicDAO {
                 LOG.trace( "Set adapterClassName to: " + trpPojo.getAdapterClassName() );
             }
         }
-        configuration.init();
-
+        
         releaseDBSession( session );
     } // loadDataFromDB
     

@@ -718,6 +718,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
             currentConfiguration = new EngineConfiguration();
             if (configDAO.isDatabasePopulated()) {
                 configDAO.loadDatafromDB( currentConfiguration );
+                currentConfiguration.init();
             } else {
                 LOG.info( "Empty database detected, creating and saving base configuration of type: "
                         + baseConfigurationProvider.getClass() );
@@ -842,8 +843,8 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
             }
             try {
                 LOG.debug( "Initialize new configuration" );
-                newConfiguration.init();
                 this.currentConfiguration = newConfiguration;
+                newConfiguration.init();
             } catch ( Exception e ) {
                 LOG.error( "Error initializing configuration: " + e );
                 e.printStackTrace();

@@ -22,6 +22,7 @@ package org.nexuse2e.integration;
 
 import java.rmi.RemoteException;
 
+import javax.jws.Oneway;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
@@ -45,12 +46,12 @@ public interface BackendDeliveryInterface {
      * @param conversationId The conversation ID.
      * @param messageId The message ID.
      * @param payload The message payload.
-     * @return The message processing response as a string.
-     * @throws ProcessInboundMessageException If some processing error occurred.
+     * @throws RemoteException If some processing error occurred.
      */
     @WebMethod(operationName = "processInboundMessage", action = "http://integration.nexuse2e.org/BackendDeliveryInterface/processInboundMessage")
     @WebResult(name = "statusResponse", targetNamespace = "")
-    public String processInboundMessage(
+    @Oneway
+    public void processInboundMessage(
         @WebParam(name = "choreographyId", targetNamespace = "")
         String choreographyId,
         @WebParam(name = "businessPartnerId", targetNamespace = "")
@@ -61,7 +62,8 @@ public interface BackendDeliveryInterface {
         String conversationId,
         @WebParam(name = "messageId", targetNamespace = "")
         String messageId,
-        @WebParam(name = "payload", targetNamespace = "") String payload)
-        throws RemoteException, ProcessInboundMessageException;
+        @WebParam(name = "payload", targetNamespace = "")
+        String payload)
+        throws RemoteException;
 
 }

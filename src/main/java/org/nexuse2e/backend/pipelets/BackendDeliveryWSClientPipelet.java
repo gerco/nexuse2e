@@ -32,7 +32,6 @@ import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.integration.BackendDeliveryInterface;
-import org.nexuse2e.integration.ProcessInboundMessageException;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.ActionPojo;
@@ -114,14 +113,12 @@ public class BackendDeliveryWSClientPipelet extends AbstractPipelet {
 
         BackendDeliveryInterface service = (BackendDeliveryInterface) factory.create();
         try {
-            String response = service.processInboundMessage( messageContext.getChoreography().getName(), messageContext
+            service.processInboundMessage( messageContext.getChoreography().getName(), messageContext
                     .getPartner().getName(), actionId, messageContext.getConversation().getConversationId(),
                     messageContext.getMessagePojo().getMessageId(), payload );
-            LOG.debug( "response from backend delivery WS is " + response );
+            LOG.debug( "Backend delivery WS called!" );
             return messageContext;
         } catch ( RemoteException e ) {
-            throw new NexusException( e );
-        } catch ( ProcessInboundMessageException e ) {
             throw new NexusException( e );
         }
     }
