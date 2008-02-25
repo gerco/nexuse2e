@@ -4,7 +4,6 @@ import javax.jws.WebService;
 
 import org.apache.log4j.Logger;
 import org.nexuse2e.integration.BackendDeliveryInterface;
-import org.nexuse2e.integration.ProcessInboundMessageException;
 
 /**
  * Created: 22.08.2007
@@ -21,17 +20,17 @@ public class BackendDeliveryWS implements BackendDeliveryInterface {
     /* (non-Javadoc)
      * @see org.nexuse2e.integration.BackendDeliveryInterface#processInboundMessage(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String[])
      */
-    public String processInboundMessage(
+    public void processInboundMessage(
             String choreographyId,
             String businessPartnerId,
             String actionId,
             String conversationId,
             String messageId,
-            String payload) throws ProcessInboundMessageException {
+            String payload) {
         LOG.info( "choreographyId=" + choreographyId + " businessPartnerId="
                 + businessPartnerId + " actionId=" + actionId
                 + " conversationId=" + conversationId + " messageId=" + messageId + " payload=" + payload );
-        return "success";
+        return;
     }
 
     
