@@ -73,10 +73,10 @@ public class XiomaBaseServerConfiguration implements BaseConfigurationProvider {
 
         try {
 
-            TRPPojo ebXML1HttpTRPPojo = new TRPPojo( "ebxml", "1.0", "http", new Date(), new Date(), 1 );
-            TRPPojo ebXML2HttpTRPPojo = new TRPPojo( "ebxml", "2.0", "http", new Date(), new Date(), 1 );
-            TRPPojo ebXML2MailTRPPojo = new TRPPojo( "ebxml", "2.0", "mail", new Date(), new Date(), 1 );
-            TRPPojo httpPlainTRPPojo = new TRPPojo( "httpplain", "1.0", "http", new Date(), new Date(), 1 );
+            TRPPojo ebXML1HttpTRPPojo = new TRPPojo( "ebxml", "1.0", "http", org.nexuse2e.messaging.ebxml.v10.ProtocolAdapter.class.getName(), new Date(), new Date(), 1 );
+            TRPPojo ebXML2HttpTRPPojo = new TRPPojo( "ebxml", "2.0", "http", org.nexuse2e.messaging.ebxml.v20.ProtocolAdapter.class.getName(), new Date(), new Date(), 1 );
+            TRPPojo ebXML2MailTRPPojo = new TRPPojo( "ebxml", "2.0", "mail", org.nexuse2e.messaging.ebxml.v20.ProtocolAdapter.class.getName(), new Date(), new Date(), 1 );
+            TRPPojo httpPlainTRPPojo = new TRPPojo( "httpplain", "1.0", "http", org.nexuse2e.messaging.DefaultProtocolAdapter.class.getName(), new Date(), new Date(), 1 );
 
             /*
              trps = new ArrayList<TRPPojo>();

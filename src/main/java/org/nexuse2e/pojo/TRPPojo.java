@@ -58,13 +58,32 @@ public class TRPPojo implements NEXUSe2ePojo {
         modifiedDate = createdDate;
     }
 
+    /** constructor without adapter class name */
+    public TRPPojo(
+            String protocol,
+            String version,
+            String transport,
+            Date createdDate,
+            Date modifiedDate,
+            int modifiedNxUserId ) {
+        this( protocol, version, transport, null, createdDate, modifiedDate, modifiedNxUserId );
+    }
+    
+    
     /** full constructor */
-    public TRPPojo( String protocol, String version, String transport, Date createdDate, Date modifiedDate,
+    public TRPPojo(
+            String protocol,
+            String version,
+            String transport,
+            String adapterClassName,
+            Date createdDate,
+            Date modifiedDate,
             int modifiedNxUserId ) {
 
         this.protocol = protocol;
         this.version = version;
         this.transport = transport;
+        this.adapterClassName = adapterClassName;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
         this.modifiedNxUserId = modifiedNxUserId;
