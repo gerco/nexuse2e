@@ -77,7 +77,7 @@ public class NotifierViewAction extends NexusE2EAction {
         loggerForm.setLoggerInstance( logger );
         loggerForm.setComponentName( loggerPojo.getComponent().getName() );
 
-        Map<String, List<String>> logCategories = Engine.getInstance().getCurrentConfiguration().getLogCategories();
+        Map<String, List<String>> logCategories = engineConfiguration.getLogCategories();
 
         loggerForm.getGroupNames().clear();
         HashMap<String, String> tempFilterValues = new HashMap<String, String>();
