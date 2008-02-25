@@ -18,37 +18,14 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="processInboundMessageResponse">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="statusResponse" type="xsd:string" />
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="processInboundMessageFault">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="errorCode" type="xsd:integer"></xsd:element>
-            <xsd:element name="errorDescription" type="xsd:string"></xsd:element>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
     </xsd:schema>
   </wsdl:types>
   <wsdl:message name="processInboundMessageRequest">
     <wsdl:part element="nx:processInboundMessage" name="parameters" />
   </wsdl:message>
-  <wsdl:message name="processInboundMessageResponse">
-    <wsdl:part element="nx:processInboundMessageResponse" name="parameters" />
-  </wsdl:message>
-  <wsdl:message name="processInboundMessageFaultMsg">
-    <wsdl:part name="parameters" element="nx:processInboundMessageFault"></wsdl:part>
-  </wsdl:message>
   <wsdl:portType name="BackendDeliveryInterface">
     <wsdl:operation name="processInboundMessage">
       <wsdl:input message="nx:processInboundMessageRequest" />
-      <wsdl:output message="nx:processInboundMessageResponse" />
-      <wsdl:fault name="fault" message="nx:processInboundMessageFaultMsg"></wsdl:fault>
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="BackendDeliveryInterfaceSOAP" type="nx:BackendDeliveryInterface">

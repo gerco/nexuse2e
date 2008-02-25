@@ -1,61 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<wsdl:definitions name="NEXUSe2eUtilities"
-  targetNamespace="http://integration.nexuse2e.org/NEXUSe2eUtilities/"
-  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
-  xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<wsdl:definitions name="NEXUSe2eUtilities" targetNamespace="http://integration.nexuse2e.org/NEXUSe2eUtilities/"
+  xmlns:nxu="http://integration.nexuse2e.org/NEXUSe2eUtilities/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 
   <wsdl:types>
     <xsd:schema attributeFormDefault="unqualified" elementFormDefault="unqualified"
       targetNamespace="http://integration.nexuse2e.org/NEXUSe2eUtilities/">
-      <xsd:element name="containsPartner" type="containsPartner"/>
-      <xsd:complexType name="containsPartner">
-        <xsd:sequence>
-          <xsd:element minOccurs="0" name="partnerId" type="xsd:string"/>
-        </xsd:sequence>
-      </xsd:complexType>
-      <xsd:element name="containsPartnerResponse" type="containsPartnerResponse"/>
-      <xsd:complexType name="containsPartnerResponse">
-        <xsd:sequence>
-          <xsd:element name="containsPartnerResponse" type="xsd:boolean"/>
-        </xsd:sequence>
-      </xsd:complexType>
+      <xsd:element name="containsPartner">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="0" name="partnerId" type="xsd:string" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="containsPartnerResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="containsPartnerResponse" type="xsd:boolean" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
     </xsd:schema>
   </wsdl:types>
   <wsdl:message name="containsPartner">
-    <wsdl:part element="containsPartner" name="parameters"/>
+    <wsdl:part element="nxu:containsPartner" name="containsPartner" />
   </wsdl:message>
   <wsdl:message name="containsPartnerResponse">
-    <wsdl:part element="containsPartnerResponse" name="parameters"/>
+    <wsdl:part element="nxu:containsPartnerResponse" name="containsPartnerResponse" />
   </wsdl:message>
   <wsdl:portType name="NEXUSe2eUtilities">
     <wsdl:operation name="containsPartner">
-      <wsdl:input message="containsPartner" name="containsPartner"/>
-      <wsdl:output message="containsPartnerResponse" name="containsPartnerResponse"/>
+      <wsdl:input message="nxu:containsPartner" name="containsPartner" />
+      <wsdl:output message="nxu:containsPartnerResponse" name="containsPartnerResponse" />
     </wsdl:operation>
   </wsdl:portType>
 
-  <wsdl:binding name="NEXUSe2eUtilitiesImplServiceSoapBinding" type="NEXUSe2eUtilities">
-    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+  <wsdl:binding name="NEXUSe2eUtilitiesImplServiceSoapBinding" type="nxu:NEXUSe2eUtilities">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
 
     <wsdl:operation name="containsPartner">
-      <soap:operation soapAction="http://integration.nexuse2e.org/NEXUSe2eUtilities/containsPartner"
-        style="document"/>
+      <soap:operation soapAction="http://integration.nexuse2e.org/NEXUSe2eUtilities/containsPartner" style="document" />
 
       <wsdl:input name="containsPartner">
-        <soap:body use="literal"/>
+        <soap:body use="literal" />
       </wsdl:input>
 
       <wsdl:output name="containsPartnerResponse">
-        <soap:body use="literal"/>
+        <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
   </wsdl:binding>
 
   <wsdl:service name="NEXUSe2eUtilitiesImplService">
 
-    <wsdl:port binding="NEXUSe2eUtilitiesImplServiceSoapBinding" name="NEXUSe2eUtilitiesImplPort">
-      <soap:address location="http://localhost:8080/NEXUSe2e/webservice/NEXUSe2eUtilities"/>
+    <wsdl:port binding="nxu:NEXUSe2eUtilitiesImplServiceSoapBinding" name="NEXUSe2eUtilitiesImplPort">
+      <soap:address location="http://localhost:8080/NEXUSe2e/webservice/NEXUSe2eUtilities" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>
