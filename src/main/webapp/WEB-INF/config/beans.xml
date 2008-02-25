@@ -16,6 +16,7 @@
         <prop key="configuration.share4.name"></prop>
         <prop key="configuration.share5.path"></prop>
         <prop key="configuration.share5.name"></prop>
+        <prop key="database.timestamp.pattern"></prop>
       </props>
     </property>
     <property name="locations">
