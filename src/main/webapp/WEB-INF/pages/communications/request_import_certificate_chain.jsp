@@ -91,9 +91,10 @@
 	</logic:iterate>
 	</table>
 	
+<logic:notEmpty name="certificateChainImportForm" property="caImports">
 	<table class="NEXUS_TABLE" width="100%">
 		<tr>
-			<td colspan="100%" class="NEXUSSection">missing CA certificates, will be imported into cacerts</td>
+			<td colspan="100%" class="NEXUSSection">Missing CA certificate(s) - will be imported into CA keystore.</td>
 		</tr>
 		<logic:iterate id="cert" name="certificateChainImportForm" property="caImports">
 		<table class="NEXUS_TABLE" width="100%">
@@ -155,7 +156,7 @@
         </table>
 	</logic:iterate>
 	</table>
-	
+</logic:notEmpty>	
 	
 	<center><logic:messagesPresent>
 		<div class="NexusError"><html:errors /></div>
@@ -164,8 +165,8 @@
 	<table class="NEXUS_BUTTON_TABLE" width="100%">
 		<tr>
 			<td>&nbsp;</td>
-			<td class="BUTTON_RIGHT"><nexus:submit>
-				<img src="images/icons/tick.png" name="SUBMIT">
+			<td class="BUTTON_RIGHT"><nexus:submit styleClass="button">
+				<img src="images/icons/tick.png" name="SUBMIT" class="button">
 			</nexus:submit></td>
 			<td class="NexusHeaderLink">Accept</td>
 		</tr>

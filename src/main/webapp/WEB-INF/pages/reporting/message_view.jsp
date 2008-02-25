@@ -135,25 +135,25 @@
 	<tr>
 
 	<logic:equal name="reportingPropertiesForm" property="searchFor" value="conversation">
-		<td class="BUTTON_RIGHT"><nexus:link
+		<td class="BUTTON_RIGHT"><nobr><nexus:link
 			href="ConversationView.do?noReset&choreographyId=${reportMessageEntryForm.choreographyId}&convId=${reportMessageEntryForm.conversationId}&partnerId=${reportMessageEntryForm.participantId}"
 			styleClass="NexusHeaderLink">
-			<nobr><img src="images/icons/resultset_previous.png" border="0" alt="" class="button">Back</nexus:link></nobr></td>
+			<img src="images/icons/resultset_previous.png" border="0" alt="" class="button">Back</nexus:link></nobr></td>
 	</logic:equal>
 	<logic:equal name="reportingPropertiesForm" property="searchFor" value="message">
-		<td class="BUTTON_RIGHT"><nexus:link
+		<td class="BUTTON_RIGHT"><nobr><nexus:link
 			href="ProcessConversationReport.do?noReset=true"
 			styleClass="NexusHeaderLink">
-			<nobr><img src="images/icons/resultset_previous.png" border="0" alt="" class="button">Back</nexus:link></nobr></td>
+			<img src="images/icons/resultset_previous.png" border="0" alt="" class="button">Back</nexus:link></nobr></td>
 	</logic:equal>
-		<td class="BUTTON_RIGHT"><nexus:link
+		<td class="BUTTON_RIGHT"><nobr><nexus:link
 			href="ModifyMessage.do?noReset&refresh&type=transaction&command=requeue&participantId=${reportMessageEntryForm.participantId}&choreographyId=${reportMessageEntryForm.choreographyId}&conversationId=${reportMessageEntryForm.conversationId}&messageId=${reportMessageEntryForm.messageId}&outbound=${reportMessageEntryForm.outbound}"
 			styleClass="NexusHeaderLink">
-			<nobr><img src="images/icons/arrow_redo.png" border="0" alt="" class="button">Re-Queue</nexus:link></nobr></td>
-		<td class="BUTTON_RIGHT"><nexus:link
+			<img src="images/icons/arrow_redo.png" border="0" alt="" class="button">Re-Queue</nexus:link></nobr></td>
+		<td class="BUTTON_RIGHT"><nobr><nexus:link
 			href="ModifyMessage.do?noReset&refresh&type=transaction&command=stop&participantId=${reportMessageEntryForm.participantId}&choreographyId=${reportMessageEntryForm.choreographyId}&conversationId=${reportMessageEntryForm.conversationId}&messageId=${reportMessageEntryForm.messageId}&outbound=${reportMessageEntryForm.outbound}"
 			styleClass="NexusHeaderLink">
-			<nobr><img src="images/icons/stop.png" onclick="" border="0" alt="" class="button">Stop</nexus:link></nobr></td>
+			<img src="images/icons/stop.png" onclick="" border="0" alt="" class="button">Stop</nexus:link></nobr></td>
 	</tr>
 </table>
 </center>

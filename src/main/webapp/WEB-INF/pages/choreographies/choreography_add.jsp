@@ -40,4 +40,3 @@
             </table>
         </center>
     </html:form>
-</body>

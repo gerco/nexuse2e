@@ -52,7 +52,7 @@
 		</tr>
 	</table>
 </html:form>
-</center>
+
 <center><logic:messagesPresent>
 	<div class="NexusError"><html:errors /></div>
 </logic:messagesPresent> <logic:messagesPresent message="true">

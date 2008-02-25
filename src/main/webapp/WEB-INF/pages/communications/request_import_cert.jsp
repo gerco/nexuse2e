@@ -36,8 +36,8 @@
 	<table class="NEXUS_BUTTON_TABLE" width="100%">
 		<tr>
 			<td>&nbsp;</td>
-			<td class="BUTTON_RIGHT"><nexus:submit sendFileForm="true">
-				<img src="images/icons/tick.png" name="SUBMIT">
+			<td class="BUTTON_RIGHT"><nexus:submit sendFileForm="true" styleClass="button">
+				<img src="images/icons/tick.png" name="SUBMIT" class="button">
 			</nexus:submit></td>
 			<td class="NexusHeaderLink">Import</td>
 		</tr>

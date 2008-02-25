@@ -59,6 +59,7 @@
 					</tr>
 				</logic:equal>
 				<logic:equal name="parameter" property="parameterDescriptor.parameterType" value="<%= ParameterType.ENUMERATION.toString() %>">
+                    <tr>
 						<td class="NEXUSValue">
 							<c:choose>
 								<c:when test="${parameter.label != null}">
