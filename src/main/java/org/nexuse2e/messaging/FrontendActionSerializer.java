@@ -121,9 +121,7 @@ public class FrontendActionSerializer implements Manageable {
             throws NexusException {
 
         synchronized ( conversationPojo ) {
-            if ( messageContext.getMessagePojo().getStatus() != Constants.MESSAGE_STATUS_FAILED ) {
-                messageContext.getMessagePojo().setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_QUEUED );
-            }
+            messageContext.getMessagePojo().setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_QUEUED );
             messageContext.getMessagePojo().setModifiedDate( new Date() );
             if ( newMessage ) {
                 List<MessagePojo> messages = conversationPojo.getMessages();
@@ -141,9 +139,7 @@ public class FrontendActionSerializer implements Manageable {
             }
 
             // Submit the message to the queue/backend
-            if ( messageContext.getMessagePojo().getStatus() != Constants.MESSAGE_STATUS_FAILED ) {
-                queue.add( messageContext );
-            }
+            queue.add( messageContext );
         }
     } // queueMessage
 

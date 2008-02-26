@@ -24,9 +24,13 @@ import java.rmi.RemoteException;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.cxf.configuration.security.AuthorizationPolicy;
+import org.apache.cxf.endpoint.Client;
+import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.interceptor.LoggingInInterceptor;
 import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
+import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.log4j.Logger;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.ParameterDescriptor;
@@ -75,6 +79,16 @@ public class BackendDeliveryWSClientPipelet extends AbstractPipelet {
     public MessageContext processMessage( MessageContext messageContext ) throws IllegalArgumentException,
             IllegalStateException, NexusException {
 
+        String username = getParameter( USERNAME_PARAM_NAME );
+        String password = getParameter( PASSWORD_PARAM_NAME );
+
+        if ( username == null ) {
+            username = "";
+        }
+        if ( password == null ) {
+            password = "";
+        }
+
         JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
         factory.setServiceClass( BackendDeliveryInterface.class );
         factory.setAddress( (String) getParameter( URL_PARAM_NAME ) );
@@ -83,20 +97,9 @@ public class BackendDeliveryWSClientPipelet extends AbstractPipelet {
         factory.getInInterceptors().add( new LoggingInInterceptor() );
         factory.getOutInterceptors().add( new LoggingOutInterceptor() );
 
-
         // HTTP basic auth
         boolean httpAuth = ( (Boolean) getParameter( BASIC_AUTH_PARAM_NAME ) ).booleanValue();
         if ( httpAuth ) {
-            String username = getParameter( USERNAME_PARAM_NAME );
-            String password = getParameter( PASSWORD_PARAM_NAME );
-
-            if ( username == null ) {
-                username = "";
-            }
-            if ( password == null ) {
-                password = "";
-            }
-
             factory.setUsername( username );
             factory.setPassword( password );
         }
@@ -113,9 +116,26 @@ public class BackendDeliveryWSClientPipelet extends AbstractPipelet {
 
         BackendDeliveryInterface service = (BackendDeliveryInterface) factory.create();
         try {
-            service.processInboundMessage( messageContext.getChoreography().getName(), messageContext
-                    .getPartner().getName(), actionId, messageContext.getConversation().getConversationId(),
-                    messageContext.getMessagePojo().getMessageId(), payload );
+            if ( httpAuth ) {
+                LOG.debug( "Using basic auth" );
+                Client cxfClient = ClientProxy.getClient( service );
+
+                HTTPConduit httpConduit = (HTTPConduit) cxfClient.getConduit();
+                AuthorizationPolicy authorizationPolicy = httpConduit.getAuthorization();
+                if ( authorizationPolicy == null ) {
+                    authorizationPolicy = new AuthorizationPolicy();
+                    httpConduit.setAuthorization( authorizationPolicy );
+                }
+                authorizationPolicy.setUserName( username );
+                authorizationPolicy.setPassword( password );
+                LOG.debug( "Credentials set" );
+            } else {
+                LOG.debug( "Not using auth" );
+            }
+
+            service.processInboundMessage( messageContext.getChoreography().getName(), messageContext.getPartner()
+                    .getName(), actionId, messageContext.getConversation().getConversationId(), messageContext
+                    .getMessagePojo().getMessageId(), payload );
             LOG.debug( "Backend delivery WS called!" );
             return messageContext;
         } catch ( RemoteException e ) {
@@ -123,50 +143,50 @@ public class BackendDeliveryWSClientPipelet extends AbstractPipelet {
         }
     }
 
-//    /**
-//     * This handler removes the namespace attributes from the SOAP request parameters.
-//     * Obviously some WebService implementations cannot cope with the default namespace
-//     * being present for every parameter.
-//     * 
-//     * @author jonas.reese
-//     */
-//    public static class RemoveNamespaceOutHandler extends DOMOutHandler {
-//
-//        public void invoke( org.codehaus.xfire.MessageContext context ) throws Exception {
-//
-//            super.invoke( context );
-//
-//            OutMessage msg = context.getOutMessage();
-//            Document doc = (Document) msg.getProperty( DOMOutHandler.DOM_MESSAGE );
-//            if ( doc != null ) {
-//                if ( doc.getFirstChild() != null
-//                        && doc.getFirstChild().getFirstChild() != null
-//                        && doc.getFirstChild().getFirstChild().getFirstChild() != null
-//                        && "processInboundMessage".equals( doc.getFirstChild().getFirstChild().getFirstChild()
-//                                .getNodeName() ) ) {
-//                    Node node = doc.getFirstChild().getFirstChild().getFirstChild();
-//                    node.setPrefix( "x" );
-//                    Node namespaceNode = node.getAttributes().getNamedItem( "xmlns" );
-//                    if ( namespaceNode != null && node.getOwnerDocument() instanceof CoreDocumentImpl ) {
-//                        node.getAttributes().removeNamedItem( namespaceNode.getNodeName() );
-//                        AttrNSImpl newNSNode = new AttrNSImpl( (CoreDocumentImpl) node.getOwnerDocument(),
-//                                namespaceNode.getNamespaceURI(), namespaceNode.getNodeName() + ":x", namespaceNode
-//                                        .getLocalName() );
-//                        newNSNode.setValue( namespaceNode.getNodeValue() );
-//                        node.getAttributes().setNamedItem( newNSNode );
-//                    }
-//                    NodeList nodes = node.getChildNodes();
-//                    for ( int i = 0; i < nodes.getLength(); i++ ) {
-//                        Node paramNode = nodes.item( i );
-//                        namespaceNode = paramNode.getAttributes().getNamedItem( "xmlns" );
-//                        if ( namespaceNode != null ) {
-//                            paramNode.getAttributes().removeNamedItem( namespaceNode.getNodeName() );
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
+    //    /**
+    //     * This handler removes the namespace attributes from the SOAP request parameters.
+    //     * Obviously some WebService implementations cannot cope with the default namespace
+    //     * being present for every parameter.
+    //     * 
+    //     * @author jonas.reese
+    //     */
+    //    public static class RemoveNamespaceOutHandler extends DOMOutHandler {
+    //
+    //        public void invoke( org.codehaus.xfire.MessageContext context ) throws Exception {
+    //
+    //            super.invoke( context );
+    //
+    //            OutMessage msg = context.getOutMessage();
+    //            Document doc = (Document) msg.getProperty( DOMOutHandler.DOM_MESSAGE );
+    //            if ( doc != null ) {
+    //                if ( doc.getFirstChild() != null
+    //                        && doc.getFirstChild().getFirstChild() != null
+    //                        && doc.getFirstChild().getFirstChild().getFirstChild() != null
+    //                        && "processInboundMessage".equals( doc.getFirstChild().getFirstChild().getFirstChild()
+    //                                .getNodeName() ) ) {
+    //                    Node node = doc.getFirstChild().getFirstChild().getFirstChild();
+    //                    node.setPrefix( "x" );
+    //                    Node namespaceNode = node.getAttributes().getNamedItem( "xmlns" );
+    //                    if ( namespaceNode != null && node.getOwnerDocument() instanceof CoreDocumentImpl ) {
+    //                        node.getAttributes().removeNamedItem( namespaceNode.getNodeName() );
+    //                        AttrNSImpl newNSNode = new AttrNSImpl( (CoreDocumentImpl) node.getOwnerDocument(),
+    //                                namespaceNode.getNamespaceURI(), namespaceNode.getNodeName() + ":x", namespaceNode
+    //                                        .getLocalName() );
+    //                        newNSNode.setValue( namespaceNode.getNodeValue() );
+    //                        node.getAttributes().setNamedItem( newNSNode );
+    //                    }
+    //                    NodeList nodes = node.getChildNodes();
+    //                    for ( int i = 0; i < nodes.getLength(); i++ ) {
+    //                        Node paramNode = nodes.item( i );
+    //                        namespaceNode = paramNode.getAttributes().getNamedItem( "xmlns" );
+    //                        if ( namespaceNode != null ) {
+    //                            paramNode.getAttributes().removeNamedItem( namespaceNode.getNodeName() );
+    //                        }
+    //                    }
+    //                }
+    //            }
+    //        }
+    //    }
 
     public static void main( String[] args ) throws Exception {
 
