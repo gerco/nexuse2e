@@ -42,8 +42,8 @@ public class ChoreographyTargetProvider implements TargetProvider {
         List<StructureNode> list = new ArrayList<StructureNode>();
 
         List<ChoreographyPojo> choreographies = engineConfiguration.getChoreographies();
-        TreeSet<ChoreographyPojo> sortedChoreographies = new TreeSet<ChoreographyPojo>( new GenericComparator(
-                ChoreographyPojo.class, "name", true ) );
+        TreeSet<ChoreographyPojo> sortedChoreographies = new TreeSet<ChoreographyPojo>(
+                new GenericComparator<ChoreographyPojo>( "name", true ) );
         sortedChoreographies.addAll( choreographies );
         for ( ChoreographyPojo choreographyPojo : sortedChoreographies ) {
             ParentalStructureNode sn = new PageNode( pattern.getTarget() + "?nxChoreographyId="

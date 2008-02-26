@@ -30,18 +30,27 @@ import org.apache.commons.beanutils.PropertyUtils;
  * @author gesch
  *
  */
-public class GenericComparator implements Comparator {
+public class GenericComparator<T> implements Comparator<T> {
 
     private boolean  ascending;
     private String[] fieldname;
-    private Class    className;
 
     /**
-     * @param className
+     * @deprecated Use other constructor.
+     * @param clazz
      * @param fieldname
      * @param ascending
      */
-    public GenericComparator( Class className, String fieldname, boolean ascending ) {
+    public GenericComparator( Class<T> clazz, String fieldname, boolean ascending ) {
+        this( fieldname, ascending );
+    }
+
+    /**
+     * Constructs a <code>GenericComparator</code>
+     * @param fieldname The bean-style property name.
+     * @param ascending Ascending/descending flag.
+     */
+    public GenericComparator( String fieldname, boolean ascending ) {
 
         this.ascending = ascending;
         StringTokenizer st = new StringTokenizer( fieldname, ";" );
@@ -52,21 +61,14 @@ public class GenericComparator implements Comparator {
             this.fieldname[counter] = st.nextToken();
             counter++;
         }
-        this.className = className;
     }
 
     /* (non-Javadoc)
      * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
      */
-    public int compare( Object o1, Object o2 ) {
+    public int compare( T o1, T o2 ) {
 
         int result = 0;
-        if ( !className.isInstance( o1 ) ) {
-            throw new ClassCastException( "first parameter is not instance of:" + className.getName() );
-        }
-        if ( !className.isInstance( o2 ) ) {
-            throw new ClassCastException( "Second parameter is not instance of:" + className.getName() );
-        }
 
         try {
             Object result1 = null;

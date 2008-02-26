@@ -36,6 +36,7 @@ import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.ConfigurationAccessService;
 import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.configuration.EngineConfiguration;
+import org.nexuse2e.configuration.GenericComparator;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ConnectionPojo;
@@ -93,7 +94,8 @@ public class ParticipantAddAction extends NexusE2EAction {
                 return error;
             }
             
-            List<PartnerPojo> allPartners = cas.getPartners( Constants.PARTNER_TYPE_PARTNER, Constants.PARTNERCOMPARATOR );
+            List<PartnerPojo> allPartners = cas.getPartners(
+                    Constants.PARTNER_TYPE_PARTNER, new GenericComparator<PartnerPojo>( "partnerId", false ) );
             List<PartnerPojo> unboundPartners = new ArrayList<PartnerPojo>();
             for ( PartnerPojo currPartner : allPartners ) {
                 // return only partners that are not participants for this choreography already

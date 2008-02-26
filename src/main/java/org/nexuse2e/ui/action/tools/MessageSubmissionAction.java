@@ -23,11 +23,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -35,7 +36,7 @@ import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.apache.struts.upload.FormFile;
 import org.nexuse2e.Engine;
-import org.nexuse2e.backend.BackendPipelineDispatcher;
+import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
@@ -52,12 +53,8 @@ import org.nexuse2e.ui.form.MessageSubmissionForm;
  */
 public class MessageSubmissionAction extends NexusE2EAction {
 
-    private static Logger       LOG                        = Logger.getLogger( MessageSubmissionAction.class );
-
     private static final String MSG_KEY_SUBMITTED          = "messagesubmission.submitted";
     private static final String MSG_KEY_ERROR              = "messagesubmission.error";
-    private static final String MSG_KEY_ERROR_URL          = "messagesubmission.error.url";
-    private static final String MSG_KEY_ERROR_TIMEOUT      = "messagesubmission.error.timeout";
     private static final String MSG_KEY_ERROR_NOPRIMARYKEY = "messagesubmission.error.noprimarykey";
     private static final String MSG_KEY_ERROR_NOREPEAT     = "messagesubmission.error.norepeat";
 
@@ -69,33 +66,25 @@ public class MessageSubmissionAction extends NexusE2EAction {
             HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
             throws Exception {
 
-        ArrayList list = new ArrayList();
+        SortedSet<String> choreographyIds = new TreeSet<String>();
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
         MessageSubmissionForm form = (MessageSubmissionForm) actionForm;
-        BackendPipelineDispatcher backendPipelineDispatcher;
-
-        ActionMessages actionMessages = new ActionMessages();
-
-        //request.getSession().setAttribute( Crumbs.CURRENT_LOCATION, Crumbs.MESSAGE_SUBMISSION );
 
         // Set current list of choroegraphies
-        List<ChoreographyPojo> choreographyList = engineConfiguration
-                .getChoreographies();
+        List<ChoreographyPojo> choreographyList = engineConfiguration.getChoreographies();
         Iterator<ChoreographyPojo> choreographyIterator = choreographyList.iterator();
         while ( choreographyIterator.hasNext() ) {
-            list.add( choreographyIterator.next().getName() );
-            // LOG.trace( "Choreography: " + list.get( list.size() - 1 ) );
+            choreographyIds.add( choreographyIterator.next().getName() );
         }
-        // LOG.trace( "Found Choreographies: " + list.size() );
-        form.setChoreographies( list );
+        form.setChoreographies( choreographyIds );
 
         // Set current list of actions
         // Set current list of receivers
         String choreographyId = form.getChoreographyId();
-        ArrayList<String> actionList = new ArrayList();
-        ArrayList<PartnerPojo> receiverList = new ArrayList<PartnerPojo>();
-        if ( ( ( choreographyId == null ) || ( choreographyId.length() == 0 ) ) && !list.isEmpty() ) {
-            choreographyId = (String) list.get( 0 );
+        SortedSet<String> actions = new TreeSet<String>();
+        SortedSet<PartnerPojo> receiverList = new TreeSet<PartnerPojo>( Constants.PARTNERCOMPARATOR );
+        if ( ( ( choreographyId == null ) || ( choreographyId.length() == 0 ) ) && !choreographyIds.isEmpty() ) {
+            choreographyId = choreographyIds.iterator().next();
         }
         if ( ( choreographyId != null ) && ( choreographyId.length() != 0 ) ) {
             ChoreographyPojo choreography = engineConfiguration
@@ -105,8 +94,7 @@ public class MessageSubmissionAction extends NexusE2EAction {
                 Set<ActionPojo> actionSet = choreography.getActions();
                 Iterator<ActionPojo> actionIterator = actionSet.iterator();
                 while ( actionIterator.hasNext() ) {
-                    actionList.add( actionIterator.next().getName() );
-                    // LOG.trace( "Action: " + actionList.get( actionList.size() - 1 ) );
+                    actions.add( actionIterator.next().getName() );
                 }
                 // Receivers
                 List<ParticipantPojo> participantSet = choreography.getParticipants();
@@ -117,7 +105,7 @@ public class MessageSubmissionAction extends NexusE2EAction {
                 }
             }
         }
-        form.setActions( actionList );
+        form.setActions( actions );
         form.setReceivers( receiverList );
         ArrayList<String> encodings = new ArrayList<String>();
         encodings.add( "UTF-8" );
@@ -144,8 +132,6 @@ public class MessageSubmissionAction extends NexusE2EAction {
             String action = form.getActionId();
             String primaryKey = form.getPrimaryKey();
             FormFile payload1 = form.getPayloadFile1();
-            FormFile payload2 = form.getPayloadFile2();
-            FormFile payload3 = form.getPayloadFile3();
 
             if ( ( payload1 == null ) && ( ( primaryKey == null ) || ( primaryKey.length() == 0 ) ) ) {
                 errors.add( ActionMessages.GLOBAL_MESSAGE, new ActionMessage( MSG_KEY_ERROR_NOPRIMARYKEY ) );
@@ -164,8 +150,6 @@ public class MessageSubmissionAction extends NexusE2EAction {
                         }
                         
                         String payloadString = new String( payload1.getFileData(), encoding );
-                        // LOG.trace( "Payload: " + payloadString );
-                        // Conversation.sendStringMessage( choreographyId, receiver, conversationId, action, payloadString );
                         Engine.getInstance().getCurrentConfiguration().getBackendPipelineDispatcher().processMessage(
                                 partner.getPartnerId(), choreographyId, action, conversationId, null, null,
                                 payloadString.getBytes() );

@@ -51,8 +51,8 @@ public class ParticipantTargetProvider implements TargetProvider {
                     Integer.parseInt( parent.getProperty( "nxChoreographyId" ) ) );
             if ( choreographyPojo != null ) {
                 List<ParticipantPojo> participants = choreographyPojo.getParticipants();
-                TreeSet<ParticipantPojo> sortedParticipants = new TreeSet<ParticipantPojo>( new GenericComparator(
-                        ParticipantPojo.class, "description;partner.partnerId", true ) );
+                TreeSet<ParticipantPojo> sortedParticipants = new TreeSet<ParticipantPojo>(
+                        new GenericComparator<ParticipantPojo>( "description;partner.partnerId", true ) );
                 sortedParticipants.addAll( participants );
                 for ( ParticipantPojo participantPojo : sortedParticipants ) {
                     StructureNode sn = new PageNode( pattern.getTarget() + "?nxPartnerId="

@@ -56,8 +56,8 @@ public class ActionTargetProvider implements TargetProvider {
             if ( choreographyPojo != null ) {
                 Set<ActionPojo> actions = choreographyPojo.getActions();
 
-                TreeSet<ActionPojo> sortedActions = new TreeSet<ActionPojo>( new GenericComparator( ActionPojo.class,
-                        "name", true ) );
+                TreeSet<ActionPojo> sortedActions = new TreeSet<ActionPojo>(
+                        new GenericComparator<ActionPojo>( "name", true ) );
                 sortedActions.addAll( actions );
                 for ( ActionPojo actionPojo : sortedActions ) {
                     StructureNode sn = new PageNode( pattern.getTarget() + "?nxActionId=" + actionPojo.getNxActionId()

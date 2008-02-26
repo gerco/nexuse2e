@@ -70,8 +70,8 @@ public class ChoreographiesAction extends NexusE2EAction {
             return error;
         }
         Vector<ChoreographyForm> choreographies = new Vector<ChoreographyForm>();
-        TreeSet<ChoreographyPojo> sortedChoreographies = new TreeSet<ChoreographyPojo>( new GenericComparator(
-                ChoreographyPojo.class, "name", true ) );
+        TreeSet<ChoreographyPojo> sortedChoreographies = new TreeSet<ChoreographyPojo>(
+                new GenericComparator<ChoreographyPojo>( "name", true ) );
         sortedChoreographies.addAll( chorpojos );
         Iterator<ChoreographyPojo> i = sortedChoreographies.iterator();
         while ( i.hasNext() ) {

@@ -47,8 +47,8 @@ public class ServiceTargetProvider implements TargetProvider {
         List<StructureNode> list = new ArrayList<StructureNode>();
         List<ServicePojo> servicePojos = engineConfiguration.getServices();
 
-        TreeSet<ServicePojo> sortedServices = new TreeSet<ServicePojo>( new GenericComparator( ServicePojo.class,
-                "name", true ) );
+        TreeSet<ServicePojo> sortedServices = new TreeSet<ServicePojo>(
+                new GenericComparator<ServicePojo>( "name", true ) );
         sortedServices.addAll( servicePojos );
 
         for ( ServicePojo servicePojo : sortedServices ) {

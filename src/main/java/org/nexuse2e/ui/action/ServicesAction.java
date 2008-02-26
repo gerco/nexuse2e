@@ -54,8 +54,7 @@ public class ServicesAction extends NexusE2EAction {
 
         List<ServicePojo> services = engineConfiguration.getServices();
         List<ServiceForm> serviceList = new ArrayList<ServiceForm>();
-        TreeSet<ServicePojo> sortedServices = new TreeSet<ServicePojo>( new GenericComparator( ServicePojo.class,
-                "name", true ) );
+        TreeSet<ServicePojo> sortedServices = new TreeSet<ServicePojo>( new GenericComparator<ServicePojo>( "name", true ) );
         sortedServices.addAll( services );
         for ( ServicePojo service : sortedServices ) {
             ServiceForm serviceForm = new ServiceForm();

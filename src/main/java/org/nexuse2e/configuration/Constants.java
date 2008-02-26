@@ -112,23 +112,23 @@ public class Constants extends org.nexuse2e.Constants {
         }
     }
 
-    public static GenericComparator PIPELINECOMPARATOR        = new GenericComparator( PipelinePojo.class,
-                                                                      "nxPipelineId", true );
-    public static GenericComparator PARTNERCOMPARATOR         = new GenericComparator( PartnerPojo.class, "partnerId",
-                                                                      true );
-    public static GenericComparator COMPONENTCOMPARATOR       = new GenericComparator( ComponentPojo.class,
-                                                                      "type;name", true );
-    public static GenericComparator COMPONENT_NAME_COMPARATOR = new GenericComparator( ComponentPojo.class,
-                                                                      "name", true );
-    public static GenericComparator PIPELETCOMPARATOR         = new GenericComparator( PipeletPojo.class, "position",
-                                                                      true );
-    public static GenericComparator CERTIFICATECOMPARATOR     = new GenericComparator( CertificatePojo.class, "name",
-                                                                      true );
-    public static GenericComparator CONVERTSATIONCOMPARATOR   = new GenericComparator( ConversationPojo.class,
-                                                                      "createdDate", false );
-
-    public static GenericComparator COMPARATOR_USER_BY_NAME   = new GenericComparator( UserPojo.class,
-                                                                      "lastName;firstName;middleName", true );
-    public static GenericComparator COMPARATOR_ROLE_BY_NAME   = new GenericComparator( RolePojo.class, "name", true );
+    public static GenericComparator<PipelinePojo> PIPELINECOMPARATOR =
+        new GenericComparator<PipelinePojo>( "nxPipelineId", true );
+    public static GenericComparator<PartnerPojo> PARTNERCOMPARATOR =
+        new GenericComparator<PartnerPojo>( "partnerId", true );
+    public static GenericComparator<ComponentPojo> COMPONENTCOMPARATOR =
+        new GenericComparator<ComponentPojo>( "type;name", true );
+    public static GenericComparator<ComponentPojo> COMPONENT_NAME_COMPARATOR =
+        new GenericComparator<ComponentPojo>( "name", true );
+    public static GenericComparator<PipeletPojo> PIPELETCOMPARATOR =
+        new GenericComparator<PipeletPojo>( "position", true );
+    public static GenericComparator<CertificatePojo> CERTIFICATECOMPARATOR =
+        new GenericComparator<CertificatePojo>( "name", true );
+    public static GenericComparator<ConversationPojo> CONVERTSATIONCOMPARATOR =
+        new GenericComparator<ConversationPojo>( "createdDate", false );
+    public static GenericComparator<UserPojo> COMPARATOR_USER_BY_NAME   =
+        new GenericComparator<UserPojo>( "lastName;firstName;middleName", true );
+    public static GenericComparator<RolePojo> COMPARATOR_ROLE_BY_NAME =
+        new GenericComparator<RolePojo>( "name", true );
 
 }

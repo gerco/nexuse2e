@@ -1,54 +1,51 @@
 <%@ taglib uri="/tags/nexus" prefix="nexus"%>
 <%@ taglib uri="/tags/struts-bean" prefix="bean"%>
 <%@ taglib uri="/tags/struts-html" prefix="html"%>
-<%@ taglib uri="/tags/struts-nested" prefix="nested"%>
 <%@ taglib uri="/tags/struts-tiles" prefix="tiles"%>
 <%@ taglib uri="/tags/struts-logic" prefix="logic"%>
-<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="/tags/struts-html-el" prefix="html-el"%>
 
 <% /* <nexus:helpBar /> */ %>
 
-<center><script language="JavaScript" type="text/javascript">
-      	this.clearConvId = function () {
-      		document.messageSubmissionForm.conversationId.value='';
-      	}
-      </script>
+<script language="JavaScript" type="text/javascript">
+	this.clearConvId = function () {
+		document.messageSubmissionForm.conversationId.value='';
+	}
+</script>
 
-<table class="NEXUS_TABLE" width="100%">
-	<tr>
-		<td><nexus:crumbs styleClass="NEXUSScreenPathLink"></nexus:crumbs></td>
-	</tr>
-	<tr>
-		<td class="NEXUSScreenName">Message Submission</td>
-	</tr>
-</table>
+<center>
+	<table class="NEXUS_TABLE" width="100%">
+		<tr>
+			<td><nexus:crumbs styleClass="NEXUSScreenPathLink"></nexus:crumbs></td>
+		</tr>
+		<tr>
+			<td class="NEXUSScreenName">Message Submission</td>
+		</tr>
+	</table>
 
-<html:form action="MessageSubmission.do" method="post"
-	enctype="multipart/form-data">
+<html:form action="MessageSubmission.do" method="post" enctype="multipart/form-data">
 	<table width="100%">
 		<tr>
-			<td colspan="2" class="NEXUSSection">Parameters for submitting a
-			Message</td>
+			<td colspan="2" class="NEXUSSection">Parameters for submitting a Message</td>
 		</tr>
 
 		<tr>
 			<td class="NEXUSName">Choreography ID</td>
-			<td class="NEXUSValue"><nexus:select name="choreographyId"
-				submitOnChange="true" form="messageSubmissionForm"
-				sendFileForm="true">
-				<logic:iterate name="messageSubmissionForm"
-					property="choreographies" id="c">
+			<td class="NEXUSValue">
+				<nexus:select name="choreographyId" submitOnChange="true" form="messageSubmissionForm" sendFileForm="true">
+					<logic:iterate name="messageSubmissionForm" property="choreographies" id="choreography">
 					<logic:equal name="messageSubmissionForm" property="choreographyId"
-						value="${c}">
-						<option value="${c}" selected="true">${c}</option>
+						value="${choreography}">
+						<option value="${choreography}" selected="selected">${choreography}</option>
 					</logic:equal>
 					<logic:notEqual name="messageSubmissionForm"
-						property="choreographyId" value="${c}">
-						<option value="${c}">${c}</option>
+						property="choreographyId" value="${choreography}">
+						<option value="${choreography}">${choreography}</option>
 					</logic:notEqual>
-				</logic:iterate>
-			</nexus:select></td>
+					</logic:iterate>
+				</nexus:select>
+			</td>
 		</tr>
 
 		<tr>
@@ -96,7 +93,7 @@
 			</html:select>
 			</td>
 		</tr>
-	</table>
+  </table>
 
 	<table class="NEXUS_BUTTON_TABLE" width="100%">
 		<tr>
@@ -108,7 +105,8 @@
 			</td>
 		</tr>
 	</table>
-</html:form></center>
+</html:form>
+</center>
 <center><logic:messagesPresent>
 	<div class="NexusError"><html:errors /></div>
 </logic:messagesPresent> <logic:messagesPresent message="true">

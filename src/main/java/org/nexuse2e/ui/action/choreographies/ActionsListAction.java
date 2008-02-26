@@ -83,8 +83,7 @@ public class ActionsListAction extends NexusE2EAction {
             return error;
         }
         Vector actions = new Vector();
-        TreeSet<ActionPojo> sortedActions = new TreeSet<ActionPojo>( new GenericComparator( ActionPojo.class, "name",
-                true ) );
+        TreeSet<ActionPojo> sortedActions = new TreeSet<ActionPojo>( new GenericComparator<ActionPojo>( "name", true ) );
         sortedActions.addAll( actionPojos );
         Iterator i = sortedActions.iterator();
         while ( i.hasNext() ) {

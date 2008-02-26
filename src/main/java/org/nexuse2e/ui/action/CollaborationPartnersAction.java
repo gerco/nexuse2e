@@ -73,7 +73,7 @@ public class CollaborationPartnersAction extends NexusE2EAction {
             partnerPojos = engineConfiguration.getPartners(
                     Constants.PARTNER_TYPE_PARTNER, Constants.PARTNERCOMPARATOR );
         }
-        TreeSet<PartnerPojo> sortedPartners = new TreeSet<PartnerPojo>( new GenericComparator( PartnerPojo.class,
+        TreeSet<PartnerPojo> sortedPartners = new TreeSet<PartnerPojo>( new GenericComparator<PartnerPojo>(
                 "name", true ) );
         sortedPartners.addAll( partnerPojos );
 

@@ -19,10 +19,12 @@
  */
 package org.nexuse2e.ui.form;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.upload.FormFile;
+import org.nexuse2e.pojo.PartnerPojo;
 
 /**
  * TODO To change the template for this generated type comment go to
@@ -48,10 +50,10 @@ public class MessageSubmissionForm extends ActionForm {
     private FormFile          payloadFile2     = null;
     private FormFile          payloadFile3     = null;
 
-    private List              choreographies   = null;
-    private List              actions          = null;
-    private List              receivers        = null;
-    private List<String>      encodings        = null;
+    private Collection<String>       choreographies   = null;
+    private Collection<String>       actions          = null;
+    private Collection<PartnerPojo>  receivers        = null;
+    private List<String>             encodings        = null;
 
     /**
      * @return Returns the actionId.
@@ -152,7 +154,7 @@ public class MessageSubmissionForm extends ActionForm {
     /**
      * @return Returns the actions.
      */
-    public List getActions() {
+    public Collection<String> getActions() {
 
         return actions;
     }
@@ -160,7 +162,7 @@ public class MessageSubmissionForm extends ActionForm {
     /**
      * @param actions The actions to set.
      */
-    public void setActions( List actions ) {
+    public void setActions( Collection<String> actions ) {
 
         this.actions = actions;
     }
@@ -168,7 +170,7 @@ public class MessageSubmissionForm extends ActionForm {
     /**
      * @return Returns the choreographies.
      */
-    public List getChoreographies() {
+    public Collection<String> getChoreographies() {
 
         return choreographies;
     }
@@ -176,7 +178,7 @@ public class MessageSubmissionForm extends ActionForm {
     /**
      * @param choreographies The choreographies to set.
      */
-    public void setChoreographies( List choreographies ) {
+    public void setChoreographies( Collection<String> choreographies ) {
 
         this.choreographies = choreographies;
     }
@@ -184,7 +186,7 @@ public class MessageSubmissionForm extends ActionForm {
     /**
      * @return Returns the receivers.
      */
-    public List getReceivers() {
+    public Collection<PartnerPojo> getReceivers() {
 
         return receivers;
     }
@@ -192,7 +194,7 @@ public class MessageSubmissionForm extends ActionForm {
     /**
      * @param receivers The receivers to set.
      */
-    public void setReceivers( List receivers ) {
+    public void setReceivers( Collection<PartnerPojo> receivers ) {
 
         this.receivers = receivers;
     }
