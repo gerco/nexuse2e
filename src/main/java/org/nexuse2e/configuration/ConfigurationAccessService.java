@@ -86,14 +86,14 @@ public interface ConfigurationAccessService {
      */
     @SuppressWarnings("unchecked")
     public abstract List<PipelinePojo> getFrontendPipelinePojos(int type,
-            GenericComparator comparator);
+            Comparator<PipelinePojo> comparator);
 
     /**
      * @return
      */
     @SuppressWarnings("unchecked")
     public abstract List<PipelinePojo> getBackendPipelinePojos(int type,
-            GenericComparator comparator);
+            Comparator<PipelinePojo> comparator);
 
     /**
      * @return

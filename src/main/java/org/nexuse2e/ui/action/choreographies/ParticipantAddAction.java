@@ -20,6 +20,7 @@
 package org.nexuse2e.ui.action.choreographies;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -94,8 +95,8 @@ public class ParticipantAddAction extends NexusE2EAction {
                 return error;
             }
             
-            List<PartnerPojo> allPartners = cas.getPartners(
-                    Constants.PARTNER_TYPE_PARTNER, new GenericComparator<PartnerPojo>( "partnerId", false ) );
+            Comparator<PartnerPojo> comp = new GenericComparator<PartnerPojo>( "partnerId", false );
+            List<PartnerPojo> allPartners = cas.getPartners( Constants.PARTNER_TYPE_PARTNER, comp );
             List<PartnerPojo> unboundPartners = new ArrayList<PartnerPojo>();
             for ( PartnerPojo currPartner : allPartners ) {
                 // return only partners that are not participants for this choreography already
@@ -104,8 +105,7 @@ public class ParticipantAddAction extends NexusE2EAction {
                 }
             }
             form.setPartners( unboundPartners );
-            form.setLocalPartners( engineConfiguration.getPartners(
-                    Constants.PARTNER_TYPE_LOCAL, Constants.PARTNERCOMPARATOR ) );
+            form.setLocalPartners( engineConfiguration.getPartners( Constants.PARTNER_TYPE_LOCAL, comp ) );
 
             LOG.trace( "Partners: " + form.getPartners().size() );
             LOG.trace( "localPartners: " + form.getLocalPartners().size() );

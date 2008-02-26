@@ -1211,7 +1211,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
      * @see org.nexuse2e.configuration.ConfigurationAccessService#getFrontendPipelinePojos(int, org.nexuse2e.configuration.GenericComparator)
      */
     @SuppressWarnings("unchecked")
-    public List<PipelinePojo> getFrontendPipelinePojos( int type, GenericComparator comparator ) {
+    public List<PipelinePojo> getFrontendPipelinePojos( int type, Comparator<PipelinePojo> comparator ) {
     
         List<PipelinePojo> filteredList = null;
         if ( type != Constants.PIPELINE_TYPE_ALL ) {
@@ -1238,7 +1238,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
      * @see org.nexuse2e.configuration.ConfigurationAccessService#getBackendPipelinePojos(int, org.nexuse2e.configuration.GenericComparator)
      */
     @SuppressWarnings("unchecked")
-    public List<PipelinePojo> getBackendPipelinePojos( int type, GenericComparator comparator ) {
+    public List<PipelinePojo> getBackendPipelinePojos( int type, Comparator<PipelinePojo> comparator ) {
     
         List<PipelinePojo> filteredList = null;
         if ( type != Constants.PIPELINE_TYPE_ALL ) {

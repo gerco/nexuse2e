@@ -19,6 +19,7 @@
  */
 package org.nexuse2e.ui.action.choreographies;
 
+import java.util.Comparator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +33,7 @@ import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.configuration.ConfigurationAccessService;
 import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.configuration.EngineConfiguration;
+import org.nexuse2e.configuration.GenericComparator;
 import org.nexuse2e.pojo.PipelinePojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.ChoreographyActionForm;
@@ -58,8 +60,9 @@ public class ActionAddAction extends NexusE2EAction {
         form.setChoreographyId( choreographyId );
 
         ConfigurationAccessService cas = engineConfiguration;
-        List<PipelinePojo> inboundPipelines = cas.getBackendPipelinePojos( Constants.PIPELINE_TYPE_INBOUND, null );
-        List<PipelinePojo> outboundPipelines = cas.getBackendPipelinePojos( Constants.PIPELINE_TYPE_OUTBOUND, null );
+        Comparator<PipelinePojo> comp = new GenericComparator<PipelinePojo>( "name", false );
+        List<PipelinePojo> inboundPipelines = cas.getBackendPipelinePojos( Constants.PIPELINE_TYPE_INBOUND, comp );
+        List<PipelinePojo> outboundPipelines = cas.getBackendPipelinePojos( Constants.PIPELINE_TYPE_OUTBOUND, comp );
         
         if (inboundPipelines == null || inboundPipelines.isEmpty()) {
             errors.add( ActionMessages.GLOBAL_MESSAGE,
