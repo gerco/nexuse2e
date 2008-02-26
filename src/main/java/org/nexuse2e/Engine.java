@@ -859,6 +859,9 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
         } else {
             this.currentConfiguration = newConfiguration;
         }
+        if (configurations != null) {
+            configurations.clear();
+        }
         // LOG.debug( "3partners: " + this.currentConfiguration.getPartners().size() );
     }
 
