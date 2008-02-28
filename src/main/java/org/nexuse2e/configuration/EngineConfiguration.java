@@ -1666,19 +1666,21 @@ public class EngineConfiguration implements ConfigurationAccessService {
      * Adds the given POJO to the update list.
      */
     protected void addToUpdateList( NEXUSe2ePojo pojo ) {
-        boolean alreadyIn = false;
+        int index = -1;
         if (pojo.getNxId() == 0) {
             pojo.setNxId( recentNxId-- );
         } else {
-            for (NEXUSe2ePojo p : updateList) {
+            for (int i = 0; i < updateList.size(); i++) {
+                NEXUSe2ePojo p = updateList.get( i );
                 if (p.getClass().equals( pojo.getClass() ) && p.getNxId() == pojo.getNxId()) {
-                    alreadyIn = true;
+                    index = i;
                 }
             }
         }
-        if (!alreadyIn) {
-            updateList.add( pojo );
+        if (index >= 0) {
+            updateList.remove( index );
         }
+        updateList.add( pojo );
     }
     
     /**
@@ -1707,9 +1709,9 @@ public class EngineConfiguration implements ConfigurationAccessService {
                     List<NEXUSe2ePojo> l = implicitUpdateList.get( parent );
                     if (l == null) {
                         l = new ArrayList<NEXUSe2ePojo>();
+                        implicitUpdateList.put( parent, l );
                     }
                     l.add( pojo );
-                    implicitUpdateList.put( parent, l );
                 }
             }
         }
