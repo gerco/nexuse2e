@@ -217,7 +217,7 @@
     </action>
 
     <action path="/ServiceList" name="serviceForm" type="org.nexuse2e.ui.action.ServicesAction">
-      <forward name="success" path="/WEB-INF/pages/services.jsp"/>
+      <forward name="success" path="/WEB-INF/pages/services/service_list.jsp"/>
     </action>
 
     <action path="/ServiceAdd" name="serviceForm" type="org.nexuse2e.ui.action.services.ServiceAddAction">
@@ -249,30 +249,30 @@
 
 
     
-    <action path="/NotifierList" name="loggerForm" type="org.nexuse2e.ui.action.serverconfig.NotifierListAction">
-      <forward name="success" path="/WEB-INF/pages/serverconfig/notifier_list.jsp"/>
+    <action path="/NotifierList" name="loggerForm" type="org.nexuse2e.ui.action.notifiers.NotifierListAction">
+      <forward name="success" path="/WEB-INF/pages/notifiers/notifier_list.jsp"/>
     </action>
     
     
-    <action path="/NotifierAdd" name="loggerForm" type="org.nexuse2e.ui.action.serverconfig.NotifierAddAction">
-      <forward name="success" path="/WEB-INF/pages/serverconfig/notifier_view.jsp"/>
+    <action path="/NotifierAdd" name="loggerForm" type="org.nexuse2e.ui.action.notifiers.NotifierAddAction">
+      <forward name="success" path="/WEB-INF/pages/notifiers/notifier_view.jsp"/>
       <forward name="created" path="/NotifierList.do"/>
       <forward name="error" path="/NotifierList.do"/>
     </action>
     
     
-    <action path="/NotifierView" name="loggerForm" type="org.nexuse2e.ui.action.serverconfig.NotifierViewAction">
-      <forward name="success" path="/WEB-INF/pages/serverconfig/notifier_view.jsp"/>
+    <action path="/NotifierView" name="loggerForm" type="org.nexuse2e.ui.action.notifiers.NotifierViewAction">
+      <forward name="success" path="/WEB-INF/pages/notifiers/notifier_view.jsp"/>
       <forward name="error" path="/NotifierList.do"/>
     </action>
       
-    <action path="/NotifierUpdate" name="loggerForm" type="org.nexuse2e.ui.action.serverconfig.NotifierUpdateAction">
-      <forward name="refresh" path="/WEB-INF/pages/serverconfig/notifier_view.jsp"/>
+    <action path="/NotifierUpdate" name="loggerForm" type="org.nexuse2e.ui.action.notifiers.NotifierUpdateAction">
+      <forward name="refresh" path="/WEB-INF/pages/notifiers/notifier_view.jsp"/>
       <forward name="update" path="/NotifierList.do"/>
       <forward name="error" path="/NotifierList.do"/>
     </action>
     
-    <action path="/NotifierDelete" name="loggerForm" type="org.nexuse2e.ui.action.serverconfig.NotifierDeleteAction">
+    <action path="/NotifierDelete" name="loggerForm" type="org.nexuse2e.ui.action.notifiers.NotifierDeleteAction">
       <forward name="success" path="/NotifierList.do"/>
     </action>
     
@@ -715,11 +715,6 @@
     <action path="/ServerConfiguration" type="org.nexuse2e.ui.action.NoOpAction">
       <forward name="success" path="/WEB-INF/pages/server_configuration.jsp"/>
     </action>
-    <!-- 
-    <action path="/ImportExportList" name="importExportForm" type="org.nexuse2e.ui.action.serverconfig.ImportExportListAction">
-      <forward name="success" path="/WEB-INF/pages/serverconfig/import_export_list.jsp"/>
-    </action>
-    -->
   </action-mappings>
   <controller processorClass="org.apache.struts.tiles.TilesRequestProcessor"/>
   <message-resources parameter="ApplicationResources" null="false"/>
