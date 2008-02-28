@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.nexuse2e.ui.action.serverconfig;
+package org.nexuse2e.ui.action.notifiers;
 
 import java.util.List;
 
@@ -73,9 +73,6 @@ public class NotifierAddAction extends NexusE2EAction {
 
         List<ComponentPojo> components = engineConfiguration.getComponents(
                 ComponentType.LOGGER, Constants.COMPONENTCOMPARATOR );
-
-        List<ComponentPojo> services = engineConfiguration.getComponents(
-                ComponentType.SERVICE, Constants.COMPONENTCOMPARATOR );
 
         if ( components == null || components.size() == 0 ) {
             LOG.trace( "no logger components found" );
