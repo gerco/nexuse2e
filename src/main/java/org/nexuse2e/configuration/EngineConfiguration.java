@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -1253,7 +1254,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
                 }
             }
         } else {
-            filteredList = getBackendPipelineTemplates();
+            filteredList = new ArrayList<PipelinePojo>( getBackendPipelineTemplates() );
         }
         if ( comparator != null ) {
             Collections.sort( filteredList, comparator );
@@ -1787,7 +1788,10 @@ public class EngineConfiguration implements ConfigurationAccessService {
      */
     public void deleteConnection( ConnectionPojo connection ) throws NexusException {
         
-        if (connection.getPartner().getConnections().remove( connection )) {
+        Set<ConnectionPojo> connections = connection.getPartner().getConnections();
+        connections = new HashSet<ConnectionPojo>( connections );
+        if (connections.remove( connection )) {
+            connection.getPartner().setConnections( connections );
             addToDeleteList( connection );
         }
     }
@@ -2066,24 +2070,31 @@ public class EngineConfiguration implements ConfigurationAccessService {
     public void deleteCertificate( CertificatePojo certificate )
     throws ReferencedCertificateException, NexusException {
     
-        // check if certificate is referenced by any connection
-        List<PartnerPojo> partners = getPartners( Constants.PARTNER_TYPE_ALL, null );
-        List<ConnectionPojo> referringObjects = new ArrayList<ConnectionPojo>();
-        for (PartnerPojo partner : partners) {
-            for (ConnectionPojo connection : partner.getConnections()) {
-                CertificatePojo cert = connection.getCertificate();
-                if (cert != null && cert.getNxCertificateId() == certificate.getNxCertificateId()) {
-                    referringObjects.add( connection );
-                }
-            }
-        }
-        if (!referringObjects.isEmpty()) {
-            throw new ReferencedCertificateException( referringObjects );
-        }
-        
         CertificatePojo oldCertificate = getCertificateByNxCertificateId(
                 Constants.CERTIFICATE_TYPE_ALL, certificate.getNxCertificateId() );
-        if ( oldCertificate != null ) {
+
+        if (oldCertificate != null) {
+            // check if certificate is referenced by any connection
+            if (certificate.getPartner() != null) {
+                List<ConnectionPojo> referringObjects = new ArrayList<ConnectionPojo>();
+                for (ConnectionPojo connection : certificate.getPartner().getConnections()) {
+                    CertificatePojo cert = connection.getCertificate();
+                    if (cert != null && cert.getNxCertificateId() == certificate.getNxCertificateId()) {
+                        referringObjects.add( connection );
+                    }
+                }
+                if (!referringObjects.isEmpty()) {
+                    throw new ReferencedCertificateException( referringObjects );
+                }
+                
+                Set<CertificatePojo> certs = certificate.getPartner().getCertificates();
+                if (certs != null) {
+                    certs = new HashSet<CertificatePojo>( certs );
+                    certs.remove( oldCertificate );
+                    certificate.getPartner().setCertificates( certs );
+                }
+            }
+        
             getCertificates( Constants.CERTIFICATE_TYPE_ALL, null ).remove( oldCertificate );
             addToDeleteList( oldCertificate );
         }

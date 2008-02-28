@@ -194,9 +194,9 @@ public class DataSaveAsServlet extends HttpServlet {
                             cPojo.getPassword() ).toCharArray() );
                     boolean foundKey = false;
                     String alias = null;
-                    Enumeration e = jks.aliases();
+                    Enumeration<String> e = jks.aliases();
                     while ( e.hasMoreElements() ) {
-                        alias = (String) e.nextElement();
+                        alias = e.nextElement();
                         // System.out.println( "Alias: '" + alias + "', entry is cert: " +  jks.isCertificateEntry( alias ) );
                         if ( jks.isKeyEntry( alias ) ) {
                             foundKey = true;
@@ -329,7 +329,7 @@ public class DataSaveAsServlet extends HttpServlet {
                 int nxCertificateId = Integer.parseInt( nxCertIdString );
                 // System.out.println( "format:" + format );
                 // System.out.println( "nxCertificateId" + nxCertificateId );
-                if ( nxCertificateId < 1 ) {
+                if ( nxCertificateId == 0 ) {
                     LOG.error( "no certificateId found!" );
                     return;
                 }

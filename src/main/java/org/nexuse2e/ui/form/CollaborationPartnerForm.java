@@ -24,11 +24,11 @@ import java.security.KeyStore;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.Vector;
 
-import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionForm;
 import org.bouncycastle.asn1.x509.X509Name;
 import org.nexuse2e.NexusException;
@@ -47,7 +47,7 @@ public class CollaborationPartnerForm extends ActionForm {
     /**
      * 
      */
-    private static final Logger LOG              = Logger.getLogger( CollaborationPartnerForm.class );
+    //private static final Logger LOG              = Logger.getLogger( CollaborationPartnerForm.class );
     private static final long   serialVersionUID = 6867989805361808373L;
     private String              name;
     private String              company;
@@ -63,10 +63,10 @@ public class CollaborationPartnerForm extends ActionForm {
     private String              country;
     private Date                created;
     private Date                lastModified;
-    private Vector              choreographies   = new Vector();
-    private Vector              contacts         = new Vector();
-    private Vector              connections      = new Vector();
-    private Vector              certificates     = new Vector();
+    private Collection<String> choreographies   = new ArrayList<String>();
+    private Collection<PartnerPojo>      contacts         = new ArrayList<PartnerPojo>();
+    private Collection<PartnerConnectionForm>   connections      = new ArrayList<PartnerConnectionForm>();
+    private Collection<Certificate>      certificates     = new ArrayList<Certificate>();
 
     public class Certificate {
 
@@ -95,12 +95,12 @@ public class CollaborationPartnerForm extends ActionForm {
                                 cert.getPassword() ).toCharArray() );
                         if ( jks != null ) {
 
-                            Enumeration aliases = jks.aliases();
+                            Enumeration<String> aliases = jks.aliases();
                             if ( !aliases.hasMoreElements() ) {
                                 throw new NexusException( "no certificate aliases found" );
                             }
                             while ( aliases.hasMoreElements() ) {
-                                String tempAlias = (String) aliases.nextElement();
+                                String tempAlias = aliases.nextElement();
                                 if ( jks.isKeyEntry( tempAlias ) ) {
                                     java.security.cert.Certificate[] certArray = jks.getCertificateChain( tempAlias );
                                     if ( certArray != null ) {
@@ -269,25 +269,25 @@ public class CollaborationPartnerForm extends ActionForm {
     public void addCertificate( Certificate cert ) {
 
         if ( certificates == null ) {
-            certificates = new Vector();
+            certificates = new ArrayList<Certificate>();
         }
-        certificates.addElement( cert );
+        certificates.add( cert );
     }
 
     public void addConnection( PartnerConnectionForm con ) {
 
         if ( connections == null ) {
-            connections = new Vector();
+            connections = new ArrayList<PartnerConnectionForm>();
         }
-        connections.addElement( con );
+        connections.add( con );
     }
 
     public void addChoreography( String choreographyId ) {
 
         if ( choreographies == null ) {
-            choreographies = new Vector();
+            choreographies = new ArrayList<String>();
         }
-        choreographies.addElement( choreographyId );
+        choreographies.add( choreographyId );
     }
 
     public String getAddress1() {
@@ -310,22 +310,22 @@ public class CollaborationPartnerForm extends ActionForm {
         this.address2 = address2;
     }
 
-    public Vector getCertificates() {
+    public Collection<Certificate> getCertificates() {
 
         return certificates;
     }
 
-    public void setCertificates( Vector certificates ) {
+    public void setCertificates( Collection<Certificate> certificates ) {
 
         this.certificates = certificates;
     }
 
-    public Vector getChoreographies() {
+    public Collection<String> getChoreographies() {
 
         return choreographies;
     }
 
-    public void setChoreographies( Vector choreographies ) {
+    public void setChoreographies( Collection<String> choreographies ) {
 
         this.choreographies = choreographies;
     }
@@ -350,22 +350,22 @@ public class CollaborationPartnerForm extends ActionForm {
         this.company = company;
     }
 
-    public Vector getConnections() {
+    public Collection<PartnerConnectionForm> getConnections() {
 
         return connections;
     }
 
-    public void setConnections( Vector connections ) {
+    public void setConnections( Collection<PartnerConnectionForm> connections ) {
 
         this.connections = connections;
     }
 
-    public Vector getContacts() {
+    public Collection<PartnerPojo> getContacts() {
 
         return contacts;
     }
 
-    public void setContacts( Vector contacts ) {
+    public void setContacts( Collection<PartnerPojo> contacts ) {
 
         this.contacts = contacts;
     }

@@ -54,7 +54,7 @@ public class PipeletParamPojo implements NEXUSe2ePojo {
     private int                 sequenceNumber;
 
     // non-persistent fields
-    private ParameterDescriptor parameterDescriptor;
+    private transient ParameterDescriptor parameterDescriptor;
 
     // Constructors
 

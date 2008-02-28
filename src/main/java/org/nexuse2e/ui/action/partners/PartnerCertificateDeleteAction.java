@@ -67,7 +67,7 @@ public class PartnerCertificateDeleteAction extends NexusE2EAction {
             addRedirect( request, URL, TIMEOUT );
             return error;
         }
-        if ( nxCertificateId < 1 ) {
+        if ( nxCertificateId == 0 ) {
             ActionMessage errorMessage = new ActionMessage( "generic.error", "Invalid nxCertificateId:"
                     + nxCertificateId );
             errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
