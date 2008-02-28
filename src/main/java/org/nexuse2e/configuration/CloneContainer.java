@@ -20,7 +20,6 @@ import org.nexuse2e.pojo.ServicePojo;
 import org.nexuse2e.pojo.TRPPojo;
 import org.nexuse2e.pojo.UserPojo;
 
-
 /**
  * @author gesch
  *
@@ -30,7 +29,7 @@ public class CloneContainer implements Serializable {
     /**
      * 
      */
-    private static final long      serialVersionUID = 464928496062976971L;
+    private static final long      serialVersionUID    = 464928496062976971L;
     private List<ChoreographyPojo> choreographies;
     private List<CertificatePojo>  certificates;
     private List<PartnerPojo>      partners;
@@ -43,6 +42,7 @@ public class CloneContainer implements Serializable {
     private List<UserPojo>         users;
     private List<RolePojo>         roles;
     private List<MappingPojo>      mappings;
+    private transient StaticBeanContainer    staticBeanContainer = null;
 
     public CloneContainer( EngineConfiguration config ) {
 
@@ -58,6 +58,7 @@ public class CloneContainer implements Serializable {
         users = config.getUsers();
         roles = config.getRoles();
         mappings = config.getMappings();
+        staticBeanContainer = config.getStaticBeanContainer();
 
     }
 
@@ -68,8 +69,9 @@ public class CloneContainer implements Serializable {
      * @throws IOException 
      * @throws ClassNotFoundException 
      */
-    public void copy(EngineConfiguration dest) throws IOException, ClassNotFoundException {
-        if (dest == null ) {
+    public void copy( EngineConfiguration dest ) throws IOException, ClassNotFoundException {
+
+        if ( dest == null ) {
             return;
         }
 
@@ -94,9 +96,9 @@ public class CloneContainer implements Serializable {
         dest.setUsers( newContainer.getUsers() );
         dest.setRoles( newContainer.getRoles() );
         dest.setMappings( newContainer.getMappings() );
+        dest.setStaticBeanContainer( staticBeanContainer );
     }
-    
-    
+
     /**
      * @return the backendPipelineTemplates
      */
