@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://schemas.xmlsoap.org/wsdl/ http://schemas.xmlsoap.org/wsdl/"
+  xmlns:tns="http://ws.service.nexuse2e.org/" xmlns:ns1="http://integration.nexuse2e.org"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" name="XmlDocumentServiceImplService"
+  targetNamespace="http://ws.service.nexuse2e.org/">
+  <wsdl:types>
+    <xsd:schema xmlns="http://integration.nexuse2e.org" xmlns:tns="http://ws.service.nexuse2e.org/"
+      attributeFormDefault="unqualified" elementFormDefault="unqualified"
+      targetNamespace="http://integration.nexuse2e.org">
+      <xsd:element name="processXmlDocument" type="processXmlDocument" />
+      <xsd:complexType name="processXmlDocument">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="choreography" type="xsd:string" />
+          <xsd:element minOccurs="0" name="action" type="xsd:string" />
+          <xsd:element minOccurs="0" name="partner" type="xsd:string" />
+          <xsd:element minOccurs="0" name="conversationId" type="xsd:string" />
+          <xsd:element minOccurs="0" name="messageId" type="xsd:string" />
+          <xsd:element minOccurs="0" name="xmlPayload" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="processXmlDocument">
+    <wsdl:part element="ns1:processXmlDocument" name="parameters"> </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="XmlDocumentService">
+    <wsdl:operation name="processXmlDocument">
+      <wsdl:input message="tns:processXmlDocument" name="processXmlDocument"> </wsdl:input>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="XmlDocumentServiceImplServiceSoapBinding" type="tns:XmlDocumentService">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="processXmlDocument">
+      <soap:operation
+        soapAction="http://integration.nexuse2e.org/XmlDocumentService/processXmlDocument"
+        style="document" />
+      <wsdl:input name="processXmlDocument">
+        <soap:body use="literal" />
+      </wsdl:input>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="XmlDocumentServiceImplService">
+    <wsdl:port binding="tns:XmlDocumentServiceImplServiceSoapBinding" name="XmlDocumentServicePort">
+      <soap:address location="http://localhost:8080/NEXUSe2e/wshandler/wsplain" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

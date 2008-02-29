@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://schemas.xmlsoap.org/wsdl/ http://schemas.xmlsoap.org/wsdl/"
+  xmlns:tns="http://ws.service.nexuse2e.org/" xmlns:ns1="http://integration.nexuse2e.org"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" name="CidxDocumentServiceImplService"
+  targetNamespace="http://ws.service.nexuse2e.org/">
+  <wsdl:types>
+    <xsd:schema xmlns="http://integration.nexuse2e.org" xmlns:tns="http://ws.service.nexuse2e.org/"
+      attributeFormDefault="unqualified" elementFormDefault="unqualified"
+      targetNamespace="http://integration.nexuse2e.org">
+      <xsd:element name="processCidxDocument" type="processCidxDocument" />
+      <xsd:complexType name="processCidxDocument">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="document" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:complexType>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="processCidxDocument">
+    <wsdl:part element="ns1:processCidxDocument" name="parameters"> </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="CidxDocumentService">
+    <wsdl:operation name="processCidxDocument">
+      <wsdl:input message="tns:processCidxDocument" name="processCidxDocument"> </wsdl:input>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="CidxDocumentServiceImplServiceSoapBinding" type="tns:CidxDocumentService">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="processCidxDocument">
+      <soap:operation
+        soapAction="http://integration.nexuse2e.org/CidxDocumentService/processCidxDocument"
+        style="document" />
+      <wsdl:input name="processCidxDocument">
+        <soap:body use="literal" />
+      </wsdl:input>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="CidxDocumentServiceImplService">
+    <wsdl:port binding="tns:CidxDocumentServiceImplServiceSoapBinding"
+      name="CidxDocumentServicePort">
+      <soap:address location="http://localhost:8080/NEXUSe2e/wshandler/wscidx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

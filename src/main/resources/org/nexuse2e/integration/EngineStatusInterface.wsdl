@@ -1,33 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <wsdl:definitions targetNamespace="http://integration.nexuse2e.org" xmlns:tns="http://integration.nexuse2e.org"
-  xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope" xmlns:ns1="http://nexuse2e.org"
+  xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope"
   xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenc11="http://schemas.xmlsoap.org/soap/encoding/"
   xmlns:soapenc12="http://www.w3.org/2003/05/soap-encoding" xmlns:soap11="http://schemas.xmlsoap.org/soap/envelope/"
   xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
-    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="qualified" elementFormDefault="qualified"
-      targetNamespace="http://integration.nexuse2e.org">
+    <xsd:schema xmlns="http://integration.nexuse2e.org" xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="qualified"
+      elementFormDefault="qualified" targetNamespace="http://integration.nexuse2e.org">
       <xsd:element name="getEngineStatus">
         <xsd:complexType />
       </xsd:element>
       <xsd:element name="getEngineStatusResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element maxOccurs="1" minOccurs="1" name="out" nillable="true" type="ns1:EngineStatusSummary" />
+            <xsd:element maxOccurs="1" minOccurs="1" name="out" nillable="true" type="EngineStatusSummary" />
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-    </xsd:schema>
-    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="qualified" elementFormDefault="qualified"
-      targetNamespace="http://nexuse2e.org">
-
       <xsd:complexType name="EngineStatusSummary">
         <xsd:sequence>
           <xsd:element minOccurs="0" name="cause" nillable="true" type="xsd:string" />
-          <xsd:element minOccurs="0" name="databaseStatus" nillable="true" type="ns1:Status" />
-          <xsd:element minOccurs="0" name="inboundStatus" nillable="true" type="ns1:Status" />
-          <xsd:element minOccurs="0" name="outboundStatus" nillable="true" type="ns1:Status" />
-          <xsd:element minOccurs="0" name="status" nillable="true" type="ns1:Status" />
+          <xsd:element minOccurs="0" name="databaseStatus" nillable="true" type="tns:Status" />
+          <xsd:element minOccurs="0" name="inboundStatus" nillable="true" type="tns:Status" />
+          <xsd:element minOccurs="0" name="outboundStatus" nillable="true" type="tns:Status" />
+          <xsd:element minOccurs="0" name="status" nillable="true" type="tns:Status" />
         </xsd:sequence>
       </xsd:complexType>
       <xsd:simpleType name="Status">
@@ -38,7 +34,6 @@
           <xsd:enumeration value="ACTIVE" />
         </xsd:restriction>
       </xsd:simpleType>
-
     </xsd:schema>
   </wsdl:types>
   <wsdl:message name="getEngineStatusResponse">

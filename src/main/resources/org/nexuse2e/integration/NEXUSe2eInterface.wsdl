@@ -5,8 +5,26 @@
   xmlns:soapenc12="http://www.w3.org/2003/05/soap-encoding" xmlns:soap11="http://schemas.xmlsoap.org/soap/envelope/"
   xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
-    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="qualified" elementFormDefault="qualified"
-      targetNamespace="http://integration.nexuse2e.org">
+    <xsd:schema xmlns="http://nexuse2e.org" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://integration.nexuse2e.org"
+      attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://nexuse2e.org">
+      <xsd:element name="NexusException">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element minOccurs="0" name="choreographyId" nillable="true" type="xsd:string" />
+            <xsd:element minOccurs="0" name="conversationDetails" nillable="true" type="xsd:string" />
+            <xsd:element minOccurs="0" name="conversationId" nillable="true" type="xsd:string" />
+            <xsd:element minOccurs="0" name="messageId" nillable="true" type="xsd:string" />
+            <xsd:element minOccurs="0" name="partnerId" nillable="true" type="xsd:string" />
+            <xsd:element minOccurs="0" name="protocolId" nillable="true" type="xsd:string" />
+            <xsd:element minOccurs="0" name="protocolVersion" nillable="true" type="xsd:string" />
+            <xsd:element minOccurs="0" name="severity" type="xsd:int" />
+            <xsd:element minOccurs="0" name="transportId" nillable="true" type="xsd:string" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:schema>
+    <xsd:schema xmlns="http://integration.nexuse2e.org" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://nexuse2e.org"
+      attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://integration.nexuse2e.org">
       <xsd:element name="triggerSendingNewMessage">
         <xsd:complexType>
           <xsd:sequence>
@@ -24,7 +42,6 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="NexusException" type="ns1:NexusException" />
       <xsd:element name="sendNewStringMessage">
         <xsd:complexType>
           <xsd:sequence>
@@ -90,22 +107,6 @@
         </xsd:complexType>
       </xsd:element>
     </xsd:schema>
-    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="qualified" elementFormDefault="qualified"
-      targetNamespace="http://nexuse2e.org">
-      <xsd:complexType name="NexusException">
-        <xsd:sequence>
-          <xsd:element minOccurs="0" name="choreographyId" nillable="true" type="xsd:string" />
-          <xsd:element minOccurs="0" name="conversationDetails" nillable="true" type="xsd:string" />
-          <xsd:element minOccurs="0" name="conversationId" nillable="true" type="xsd:string" />
-          <xsd:element minOccurs="0" name="messageId" nillable="true" type="xsd:string" />
-          <xsd:element minOccurs="0" name="partnerId" nillable="true" type="xsd:string" />
-          <xsd:element minOccurs="0" name="protocolId" nillable="true" type="xsd:string" />
-          <xsd:element minOccurs="0" name="protocolVersion" nillable="true" type="xsd:string" />
-          <xsd:element minOccurs="0" name="severity" type="xsd:int" />
-          <xsd:element minOccurs="0" name="transportId" nillable="true" type="xsd:string" />
-        </xsd:sequence>
-      </xsd:complexType>
-    </xsd:schema>
   </wsdl:types>
   <wsdl:message name="sendStringMessageRequest">
     <wsdl:part name="parameters" element="tns:sendStringMessage" />
@@ -120,7 +121,7 @@
     <wsdl:part name="parameters" element="tns:sendStringMessageResponse" />
   </wsdl:message>
   <wsdl:message name="NexusException">
-    <wsdl:part name="NexusException" element="tns:NexusException" />
+    <wsdl:part name="NexusException" element="ns1:NexusException" />
   </wsdl:message>
   <wsdl:message name="triggerSendingNewMessageResponse">
     <wsdl:part name="parameters" element="tns:triggerSendingNewMessageResponse" />
