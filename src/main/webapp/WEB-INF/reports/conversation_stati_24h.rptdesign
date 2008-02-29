@@ -368,7 +368,7 @@
       <Left>0.0</Left>
       <Top>0.0</Top>
       <Width>270.0</Width>
-      <Height>165.0</Height>
+      <Height>210.0</Height>
     </Bounds>
     <Insets>
       <Top>3.0</Top>
@@ -1070,7 +1070,7 @@ function afterDataSetFilled(series, dataSet, icsc) {
             <property name="textIndent">0em</property>
             <property name="marginTop">0pt</property>
             <property name="dataSet">Conversation_Stati</property>
-            <property name="height">220px</property>
+            <property name="height">280px</property>
             <property name="width">360px</property>
             <list-property name="boundDataColumns">
                 <structure>

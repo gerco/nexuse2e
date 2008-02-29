@@ -378,8 +378,8 @@ GROUP BY HOUR( created_date )</property>
     <Bounds>
       <Left>0.0</Left>
       <Top>0.0</Top>
-      <Width>262.5</Width>
-      <Height>187.5</Height>
+      <Width>300.0</Width>
+      <Height>210.0</Height>
     </Bounds>
     <Insets>
       <Top>3.0</Top>
@@ -3417,8 +3417,8 @@ function beforeGeneration(chart, icsc) {
             <property name="outputFormat">SVG</property>
             <property name="marginTop">0pt</property>
             <property name="dataSet">messagesPerHour</property>
-            <property name="height">250px</property>
-            <property name="width">350px</property>
+            <property name="height">280px</property>
+            <property name="width">400px</property>
             <list-property name="boundDataColumns">
                 <structure>
                     <property name="name">MESSAGE_COUNT</property>
