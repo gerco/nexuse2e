@@ -54,6 +54,7 @@ public class StateMachineExecutor {
             throws NexusException {
 
         MessagePojo messagePojo = null;
+        String choreographyId = null;
 
         messagePojo = messageContext.getMessagePojo();
 
@@ -62,9 +63,9 @@ public class StateMachineExecutor {
             LOG.trace( "Conversation:" + messagePojo.getConversation() );
             LOG.trace( "Choreography:" + messagePojo.getConversation().getChoreography() );
             LOG.debug( "ChoreographyID:" + messagePojo.getConversation().getChoreography().getName() );
+            choreographyId = messagePojo.getConversation().getChoreography().getName();
         }
 
-        String choreographyId = messagePojo.getConversation().getChoreography().getName();
         if ( choreographyId == null || choreographyId.equals( "" ) ) {
             throw new NexusException( "No valid choreography ID found in message!" );
         }
