@@ -83,7 +83,7 @@ left outer join nx_conversation
 on nx_choreography.nx_choreography_id = nx_conversation.nx_choreography_id
 left outer join nx_message
 on nx_conversation.nx_conversation_id = nx_message.nx_conversation_id
-where nx_message.created_date > ? or nx_message.created_date is null
+where type = 1 and (nx_message.created_date > ? or nx_message.created_date is null)
 group by nx_choreography.name</property>
         </oda-data-set>
     </data-sets>

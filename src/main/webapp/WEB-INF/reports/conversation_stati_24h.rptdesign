@@ -483,11 +483,19 @@ function afterDataSetFilled(series, dataSet, icsc) {
         <Green>166</Green>
         <Blue>218</Blue>
       </Entries>
+      <!--
       <Entries xsi:type="attribute:ColorDefinition">
         <Transparency>255</Transparency>
         <Red>128</Red>
         <Green>255</Green>
         <Blue>128</Blue>
+      </Entries>
+      -->
+      <Entries xsi:type="attribute:ColorDefinition">
+        <Transparency>255</Transparency>
+        <Red>208</Red>
+        <Green>208</Green>
+        <Blue>64</Blue>
       </Entries>
       <Entries xsi:type="attribute:ColorDefinition">
         <Transparency>255</Transparency>
@@ -527,9 +535,9 @@ function afterDataSetFilled(series, dataSet, icsc) {
       </Entries>
       <Entries xsi:type="attribute:ColorDefinition">
         <Transparency>255</Transparency>
-        <Red>128</Red>
+        <Red>64</Red>
         <Green>192</Green>
-        <Blue>128</Blue>
+        <Blue>64</Blue>
       </Entries>
       <Entries xsi:type="attribute:ColorDefinition">
         <Transparency>255</Transparency>
