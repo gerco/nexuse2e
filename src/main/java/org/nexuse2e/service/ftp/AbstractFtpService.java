@@ -51,27 +51,27 @@ import org.nexuse2e.util.FileUtil;
  */
 public abstract class AbstractFtpService extends AbstractService {
 
-    private static Logger      LOG                         = Logger.getLogger( AbstractFtpService.class );
+    private static Logger      LOG                        = Logger.getLogger( AbstractFtpService.class );
 
-    public static final String PARTNER_PARAM_NAME          = "partnerId";
-    public static final String DOWNLOAD_DIR_PARAM_NAME     = "downloadDir";
-    public static final String ERROR_DIR_PARAM_NAME        = "errorDir";
-    public static final String FTP_TYPE_PARAM_NAME         = "ftpType";
-    public static final String CERTIFICATE_PARAM_NAME      = "certificate";
-    public static final String URL_PARAM_NAME              = "url";
-    public static final String FILE_PATTERN_PARAM_NAME     = "filePattern";
-    public static final String USER_PARAM_NAME             = "username";
-    public static final String PASSWORD_PARAM_NAME         = "password";
-    public static final String INTERVAL_PARAM_NAME         = "interval";
-    public static final String TRANSFER_MODE_PARAM_NAME    = "transferMode";
-    public static final String RENAMING_PREFIX_PARAM_NAME  = "prefix";
-    public static final String CHANGE_FILE_PARAM_NAME      = "changeFile";
+    public static final String PARTNER_PARAM_NAME         = "partnerId";
+    public static final String DOWNLOAD_DIR_PARAM_NAME    = "downloadDir";
+    public static final String ERROR_DIR_PARAM_NAME       = "errorDir";
+    public static final String FTP_TYPE_PARAM_NAME        = "ftpType";
+    public static final String CERTIFICATE_PARAM_NAME     = "certificate";
+    public static final String URL_PARAM_NAME             = "url";
+    public static final String FILE_PATTERN_PARAM_NAME    = "filePattern";
+    public static final String USER_PARAM_NAME            = "username";
+    public static final String PASSWORD_PARAM_NAME        = "password";
+    public static final String INTERVAL_PARAM_NAME        = "interval";
+    public static final String TRANSFER_MODE_PARAM_NAME   = "transferMode";
+    public static final String RENAMING_PREFIX_PARAM_NAME = "prefix";
+    public static final String CHANGE_FILE_PARAM_NAME     = "changeFile";
 
     private SchedulingService  schedulingService;
     private SchedulerClient    schedulerClient;
-    private boolean            fileChangeActive            = true;
+    private boolean            fileChangeActive           = true;
 
-    private SimpleDateFormat   simpleDateFormat            = new SimpleDateFormat( "HH:mm" );
+    private SimpleDateFormat   simpleDateFormat           = new SimpleDateFormat( "HH:mm" );
 
     public AbstractFtpService() {
 
@@ -376,41 +376,43 @@ public abstract class AbstractFtpService extends AbstractService {
 
                 String regEx = FileUtil.dosStyleToRegEx( filePattern );
                 for ( FTPFile file : files ) {
-                    if ( Pattern.matches( regEx, file.getName() ) ) {
-                        File localFile = new File( localDir, file.getName() );
-                        FileOutputStream fout = new FileOutputStream( localFile );
-                        success = ftp.retrieveFile( file.getName(), fout );
-                        fout.flush();
-                        fout.close();
-                        if ( !success ) {
-                            LOG.error( "Could not retrieve file " + file.getName() );
-                        } else {
-                            try {
+                    if ( ( file != null ) && ( file.getName() != null ) ) {
+                        if ( Pattern.matches( regEx, file.getName() ) ) {
+                            File localFile = new File( localDir, file.getName() );
+                            FileOutputStream fout = new FileOutputStream( localFile );
+                            success = ftp.retrieveFile( file.getName(), fout );
+                            fout.flush();
+                            fout.close();
+                            if ( !success ) {
+                                LOG.error( "Could not retrieve file " + file.getName() );
+                            } else {
+                                try {
 
-                                processFile( localFile, errorDir, (String) getParameter( PARTNER_PARAM_NAME ) );
+                                    processFile( localFile, errorDir, (String) getParameter( PARTNER_PARAM_NAME ) );
 
-                                String prefix = getParameter( RENAMING_PREFIX_PARAM_NAME );
-                                boolean error = false;
-                                if ( fileChangeActive ) {
-                                    if ( StringUtils.isEmpty( prefix ) ) {
-                                        if ( !ftp.deleteFile( file.getName() ) ) {
-                                            LOG.error( "Could not delete file " + file.getName() );
-                                            error = true;
-                                        }
-                                    } else {
-                                        if ( !ftp.rename( file.getName(), prefix + file.getName() ) ) {
-                                            LOG.error( "Could not rename file from " + file.getName() + " to " + prefix
-                                                    + file.getName() );
-                                            error = true;
+                                    String prefix = getParameter( RENAMING_PREFIX_PARAM_NAME );
+                                    boolean error = false;
+                                    if ( fileChangeActive ) {
+                                        if ( StringUtils.isEmpty( prefix ) ) {
+                                            if ( !ftp.deleteFile( file.getName() ) ) {
+                                                LOG.error( "Could not delete file " + file.getName() );
+                                                error = true;
+                                            }
+                                        } else {
+                                            if ( !ftp.rename( file.getName(), prefix + file.getName() ) ) {
+                                                LOG.error( "Could not rename file from " + file.getName() + " to "
+                                                        + prefix + file.getName() );
+                                                error = true;
+                                            }
                                         }
                                     }
-                                }
 
-                                if ( !error ) {
-                                    localFiles.add( localFile );
+                                    if ( !error ) {
+                                        localFiles.add( localFile );
+                                    }
+                                } catch ( Exception e ) {
+                                    LOG.error( "Error processing file " + file.getName() + ": " + e );
                                 }
-                            } catch ( Exception e ) {
-                                LOG.error( "Error processing file " + file.getName() + ": " + e );
                             }
                         }
                     }
