@@ -57,7 +57,7 @@ public class XmlSchemaValidationPipelet extends AbstractPipelet {
     protected static final String    SCHEMA_FILE_PATH = "schemaFilePath";
 
     protected String                 schemaFilePath;
-    protected Map<String, Validator> validators       = new HashMap<String, Validator>();
+    protected Map<String, Schema> schemas       = new HashMap<String, Schema>();
 
     public XmlSchemaValidationPipelet() {
 
@@ -86,7 +86,7 @@ public class XmlSchemaValidationPipelet extends AbstractPipelet {
     @Override
     public void teardown() {
 
-        validators = new HashMap<String, Validator>();
+        schemas = new HashMap<String, Schema>();
 
         super.teardown();
     }
@@ -110,16 +110,14 @@ public class XmlSchemaValidationPipelet extends AbstractPipelet {
                 tempFilePath = ServerPropertiesUtil.replacePayloadDependedValues( tempFilePath, pojo
                         .getSequenceNumber(), messageContext );
 
-                Validator validator = validators.get( tempFilePath );
+                Schema schema = schemas.get( tempFilePath );
 
-                if ( validator == null ) {
+                if ( schema == null ) {
                     SchemaFactory factory = SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );
-                    Schema schema;
                     try {
                         schema = factory.newSchema( new File( tempFilePath ) );
-                        validator = schema.newValidator();
-                        LOG.debug( "Using XML Schema: " + tempFilePath );
-                        validators.put( tempFilePath, validator );
+                        
+                        schemas.put( tempFilePath, schema );
                     } catch ( Exception e ) {
                         throw new NexusException( "Error reading XML Schema file: " + tempFilePath + ". Cause: "
                                 + e.getMessage() );
@@ -127,6 +125,10 @@ public class XmlSchemaValidationPipelet extends AbstractPipelet {
                 }
 
                 try {
+                    
+                    Validator validator = schema.newValidator();
+                    LOG.debug( "Using XML Schema: " + tempFilePath );
+                    
                     InputSource inputSource = new InputSource( new ByteArrayInputStream( pojo.getPayloadData() ) );
                     DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
                     documentBuilderFactory.setNamespaceAware( true );
