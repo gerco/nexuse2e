@@ -344,8 +344,13 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                                 } catch (StateTransitionException stex) {
                                     LOG.warn( stex.getMessage() );
                                 }
+                                
+                                // deregistering 
+                                
+                                Engine.getInstance().getEngineController().getEngineControllerStub().broadcastAck( messageContext );
                                 Engine.getInstance().getTransactionService().deregisterProcessingMessage(
                                         referencedMessagePojo.getMessageId() );
+                            
                             } catch ( NexusException e ) {
                                 LOG.error( new LogMessage(
                                         "Error updating status for acknowleged message (message ID: "
@@ -397,6 +402,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                                 } catch (StateTransitionException stex) {
                                     LOG.warn( stex.getMessage() );
                                 }
+                                Engine.getInstance().getEngineController().getEngineControllerStub().broadcastAck( messageContext );
                                 Engine.getInstance().getTransactionService().deregisterProcessingMessage(
                                         referencedMessagePojo.getMessageId() );
                             } catch ( NexusException e ) {
