@@ -50,7 +50,7 @@ public class StateMachineExecutor {
      * @return
      * @throws NexusException
      */
-    protected ChoreographyPojo validateChoreography( MessageContext messageContext, boolean direction )
+    public ChoreographyPojo validateChoreography( MessageContext messageContext, boolean direction )
             throws NexusException {
 
         MessagePojo messagePojo = null;
@@ -147,7 +147,7 @@ public class StateMachineExecutor {
      * @return
      * @throws NexusException
      */
-    protected ParticipantPojo validateParticipant( MessageContext messagePipelineParameter, boolean direction )
+    public ParticipantPojo validateParticipant( MessageContext messagePipelineParameter, boolean direction )
             throws NexusException {
 
         MessagePojo messagePojo = null;
@@ -198,7 +198,7 @@ public class StateMachineExecutor {
      * @return
      * @throws NexusException
      */
-    protected ConversationPojo validateTransition( MessageContext messageContext ) throws NexusException {
+    public ConversationPojo validateTransition( MessageContext messageContext ) throws NexusException {
 
         String currentMessageId = messageContext.getMessagePojo().getMessageId();
         String currentActionId = messageContext.getMessagePojo().getAction().getName();

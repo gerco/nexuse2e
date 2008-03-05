@@ -438,6 +438,59 @@ public class BasicDAO extends HibernateDaoSupport {
     } // updateRecord
 
     /**
+     * Convenience method for merging a single record to the persistent object.
+     * @param record The instance to be persisted
+     * @param session The session. If <code>null</code>, a new session is created.
+     * @param transaction The transaction. If <code>null</code>, a new transaction is created.
+     * @throws NexusException
+     */
+    public void mergeRecord( Object record, Session session, Transaction transaction ) throws NexusException {
+
+        NexusException persistenceException = null;
+        boolean extSessionFlag = true;
+        boolean extTransactionFlag = true;
+
+        try {
+            if ( session == null ) {
+                session = getDBSession();
+                extSessionFlag = false;
+            }
+            try {
+
+                if ( transaction == null ) {
+                    transaction = session.beginTransaction();
+                    extTransactionFlag = false;
+                }
+                session.merge( record );
+                if ( !extTransactionFlag ) {
+                    transaction.commit();
+                }
+            } catch ( HibernateException e ) {
+                if ( transaction != null ) {
+                    transaction.rollback();
+                }
+                LOG.error( "Error updating record: " + record );
+                e.printStackTrace();
+                persistenceException = new NexusException( e );
+            } finally {
+                if ( !extSessionFlag ) {
+                    releaseDBSession( session );
+                    // session.close();
+                }
+            }
+
+        } catch ( HibernateException e ) {
+            e.printStackTrace();
+            // record does not exist
+            persistenceException = new NexusException( e );
+        } finally {
+            if ( persistenceException != null ) {
+                throw persistenceException;
+            }
+        }
+    } // updateRecord
+
+    /**
      * Convenience method for saving or updating a single instance.
      * @param record The instance to be persisted
      * @throws HibernateException

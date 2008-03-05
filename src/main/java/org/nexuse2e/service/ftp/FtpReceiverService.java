@@ -100,25 +100,27 @@ public class FtpReceiverService extends AbstractService implements ReceiverAware
     
     private void addCertificatesToDropdown( ListParameter certsDropdown ) {
         ConfigurationAccessService cas = Engine.getInstance().getActiveConfigurationAccessService();
-        try {
-            List<CertificatePojo> certs = cas.getCertificates( Constants.CERTIFICATE_TYPE_LOCAL, null );
-            if (certs != null) {
-                for (CertificatePojo cert : certs) {
-                    String label = cert.getName();
-                    if (label == null || "".equals( label.trim() )) {
-                        label = "Certificate #" + cert.getNxCertificateId();
-                    }
-                    if (cert.getDescription() != null && !"".equals( cert.getDescription() )) {
-                        label += " (" + cert.getDescription() + ")";
-                    }
-                    String value = Integer.toString( cert.getNxCertificateId() );
-                    if (certsDropdown.getElement( value ) == null) {
-                        certsDropdown.addElement( label, value );
+        if (cas != null) {
+            try {
+                List<CertificatePojo> certs = cas.getCertificates( Constants.CERTIFICATE_TYPE_LOCAL, null );
+                if (certs != null) {
+                    for (CertificatePojo cert : certs) {
+                        String label = cert.getName();
+                        if (label == null || "".equals( label.trim() )) {
+                            label = "Certificate #" + cert.getNxCertificateId();
+                        }
+                        if (cert.getDescription() != null && !"".equals( cert.getDescription() )) {
+                            label += " (" + cert.getDescription() + ")";
+                        }
+                        String value = Integer.toString( cert.getNxCertificateId() );
+                        if (certsDropdown.getElement( value ) == null) {
+                            certsDropdown.addElement( label, value );
+                        }
                     }
                 }
+            } catch (NexusException nex) {
+                LOG.error( "Could not retrieve local certificate list", nex );
             }
-        } catch (NexusException nex) {
-            LOG.error( "Could not retrieve local certificate list", nex );
         }
     }
     

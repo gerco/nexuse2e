@@ -13,6 +13,7 @@ import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.EngineConfiguration;
+import org.nexuse2e.pojo.UserPojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.ConfigurationManagementForm;
 
@@ -37,9 +38,12 @@ public class ImportConfigurationAction extends NexusE2EAction {
         ConfigurationManagementForm form = (ConfigurationManagementForm) actionForm;
         
         if (form.getPayloadFile() != null && !StringUtils.isEmpty( form.getPayloadFile().getFileName() )) {
+            UserPojo user = (UserPojo) request.getSession().getAttribute( ATTRIBUTE_USER );
+            if (user != null) {
+                Engine.getInstance().invalidateConfiguration( user.getNxUserId() );
+            }
             Engine.getInstance().importConfiguration(
                     new ByteArrayInputStream( form.getPayloadFile().getFileData() ) );
-            request.setAttribute( REFRESH_TREE, "true" );
             return actionMapping.findForward( ACTION_FORWARD_SUCCESS );
         } else {
             ActionMessage errorMessage = new ActionMessage( "configuration.import.nofile" );

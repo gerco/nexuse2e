@@ -31,17 +31,12 @@ import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
-import org.nexuse2e.configuration.ConfigurationAccessService;
-import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.configuration.EngineConfiguration;
-import org.nexuse2e.configuration.Constants.ComponentType;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ComponentPojo;
 import org.nexuse2e.pojo.ConnectionPojo;
-import org.nexuse2e.pojo.ConversationPojo;
 import org.nexuse2e.pojo.GenericParamPojo;
 import org.nexuse2e.pojo.LoggerPojo;
 import org.nexuse2e.pojo.MappingPojo;
@@ -946,8 +941,6 @@ public class ConfigDAO extends BasicDAO {
      */
     public void saveConfigurationToDB( EngineConfiguration configuration ) throws NexusException {
 
-        ConfigurationAccessService current = Engine.getInstance().getActiveConfigurationAccessService();
-
         Session session = getDBSession();
 
         Transaction transaction = session.beginTransaction();
@@ -966,12 +959,6 @@ public class ConfigDAO extends BasicDAO {
         Map<String, List<GenericParamPojo>> genericParameters = configuration.getGenericParameters();
         List<MappingPojo> mappings = configuration.getMappings();
         
-        List<TRPPojo> obsoleteTRPs = getObsoleteEntries( trps, current.getTrps() );
-        for ( TRPPojo pojo : obsoleteTRPs ) {
-            deleteTrp( pojo, session, transaction );
-        }
-        obsoleteTRPs.clear();
-
         if ( trps != null && trps.size() > 0 ) {
 
             Iterator<TRPPojo> i = trps.iterator();
@@ -986,13 +973,6 @@ public class ConfigDAO extends BasicDAO {
                 }
             }
         }
-
-        List<ComponentPojo> obsoleteComponents = getObsoleteEntries( components, current.getComponents(
-                ComponentType.ALL, null ) );
-        for ( ComponentPojo pojo : obsoleteComponents ) {
-            deleteComponent( pojo, session, transaction );
-        }
-        obsoleteComponents.clear();
 
         if ( components != null && components.size() > 0 ) {
 
@@ -1009,13 +989,6 @@ public class ConfigDAO extends BasicDAO {
             }
         }
 
-        List<PipelinePojo> obsoleteBackendPipelineTemplates = getObsoleteEntries( backendPipelineTemplates, current
-                .getBackendPipelinePojos( Constants.PIPELINE_TYPE_ALL, null ) );
-        for ( PipelinePojo pojo : obsoleteBackendPipelineTemplates ) {
-            deletePipeline( pojo, session, transaction );
-        }
-        obsoleteBackendPipelineTemplates.clear();
-
         if ( backendPipelineTemplates != null && backendPipelineTemplates.size() > 0 ) {
 
             for ( PipelinePojo pojo : backendPipelineTemplates ) {
@@ -1030,13 +1003,6 @@ public class ConfigDAO extends BasicDAO {
                 }
             }
         }
-
-        List<PipelinePojo> obsoleteFrontendPipelineTemplates = getObsoleteEntries( frontendPipelineTemplates, current
-                .getFrontendPipelinePojos( Constants.PIPELINE_TYPE_ALL, null ) );
-        for ( PipelinePojo pojo : obsoleteBackendPipelineTemplates ) {
-            deletePipeline( pojo, session, transaction );
-        }
-        obsoleteFrontendPipelineTemplates.clear();
 
         if ( frontendPipelineTemplates != null && frontendPipelineTemplates.size() > 0 ) {
 
@@ -1071,13 +1037,6 @@ public class ConfigDAO extends BasicDAO {
             }
         }
 
-        List<CertificatePojo> obsoleteCertificates = getObsoleteEntries( certificates, current.getCertificates(
-                Constants.CERTIFICATE_TYPE_ALL, null ) );
-        for ( CertificatePojo pojo : obsoleteCertificates ) {
-            deleteCertificate( pojo, session, transaction );
-        }
-        obsoleteCertificates.clear();
-
         if ( certificates != null && certificates.size() > 0 ) {
 
             for ( CertificatePojo certificate : certificates ) {
@@ -1092,23 +1051,6 @@ public class ConfigDAO extends BasicDAO {
                 }
             }
         }
-
-        List<ChoreographyPojo> obsoleteChoreographies = getObsoleteEntries( choreographies, current.getChoreographies() );
-        for ( ChoreographyPojo pojo : obsoleteChoreographies ) {
-            boolean removeConversations = false;
-
-            List<ConversationPojo> conversations = Engine.getInstance().getTransactionService()
-                    .getConversationsByChoreography( pojo, session, transaction );
-            if ( conversations == null || conversations.size() == 0 ) {
-                deleteChoreography( pojo, session, transaction );
-            } else if ( removeConversations ) {
-                for ( ConversationPojo conv : conversations ) {
-                    Engine.getInstance().getTransactionService().deleteConversation( conv, session, transaction );
-                }
-                deleteChoreography( pojo, session, transaction );
-            }
-        }
-        obsoleteChoreographies.clear();
 
         if ( choreographies != null && choreographies.size() > 0 ) {
 
@@ -1129,19 +1071,6 @@ public class ConfigDAO extends BasicDAO {
             }
         }
 
-        List<PartnerPojo> obsoletePartners = getObsoleteEntries( partners, current.getPartners(
-                Constants.PARTNER_TYPE_ALL, null ) );
-        for ( PartnerPojo pojo : obsoletePartners ) {
-            deletePartner( pojo, session, transaction );
-        }
-        obsoletePartners.clear();
-
-        List<ServicePojo> obsoleteServices = getObsoleteEntries( services, current.getServices() );
-        for ( ServicePojo pojo : obsoleteServices ) {
-            deleteService( pojo, session, transaction );
-        }
-        obsoleteServices.clear();
-
         if ( services != null && services.size() > 0 ) {
             for ( ServicePojo pojo : services ) {
                 LOG.debug( "Service: " + pojo.getNxServiceId() + " - " + pojo.getName() );
@@ -1155,12 +1084,6 @@ public class ConfigDAO extends BasicDAO {
                 }
             }
         }
-
-        List<LoggerPojo> obsoleteLoggers = getObsoleteEntries( loggers, current.getLoggers() );
-        for ( LoggerPojo pojo : obsoleteLoggers ) {
-            deleteLogger( pojo, session, transaction );
-        }
-        obsoleteLoggers.clear();
 
         if ( loggers != null && loggers.size() > 0 ) {
 
@@ -1177,15 +1100,6 @@ public class ConfigDAO extends BasicDAO {
             }
         }
 
-        /*
-         * User configuration
-         */
-        List<RolePojo> obsoleteRoles = getObsoleteEntries( roles, current.getRoles( null ) );
-        for ( RolePojo pojo : obsoleteRoles ) {
-            deleteRole( pojo, session, transaction );
-        }
-        obsoleteRoles.clear();
-
         // save roles first to ensure referential integrity
         if ( roles != null && roles.size() > 0 ) {
 
@@ -1201,12 +1115,6 @@ public class ConfigDAO extends BasicDAO {
                 }
             }
         }
-
-        List<UserPojo> obsoleteUsers = getObsoleteEntries( users, current.getUsers( null ) );
-        for ( UserPojo pojo : obsoleteUsers ) {
-            deleteUser( pojo, session, transaction );
-        }
-        obsoleteUsers.clear();
 
         if ( users != null && users.size() > 0 ) {
 
@@ -1245,12 +1153,6 @@ public class ConfigDAO extends BasicDAO {
             }
         }
 
-        List<MappingPojo> obsoleteMappingEntries = getObsoleteEntries( mappings, current.getMappings( null ) );
-        for ( MappingPojo pojo : obsoleteMappingEntries ) {
-            deleteMapping( pojo, session, transaction );
-        }
-        obsoleteMappingEntries.clear();
-
         if ( mappings != null && mappings.size() > 0 ) {
 
             for ( MappingPojo pojo : mappings ) {
@@ -1270,25 +1172,4 @@ public class ConfigDAO extends BasicDAO {
         transaction.commit();
         releaseDBSession( session );
     } // saveConfigurationToDB
-
-    /**
-     * @param newObjects 
-     * @param oldObjects
-     * @return
-     */
-    private <T> List<T> getObsoleteEntries( List<T> newObjects, List<T> oldObjects ) {
-
-        List<T> obsoleteObjects = new ArrayList<T>();
-        if ( newObjects == null ) {
-            newObjects = new ArrayList<T>();
-        }
-        if ( oldObjects != null ) {
-            for ( T oldPojo : oldObjects ) {
-                if ( !newObjects.contains( oldPojo ) ) {
-                    obsoleteObjects.add( oldPojo );
-                }
-            }
-        }
-        return obsoleteObjects;
-    }
 } // CommunicationPartnerDAO

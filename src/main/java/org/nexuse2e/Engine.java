@@ -766,13 +766,13 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
         BaseConfigurationProvider provider = new XmlBaseConfigurationProvider( xmlInput );
 
         try {
-            ConfigDAO configDao = (ConfigDAO) Engine.getInstance().getDao( "configDao" );
+            ConfigDAO configDao = getConfigDAO();
             configDao.deleteAll();
             EngineConfiguration newConfig = new EngineConfiguration();
             newConfig.createBaseConfiguration( provider );
-            currentConfiguration = null;
-            currentConfiguration = newConfig;
-            initialize();
+            configDao.saveConfigurationToDB( newConfig );
+            newConfig.init();
+            setCurrentConfiguration( newConfig );
         } catch (Exception ex) {
             if (ex instanceof NexusException) {
                 throw (NexusException) ex;
