@@ -761,7 +761,8 @@ public class EngineConfiguration implements ConfigurationAccessService {
     public Service getServiceInstanceFromPojo( ServicePojo pojo ) throws NexusException {
 
         try {
-            Object newService = Class.forName( pojo.getComponent().getClassName() ).newInstance();
+            Class<?> serviceClass = Class.forName( pojo.getComponent().getClassName() );
+            Object newService = serviceClass.newInstance();
             if ( newService instanceof Service ) {
                 Service service = (Service) newService;
                 service.setAutostart( pojo.isAutostart() );
