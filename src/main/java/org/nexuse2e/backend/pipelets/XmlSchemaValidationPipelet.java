@@ -55,6 +55,7 @@ public class XmlSchemaValidationPipelet extends AbstractPipelet {
     private static Logger            LOG              = Logger.getLogger( XmlSchemaValidationPipelet.class );
 
     protected static final String    SCHEMA_FILE_PATH = "schemaFilePath";
+    protected static final String    VALIDATION_ENABLED = "validationEnabled";
 
     protected String                 schemaFilePath;
     protected Map<String, Schema> schemas       = new HashMap<String, Schema>();
@@ -65,6 +66,8 @@ public class XmlSchemaValidationPipelet extends AbstractPipelet {
 
         parameterMap.put( SCHEMA_FILE_PATH, new ParameterDescriptor( ParameterType.STRING, "Schema file",
                 "Path to the schema file for XML validation", "" ) );
+        parameterMap.put( VALIDATION_ENABLED, new ParameterDescriptor( ParameterType.BOOLEAN, "Enable validation",
+                "Uncheck this option if you want to disable the XML schema validation", Boolean.TRUE ) );
     }
 
     /* (non-Javadoc)
@@ -98,7 +101,9 @@ public class XmlSchemaValidationPipelet extends AbstractPipelet {
     public MessageContext processMessage( MessageContext messageContext ) throws IllegalArgumentException,
             IllegalStateException, NexusException {
 
-        if ( !StringUtils.isEmpty( schemaFilePath ) ) {
+        Boolean enabled = getParameter( VALIDATION_ENABLED );
+        
+        if ( enabled != null && enabled.booleanValue() && !StringUtils.isEmpty( schemaFilePath ) ) {
             // get message payloads
             List<MessagePayloadPojo> payloads = messageContext.getMessagePojo().getMessagePayloads();
 
@@ -107,8 +112,8 @@ public class XmlSchemaValidationPipelet extends AbstractPipelet {
             for ( MessagePayloadPojo pojo : payloads ) {
 
                 String tempFilePath = ServerPropertiesUtil.replaceServerProperties( schemaFilePath, messageContext );
-                tempFilePath = ServerPropertiesUtil.replacePayloadDependedValues( tempFilePath, pojo
-                        .getSequenceNumber(), messageContext );
+                tempFilePath = ServerPropertiesUtil.replacePayloadDependedValues(
+                        tempFilePath, pojo.getSequenceNumber(), messageContext );
 
                 Schema schema = schemas.get( tempFilePath );
 
@@ -144,7 +149,7 @@ public class XmlSchemaValidationPipelet extends AbstractPipelet {
                             + messageContext.getMessagePojo().getMessageId() + "): " + e.getMessage(), e );
                 }
             }
-        } 
+        }
 
         return messageContext;
     }
