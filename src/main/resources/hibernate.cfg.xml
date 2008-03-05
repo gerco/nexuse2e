@@ -21,7 +21,7 @@
     <property name="show_sql">false</property>
     <property name="use_outer_join">true</property>
 
-    <property name="connection.isolation">2</property>
+    <property name="connection.isolation">8</property>
     <property name="hibernate.connection.isolation">2</property>
     <property name="query.substitutions">true=1, false=0</property>
     <property name="hibernate.query.substitutions">true=1, false=0</property>
