@@ -73,7 +73,7 @@ public class DatabasePurgeAction extends NexusE2EAction {
                     }
                 }
                 dbForm.setMessageCount( messageCount );
-                System.out.println("size: "+conversations.size());
+                // System.out.println("size: "+conversations.size());
             }
             if(dbForm.isPurgeLog()) {
                 List<LogPojo> logEntries = getLogEntiesByForm( dbForm, null, null );
@@ -162,11 +162,11 @@ public class DatabasePurgeAction extends NexusE2EAction {
             end.set( Calendar.MINUTE, Integer.parseInt( form.getEndMin()) );
             endDate = end.getTime();
         }
-        System.out.println("startdate("+form.isStartEnabled()+"): "+startDate);
-        System.out.println("enddate("+form.isEndEnabled()+"): "+endDate);
+        // System.out.println("startdate("+form.isStartEnabled()+"): "+startDate);
+        // System.out.println("enddate("+form.isEndEnabled()+"): "+endDate);
 
-        System.out.println("Messages: "+form.isPurgeMessages());
-        System.out.println("LogEntries: "+form.isPurgeLog());
+        // System.out.println("Messages: "+form.isPurgeMessages());
+        // System.out.println("LogEntries: "+form.isPurgeLog());
         
         return Engine.getInstance().getTransactionService().getLogEntriesForReport( null, null, startDate, endDate, 0, 0, TransactionDAO.SORT_NONE, false , session,transaction);
     }
@@ -193,11 +193,11 @@ public class DatabasePurgeAction extends NexusE2EAction {
             end.set( Calendar.MINUTE, Integer.parseInt( form.getEndMin()) );
             endDate = end.getTime();
         }
-        System.out.println("startdate("+form.isStartEnabled()+"): "+startDate);
-        System.out.println("enddate("+form.isEndEnabled()+"): "+endDate);
+        // System.out.println("startdate("+form.isStartEnabled()+"): "+startDate);
+        // System.out.println("enddate("+form.isEndEnabled()+"): "+endDate);
 
-        System.out.println("Messages: "+form.isPurgeMessages());
-        System.out.println("LogEntries: "+form.isPurgeLog());
+        // System.out.println("Messages: "+form.isPurgeMessages());
+        // System.out.println("LogEntries: "+form.isPurgeLog());
         
         
         return Engine.getInstance().getTransactionService().getConversationsForReport( null,0, 0, null, startDate, endDate, 0, 0, TransactionDAO.SORT_NONE, false, session, transaction );
