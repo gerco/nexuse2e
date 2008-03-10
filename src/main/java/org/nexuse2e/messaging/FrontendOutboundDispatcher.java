@@ -19,7 +19,6 @@
  */
 package org.nexuse2e.messaging;
 
-import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -33,7 +32,6 @@ import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.controller.StateTransitionException;
 import org.nexuse2e.logging.LogMessage;
-import org.nexuse2e.pojo.ConversationPojo;
 import org.nexuse2e.pojo.MessagePojo;
 import org.nexuse2e.pojo.ParticipantPojo;
 import org.springframework.beans.factory.InitializingBean;
@@ -213,8 +211,6 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
         public void run() {
 
             MessagePojo messagePojo = messageContext.getMessagePojo();
-            ;
-            ConversationPojo conversationPojo = messagePojo.getConversation();
 
             LOG.trace( "Message ( " + messagePojo.getMessageId() + " ) end timestamp: " + messagePojo.getEndDate() );
 
@@ -222,82 +218,18 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                 LOG.debug( new LogMessage( "Sending message...", messagePojo ) );
                 try {
                     retryCount++;
-                    synchronized ( conversationPojo ) {
-                        if ( ( messagePojo.getType() != Constants.INT_MESSAGE_TYPE_NORMAL )
-                                && ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_PROCESSING ) ) {
-                            conversationPojo.setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_SENDING_ACK );
-                        } else if ( messagePojo.getEndDate() != null ) {
+                    if ( messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_NORMAL
+                            && messagePojo.getEndDate() != null ) {
+                        // If message has been ack'ed while we were waiting do nothing
+                        LOG.info( "Cancelled sending message (ack was just received): " + messagePojo.getMessageId() );
+                        cancelRetrying( false );
+                        return;
+                    }
+                    // Send message
+                    messageContext.getMessagePojo().setRetries( retryCount - 1 );
+                    messageContext = pipeline.processMessage( messageContext );
 
-                            // If message has been ack'ed while we were waiting do nothing
-                            LOG.info( "Cancelled sending message (ack was just received): "
-                                    + messagePojo.getMessageId() );
-                            cancelRetrying( false );
-                            return;
-                        }
-
-                        // Send message
-                        messageContext.getMessagePojo().setRetries( retryCount - 1 );
-                        messageContext = pipeline.processMessage( messageContext );
-
-                        if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
-                            if ( ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_PROCESSING )
-                                    || ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_AWAITING_ACK ) ) {
-                                if ( messageContext.getParticipant().getConnection().isReliable() ) {
-                                    conversationPojo
-                                            .setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_AWAITING_ACK );
-                                } else {
-                                    Engine.getInstance().getTransactionService().deregisterProcessingMessage(
-                                            messagePojo.getMessageId() );
-                                    messagePojo.setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_SENT );
-                                    messagePojo.setModifiedDate( new Date() );
-                                    if ( conversationPojo.getCurrentAction().isEnd() ) {
-                                        conversationPojo
-                                                .setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_COMPLETED );
-                                    } else {
-                                        conversationPojo.setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_IDLE );
-                                    }
-                                }
-                            } else {
-                                LOG.error( new LogMessage(
-                                        "Unexpected conversation state after sending normal message: "
-                                                + conversationPojo.getStatus(), messagePojo ) );
-                            }
-                        } else {
-                            // Engine.getInstance().getTransactionService().deregisterProcessingMessage( messagePojo.getMessageId() );
-                            messagePojo.setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_SENT );
-                            Date endDate = new Date();
-                            messagePojo.setModifiedDate( endDate );
-                            messagePojo.setEndDate( endDate );
-                            messagePojo.getReferencedMessage().setEndDate( endDate );
-                            if ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_SENDING_ACK ) {
-                                conversationPojo
-                                        .setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND );
-                            } else if ( ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_BACKEND_SENT_SENDING_ACK )
-                                    || ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_IDLE )
-                                    || ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND ) ) {
-                                if ( conversationPojo.getCurrentAction().isEnd() ) {
-                                    conversationPojo.setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_COMPLETED );
-                                } else {
-                                    conversationPojo.setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_IDLE );
-                                }
-                            } else if ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_AWAITING_BACKEND ) {
-                                LOG.debug( new LogMessage(
-                                        "Received ack message, backend still processing - conversation ID: "
-                                                + conversationPojo.getConversationId(), messagePojo ) );
-                            } else if ( ( conversationPojo.getStatus() != org.nexuse2e.Constants.CONVERSATION_STATUS_COMPLETED )
-                                    && ( conversationPojo.getStatus() != org.nexuse2e.Constants.CONVERSATION_STATUS_ERROR ) ) {
-                                LOG.error( new LogMessage( "Unexpected conversation state after sending ack message: "
-                                        + conversationPojo.getStatus(), messagePojo ) );
-                            }
-                        }
-
-                        // Persist status changes
-                        try {
-                            Engine.getInstance().getTransactionService().updateTransaction( messagePojo );
-                        } catch (StateTransitionException stex) {
-                            LOG.warn( stex.getMessage() );
-                        }
-                    } // synchronized
+                    messageContext.getStateMachine().sentMessage();
 
                     LOG.debug( new LogMessage( "Message sent.", messagePojo ) );
                 } catch ( Throwable e ) {
@@ -309,12 +241,6 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                     } catch (StateTransitionException stex) {
                         LOG.warn( stex.getMessage() );
                     }
-
-                    /*
-                    if ( LOG.isTraceEnabled() ) {
-                        e.printStackTrace();
-                    }
-                    */
 
                     LOG.error( new LogMessage( "Error sending message: " + e, messagePojo ), e );
                 }
@@ -347,21 +273,15 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
             MessagePojo messagePojo = messageContext.getMessagePojo();
             synchronized ( messagePojo.getConversation() ) {
 
-                // if ( messagePojo.getStatus() != org.nexuse2e.Constants.MESSAGE_STATUS_SENT ) {
                 if ( updateStatus ) {
-                    messagePojo.setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_FAILED );
-                    messagePojo.getConversation().setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_ERROR );
                     try {
-                        Engine.getInstance().getTransactionService().updateTransaction( messagePojo );
-                    } catch ( NexusException e ) {
-                        LOG.error( new LogMessage( "Error updating conversation/message on failed atempt message!",
-                                messagePojo ) );
-                        e.printStackTrace();
+                        messageContext.getStateMachine().processingFailed();
                     } catch (StateTransitionException stex) {
                         LOG.warn( stex.getMessage() );
+                    } catch (NexusException e) {
+                        LOG.error( "Error while setting conversation status to ERROR", e );
                     }
                 }
-                // }
                 Engine.getInstance().getTransactionService().deregisterProcessingMessage(
                         messageContext.getMessagePojo().getMessageId() );
             } // synchronized

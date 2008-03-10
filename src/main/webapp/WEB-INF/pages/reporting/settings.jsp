@@ -125,7 +125,7 @@
                
                 <td class="BUTTON_RIGHT">
                 
-                	<nexus:submit onClick="document.reportingPropertiesForm.command.value='saveFields';" styleClass="button"><img src="images/icons/tick.png" class="button">Save Settings</nexus:submit>
+                	<nexus:submit styleClass="button"><img src="images/icons/tick.png" class="button">Save Settings</nexus:submit>
 				
                   
             </td>

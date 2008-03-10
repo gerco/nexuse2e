@@ -472,5 +472,12 @@ public interface TransactionService extends Manageable {
     public abstract void releaseDBSession(Session session)  throws NexusException;
     
     
+    /**
+     * Gets the synchronization <code>Object</code> for the given <code>ConversationPojo</code>.
+     * @param conversation The conversation to get a synchronization object for.
+     * @return A non-<code>null</code> <code>Object</code>.
+     */
+    public abstract Object getSyncObjectForConversation( ConversationPojo conversation );
+    
     
 } // TransactionService

@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.nexuse2e.ActionSpecificKey;
+import org.nexuse2e.Engine;
 import org.nexuse2e.ProtocolSpecificKey;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ConversationPojo;
@@ -56,6 +57,8 @@ public class MessageContext implements Serializable {
     private ConversationPojo    conversation        = null;
 
     private ArrayList<ErrorDescriptor> errors       = null;
+    
+    private transient ConversationStateMachine conversationStateMachine = null;
     
     /**
      * @return the data
@@ -254,5 +257,21 @@ public class MessageContext implements Serializable {
     public void setErrors( ArrayList<ErrorDescriptor> errors ) {
     
         this.errors = errors;
+    }
+    
+    /**
+     * Gets the <code>ConversationStateMachine</code> that shall be used for
+     * state transitions.
+     * @return The <code>ConversationStateMachine</code>.
+     */
+    public ConversationStateMachine getStateMachine() {
+        if (conversationStateMachine == null) {
+            conversationStateMachine = new ConversationStateMachine(
+                    conversation,
+                    messagePojo,
+                    participant.getConnection().isReliable(),
+                    Engine.getInstance().getTransactionService().getSyncObjectForConversation( conversation ) );
+        }
+        return conversationStateMachine;
     }
 } // MessageContext

@@ -19,6 +19,8 @@
  */
 package org.nexuse2e.controller;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -64,6 +66,8 @@ public class TransactionServiceImpl implements TransactionService {
     private HashMap<String, ScheduledFuture<?>>       processingMessages = new HashMap<String, ScheduledFuture<?>>();
     private HashMap<String, ScheduledExecutorService> schedulers         = new HashMap<String, ScheduledExecutorService>();
     private Hashtable<String, String>                 synchronousReplies = new Hashtable<String, String>();
+
+    private Map<String, WeakReference<Object>>        syncObjects        = new HashMap<String, WeakReference<Object>>();
 
     private Constants.BeanStatus                      status             = Constants.BeanStatus.UNDEFINED;
 
@@ -942,6 +946,37 @@ public class TransactionServiceImpl implements TransactionService {
 
         Engine.getInstance().getTransactionDAO().deleteLogEntry( logEntry, session, transaction );
 
+    }
+
+    public Object getSyncObjectForConversation( ConversationPojo conversation ) {
+
+        synchronized (syncObjects) {
+            WeakReference<Object> ref = syncObjects.get( conversation.getConversationId() );
+            Object obj = null;
+            if (ref != null) {
+                obj = ref.get();
+            }
+            
+            // clear out removed weak references
+            List<String> keys = new ArrayList<String>();
+            for (String key : syncObjects.keySet()) {
+                WeakReference<Object> weakRef = syncObjects.get( key );
+                if (weakRef.get() == null) {
+                    keys.add( key );
+                }
+            }
+            
+            for (String key : keys) {
+                syncObjects.remove( key );
+            }
+            
+            if (obj != null) {
+                return obj;
+            }
+            obj = new Object();
+            syncObjects.put( conversation.getConversationId(), new WeakReference<Object>( obj ) );
+            return obj;
+        }
     }
 
 } // TransactionService

@@ -20,7 +20,6 @@
 package org.nexuse2e.messaging;
 
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -262,18 +261,10 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                             }
                         } else {
                             LOG.debug( "Not reliable, not creating ack - message ID: " + messagePojo.getMessageId() );
-                            if ( messagePojo.getConversation().getCurrentAction().isEnd() ) {
-                                messagePojo.getConversation().setStatus(
-                                        org.nexuse2e.Constants.CONVERSATION_STATUS_COMPLETED );
-                            } else {
-                                messagePojo.getConversation().setStatus(
-                                        org.nexuse2e.Constants.CONVERSATION_STATUS_IDLE );
-                            }
-                            // Persist status changes
                             try {
-                                Engine.getInstance().getTransactionService().updateTransaction( messagePojo );
-                            } catch (StateTransitionException stex) {
-                                LOG.warn( stex.getMessage() );
+                                messageContext.getStateMachine().receivedNonReliableMessage();
+                            } catch (StateTransitionException e) {
+                                LOG.warn( e.getMessage() );
                             }
                         }
                     } else {
@@ -314,56 +305,18 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                 LOG.info( "Received duplicate acknowledgment: " + messagePojo.getMessageId() + " for normal message: "
                         + ( messagePojo.getReferencedMessage() != null ? messagePojo.getReferencedMessage() : "n/a" ) );
             } else {
-
                 MessagePojo referencedMessagePojo = messagePojo.getReferencedMessage();
                 if ( referencedMessagePojo != null ) {
-                    synchronized ( referencedMessagePojo.getConversation() ) {
-                        if ( ( referencedMessagePojo.getConversation().getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_AWAITING_ACK )
-                                || ( referencedMessagePojo.getConversation().getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_PROCESSING )
-                                || ( referencedMessagePojo.getConversation().getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_ERROR ) ) {
-                            if ( referencedMessagePojo.getConversation().getCurrentAction().isEnd() ) {
-                                referencedMessagePojo.getConversation().setStatus(
-                                        org.nexuse2e.Constants.CONVERSATION_STATUS_COMPLETED );
-                            } else {
-                                referencedMessagePojo.getConversation().setStatus(
-                                        org.nexuse2e.Constants.CONVERSATION_STATUS_IDLE );
-                            }
-                            referencedMessagePojo.setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_SENT );
-                            try {
-                                // Complete ack message and add to conversation
-                                Date endDate = new Date();
-                                messagePojo.setAction( referencedMessagePojo.getAction() );
-                                messagePojo.setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_SENT );
-                                messagePojo.setModifiedDate( endDate );
-                                messagePojo.setEndDate( endDate );
-                                referencedMessagePojo.getConversation().getMessages().add( messagePojo );
-                                referencedMessagePojo.setModifiedDate( endDate );
-                                referencedMessagePojo.setEndDate( endDate );
-                                try {
-                                    Engine.getInstance().getTransactionService().updateTransaction( referencedMessagePojo );
-                                } catch (StateTransitionException stex) {
-                                    LOG.warn( stex.getMessage() );
-                                }
-                                
-                                // deregistering 
-                                
-                                Engine.getInstance().getEngineController().getEngineControllerStub().broadcastAck( messageContext );
-                                Engine.getInstance().getTransactionService().deregisterProcessingMessage(
-                                        referencedMessagePojo.getMessageId() );
-                            
-                            } catch ( NexusException e ) {
-                                LOG.error( new LogMessage(
-                                        "Error updating status for acknowleged message (message ID: "
-                                                + referencedMessagePojo.getMessageId() + ")", messagePojo ) );
-                                e.printStackTrace();
-                            }
-                        } else {
-                            LOG.warn( new LogMessage(
-                                    "Received ACK when it was not expected - ID of acknowleged message: "
-                                            + referencedMessagePojo.getMessageId() + ", status: "
-                                            + referencedMessagePojo.getConversation().getStatus(), messagePojo ) );
-                        }
-                    } // synchronized
+                    try {
+                        messageContext.getStateMachine().receivedAckMessage();
+                    } catch (StateTransitionException stex) {
+                        LOG.warn( stex.getMessage() );
+                    }
+
+                    // deregistering 
+                    Engine.getInstance().getEngineController().getEngineControllerStub().broadcastAck( messageContext );
+                    Engine.getInstance().getTransactionService().deregisterProcessingMessage(
+                            referencedMessagePojo.getMessageId() );
                 } else {
                     LOG.error( new LogMessage( "Error using referenced message on acknowledgment (ack message ID: "
                             + messagePojo.getMessageId() + ")", messagePojo ) );
@@ -382,37 +335,15 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
 
                 MessagePojo referencedMessagePojo = messagePojo.getReferencedMessage();
                 if ( referencedMessagePojo != null ) {
-                    synchronized ( referencedMessagePojo.getConversation() ) {
-                       
-                                referencedMessagePojo.getConversation().setStatus(
-                                        org.nexuse2e.Constants.CONVERSATION_STATUS_ERROR );
-                            referencedMessagePojo.setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_FAILED );
-                            try {
-                                // Complete error message and add to conversation
-                                Date endDate = new Date();
-                                messagePojo.setAction( referencedMessagePojo.getAction() );
-                                messagePojo.setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_SENT );
-                                messagePojo.setModifiedDate( endDate );
-                                messagePojo.setEndDate( endDate );
-                                referencedMessagePojo.getConversation().getMessages().add( messagePojo );
-                                referencedMessagePojo.setModifiedDate( endDate );
-                                referencedMessagePojo.setEndDate( endDate );
-                                try {
-                                    Engine.getInstance().getTransactionService().updateTransaction( referencedMessagePojo );
-                                } catch (StateTransitionException stex) {
-                                    LOG.warn( stex.getMessage() );
-                                }
-                                Engine.getInstance().getEngineController().getEngineControllerStub().broadcastAck( messageContext );
-                                Engine.getInstance().getTransactionService().deregisterProcessingMessage(
-                                        referencedMessagePojo.getMessageId() );
-                            } catch ( NexusException e ) {
-                                LOG.error( new LogMessage(
-                                        "Error updating status for failed message (message ID: "
-                                                + referencedMessagePojo.getMessageId() + ")", messagePojo ) );
-                                e.printStackTrace();
-                            }
-                      
-                    } // synchronized
+                    try {
+                        messageContext.getStateMachine().receivedErrorMessage();
+                    } catch (StateTransitionException stex) {
+                        LOG.warn( stex.getMessage() );
+                    }
+
+                    Engine.getInstance().getEngineController().getEngineControllerStub().broadcastAck( messageContext );
+                    Engine.getInstance().getTransactionService().deregisterProcessingMessage(
+                            referencedMessagePojo.getMessageId() );
                 } else {
                     LOG.error( new LogMessage( "Error using referenced message on acknowledgment (ack message ID: "
                             + messagePojo.getMessageId() + ")", messagePojo ) );

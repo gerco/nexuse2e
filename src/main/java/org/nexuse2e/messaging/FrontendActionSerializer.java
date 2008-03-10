@@ -19,8 +19,6 @@
  */
 package org.nexuse2e.messaging;
 
-import java.util.Date;
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -34,7 +32,6 @@ import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.controller.StateTransitionException;
 import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.pojo.ConversationPojo;
-import org.nexuse2e.pojo.MessagePojo;
 
 /**
  * Component in the NEXUSe2e frontend that serializes the processing of inbound messages per Choreography. 
@@ -100,7 +97,7 @@ public class FrontendActionSerializer implements Manageable {
 
             // Persist the message
             try {
-                queueMessage( messageContext, true );
+                queueMessage( messageContext );
             } catch ( Exception e ) {
                 throw new NexusException( "Error storing new conversation/message state: " + e );
             }
@@ -114,34 +111,17 @@ public class FrontendActionSerializer implements Manageable {
 
     /**
      * @param messageContext
-     * @param newMessage
      * @throws NexusException
      */
-    private void queueMessage( MessageContext messageContext, boolean newMessage )
+    private void queueMessage( MessageContext messageContext )
             throws NexusException {
 
-        MessagePojo messagePojo = messageContext.getMessagePojo();
-        ConversationPojo conversationPojo = messagePojo.getConversation();
-
-        synchronized ( conversationPojo ) {
-            messagePojo.setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_QUEUED );
-            messagePojo.setModifiedDate( new Date() );
-            if ( newMessage ) {
-                List<MessagePojo> messages = conversationPojo.getMessages();
-                messages.add( messagePojo );
-                Engine.getInstance().getTransactionService().storeTransaction(
-                        conversationPojo, messagePojo );
-            } else {
-                try {
-                    Engine.getInstance().getTransactionService().updateTransaction( messagePojo );
-                } catch (StateTransitionException stex) {
-                    LOG.warn( stex.getMessage() );
-                }
-            }
-
-            // Submit the message to the queue/backend
-            queue.add( messageContext );
+        try {
+            messageContext.getStateMachine().queueMessage();
+        } catch (StateTransitionException e) {
+            LOG.warn( e.getMessage() );
         }
+        queue.add( messageContext );
     } // queueMessage
 
     /**
@@ -171,7 +151,7 @@ public class FrontendActionSerializer implements Manageable {
             throws NexusException {
 
         if ( messageContext != null ) {
-            queueMessage( messageContext, false );
+            queueMessage( messageContext );
         } else {
             LOG.error( "Message: " + messageId + " could not be found in database, cancelled requeueing!" );
         }
@@ -306,85 +286,34 @@ public class FrontendActionSerializer implements Manageable {
         public void run() {
 
             MessageContext messageContext = null;
-            MessagePojo messagePojo = null;
-            ConversationPojo conversationPojo = null;
 
             while ( !stopRequested ) {
                 try {
                     messageContext = queue.take();
-                    messagePojo = messageContext.getMessagePojo();
-                    conversationPojo = messagePojo.getConversation();
 
-                    synchronized ( conversationPojo ) {
+                    // Initiate the backend process
+                    FrontendActionSerializer.this.backendInboundDispatcher.processMessage( messageContext );
 
-                        if ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_PROCESSING ) {
-                            conversationPojo.setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_AWAITING_BACKEND );
-                        } else if ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_ERROR ) {
-                            // Fixing state for requeued message
-                            conversationPojo
-                                    .setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND );
-
-                        }
-
-                        // Initiate the backend process
-                        FrontendActionSerializer.this.backendInboundDispatcher.processMessage( messageContext );
-
-                        messagePojo.setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_SENT );
-                        messagePojo.setModifiedDate( new Date() );
-                        if ( ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND )
-                                || ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_IDLE ) ) {
-                            if ( conversationPojo.getCurrentAction().isEnd() ) {
-                                conversationPojo.setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_COMPLETED );
-                            } else {
-                                conversationPojo.setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_IDLE );
-                            }
-                        } else if ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_AWAITING_BACKEND ) {
-                            conversationPojo
-                                    .setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_BACKEND_SENT_SENDING_ACK );
-                        } else if ( conversationPojo.getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_COMPLETED ) {
-                            LOG.debug( new LogMessage( "Processing message for completed conversation.", messagePojo ) );
-                        } else {
-                            LOG.error( new LogMessage( "Unexpected conversation state detected: "
-                                    + conversationPojo.getStatus(), messagePojo ) );
-                        }
-
-                        // Persist the message
-                        try {
-                            Engine.getInstance().getTransactionService().updateTransaction( messagePojo );
-                        } catch ( NexusException e ) {
-                            e.printStackTrace();
-                            LOG.error( new LogMessage(
-                                    "InboundQueueListener.run detected an exception when storing message ack status: "
-                                            + e + " - " + e.getMessage(), messagePojo ) );
-                        } catch (StateTransitionException stex) {
-                            LOG.warn( stex.getMessage() );
-                        }
-                    } // synchronized
+                    messageContext.getStateMachine().processedBackend();
                 } catch ( NexusException nex ) {
-                    LOG.error( "InboundQueueListener.run detected an exception: " + nex );
+                    LOG.error( "InboundQueueListener.run detected an exception: ", nex );
                     nex.printStackTrace();
-                    synchronized ( messagePojo.getConversation() ) {
-
-                        messagePojo.setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_FAILED );
-                        conversationPojo.setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_ERROR );
-                        // Persist the message
-                        try {
-                            Engine.getInstance().getTransactionService().updateTransaction( messagePojo );
-                        } catch ( NexusException e ) {
-                            e.printStackTrace();
-                            LOG.error( new LogMessage(
-                                    "InboundQueueListener.run detected an exception when storing message error status: "
-                                            + e + " - " + e.getMessage(), messagePojo ) );
-                        } catch (StateTransitionException stex) {
-                            LOG.warn( stex.getMessage() );
-                        }
+                    try {
+                        messageContext.getStateMachine().processingFailed();
+                    } catch (StateTransitionException e) {
+                    } catch (NexusException e) {
+                        e.printStackTrace();
+                        LOG.error( "Error while setting conversation status to ERROR", e );
                     }
                 } catch ( InterruptedException ex ) {
-                    LOG.debug( new LogMessage( "Interrupted while listening on queue ", messagePojo ) );
+                    LOG.debug( new LogMessage( "Interrupted while listening on queue ", messageContext.getMessagePojo() ) );
+                } catch (StateTransitionException stex) {
+                    LOG.warn( stex.getMessage() );
                 }
             } // while
             LOG.info( new LogMessage( "Stopped InboundQueueListener (FrontendActionSerializer) "
-                    + FrontendActionSerializer.this.choreographyId, messagePojo ) );
+                    + FrontendActionSerializer.this.choreographyId,
+                    (messageContext == null ? null : messageContext.getMessagePojo() ) ) );
             stopRequested = false;
         } // run
 
