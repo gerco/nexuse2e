@@ -20,9 +20,7 @@
 package org.nexuse2e.ui.action;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,7 +31,6 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.configuration.EngineConfiguration;
-import org.nexuse2e.configuration.GenericComparator;
 import org.nexuse2e.pojo.PartnerPojo;
 import org.nexuse2e.ui.form.CollaborationPartnerForm;
 
@@ -73,13 +70,8 @@ public class CollaborationPartnersAction extends NexusE2EAction {
             partnerPojos = engineConfiguration.getPartners(
                     Constants.PARTNER_TYPE_PARTNER, Constants.PARTNERCOMPARATOR );
         }
-        TreeSet<PartnerPojo> sortedPartners = new TreeSet<PartnerPojo>( new GenericComparator<PartnerPojo>(
-                "name", true ) );
-        sortedPartners.addAll( partnerPojos );
 
-        Iterator<PartnerPojo> partnerI = sortedPartners.iterator();
-        while ( partnerI.hasNext() ) {
-            PartnerPojo partner = partnerI.next();
+        for (PartnerPojo partner : partnerPojos) {
             CollaborationPartnerForm cpf = new CollaborationPartnerForm();
             cpf.setProperties( partner );
             partners.add( cpf );
