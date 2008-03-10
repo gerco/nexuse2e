@@ -306,7 +306,8 @@ public class FrontendActionSerializer implements Manageable {
                         LOG.error( "Error while setting conversation status to ERROR", e );
                     }
                 } catch ( InterruptedException ex ) {
-                    LOG.debug( new LogMessage( "Interrupted while listening on queue ", messageContext.getMessagePojo() ) );
+                    LOG.debug( new LogMessage( "Interrupted while listening on queue ",
+                            (messageContext == null ? null : messageContext.getMessagePojo() ) ) );
                 } catch (StateTransitionException stex) {
                     LOG.warn( stex.getMessage() );
                 }
