@@ -556,9 +556,13 @@ public class TransactionServiceImpl implements TransactionService {
         int allowedConversationStatus = conversationStatus;
         try {
             transaction = session.beginTransaction();
-            MessagePojo persistentMessage = (MessagePojo) transactionDAO.getRecordById(
-                    MessagePojo.class, message.getNxMessageId(), session, transaction );
-            
+            MessagePojo persistentMessage;
+            if ( message.getNxMessageId() > 0 ) {
+                persistentMessage = (MessagePojo) transactionDAO.getRecordById(
+                        MessagePojo.class, message.getNxMessageId(), session, transaction );
+            } else {
+                persistentMessage = message;
+            }
             if (persistentMessage != null) {
                 if (!force) {
                     allowedMessageStatus = getAllowedTransitionStatus( persistentMessage, messageStatus );
