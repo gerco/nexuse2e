@@ -146,6 +146,7 @@ public interface NEXUSe2eInterface extends Remote {
             String actionId,
             @WebParam(name = "conversationId", targetNamespace = "")
             String conversationId,
+            @WebParam(name = "primaryKey", targetNamespace = "")
             Object primaryKey ) throws RemoteException, NexusException;
 
     /**
