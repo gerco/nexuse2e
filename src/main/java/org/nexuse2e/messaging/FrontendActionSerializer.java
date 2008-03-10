@@ -301,6 +301,7 @@ public class FrontendActionSerializer implements Manageable {
                     try {
                         messageContext.getStateMachine().processingFailed();
                     } catch (StateTransitionException e) {
+                        LOG.warn( e.getMessage() );
                     } catch (NexusException e) {
                         e.printStackTrace();
                         LOG.error( "Error while setting conversation status to ERROR", e );
