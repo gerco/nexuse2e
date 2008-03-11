@@ -52,7 +52,9 @@ public class LogMessage implements Serializable {
 
         this.description = description;
         if ( messagePojo != null ) {
-            this.conversationId = messagePojo.getConversation().getConversationId();
+            if (messagePojo.getConversation() != null) {
+                this.conversationId = messagePojo.getConversation().getConversationId();
+            }
             this.messageId = messagePojo.getMessageId();
         }
     }
