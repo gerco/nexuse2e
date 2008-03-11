@@ -184,8 +184,9 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                     + action.getName(), messagePojo ) );
         } else {
             LOG.info( new LogMessage( "Received  " + msgType + " message (" + messagePojo.getMessageId() + ") from "
-                    + messagePojo.getParticipant().getPartner().getPartnerId() + " for " + choreography.getName() + "/"
-                    + messagePojo.getConversation().getCurrentAction().getName(), messagePojo ) );
+                    + messagePojo.getParticipant().getPartner().getPartnerId() + " for " + choreography.getName()
+                    + (messagePojo.getConversation() != null ? "/"
+                            + messagePojo.getConversation().getCurrentAction().getName() : ""), messagePojo ) );
         }
 
         if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
