@@ -75,60 +75,62 @@ public class ConversationStateMachine {
     
     public void sentMessage() throws StateTransitionException, NexusException {
 
-        if ( message.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
-            if ( ( conversation.getStatus() == Constants.CONVERSATION_STATUS_PROCESSING )
-                    || ( conversation.getStatus() == Constants.CONVERSATION_STATUS_AWAITING_ACK ) ) {
-                if ( reliable ) {
-                    conversation.setStatus( Constants.CONVERSATION_STATUS_AWAITING_ACK );
+        synchronized (sync) {
+            if ( message.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
+                if ( ( conversation.getStatus() == Constants.CONVERSATION_STATUS_PROCESSING )
+                        || ( conversation.getStatus() == Constants.CONVERSATION_STATUS_AWAITING_ACK ) ) {
+                    if ( reliable ) {
+                        conversation.setStatus( Constants.CONVERSATION_STATUS_AWAITING_ACK );
+                    } else {
+                        Engine.getInstance().getTransactionService().deregisterProcessingMessage(
+                                message.getMessageId() );
+                        message.setStatus( Constants.MESSAGE_STATUS_SENT );
+                        message.setModifiedDate( new Date() );
+                        if ( conversation.getCurrentAction().isEnd() ) {
+                            conversation.setStatus( Constants.CONVERSATION_STATUS_COMPLETED );
+                        } else {
+                            conversation.setStatus( Constants.CONVERSATION_STATUS_IDLE );
+                        }
+                    }
                 } else {
-                    Engine.getInstance().getTransactionService().deregisterProcessingMessage(
-                            message.getMessageId() );
-                    message.setStatus( Constants.MESSAGE_STATUS_SENT );
-                    message.setModifiedDate( new Date() );
+                    throw new StateTransitionException(
+                            "Unexpected conversation state after sending normal message: " + conversation.getStatus() );
+                }
+            } else {
+                // Engine.getInstance().getTransactionService().deregisterProcessingMessage( message.getMessageId() );
+                message.setStatus( Constants.MESSAGE_STATUS_SENT );
+                Date endDate = new Date();
+                message.setModifiedDate( endDate );
+                message.setEndDate( endDate );
+                message.getReferencedMessage().setEndDate( endDate );
+                if ( conversation.getStatus() == Constants.CONVERSATION_STATUS_SENDING_ACK ||
+                        conversation.getStatus() == Constants.CONVERSATION_STATUS_PROCESSING ) {
+                    conversation.setStatus( Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND );
+                } else if ( ( conversation.getStatus() == Constants.CONVERSATION_STATUS_BACKEND_SENT_SENDING_ACK )
+                        || ( conversation.getStatus() == Constants.CONVERSATION_STATUS_IDLE )
+                        || ( conversation.getStatus() == Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND ) ) {
                     if ( conversation.getCurrentAction().isEnd() ) {
                         conversation.setStatus( Constants.CONVERSATION_STATUS_COMPLETED );
                     } else {
                         conversation.setStatus( Constants.CONVERSATION_STATUS_IDLE );
                     }
+                } else if ( conversation.getStatus() == Constants.CONVERSATION_STATUS_AWAITING_BACKEND ) {
+                    LOG.debug( new LogMessage(
+                            "Received ack message, backend still processing - conversation ID: "
+                                    + conversation.getConversationId(), message ) );
+                } else if ( ( conversation.getStatus() != Constants.CONVERSATION_STATUS_COMPLETED )
+                        && ( conversation.getStatus() != Constants.CONVERSATION_STATUS_ERROR ) ) {
+                    LOG.error( new LogMessage( "Unexpected conversation state after sending ack message: "
+                            + conversation.getStatus(), message ) );
                 }
-            } else {
-                throw new StateTransitionException(
-                        "Unexpected conversation state after sending normal message: " + conversation.getStatus() );
             }
-        } else {
-            // Engine.getInstance().getTransactionService().deregisterProcessingMessage( message.getMessageId() );
-            message.setStatus( Constants.MESSAGE_STATUS_SENT );
-            Date endDate = new Date();
-            message.setModifiedDate( endDate );
-            message.setEndDate( endDate );
-            message.getReferencedMessage().setEndDate( endDate );
-            if ( conversation.getStatus() == Constants.CONVERSATION_STATUS_SENDING_ACK ||
-                    conversation.getStatus() == Constants.CONVERSATION_STATUS_PROCESSING ) {
-                conversation.setStatus( Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND );
-            } else if ( ( conversation.getStatus() == Constants.CONVERSATION_STATUS_BACKEND_SENT_SENDING_ACK )
-                    || ( conversation.getStatus() == Constants.CONVERSATION_STATUS_IDLE )
-                    || ( conversation.getStatus() == Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND ) ) {
-                if ( conversation.getCurrentAction().isEnd() ) {
-                    conversation.setStatus( Constants.CONVERSATION_STATUS_COMPLETED );
-                } else {
-                    conversation.setStatus( Constants.CONVERSATION_STATUS_IDLE );
-                }
-            } else if ( conversation.getStatus() == Constants.CONVERSATION_STATUS_AWAITING_BACKEND ) {
-                LOG.debug( new LogMessage(
-                        "Received ack message, backend still processing - conversation ID: "
-                                + conversation.getConversationId(), message ) );
-            } else if ( ( conversation.getStatus() != Constants.CONVERSATION_STATUS_COMPLETED )
-                    && ( conversation.getStatus() != Constants.CONVERSATION_STATUS_ERROR ) ) {
-                LOG.error( new LogMessage( "Unexpected conversation state after sending ack message: "
-                        + conversation.getStatus(), message ) );
+    
+            // Persist status changes
+            try {
+                Engine.getInstance().getTransactionService().updateTransaction( message );
+            } catch (StateTransitionException stex) {
+                LOG.warn( stex.getMessage() );
             }
-        }
-
-        // Persist status changes
-        try {
-            Engine.getInstance().getTransactionService().updateTransaction( message );
-        } catch (StateTransitionException stex) {
-            LOG.warn( stex.getMessage() );
         }
     }
     

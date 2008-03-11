@@ -123,7 +123,8 @@ public class TransactionServiceImpl implements TransactionService {
         followUpMessageStates = new HashMap<Integer, int[]>();
         followUpMessageStates.put( Constants.MESSAGE_STATUS_FAILED,
                 new int[] {
-                    Constants.MESSAGE_STATUS_QUEUED } );
+                    Constants.MESSAGE_STATUS_QUEUED,
+                    Constants.MESSAGE_STATUS_SENT } );
         followUpMessageStates.put( Constants.MESSAGE_STATUS_RETRYING,
                 new int[] {
                     Constants.MESSAGE_STATUS_FAILED,
