@@ -112,8 +112,8 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
             LOG.trace( "matching choreography found" );
         } catch ( NexusException e ) {
             e.printStackTrace();
-            LOG.error( new LogMessage( "No matching choreography found: "
-                    + messagePojo.getConversation().getChoreography().getName(), messagePojo ) );
+            LOG.error( new LogMessage(
+                    "Error while validating choreography: " + e.getMessage(), messagePojo ) );
             responseMessageContext = protocolAdapter.createErrorAcknowledgement(
                     Constants.ErrorMessageReasonCode.CHOREOGRAPHY_NOT_FOUND, null, messageContext, null );
             headerAccessible = true;
