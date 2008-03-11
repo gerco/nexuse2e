@@ -120,9 +120,6 @@ public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
         System.out.println( "--------------- create error -----------------" );
 
         String currentMessageId = messageContext.getMessagePojo().getMessageId();
-        String currentConversationId = messageContext.getMessagePojo().getConversation().getConversationId();
-        String currentChoreographyId = messageContext.getMessagePojo().getConversation().getChoreography().getName();
-        String currentPartnerId = messageContext.getMessagePojo().getConversation().getPartner().getPartnerId();
 
         MessagePojo errorNotification = new MessagePojo();
 
