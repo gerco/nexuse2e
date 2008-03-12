@@ -148,7 +148,10 @@ public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
             }
         }
 
-        return messageContext.getMessagePojo().getConversation().getConversationId();
+        if (messageContext.getMessagePojo() != null && messageContext.getMessagePojo().getConversation() != null) {
+            return messageContext.getMessagePojo().getConversation().getConversationId();
+        }
+        return null;
     } // triggerSendingNewMessage
 
     /* (non-Javadoc)
@@ -183,7 +186,10 @@ public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
             }
         }
 
-        return messageContext.getMessagePojo().getConversation().getConversationId();
+        if (messageContext.getMessagePojo() != null && messageContext.getMessagePojo().getConversation() != null) {
+            return messageContext.getMessagePojo().getConversation().getConversationId();
+        }
+        return null;
     } // sendNewStringMessage
     
     /**
