@@ -27,10 +27,10 @@ import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.ProtocolSpecificKey;
-import org.nexuse2e.messaging.ebxml.v20.Constants;
 import org.nexuse2e.messaging.ErrorDescriptor;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.ChoreographyPojo;
+import org.nexuse2e.pojo.ConversationPojo;
 import org.nexuse2e.pojo.MessagePojo;
 import org.nexuse2e.pojo.ParticipantPojo;
 import org.nexuse2e.pojo.PartnerPojo;
@@ -148,9 +148,10 @@ public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
         String from = null;
         String fromIdType = null;
 
+        ConversationPojo conv = messageContext.getMessagePojo().getConversation();
         errorNotification.getCustomParameters().put(
                 Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_TOIDTYPE,
-                messageContext.getMessagePojo().getConversation().getPartner().getPartnerIdType() );
+                (conv != null ? conv.getPartner().getPartnerIdType() : null) );
         errorNotification.getCustomParameters().put(
                 Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_FROM,
                 messageContext.getMessagePojo().getParticipant().getLocalPartner().getPartnerId() );
