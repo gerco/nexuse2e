@@ -104,7 +104,8 @@ public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
 
         if ( backendPipelineDispatcher != null ) {
             try {
-                backendPipelineDispatcher.processMessage( conversationId, actionId, null, payload.getBytes() );
+                backendPipelineDispatcher.processMessage(
+                        conversationId, actionId, null, payload == null ? null : payload.getBytes() );
             } catch ( NexusException e ) {
                 LOG.debug( "sendStringMessage - error: " + e );
                 e.printStackTrace();
