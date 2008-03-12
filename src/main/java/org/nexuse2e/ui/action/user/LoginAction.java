@@ -63,16 +63,21 @@ public class LoginAction extends Action {
             String pass = PasswordUtil.hashPassword( loginForm.getPass() );
             if ( user != null && user.length() > 0 ) {
                 EngineConfiguration engineConfig = Engine.getInstance().getCurrentConfiguration();
-                UserPojo userInstance = engineConfig.getUserByLoginName( user );
-                if ( userInstance != null && userInstance.getPassword().equals( pass ) ) { // nx_user.password has a "not null" constraint
-                    HttpSession session = request.getSession();
-                    session.setAttribute( NexusE2EAction.ATTRIBUTE_USER, userInstance );
-                    forward = actionMapping.findForward( NexusE2EAction.ACTION_FORWARD_SUCCESS );
-                    LOG.trace( "Login for \"" + user + "\" successful." );
-                } else {
-                    ActionMessage errorMessage = new ActionMessage( "login.credentials.wrong" );
+                if (engineConfig == null) {
+                    ActionMessage errorMessage = new ActionMessage( "login.system.down" );
                     errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
-                    LOG.warn( "Login for \"" + user + "\" failed." );
+                } else {
+                    UserPojo userInstance = engineConfig.getUserByLoginName( user );
+                    if ( userInstance != null && userInstance.getPassword().equals( pass ) ) { // nx_user.password has a "not null" constraint
+                        HttpSession session = request.getSession();
+                        session.setAttribute( NexusE2EAction.ATTRIBUTE_USER, userInstance );
+                        forward = actionMapping.findForward( NexusE2EAction.ACTION_FORWARD_SUCCESS );
+                        LOG.trace( "Login for \"" + user + "\" successful." );
+                    } else {
+                        ActionMessage errorMessage = new ActionMessage( "login.credentials.wrong" );
+                        errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
+                        LOG.warn( "Login for \"" + user + "\" failed." );
+                    }
                 }
             }
 
