@@ -7,10 +7,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ComponentPojo;
+import org.nexuse2e.pojo.GenericParamPojo;
 import org.nexuse2e.pojo.LoggerPojo;
 import org.nexuse2e.pojo.MappingPojo;
 import org.nexuse2e.pojo.PartnerPojo;
@@ -42,6 +44,7 @@ public class CloneContainer implements Serializable {
     private List<UserPojo>         users;
     private List<RolePojo>         roles;
     private List<MappingPojo>      mappings;
+    private Map<String, List<GenericParamPojo>> genericParameters;
     private transient StaticBeanContainer    staticBeanContainer = null;
 
     public CloneContainer( EngineConfiguration config ) {
@@ -58,8 +61,8 @@ public class CloneContainer implements Serializable {
         users = config.getUsers();
         roles = config.getRoles();
         mappings = config.getMappings();
+        genericParameters = config.getGenericParameters();
         staticBeanContainer = config.getStaticBeanContainer();
-
     }
 
     /**
@@ -96,6 +99,7 @@ public class CloneContainer implements Serializable {
         dest.setUsers( newContainer.getUsers() );
         dest.setRoles( newContainer.getRoles() );
         dest.setMappings( newContainer.getMappings() );
+        dest.setGenericParameters( newContainer.getGenericParameters() );
         dest.setStaticBeanContainer( staticBeanContainer );
     }
 
@@ -285,4 +289,13 @@ public class CloneContainer implements Serializable {
         this.mappings = mappings;
     }
 
+    public Map<String, List<GenericParamPojo>> getGenericParameters() {
+
+        return genericParameters;
+    }
+
+    public void setGenericParameters( Map<String, List<GenericParamPojo>> genericParameters ) {
+
+        this.genericParameters = genericParameters;
+    }
 };
