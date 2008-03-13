@@ -558,8 +558,9 @@
 
 						<logic:equal name="reportingSettingsForm"
 							property="messColSelect" value="true">
-							<td class="NEXUSValue"><html-el:multibox
-								name="reportingSettingsForm" property="selected"
+							<td class="NEXUSValue">
+							<html-el:multibox
+								property="selected"
 								value="${message.participantId}|${message.choreographyId}|${message.conversationId}|${message.messageId}" /></td>
 						</logic:equal>
 						<td class="NEXUSValue"><nexus:link styleClass="NexusLink"
@@ -603,13 +604,14 @@
 				value="true">
 				<table class="NEXUS_BUTTON_TABLE" width="100%">
 					<tr>
-						<td class="BUTTON_LEFT"><a href="#" id="startLink"
-							onclick="javascript: scriptScope.selectAll(true);"
-							class="NexusLink" styleClass="white-space:nowrap;">Select all</a></td>
-						<td class="BUTTON_LEFT"><a href="#" id="startLink"
-							onclick="javascript: scriptScope.selectAll(false);"
-							class="NexusLink" styleClass="white-space:nowrap;">Deselect
-						all</a></td>
+						<td class="BUTTON_LEFT" width="75px"><a href=#" id="startLink"
+							onClick="javascript: scriptScope.selectAll(true);return false;" class="NexusLink">
+							<nobr>Select all</nobr>
+						</a><br /><a href="#" id="startLink"
+							onClick="javascript: scriptScope.selectAll(false)" class="NexusLink">
+							<nobr>Deselect all</nobr>
+						</a></td>
+
 						<td class="BUTTON_RIGHT"><nobr><nexus:submit
 							onClick="document.forms['reportingPropertiesForm'].command.value='requeue';">
 							<img src="images/icons/tick.png" name="clearButton" class="button">
@@ -662,8 +664,9 @@
 					<tr>
 						<logic:equal name="reportingSettingsForm"
 							property="convColSelect" value="true">
-							<td class="NEXUSValue"><html-el:multibox
-								name="reportingSettingsForm" property="selected"
+							<td class="NEXUSValue">
+							<html-el:multibox
+								property="selected"
 								value="${conv.participantId}|${conv.choreographyId}|${conv.conversationId}" /></td>
 						</logic:equal>
 						<logic:equal name="reportingSettingsForm"
