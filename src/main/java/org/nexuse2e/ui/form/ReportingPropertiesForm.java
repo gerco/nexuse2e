@@ -84,6 +84,7 @@ public class ReportingPropertiesForm extends ActionForm {
     private String                                  timezone                          = null;
     private List<String>                            participantIds                    = null;
     private List<String>                            choreographyIds                   = null;
+    private String[]                                selected                          = new String[0];
 
 
     /**
@@ -582,4 +583,15 @@ public class ReportingPropertiesForm extends ActionForm {
         this.choreographyIds = choreographyIds;
     }
 
+
+    public String[] getSelected() {
+
+        return selected;
+    }
+
+
+    public void setSelected(String[] selected) {
+
+        this.selected = selected;
+    }
 }

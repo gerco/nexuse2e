@@ -105,7 +105,6 @@ public class ReportingSettingsForm extends ActionForm {
     private List<String>                            participantIds                    = null;
     private List<String>                            choreographyIds                   = null;
     private int                                     pageSize                          = 20;
-    private String[]                                selected                          = new String[0];
 
     
     /**
@@ -484,21 +483,6 @@ public class ReportingSettingsForm extends ActionForm {
     public void setPageSize( int pageSize ) {
 
         this.pageSize = pageSize;
-    }
-
-    public void setSelected( String[] key ) {
-
-        selected = key;
-    }
-
-    public String[] getSelectedResults() {
-
-        return selected;
-    }
-
-    public String[] getSelected() {
-
-        return new String[0];
     }
 
     public void reset( ActionMapping mappping, HttpServletRequest request ) {

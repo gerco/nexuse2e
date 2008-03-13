@@ -103,8 +103,9 @@ public class ProcessConversationReportAction extends ReportingAction {
         String searchFor = form.getSearchFor();
 
         if ( searchFor != null && searchFor.equals( "message" ) && command != null && command.equals( "requeue" ) ) {
-            for ( int i = 0; i < reportingSettings.getSelectedResults().length; i++ ) {
-                String messageIdent = reportingSettings.getSelectedResults()[i];
+            String[] values = form.getSelected();
+            for ( int i = 0; i < values.length; i++ ) {
+                String messageIdent = values[i];
                 StringTokenizer st = new StringTokenizer( messageIdent, "|" );
                 if ( st.countTokens() != 4 ) {
                     ActionMessage errorMessage = new ActionMessage( "generic.error", "Can't re-queue Message: >"
@@ -165,8 +166,9 @@ public class ProcessConversationReportAction extends ReportingAction {
             command = "transaction";
         }
         if ( searchFor != null && searchFor.equals( "message" ) && command != null && command.equals( "stop" ) ) {
-            for ( int i = 0; i < reportingSettings.getSelectedResults().length; i++ ) {
-                String messageIdent = reportingSettings.getSelectedResults()[i];
+            String[] values = form.getSelected();
+            for ( int i = 0; i < values.length; i++ ) {
+                String messageIdent = values[i];
                 StringTokenizer st = new StringTokenizer( messageIdent, "|" );
                 if ( st.countTokens() != 4 ) {
                     ActionMessage errorMessage = new ActionMessage( "generic.error", "cant stop Message: >"
@@ -194,9 +196,10 @@ public class ProcessConversationReportAction extends ReportingAction {
         if ( searchFor != null && searchFor.equals( "conversation" ) && command != null && command.equals( "delete" ) ) {
             System.out.println( "deleting conversation" );
 
-            for ( int i = 0; i < reportingSettings.getSelectedResults().length; i++ ) {
+            String[] values = form.getSelected();
+            for ( int i = 0; i < values.length; i++ ) {
 
-                String messageIdent = reportingSettings.getSelectedResults()[i];
+                String messageIdent = values[i];
                 StringTokenizer st = new StringTokenizer( messageIdent, "|" );
                 if ( st.countTokens() != 3 ) {
                     ActionMessage errorMessage = new ActionMessage( "generic.error", "Can't delete conversation: >"
