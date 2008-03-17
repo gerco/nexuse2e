@@ -1,0 +1,1 @@
+hourFunction=DATEPART( hour, created_date )
