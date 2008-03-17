@@ -106,6 +106,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     private String                           cacertsPath                    = null;
     private String                           certificatePath                = null;
     private String                           nexusE2ERoot                   = null;
+    private String                           databaseDialect                = null;
 
     private Map<Object, EngineConfiguration> configurations                 = new HashMap<Object, EngineConfiguration>();
 
@@ -1293,6 +1294,24 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     public void setTimestampPattern( String timestampPattern ) {
 
         this.timestampPattern = timestampPattern;
+    }
+
+    /**
+     * Gets the hibernate database dialect class name.
+     * @return The hibernate db dialect class name.
+     */
+    public String getDatabaseDialect() {
+
+        return databaseDialect;
+    }
+
+    /**
+     * Sets the hibernate database dialect class name.
+     * @param The hibernate db dialect class name to set.
+     */
+    public void setDatabaseDialect( String databaseDialect ) {
+
+        this.databaseDialect = databaseDialect;
     }
 
 } // Engine
