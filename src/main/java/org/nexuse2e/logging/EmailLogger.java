@@ -133,7 +133,6 @@ public class EmailLogger extends AbstractLogger {
     protected void append( LoggingEvent loggingEvent ) {
 
         if ( status != BeanStatus.ACTIVATED ) {
-            System.err.println( "EmailLogger not in correct state to process log event: " + status );
             return;
         }
 
