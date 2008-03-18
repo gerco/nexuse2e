@@ -101,6 +101,9 @@ public class ParticipantAddAction extends NexusE2EAction {
             for ( PartnerPojo currPartner : allPartners ) {
                 // return only partners that are not participants for this choreography already
                 if ( cas.getParticipantFromChoreographyByNxPartnerId( choreography, currPartner.getNxPartnerId() ) == null ) {
+                    if (form.getNxPartnerId() == 0) {
+                        form.setNxPartnerId( currPartner.getNxPartnerId() );
+                    }
                     unboundPartners.add( currPartner );
                 }
             }
@@ -186,8 +189,9 @@ public class ParticipantAddAction extends NexusE2EAction {
                 PartnerPojo localPartner = engineConfiguration.getPartnerByNxPartnerId(
                         form.getNxLocalPartnerId() );
                 CertificatePojo localCertificate = engineConfiguration
-                        .getCertificateFromPartnerByNxCertificateId( partner, form.getNxLocalCertificateId() );
+                        .getCertificateFromPartnerByNxCertificateId( localPartner, form.getNxLocalCertificateId() );
                 participant.setPartner( partner );
+
                 
                 // Make sure we have a default description set
                 if ( StringUtils.isEmpty( participant.getDescription() ) ) {
