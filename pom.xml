@@ -533,7 +533,7 @@
       <groupId>com.ibm.icu</groupId>
       <artifactId>icu4j</artifactId>
       <version>3.6.1</version>
-      <scope>run</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>rhino</groupId>
