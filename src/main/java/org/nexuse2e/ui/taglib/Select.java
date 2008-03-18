@@ -26,6 +26,7 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * This tag generates a HTML select that can click a button on change
@@ -93,7 +94,8 @@ public class Select extends BodyTagSupport {
                     + ( name != null ? " name=\"" + name + "\"" : "" )
                     + ( submitOnChange ? " onchange=\"" + ( onSubmit == null ? "" : onSubmit + " " )
                             + ( "true".equalsIgnoreCase( sendFileForm ) ? "submitFileForm( " : "submitForm( " )
-                            + ( form == null ? "document.forms[0]" : form ) + " );\"" : "" ) + " class=\"" + styleClass
+                            + ( form == null ? "document.forms[0]" : form ) + " );\"" : "" )
+                            + ( StringUtils.isEmpty(styleClass) ? "" : " class=\"" + styleClass )
                     + "\">" );
         } catch ( IOException e ) {
             throw new JspException( e );
