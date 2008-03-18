@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
@@ -139,7 +138,7 @@ public class Report extends BodyTagSupport {
                 Object value = parameters.get( name );
                 task.setParameterValue( name, value );
             }
-            task.setLocale( Locale.US );
+            task.setLocale( java.util.Locale.US );
 
             //set output options
             HTMLRenderOption options = new HTMLRenderOption();
