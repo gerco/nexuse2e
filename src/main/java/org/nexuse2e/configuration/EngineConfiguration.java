@@ -1851,9 +1851,9 @@ public class EngineConfiguration implements ConfigurationAccessService {
     
         PipelinePojo oldPipeline = getPipelinePojoByNxPipelineId( pipeline.getNxPipelineId() );
         if ( oldPipeline != null ) {
-            getBackendPipelinePojos( Constants.PIPELINE_TYPE_ALL, null ).remove( oldPipeline );
+            getBackendPipelineTemplates().remove( oldPipeline );
         }
-        getBackendPipelinePojos( Constants.PIPELINE_TYPE_ALL, null ).add( pipeline );
+        getBackendPipelineTemplates().add( pipeline );
         addToUpdateList( pipeline );
         addToImplicitUpdateList( pipeline, pipeline.getPipelets() );
     }
@@ -1883,7 +1883,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
         
         PipelinePojo oldPipeline = getPipelinePojoByNxPipelineId( pipeline.getNxPipelineId() );
         if ( oldPipeline != null ) {
-            getBackendPipelinePojos( Constants.PIPELINE_TYPE_ALL, null ).remove( oldPipeline );
+            getBackendPipelineTemplates().remove( oldPipeline );
             addToDeleteList( oldPipeline );
         }
     }
