@@ -19,6 +19,7 @@
  */
 package org.nexuse2e.configuration;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +30,9 @@ import java.util.List;
  * 
  * @author jonas.reese
  */
-public class ListParameter {
+public class ListParameter implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private List<ListElement>     list;
     private int                   selectedIndex;

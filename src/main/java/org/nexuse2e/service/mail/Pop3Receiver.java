@@ -34,15 +34,18 @@ import javax.mail.URLName;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Layer;
+import org.nexuse2e.configuration.ListParameter;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.service.AbstractService;
 import org.nexuse2e.service.ReceiverAware;
 import org.nexuse2e.transport.TransportReceiver;
+import org.nexuse2e.util.CertificatePojoSocketFactory;
 
 /**
  * This class implements the POP3 receiver service.
@@ -57,6 +60,7 @@ public class Pop3Receiver extends AbstractService implements ReceiverAware, Runn
     public static final String PORT_PARAM_NAME          = "port";
     public static final String USER_PARAM_NAME          = "user";
     public static final String PASSWORD_PARAM_NAME      = "password";
+    public static final String ENCRYPTION_PARAM_NAME    = "encrpytion";
     //    public static final String AUTOPOLL_PARAM_NAME      = "autopoll";
     public static final String POLL_INTERVAL_PARAM_NAME = "pollInterval";
 
@@ -71,11 +75,17 @@ public class Pop3Receiver extends AbstractService implements ReceiverAware, Runn
         parameterMap.put( HOST_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "Host",
                 "POP3 host name or IP address", "" ) );
         parameterMap.put( PORT_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "Port",
-                "POP3 port number (default is 110)", "110" ) );
+                "POP3 port number (default is 110 or 995 for SSL)", "110" ) );
         parameterMap.put( USER_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "User",
                 "Authentication user name", "" ) );
         parameterMap.put( PASSWORD_PARAM_NAME, new ParameterDescriptor( ParameterType.PASSWORD, "Password",
                 "Authentication user password", "" ) );
+        ListParameter encryptionTypeDrowdown = new ListParameter();
+        encryptionTypeDrowdown.addElement( "None", "none" );
+        encryptionTypeDrowdown.addElement( "TLS", "tls" );
+        encryptionTypeDrowdown.addElement( "SSL", "ssl" );
+        parameterMap.put( ENCRYPTION_PARAM_NAME, new ParameterDescriptor(
+                ParameterType.LIST, "Encryption", "Connection encryption type", encryptionTypeDrowdown ) );
 
         // obsolete, service polls automatically when started. Method poll is available when service is active.
 
@@ -141,10 +151,10 @@ public class Pop3Receiver extends AbstractService implements ReceiverAware, Runn
         LOG.trace( "Polling mail account..." );
 
         receiveMail( (String) getParameter( HOST_PARAM_NAME ), (String) getParameter( USER_PARAM_NAME ),
-                (String) getParameter( PASSWORD_PARAM_NAME ) );
+                (String) getParameter( PASSWORD_PARAM_NAME ), (String) getParameter( PORT_PARAM_NAME ) );
     }
 
-    private boolean receiveMail( String popServer, String popUser, String popPassword ) {
+    private boolean receiveMail( String popServer, String popUser, String popPassword, String port ) {
 
         Store store = null;
         Folder folder = null;
@@ -156,12 +166,12 @@ public class Pop3Receiver extends AbstractService implements ReceiverAware, Runn
         }
 
         try {
-            Session session = connect( popServer, popUser, popPassword );
+            Session session = connect( popServer, popUser, popPassword, port );
             if ( session == null ) {
                 return false;
             }
 
-            store = session.getStore( "pop3" );
+            store = session.getStore( (isSslEnabled() ? "pop3s" : "pop3") );
             store.connect( popServer, popUser, popPassword );
 
             LOG.trace( "Connected to server, checking for email messages" );
@@ -238,17 +248,55 @@ public class Pop3Receiver extends AbstractService implements ReceiverAware, Runn
         return result;
     }
 
-    private Session connect( String host, String user, String password ) throws Exception {
+    private boolean isSslEnabled() {
+        ListParameter lp = getParameter( ENCRYPTION_PARAM_NAME );
+        if (lp != null) {
+            if ("ssl".equals( lp.getSelectedValue() )) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean isTlsEnabled() {
+        ListParameter lp = getParameter( ENCRYPTION_PARAM_NAME );
+        if (lp != null) {
+            if ("tls".equals( lp.getSelectedValue() )) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private Session connect( String host, String user, String password, String port ) throws Exception {
 
+        boolean ssl = isSslEnabled();
+        boolean tls = isTlsEnabled();
+        
+        String protocol = (ssl ? "pop3s" : "pop3");
+        
         if ( ( host != null ) && !host.equals( "" ) && !host.equals( " " ) ) {
-            Properties props = System.getProperties();
+            Properties props = new Properties( System.getProperties() );
             props.put( "mail.host", host );
 
+            if (port != null && !StringUtils.isEmpty( port )) {
+                props.put( "mail." + protocol + ".port", port );
+            } else {
+                props.remove( "mail." + protocol + ".port" );
+            }
+            if (ssl) {
+                props.put( "mail." + protocol + ".socketFactory.class", CertificatePojoSocketFactory.class.getName() );
+            }
+            
+            if (tls) {
+                // TODO: implement this
+            }
+            
             // Get a Session object
             Session session = Session.getInstance( props, null );
 
             PasswordAuthentication passwordAuthentication = new PasswordAuthentication( user, password );
-            String urlNameString = "pop3://" + host;
+            String urlNameString = protocol + "://" + host;
             URLName urlName = new URLName( urlNameString );
 
             session.setPasswordAuthentication( urlName, passwordAuthentication );

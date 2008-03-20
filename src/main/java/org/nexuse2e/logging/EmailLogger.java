@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
+import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.configuration.EngineConfiguration;
@@ -45,11 +46,9 @@ public class EmailLogger extends AbstractLogger {
     private static final String RECIPIENT_PARAM     = "recipient";
     private static final String SUBJECT_PARAM       = "subject";
 
-    private Service             service             = null;
     private String              serviceName         = null;
     private String              recipient           = null;
     private String              subject             = null;
-    private EngineConfiguration engineConfiguration = null;
 
     /**
      * Default constructor.
@@ -93,31 +92,30 @@ public class EmailLogger extends AbstractLogger {
         this.serviceName = serviceName;
         this.recipient = recipient;
         this.subject = subject;
-        engineConfiguration = config;
 
         status = BeanStatus.INITIALIZED;
     }
-
+    
     private SmtpSender findService() {
 
         SmtpSender smtpSender = null;
 
-        if ( service != null ) {
-            return (SmtpSender) service;
-        } else if ( serviceName != null && serviceName.trim().length() > 0 ) {
-            Service service = engineConfiguration.getStaticBeanContainer().getService( serviceName );
-            if ( service == null ) {
-                LOG.error( "EmailLogger.initialize(): Service \"" + serviceName
-                        + "\" not found. Please check your configuration" );
-                return null;
+        if ( serviceName != null && serviceName.trim().length() > 0 ) {
+            EngineConfiguration engineConfiguration = Engine.getInstance().getCurrentConfiguration();
+            if (engineConfiguration != null) {
+                Service service = engineConfiguration.getStaticBeanContainer().getService( serviceName );
+                if ( service == null ) {
+                    LOG.error( "EmailLogger.initialize(): Service \"" + serviceName
+                            + "\" not found. Please check your configuration" );
+                    return null;
+                }
+                if ( !( service instanceof SmtpSender ) ) {
+                    LOG.error( "EmailLogger.initialize(): Service \"" + serviceName
+                            + "\" not of type SmtpSender. Please check your configuration" );
+                    return null;
+                }
+                smtpSender = (SmtpSender) service;
             }
-            if ( !( service instanceof SmtpSender ) ) {
-                LOG.error( "EmailLogger.initialize(): Service \"" + serviceName
-                        + "\" not of type SmtpSender. Please check your configuration" );
-                return null;
-            }
-            smtpSender = (SmtpSender) service;
-            this.service = service;
         } else {
             LOG.error( "No SMTP service found. Please check your configuration" );
             return null;
@@ -146,11 +144,13 @@ public class EmailLogger extends AbstractLogger {
 
         SmtpSender smtpSender = findService();
         if ( smtpSender != null ) {
-            try {
-                smtpSender.sendMessage( recipient, subject, loggingEvent.getRenderedMessage() );
-            } catch ( NexusException e ) {
-                System.err.println( "Error sending log email: " + e );
-                e.printStackTrace();
+            if (smtpSender.getStatus() == BeanStatus.STARTED) {
+                try {
+                    smtpSender.sendMessage( recipient, subject, loggingEvent.getRenderedMessage() );
+                } catch ( NexusException e ) {
+                    System.err.println( "Error sending log email: " + e );
+                    e.printStackTrace();
+                }
             }
         } else {
             System.err.println( "SMTP service not available!" );

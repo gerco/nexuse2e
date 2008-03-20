@@ -117,10 +117,10 @@ public class CertificateUtil {
         PrivateKey returnPrivateKey = null;
 
         try {
-            Enumeration enumeration = keyStore.aliases();
+            Enumeration<String> enumeration = keyStore.aliases();
 
             while ( enumeration.hasMoreElements() ) {
-                String temp = (String) enumeration.nextElement();
+                String temp = enumeration.nextElement();
 
                 if ( keyStore.isKeyEntry( temp ) ) {
                     keyAlias = temp;
@@ -233,9 +233,9 @@ public class CertificateUtil {
      * @param certs
      * @return
      */
-    public static Collection getX509Certificates( byte[] certs ) throws CertificateException {
+    public static Collection<? extends Certificate> getX509Certificates( byte[] certs ) throws CertificateException {
 
-        Collection certCollection = null;
+        Collection<? extends Certificate> certCollection = null;
 
         CertificateFactory certificateFactory;
         try {
@@ -284,9 +284,9 @@ public class CertificateUtil {
             ByteArrayInputStream bais = new ByteArrayInputStream( data );
             keyStore.load( bais, password.toCharArray() );
             if ( LOG.isDebugEnabled() ) {
-                Enumeration enumeration = keyStore.aliases();
+                Enumeration<String> enumeration = keyStore.aliases();
                 if ( enumeration.hasMoreElements() ) {
-                    String alias = (String) enumeration.nextElement();
+                    String alias = enumeration.nextElement();
                     LOG.debug( "getPKCS12KeyStoreFromByteArray - alias: " + alias );
                     Certificate certificate = keyStore.getCertificate( alias );
                     LOG.trace( "getPKCS12KeyStoreFromByteArray: " + certificate );
@@ -347,9 +347,9 @@ public class CertificateUtil {
 
         try {
             if ( pkcs12 != null ) {
-                Enumeration enumeration = pkcs12.aliases();
+                Enumeration<String> enumeration = pkcs12.aliases();
                 while ( enumeration.hasMoreElements() ) {
-                    String alias = (String) enumeration.nextElement();
+                    String alias = enumeration.nextElement();
                     certs = (Certificate[]) pkcs12.getCertificateChain( alias );
                     if ( certs != null && certs.length > 0 ) {
                         break;
@@ -423,8 +423,8 @@ public class CertificateUtil {
 
         String result = null;
         try {
-            Vector ids = x509Principal.getOIDs();
-            Vector values = x509Principal.getValues();
+            Vector<?> ids = x509Principal.getOIDs();
+            Vector<?> values = x509Principal.getValues();
             for ( int i = 0; i < ids.size(); i++ ) {
                 DERObjectIdentifier innerId = (DERObjectIdentifier) ids.elementAt( i );
                 if ( innerId.equals( id ) ) {
@@ -1105,7 +1105,7 @@ public class CertificateUtil {
            
             X509Principal subject = getPrincipalFromCertificate( head, true );
 
-            HashMap<X509Principal, X509Certificate>  certHashMap = getX509CertificateHashMap( certificates );
+            Map<X509Principal, X509Certificate>  certHashMap = getX509CertificateHashMap( certificates );
 
             certHashMap.put( subject, head );
             List<X509Certificate> certsList = getCertChainDN( certHashMap, subject );
@@ -1150,7 +1150,8 @@ public class CertificateUtil {
      * @param subject
      * @return
      */
-    private static ArrayList<X509Certificate> getCertChainDN( HashMap certificateHashMap, X509Principal subject ) {
+    private static ArrayList<X509Certificate> getCertChainDN(
+            Map<X509Principal, X509Certificate> certificateHashMap, X509Principal subject ) {
 
         ArrayList<X509Certificate> certChain = new ArrayList<X509Certificate>();
         X509Principal issuer = null;
@@ -1159,10 +1160,7 @@ public class CertificateUtil {
             while ( !subject.equals( issuer ) && ( x509Certificate != null ) ) {
                 issuer = getPrincipalFromCertificate( x509Certificate, false );
                 subject = getPrincipalFromCertificate( x509Certificate, true );
-                // log.debug( "add entry:" + subject );
                 certChain.add( x509Certificate );
-
-                // log.debug( "Found cert:" + subject + " - " + issuer );
 
                 x509Certificate = (X509Certificate) certificateHashMap.get( issuer );
             }

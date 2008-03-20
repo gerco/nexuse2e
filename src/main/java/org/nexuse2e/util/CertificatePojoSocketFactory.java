@@ -42,7 +42,8 @@ public class CertificatePojoSocketFactory implements SocketFactory {
     /**
      * Constructs a new <code>CertificatePojoSocketFactory</code> using the given
      * <code>CertificatePojo</code> as certificate.
-     * @param cert The certificate to use.
+     * @param cert The certificate to use. If <code>cert</code> is <code>null</code>,
+     * this socket factory cannot be used for connections that require client authentication.
      * @throws NexusException If the socket factory could not be created (e.g., if
      * the certificate data is corrupt).
      */
@@ -50,8 +51,21 @@ public class CertificatePojoSocketFactory implements SocketFactory {
 
         this.cert = cert;
         ConfigurationAccessService cas = Engine.getInstance().getActiveConfigurationAccessService();
-        keystore = CertificateUtil.getPKCS12KeyStore( cert );
+        if (cert != null) {
+            keystore = CertificateUtil.getPKCS12KeyStore( cert );
+        } else {
+            keystore = null;
+        }
         truststore = cas.getCacertsKeyStore();
+    }
+    
+    /**
+     * Constructs a new <code>CertificatePojoSocketFactory</code> without client
+     * authentication capabilities.
+     */
+    public CertificatePojoSocketFactory() throws NexusException {
+
+        this( null );
     }
 
     /**
