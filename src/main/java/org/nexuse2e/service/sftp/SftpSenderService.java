@@ -155,9 +155,13 @@ public class SftpSenderService extends AbstractService implements SenderAware {
                 ByteArrayInputStream bais = new ByteArrayInputStream( messagePayloadPojo.getPayloadData() );
 
                 String newFileName = baseFileName + ( useTimestamp ? sdf.format( new Date() ) : "" ) + fileExtension;
+                String tempFileName = newFileName + ".part";
 
-                channelSftp.put( bais, newFileName );
-                LOG.trace( "Uploaded file: " + newFileName );
+                channelSftp.put( bais, tempFileName );
+                LOG.trace( "Uploaded file: " + tempFileName );
+
+                channelSftp.rename( tempFileName, newFileName );
+                LOG.trace( "Renamed file " + tempFileName + " to " + newFileName );
             }
 
         } catch ( Exception e ) {
