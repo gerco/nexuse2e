@@ -217,35 +217,49 @@ public class SmtpSender extends AbstractService implements SenderAware {
 
         boolean ssl = isSslEnabled();
         boolean tls = isTlsEnabled();
+        boolean authenticate = false;
+
+        if ( !StringUtils.isEmpty( user ) && !StringUtils.isEmpty( password ) ) {
+            authenticate = true;
+        }
 
         String protocol = ssl ? "smtps" : "smtp";
-        
+
         if ( host != null && !host.trim().equals( "" ) ) {
             Properties props = new Properties( System.getProperties() );
             props.put( "mail." + protocol + ".host", host );
-            props.put( "mail." + protocol + ".auth", "true" );
-            if (!StringUtils.isEmpty( port )) {
+            if ( authenticate ) {
+                props.put( "mail." + protocol + ".auth", "true" );
+            } else {
+                props.put( "mail." + protocol + ".auth", "false" );
+            }
+            if ( !StringUtils.isEmpty( port ) ) {
                 props.put( "mail." + protocol + ".port", port );
             } else {
                 props.remove( "mail." + protocol + ".port" );
             }
-            if (ssl) {
+            if ( ssl ) {
                 props.put( "mail." + protocol + ".socketFactory.class", CertificatePojoSocketFactory.class.getName() );
             }
             props.put( "mail." + protocol + ".starttls.enable", Boolean.toString( tls ) );
-            
+
             props.put( "mail.host", host );
 
             // Get a Session object
             Session session = Session.getInstance( props, null );
 
-            PasswordAuthentication passwordAuthentication = new PasswordAuthentication( user, password );
             String urlNameString = protocol + "://" + host;
             URLName urlName = new URLName( urlNameString );
-
-            session.setPasswordAuthentication( urlName, passwordAuthentication );
+            if ( authenticate ) {
+                PasswordAuthentication passwordAuthentication = new PasswordAuthentication( user, password );
+                session.setPasswordAuthentication( urlName, passwordAuthentication );
+            }
             Transport transport = session.getTransport( urlName );
-            transport.connect( host, user, password );
+            if ( authenticate ) {
+                transport.connect( host, user, password );
+            } else {
+                transport.connect();
+            }
 
             return new Object[] { session, transport};
         }
