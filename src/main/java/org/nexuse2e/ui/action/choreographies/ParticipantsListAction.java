@@ -19,9 +19,8 @@
  */
 package org.nexuse2e.ui.action.choreographies;
 
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -68,21 +67,18 @@ public class ParticipantsListAction extends NexusE2EAction {
             addRedirect( request, URL, TIMEOUT );
             return error;
         }
-        List<ParticipantPojo> participantPojos = null;
-        Vector participants = new Vector();
+        List<ParticipantForm> participants = new ArrayList<ParticipantForm>();
         try {
             ChoreographyPojo choreography = engineConfiguration
                     .getChoreographyByNxChoreographyId( nxChoreographyId );
-            participantPojos = choreography.getParticipants();
-            Iterator i = participantPojos.iterator();
-            while ( i.hasNext() ) {
-                ParticipantPojo participant = (ParticipantPojo) i.next();
+            List<ParticipantPojo> participantPojos = choreography.getParticipants();
+            for ( ParticipantPojo participant : participantPojos ) {
                 ParticipantForm pform = new ParticipantForm();
                 pform.setPartnerDisplayName( participant.getPartner().getPartnerId() );
                 pform.setNxPartnerId( participant.getPartner().getNxPartnerId() );
                 pform.setUrl( (participant.getConnection() != null) ? participant.getConnection().getUri() : "" );
                 pform.setDescription( participant.getDescription() );
-                participants.addElement( pform );
+                participants.add( pform );
             }
         } catch ( NexusException e ) {
             ActionMessage errorMessage = new ActionMessage( "generic.error", e.getMessage() );

@@ -4,7 +4,7 @@
 <%@ taglib uri="/tags/struts-nested" prefix="nested"%>
 <%@ taglib uri="/tags/struts-tiles" prefix="tiles"%>
 <%@ taglib uri="/tags/struts-logic" prefix="logic"%>
-<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="/tags/struts-html-el" prefix="html-el"%>
 
 <% /*<nexus:helpBar helpDoc="documentation/Participants.htm"/> */ %>
@@ -52,20 +52,13 @@
 		</tr>
 		<tr>
 			<td class="NEXUSName">Local Partner ID</td>
-			<td class="NEXUSValue"><nexus:select submitOnChange="true"
+			<td class="NEXUSValue">
+			  <nexus:select submitOnChange="true"
 				name="nxLocalPartnerId">
 				<logic:iterate id="localPartner" property="localPartners"
 					name="participantForm">
-					<logic:equal name="participantForm" property="nxLocalPartnerId"
-						value="${partner.nxPartnerId}">
-						<option value="${localPartner.nxPartnerId}" selected="true">${localPartner.name}
-						(${localPartner.partnerId})</option>
-					</logic:equal>
-					<logic:notEqual name="participantForm" property="nxLocalPartnerId"
-						value="${partner.nxPartnerId}">
-						<option value="${localPartner.nxPartnerId}">${localPartner.name}
-						(${localPartner.partnerId})</option>
-					</logic:notEqual>
+					<option value="${localPartner.nxPartnerId}" <c:if test="${localPartner.nxPartnerId == participantForm.nxLocalPartnerId}">selected</c:if>>${localPartner.name}
+					(${localPartner.partnerId}) selected</option>
 				</logic:iterate>
 			</nexus:select></td>
 		</tr>
