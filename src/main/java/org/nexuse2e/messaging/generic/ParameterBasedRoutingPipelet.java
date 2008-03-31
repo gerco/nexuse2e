@@ -186,10 +186,10 @@ public class ParameterBasedRoutingPipelet extends AbstractPipelet {
 
         IdGenerator messageIdGenerator = Engine.getInstance().getIdGenerator( Constants.ID_GENERATOR_MESSAGE );
         IdGenerator conversationIdGenerator = Engine.getInstance().getIdGenerator( Constants.ID_GENERATOR_CONVERSATION );
-        Engine.getInstance().getTransactionService().initializeMessage( messageContext.getMessagePojo(),
-                messageIdGenerator.getId(), conversationIdGenerator.getId(), actionId, partnerId, choreographyId );
         messageContext.getMessagePojo().setOutbound( false );
         messageContext.getMessagePojo().setType( org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_NORMAL );
+        Engine.getInstance().getTransactionService().initializeMessage( messageContext.getMessagePojo(),
+                messageIdGenerator.getId(), conversationIdGenerator.getId(), actionId, partnerId, choreographyId );
 
         return messageContext;
     }

@@ -83,11 +83,11 @@ public class HTTPPlainHeaderDeserializer extends AbstractPipelet {
 
         MessagePojo messagePojo = messageContext.getMessagePojo();
 
+        messagePojo.setOutbound( false );
+        messagePojo.setType( org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_NORMAL );
         messagePojo = Engine.getInstance().getTransactionService().initializeMessage( messagePojo, messageId,
                 conversationId, actionId, participantId, choreographyId );
 
-        messagePojo.setOutbound( false );
-        messagePojo.setType( org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_NORMAL );
 
         return messageContext;
     } // processMessage
