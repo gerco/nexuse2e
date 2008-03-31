@@ -980,7 +980,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                             try {
                                 bean.activate();
                             } catch ( Exception e ) {
-                                LOG.error( "Could not active bean: " + bean.getClass().getCanonicalName() );
+                                LOG.error( "Could not activate bean: " + bean.getClass().getCanonicalName() );
                             }
                         }
                     }
@@ -1106,7 +1106,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     /**
      * @param timestampFormaters the timestampFormaters to set
      */
-    public void setTimestampFormaters( Map<String, TimestampFormatter> timestampFormaters ) {
+    public void setTimestampFormatters( Map<String, TimestampFormatter> timestampFormaters ) {
 
         this.timestampFormatters = timestampFormaters;
     }

@@ -235,9 +235,11 @@ public class SftpPollingReceiverService extends AbstractService implements Recei
      * @param errorDir The error directory.
      * @param partnerId The partner ID.
      */
-    private void processFile( File file, File errorDir, String partnerId ) throws NexusException {
+    private boolean processFile( File file, File errorDir, String partnerId ) throws NexusException {
 
         counter++;
+        
+        boolean processedSucessfully = false;
 
         if ( transportReceiver != null && file != null && file.exists() && file.length() != 0 ) {
             try {
@@ -260,6 +262,8 @@ public class SftpPollingReceiverService extends AbstractService implements Recei
                 messageContext.getMessagePojo().setCustomParameters( customParameters );
                 LOG.debug( "Calling TransportReceiver..." );
                 transportReceiver.processMessage( messageContext );
+                
+                processedSucessfully = true;
 
                 file.delete();
             } catch ( Exception ex ) {
@@ -280,6 +284,8 @@ public class SftpPollingReceiverService extends AbstractService implements Recei
                 LOG.error( "No file to process!" );
             }
         }
+        
+        return processedSucessfully;
     }
 
     private static String dosStyleToRegEx( String pattern ) {
@@ -463,10 +469,10 @@ public class SftpPollingReceiverService extends AbstractService implements Recei
                                 fout.close();
                                 try {
 
-                                    processFile( localFile, errorDir, (String) getParameter( PARTNER_PARAM_NAME ) );
+                                    boolean processedSucessfully = processFile( localFile, errorDir, (String) getParameter( PARTNER_PARAM_NAME ) );
 
                                     boolean error = false;
-                                    if ( fileChangeActive ) {
+                                    if ( processedSucessfully && fileChangeActive ) {
                                         if ( StringUtils.isEmpty( prefix ) ) {
                                             try {
                                                 channelSftp.rm( file.getFilename() );

@@ -104,12 +104,16 @@ abstract public class AbstractPipeline implements Pipeline {
 
         if ( forwardPipelets != null ) {
             for ( int i = 0; i < forwardPipelets.length; i++ ) {
-                forwardPipelets[i].activate();
+                if ( forwardPipelets[i] != null ) {
+                    forwardPipelets[i].activate();
+                }
             }
         }
         if ( returnPipelets != null ) {
             for ( int i = 0; i < returnPipelets.length; i++ ) {
-                returnPipelets[i].activate();
+                if ( returnPipelets[i] != null ) {
+                    returnPipelets[i].activate();
+                }
             }
         }
         if ( getPipelineEndpoint() != null ) {
@@ -123,15 +127,19 @@ abstract public class AbstractPipeline implements Pipeline {
     public void deactivate() {
 
         status = BeanStatus.INITIALIZED;
-        
+
         if ( forwardPipelets != null ) {
             for ( int i = 0; i < forwardPipelets.length; i++ ) {
-                forwardPipelets[i].deactivate();
+                if ( forwardPipelets[i] != null ) {
+                    forwardPipelets[i].deactivate();
+                }
             }
         }
         if ( returnPipelets != null ) {
             for ( int i = 0; i < returnPipelets.length; i++ ) {
-                returnPipelets[i].deactivate();
+                if ( returnPipelets[i] != null ) {
+                    returnPipelets[i].deactivate();
+                }
             }
         }
         if ( getPipelineEndpoint() != null ) {
@@ -154,8 +162,7 @@ abstract public class AbstractPipeline implements Pipeline {
      * @see org.nexuse2e.Manageable#getStatus()
      */
     public BeanStatus getStatus() {
-        
-        
+
         try {
             BeanStatus minimumStatus = BeanStatus.STARTED;
             if ( forwardPipelets != null ) {
@@ -187,11 +194,11 @@ abstract public class AbstractPipeline implements Pipeline {
                 }
             }
 
-            if( (forwardPipelets == null || forwardPipelets.length == 0) && 
-                    (returnPipelets == null || returnPipelets.length == 0)) {
+            if ( ( forwardPipelets == null || forwardPipelets.length == 0 )
+                    && ( returnPipelets == null || returnPipelets.length == 0 ) ) {
                 minimumStatus = status;
             }
-            
+
             return minimumStatus;
         } catch ( Exception e ) {
             // TODO Auto-generated catch block
@@ -206,15 +213,19 @@ abstract public class AbstractPipeline implements Pipeline {
     public void initialize( EngineConfiguration config ) throws InstantiationException {
 
         status = BeanStatus.INITIALIZED;
-        
+
         if ( forwardPipelets != null ) {
             for ( int i = 0; i < forwardPipelets.length; i++ ) {
-                forwardPipelets[i].initialize( null );
+                if ( forwardPipelets[i] != null ) {
+                    forwardPipelets[i].initialize( null );
+                }
             }
         }
         if ( returnPipelets != null ) {
             for ( int i = 0; i < returnPipelets.length; i++ ) {
-                returnPipelets[i].initialize( null );
+                if ( returnPipelets[i] != null ) {
+                    returnPipelets[i].initialize( null );
+                }
             }
         }
         if ( getPipelineEndpoint() != null ) {
@@ -228,15 +239,19 @@ abstract public class AbstractPipeline implements Pipeline {
     public void teardown() {
 
         status = BeanStatus.INSTANTIATED;
-        
+
         if ( forwardPipelets != null ) {
             for ( int i = 0; i < forwardPipelets.length; i++ ) {
-                forwardPipelets[i].teardown();
+                if ( forwardPipelets[i] != null ) {
+                    forwardPipelets[i].teardown();
+                }
             }
         }
         if ( returnPipelets != null ) {
             for ( int i = 0; i < returnPipelets.length; i++ ) {
-                returnPipelets[i].teardown();
+                if ( returnPipelets[i] != null ) {
+                    returnPipelets[i].teardown();
+                }
             }
         }
         if ( getPipelineEndpoint() != null ) {
