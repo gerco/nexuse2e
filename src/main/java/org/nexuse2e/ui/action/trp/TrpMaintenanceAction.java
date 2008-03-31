@@ -19,7 +19,9 @@
  */
 package org.nexuse2e.ui.action.trp;
 
-import java.util.List;
+import java.util.Comparator;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -91,11 +93,48 @@ public class TrpMaintenanceAction extends NexusE2EAction {
                 }
             }
         }
-        List<TRPPojo> trps = engineConfiguration.getTrps();
+        Comparator<TRPPojo> comparator = new Comparator<TRPPojo>() {
+            public int compare( TRPPojo trp1, TRPPojo trp2 ) {
+                if (trp1 == null) {
+                    if (trp2 != null) {
+                        return -1;
+                    }
+                    return 0;
+                }
+                if (trp2 == null) {
+                    if (trp1 == null) {
+                        return 1;
+                    }
+                    return 0;
+                }
+                String t1 = trp1.getTransport();
+                String t2 = trp2.getTransport();
+                if (t1 != null && t2 != null) {
+                    int result = t1.compareTo( t2 );
+                    if (result == 0) {
+                        String p1 = trp1.getProtocol();
+                        String p2 = trp2.getProtocol();
+                        if (p1 != null && p2 != null) {
+                            result = p1.compareTo( p2 );
+                            if (result == 0) {
+                                String v1 = trp1.getVersion();
+                                String v2 = trp2.getVersion();
+                                if (v1 != null && v2 != null) {
+                                    result = v1.compareTo( v2 );
+                                }
+                            }
+                        }
+                    }
+                    return result;
+                }
+                return 0;
+            }
+        };
 
-        
+        SortedSet<TRPPojo> set = new TreeSet<TRPPojo>( comparator );
+        set.addAll( engineConfiguration.getTrps() );
 
-        request.setAttribute( ATTRIBUTE_COLLECTION, trps );
+        request.setAttribute( ATTRIBUTE_COLLECTION, set );
 
         return success;
     }
