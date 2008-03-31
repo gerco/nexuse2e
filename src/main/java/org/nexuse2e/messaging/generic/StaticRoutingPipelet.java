@@ -41,12 +41,12 @@ public class StaticRoutingPipelet extends AbstractPipelet {
 
         IdGenerator messageIdGenerator = Engine.getInstance().getIdGenerator( Constants.ID_GENERATOR_MESSAGE );
         IdGenerator conversationIdGenerator = Engine.getInstance().getIdGenerator( Constants.ID_GENERATOR_CONVERSATION );
+        messageContext.getMessagePojo().setOutbound( false );
+        messageContext.getMessagePojo().setType( org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_NORMAL );
         Engine.getInstance().getTransactionService().initializeMessage( messageContext.getMessagePojo(),
                 messageIdGenerator.getId(), conversationIdGenerator.getId(),
                 (String) getParameter( ACTION_PARAM_NAME ), messageContext.getPartner().getPartnerId(),
                 (String) getParameter( CHOREOGRAPHY_PARAM_NAME ) );
-        messageContext.getMessagePojo().setOutbound( false );
-        messageContext.getMessagePojo().setType( org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_NORMAL );
 
         return messageContext;
     }
