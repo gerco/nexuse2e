@@ -31,4 +31,4 @@ mvn install:install-file -DgroupId=org.eclipse.birt -DartifactId=scriptapi -Dver
 mvn install:install-file -DgroupId=org.eclipse.birt -DartifactId=modelapi -Dversion=2.2.1 -Dpackaging=jar -Dfile=lib/modelapi.jar
 
 # jgroups
-mvn install:install-file -DgroupId=jgroups -DartifactId=jgroups-all -Dversion=2.5.ga -Dpackaging=jar -Dfile=lib/jgroups-all.jar
+mvn install:install-file -DgroupId=jgroups -DartifactId=jgroups-all -Dversion=2.6.2 -Dpackaging=jar -Dfile=lib/jgroups-all.jar

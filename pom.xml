@@ -436,7 +436,7 @@
     <dependency>
       <groupId>jgroups</groupId>
       <artifactId>jgroups-all</artifactId>
-      <version>2.5.ga</version>
+      <version>2.6.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -694,12 +694,13 @@
           </connectors>
         </configuration>
       </plugin>
-      <plugin>
         <!-- http://www.sagehill.net/docbookxsl/ -->
         <!-- http://xmlgraphics.apache.org/fop/0.94/hyphenation.html 
           Copy fop-hyph.jar to <user dir>/.m2/repository/org/apache/xmlgraphics/fop/0.94/
         -->
         <!-- http://www.agilejava.com/docbkx/docbkx-maven-plugin/generate-html-mojo.html -->
+        <!-- 
+      <plugin>
         <groupId>com.agilejava.docbkx</groupId>
         <artifactId>docbkx-maven-plugin</artifactId>
         <executions>
@@ -725,6 +726,7 @@
           <chunkedOutput>true</chunkedOutput>
         </configuration>
       </plugin>
+       -->
       <!-- 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
