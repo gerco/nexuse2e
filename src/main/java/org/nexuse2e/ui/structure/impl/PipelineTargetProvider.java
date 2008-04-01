@@ -21,9 +21,11 @@ package org.nexuse2e.ui.structure.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeSet;
 
 import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.configuration.EngineConfiguration;
+import org.nexuse2e.configuration.GenericComparator;
 import org.nexuse2e.pojo.PipelinePojo;
 import org.nexuse2e.ui.structure.ParentalStructureNode;
 import org.nexuse2e.ui.structure.StructureNode;
@@ -43,7 +45,7 @@ public class PipelineTargetProvider implements TargetProvider {
 
         List<StructureNode> list = new ArrayList<StructureNode>();
         List<PipelinePojo> pipelinePojos = null;
-
+        
         if ( frontend ) {
             pipelinePojos = engineConfiguration.getFrontendPipelinePojos(
                     Constants.PIPELINE_TYPE_ALL, Constants.PIPELINECOMPARATOR );
@@ -52,8 +54,12 @@ public class PipelineTargetProvider implements TargetProvider {
                     Constants.PIPELINE_TYPE_ALL, Constants.PIPELINECOMPARATOR );
         }
 
-        if ( pipelinePojos != null ) {
-            for ( PipelinePojo pipelinePojo : pipelinePojos ) {
+        TreeSet<PipelinePojo> sortedPipelines = new TreeSet<PipelinePojo>(
+                new GenericComparator<PipelinePojo>( "name", true ) );
+        sortedPipelines.addAll( pipelinePojos );
+
+        if ( sortedPipelines != null ) {
+            for ( PipelinePojo pipelinePojo : sortedPipelines ) {
                 StructureNode sn = new PageNode( pattern.getTarget() + "?nxPipelineId=" + pipelinePojo.getNxPipelineId(),
                         pipelinePojo.getName(), pattern.getIcon() );
                 list.add( sn );

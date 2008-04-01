@@ -20,8 +20,8 @@
 package org.nexuse2e.ui.action;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,6 +32,7 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.configuration.EngineConfiguration;
+import org.nexuse2e.configuration.GenericComparator;
 import org.nexuse2e.pojo.PipelinePojo;
 import org.nexuse2e.ui.form.PipelineForm;
 
@@ -46,8 +47,8 @@ public class PipelinesAction extends NexusE2EAction {
      */
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
-            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
-            throws Exception {
+            HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration,
+            ActionMessages errors, ActionMessages messages ) throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
 
@@ -57,19 +58,21 @@ public class PipelinesAction extends NexusE2EAction {
         String parameter = actionMapping.getParameter();
 
         if ( "frontend".equalsIgnoreCase( parameter ) ) {
-            pipelinePojos = engineConfiguration.getFrontendPipelinePojos(
-                    Constants.PIPELINE_TYPE_ALL, Constants.PIPELINECOMPARATOR );
+            pipelinePojos = engineConfiguration.getFrontendPipelinePojos( Constants.PIPELINE_TYPE_ALL,
+                    Constants.PIPELINECOMPARATOR );
         } else {
-            pipelinePojos = engineConfiguration.getBackendPipelinePojos(
-                    Constants.PIPELINE_TYPE_ALL, Constants.PIPELINECOMPARATOR );
+            pipelinePojos = engineConfiguration.getBackendPipelinePojos( Constants.PIPELINE_TYPE_ALL,
+                    Constants.PIPELINECOMPARATOR );
         }
-        if ( pipelinePojos != null && pipelinePojos.size() > 0 ) {
 
-            Iterator<PipelinePojo> pipelineI = pipelinePojos.iterator();
-            while ( pipelineI.hasNext() ) {
-                PipelinePojo pipeline = pipelineI.next();
+        TreeSet<PipelinePojo> sortedPipelines = new TreeSet<PipelinePojo>( new GenericComparator<PipelinePojo>( "name",
+                true ) );
+        sortedPipelines.addAll( pipelinePojos );
+
+        if ( sortedPipelines != null ) {
+            for ( PipelinePojo pipelinePojo : sortedPipelines ) {
                 PipelineForm pipelineForm = new PipelineForm();
-                pipelineForm.setProperties( pipeline );
+                pipelineForm.setProperties( pipelinePojo );
                 pipelines.add( pipelineForm );
             }
         }
