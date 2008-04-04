@@ -21,8 +21,10 @@ package org.nexuse2e.configuration;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Level;
 import org.nexuse2e.configuration.Constants.ComponentType;
@@ -155,6 +157,22 @@ public class XiomaBaseClientConfiguration extends XiomaBaseServerConfiguration {
 
             backendPipelineTemplates.add( clientInboundPipelinePojo );
             backendPipelineTemplates.add( clientOutboundPipelinePojo );
+            
+            
+            ChoreographyPojo shipNoticeChoreographyPojo = new ChoreographyPojo();
+            ActionPojo sendFileActionPojo = new ActionPojo( shipNoticeChoreographyPojo, new Date(), new Date(), 1, true,
+                    true, clientInboundPipelinePojo, clientOutboundPipelinePojo, "SendFile" );
+            List<ParticipantPojo> shipNoticeParticipants = new ArrayList<ParticipantPojo>();
+            Set<ActionPojo> shipNoticeActions = new HashSet<ActionPojo>();
+            shipNoticeActions.add( sendFileActionPojo );
+            shipNoticeChoreographyPojo.setName( "ShipNotice" );
+            shipNoticeChoreographyPojo.setDescription( "ShipNotice" );
+            shipNoticeChoreographyPojo.setModifiedDate( new Date() );
+            shipNoticeChoreographyPojo.setModifiedNxUserId( 1 );
+            shipNoticeChoreographyPojo.setCreatedDate( new Date() );
+            shipNoticeChoreographyPojo.setParticipants( shipNoticeParticipants );
+            shipNoticeChoreographyPojo.setActions( shipNoticeActions );
+            choreographies.add( shipNoticeChoreographyPojo );
 
             
             for ( ActionPojo pojo : choreography.getActions() ) {

@@ -166,7 +166,7 @@ public class SftpSenderService extends AbstractService implements SenderAware {
 
         } catch ( Exception e ) {
             e.printStackTrace();
-            LOG.error( "Error polling FTP account: " + e );
+            LOG.error( "Error uploading to FTP account (" + getParameter( URL_PARAM_NAME ) + "): " + e );
         } finally {
             if ( ( channelSftp != null ) && channelSftp.isConnected() ) {
                 channelSftp.disconnect();

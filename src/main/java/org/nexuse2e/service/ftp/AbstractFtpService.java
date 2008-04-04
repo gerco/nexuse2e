@@ -140,7 +140,7 @@ public abstract class AbstractFtpService extends AbstractService {
     private void addCertificatesToDropdown( ListParameter certsDropdown ) {
 
         ConfigurationAccessService cas = Engine.getInstance().getActiveConfigurationAccessService();
-        if (cas != null) {
+        if ( cas != null ) {
             try {
                 List<CertificatePojo> certs = cas.getCertificates( Constants.CERTIFICATE_TYPE_LOCAL, null );
                 if ( certs != null ) {
@@ -429,7 +429,7 @@ public abstract class AbstractFtpService extends AbstractService {
                 // process files
             } catch ( Exception e ) {
                 e.printStackTrace();
-                LOG.error( "Error polling FTP account: " + e );
+                LOG.error( "Error polling FTP account (" + getParameter( URL_PARAM_NAME ) + "): " + e );
             } finally {
                 if ( ftp.isConnected() ) {
                     try {

@@ -515,7 +515,7 @@ public class SftpPollingReceiverService extends AbstractService implements Recei
                 // process files
             } catch ( Exception e ) {
                 e.printStackTrace();
-                LOG.error( "Error polling FTP account: " + e );
+                LOG.error( "Error polling FTP account (" + getParameter( URL_PARAM_NAME ) + "): " + e );
             } finally {
                 if ( ( channelSftp != null ) && channelSftp.isConnected() ) {
                     LOG.trace( "Closing channel..." );

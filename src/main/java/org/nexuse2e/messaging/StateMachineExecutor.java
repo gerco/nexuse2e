@@ -220,7 +220,9 @@ public class StateMachineExecutor {
                     conversation.setCurrentAction( messageContext.getMessagePojo().getAction() );
                     return conversation;
                 }
-            } else {
+                // Only process normal message if previous ones have been ack'd
+            } else if ( conversation.getStatus() == Constants.CONVERSATION_STATUS_IDLE
+                    || conversation.getStatus() == Constants.CONVERSATION_STATUS_COMPLETED ) {
                 // followup message in conversation. Checking state machine status.
                 String actionId = conversation.getCurrentAction().getName();
 

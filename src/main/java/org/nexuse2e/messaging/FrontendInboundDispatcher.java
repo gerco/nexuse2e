@@ -286,7 +286,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
             // Send acknowledgment/error message back asynchronously
             if ( participant.getConnection().isSynchronous() ) {
                 return responseMessageContext;
-            } else if ( ( responseMessageContext != null ) && responseMessageContext.getMessagePojo() != null ) {
+            } else if ( !headerInvalid && ( responseMessageContext != null ) && responseMessageContext.getMessagePojo() != null ) {
                 try {
                     backendOutboundDispatcher.processMessage( responseMessageContext );
                     return null;
