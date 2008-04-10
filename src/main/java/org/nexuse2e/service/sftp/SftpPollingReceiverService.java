@@ -315,10 +315,10 @@ public class SftpPollingReceiverService extends AbstractService implements Recei
         Session session = null;
 
         try {
-            String host = "sftp.wirecard.com";
-            String user = "T2078";
-            String password = "NTum-93!";
-            String path = "/toT2078/WD_RESP/new";
+            String host = "sftp.test.com";
+            String user = "testuser";
+            String password = "test";
+            String path = "/testpath";
             String prefix = "../processed/";
 
             session = jsch.getSession( user, host, 22 );

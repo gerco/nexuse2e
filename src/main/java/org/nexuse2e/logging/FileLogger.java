@@ -188,8 +188,12 @@ public class FileLogger extends FileAppender implements LogAppender {
      * @see org.apache.log4j.WriterAppender#append(org.apache.log4j.spi.LoggingEvent)
      */
     @Override
-    public void append( LoggingEvent arg0 ) {
+    public void append( LoggingEvent loggingevent ) {
 
-        super.append( arg0 );
+        if ( !loggingevent.getLevel().isGreaterOrEqual( Level.toLevel( getLogThreshold(), Level.ERROR ) ) ) {
+            return;
+        }
+
+        super.append( loggingevent );
     }
 }

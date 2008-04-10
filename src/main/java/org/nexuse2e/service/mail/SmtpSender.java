@@ -90,7 +90,7 @@ public class SmtpSender extends AbstractService implements SenderAware {
     public static final String EMAIL_PARAM_NAME    = "email";
     public static final String USER_PARAM_NAME     = "user";
     public static final String PASSWORD_PARAM_NAME = "password";
-    public static final String ENCRYPTION_PARAM_NAME = "encrpytion";
+    public static final String ENCRYPTION_PARAM_NAME = "encryption";
 
     private TransportSender    transportSender;
 

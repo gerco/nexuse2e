@@ -80,7 +80,8 @@ public class TransactionServiceImpl implements TransactionService {
         followUpConversationStates.put( Constants.CONVERSATION_STATUS_ERROR,
                 new int[] {
                     Constants.CONVERSATION_STATUS_IDLE,
-                    Constants.CONVERSATION_STATUS_COMPLETED } );
+                    Constants.CONVERSATION_STATUS_COMPLETED,
+                    Constants.CONVERSATION_STATUS_PROCESSING} );
         followUpConversationStates.put( Constants.CONVERSATION_STATUS_CREATED,
                 new int[] {
                     Constants.CONVERSATION_STATUS_PROCESSING } );

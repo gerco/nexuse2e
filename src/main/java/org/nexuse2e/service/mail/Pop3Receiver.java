@@ -60,7 +60,7 @@ public class Pop3Receiver extends AbstractService implements ReceiverAware, Runn
     public static final String PORT_PARAM_NAME          = "port";
     public static final String USER_PARAM_NAME          = "user";
     public static final String PASSWORD_PARAM_NAME      = "password";
-    public static final String ENCRYPTION_PARAM_NAME    = "encrpytion";
+    public static final String ENCRYPTION_PARAM_NAME    = "encryption";
     //    public static final String AUTOPOLL_PARAM_NAME      = "autopoll";
     public static final String POLL_INTERVAL_PARAM_NAME = "pollInterval";
 

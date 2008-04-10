@@ -38,15 +38,14 @@ import org.nexuse2e.pojo.MessagePojo;
  * @version $LastChangedRevision:  $ - $LastChangedDate:  $ by $LastChangedBy:  $
  */
 public class ConversationStateMachine {
-    
-    private static Logger    LOG              = Logger.getLogger( ConversationStateMachine.class );
-    
+
+    private static Logger    LOG = Logger.getLogger( ConversationStateMachine.class );
+
     private ConversationPojo conversation;
     private MessagePojo      message;
     private boolean          reliable;
     private Object           sync;
-    
-    
+
     /**
      * Constructs a new <code>ConversationStateMachine</code>. Please do not use the constructor,
      * use {@link MessageContext#getStateMachine()}.
@@ -56,29 +55,30 @@ public class ConversationStateMachine {
      * @param reliable If <code>true</code>, reliable messaging is enabled.
      * @param sync The synchronization object. Must not be <code>null</code>.
      */
-    public ConversationStateMachine(
-            ConversationPojo conversation, MessagePojo message, boolean reliable, Object sync ) {
+    public ConversationStateMachine( ConversationPojo conversation, MessagePojo message, boolean reliable, Object sync ) {
+
         this.conversation = conversation;
         this.message = message;
         this.reliable = reliable;
         this.sync = sync;
     }
 
-
     /**
      * Gets the conversation that is associated with this <code>ConversationStateMachine</code>.
      * @return The conversation.
      */
     public ConversationPojo getConversation() {
+
         return conversation;
     }
-    
+
     public void sentMessage() throws StateTransitionException, NexusException {
 
-        synchronized (sync) {
+        synchronized ( sync ) {
             if ( message.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
                 if ( ( conversation.getStatus() == Constants.CONVERSATION_STATUS_PROCESSING )
-                        || ( conversation.getStatus() == Constants.CONVERSATION_STATUS_AWAITING_ACK ) ) {
+                        || ( conversation.getStatus() == Constants.CONVERSATION_STATUS_AWAITING_ACK )
+                        || ( conversation.getStatus() == Constants.CONVERSATION_STATUS_ERROR /* Included for requeuing */) ) {
                     if ( reliable ) {
                         conversation.setStatus( Constants.CONVERSATION_STATUS_AWAITING_ACK );
                     } else {
@@ -93,8 +93,8 @@ public class ConversationStateMachine {
                         }
                     }
                 } else {
-                    throw new StateTransitionException(
-                            "Unexpected conversation state after sending normal message: " + conversation.getStatus() );
+                    throw new StateTransitionException( "Unexpected conversation state after sending normal message: "
+                            + conversation.getStatus() );
                 }
             } else {
                 // Engine.getInstance().getTransactionService().deregisterProcessingMessage( message.getMessageId() );
@@ -103,8 +103,8 @@ public class ConversationStateMachine {
                 message.setModifiedDate( endDate );
                 message.setEndDate( endDate );
                 message.getReferencedMessage().setEndDate( endDate );
-                if ( conversation.getStatus() == Constants.CONVERSATION_STATUS_SENDING_ACK ||
-                        conversation.getStatus() == Constants.CONVERSATION_STATUS_PROCESSING ) {
+                if ( conversation.getStatus() == Constants.CONVERSATION_STATUS_SENDING_ACK
+                        || conversation.getStatus() == Constants.CONVERSATION_STATUS_PROCESSING ) {
                     conversation.setStatus( Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND );
                 } else if ( ( conversation.getStatus() == Constants.CONVERSATION_STATUS_BACKEND_SENT_SENDING_ACK )
                         || ( conversation.getStatus() == Constants.CONVERSATION_STATUS_IDLE )
@@ -115,27 +115,27 @@ public class ConversationStateMachine {
                         conversation.setStatus( Constants.CONVERSATION_STATUS_IDLE );
                     }
                 } else if ( conversation.getStatus() == Constants.CONVERSATION_STATUS_AWAITING_BACKEND ) {
-                    LOG.debug( new LogMessage(
-                            "Received ack message, backend still processing - conversation ID: "
-                                    + conversation.getConversationId(), message ) );
+                    LOG.debug( new LogMessage( "Received ack message, backend still processing - conversation ID: "
+                            + conversation.getConversationId(), message ) );
                 } else if ( ( conversation.getStatus() != Constants.CONVERSATION_STATUS_COMPLETED )
                         && ( conversation.getStatus() != Constants.CONVERSATION_STATUS_ERROR ) ) {
                     LOG.error( new LogMessage( "Unexpected conversation state after sending ack message: "
                             + conversation.getStatus(), message ) );
                 }
             }
-    
+
             // Persist status changes
             try {
                 Engine.getInstance().getTransactionService().updateTransaction( message );
-            } catch (StateTransitionException stex) {
+            } catch ( StateTransitionException stex ) {
                 LOG.warn( stex.getMessage() );
             }
         }
     }
-    
+
     public void receivedNonReliableMessage() throws StateTransitionException, NexusException {
-        synchronized (sync) {
+
+        synchronized ( sync ) {
             if ( message.getConversation().getCurrentAction().isEnd() ) {
                 message.getConversation().setStatus( Constants.CONVERSATION_STATUS_COMPLETED );
             } else {
@@ -147,21 +147,20 @@ public class ConversationStateMachine {
     }
 
     public void receivedAckMessage() throws StateTransitionException, NexusException {
-        synchronized (sync) {
+
+        synchronized ( sync ) {
             MessagePojo referencedMessage = message.getReferencedMessage();
             if ( referencedMessage != null ) {
                 if ( ( referencedMessage.getConversation().getStatus() == Constants.CONVERSATION_STATUS_AWAITING_ACK )
                         || ( referencedMessage.getConversation().getStatus() == Constants.CONVERSATION_STATUS_PROCESSING )
                         || ( referencedMessage.getConversation().getStatus() == Constants.CONVERSATION_STATUS_ERROR ) ) {
                     if ( referencedMessage.getConversation().getCurrentAction().isEnd() ) {
-                        referencedMessage.getConversation().setStatus(
-                                Constants.CONVERSATION_STATUS_COMPLETED );
+                        referencedMessage.getConversation().setStatus( Constants.CONVERSATION_STATUS_COMPLETED );
                     } else {
-                        referencedMessage.getConversation().setStatus(
-                                Constants.CONVERSATION_STATUS_IDLE );
+                        referencedMessage.getConversation().setStatus( Constants.CONVERSATION_STATUS_IDLE );
                     }
                     referencedMessage.setStatus( Constants.MESSAGE_STATUS_SENT );
-    
+
                     // Complete ack message and add to conversation
                     Date endDate = new Date();
                     message.setAction( referencedMessage.getAction() );
@@ -171,11 +170,12 @@ public class ConversationStateMachine {
                     referencedMessage.getConversation().getMessages().add( message );
                     referencedMessage.setModifiedDate( endDate );
                     referencedMessage.setEndDate( endDate );
-    
+
                     Engine.getInstance().getTransactionService().updateTransaction( referencedMessage );
                 } else {
                     throw new StateTransitionException(
-                            "Ack message received where it was not expected: Message status was " + referencedMessage.getStatus() );
+                            "Ack message received where it was not expected: Message status was "
+                                    + referencedMessage.getStatus() );
                 }
             } else {
                 throw new NexusException( "Error using referenced message on acknowledgment (ack message ID: "
@@ -183,13 +183,14 @@ public class ConversationStateMachine {
             }
         }
     }
-    
+
     public void receivedErrorMessage() throws StateTransitionException, NexusException {
-        synchronized (sync) {
-            
+
+        synchronized ( sync ) {
+
             MessagePojo referencedMessage = message.getReferencedMessage();
             if ( referencedMessage != null ) {
-                
+
                 referencedMessage.getConversation().setStatus( Constants.CONVERSATION_STATUS_ERROR );
                 referencedMessage.setStatus( Constants.MESSAGE_STATUS_FAILED );
 
@@ -204,18 +205,20 @@ public class ConversationStateMachine {
                 referencedMessage.setEndDate( endDate );
                 try {
                     Engine.getInstance().getTransactionService().updateTransaction( referencedMessage );
-                } catch (StateTransitionException stex) {
+                } catch ( StateTransitionException stex ) {
                     LOG.warn( stex.getMessage() );
                 }
             } else {
-                throw new NexusException( "Error using referenced message on negative acknowledgment (error message ID: "
-                        + message.getMessageId() + ")" );
+                throw new NexusException(
+                        "Error using referenced message on negative acknowledgment (error message ID: "
+                                + message.getMessageId() + ")" );
             }
-  
+
         } // synchronized
     }
-    
+
     public void processedBackend() throws StateTransitionException, NexusException {
+
         synchronized ( sync ) {
             message.setStatus( Constants.MESSAGE_STATUS_SENT );
             message.setModifiedDate( new Date() );
@@ -227,14 +230,14 @@ public class ConversationStateMachine {
                 } else {
                     conversation.setStatus( Constants.CONVERSATION_STATUS_IDLE );
                 }
-            } else if ( conversation.getStatus() == Constants.CONVERSATION_STATUS_AWAITING_BACKEND ||
-                    conversation.getStatus() == Constants.CONVERSATION_STATUS_PROCESSING ) {
+            } else if ( conversation.getStatus() == Constants.CONVERSATION_STATUS_AWAITING_BACKEND
+                    || conversation.getStatus() == Constants.CONVERSATION_STATUS_PROCESSING ) {
                 conversation.setStatus( Constants.CONVERSATION_STATUS_BACKEND_SENT_SENDING_ACK );
             } else if ( conversation.getStatus() == Constants.CONVERSATION_STATUS_COMPLETED ) {
                 LOG.debug( new LogMessage( "Processing message for completed conversation.", message ) );
             } else {
-                LOG.error( new LogMessage( "Unexpected conversation state detected: "
-                        + conversation.getStatus(), message ) );
+                LOG.error( new LogMessage( "Unexpected conversation state detected: " + conversation.getStatus(),
+                        message ) );
             }
 
             // Persist the message
@@ -243,23 +246,24 @@ public class ConversationStateMachine {
     }
 
     public void processingFailed() throws StateTransitionException, NexusException {
-        synchronized (sync) {
+
+        synchronized ( sync ) {
             message.setStatus( Constants.MESSAGE_STATUS_FAILED );
             conversation.setStatus( Constants.CONVERSATION_STATUS_ERROR );
-    
+
             // Persist the message
             Engine.getInstance().getTransactionService().updateTransaction( message );
         } // synchronized
     }
-    
+
     public void queueMessage() throws StateTransitionException, NexusException {
 
-        synchronized (sync) {
+        synchronized ( sync ) {
             List<MessagePojo> messages = conversation.getMessages();
-    
+
             message.setStatus( Constants.MESSAGE_STATUS_QUEUED );
             message.setModifiedDate( new Date() );
-    
+
             if ( message.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_NORMAL ) {
                 conversation.setStatus( Constants.CONVERSATION_STATUS_PROCESSING );
             }

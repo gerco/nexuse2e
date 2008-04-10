@@ -417,7 +417,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
                             Logger targetlogger = Logger.getLogger( token );
                             logAppender.registerLogger( targetlogger );
                             if ( targetlogger.getLevel() == null
-                                    || targetlogger.getLevel().toInt() < logger.getThreshold() ) {
+                                    || targetlogger.getLevel().toInt() > logger.getThreshold() ) {
                                 targetlogger.setLevel( Level.toLevel( logger.getThreshold() ) );
                             }
                             targetlogger.addAppender( logAppender );
