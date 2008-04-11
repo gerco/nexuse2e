@@ -45,12 +45,14 @@ public class SftpSenderService extends AbstractService implements SenderAware {
     public static final String PASSWORD_PARAM_NAME       = "password";
     public static final String BASE_FILE_NAME_PARAM_NAME = "baseFileName";
     public static final String FILE_EXTENSION_PARAM_NAME = "fileExtension";
+    public static final String TEMP_FILE_PARAM_NAME      = "useTempFile";
     public static final String APPEND_TIMESTAMP          = "appendTimestamp";
 
     private TransportSender    transportSender           = null;
     private String             baseFileName              = null;
     private String             fileExtension             = null;
     private boolean            useTimestamp              = true;
+    private boolean            useTempFileName           = true;
 
     /* (non-Javadoc)
      * @see org.nexuse2e.service.AbstractService#fillParameterMap(java.util.Map)
@@ -63,6 +65,9 @@ public class SftpSenderService extends AbstractService implements SenderAware {
 
         parameterMap.put( FILE_EXTENSION_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "File extension",
                 "The file extension used in uploads", ".xml" ) );
+
+        parameterMap.put( TEMP_FILE_PARAM_NAME, new ParameterDescriptor( ParameterType.BOOLEAN,
+                "Use temporary file name", "Use temporary file name during upload", Boolean.TRUE ) );
 
         parameterMap.put( APPEND_TIMESTAMP, new ParameterDescriptor( ParameterType.BOOLEAN, "Append Timestamp",
                 "Flag whether to append a timestamp to the filename", Boolean.TRUE ) );
@@ -88,6 +93,12 @@ public class SftpSenderService extends AbstractService implements SenderAware {
         if ( tempFlag != null && tempFlag.equals( Boolean.FALSE ) ) {
             useTimestamp = false;
             LOG.info( "Using base file name - not appending timestamp." );
+        }
+
+        tempFlag = getParameter( TEMP_FILE_PARAM_NAME );
+        if ( tempFlag != null && tempFlag.equals( Boolean.FALSE ) ) {
+            useTempFileName = false;
+            LOG.info( "Not using temporary file name during upload." );
         }
 
         super.initialize( config );
@@ -155,13 +166,18 @@ public class SftpSenderService extends AbstractService implements SenderAware {
                 ByteArrayInputStream bais = new ByteArrayInputStream( messagePayloadPojo.getPayloadData() );
 
                 String newFileName = baseFileName + ( useTimestamp ? sdf.format( new Date() ) : "" ) + fileExtension;
-                String tempFileName = newFileName + ".part";
+                String tempFileName = newFileName;
+                if ( useTempFileName ) {
+                    tempFileName = newFileName + ".part";
+                }
 
                 channelSftp.put( bais, tempFileName );
                 LOG.trace( "Uploaded file: " + tempFileName );
 
-                channelSftp.rename( tempFileName, newFileName );
-                LOG.trace( "Renamed file " + tempFileName + " to " + newFileName );
+                if ( useTempFileName ) {
+                    channelSftp.rename( tempFileName, newFileName );
+                    LOG.trace( "Renamed file " + tempFileName + " to " + newFileName );
+                }
             }
 
         } catch ( Exception e ) {
