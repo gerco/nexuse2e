@@ -31,6 +31,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -59,6 +62,7 @@ public class DataConversionService extends AbstractService {
     public final static String FILL_RIGHT              = "fillRight";
     public final static String STRIP_LEADING           = "stripLeading";
     public final static String CONCAT                  = "concat";
+    public final static String XPATH                   = "xpath";
 
     @Override
     public void fillParameterMap( Map<String, ParameterDescriptor> parameterMap ) {
@@ -91,12 +95,11 @@ public class DataConversionService extends AbstractService {
      * @param definition The mapping definition.
      * @return The converted value.
      */
-    public String processConversion(
-            XPath xPath, Document document, String value, MappingDefinition definition ) {
+    public String processConversion( XPath xPath, Document document, String value, MappingDefinition definition ) {
 
         return processConversion( xPath, document, value, definition, null );
     }
-    
+
     /**
      * Process a conversion operation.
      * @param value The value to be converted
@@ -105,8 +108,8 @@ public class DataConversionService extends AbstractService {
      * May be <code>null</code>.
      * @return The converted value.
      */
-    public String processConversion(
-            String value, MappingDefinition definition, Map<String, String> additionalValues ) {
+    public String processConversion( String value, MappingDefinition definition, Map<String, String> additionalValues ) {
+
         return processConversion( null, null, value, definition, additionalValues );
     }
 
@@ -121,11 +124,7 @@ public class DataConversionService extends AbstractService {
      * May be <code>null</code>.
      * @return The converted value.
      */
-    public String processConversion(
-            XPath xPath,
-            Document document,
-            String value,
-            MappingDefinition definition,
+    public String processConversion( XPath xPath, Document document, String value, MappingDefinition definition,
             Map<String, String> aditionalValues ) {
 
         // We return the unchanged value in case no command was found
@@ -181,13 +180,8 @@ public class DataConversionService extends AbstractService {
         return result;
     }
 
-    private String executeCommand(
-            XPath xPath,
-            Document document,
-            String name,
-            String[] params,
-            MappingDefinition definition,
-            Map<String, String> additionalValues ) {
+    private String executeCommand( XPath xPath, Document document, String name, String[] params,
+            MappingDefinition definition, Map<String, String> additionalValues ) {
 
         if ( name == null ) {
             return null;
@@ -231,9 +225,12 @@ public class DataConversionService extends AbstractService {
         } else if ( name.equals( STRIP_LEADING ) ) {
             LOG.trace( "dispatching: stripLeading" );
             return processStripLeading( params, definition, additionalValues );
-        } else if (name.equals( CONCAT )) {
+        } else if ( name.equals( CONCAT ) ) {
             LOG.trace( "dispatching: concat" );
             return processConcat( xPath, document, params, definition, additionalValues );
+        } else if ( name.equals( XPATH ) ) {
+            LOG.trace( "dispatching: xpath" );
+            return processXPath( xPath, document, params, definition, additionalValues );
         } else {
             LOG.trace( "Method: " + name + " is not a valid conversion method!" );
         }
@@ -438,12 +435,12 @@ public class DataConversionService extends AbstractService {
             Map<String, String> aditionalValues ) {
 
         String n;
-        if (left) {
+        if ( left ) {
             n = "fillLeft";
         } else {
             n = "fillRight";
         }
-        
+
         if ( params == null || params.length < 2 ) {
             LOG.error( n + " requires at least 2 parameters: fillLeft[char,count]" );
             return null;
@@ -452,25 +449,25 @@ public class DataConversionService extends AbstractService {
             String value = aditionalValues.get( "$value" );
             if ( !StringUtils.isEmpty( value ) ) {
                 String character = stripParameter( params[0] );
-                if (StringUtils.isEmpty( character )) {
-                    LOG.error( n +": char parameter must not be empty" );
+                if ( StringUtils.isEmpty( character ) ) {
+                    LOG.error( n + ": char parameter must not be empty" );
                     return null;
                 }
                 char c = character.charAt( 0 );
                 int count = 0;
                 try {
                     count = Integer.parseInt( stripParameter( params[1] ) );
-                } catch (NumberFormatException nfex) {
+                } catch ( NumberFormatException nfex ) {
                     LOG.error( n + ": invalid count parameter: " + params[1] );
                     return null;
                 }
                 int fillLen = count - value.length();
-                if (fillLen > 0) {
+                if ( fillLen > 0 ) {
                     char[] filler = new char[fillLen];
-                    for (int i = 0; i < filler.length; i++) {
+                    for ( int i = 0; i < filler.length; i++ ) {
                         filler[i] = c;
                     }
-                    if (left) {
+                    if ( left ) {
                         value = new String( filler ) + value;
                     } else {
                         value += new String( filler );
@@ -486,54 +483,79 @@ public class DataConversionService extends AbstractService {
 
     private String processStripLeading( String[] params, MappingDefinition definition,
             Map<String, String> aditionalValues ) {
+
         if ( params == null || params.length < 1 ) {
             LOG.error( "stripLeading requires at least one parameters: stripLeading[char]" );
             return null;
         }
 
         String value = aditionalValues.get( "$value" );
-        if (value != null) {
+        if ( value != null ) {
             String character = stripParameter( params[0] );
-            if (StringUtils.isEmpty( character )) {
+            if ( StringUtils.isEmpty( character ) ) {
                 LOG.error( "stripLeading: char parameter must not be empty" );
                 return null;
             }
             char c = character.charAt( 0 );
             int offset;
             char[] chars = value.toCharArray();
-            for (offset = 0; offset < chars.length && chars[offset] == c; offset++);
+            for ( offset = 0; offset < chars.length && chars[offset] == c; offset++ )
+                ;
             value = new String( chars, offset, chars.length - offset );
         }
         return value;
     }
 
-    private String processConcat(
-            XPath xPath,
-            Document document,
-            String[] params,
-            MappingDefinition definition,
+    private String processConcat( XPath xPath, Document document, String[] params, MappingDefinition definition,
             Map<String, String> aditionalValues ) {
 
-        if (xPath == null || document == null) {
+        if ( xPath == null || document == null ) {
             LOG.error( "concat can only be executed on XML documents" );
         }
         try {
             String value = aditionalValues.get( "$value" );
             if ( !StringUtils.isEmpty( value ) ) {
                 StringBuilder sb = new StringBuilder( value );
-                if (params != null) {
-                    for (String parameter : params) {
+                if ( params != null ) {
+                    for ( String parameter : params ) {
                         String xPathStatement = stripParameter( parameter );
                         sb.append( xPath.evaluate( xPathStatement, document ) );
                     }
                 }
-                
+
                 return sb.toString();
             }
         } catch ( Exception e ) {
             LOG.error( "Error while replacing String: " + e );
         }
         return null;
+    }
+
+    private String processXPath( XPath xPath, Document document, String[] params, MappingDefinition definition,
+            Map<String, String> aditionalValues ) {
+
+        Object xPathResult = null;
+
+        if ( params == null || params.length < 1 ) {
+            LOG.error( "xpath requires at least one parameters: xpath[xpath statement]" );
+            return null;
+        }
+
+        XPath xPathObj = XPathFactory.newInstance().newXPath();
+        try {
+            String xPathStatement = stripParameter( params[0] );
+            LOG.trace( "Executing XPATH: " + xPathStatement );
+            xPathResult = xPathObj.evaluate( xPathStatement, document, XPathConstants.STRING );
+        } catch ( XPathExpressionException e ) {
+            LOG.error( "Error executing XPath statement: " + e );
+            e.printStackTrace();
+        }
+        if ( !( xPathResult instanceof String ) ) {
+            LOG.error( "XPath did not return String result: " + xPathResult );
+            return null;
+        }
+
+        return (String) xPathResult;
     }
 
     /**
@@ -640,7 +662,8 @@ public class DataConversionService extends AbstractService {
     private String processDateFormat( String[] params, MappingDefinition definition, Map<String, String> aditionalValues ) {
 
         if ( params == null || params.length < 2 ) {
-            LOG.error( "dateformat requires at least 2 parameters: dateformat['sourceformat','targetformat'], third parameter timezone is optional. '-0300' or 'local'" );
+            LOG
+                    .error( "dateformat requires at least 2 parameters: dateformat['sourceformat','targetformat'], third parameter timezone is optional. '-0300' or 'local'" );
             return null;
         }
 
@@ -651,36 +674,35 @@ public class DataConversionService extends AbstractService {
                     date = new Date();
                 }
             } else {
-                String dateValue = aditionalValues.get( "$value" ).trim() ;
-                
-                
+                String dateValue = aditionalValues.get( "$value" ).trim();
+
                 // TODO: configurable  ?
-                
-                if(dateValue.substring( dateValue.length()-3 ).startsWith( ":" )) {
+
+                if ( dateValue.substring( dateValue.length() - 3 ).startsWith( ":" ) ) {
                     LOG.info( "dateValue needs to be modified, unparesable ':' in timezone found" );
-                    String newDate = dateValue.substring( 0,dateValue.length()-3 )+dateValue.substring( dateValue.length()-2 );
+                    String newDate = dateValue.substring( 0, dateValue.length() - 3 )
+                            + dateValue.substring( dateValue.length() - 2 );
                     dateValue = newDate;
                 }
-                
+
                 // TODO configurable  ?
-                if(dateValue.endsWith( "Z" )) {
-                    LOG.info( "dateValue ends with Z. UTC is expected and Z is replaced with '-0000'");
-                    String newDate = dateValue.substring( 0,dateValue.length()-1 )+"+0000";
+                if ( dateValue.endsWith( "Z" ) ) {
+                    LOG.info( "dateValue ends with Z. UTC is expected and Z is replaced with '-0000'" );
+                    String newDate = dateValue.substring( 0, dateValue.length() - 1 ) + "+0000";
                     dateValue = newDate;
                 }
-                
-                
+
                 String datePattern = stripParameter( params[0] );
                 SimpleDateFormat sourceFormat = new SimpleDateFormat( datePattern );
                 date = sourceFormat.parse( dateValue );
             }
             SimpleDateFormat targetFormat = new SimpleDateFormat( stripParameter( params[1] ) );
-            
-            if(params.length > 2) {
-                System.out.println("timezone transformation: "+params[2] );
+
+            if ( params.length > 2 ) {
+                System.out.println( "timezone transformation: " + params[2] );
                 String timezone = stripParameter( params[2] );
-                if(!StringUtils.isEmpty( timezone )) {
-                    if(timezone.toLowerCase().equals( "local" )) {
+                if ( !StringUtils.isEmpty( timezone ) ) {
+                    if ( timezone.toLowerCase().equals( "local" ) ) {
                         // SimpleDateFormat uses server local time as base.
                     } else {
                         TimeZone zone = TimeZone.getTimeZone( timezone );
@@ -688,8 +710,7 @@ public class DataConversionService extends AbstractService {
                     }
                 }
             }
-            
-            
+
             return targetFormat.format( date );
         } catch ( ParseException e ) {
             // TODO Auto-generated catch block

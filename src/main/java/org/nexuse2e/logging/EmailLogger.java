@@ -23,6 +23,7 @@ package org.nexuse2e.logging;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
@@ -32,6 +33,8 @@ import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.pojo.ChoreographyPojo;
+import org.nexuse2e.pojo.ConversationPojo;
 import org.nexuse2e.service.Service;
 import org.nexuse2e.service.mail.SmtpSender;
 
@@ -41,14 +44,17 @@ import org.nexuse2e.service.mail.SmtpSender;
  */
 public class EmailLogger extends AbstractLogger {
 
-    private static Logger       LOG                 = Logger.getLogger( EmailLogger.class );
-    private static final String SERVICE_PARAM_NAME  = "service";
-    private static final String RECIPIENT_PARAM     = "recipient";
-    private static final String SUBJECT_PARAM       = "subject";
+    private static Logger       LOG                       = Logger.getLogger( EmailLogger.class );
+    private static final String SERVICE_PARAM_NAME        = "service";
+    private static final String RECIPIENT_PARAM           = "recipient";
+    private static final String SUBJECT_PARAM             = "subject";
+    private static final String CHOREOGRAPHY_FILTER_PARAM = "choreographyFilter";
 
-    private String              serviceName         = null;
-    private String              recipient           = null;
-    private String              subject             = null;
+    private String              serviceName               = null;
+    private String              recipient                 = null;
+    private String              subject                   = null;
+    private String              choreographyFilter        = null;
+    private boolean             checkChoreography         = false;
 
     /**
      * Default constructor.
@@ -63,6 +69,8 @@ public class EmailLogger extends AbstractLogger {
                 "The recipient(s) of the email", "" ) );
         parameterMap.put( SUBJECT_PARAM, new ParameterDescriptor( ParameterType.STRING, "Subject",
                 "The subject line of the email", "" ) );
+        parameterMap.put( CHOREOGRAPHY_FILTER_PARAM, new ParameterDescriptor( ParameterType.STRING,
+                "Choreography Filter", "The ID of a choreography to display messages for", "" ) );
         status = BeanStatus.INSTANTIATED;
     }
 
@@ -74,6 +82,7 @@ public class EmailLogger extends AbstractLogger {
         String serviceName = getParameter( SERVICE_PARAM_NAME );
         String recipient = getParameter( RECIPIENT_PARAM );
         String subject = getParameter( SUBJECT_PARAM );
+        String choreography = getParameter( CHOREOGRAPHY_FILTER_PARAM );
 
         if ( ( serviceName == null ) && ( serviceName.trim().length() == 0 ) ) {
             LOG.error( "EmailLogger.initialize(): Service name not specified. Please check your configuration" );
@@ -89,20 +98,26 @@ public class EmailLogger extends AbstractLogger {
             return;
         }
 
+        if ( !StringUtils.isEmpty( choreography ) ) {
+            LOG.info( "EmailLogger.initialize(): Filtering on choreography: " + choreography );
+            choreographyFilter = choreography;
+            checkChoreography = true;
+        }
+
         this.serviceName = serviceName;
         this.recipient = recipient;
         this.subject = subject;
 
         status = BeanStatus.INITIALIZED;
     }
-    
+
     private SmtpSender findService() {
 
         SmtpSender smtpSender = null;
 
         if ( serviceName != null && serviceName.trim().length() > 0 ) {
             EngineConfiguration engineConfiguration = Engine.getInstance().getCurrentConfiguration();
-            if (engineConfiguration != null) {
+            if ( engineConfiguration != null ) {
                 Service service = engineConfiguration.getStaticBeanContainer().getService( serviceName );
                 if ( service == null ) {
                     LOG.error( "EmailLogger.initialize(): Service \"" + serviceName
@@ -130,6 +145,9 @@ public class EmailLogger extends AbstractLogger {
     @Override
     protected void append( LoggingEvent loggingEvent ) {
 
+        ChoreographyPojo choreographyPojo = null;
+        boolean matchedChoreography = false;
+
         if ( status != BeanStatus.ACTIVATED ) {
             return;
         }
@@ -142,18 +160,40 @@ public class EmailLogger extends AbstractLogger {
             return;
         }
 
-        SmtpSender smtpSender = findService();
-        if ( smtpSender != null ) {
-            if (smtpSender.getStatus() == BeanStatus.STARTED) {
+        if ( checkChoreography && ( loggingEvent.getMessage() instanceof LogMessage ) ) {
+            LogMessage logMessage = (LogMessage) loggingEvent.getMessage();
+            if ( logMessage.getConversationId() != null ) {
+                ConversationPojo conversationPojo;
                 try {
-                    smtpSender.sendMessage( recipient, subject, loggingEvent.getRenderedMessage() );
+                    conversationPojo = Engine.getInstance().getTransactionService().getConversation(
+                            logMessage.getConversationId() );
+                    if ( conversationPojo != null ) {
+                        choreographyPojo = conversationPojo.getChoreography();
+                        if ( choreographyPojo != null ) {
+                            matchedChoreography = choreographyFilter.equals( choreographyPojo.getName() );
+                        }
+                    }
                 } catch ( NexusException e ) {
-                    System.err.println( "Error sending log email: " + e );
-                    e.printStackTrace();
+                    System.err.println( "Error identifying choreography when filtering email notification: " + e );
                 }
             }
-        } else {
-            System.err.println( "SMTP service not available!" );
+        }
+
+        if ( !checkChoreography || matchedChoreography ) {
+
+            SmtpSender smtpSender = findService();
+            if ( smtpSender != null ) {
+                if ( smtpSender.getStatus() == BeanStatus.STARTED ) {
+                    try {
+                        smtpSender.sendMessage( recipient, subject, loggingEvent.getRenderedMessage() );
+                    } catch ( NexusException e ) {
+                        System.err.println( "Error sending log email: " + e );
+                        e.printStackTrace();
+                    }
+                }
+            } else {
+                System.err.println( "SMTP service not available!" );
+            }
         }
 
     }

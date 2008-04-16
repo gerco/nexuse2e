@@ -60,6 +60,7 @@ import org.bouncycastle.mail.smime.SMIMEEnvelopedGenerator;
 import org.bouncycastle.mail.smime.SMIMESignedGenerator;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.configuration.ListParameter;
@@ -166,6 +167,11 @@ public class SmtpSender extends AbstractService implements SenderAware {
 
         Session session = null;
         Transport transport = null;
+        
+        if ( BeanStatus.STARTED != status ) {
+            LOG.warn( "SMTP service not started!" );
+            return;
+        }
 
         try {
             ParticipantPojo participant = messageContext.getParticipant();
@@ -405,6 +411,11 @@ public class SmtpSender extends AbstractService implements SenderAware {
         Session session = null;
         Transport transport = null;
 
+        if ( BeanStatus.STARTED != status ) {
+            LOG.warn( "SMTP service not started!" );
+            return;
+        }
+
         try {
             ParticipantPojo p = messagePipelineParameter.getParticipant();
             String emailAddr = p.getConnection().getUri();
@@ -459,6 +470,11 @@ public class SmtpSender extends AbstractService implements SenderAware {
         Session session = null;
         Transport transport = null;
 
+        if ( BeanStatus.STARTED != status ) {
+            LOG.warn( "SMTP service not started!" );
+            return;
+        }
+
         try {
             Object[] connectionInfo = connect( (String) getParameter( HOST_PARAM_NAME ),
                     (String) getParameter( USER_PARAM_NAME ),
@@ -492,6 +508,11 @@ public class SmtpSender extends AbstractService implements SenderAware {
     }
 
     private void sendMessage( Transport transport, Message message, Address[] addresses ) throws MessagingException {
+
+        if ( BeanStatus.STARTED != status ) {
+            LOG.warn( "SMTP service not started!" );
+            return;
+        }
 
         if ( transport != null ) {
             if ( !transport.isConnected() ) {
