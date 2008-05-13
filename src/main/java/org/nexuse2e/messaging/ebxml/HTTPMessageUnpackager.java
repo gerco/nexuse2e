@@ -206,10 +206,10 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
                         + mimeMessage.getContentType() );
             } // if
         } catch ( javax.mail.MessagingException mEx ) {
-            LOG.error( "Error reading message: " + mEx, mEx );
+            LOG.error( "Error reading message: " + mEx + ( ( data != null ) ? "\n" + new String( data ) : "" ), mEx );
             throw new IllegalArgumentException( mEx.toString() );
         } catch ( IOException ioEx ) {
-            LOG.error( "Error reading message: " + ioEx, ioEx );
+            LOG.error( "Error reading message: " + ioEx + ( ( data != null ) ? "\n" + new String( data ) : "" ), ioEx );
             throw new IllegalArgumentException( ioEx.toString() );
         }
 

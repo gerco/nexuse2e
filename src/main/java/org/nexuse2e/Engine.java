@@ -344,6 +344,8 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                     status = BeanStatus.ERROR;
                     return;
                 }
+            } else {
+                currentConfiguration.init();
             }
 
             // Add transaction service to static beans so its life cylcle is managed correctly

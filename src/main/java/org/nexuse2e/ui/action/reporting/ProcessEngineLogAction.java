@@ -102,7 +102,7 @@ public class ProcessEngineLogAction extends ReportingAction {
 
             if ( dir == null || dir.equals( "" ) || dir.equals( "first" ) || dir.equals( "engine" ) ) {
                 int pos = form.getStartCount();
-                if ( pos == 0 || !dir.equals( "engine" ) ) {
+                if ( pos == 0 || ( !"engine".equals( dir ) ) ) {
                     reportMessages = Engine.getInstance().getTransactionService().getLogEntriesForReport( severity,
                             messageText, startDate, endDate, form.getPageSize(), 0, LogDAO.SORT_CREATED, false, null,
                             null );

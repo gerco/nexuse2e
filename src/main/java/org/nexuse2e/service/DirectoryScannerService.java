@@ -390,7 +390,7 @@ public class DirectoryScannerService extends AbstractService implements Schedule
         File killFileObject = new File( killFile );
 
         if ( killFileObject.delete() ) {
-            LOG.error( "File " + killFile + " deleted." );
+            LOG.debug( "File " + killFile + " deleted." );
         } else {
             LOG.error( "File " + killFile + " could not be deleted." );
         }

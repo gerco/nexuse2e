@@ -193,7 +193,8 @@ public class HttpReceiverService extends AbstractControllerService implements Re
                 soapMessage.writeTo( response.getOutputStream() );
                 response.setContentType( "text/xml" );
             } catch ( Exception e ) {
-                response.sendError( 500, "NEXUSe2e - Processing error error creating SOAPFault " + e );
+                LOG.error( "NEXUSe2e - Processing error creating SOAPFault " + e );
+                response.sendError( 500, "NEXUSe2e - Processing error creating SOAPFault " + e );
             }
         } else {
             response.sendError( 500, "NEXUSe2e - Processing error: " + message );
