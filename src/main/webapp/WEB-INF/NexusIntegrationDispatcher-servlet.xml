@@ -7,6 +7,7 @@
                 /http=httpIntegrationController
                 /debug=debugController
                 /engineStatus=engineStatusController
+                /engineHTTPStatus=engineHTTPStatusController
             </value>
         </property>
     </bean>

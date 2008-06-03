@@ -64,6 +64,7 @@
   <bean id="httpIntegrationController" class="org.nexuse2e.integration.HTTPIntegrationController"></bean>
   <bean id="debugController" class="org.nexuse2e.integration.DebugController"></bean>
   <bean id="engineStatusController" class="org.nexuse2e.integration.EngineStatusController"></bean>
+  <bean id="engineHTTPStatusController" class="org.nexuse2e.integration.EngineHTTPStatusController"></bean>
 
   <!-- ********************************************** -->
   <!-- Web services                                   -->
