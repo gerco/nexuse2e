@@ -52,13 +52,13 @@ import org.xml.sax.InputSource;
  */
 public class XmlSchemaValidationPipelet extends AbstractPipelet {
 
-    private static Logger            LOG              = Logger.getLogger( XmlSchemaValidationPipelet.class );
+    private static Logger         LOG                = Logger.getLogger( XmlSchemaValidationPipelet.class );
 
-    protected static final String    SCHEMA_FILE_PATH = "schemaFilePath";
-    protected static final String    VALIDATION_ENABLED = "validationEnabled";
+    protected static final String SCHEMA_FILE_PATH   = "schemaFilePath";
+    protected static final String VALIDATION_ENABLED = "validationEnabled";
 
-    protected String                 schemaFilePath;
-    protected Map<String, Schema> schemas       = new HashMap<String, Schema>();
+    protected String              schemaFilePath;
+    protected Map<String, Schema> schemas            = new HashMap<String, Schema>();
 
     public XmlSchemaValidationPipelet() {
 
@@ -102,7 +102,7 @@ public class XmlSchemaValidationPipelet extends AbstractPipelet {
             IllegalStateException, NexusException {
 
         Boolean enabled = getParameter( VALIDATION_ENABLED );
-        
+
         if ( enabled != null && enabled.booleanValue() && !StringUtils.isEmpty( schemaFilePath ) ) {
             // get message payloads
             List<MessagePayloadPojo> payloads = messageContext.getMessagePojo().getMessagePayloads();
@@ -112,8 +112,8 @@ public class XmlSchemaValidationPipelet extends AbstractPipelet {
             for ( MessagePayloadPojo pojo : payloads ) {
 
                 String tempFilePath = ServerPropertiesUtil.replaceServerProperties( schemaFilePath, messageContext );
-                tempFilePath = ServerPropertiesUtil.replacePayloadDependedValues(
-                        tempFilePath, pojo.getSequenceNumber(), messageContext );
+                tempFilePath = ServerPropertiesUtil.replacePayloadDependedValues( tempFilePath, pojo
+                        .getSequenceNumber(), messageContext );
 
                 Schema schema = schemas.get( tempFilePath );
 
@@ -121,7 +121,7 @@ public class XmlSchemaValidationPipelet extends AbstractPipelet {
                     SchemaFactory factory = SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );
                     try {
                         schema = factory.newSchema( new File( tempFilePath ) );
-                        
+
                         schemas.put( tempFilePath, schema );
                     } catch ( Exception e ) {
                         throw new NexusException( "Error reading XML Schema file: " + tempFilePath + ". Cause: "
@@ -130,10 +130,10 @@ public class XmlSchemaValidationPipelet extends AbstractPipelet {
                 }
 
                 try {
-                    
+
                     Validator validator = schema.newValidator();
                     LOG.debug( "Using XML Schema: " + tempFilePath );
-                    
+
                     InputSource inputSource = new InputSource( new ByteArrayInputStream( pojo.getPayloadData() ) );
                     DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
                     documentBuilderFactory.setNamespaceAware( true );

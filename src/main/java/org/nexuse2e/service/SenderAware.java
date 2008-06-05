@@ -47,5 +47,5 @@ public interface SenderAware {
      * @param message The message to be sent.
      * @throws NexusException if the message could not be sent for any reason.
      */
-    public void sendMessage( MessageContext message ) throws NexusException;
+    public MessageContext sendMessage( MessageContext message ) throws NexusException;
 }

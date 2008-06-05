@@ -41,9 +41,8 @@ public class FtpSenderService extends AbstractService implements SenderAware {
     /* (non-Javadoc)
      * @see org.nexuse2e.service.SenderAware#sendMessage(org.nexuse2e.messaging.MessageContext)
      */
-    public void sendMessage( MessageContext message ) throws NexusException {
-        // TODO Auto-generated method stub
-        
+    public MessageContext sendMessage( MessageContext message ) throws NexusException {
+        return null;
     }
 
     /* (non-Javadoc)

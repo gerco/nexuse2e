@@ -90,7 +90,7 @@ public class HttpSenderService extends AbstractService implements SenderAware {
         this.transportSender = transportSender;
     }
 
-    public void sendMessage( MessageContext messageContext ) throws NexusException {
+    public MessageContext sendMessage( MessageContext messageContext ) throws NexusException {
 
         ParticipantPojo participant = messageContext.getParticipant();
         int timeout = participant.getConnection().getTimeout() * 1000;
@@ -269,6 +269,8 @@ public class HttpSenderService extends AbstractService implements SenderAware {
             LOG.warn( new LogMessage( "Message submission failed: " + ex, messageContext.getMessagePojo() ) );
             throw new NexusException( "Message submission failed: " + ex );
         }
+        
+        return null;
     }
 
     /**

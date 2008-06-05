@@ -21,6 +21,7 @@ package org.nexuse2e.configuration;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,8 +41,16 @@ import org.nexuse2e.service.Service;
  */
 
 public class StaticBeanContainer {
+    
+    private Map<String, Manageable> managableBeans = new HashMap<String, Manageable>( 100 );
 
-    private Map<String, Manageable> managableBeans = null;
+    /*
+    public StaticBeanContainer() {
+        // HashMap<String, Manageable> beanContainer = new LinkedHashMap<String, Manageable>();
+        HashMap<String, Manageable> beanContainer = new HashMap<String, Manageable>( 100 );
+        setManagableBeans( beanContainer );
+    }
+    */
 
     /**
      * @return the managableBeans

@@ -163,14 +163,14 @@ public class SmtpSender extends AbstractService implements SenderAware {
         this.transportSender = transportSender;
     }
 
-    public void sendMessage( MessageContext messageContext ) throws NexusException {
+    public MessageContext sendMessage( MessageContext messageContext ) throws NexusException {
 
         Session session = null;
         Transport transport = null;
         
         if ( BeanStatus.STARTED != status ) {
             LOG.warn( "SMTP service not started!" );
-            return;
+            return null;
         }
 
         try {
@@ -217,6 +217,8 @@ public class SmtpSender extends AbstractService implements SenderAware {
             LOG.error( "Error sending SMTP message: " + ex );
             throw new NexusException( ex.getMessage() );
         }
+        
+        return null;
     }
 
     private Object[] connect( String host, String user, String password, String port ) throws Exception {

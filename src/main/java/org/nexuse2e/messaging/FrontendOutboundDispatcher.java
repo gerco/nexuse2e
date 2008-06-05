@@ -216,6 +216,9 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
 
             if ( retryCount <= retries ) {
                 LOG.debug( new LogMessage( "Sending message...", messagePojo ) );
+
+                MessageContext returnedMessageContext = null;
+
                 try {
                     retryCount++;
                     if ( messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_NORMAL
@@ -227,7 +230,7 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                     }
                     // Send message
                     messageContext.getMessagePojo().setRetries( retryCount - 1 );
-                    messageContext = pipeline.processMessage( messageContext );
+                    returnedMessageContext = pipeline.processMessage( messageContext );
 
                     messageContext.getStateMachine().sentMessage();
 
@@ -238,12 +241,22 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                         Engine.getInstance().getTransactionService().updateTransaction( messagePojo );
                     } catch ( NexusException e1 ) {
                         LOG.error( new LogMessage( "Error saving message: " + e1, messagePojo ) );
-                    } catch (StateTransitionException stex) {
+                    } catch ( StateTransitionException stex ) {
                         LOG.warn( stex.getMessage() );
                     }
 
                     LOG.error( new LogMessage( "Error sending message: " + e, messagePojo ), e );
                 }
+
+                if ( ( returnedMessageContext != null ) && !returnedMessageContext.equals( messageContext ) ) {
+                    try {
+                        Engine.getInstance().getCurrentConfiguration().getStaticBeanContainer()
+                                .getFrontendInboundDispatcher().processMessage( returnedMessageContext );
+                    } catch ( NexusException e ) {
+                        LOG.error( "Error processing synchronous reply: " + e );
+                    }
+                }
+
             } else {
                 if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
                     LOG.error( new LogMessage(
@@ -276,9 +289,9 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                 if ( updateStatus ) {
                     try {
                         messageContext.getStateMachine().processingFailed();
-                    } catch (StateTransitionException stex) {
+                    } catch ( StateTransitionException stex ) {
                         LOG.warn( stex.getMessage() );
-                    } catch (NexusException e) {
+                    } catch ( NexusException e ) {
                         LOG.error( "Error while setting conversation status to ERROR", e );
                     }
                 }

@@ -847,7 +847,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
             try {
                 LOG.debug( "Initialize new configuration" );
                 this.currentConfiguration = newConfiguration;
-                newConfiguration.init();
+                // newConfiguration.init();
             } catch ( Exception e ) {
                 LOG.error( "Error initializing configuration: " + e );
                 e.printStackTrace();

@@ -153,6 +153,23 @@ public class MessageLabelPojo implements NEXUSe2ePojo {
     }
 
     /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        MessageLabelPojo clonedMessageLabelPojo = new MessageLabelPojo();
+        
+        clonedMessageLabelPojo.setLabel( label );
+        clonedMessageLabelPojo.setValue( value );
+        clonedMessageLabelPojo.setCreatedDate( createdDate );
+        clonedMessageLabelPojo.setModifiedDate( modifiedDate );
+        clonedMessageLabelPojo.setModifiedNxUserId( modifiedNxUserId );
+        clonedMessageLabelPojo.setMessage( message );
+        
+        return clonedMessageLabelPojo;
+    }
+    
+    /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override

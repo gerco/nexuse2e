@@ -198,7 +198,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
     public EngineConfiguration() {
 
         timestamp = new Date().getTime();
-        createStaticBeanContainer();
+        staticBeanContainer = new StaticBeanContainer();
         initLoggerCategories();
     }
 
@@ -297,6 +297,9 @@ public class EngineConfiguration implements ConfigurationAccessService {
      * @throws NexusException If the initialization failed.
      */
     public void init() throws NexusException {
+
+        initStaticBeanContainer();
+
         ProtocolAdapter[] protocolAdapters = new ProtocolAdapter[getTrps().size()];
         int index = 0;
         for ( TRPPojo trpPojo : getTrps() ) {
@@ -322,7 +325,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
         backendOutboundDispatcher.setProtocolAdapters( protocolAdapters );
 
         initializeLogAppenders();
-
+        
         createConfiguration();
     }
 
@@ -441,12 +444,14 @@ public class EngineConfiguration implements ConfigurationAccessService {
      * @throws InstantiationException 
      * 
      */
-    public void createStaticBeanContainer() {
+    public void initStaticBeanContainer() {
 
-        staticBeanContainer = new StaticBeanContainer();
-        HashMap<String, Manageable> beanContainer = new LinkedHashMap<String, Manageable>();
+        /*
+        // HashMap<String, Manageable> beanContainer = new LinkedHashMap<String, Manageable>();
+        HashMap<String, Manageable> beanContainer = new HashMap<String, Manageable>( 100 );
         staticBeanContainer.setManagableBeans( beanContainer );
-
+        */
+        staticBeanContainer.getManagableBeans().clear();
 
         staticBeanContainer.getManagableBeans().put( org.nexuse2e.Constants.FRONTEND_INBOUND_DISPATCHER,
                 new FrontendInboundDispatcher() );

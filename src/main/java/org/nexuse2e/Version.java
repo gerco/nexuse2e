@@ -21,13 +21,13 @@ package org.nexuse2e;
 
 public class Version {
 
-    private static final String  SUBVERSION_REVISION = "670";
-    private static final String  SUBVERSION_DATE     = "2008/04/11 11:16:17";
+    private static final String  SUBVERSION_REVISION = "681";
+    private static final String  SUBVERSION_DATE     = "2008/06/03 18:01:47";
     private static final boolean BETA                = false;
     private static final int     BETA_VERSION        = 1;
     private static final boolean RC                  = false;
     private static final int     RC_VERSION          = 1;
-    private static final String  VERSION             = "4.1.1" + ( BETA ? " BETA-" + BETA_VERSION :  ( RC ? " RC-" + RC_VERSION : "" ) ) + ", Build "
+    private static final String  VERSION             = "4.1.2" + ( BETA ? " BETA-" + BETA_VERSION :  ( RC ? " RC-" + RC_VERSION : "" ) ) + ", Build "
                                                              + SUBVERSION_REVISION + " (" + SUBVERSION_DATE + ")";
 
     public static String getVersion() {

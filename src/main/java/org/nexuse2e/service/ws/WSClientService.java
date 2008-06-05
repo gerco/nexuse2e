@@ -110,7 +110,7 @@ public class WSClientService extends AbstractService implements SenderAware {
         return transportSender;
     }
 
-    public void sendMessage( MessageContext messageContext ) throws NexusException {
+    public MessageContext sendMessage( MessageContext messageContext ) throws NexusException {
 
         if ( getStatus() != BeanStatus.STARTED ) {
             throw new NexusException( "Service " + getClass().getSimpleName() + " not started" );
@@ -184,6 +184,8 @@ public class WSClientService extends AbstractService implements SenderAware {
                 theCidxDocumentService.processCidxDocument( new String( payload.getPayloadData() ) );
             }
         }
+        
+        return null;
     }
 
     public void setTransportSender( TransportSender transportSender ) {

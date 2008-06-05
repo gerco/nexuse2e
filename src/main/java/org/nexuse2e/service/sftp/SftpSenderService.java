@@ -107,7 +107,7 @@ public class SftpSenderService extends AbstractService implements SenderAware {
     /* (non-Javadoc)
      * @see org.nexuse2e.service.SenderAware#sendMessage(org.nexuse2e.messaging.MessageContext)
      */
-    public void sendMessage( MessageContext messageContext ) throws NexusException {
+    public MessageContext sendMessage( MessageContext messageContext ) throws NexusException {
 
         JSch jsch = new JSch();
         ChannelSftp channelSftp = null;
@@ -188,6 +188,8 @@ public class SftpSenderService extends AbstractService implements SenderAware {
                 channelSftp.disconnect();
             }
         }
+        
+        return null;
     }
 
     /* (non-Javadoc)

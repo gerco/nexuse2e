@@ -92,22 +92,22 @@ public class ServerPropertiesUtil {
                 }
                 if ( context != null ) {
                     if ( property.equals( ServerProperty.PARTNERID ) ) {
-                        if ( context.getPartner() != null ) {
-                            String partnerId = context.getPartner().getPartnerId();
+                        if ( context.getMessagePojo().getParticipant().getPartner() != null ) {
+                            String partnerId = context.getMessagePojo().getParticipant().getPartner().getPartnerId();
                             if ( !StringUtils.isEmpty( partnerId ) ) {
                                 value = StringUtils.replace( value, property.getValue(), partnerId );
                             }
                         }
                     } else if ( property.equals( ServerProperty.PARTNERNAME ) ) {
-                        if ( context.getPartner() != null ) {
-                            String partnerName = context.getPartner().getName();
+                        if ( context.getMessagePojo().getParticipant().getPartner() != null ) {
+                            String partnerName = context.getMessagePojo().getParticipant().getPartner().getName();
                             if ( !StringUtils.isEmpty( partnerName ) ) {
                                 value = StringUtils.replace( value, property.getValue(), partnerName );
                             }
                         }
                     } else if ( property.equals( ServerProperty.CHOREOGRAPHY ) ) {
-                        if ( context.getChoreography() != null ) {
-                            String choreography = context.getChoreography().getName();
+                        if ( context.getMessagePojo().getConversation().getChoreography() != null ) {
+                            String choreography = context.getMessagePojo().getConversation().getChoreography().getName();
                             if ( !StringUtils.isEmpty( choreography ) ) {
                                 value = StringUtils.replace( value, property.getValue(), choreography );
                             }

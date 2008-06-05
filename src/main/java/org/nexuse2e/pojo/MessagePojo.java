@@ -132,7 +132,13 @@ public class MessagePojo implements NEXUSe2ePojo {
         clonedMessagePojo.setExpirationDate( expirationDate );
         clonedMessagePojo.setHeaderData( headerData != null ? headerData.clone() : null );
         clonedMessagePojo.setMessageId( messageId );
-        clonedMessagePojo.setMessageLabels( messageLabels );
+        List<MessageLabelPojo> clonedMessageLabels = new ArrayList<MessageLabelPojo>();
+        for ( MessageLabelPojo messageLabelPojo : clonedMessageLabels ) {
+            MessageLabelPojo clonedMessageLabelPojo = (MessageLabelPojo)messageLabelPojo.clone();
+            clonedMessageLabelPojo.setMessage( clonedMessagePojo );
+            clonedMessageLabels.add( clonedMessageLabelPojo );
+        }
+        clonedMessagePojo.setMessageLabels( clonedMessageLabels );
         List<MessagePayloadPojo> clonedMessagePayloads = new ArrayList<MessagePayloadPojo>();
         for ( MessagePayloadPojo messagePayload : messagePayloads ) {
             MessagePayloadPojo clonedMessagePayload = (MessagePayloadPojo)messagePayload.clone();

@@ -228,7 +228,8 @@ abstract public class AbstractPipeline implements Pipeline {
                 }
             }
         }
-        if ( getPipelineEndpoint() != null ) {
+        if ( ( getPipelineEndpoint() != null ) && !( getPipelineEndpoint() instanceof BackendOutboundDispatcher )
+                && !( getPipelineEndpoint() instanceof FrontendInboundDispatcher ) ) {
             ( (Pipelet) getPipelineEndpoint() ).initialize( config );
         }
     }
@@ -254,7 +255,8 @@ abstract public class AbstractPipeline implements Pipeline {
                 }
             }
         }
-        if ( getPipelineEndpoint() != null ) {
+        if ( (getPipelineEndpoint() != null) && !( getPipelineEndpoint() instanceof BackendOutboundDispatcher )
+                && !( getPipelineEndpoint() instanceof FrontendInboundDispatcher )  ) {
             ( (Pipelet) getPipelineEndpoint() ).teardown();
         }
     }
