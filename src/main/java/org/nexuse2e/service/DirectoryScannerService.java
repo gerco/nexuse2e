@@ -22,12 +22,19 @@ package org.nexuse2e.service;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -39,6 +46,7 @@ import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.tools.mapping.xmldata.MappingDefinition;
+import org.w3c.dom.Document;
 
 /**
  * @author mbreilmann
@@ -55,6 +63,7 @@ public class DirectoryScannerService extends AbstractService implements Schedule
     public static final String        DIRECTORY                   = "directory";
     public static final String        BACKUP_DIRECTORY            = "backup_directory";
     public static final String        CHOREOGRAPHY                = "choreography";
+    public static final String        CONVERSATION                = "conversation";
     public static final String        ACTION                      = "action";
     public static final String        PARTNER                     = "partner";
     public final static String        INTERVAL                    = "interval";
@@ -72,6 +81,7 @@ public class DirectoryScannerService extends AbstractService implements Schedule
     private String                    partnerId                   = null;
     private String                    choreographyId              = null;
     private String                    actionId                    = null;
+    private String                    conversationStatement       = null;
     private FilenameFilter            filenameFilter              = null;
 
     private DataConversionService     mappingService              = null;
@@ -100,6 +110,8 @@ public class DirectoryScannerService extends AbstractService implements Schedule
                 "The partner to send the message.", "" ) );
         parameterMap.put( FILTER, new ParameterDescriptor( ParameterType.STRING, "Extension",
                 "File extension to limit processing to.", "" ) );
+        parameterMap.put( CONVERSATION, new ParameterDescriptor( ParameterType.STRING, "Conversation",
+                "The XPATH statement to create the conversation ID to use.", "" ) );
 
         parameterMap.put( MAPPING_SERVICE, new ParameterDescriptor( ParameterType.SERVICE, "Mapping Service",
                 "The Mapping and Conversion Service.", DataConversionService.class ) );
@@ -169,6 +181,11 @@ public class DirectoryScannerService extends AbstractService implements Schedule
             LOG.error( "No value for setting 'partner' provided!" );
         }
 
+        String conversationStatementValue = getParameter( CONVERSATION );
+        if ( ( conversationStatementValue != null ) && ( conversationStatementValue.length() != 0 ) ) {
+            conversationStatement = conversationStatementValue;
+        }
+        
         String filterValue = getParameter( FILTER );
         if ( ( filterValue != null ) && ( filterValue.length() != 0 ) ) {
             filenameFilter = new FilenameExtensionFilter( filterValue );
@@ -185,7 +202,8 @@ public class DirectoryScannerService extends AbstractService implements Schedule
             if ( service != null && service instanceof DataConversionService ) {
                 mappingService = (DataConversionService) service;
             } else {
-                throw new InstantiationException( "the selected serviceName: " + serviceName + " references no valid Data Conversion Service" );
+                throw new InstantiationException( "the selected serviceName: " + serviceName
+                        + " references no valid Data Conversion Service" );
             }
         } else {
             LOG.warn( "no mapping service configured!" );
@@ -201,19 +219,19 @@ public class DirectoryScannerService extends AbstractService implements Schedule
             }
             if ( !( service instanceof SchedulingService ) ) {
                 status = BeanStatus.ERROR;
-                throw new InstantiationException( schedulingServiceName + " is instance of " + service.getClass().getName()
-                        + " but SchedulingService is required" );
+                throw new InstantiationException( schedulingServiceName + " is instance of "
+                        + service.getClass().getName() + " but SchedulingService is required" );
             }
             schedulingService = (SchedulingService) service;
 
         } else {
             status = BeanStatus.ERROR;
-            throw new InstantiationException( "SchedulingService is not properly configured (schedulingServiceObj == null)!" );
+            throw new InstantiationException(
+                    "SchedulingService is not properly configured (schedulingServiceObj == null)!" );
         }
 
-        backendPipelineDispatcher =
-            (BackendPipelineDispatcher)
-            Engine.getInstance().getCurrentConfiguration().getStaticBeanContainer().getBackendPipelineDispatcher();
+        backendPipelineDispatcher = (BackendPipelineDispatcher) Engine.getInstance().getCurrentConfiguration()
+                .getStaticBeanContainer().getBackendPipelineDispatcher();
 
         super.initialize( config );
     }
@@ -304,6 +322,7 @@ public class DirectoryScannerService extends AbstractService implements Schedule
     private void processFile( String newFile ) throws Exception {
 
         byte[] fileBuffer = null;
+        String conversationId = null;
 
         if ( ( newFile != null ) && ( newFile.length() != 0 ) ) {
             try {
@@ -341,7 +360,8 @@ public class DirectoryScannerService extends AbstractService implements Schedule
                 String tempPartnerId = partnerId;
                 if ( partnerId.startsWith( "${" ) ) {
                     if ( mappingService == null ) {
-                        LOG.error( "no valid Mapping service configured. Mapping and conversion features are not available!" );
+                        LOG
+                                .error( "no valid Mapping service configured. Mapping and conversion features are not available!" );
                     } else {
                         MappingDefinition mappingDef = new MappingDefinition();
                         mappingDef.setCommand( partnerId );
@@ -352,7 +372,8 @@ public class DirectoryScannerService extends AbstractService implements Schedule
                 String tempChoreographyId = choreographyId;
                 if ( choreographyId.startsWith( "${" ) ) {
                     if ( mappingService == null ) {
-                        LOG.error( "no valid Mapping service configured. Mapping and conversion features are not available!" );
+                        LOG
+                                .error( "no valid Mapping service configured. Mapping and conversion features are not available!" );
                     } else {
                         MappingDefinition mappingDef = new MappingDefinition();
                         mappingDef.setCommand( choreographyId );
@@ -363,15 +384,28 @@ public class DirectoryScannerService extends AbstractService implements Schedule
                 String tempActionId = actionId;
                 if ( actionId.startsWith( "${" ) ) {
                     if ( mappingService == null ) {
-                        LOG.error( "no valid Mapping service configured. Mapping and conversion features are not available!" );
+                        LOG
+                                .error( "no valid Mapping service configured. Mapping and conversion features are not available!" );
                     } else {
                         MappingDefinition mappingDef = new MappingDefinition();
                         mappingDef.setCommand( actionId );
                         tempActionId = mappingService.processConversion( null, null, null, mappingDef, variables );
                     }
                 }
+                
+                if ( !StringUtils.isEmpty( conversationStatement ) ) {
+                    ByteArrayInputStream bais = new ByteArrayInputStream( fileBuffer );
 
-                backendPipelineDispatcher.processMessage( tempPartnerId, tempChoreographyId, tempActionId, null, null,
+                    DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+                    DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
+                    Document document = builder.parse( bais );
+
+                    XPath xPathObj = XPathFactory.newInstance().newXPath();
+                    Object xPathResult = xPathObj.evaluate( conversationStatement, document, XPathConstants.STRING );
+                    conversationId = (String)xPathResult;
+                }
+
+                backendPipelineDispatcher.processMessage( tempPartnerId, tempChoreographyId, tempActionId, conversationId, null,
                         null, fileBuffer );
                 // Remove file from the file system.
                 deleteFile( newFile );
