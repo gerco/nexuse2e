@@ -4,7 +4,7 @@
 	<MimeHandlers>
 		<Handler MimeType="application/xml">
 			<Class>org.nexuse2e.messaging.mime.text_xml</Class>
-		</Handler>	
+		</Handler>
 		<Handler MimeType="text/xml">
 			<Class>org.nexuse2e.messaging.mime.text_xml</Class>
 		</Handler>
@@ -14,18 +14,18 @@
 		<Handler MimeType="application/msword">
 			<Class>org.nexuse2e.messaging.mime.binary_base64</Class>
 		</Handler>
-        <Handler MimeType="application/msexcel">
-            <Class>org.nexuse2e.messaging.mime.binary_base64</Class>
-        </Handler>
-        <Handler MimeType="application/mspowerpoint">
-            <Class>org.nexuse2e.messaging.mime.binary_base64</Class>
-        </Handler>
-        <Handler MimeType="application/msproject">
-            <Class>org.nexuse2e.messaging.mime.binary_base64</Class>
-        </Handler>
-        <Handler MimeType="application/msaccess">
-            <Class>org.nexuse2e.messaging.mime.binary_base64</Class>
-        </Handler>
+		<Handler MimeType="application/msexcel">
+			<Class>org.nexuse2e.messaging.mime.binary_base64</Class>
+		</Handler>
+		<Handler MimeType="application/mspowerpoint">
+			<Class>org.nexuse2e.messaging.mime.binary_base64</Class>
+		</Handler>
+		<Handler MimeType="application/msproject">
+			<Class>org.nexuse2e.messaging.mime.binary_base64</Class>
+		</Handler>
+		<Handler MimeType="application/msaccess">
+			<Class>org.nexuse2e.messaging.mime.binary_base64</Class>
+		</Handler>
 		<Handler MimeType="application/octet-stream">
 			<Class>org.nexuse2e.messaging.mime.binary_base64</Class>
 		</Handler>
@@ -84,39 +84,39 @@
 			<FileType>ZIP</FileType>
 		</MimeMapping>
 		<MimeMapping MimeType="application/msword">
-            <FileType>doc</FileType>
-            <FileType>DOC</FileType>
-            <FileType>word</FileType>
-            <FileType>WORD</FileType>
-            <FileType>w6w</FileType>
-            <FileType>W6W</FileType>
+			<FileType>doc</FileType>
+			<FileType>DOC</FileType>
+			<FileType>word</FileType>
+			<FileType>WORD</FileType>
+			<FileType>w6w</FileType>
+			<FileType>W6W</FileType>
 		</MimeMapping>
-        <MimeMapping MimeType="application/msproject">
-            <FileType>mpp</FileType>
-            <FileType>MPP</FileType>
-        </MimeMapping>
-        <MimeMapping MimeType="application/msexcel">
-            <FileType>xls</FileType>
-            <FileType>XLS</FileType>
-            <FileType>xla</FileType>
-            <FileType>XLA</FileType>
-            <FileType>xlt</FileType>
-            <FileType>XLT</FileType>
-            <FileType>xlw</FileType>
-            <FileType>XLW</FileType>
-        </MimeMapping>
-        <MimeMapping MimeType="application/mspowerpoint">
-            <FileType>ppt</FileType>
-            <FileType>PPT</FileType>
-            <FileType>pps</FileType>
-            <FileType>PPS</FileType>
-            <FileType>pot</FileType>
-            <FileType>POT</FileType>
-        </MimeMapping>
-        <MimeMapping MimeType="application/msaccess">
-            <FileType>mdb</FileType>
-            <FileType>MDB</FileType>
-        </MimeMapping>
+		<MimeMapping MimeType="application/msproject">
+			<FileType>mpp</FileType>
+			<FileType>MPP</FileType>
+		</MimeMapping>
+		<MimeMapping MimeType="application/msexcel">
+			<FileType>xls</FileType>
+			<FileType>XLS</FileType>
+			<FileType>xla</FileType>
+			<FileType>XLA</FileType>
+			<FileType>xlt</FileType>
+			<FileType>XLT</FileType>
+			<FileType>xlw</FileType>
+			<FileType>XLW</FileType>
+		</MimeMapping>
+		<MimeMapping MimeType="application/mspowerpoint">
+			<FileType>ppt</FileType>
+			<FileType>PPT</FileType>
+			<FileType>pps</FileType>
+			<FileType>PPS</FileType>
+			<FileType>pot</FileType>
+			<FileType>POT</FileType>
+		</MimeMapping>
+		<MimeMapping MimeType="application/msaccess">
+			<FileType>mdb</FileType>
+			<FileType>MDB</FileType>
+		</MimeMapping>
 		<MimeMapping MimeType="audio/x-mpeg">
 			<FileType>mp3</FileType>
 			<FileType>MP3</FileType>
@@ -136,6 +136,79 @@
 		<MimeMapping MimeType="image/gif">
 			<FileType>gif</FileType>
 			<FileType>GIF</FileType>
+		</MimeMapping>
+		<!-- Office 2007 types -->
+		<MimeMapping MimeType="application/onenote">
+			<FileType>onetoc</FileType>
+			<FileType>onetoc2</FileType>
+			<FileType>onetmp</FileType>
+			<FileType>onepkg</FileType>
+		</MimeMapping>
+		<MimeMapping MimeType="application/vnd.ms-excel.addin.macroEnabled.12">
+			<FileType>xlam</FileType>
+		</MimeMapping>
+		<MimeMapping MimeType="application/vnd.ms-excel.sheet.binary.macroEnabled.12">
+			<FileType>xlsb</FileType>
+		</MimeMapping>
+		<MimeMapping MimeType="application/vnd.ms-excel.sheet.macroEnabled.12">
+			<FileType>xlsm</FileType>
+		</MimeMapping>
+		<MimeMapping MimeType="application/vnd.ms-excel.template.macroEnabled.12">
+			<FileType>xltm</FileType>
+		</MimeMapping>
+		<MimeMapping MimeType="application/vnd.ms-powerpoint.addin.macroEnabled.12">
+			<FileType>ppam</FileType>
+		</MimeMapping>
+		<MimeMapping
+			MimeType="application/vnd.ms-powerpoint.presentation.macroEnabled.12">
+			<FileType>pptm</FileType>
+		</MimeMapping>
+		<MimeMapping MimeType="application/vnd.ms-powerpoint.slide.macroEnabled.12">
+			<FileType>sldm</FileType>
+		</MimeMapping>
+		<MimeMapping MimeType="application/vnd.ms-powerpoint.slideshow.macroEnabled.12">
+			<FileType>ppsm</FileType>
+		</MimeMapping>
+		<MimeMapping MimeType="application/vnd.ms-powerpoint.template.macroEnabled.12">
+			<FileType>potm</FileType>
+		</MimeMapping>
+		<MimeMapping MimeType="application/vnd.ms-word.document.macroEnabled.12">
+			<FileType>docm</FileType>
+		</MimeMapping>
+		<MimeMapping MimeType="application/vnd.ms-word.template.macroEnabled.12">
+			<FileType>dotm</FileType>
+		</MimeMapping>
+		<MimeMapping
+			MimeType="application/vnd.openxmlformats-officedocument.presentationml.presentation">
+			<FileType>pptx</FileType>
+		</MimeMapping>
+		<MimeMapping
+			MimeType="application/vnd.openxmlformats-officedocument.presentationml.slide">
+			<FileType>sldx</FileType>
+		</MimeMapping>
+		<MimeMapping
+			MimeType="application/vnd.openxmlformats-officedocument.presentationml.slideshow">
+			<FileType>ppsx</FileType>
+		</MimeMapping>
+		<MimeMapping
+			MimeType="application/vnd.openxmlformats-officedocument.presentationml.template">
+			<FileType>potx</FileType>
+		</MimeMapping>
+		<MimeMapping
+			MimeType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+			<FileType>xlsx</FileType>
+		</MimeMapping>
+		<MimeMapping
+			MimeType="application/vnd.openxmlformats-officedocument.spreadsheetml.template">
+			<FileType>xltx</FileType>
+		</MimeMapping>
+		<MimeMapping
+			MimeType="application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+			<FileType>docx</FileType>
+		</MimeMapping>
+		<MimeMapping
+			MimeType="application/vnd.openxmlformats-officedocument.wordprocessingml.template">
+			<FileType>dotx</FileType>
 		</MimeMapping>
 	</FileMappings>
 </MimeConfig>
