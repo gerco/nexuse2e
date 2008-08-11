@@ -119,6 +119,9 @@ public class TransactionServiceImpl implements TransactionService {
                     Constants.CONVERSATION_STATUS_COMPLETED,
                     Constants.CONVERSATION_STATUS_ERROR,
                     Constants.CONVERSATION_STATUS_IDLE } );
+        followUpConversationStates.put( Constants.CONVERSATION_STATUS_COMPLETED,
+                new int[] {
+                    Constants.CONVERSATION_STATUS_ERROR } );
         
         
         followUpMessageStates = new HashMap<Integer, int[]>();
@@ -135,6 +138,9 @@ public class TransactionServiceImpl implements TransactionService {
                     Constants.MESSAGE_STATUS_RETRYING,
                     Constants.MESSAGE_STATUS_FAILED,
                     Constants.MESSAGE_STATUS_SENT } );
+        followUpMessageStates.put( Constants.MESSAGE_STATUS_SENT,
+                new int[] {
+                    Constants.MESSAGE_STATUS_QUEUED } );
     }
     
 
