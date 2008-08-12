@@ -119,6 +119,9 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
 
     private String                           timestampPattern               = null;
 
+    // TRUE to allow submission of business reply while inbound pipeline is blocking/synchronously
+    private boolean                          lenientBackendStateMachine      = false;
+
     private MimetypesFileTypeMap             mimetypesFileTypeMap           = null;
 
     static {
@@ -507,8 +510,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     public String getFileExtensionFromMime( String mimeType ) {
 
         MimeMapping tempMimeMapping = mimeMappings.get( mimeType );
-        
-        
+
         if ( tempMimeMapping != null ) {
             return tempMimeMapping.fileExtension;
         }
@@ -684,34 +686,36 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
         }
         return null;
     }
-    
+
     /**
      * Convenience method to get the configuration DAO.
      * @return The configuration DAO.
      * @throws NexusException If the configuration DAO is not available.
      */
     public ConfigDAO getConfigDAO() throws NexusException {
+
         return (ConfigDAO) getDao( "configDao" );
     }
-    
+
     /**
      * Convenience method to get the transaction DAO.
      * @return The transaction DAO.
      * @throws NexusException If the transaction DAO is not available.
      */
     public TransactionDAO getTransactionDAO() throws NexusException {
+
         return (TransactionDAO) getDao( "transactionDao" );
     }
-    
+
     /**
      * Convenience method to get the log DAO.
      * @return The log DAO.
      * @throws NexusException If the log DAO is not available.
      */
     public LogDAO getLogDAO() throws NexusException {
+
         return (LogDAO) getDao( "logDao" );
     }
-
 
     @SuppressWarnings("unchecked")
     private void createEngineConfiguration() throws InstantiationException {
@@ -719,7 +723,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
         try {
             ConfigDAO configDAO = getConfigDAO();
             currentConfiguration = new EngineConfiguration();
-            if (configDAO.isDatabasePopulated()) {
+            if ( configDAO.isDatabasePopulated() ) {
                 configDAO.loadDatafromDB( currentConfiguration );
                 currentConfiguration.init();
             } else {
@@ -735,9 +739,9 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                                 + "' could not be instantiated: " + iEx );
                     }
                 }
-                if (baseConfigurationProvider == null || !baseConfigurationProvider.isConfigurationAvailable()) {
+                if ( baseConfigurationProvider == null || !baseConfigurationProvider.isConfigurationAvailable() ) {
                     String message = "No base configuration available from BaseConfigurationProvider "
-                        + baseConfigurationProvider;
+                            + baseConfigurationProvider;
                     LOG.error( message );
                     throw new InstantiationException( message );
                 }
@@ -746,7 +750,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
             }
 
         } catch ( Exception e ) {
-            if (e instanceof InstantiationException) {
+            if ( e instanceof InstantiationException ) {
                 throw (InstantiationException) e;
             }
             e.printStackTrace();
@@ -766,6 +770,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
      * @throws NexusException 
      */
     public void importConfiguration( InputStream xmlInput ) throws NexusException {
+
         BaseConfigurationProvider provider = new XmlBaseConfigurationProvider( xmlInput );
 
         try {
@@ -776,8 +781,8 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
             configDao.saveConfigurationToDB( newConfig );
             newConfig.init();
             setCurrentConfiguration( newConfig );
-        } catch (Exception ex) {
-            if (ex instanceof NexusException) {
+        } catch ( Exception ex ) {
+            if ( ex instanceof NexusException ) {
                 throw (NexusException) ex;
             }
             throw new NexusException( ex );
@@ -811,28 +816,28 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                 changeStatus( BeanStatus.INSTANTIATED );
                 LOG.debug( "Saving configuration..." );
                 getConfigDAO().saveDelta( newConfiguration );
-//                if ( oldServicePojo != null ) {
-//                    service = getService( oldServicePojo.getName() );
-//                    services.remove( oldServicePojo );
-//                    // service has been renamed
-//                    if ( !oldServicePojo.getName().equals( servicePojo.getName() ) ) {
-//                        renameService( oldServicePojo.getName(), servicePojo.getName() );
-//                    }
-//                    if ( servicePojo.getServiceParams() != null ) {
-//                        ConfigurationUtil.configureService( service, servicePojo.getServiceParams() );
-//                    }
-//                } else {
-//                    service = (Service) Class.forName( servicePojo.getComponent().getClassName() ).newInstance();
-//                    if ( servicePojo.getServiceParams() != null ) {
-//                        ConfigurationUtil.configureService( service, servicePojo.getServiceParams() );
-//                    }
-//                    service.initialize( this );
-//                    service.activate();
-//                    if ( service.isAutostart() ) {
-//                        service.start();
-//                    }
-//                    getStaticBeanContainer().getManagableBeans().put( servicePojo.getName(), service );
-//                }
+                //                if ( oldServicePojo != null ) {
+                //                    service = getService( oldServicePojo.getName() );
+                //                    services.remove( oldServicePojo );
+                //                    // service has been renamed
+                //                    if ( !oldServicePojo.getName().equals( servicePojo.getName() ) ) {
+                //                        renameService( oldServicePojo.getName(), servicePojo.getName() );
+                //                    }
+                //                    if ( servicePojo.getServiceParams() != null ) {
+                //                        ConfigurationUtil.configureService( service, servicePojo.getServiceParams() );
+                //                    }
+                //                } else {
+                //                    service = (Service) Class.forName( servicePojo.getComponent().getClassName() ).newInstance();
+                //                    if ( servicePojo.getServiceParams() != null ) {
+                //                        ConfigurationUtil.configureService( service, servicePojo.getServiceParams() );
+                //                    }
+                //                    service.initialize( this );
+                //                    service.activate();
+                //                    if ( service.isAutostart() ) {
+                //                        service.start();
+                //                    }
+                //                    getStaticBeanContainer().getManagableBeans().put( servicePojo.getName(), service );
+                //                }
             } catch ( Exception e ) {
                 LOG.error( "Error saving configuration: " + e );
                 e.printStackTrace();
@@ -862,7 +867,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
         } else {
             this.currentConfiguration = newConfiguration;
         }
-        if (configurations != null) {
+        if ( configurations != null ) {
             configurations.clear();
         }
         // LOG.debug( "3partners: " + this.currentConfiguration.getPartners().size() );
@@ -1314,6 +1319,18 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     public void setDatabaseDialect( String databaseDialect ) {
 
         this.databaseDialect = databaseDialect;
+    }
+
+    
+    public boolean isLenientBackendStateMachine() {
+    
+        return lenientBackendStateMachine;
+    }
+
+    
+    public void setLenientBackendStateMachine( boolean lenientBackendStateMachine ) {
+    
+        this.lenientBackendStateMachine = lenientBackendStateMachine;
     }
 
 } // Engine
