@@ -161,8 +161,8 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
         if ( getBeanFactory() == null ) {
             throw new InstantiationException( "No beanFactory found!" );
         }
-        LOG.debug( "EngineId:" + getBeanId() );
-
+        LOG.debug( "EngineId: " + getBeanId() );
+        LOG.debug( "lenientBackendStateMachine: " + lenientBackendStateMachine );
     }
 
     /**
