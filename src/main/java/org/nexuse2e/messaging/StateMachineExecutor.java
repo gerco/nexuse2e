@@ -222,9 +222,17 @@ public class StateMachineExecutor {
                 }
                 // Only process normal message if previous ones have been ack'd
             } else if ( conversation.getStatus() == Constants.CONVERSATION_STATUS_IDLE
-                    || conversation.getStatus() == Constants.CONVERSATION_STATUS_COMPLETED ) {
+                    || conversation.getStatus() == Constants.CONVERSATION_STATUS_COMPLETED
+                    || Engine.getInstance().isLenientBackendStateMachine() ) {
                 // followup message in conversation. Checking state machine status.
                 String actionId = conversation.getCurrentAction().getName();
+
+                if ( conversation.getStatus() != Constants.CONVERSATION_STATUS_IDLE
+                        && conversation.getStatus() != Constants.CONVERSATION_STATUS_COMPLETED
+                        && Engine.getInstance().isLenientBackendStateMachine() ) {
+                    LOG.debug( "*** Applied lenientBackendStateMachine: " + currentConversationId + "/"
+                            + currentMessageId );
+                }
 
                 Set<FollowUpActionPojo> followUpActions = conversation.getCurrentAction().getFollowUpActions();
 
@@ -248,5 +256,4 @@ public class StateMachineExecutor {
 
         return null;
     } // validateTransition
-
 } // StateMachineExecutor
