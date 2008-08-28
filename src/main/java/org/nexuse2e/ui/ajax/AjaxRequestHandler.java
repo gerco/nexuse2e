@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.json.JSONException;
 
 /**
- * Interface for intances that can handle Ajax requests.
+ * Interface for instances that can handle Ajax requests.
  * @author Sebastian Schulze
  * @date 14.12.2006
  */
