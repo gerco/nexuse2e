@@ -16,14 +16,13 @@ import org.nexuse2e.configuration.Constants.ParameterType;
  * 
  * The table has to be created manually. Example SQL:
  * <pre>
- * CREATE TABLE <tableName> (
- *  <namespaceColum> VARCHAR(n),
- *  <namespaceVersionColum> VARCHAR(n),
- *  <propertyNameColum> VARCHAR(n),
- *  <propertyValueColum> VARCHAR(n),
- *  PRIMARY KEY( <namespaceColumn>,
- *               <namespaceVersionColumn>,
- *               <propertyNameColumn> )
+ * CREATE TABLE nx_persistent_property (
+ *  id INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+ *  namespace VARCHAR(128),
+ *  version VARCHAR(128),
+ *  name VARCHAR(128),
+ *  value VARCHAR(128),
+ *  UNIQUE ( namespace, version, name )
  * );
  * </pre>
  * 
