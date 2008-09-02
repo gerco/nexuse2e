@@ -56,7 +56,7 @@ public interface PropertyService<T> extends Service {
      *         or <code>null</code>, if none was found.
      * @throws Exception, if an error occurs.
      */
-    T read( String componentId, String namespaceVersion,
+    T read( String namespace, String namespaceVersion,
             String propertyName ) throws Exception;
     
     /**
