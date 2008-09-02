@@ -63,29 +63,29 @@ public class TransientPropertyService extends AbstractService implements Propert
     /* (non-Javadoc)
      * @see org.nexuse2e.service.PropertyService#read(java.lang.String, java.lang.String, java.lang.String)
      */
-    public String read( String componentId,
-                        String componentVersion,
+    public String read( String namespace,
+                        String namespaceVersion,
                         String propertyName ) throws Exception {
-        return access( componentId, componentVersion, propertyName, false );
+        return access( namespace, namespaceVersion, propertyName, false );
     }
 
     /* (non-Javadoc)
      * @see org.nexuse2e.service.PropertyService#store(java.lang.String, java.lang.String, java.lang.String, java.lang.Object)
      */
-    public void store( String componentId,
-                       String componentVersion,
+    public void store( String namespace,
+                       String namespaceVersion,
                        String propertyName,
                        String value ) throws Exception {
         
-        Map<String,Map<String,String>> componentDomain = storage.get( componentId );
+        Map<String,Map<String,String>> componentDomain = storage.get( namespace );
         if ( componentDomain == null ) {
             componentDomain = new HashMap<String,Map<String,String>>();
-            storage.put( componentId, componentDomain );
+            storage.put( namespace, componentDomain );
         }
-        Map<String,String> versionDomain = componentDomain.get( componentVersion );
+        Map<String,String> versionDomain = componentDomain.get( namespaceVersion );
         if ( versionDomain == null ) {
             versionDomain = new HashMap<String,String>();
-            componentDomain.put( componentVersion, versionDomain );
+            componentDomain.put( namespaceVersion, versionDomain );
         }
         versionDomain.put( propertyName, value );
     }
@@ -93,26 +93,26 @@ public class TransientPropertyService extends AbstractService implements Propert
     /* (non-Javadoc)
      * @see org.nexuse2e.service.PropertyService#remove(java.lang.String, java.lang.String, java.lang.String)
      */
-    public String remove( String componentId,
-                        String componentVersion,
+    public String remove( String namespace,
+                        String namespaceVersion,
                         String propertyName ) throws Exception {
-        return access( componentId, componentVersion, propertyName, true );
+        return access( namespace, namespaceVersion, propertyName, true );
     }
     
     /**
      * Internal handling.
-     * @param componentId
-     * @param componentVersion
+     * @param namespace
+     * @param namespaceVersion
      * @param propertyName
      * @param remove Whether the value should just be looked up, or removed from storage.
      * @return
      */
-    private String access( String componentId, String componentVersion, String propertyName, boolean remove ) {
+    private String access( String namespace, String namespaceVersion, String propertyName, boolean remove ) {
         String result = null;
         
-        Map<String,Map<String,String>> componentDomain = storage.get( componentId );
+        Map<String,Map<String,String>> componentDomain = storage.get( namespace );
         if ( componentDomain != null ) {
-            Map<String,String> versionDomain = componentDomain.get( componentVersion );
+            Map<String,String> versionDomain = componentDomain.get( namespaceVersion );
             if ( versionDomain != null ) {
                 if ( remove ) {
                     result = versionDomain.remove( propertyName );

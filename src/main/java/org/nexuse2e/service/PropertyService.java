@@ -24,6 +24,11 @@ package org.nexuse2e.service;
  * This interface describes a generic service that enables
  * clients to store internal data on runtime.
  * 
+ * Properties are stored in different namespaces.
+ * Each namespace can have several versions that are separated.
+ * A property is identified by a distinct name that is unique
+ * for each namespace and version.
+ * 
  * One usual implementation would be a service component that
  * can store/read key-value pairs in a persistent database. 
  * 
@@ -34,36 +39,36 @@ public interface PropertyService<T> extends Service {
     
     /**
      * Stores a property for a component.
-     * @param componentId The component identifier.
-     * @param componentVersion The component version.
+     * @param namespace The namespace.
+     * @param namespaceVersion The namespace version.
      * @param propertyName The name of the property to store.
      * @param value The value to store.
      * @throws Exception, if an error occurs.
      */
-    void store( String componentId, String componentVersion,
+    void store( String namespace, String namespaceVersion,
                 String propertyName, T value ) throws Exception ;
     /**
      * Reads a property for a component.
-     * @param componentId The component identifier.
-     * @param componentVersion The component version.
+     * @param namespace The namespace.
+     * @param namespaceVersion The namespace version.
      * @param propertyName The name of the property to store.
      * @return The stored value for the given parameters
      *         or <code>null</code>, if none was found.
      * @throws Exception, if an error occurs.
      */
-    T read( String componentId, String componentVersion,
+    T read( String componentId, String namespaceVersion,
             String propertyName ) throws Exception;
     
     /**
      * Removes a property for a component.
-     * @param componentId The component identifier.
-     * @param componentVersion The component version.
+     * @param namespace The namespace.
+     * @param namespaceVersion The namespace version.
      * @param propertyName The name of the property to store.
      * @return The stored value for the given parameters
      *         or <code>null</code>, if none was found. 
      * @throws Exception, if an error occurs.
      */
-    T remove( String componentId, String componentVersion,
+    T remove( String namespace, String namespaceVersion,
                  String propertyName ) throws Exception;
     
 }
