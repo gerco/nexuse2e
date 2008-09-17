@@ -261,7 +261,7 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                 if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
                     LOG.error( new LogMessage(
                             "Maximum number of retries reached without receiving acknowledgment - choreography: "
-                                    + messagePojo.getConversation().getChoreography().getName(), messagePojo ) );
+                                    + messagePojo.getConversation().getChoreography().getName() + ", partner: " + messagePojo.getConversation().getPartner().getPartnerId(), messagePojo ) );
                 } else {
                     LOG.debug( new LogMessage( "Max number of retries reached!", messagePojo ) );
                 }
