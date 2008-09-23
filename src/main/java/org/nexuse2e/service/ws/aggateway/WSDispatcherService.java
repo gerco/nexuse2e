@@ -162,7 +162,12 @@ public class WSDispatcherService extends AbstractService implements ReceiverAwar
         }
     }
 
-    @javax.jws.WebService(portName = "DocExchangePortType", serviceName = "AgGatewayDocumentExchange", targetNamespace = "org.nexuse2e.service.ws.aggateway.wsdl", endpointInterface = "org.nexuse2e.service.ws.aggateway.wsdl.DocExchangePortType")
+    @javax.jws.WebService(
+            portName = "DocExchangePortType",
+            serviceName = "AgGatewayDocumentExchange",
+            targetNamespace = "urn:aggateway:names:ws:docexchange",
+            endpointInterface = "org.nexuse2e.service.ws.aggateway.wsdl.DocExchangePortType",
+            wsdlLocation = "classpath:org/nexuse2e/integration/AgGateway.wsdl")
     public static class AgGatewayDocumentExchangeImpl implements DocExchangePortType, ReceiverAware {
 
         private TransportReceiver transportReceiver;
