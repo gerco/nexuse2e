@@ -46,7 +46,7 @@
 							document.forms[0].transport.value=document.getElementsByName('htmlnewtransport')[0].value;
 							document.forms[0].protocol.value=document.getElementsByName('htmlnewprotocol')[0].value;
 							document.forms[0].version.value=document.getElementsByName('htmlnewversion')[0].value;
-                            document.forms[0].version.value=document.getElementsByName('htmlnewadapterclassname')[0].value;
+                            document.forms[0].adapterClassName.value=document.getElementsByName('htmlnewadapterclassname')[0].value;
 							">
 					<img src="images/icons/add.png" class="button" alt="Configure" id="addTrp"><span dojoType="tooltip" connectId="addTrp" toggle="explode">Add TRP Entry</span>
 				</nexus:submit>
