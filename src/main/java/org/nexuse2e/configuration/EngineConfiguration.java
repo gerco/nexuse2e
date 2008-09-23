@@ -30,7 +30,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -48,7 +47,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.nexuse2e.ActionSpecificKey;
 import org.nexuse2e.Engine;
-import org.nexuse2e.Manageable;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.ProtocolSpecificKey;
 import org.nexuse2e.Constants.BeanStatus;
@@ -1217,7 +1215,6 @@ public class EngineConfiguration implements ConfigurationAccessService {
     /* (non-Javadoc)
      * @see org.nexuse2e.configuration.ConfigurationAccessService#getFrontendPipelinePojos(int, org.nexuse2e.configuration.GenericComparator)
      */
-    @SuppressWarnings("unchecked")
     public List<PipelinePojo> getFrontendPipelinePojos( int type, Comparator<PipelinePojo> comparator ) {
     
         List<PipelinePojo> filteredList = null;
@@ -1244,7 +1241,6 @@ public class EngineConfiguration implements ConfigurationAccessService {
     /* (non-Javadoc)
      * @see org.nexuse2e.configuration.ConfigurationAccessService#getBackendPipelinePojos(int, org.nexuse2e.configuration.GenericComparator)
      */
-    @SuppressWarnings("unchecked")
     public List<PipelinePojo> getBackendPipelinePojos( int type, Comparator<PipelinePojo> comparator ) {
     
         List<PipelinePojo> filteredList = null;
@@ -1855,10 +1851,11 @@ public class EngineConfiguration implements ConfigurationAccessService {
     public void updatePipeline( PipelinePojo pipeline ) throws NexusException {
     
         PipelinePojo oldPipeline = getPipelinePojoByNxPipelineId( pipeline.getNxPipelineId() );
+        List<PipelinePojo> pt = (pipeline.isFrontend() ? getFrontendPipelineTemplates() : getBackendPipelineTemplates());
         if ( oldPipeline != null ) {
-            getBackendPipelineTemplates().remove( oldPipeline );
+            pt.remove( oldPipeline );
         }
-        getBackendPipelineTemplates().add( pipeline );
+        pt.add( pipeline );
         addToUpdateList( pipeline );
         addToImplicitUpdateList( pipeline, pipeline.getPipelets() );
     }

@@ -19,6 +19,8 @@
  */
 package org.nexuse2e.ui.action.pipelines;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,7 +33,9 @@ import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.Configurable;
 import org.nexuse2e.configuration.ConfigurationUtil;
 import org.nexuse2e.configuration.EngineConfiguration;
+import org.nexuse2e.configuration.GenericComparator;
 import org.nexuse2e.pojo.PipeletPojo;
+import org.nexuse2e.pojo.ServicePojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.PipelineForm;
 
@@ -81,8 +85,11 @@ public class PipeletParamsViewAction extends NexusE2EAction {
         form.setParameters( ConfigurationUtil.getConfiguration( configurable, pipeletPojo ) );
         form.createParameterMapFromPojos();
 
-        request.setAttribute( ATTRIBUTE_COLLECTION, engineConfiguration
-                .getServices() );
+        List<ServicePojo> services = engineConfiguration.getServices();
+        List<ServicePojo> sortedServices = new ArrayList<ServicePojo>( services.size() );
+        sortedServices.addAll( engineConfiguration.getServices() );
+        Collections.sort( sortedServices, new GenericComparator<ServicePojo>( "name", true ) );
+        request.setAttribute( ATTRIBUTE_COLLECTION, sortedServices );
 
         return success;
     }

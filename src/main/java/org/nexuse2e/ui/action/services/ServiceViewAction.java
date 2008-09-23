@@ -19,6 +19,10 @@
  */
 package org.nexuse2e.ui.action.services;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -28,6 +32,7 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.configuration.ConfigurationUtil;
 import org.nexuse2e.configuration.EngineConfiguration;
+import org.nexuse2e.configuration.GenericComparator;
 import org.nexuse2e.pojo.ServiceParamPojo;
 import org.nexuse2e.pojo.ServicePojo;
 import org.nexuse2e.service.Service;
@@ -60,7 +65,12 @@ public class ServiceViewAction extends NexusE2EAction {
         serviceForm.createParameterMapFromPojos();
         serviceForm.setServiceInstance( service );
         
-        request.setAttribute( ATTRIBUTE_SERVICE_COLLECTION, engineConfiguration.getServices( ) );
+        List<ServicePojo> services = engineConfiguration.getServices();
+        List<ServicePojo> sortedServices = new ArrayList<ServicePojo>( services.size() );
+        sortedServices.addAll( engineConfiguration.getServices() );
+        Collections.sort( sortedServices, new GenericComparator<ServicePojo>( "name", true ) );
+        request.setAttribute( ATTRIBUTE_SERVICE_COLLECTION, sortedServices );
+
         return actionMapping.findForward( ACTION_FORWARD_SUCCESS );
         
     }
