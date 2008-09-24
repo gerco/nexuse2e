@@ -172,7 +172,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     //public synchronized void changeStatus( BeanStatus targetStatus ) throws InstantiationException {
     public void changeStatus( BeanStatus targetStatus ) throws InstantiationException {
 
-        while ( getStatus() != targetStatus ) {
+        while ( getStatus() != targetStatus && getStatus() != BeanStatus.ERROR ) {
             if ( getStatus().ordinal() < targetStatus.ordinal() ) {
                 switch ( getStatus() ) {
                     case UNDEFINED:
@@ -814,6 +814,11 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
 
             try {
                 changeStatus( BeanStatus.INSTANTIATED );
+
+                // try to fix ERROR status
+                if (getStatus() == BeanStatus.ERROR) {
+                    status = BeanStatus.INSTANTIATED;
+                }
                 LOG.debug( "Saving configuration..." );
                 getConfigDAO().saveDelta( newConfiguration );
                 //                if ( oldServicePojo != null ) {
