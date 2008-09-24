@@ -1885,7 +1885,8 @@ public class EngineConfiguration implements ConfigurationAccessService {
         
         PipelinePojo oldPipeline = getPipelinePojoByNxPipelineId( pipeline.getNxPipelineId() );
         if ( oldPipeline != null ) {
-            getBackendPipelineTemplates().remove( oldPipeline );
+            List<PipelinePojo> pt = (oldPipeline.isFrontend() ? getFrontendPipelineTemplates() : getBackendPipelineTemplates());
+            pt.remove( oldPipeline );
             addToDeleteList( oldPipeline );
         }
     }
