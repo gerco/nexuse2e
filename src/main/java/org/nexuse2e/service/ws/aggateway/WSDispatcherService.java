@@ -184,10 +184,10 @@ public class WSDispatcherService extends AbstractService implements ReceiverAwar
 
         public OutboundData execute( InboundData parameters ) throws DocExchangeFault {
 
+            Object data = parameters.getXmlPayload().getAny();
             System.out.println( "getBusinessProcess: " + parameters.getBusinessProcess() );
             process( transportReceiver, parameters.getBusinessProcess(), parameters.getProcessStep(), parameters
-                    .getPartnerId(), parameters.getConversationId(), parameters.getMessageId(), parameters
-                    .getXmlPayload() );
+                    .getPartnerId(), parameters.getConversationId(), parameters.getMessageId(), (data == null ? null : data.toString()) );
 
             return new OutboundData();
         }

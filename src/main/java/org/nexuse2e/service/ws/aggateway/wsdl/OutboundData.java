@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
@@ -19,9 +20,9 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="processStep" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="messageId" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="xmlPayload" type="{http://www.w3.org/2001/XMLSchema}string" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="processStep" type="{urn:aggateway:names:ws:docexchange}aggatewayToken" minOccurs="0"/>
+ *         &lt;element name="messageId" type="{urn:aggateway:names:ws:docexchange}aggatewayToken" minOccurs="0"/>
+ *         &lt;element name="xmlPayload" type="{urn:aggateway:names:ws:docexchange}xmlPayload" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -38,10 +39,11 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class OutboundData {
 
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     protected String processStep;
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     protected String messageId;
-    @XmlElement(required = true)
-    protected List<String> xmlPayload;
+    protected List<XmlPayload> xmlPayload;
 
     /**
      * Gets the value of the processStep property.
@@ -109,13 +111,13 @@ public class OutboundData {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link String }
+     * {@link XmlPayload }
      * 
      * 
      */
-    public List<String> getXmlPayload() {
+    public List<XmlPayload> getXmlPayload() {
         if (xmlPayload == null) {
-            xmlPayload = new ArrayList<String>();
+            xmlPayload = new ArrayList<XmlPayload>();
         }
         return this.xmlPayload;
     }

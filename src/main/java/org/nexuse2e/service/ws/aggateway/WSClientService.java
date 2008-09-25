@@ -26,6 +26,7 @@ import java.util.Map;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.TrustManager;
+import javax.xml.namespace.QName;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
@@ -54,6 +55,7 @@ import org.nexuse2e.service.ws.aggateway.wsdl.DocExchangeFault;
 import org.nexuse2e.service.ws.aggateway.wsdl.DocExchangePortType;
 import org.nexuse2e.service.ws.aggateway.wsdl.InboundData;
 import org.nexuse2e.service.ws.aggateway.wsdl.OutboundData;
+import org.nexuse2e.service.ws.aggateway.wsdl.XmlPayload;
 import org.nexuse2e.transport.TransportSender;
 import org.nexuse2e.util.CertificateUtil;
 import org.nexuse2e.util.EncryptionUtil;
@@ -101,6 +103,8 @@ public class WSClientService extends AbstractService implements SenderAware {
         MessagePojo messagePojo = messageContext.getMessagePojo();
 
         factory.setServiceClass( DocExchangePortType.class );
+        factory.setServiceName( new QName( "urn:aggateway:names:ws:docexchange", "AgGatewayDocumentExchange" ) );
+        factory.setWsdlLocation( "classpath:org/nexuse2e/integration/AgGateway.wsdl" );
         factory.setAddress( receiverURL );
         DocExchangePortType theDocExchangePortType = (DocExchangePortType) factory.create();
 
@@ -219,21 +223,24 @@ public class WSClientService extends AbstractService implements SenderAware {
             inboundData.setPartnerType( messagePojo.getParticipant().getPartner().getPartnerIdType() );
             inboundData.setConversationId( messagePojo.getConversation().getConversationId() );
             inboundData.setMessageId( messagePojo.getMessageId() );
-            inboundData.setXmlPayload( new String( payload.getPayloadData() ) );
+            XmlPayload p = new XmlPayload();
+            p.setAny( new String( payload.getPayloadData() ) );
+            inboundData.setXmlPayload( p );
 
             try {
                 OutboundData outboundData = theDocExchangePortType.execute( inboundData );
 
                 if ( outboundData.getXmlPayload() != null ) {
                     List<MessagePayloadPojo> messagePayloads = new ArrayList<MessagePayloadPojo>( 1 );
-                    for (String xmlPayload : outboundData.getXmlPayload()) {
+                    for (XmlPayload xmlPayload : outboundData.getXmlPayload()) {
                         LOG.trace( "Returned document:\n" + xmlPayload );
                         MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo();
                         messagePayloadPojo.setMessage( replyMessageContext.getMessagePojo() );
                         messagePayloadPojo.setContentId( Engine.getInstance().getIdGenerator(
                                 Constants.ID_GENERATOR_MESSAGE_PAYLOAD ).getId() );
                         messagePayloadPojo.setMimeType( "text/xml" );
-                        messagePayloadPojo.setPayloadData( xmlPayload.getBytes() );
+                        Object data = xmlPayload.getAny();
+                        messagePayloadPojo.setPayloadData( data == null ? null : data.toString().getBytes() );
                         messagePayloads.add( messagePayloadPojo );
                     }
                     replyMessageContext.getMessagePojo().setMessagePayloads( messagePayloads );

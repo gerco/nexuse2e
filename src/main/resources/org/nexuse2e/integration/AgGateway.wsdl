@@ -1,78 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<definitions name="AgGatewayDocumentExchange"
-    targetNamespace="urn:aggateway:names:ws:docexchange"
-    xmlns:tns="urn:aggateway:names:ws:docexchange"
-    xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy"
-    xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
-    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
-    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
-    xmlns="http://schemas.xmlsoap.org/wsdl/">
-    <wsp:UsingPolicy xmlns:n1="http://schemas.xmlsoap.org/wsdl/" n1:Required="false" />
-    <wsdl:types>
-        <xsd:schema xmlns="urn:aggateway:names:ws:docexchange"
-            xmlns:tns="urn:aggateway:names:ws:docexchange" attributeFormDefault="unqualified"
-            elementFormDefault="unqualified" targetNamespace="urn:aggateway:names:ws:docexchange">
-            <xsd:element name="inboundData" type="inboundData" />
-            <xsd:complexType name="inboundData">
-                <xsd:sequence>
-                    <xsd:element minOccurs="0" name="businessProcess" type="xsd:string" />
-                    <xsd:element minOccurs="0" name="processStep" type="xsd:string" />
-                    <xsd:element minOccurs="0" name="partnerId" type="xsd:string" />
-                    <xsd:element minOccurs="0" name="partnerType" type="xsd:string" />
-                    <xsd:element minOccurs="0" name="conversationId" type="xsd:string" />
-                    <xsd:element minOccurs="0" name="messageId" type="xsd:string" />
-                    <xsd:element minOccurs="1" name="xmlPayload" type="xsd:string" />
-                </xsd:sequence>
-            </xsd:complexType>
-            <xsd:element name="outboundData" type="outboundData" />
-            <xsd:complexType name="outboundData">
-                <xsd:sequence>
-                    <xsd:element minOccurs="0" name="processStep" type="xsd:string" />
-                    <xsd:element minOccurs="0" name="messageId" type="xsd:string" />
-                    <xsd:element minOccurs="0" maxOccurs="unbounded" name="xmlPayload" type="xsd:string" />
-                </xsd:sequence>
-            </xsd:complexType>
-        </xsd:schema>
-    </wsdl:types>
-    <message name="DocExchangeInput">
-        <part name="parameters" element="tns:inboundData" />
-    </message>
-    <message name="DocExchangeOutput">
-        <part name="result" type="tns:outboundData" />
-    </message>
-    <message name="DocExchangeFault">
-        <part name="problem" type="xsd:string" />
-    </message>
-    <portType name="DocExchangePortType">
-        <operation name="execute">
-            <input message="tns:DocExchangeInput">
+<definitions name="AgGatewayDocumentExchange" 
+	targetNamespace="urn:aggateway:names:ws:docexchange" 
+	xmlns:tns="urn:aggateway:names:ws:docexchange" 
+	xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+	xmlns="http://schemas.xmlsoap.org/wsdl/">
+	<wsp:UsingPolicy xmlns:n1="http://schemas.xmlsoap.org/wsdl/" n1:Required="false"/>
+	<wsdl:types>
+		<xsd:schema xmlns="urn:aggateway:names:ws:docexchange" 
+			xmlns:tns="urn:aggateway:names:ws:docexchange" attributeFormDefault="unqualified" 
+			elementFormDefault="qualified" targetNamespace="urn:aggateway:names:ws:docexchange">
+			<xsd:element name="inboundData" type="inboundData"/>
+			<xsd:complexType name="inboundData">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" name="businessProcess" type="aggatewayToken"/>
+					<xsd:element minOccurs="0" name="processStep" type="aggatewayToken"/>
+					<xsd:element minOccurs="0" name="partnerId" type="aggatewayToken"/>
+					<xsd:element minOccurs="0" name="partnerType" type="aggatewayToken"/>
+					<xsd:element minOccurs="0" name="conversationId" type="aggatewayToken"/>
+					<xsd:element minOccurs="0" name="messageId" type="aggatewayToken"/>
+					<xsd:element minOccurs="1" name="xmlPayload" type="xmlPayload"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:element name="outboundData" type="outboundData"/>
+			<xsd:complexType name="outboundData">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" name="processStep" type="aggatewayToken"/>
+					<xsd:element minOccurs="0" name="messageId" type="aggatewayToken"/>
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="xmlPayload" type="xmlPayload"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="aggatewayToken">
+				<xsd:restriction base="xsd:token">
+					<xsd:pattern value="[a-zA-Z0-9_\-:\.]*"/>
+					<xsd:minLength value="0"/>
+					<xsd:maxLength value="128"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="xmlPayload">
+				<xsd:sequence>
+					<xsd:any namespace="##any" processContents="lax"/>
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:schema>
+	</wsdl:types>
+	<message name="DocExchangeInput">
+		<part name="parameters" element="tns:inboundData"/>
+	</message>
+	<message name="DocExchangeOutput">
+		<part name="result" type="tns:outboundData"/>
+	</message>
+	<message name="DocExchangeFault">
+		<part name="problem" type="xsd:string"/>
+	</message>
+	<portType name="DocExchangePortType">
+		<operation name="execute">
+			<input message="tns:DocExchangeInput">
             </input>
-            <output message="tns:DocExchangeOutput" />
-            <fault name="DocExchangeProblem" message="tns:DocExchangeFault" />
-        </operation>
-    </portType>
-    <binding name="DocExchangeBinding" type="tns:DocExchangePortType">
-        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
-        <operation name="execute">
-            <soap:operation soapAction="execute" />
-            <input>
-                <soap:body use="literal" />
-                <wsp:Policy>
-                    <wsp:PolicyReference URI="policy:userNameTokenPolicy" />
-                </wsp:Policy>
-            </input>
-            <output>
-                <soap:body use="literal" />
-            </output>
-            <fault name="DocExchangeProblem">
-                <soap:fault  name="DocExchangeProblem" use="literal" />
-            </fault>
-        </operation>
-    </binding>
-    <service name="AgGatewayDocumentExchange">
-        <port name="AgGatewayDocumentExchangePort" binding="tns:DocExchangeBinding">
-            <soap:address
-            location="http://www.aggateway.org/samples/ws/AgGatewayDocumentExchange_1.0" />
-        </port>
-    </service>
+			<output message="tns:DocExchangeOutput"/>
+			<fault name="DocExchangeProblem" message="tns:DocExchangeFault"/>
+		</operation>
+	</portType>
+	<binding name="DocExchangeBinding" type="tns:DocExchangePortType">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="execute">
+			<soap:operation soapAction="execute"/>
+			<input>
+				<soap:body use="literal"/>
+				<wsp:Policy>
+					<wsp:PolicyReference URI="policy:userNameTokenPolicy"/>
+				</wsp:Policy>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+			<fault name="DocExchangeProblem">
+				<soap:fault name="DocExchangeProblem" use="literal"/>
+			</fault>
+		</operation>
+	</binding>
+	<service name="AgGatewayDocumentExchange">
+		<port name="AgGatewayDocumentExchangePort" binding="tns:DocExchangeBinding">
+			<soap:address 
+			location="http://www.aggateway.org/samples/ws/AgGatewayDocumentExchange_1.0"/>
+		</port>
+	</service>
 </definitions>

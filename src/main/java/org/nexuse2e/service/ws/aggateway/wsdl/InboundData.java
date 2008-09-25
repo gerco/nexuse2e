@@ -5,6 +5,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
@@ -17,13 +19,13 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="businessProcess" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="processStep" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="partnerId" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="partnerType" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="conversationId" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="messageId" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="xmlPayload" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="businessProcess" type="{urn:aggateway:names:ws:docexchange}aggatewayToken" minOccurs="0"/>
+ *         &lt;element name="processStep" type="{urn:aggateway:names:ws:docexchange}aggatewayToken" minOccurs="0"/>
+ *         &lt;element name="partnerId" type="{urn:aggateway:names:ws:docexchange}aggatewayToken" minOccurs="0"/>
+ *         &lt;element name="partnerType" type="{urn:aggateway:names:ws:docexchange}aggatewayToken" minOccurs="0"/>
+ *         &lt;element name="conversationId" type="{urn:aggateway:names:ws:docexchange}aggatewayToken" minOccurs="0"/>
+ *         &lt;element name="messageId" type="{urn:aggateway:names:ws:docexchange}aggatewayToken" minOccurs="0"/>
+ *         &lt;element name="xmlPayload" type="{urn:aggateway:names:ws:docexchange}xmlPayload"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -44,14 +46,20 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class InboundData {
 
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     protected String businessProcess;
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     protected String processStep;
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     protected String partnerId;
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     protected String partnerType;
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     protected String conversationId;
+    @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     protected String messageId;
     @XmlElement(required = true)
-    protected String xmlPayload;
+    protected XmlPayload xmlPayload;
 
     /**
      * Gets the value of the businessProcess property.
@@ -202,10 +210,10 @@ public class InboundData {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link XmlPayload }
      *     
      */
-    public String getXmlPayload() {
+    public XmlPayload getXmlPayload() {
         return xmlPayload;
     }
 
@@ -214,10 +222,10 @@ public class InboundData {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link XmlPayload }
      *     
      */
-    public void setXmlPayload(String value) {
+    public void setXmlPayload(XmlPayload value) {
         this.xmlPayload = value;
     }
 
