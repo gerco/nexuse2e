@@ -89,7 +89,7 @@ public class AuthSSLX509TrustManager implements X509TrustManager {
     }
 
     /**
-     * @see com.sun.net.ssl.X509TrustManager#isClientTrusted(X509Certificate[])
+     * @see //com.sun.net.ssl.X509TrustManager#isClientTrusted(X509Certificate[])
      */
     public boolean isClientTrusted( X509Certificate[] certificates ) {
 
@@ -126,7 +126,7 @@ public class AuthSSLX509TrustManager implements X509TrustManager {
     }
 
     /**
-     * @see com.sun.net.ssl.X509TrustManager#isServerTrusted(X509Certificate[])
+     * @see //com.sun.net.ssl.X509TrustManager#isServerTrusted(X509Certificate[])
      */
     public boolean isServerTrusted( X509Certificate[] certificates ) {
 
@@ -163,7 +163,7 @@ public class AuthSSLX509TrustManager implements X509TrustManager {
     }
 
     /**
-     * @see com.sun.net.ssl.X509TrustManager#getAcceptedIssuers()
+     * @see //com.sun.net.ssl.X509TrustManager#getAcceptedIssuers()
      */
     public X509Certificate[] getAcceptedIssuers() {
 
