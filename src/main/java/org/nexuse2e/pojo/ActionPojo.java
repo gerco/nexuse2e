@@ -50,10 +50,12 @@ public class ActionPojo implements NEXUSe2ePojo {
     private int                     modifiedNxUserId;
     private boolean                 start;
     private boolean                 end;
+    private boolean                 pollingRequired;
     private PipelinePojo            inboundPipeline;
     private PipelinePojo            outboundPipeline;
     private PipelinePojo            statusUpdatePipeline;
     private String                  name;
+    private String                  documentType;
     @XmlElementWrapper(name = "FollowUpActions")
     @XmlElement(name = "FollowUpAction")
     private Set<FollowUpActionPojo> followUpActions  = new HashSet<FollowUpActionPojo>( 0 );
@@ -61,10 +63,10 @@ public class ActionPojo implements NEXUSe2ePojo {
     @XmlElement(name = "FollowedAction")
     private Set<FollowUpActionPojo> followedActions  = new HashSet<FollowUpActionPojo>( 0 );
 
-    private int statusUpdateNxPipelineId;
-    private int inboundNxPipelineId;
-    private int outboundNxPipelineId;
-    
+    private int                     statusUpdateNxPipelineId;
+    private int                     inboundNxPipelineId;
+    private int                     outboundNxPipelineId;
+
     // Constructors
 
     /** default constructor */
@@ -120,13 +122,15 @@ public class ActionPojo implements NEXUSe2ePojo {
     }
 
     public int getNxId() {
+
         return nxActionId;
     }
-    
+
     public void setNxId( int nxId ) {
+
         this.nxActionId = nxId;
     }
-    
+
     public ChoreographyPojo getChoreography() {
 
         return this.choreography;
@@ -202,12 +206,13 @@ public class ActionPojo implements NEXUSe2ePojo {
         }
         return inboundNxPipelineId;
     }
-    
+
     /**
      * Required for JAXB
      * @param inboundPipelineId
      */
     public void setInboundNxPipelineId( int inboundPipelineId ) {
+
         this.inboundNxPipelineId = inboundPipelineId;
     }
 
@@ -234,12 +239,13 @@ public class ActionPojo implements NEXUSe2ePojo {
         }
         return outboundNxPipelineId;
     }
-    
+
     /**
      * Required for JAXB
      * @param outboundPipelineId
      */
     public void setOutboundNxPipelineId( int outboundPipelineId ) {
+
         this.outboundNxPipelineId = outboundPipelineId;
     }
 
@@ -327,12 +333,13 @@ public class ActionPojo implements NEXUSe2ePojo {
         }
         return statusUpdateNxPipelineId;
     }
-    
+
     /**
      * Required for JAXB
      * @param statusUpdatePipelineId
      */
     public void setStatusUpdateNxPipelineId( int statusUpdateNxPipelineId ) {
+
         this.statusUpdateNxPipelineId = statusUpdateNxPipelineId;
     }
 
@@ -344,6 +351,36 @@ public class ActionPojo implements NEXUSe2ePojo {
     public void setStatusUpdatePipeline( PipelinePojo statusUpdatePipeline ) {
 
         this.statusUpdatePipeline = statusUpdatePipeline;
+    }
+
+    /**
+     * Required for JAXB
+     * @param statusUpdatePipelineId
+     */
+    @XmlAttribute
+    public boolean isPollingRequired() {
+
+        return pollingRequired;
+    }
+
+    public void setPollingRequired( boolean pollingRequired ) {
+
+        this.pollingRequired = pollingRequired;
+    }
+
+    /**
+     * Required for JAXB
+     * @param statusUpdatePipelineId
+     */
+    @XmlAttribute
+    public String getDocumentType() {
+
+        return documentType;
+    }
+
+    public void setDocumentType( String documentType ) {
+
+        this.documentType = documentType;
     }
 
 }

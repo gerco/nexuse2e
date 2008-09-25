@@ -52,6 +52,8 @@ public class ConnectionPojo implements NEXUSe2ePojo {
     private boolean              secure;
     private boolean              reliable;
     private boolean              synchronous;
+    private boolean              hold;
+    private boolean              pickUp;
     private int                  synchronousTimeout;
     private int                  retries;
     private Date                 createdDate;
@@ -417,6 +419,40 @@ public class ConnectionPojo implements NEXUSe2ePojo {
 
         // TODO Auto-generated method stub
         return nxConnectionId;
+    }
+
+    
+    /**
+     * Required for JAXB 
+     * @return
+     */
+    @XmlAttribute
+    public boolean isHold() {
+    
+        return hold;
+    }
+
+    
+    public void setHold( boolean hold ) {
+    
+        this.hold = hold;
+    }
+
+    
+    /**
+     * Required for JAXB 
+     * @return
+     */
+    @XmlAttribute
+    public boolean isPickUp() {
+    
+        return pickUp;
+    }
+
+    
+    public void setPickUp( boolean pickUp ) {
+    
+        this.pickUp = pickUp;
     }
 
 }

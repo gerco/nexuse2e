@@ -40,6 +40,14 @@
             <column name="synchronous_flag" not-null="true">
             </column>
         </property>
+        <property name="hold" type="boolean">
+            <column name="hold" not-null="true" default="false">
+            </column>
+        </property>
+        <property name="pickUp" type="boolean">
+            <column name="pick_up" not-null="true" default="false">
+            </column>
+        </property>
         <property name="synchronousTimeout" type="int">
             <column name="synchronous_timeout" not-null="true" sql-type="integer">
                 <comment></comment>
