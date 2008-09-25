@@ -47,7 +47,7 @@ public interface NEXUSe2eInterface extends Remote {
      * 
      * @deprecated Method is not required any more. Use sendNewStringMessage when sending the first message in conversation.
      */
-    @WebMethod(exclude=true)
+    @WebMethod(operationName="createConversation1", exclude=true)
     public String createConversation( String choreographyId, String businessPartnerId ) throws RemoteException, NexusException;
 
     /**
@@ -120,7 +120,7 @@ public interface NEXUSe2eInterface extends Remote {
      * @param primaryKey The primary key used to retrieve/create the payload.
      * @return The ID of the conversation that was created for this message.
      */
-    @WebMethod(exclude = true)
+    @WebMethod(operationName="triggerSendingNewMessage1", exclude = true)
     public String triggerSendingNewMessage( String choreographyId, String businessPartnerId, String actionId,
             Object primaryKey ) throws RemoteException, NexusException;
 
