@@ -19,6 +19,8 @@
  */
 package org.nexuse2e.service.ws.aggateway;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +28,10 @@ import java.util.Map;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.TrustManager;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
@@ -49,6 +54,7 @@ import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.pojo.MessagePayloadPojo;
 import org.nexuse2e.pojo.MessagePojo;
+import org.nexuse2e.pojo.ParticipantPojo;
 import org.nexuse2e.service.AbstractService;
 import org.nexuse2e.service.SenderAware;
 import org.nexuse2e.service.ws.aggateway.wsdl.DocExchangeFault;
@@ -59,6 +65,8 @@ import org.nexuse2e.service.ws.aggateway.wsdl.XmlPayload;
 import org.nexuse2e.transport.TransportSender;
 import org.nexuse2e.util.CertificateUtil;
 import org.nexuse2e.util.EncryptionUtil;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 /**
  * Service that acts as an Ag Gateway compliant web service client.
@@ -213,23 +221,35 @@ public class WSClientService extends AbstractService implements SenderAware {
             LOG.error( "Error cloning outbound message: " + e );
         }
 
+        ParticipantPojo participant = messagePojo.getParticipant();
         for ( MessagePayloadPojo payload : messagePojo.getMessagePayloads() ) {
             LOG.trace( "Calling web service at: " + receiverURL );
 
             InboundData inboundData = new InboundData();
             inboundData.setBusinessProcess( messagePojo.getConversation().getChoreography().getName() );
             inboundData.setProcessStep( messagePojo.getConversation().getCurrentAction().getName() );
-            inboundData.setPartnerId( messagePojo.getParticipant().getPartner().getPartnerId() );
-            inboundData.setPartnerType( messagePojo.getParticipant().getPartner().getPartnerIdType() );
+            inboundData.setPartnerId( participant.getLocalPartner().getPartnerId() );
+            inboundData.setPartnerType( participant.getLocalPartner().getPartnerIdType() );
             inboundData.setConversationId( messagePojo.getConversation().getConversationId() );
             inboundData.setMessageId( messagePojo.getMessageId() );
             XmlPayload p = new XmlPayload();
-            p.setAny( new String( payload.getPayloadData() ) );
+            Document d;
+            try {
+                d = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse( new ByteArrayInputStream( payload.getPayloadData() ) );
+                p.setAny( d.getDocumentElement() );
+            } catch (SAXException e) {
+                throw new NexusException( e );
+            } catch (IOException e) {
+                throw new NexusException( e );
+            } catch (ParserConfigurationException e) {
+                throw new NexusException( e );
+            }
             inboundData.setXmlPayload( p );
 
             try {
                 OutboundData outboundData = theDocExchangePortType.execute( inboundData );
 
+                
                 if ( outboundData.getXmlPayload() != null ) {
                     List<MessagePayloadPojo> messagePayloads = new ArrayList<MessagePayloadPojo>( 1 );
                     for (XmlPayload xmlPayload : outboundData.getXmlPayload()) {
@@ -298,4 +318,16 @@ public class WSClientService extends AbstractService implements SenderAware {
 
     }
     */
+    
+    @XmlRootElement
+    static class AnyImpl {
+        private String any;
+        AnyImpl( byte[] data ) {
+            any = new String( data );
+        }
+        
+        public String toString() {
+            return any;
+        }
+    }
 }
