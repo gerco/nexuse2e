@@ -19,11 +19,18 @@
  */
 package org.nexuse2e.service.ws.aggateway;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.Endpoint;
 
 import org.apache.log4j.Logger;
@@ -45,6 +52,7 @@ import org.nexuse2e.service.ws.aggateway.wsdl.DocExchangePortType;
 import org.nexuse2e.service.ws.aggateway.wsdl.InboundData;
 import org.nexuse2e.service.ws.aggateway.wsdl.OutboundData;
 import org.nexuse2e.transport.TransportReceiver;
+import org.w3c.dom.Node;
 
 /**
  * A service that dynamically registers a Ag Gateway compliant web service endpoint.
@@ -186,8 +194,26 @@ public class WSDispatcherService extends AbstractService implements ReceiverAwar
 
             Object data = parameters.getXmlPayload().getAny();
             System.out.println( "getBusinessProcess: " + parameters.getBusinessProcess() );
+            
+            
+            byte[] result = null;
+            try {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+                DOMSource xmlSource = new DOMSource( (Node)data );
+                TransformerFactory transformerFactory = TransformerFactory.newInstance();
+                Transformer transformer = transformerFactory.newTransformer();
+                transformer.transform( xmlSource, new StreamResult( baos ) );
+
+                result = baos.toByteArray();
+            } catch ( Exception e ) {
+                if ( LOG.isTraceEnabled() ) {
+                    e.printStackTrace();
+                }
+            }
+
             process( transportReceiver, parameters.getBusinessProcess(), parameters.getProcessStep(), parameters
-                    .getPartnerId(), parameters.getConversationId(), parameters.getMessageId(), (data == null ? null : data.toString()) );
+                    .getPartnerId(), parameters.getConversationId(), parameters.getMessageId(), new String( result ) );
 
             return new OutboundData();
         }
