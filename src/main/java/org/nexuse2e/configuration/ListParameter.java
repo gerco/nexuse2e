@@ -145,8 +145,10 @@ public class ListParameter implements Serializable {
      * Represents a single dropdown element.
      * @author jonas.reese
      */
-    public static class ListElement {
+    public static class ListElement implements Serializable {
 
+        private static final long serialVersionUID = 1L;
+        
         private String label;
         private String value;
 
