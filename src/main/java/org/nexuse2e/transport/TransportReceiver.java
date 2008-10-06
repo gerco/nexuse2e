@@ -215,7 +215,6 @@ public class TransportReceiver implements Pipelet, ProtocolSpecific {
     /* (non-Javadoc)
      * @see org.nexuse2e.Configurable#getParameterMap()
      */
-    @SuppressWarnings("unchecked")
     public Map<String, ParameterDescriptor> getParameterMap() {
 
         return parameterDescriptors;

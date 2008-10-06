@@ -26,7 +26,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.nexuse2e.Engine;
 import org.nexuse2e.EngineMonitor;
 import org.nexuse2e.EngineStatusSummary;
-import org.nexuse2e.StatusSummary;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 

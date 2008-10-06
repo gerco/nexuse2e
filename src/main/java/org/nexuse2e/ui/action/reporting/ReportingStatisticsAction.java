@@ -2,7 +2,6 @@ package org.nexuse2e.ui.action.reporting;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

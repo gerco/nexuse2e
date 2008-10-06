@@ -19,7 +19,6 @@
  */
 package org.nexuse2e.tools.mapping.magic;
 
-import org.nexuse2e.tools.mapping.csv.RecordEntry;
 
 /**
  * @author guido.esch

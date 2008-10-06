@@ -74,7 +74,7 @@ public class BackendPipeline extends AbstractPipeline implements ActionSpecific 
                     messageContext = backendPipelet.processMessage( messageContext );
                     if ( messageContext == null ) {
                         LOG.warn( new LogMessage( "Pipelet " + backendPipelet.getClass()
-                                + " did not return a MessageContext instance!", messageContext.getMessagePojo() ) );
+                                + " did not return a MessageContext instance!" ) );
                     }
                 }
             } else {
