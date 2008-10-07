@@ -211,7 +211,7 @@ public class HttpTestClient {
         option = new Option( "t", "threads", true, "start n threads (default is 1)" );
         option.setArgName( "n" );
         options.addOption( option );
-        option = new Option( "cid", "choregographyid", true, "the choreography ID" );
+        option = new Option( "cid", "choreographyid", true, "the choreography ID" );
         option.setArgName( "id" );
         option.setRequired( true );
         options.addOption( option );
@@ -234,7 +234,7 @@ public class HttpTestClient {
                 System.exit( 0 );
             }
             boolean plain = commandLine.hasOption( "p" );
-            List l = commandLine.getArgList();
+            List<?> l = commandLine.getArgList();
             if ( l.size() < 1 ) {
                 throw new MissingArgumentException( "file" );
             }
