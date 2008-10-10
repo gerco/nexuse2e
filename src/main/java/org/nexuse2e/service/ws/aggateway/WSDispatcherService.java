@@ -20,18 +20,27 @@
 package org.nexuse2e.service.ws.aggateway;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.CallbackHandler;
+import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.ws.Endpoint;
 
+import org.apache.cxf.jaxws.EndpointImpl;
+import org.apache.cxf.ws.security.wss4j.WSS4JInInterceptor;
 import org.apache.log4j.Logger;
+import org.apache.ws.security.WSConstants;
+import org.apache.ws.security.WSPasswordCallback;
+import org.apache.ws.security.handler.WSHandlerConstants;
 import org.nexuse2e.DynamicWSDispatcherServlet;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
@@ -63,6 +72,9 @@ public class WSDispatcherService extends AbstractService implements ReceiverAwar
     private static Logger       LOG            = Logger.getLogger( WSDispatcherService.class );
 
     private static final String URL_PARAM_NAME = "url";
+    private static final String WS_AUTH_PARAM_NAME = "wsAuth";
+    private static final String USERNAME_PARAM_NAME = "user";
+    private static final String PASSWORD_PARAM_NAME = "password";
 
     private Endpoint            endpoint;
     private TransportReceiver   transportReceiver;
@@ -72,6 +84,12 @@ public class WSDispatcherService extends AbstractService implements ReceiverAwar
 
         parameterMap.put( URL_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "Web service URL",
                 "The last part of the web service URL (e.g. /sendMessage)", "" ) );
+        parameterMap.put( WS_AUTH_PARAM_NAME, new ParameterDescriptor( ParameterType.BOOLEAN,
+                "WS* authentication", "Enable WS* authentication (username/password)", Boolean.FALSE ) );
+        parameterMap.put( USERNAME_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "User name",
+                "The user name for WS* authentication", "" ) );
+        parameterMap.put( PASSWORD_PARAM_NAME, new ParameterDescriptor( ParameterType.PASSWORD, "Password",
+                "The password for WS* authentication", "" ) );
     }
 
     @Override
@@ -85,7 +103,7 @@ public class WSDispatcherService extends AbstractService implements ReceiverAwar
         if ( getStatus() == BeanStatus.STARTED ) {
             return;
         }
-
+        
         String url = (String) getParameter( URL_PARAM_NAME );
         LOG.debug( "Web service URL extension: " + url );
 
@@ -93,6 +111,33 @@ public class WSDispatcherService extends AbstractService implements ReceiverAwar
             Object implementor = new AgGatewayDocumentExchangeImpl();
             ( (ReceiverAware) implementor ).setTransportReceiver( transportReceiver );
             endpoint = Endpoint.publish( url, implementor );
+
+            Boolean b = getParameter( WS_AUTH_PARAM_NAME );
+            // configure WS security
+            if (b != null && b.booleanValue()) {
+                org.apache.cxf.endpoint.Endpoint cxfEndpoint = ((EndpointImpl) endpoint).getServer().getEndpoint();
+                Map<String,Object> inProps= new HashMap<String,Object>();
+                inProps.put( WSHandlerConstants.ACTION, WSHandlerConstants.USERNAME_TOKEN );
+                inProps.put( WSHandlerConstants.PASSWORD_TYPE, WSConstants.PW_TEXT );
+                inProps.put( WSHandlerConstants.USER, getParameter( USERNAME_PARAM_NAME ) );
+                final String password = (String) getParameter( PASSWORD_PARAM_NAME );
+                CallbackHandler callback = new CallbackHandler() {
+                    public void handle( Callback[] callbacks ) throws IOException, UnsupportedCallbackException {
+                        WSPasswordCallback pc = (WSPasswordCallback) callbacks[0];
+                        // check password
+                        if  (password == null || !password.equals( pc.getPassword() )) {
+                            String m = "User " + pc.getIdentifer() + " tried to access AgGateway web service with an incorrect password";
+                            LOG.error( m );
+                            throw new SecurityException( m );
+                        }
+                        pc.setPassword( password );
+                    }
+                };
+                inProps.put( WSHandlerConstants.PW_CALLBACK_REF, callback );
+                WSS4JInInterceptor wssIn = new WSS4JInInterceptor( inProps );
+                cxfEndpoint.getInInterceptors().add( wssIn );
+            }
+            
             super.start();
         } catch ( Exception ex ) {
             ex.printStackTrace();

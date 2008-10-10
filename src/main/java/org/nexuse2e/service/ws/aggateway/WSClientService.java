@@ -23,12 +23,15 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.security.KeyStore;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.TrustManager;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.CallbackHandler;
+import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -38,17 +41,25 @@ import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.configuration.security.AuthorizationPolicy;
 import org.apache.cxf.configuration.security.FiltersType;
 import org.apache.cxf.endpoint.Client;
+import org.apache.cxf.endpoint.Endpoint;
 import org.apache.cxf.frontend.ClientProxy;
+import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
+import org.apache.cxf.ws.security.wss4j.WSS4JOutInterceptor;
 import org.apache.log4j.Logger;
+import org.apache.ws.security.WSConstants;
+import org.apache.ws.security.WSPasswordCallback;
+import org.apache.ws.security.handler.WSHandlerConstants;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.Constants;
+import org.nexuse2e.configuration.ListParameter;
 import org.nexuse2e.configuration.ParameterDescriptor;
+import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.CertificatePojo;
@@ -78,11 +89,18 @@ public class WSClientService extends AbstractService implements SenderAware {
 
     private static Logger   LOG = Logger.getLogger( WSClientService.class );
 
+    private static final String AUTH_TYPE_PARAM_NAME = "authType";
+    
     private TransportSender transportSender;
 
     @Override
     public void fillParameterMap( Map<String, ParameterDescriptor> parameterMap ) {
 
+        ListParameter authTypeDrowdown = new ListParameter();
+        authTypeDrowdown.addElement( "Basic authentication (HTTP)", "basic" );
+        authTypeDrowdown.addElement( "WS* authentication", "ws" );
+        parameterMap.put( AUTH_TYPE_PARAM_NAME, new ParameterDescriptor( ParameterType.LIST, "Authentication type",
+                "The client authentication type", authTypeDrowdown ) );
     }
 
     @Override
@@ -126,58 +144,49 @@ public class WSClientService extends AbstractService implements SenderAware {
 
         // HTTP basic auth
         String username = messageContext.getMessagePojo().getParticipant().getConnection().getLoginName();
-        String password = messageContext.getMessagePojo().getParticipant().getConnection().getPassword();
+        final String password = messageContext.getMessagePojo().getParticipant().getConnection().getPassword();
         if ( !StringUtils.isEmpty( username ) ) {
-            LOG.debug( "Using basic auth" );
-            factory.setUsername( username );
-            factory.setPassword( password );
+            ListParameter authType = getParameter( AUTH_TYPE_PARAM_NAME );
+            if (authType != null && "ws".equals( authType.getSelectedValue() )) {
+                // WS-Security - User Tokens
+                Endpoint cxfEndpoint = cxfClient.getEndpoint();
 
-            AuthorizationPolicy authorizationPolicy = httpConduit.getAuthorization();
-            if ( authorizationPolicy == null ) {
-                authorizationPolicy = new AuthorizationPolicy();
-                httpConduit.setAuthorization( authorizationPolicy );
+                Map<String, Object> outProps = new HashMap<String, Object>();
+                outProps.put( WSHandlerConstants.ACTION, WSHandlerConstants.USERNAME_TOKEN );
+                // Specify our username
+                outProps.put( WSHandlerConstants.USER, username );
+                // Password type : plain text
+                outProps.put( WSHandlerConstants.PASSWORD_TYPE, WSConstants.PW_TEXT );
+                // Callback used to retrieve password for given user.
+                CallbackHandler callback = new CallbackHandler() {
+                    public void handle( Callback[] callbacks ) throws IOException, UnsupportedCallbackException {
+                        WSPasswordCallback pc = (WSPasswordCallback) callbacks[0];
+                        // set the password for our message.
+                        pc.setPassword( password );
+                    }
+                };
+                outProps.put( WSHandlerConstants.PW_CALLBACK_REF, callback );
+                WSS4JOutInterceptor wssOut = new WSS4JOutInterceptor( outProps );
+                LoggingOutInterceptor loggingOutInterceptor = new LoggingOutInterceptor();
+                cxfEndpoint.getOutInterceptors().add( loggingOutInterceptor );
+                cxfEndpoint.getOutInterceptors().add( wssOut );
+            } else {
+                // basic auth
+                LOG.debug( "Using basic auth" );
+                factory.setUsername( username );
+                factory.setPassword( password );
+
+                AuthorizationPolicy authorizationPolicy = httpConduit.getAuthorization();
+                if ( authorizationPolicy == null ) {
+                    authorizationPolicy = new AuthorizationPolicy();
+                    httpConduit.setAuthorization( authorizationPolicy );
+                }
+                authorizationPolicy.setUserName( username );
+                authorizationPolicy.setPassword( password );
+                LOG.debug( "Credentials set" );
             }
-            authorizationPolicy.setUserName( username );
-            authorizationPolicy.setPassword( password );
-            LOG.debug( "Credentials set" );
-
-            /* WS-Security - User Tokens
-            Endpoint cxfEndpoint = cxfClient.getEndpoint();
-
-            Map<String, Object> inProps = new HashMap<String, Object>();
-            inProps.put( WSHandlerConstants.ACTION, WSHandlerConstants.USERNAME_TOKEN );
-            // Password type : plain text
-            inProps.put( WSHandlerConstants.PASSWORD_TYPE, WSConstants.PW_TEXT );
-            // for hashed password use:
-            //properties.setProperty(WSHandlerConstants.PASSWORD_TYPE, WSConstants.PW_DIGEST);
-            // Callback used to retrieve password for given user.
-            inProps.put( WSHandlerConstants.PW_CALLBACK_CLASS, ServerPasswordHandler.class.getName() );
-            WSS4JInInterceptor wssIn = new WSS4JInInterceptor( inProps );
-            LoggingInInterceptor loggingInInterceptor = new LoggingInInterceptor();
-            cxfEndpoint.getInInterceptors().add( loggingInInterceptor );
-            cxfEndpoint.getInInterceptors().add( wssIn );
-            cxfEndpoint.getInInterceptors().add( new SAAJInInterceptor() ); // 2.0.x only; not needed in 2.1+
-
-            Map<String, Object> outProps = new HashMap<String, Object>();
-            outProps.put( WSHandlerConstants.ACTION, WSHandlerConstants.USERNAME_TOKEN );
-            // Specify our username
-            outProps.put( WSHandlerConstants.USER, username );
-            // Password type : plain text
-            outProps.put( WSHandlerConstants.PASSWORD_TYPE, WSConstants.PW_TEXT );
-            // for hashed password use:
-            //properties.setProperty(WSHandlerConstants.PASSWORD_TYPE, WSConstants.PW_DIGEST);
-            // Callback used to retrieve password for given user.
-            // outProps.put( WSHandlerConstants.PW_CALLBACK_CLASS, WSClientService.ClientPasswordCallback.class.getName() );
-            outProps.put( WSHandlerConstants.PW_CALLBACK_REF, new WSClientService.ClientPasswordCallback( password ) );
-            WSS4JOutInterceptor wssOut = new WSS4JOutInterceptor( outProps );
-            LoggingOutInterceptor loggingOutInterceptor = new LoggingOutInterceptor();
-            cxfEndpoint.getOutInterceptors().add( loggingOutInterceptor );
-            cxfEndpoint.getOutInterceptors().add( wssOut );
-            // cxfEndpoint.getOutInterceptors().add( new SAAJOutInterceptor() ); // 2.0.x only; not needed in 2.1+
-            */
-
         } else {
-            LOG.debug( "Not using basic auth" );
+            LOG.debug( "Not using auth" );
         }
 
         // Enable SSL, see also http://cwiki.apache.org/confluence/display/CXF20DOC/Client+HTTP+Transport+%28including+SSL+support%29
@@ -296,38 +305,5 @@ public class WSClientService extends AbstractService implements SenderAware {
     public void setTransportSender( TransportSender transportSender ) {
 
         this.transportSender = transportSender;
-    }
-
-    /* WS-Security - User Tokens
-    class ClientPasswordCallback implements CallbackHandler {
-
-        private String password = null;
-
-        ClientPasswordCallback( String password ) {
-
-            this.password = password;
-        }
-
-        public void handle( Callback[] callbacks ) throws IOException, UnsupportedCallbackException {
-
-            WSPasswordCallback pc = (WSPasswordCallback) callbacks[0];
-
-            // set the password for our message.
-            pc.setPassword( password );
-        }
-
-    }
-    */
-    
-    @XmlRootElement
-    static class AnyImpl {
-        private String any;
-        AnyImpl( byte[] data ) {
-            any = new String( data );
-        }
-        
-        public String toString() {
-            return any;
-        }
     }
 }
