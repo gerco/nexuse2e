@@ -117,7 +117,7 @@ public class HeaderDeserializer extends AbstractPipelet {
             SOAPHeader soapHeader = soapEnvelope.getHeader();
 
             // Determine message type first
-            Iterator headerElements = soapHeader.getChildElements();
+            Iterator<?> headerElements = soapHeader.getChildElements();
             while ( headerElements.hasNext() ) {
                 Node node = (Node) headerElements.next();
                 while ( node instanceof Text && headerElements.hasNext() ) {
@@ -208,8 +208,8 @@ public class HeaderDeserializer extends AbstractPipelet {
             SOAPElement element = null;
             SOAPElement innerElement = null;
             Node node = null;
-            Iterator innerElements = null;
-            Iterator headerElements = messageHeader.getChildElements();
+            Iterator<?> innerElements = null;
+            Iterator<?> headerElements = messageHeader.getChildElements();
             while ( headerElements.hasNext() ) {
                 node = (Node) headerElements.next();
                 while ( node instanceof Text && headerElements.hasNext() ) {
@@ -379,7 +379,7 @@ public class HeaderDeserializer extends AbstractPipelet {
             Node node = null;
             // SOAPElement innerElement = null;
             // Iterator innerElements = null;
-            Iterator ackElements = acknowledgement.getChildElements();
+            Iterator<?> ackElements = acknowledgement.getChildElements();
             while ( ackElements.hasNext() ) {
                 node = (Node) ackElements.next();
                 while ( node instanceof Text && ackElements.hasNext() ) {
@@ -433,11 +433,10 @@ public class HeaderDeserializer extends AbstractPipelet {
         LOG.trace( "enter EbXMLV20HeaderDeserializer.unmarshallErrorList" );
         messagePojo.setType( org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ERROR );
 
-        SOAPElement element = null;
         Node node = null;
         // SOAPElement innerElement = null;
         // Iterator innerElements = null;
-        Iterator errorElements = errorList.getChildElements();
+        Iterator<?> errorElements = errorList.getChildElements();
         while ( errorElements.hasNext() ) {
             node = (Node) errorElements.next();
             
