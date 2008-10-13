@@ -40,7 +40,7 @@ public class NEXUSe2eUtilitiesWSClient {
         factory.setServiceClass( NEXUSe2eUtilities.class );
         factory.setAddress( "http://localhost:8080/NEXUSe2e/webservice/NEXUSe2eUtilities" );
         NEXUSe2eUtilities nexuse2eInterface = (NEXUSe2eUtilities) factory.create();
-        boolean result = nexuse2eInterface.containsPartner( "1100011011244" );
+        boolean result = nexuse2eInterface.containsPartner( "roma", "GenericFile" );
         System.out.println( "Result: " + result );
     }
 }

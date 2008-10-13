@@ -37,12 +37,17 @@ import javax.jws.soap.SOAPBinding;
 public interface NEXUSe2eUtilities {
 
     /**
-     * Returns <code>true</code> if and only if the current configuration contains a partner
-     * with the given partner ID.
-     * @param partnerId The partner ID to check.
-     * @return <code>true</code> if the partner is configured, <code>false</code> otherwise. 
+     * Returns <code>true</code> if and only if the current configuration or the specified choreography
+     * contains a partner with the given partner ID.
+     * @param partnerId The partner ID to check. Must not be <code>null</code>.
+     * @param choreographyName The name of the choreography to search the partner in. If <code>null</code>,
+     * the whole configuration is checked for the given partner ID. 
+     * @return <code>true</code> if the partner is configured (in the given choreography),
+     * <code>false</code> otherwise. 
      */
     @WebMethod(operationName = "containsPartner", action = "http://integration.nexuse2e.org/NEXUSe2eUtilities/containsPartner")
     @WebResult(name = "containsPartnerResponse")
-    public boolean containsPartner( @WebParam(name = "partnerId") String partnerId );
+    public boolean containsPartner(
+            @WebParam(name = "partnerId") String partnerId,
+            @WebParam(name = "choreographyName") String choreographyName );
 }
