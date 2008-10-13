@@ -76,7 +76,7 @@ public class HttpTestClient {
 
         public void run() {
 
-            DateFormat df = new SimpleDateFormat( "yyyy-MM-dd'T'HH:ss:SS'Z'" );
+            DateFormat df = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss'Z'" );
             try {
                 HttpClient client = new HttpClient();
                 for ( int i = 0; i < repeat; i++ ) {
@@ -203,7 +203,7 @@ public class HttpTestClient {
 
         CommandLineParser parser = new GnuParser();
         Options options = new Options();
-        options.addOption( "?", "help", false, "print out command-line options" );
+        options.addOption( "?", "help", false, "show command-line options" );
         options.addOption( "p", "plain", false, "use 'plain' request (instead of EBXML header)" );
         Option option = new Option( "r", "repeat", true, "repeat request n times" );
         option.setArgName( "n" );
