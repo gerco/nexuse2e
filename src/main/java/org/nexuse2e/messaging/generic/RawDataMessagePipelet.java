@@ -42,7 +42,9 @@ public class RawDataMessagePipelet extends AbstractPipelet {
         messagePayloadPojo.setMessage( messagePojo );
         messagePayloadPojo.setContentId(
                 Engine.getInstance().getIdGenerator( Constants.ID_GENERATOR_MESSAGE_PAYLOAD ).getId() );
-        messagePayloadPojo.setMimeType( (String) getParameter( MIME_TYPE_PARAM_NAME ) );
+        // ensure that at least the default value will be used
+        String mimeType = (String) getParameter( MIME_TYPE_PARAM_NAME );
+        messagePayloadPojo.setMimeType( mimeType != null ? mimeType : "text/plain" );
         messagePayloadPojo.setPayloadData( (byte[]) messageContext.getData() );
         List<MessagePayloadPojo> messagePayloads = new ArrayList<MessagePayloadPojo>( 1 );
         messagePayloads.add( messagePayloadPojo );

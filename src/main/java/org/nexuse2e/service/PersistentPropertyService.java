@@ -136,16 +136,24 @@ public class PersistentPropertyService extends DatabaseServiceImpl implements
     /* (non-Javadoc)
      * @see org.nexuse2e.service.PropertyService#read(java.lang.String, java.lang.String, java.lang.String)
      */
-    public String read( String namespace,
+    public synchronized String read( String namespace,
                         String namespaceVersion,
                         String propertyName ) throws SQLException {
         String value = null;
         
         Connection con = null;
         PreparedStatement stmt = null;
+        int origTxIsolation = -1;
+        boolean origAutoCommitMode = false;
         
         try {
             con = getDatabaseConnection();
+            // preserve settings to restore later
+            origTxIsolation = con.getTransactionIsolation();
+            origAutoCommitMode = con.getAutoCommit();
+            // make connection transactional
+            con.setTransactionIsolation( Connection.TRANSACTION_SERIALIZABLE );
+            con.setAutoCommit( false );
             stmt = con.prepareStatement( selectQuery );
             stmt.setString( 1, namespace );
             stmt.setString( 2, namespaceVersion );
@@ -160,6 +168,9 @@ public class PersistentPropertyService extends DatabaseServiceImpl implements
                 stmt.close();
             }
             if ( con != null ) {
+                // restore original settings
+                con.setTransactionIsolation( origTxIsolation );
+                con.setAutoCommit( origAutoCommitMode );
                 releaseDatabaseConnection( con );
             }
         }
@@ -170,18 +181,24 @@ public class PersistentPropertyService extends DatabaseServiceImpl implements
     /* (non-Javadoc)
      * @see org.nexuse2e.service.PropertyService#remove(java.lang.String, java.lang.String, java.lang.String)
      */
-    public String remove( String namespace,
+    public synchronized String remove( String namespace,
                           String namespaceVersion,
                           String propertyName ) throws SQLException {
         String value = null;
         
         Connection con = null;
         PreparedStatement stmt = null;
+        int origTxIsolation = -1;
+        boolean origAutoCommitMode = false;
         
         try {
             con = getDatabaseConnection();
-            con.setAutoCommit( false );
+            // preserve settings to restore later
+            origTxIsolation = con.getTransactionIsolation();
+            origAutoCommitMode = con.getAutoCommit();
+            // make connection transactional
             con.setTransactionIsolation( Connection.TRANSACTION_SERIALIZABLE );
+            con.setAutoCommit( false );
             // first get
             stmt = con.prepareStatement( selectQuery );
             stmt.setString( 1, namespace );
@@ -209,6 +226,9 @@ public class PersistentPropertyService extends DatabaseServiceImpl implements
                 stmt.close();
             }
             if ( con != null ) {
+                // restore original settings
+                con.setTransactionIsolation( origTxIsolation );
+                con.setAutoCommit( origAutoCommitMode );
                 releaseDatabaseConnection( con );
             }
         }
@@ -219,17 +239,23 @@ public class PersistentPropertyService extends DatabaseServiceImpl implements
     /* (non-Javadoc)
      * @see org.nexuse2e.service.PropertyService#store(java.lang.String, java.lang.String, java.lang.String, java.lang.Object)
      */
-    public void store( String namespace,
+    public synchronized void store( String namespace,
                        String namespaceVersion,
                        String propertyName,
                        String value ) throws SQLException {
         Connection con = null;
         PreparedStatement stmt = null;
+        int origTxIsolation = -1;
+        boolean origAutoCommitMode = false;
         
         try {
             con = getDatabaseConnection();
-            con.setAutoCommit( false );
+            // preserve settings to restore later
+            origTxIsolation = con.getTransactionIsolation();
+            origAutoCommitMode = con.getAutoCommit();
+            // make connection transactional
             con.setTransactionIsolation( Connection.TRANSACTION_SERIALIZABLE );
+            con.setAutoCommit( false );
             // first get
             stmt = con.prepareStatement( selectQuery );
             stmt.setString( 1, namespace );
@@ -266,6 +292,9 @@ public class PersistentPropertyService extends DatabaseServiceImpl implements
                 stmt.close();
             }
             if ( con != null ) {
+                // restore original settings
+                con.setTransactionIsolation( origTxIsolation );
+                con.setAutoCommit( origAutoCommitMode );
                 releaseDatabaseConnection( con );
             }
         }
