@@ -21,6 +21,7 @@ package org.nexuse2e.service.ws.aggateway;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +36,11 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
@@ -43,7 +49,9 @@ import org.apache.cxf.configuration.security.FiltersType;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.endpoint.Endpoint;
 import org.apache.cxf.frontend.ClientProxy;
+import org.apache.cxf.interceptor.LoggingInInterceptor;
 import org.apache.cxf.interceptor.LoggingOutInterceptor;
+import org.apache.cxf.jaxws.JaxWsClientFactoryBean;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
@@ -77,6 +85,8 @@ import org.nexuse2e.transport.TransportSender;
 import org.nexuse2e.util.CertificateUtil;
 import org.nexuse2e.util.EncryptionUtil;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 /**
@@ -124,7 +134,7 @@ public class WSClientService extends AbstractService implements SenderAware {
 
         String receiverURL = messageContext.getParticipant().getConnection().getUri();
 
-        JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
+        JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean(new JaxWsClientFactoryBean());
 
         MessagePojo messagePojo = messageContext.getMessagePojo();
 
@@ -167,9 +177,11 @@ public class WSClientService extends AbstractService implements SenderAware {
                 };
                 outProps.put( WSHandlerConstants.PW_CALLBACK_REF, callback );
                 WSS4JOutInterceptor wssOut = new WSS4JOutInterceptor( outProps );
-                LoggingOutInterceptor loggingOutInterceptor = new LoggingOutInterceptor();
-                cxfEndpoint.getOutInterceptors().add( loggingOutInterceptor );
                 cxfEndpoint.getOutInterceptors().add( wssOut );
+                if (LOG.isDebugEnabled()) {
+                    cxfEndpoint.getOutInterceptors().add( new LoggingOutInterceptor() );
+                    cxfEndpoint.getInInterceptors().add( new LoggingInInterceptor() );
+                }
             } else {
                 // basic auth
                 LOG.debug( "Using basic auth" );
@@ -244,8 +256,11 @@ public class WSClientService extends AbstractService implements SenderAware {
             XmlPayload p = new XmlPayload();
             Document d;
             try {
-                d = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse( new ByteArrayInputStream( payload.getPayloadData() ) );
-                p.setAny( d.getDocumentElement() );
+                DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+                builderFactory.setNamespaceAware( true );
+                d = builderFactory.newDocumentBuilder().parse( new ByteArrayInputStream( payload.getPayloadData() ) );
+                Element element = d.getDocumentElement();
+                p.setAny( element );
             } catch (SAXException e) {
                 throw new NexusException( e );
             } catch (IOException e) {
@@ -258,18 +273,38 @@ public class WSClientService extends AbstractService implements SenderAware {
             try {
                 OutboundData outboundData = theDocExchangePortType.execute( inboundData );
 
-                
+                outboundData.getProcessStep();
                 if ( outboundData.getXmlPayload() != null ) {
+                    TransformerFactory transformerFactory = TransformerFactory.newInstance();
+                    
                     List<MessagePayloadPojo> messagePayloads = new ArrayList<MessagePayloadPojo>( 1 );
                     for (XmlPayload xmlPayload : outboundData.getXmlPayload()) {
-                        LOG.trace( "Returned document:\n" + xmlPayload );
+                        String document = null;
+                        try {
+                            Transformer transformer = transformerFactory.newTransformer();
+                            transformer.setOutputProperty( "indent", "yes" );
+                            StringWriter writer = new StringWriter();
+                            StreamResult result = new StreamResult( writer );
+                            Element element = (Element) xmlPayload.getAny();
+                            
+                            // hack: fix the missing namespace definition which doesn't come out for some strange reason
+                            Node node = element.getFirstChild();
+                            String prefix = node.getPrefix();
+                            element.setAttribute( "xmlns" + (StringUtils.isBlank( prefix ) ? "" : ":" + prefix), element.getNamespaceURI() );
+                            
+                            // serialize the document
+                            transformer.transform(new DOMSource( element ), result );
+                            document = writer.getBuffer().toString();
+                        } catch (TransformerException e) {
+                            throw new NexusException( e );
+                        }
+                        LOG.trace( "Returned document:\n" + document );
                         MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo();
                         messagePayloadPojo.setMessage( replyMessageContext.getMessagePojo() );
                         messagePayloadPojo.setContentId( Engine.getInstance().getIdGenerator(
                                 Constants.ID_GENERATOR_MESSAGE_PAYLOAD ).getId() );
                         messagePayloadPojo.setMimeType( "text/xml" );
-                        Object data = xmlPayload.getAny();
-                        messagePayloadPojo.setPayloadData( data == null ? null : data.toString().getBytes() );
+                        messagePayloadPojo.setPayloadData( (document == null ? null : document.getBytes()) );
                         messagePayloads.add( messagePayloadPojo );
                     }
                     replyMessageContext.getMessagePojo().setMessagePayloads( messagePayloads );
