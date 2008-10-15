@@ -1,0 +1,170 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    <soap:Header>
+        <wsse:Security
+            xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
+            soap:mustUnderstand="1">
+            <wsse:UsernameToken
+                xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
+                xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+                wsu:Id="UsernameToken-4711760">
+                <wsse:Username
+                    xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
+                    >1027109</wsse:Username>
+                <wsse:Password
+                    xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
+                    Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText"
+                    >Test_123</wsse:Password>
+            </wsse:UsernameToken>
+        </wsse:Security>
+    </soap:Header>
+    <soap:Body>
+        <inboundData xmlns="urn:aggateway:names:ws:docexchange">
+            <businessProcess>${ChoreographyID}</businessProcess>
+            <processStep>${ActionID}</processStep>
+            <partnerId>${SenderID}</partnerId>
+            <partnerType>GLN</partnerType>
+            <conversationId>${ConversationID}</conversationId>
+            <messageId>${MessageID}</messageId>
+            <xmlPayload>
+                <ProductMovementReport:ProductMovementReport xmlns=""
+                    xmlns:ProductMovementReport="urn:cidx:names:specification:ces:schema:all:5:0"
+                    xmlns:cidx="urn:cidx:names:specification:ces:schema:all:5:0"
+                    xmlns:ns5="urn:cidx:names:specification:ces:schema:all:5:0" Version="5.0">
+                    <ns5:Header>
+                        <ns5:ThisDocumentIdentifier>
+                            <ns5:DocumentIdentifier>I2_Test1a</ns5:DocumentIdentifier>
+                        </ns5:ThisDocumentIdentifier>
+                        <ns5:ThisDocumentDateTime>
+                            <ns5:DateTime DateTimeQualifier="On">2005-05-05T15:55:34Z</ns5:DateTime>
+                        </ns5:ThisDocumentDateTime>
+                        <ns5:From>
+                            <ns5:PartnerInformation>
+                                <ns5:PartnerName>FALOR FARM CENTER INC</ns5:PartnerName>
+                                <ns5:PartnerIdentifier Agency="AGIIS-EBID">0615121660000</ns5:PartnerIdentifier>
+                                <ns5:ContactInformation>
+                                    <ns5:ContactName>SeedTrak</ns5:ContactName>
+                                    <ns5:ContactDescription>DataSource</ns5:ContactDescription>
+                                </ns5:ContactInformation>
+                                <ns5:ContactInformation>
+                                    <ns5:ContactName>03.23.05</ns5:ContactName>
+                                    <ns5:ContactDescription>SoftwareVersion</ns5:ContactDescription>
+                                </ns5:ContactInformation>
+                                <ns5:ContactInformation>
+                                    <ns5:ContactName>2005</ns5:ContactName>
+                                    <ns5:ContactDescription>SeedYear</ns5:ContactDescription>
+                                </ns5:ContactInformation>
+                            </ns5:PartnerInformation>
+                        </ns5:From>
+                        <ns5:To>
+                            <ns5:PartnerInformation>
+                                <ns5:PartnerName>MONSANTO AGRICULTURAL CO</ns5:PartnerName>
+                                <ns5:PartnerIdentifier Agency="AGIIS-EBID"
+                                >0062668030000</ns5:PartnerIdentifier>
+                            </ns5:PartnerInformation>
+                        </ns5:To>
+                    </ns5:Header>
+                    <ns5:ProductMovementReportBody>
+                        <ns5:ProductMovementReportDetails>
+                            <ns5:ReportingEntity>
+                                <ns5:PartnerInformation>
+                                    <ns5:PartnerName>FALOR FARM CENTER INC</ns5:PartnerName>
+                                    <ns5:PartnerIdentifier Agency="AGIIS-EBID"
+                                    >0615121660000</ns5:PartnerIdentifier>
+                                </ns5:PartnerInformation>
+                            </ns5:ReportingEntity>
+                            <ns5:ProductMovementTransactions ProductMovementReportType="SalesReport">
+                                <ns5:ProductMovementTransaction>
+                                    <ns5:ProductMovementTransactionProperties
+                                        ProductMovementType="StockSale" SaleOrReturnType="EndUser">
+                                        <ns5:ReferenceInformation ReferenceType="InvoiceNumber">
+                                            <ns5:DocumentReference>
+                                                <ns5:DocumentIdentifier>01416-0010</ns5:DocumentIdentifier>
+                                            </ns5:DocumentReference>
+                                        </ns5:ReferenceInformation>
+                                        <ns5:EventDateTime EventDateType="InvoiceDate">
+                                            <ns5:DateTime DateTimeQualifier="On"
+                                                >2002-03-25T10:00:00Z</ns5:DateTime>
+                                        </ns5:EventDateTime>
+                                        <ns5:EventDateTime EventDateType="ShipDate">
+                                            <ns5:DateTime DateTimeQualifier="On"
+                                                >2002-03-25T10:00:00Z</ns5:DateTime>
+                                        </ns5:EventDateTime>
+                                        <ns5:LanguageCode Domain="ISO-639-2T">eng</ns5:LanguageCode>
+                                        <ns5:CurrencyCode Domain="ISO-4217">USD</ns5:CurrencyCode>
+                                    </ns5:ProductMovementTransactionProperties>
+                                    <ns5:ProductMovementTransactionPartners>
+                                        <ns5:ShipTo>
+                                            <ns5:PartnerInformation>
+                                                <ns5:PartnerName>DALE CREAGER</ns5:PartnerName>
+                                                <ns5:PartnerIdentifier Agency="AssignedBySeller"
+                                                  >53806</ns5:PartnerIdentifier>
+                                                <ns5:ContactInformation>
+                                                  <ns5:ContactName>DALE CREAGER</ns5:ContactName>
+                                                  <ns5:ContactNumber>4193352111</ns5:ContactNumber>
+                                                </ns5:ContactInformation>
+                                                <ns5:AddressInformation>
+                                                  <ns5:AddressLine>7891 COUNTY ROAD 10</ns5:AddressLine>
+                                                  <ns5:AddressLine>4456 Main Street</ns5:AddressLine>
+                                                  <ns5:CityName>DELTA</ns5:CityName>
+                                                  <ns5:StateOrProvince>OH</ns5:StateOrProvince>
+                                                  <ns5:PostalCode>435159455</ns5:PostalCode>
+                                                  <ns5:PostalCountry>USA</ns5:PostalCountry>
+                                                </ns5:AddressInformation>
+                                            </ns5:PartnerInformation>
+                                        </ns5:ShipTo>
+                                        <ns5:OtherPartner PartnerRole="ShipFrom">
+                                            <ns5:PartnerInformation>
+                                                <ns5:PartnerName>FALOR FARM CENTER INC</ns5:PartnerName>
+                                                <ns5:PartnerIdentifier Agency="AGIIS-EBID"
+                                                  >0615121660000</ns5:PartnerIdentifier>
+                                                <ns5:AddressInformation>
+                                                  <ns5:AddressLine>7891 COUNTY ROAD 10</ns5:AddressLine>
+                                                  <ns5:AddressLine>7689 main Street</ns5:AddressLine>
+                                                  <ns5:CityName>DELTA</ns5:CityName>
+                                                  <ns5:StateOrProvince>OH</ns5:StateOrProvince>
+                                                  <ns5:PostalCode>435159455</ns5:PostalCode>
+                                                  <ns5:PostalCountry>USA</ns5:PostalCountry>
+                                                </ns5:AddressInformation>
+                                            </ns5:PartnerInformation>
+                                        </ns5:OtherPartner>
+                                        <ns5:OtherPartner PartnerRole="SoldTo">
+                                            <ns5:PartnerInformation>
+                                                <ns5:PartnerName>Jason Huesling</ns5:PartnerName>
+                                                <ns5:PartnerIdentifier Agency="AGIIS-EBID"
+                                                  >5673245465768</ns5:PartnerIdentifier>
+                                                <ns5:AddressInformation>
+                                                  <ns5:AddressLine>456 Creve Coeur Mill Road</ns5:AddressLine>
+                                                  <ns5:AddressLine>River Bend</ns5:AddressLine>
+                                                  <ns5:CityName>Saint Louis</ns5:CityName>
+                                                  <ns5:StateOrProvince>MO</ns5:StateOrProvince>
+                                                  <ns5:PostalCode>631419455</ns5:PostalCode>
+                                                  <ns5:PostalCountry>USA</ns5:PostalCountry>
+                                                </ns5:AddressInformation>
+                                            </ns5:PartnerInformation>
+                                        </ns5:OtherPartner>
+                                    </ns5:ProductMovementTransactionPartners>
+                                    <ns5:ProductMovementTransactionDetails>
+                                        <ns5:ProductMovementProductLineItem>
+                                            <ns5:LineNumber>10</ns5:LineNumber>
+                                            <ns5:ProductIdentification>
+                                                <ns5:ProductIdentifier Agency="UPC"
+                                                >070183066810</ns5:ProductIdentifier>
+                                            </ns5:ProductIdentification>
+                                            <ns5:ProductQuantity>
+                                                <ns5:Measurement>
+                                                  <ns5:MeasurementValue>10</ns5:MeasurementValue>
+                                                  <ns5:UnitOfMeasureCode Domain="UN-Rec-20"
+                                                  >BG</ns5:UnitOfMeasureCode>
+                                                </ns5:Measurement>
+                                            </ns5:ProductQuantity>
+                                        </ns5:ProductMovementProductLineItem>
+                                    </ns5:ProductMovementTransactionDetails>
+                                </ns5:ProductMovementTransaction>
+                            </ns5:ProductMovementTransactions>
+                        </ns5:ProductMovementReportDetails>
+                    </ns5:ProductMovementReportBody>
+                </ProductMovementReport:ProductMovementReport>
+            </xmlPayload>
+        </inboundData>
+    </soap:Body>
+</soap:Envelope>

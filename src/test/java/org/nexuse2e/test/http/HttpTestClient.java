@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -32,8 +33,6 @@ import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.nexuse2e.NexusException;
-import org.nexuse2e.configuration.NexusUUIDGenerator;
 
 /**
  * A command-line tool that allows to initiate one or more HTTP requests
@@ -85,9 +84,10 @@ public class HttpTestClient {
                     
                     String urlParams = "";
 
-                    NexusUUIDGenerator idGenerator = new NexusUUIDGenerator();
-                    String messageId = idGenerator.getId();
-                    String conversationId = idGenerator.getId();
+                    UUID isoUuid = UUID.randomUUID();
+                    String conversationId = isoUuid.toString();
+                    isoUuid = UUID.randomUUID();
+                    String messageId = isoUuid.toString();
 
                     if ( plain ) {
                         StringBuffer buffer = new StringBuffer( "?" );
@@ -110,6 +110,7 @@ public class HttpTestClient {
                         method.setParameter( "ParticipantID", participantId );
                         method.setParameter( "ConversationID", conversationId );
                         method.setParameter( "MessageID", messageId );
+                        //out( "Request: " + content );
                         RequestEntity requestEntity = new StringRequestEntity( content, "text/xml", "UTF-8" );
                         method.setRequestEntity( requestEntity );
                     } else {
@@ -123,6 +124,7 @@ public class HttpTestClient {
                         replaced = StringUtils.replace( replaced, "${MessageID}", messageId );
                         replaced = StringUtils.replace( replaced, "${Timestamp}", timestamp );
                         RequestEntity requestEntity = new StringRequestEntity( replaced, "multipart/related", "UTF-8" );
+                        //out( "Request: " + replaced );
                         method.setRequestEntity( requestEntity );
                     }
                     long time = System.currentTimeMillis();
@@ -142,8 +144,6 @@ public class HttpTestClient {
                 e.printStackTrace();
             } catch ( IOException e ) {
                 System.err.println( e.getMessage() );
-            } catch ( NexusException e ) {
-                e.printStackTrace();
             } catch ( InterruptedException ignored ) {
             }
         }

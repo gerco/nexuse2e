@@ -1,0 +1,40 @@
+<project name="nexuse2e-testclient" default="jar" basedir=".">
+  <property file="nexuse2e-build.properties" />
+
+  <property name="targetDir" value="${basedir}/target" />
+  <property name="jarDir" value="${targetDir}/httptestclient" />
+
+
+  <target name="jar" description="Package the HTTP test client">
+    <echo message="Packaging HttpTestClient.jar..." />
+    <mkdir dir="${jarDir}" />
+    <mkdir dir="${jarDir}/lib" />
+    <copy todir="${jarDir}/lib" flatten="true">
+      <fileset dir="${targetDir}">
+        <include name="nexuse2e-server*/WEB-INF/lib/commons-cli*.jar" />
+        <include name="nexuse2e-server*/WEB-INF/lib/commons-codec*.jar" />
+        <include name="nexuse2e-server*/WEB-INF/lib/commons-httpclient*.jar" />
+        <include name="nexuse2e-server*/WEB-INF/lib/commons-io*.jar" />
+        <include name="nexuse2e-server*/WEB-INF/lib/commons-lang*.jar" />
+        <include name="nexuse2e-server*/WEB-INF/lib/commons-logging*.jar" />
+      </fileset>
+    </copy>
+    <fileset dir="${jarDir}/lib" includes="*.jar" id="jars"/>
+
+    <pathconvert property="classpath" refid="jars" pathsep=" " dirsep="/">
+      <map from="${jarDir}/lib" to="lib"/>
+    </pathconvert>
+
+    <jar destfile="${jarDir}/httptestclient.jar">
+      <fileset dir="${targetDir}/test-classes" id="testClasses" />
+      <manifest>
+        <attribute name="main-class" value="org.nexuse2e.test.http.HttpTestClient" />
+		<attribute name="class-path" value="${classpath}"/>
+      </manifest>
+    </jar>
+
+    <copy todir="${jarDir}">
+      <fileset dir="${basedir}/src/test/java/org/nexuse2e/test/http/" includes="*.txt"/>
+    </copy>
+  </target>
+</project>
