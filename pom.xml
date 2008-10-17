@@ -18,7 +18,7 @@
        <enabled>false</enabled>
      </snapshots>
    </repository>
- </repositories>
+  </repositories>
  <dependencies>
    <dependency>
      <groupId>junit</groupId>
@@ -386,7 +386,7 @@
    <dependency>
      <groupId>com.jcraft</groupId>
      <artifactId>jsch</artifactId>
-     <version>0.1.38</version>
+     <version>0.1.40</version>
      <scope>compile</scope>
    </dependency>
    <dependency>

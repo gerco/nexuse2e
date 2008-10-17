@@ -32,3 +32,6 @@ mvn install:install-file -DgroupId=org.eclipse.birt -DartifactId=modelapi -Dvers
 
 # jgroups
 mvn install:install-file -DgroupId=jgroups -DartifactId=jgroups-all -Dversion=2.6.2 -Dpackaging=jar -Dfile=lib/jgroups-all.jar
+
+# jsch
+mvn install:install-file -DgroupId=com.jcraft -DartifactId=jsch -Dversion=0.1.40 -Dpackaging=jar -Dfile=lib/jsch-0.1.40.jar
