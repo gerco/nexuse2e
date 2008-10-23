@@ -41,6 +41,8 @@ abstract public class AbstractPipelet implements Pipelet {
     protected boolean                          frontendPipelet;
     protected boolean                          forwardPipelet;
     protected BeanStatus                       status       = BeanStatus.UNDEFINED;
+    
+    protected Pipeline                         pipeline;
 
     /* (non-Javadoc)
      * @see org.nexuse2e.Manageable#activate()
@@ -82,7 +84,6 @@ abstract public class AbstractPipelet implements Pipelet {
     /* (non-Javadoc)
      * @see org.nexuse2e.Configurable#getParameterMap()
      */
-    @SuppressWarnings("unchecked")
     public Map<String, ParameterDescriptor> getParameterMap() {
 
         return parameterMap;
@@ -151,6 +152,14 @@ abstract public class AbstractPipelet implements Pipelet {
 
         frontendPipelet = isFrontendPipelet;
 
+    }
+    
+    public Pipeline getPipeline() {
+        return pipeline;
+    }
+    
+    public void setPipeline( Pipeline pipeline ) {
+        this.pipeline = pipeline;
     }
 
 }

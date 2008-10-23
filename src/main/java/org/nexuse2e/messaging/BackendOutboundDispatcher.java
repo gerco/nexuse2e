@@ -60,6 +60,8 @@ public class BackendOutboundDispatcher extends StateMachineExecutor implements P
     private boolean                                  frontendPipeline;
 
     private Map<String, Object>                      parameters                 = new HashMap<String, Object>();
+    
+    private Pipeline                                 pipeline;
 
     /* (non-Javadoc)
      * @see org.nexuse2e.messaging.Pipelet#processMessage(org.nexuse2e.messaging.MessageContext)
@@ -340,5 +342,19 @@ public class BackendOutboundDispatcher extends StateMachineExecutor implements P
 
         frontendPipeline = isFrontendPipelet;
 
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.messaging.Pipelet#getPipeline()
+     */
+    public Pipeline getPipeline() {
+        return pipeline;
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.messaging.Pipelet#setPipeline(org.nexuse2e.messaging.Pipeline)
+     */
+    public void setPipeline( Pipeline pipeline ) {
+        this.pipeline = pipeline;
     }
 } // BackendOutboundDispatcher

@@ -99,7 +99,6 @@ public class PipelineForm extends ActionForm {
     /**
      * @param component
      */
-    @SuppressWarnings("unchecked")
     public void setProperties( PipelinePojo pipeline ) {
 
         if ( pipeline == null ) {
@@ -329,6 +328,40 @@ public class PipelineForm extends ActionForm {
     public List<PipeletPojo> getPipelets() {
 
         return pipelets;
+    }
+    
+    /**
+     * Returns all pipelets that have the <code>forward</code> flag set to <code>true</code>.
+     * @return A copied collection containing all forward pipelets.
+     */
+    public List<PipeletPojo> getForwardPipelets() {
+
+        List<PipeletPojo> forwardPipelets = new ArrayList<PipeletPojo>();
+        if (pipelets != null) {
+            for (PipeletPojo pipelet : pipelets) {
+                if (pipelet.isForward()) {
+                    forwardPipelets.add( pipelet );
+                }
+            }
+        }
+        return forwardPipelets;
+    }
+    
+    /**
+     * Returns all pipelets that have the <code>forward</code> flag set to <code>false</code>.
+     * @return A copied collection containing all backward pipelets.
+     */
+    public List<PipeletPojo> getReturnPipelets() {
+
+        List<PipeletPojo> returnPipelets = new ArrayList<PipeletPojo>();
+        if (pipelets != null) {
+            for (PipeletPojo pipelet : pipelets) {
+                if (!pipelet.isForward()) {
+                    returnPipelets.add( pipelet );
+                }
+            }
+        }
+        return returnPipelets;
     }
     
     /**

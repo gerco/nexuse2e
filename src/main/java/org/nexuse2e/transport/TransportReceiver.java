@@ -37,6 +37,7 @@ import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.messaging.FrontendPipeline;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.messaging.Pipelet;
+import org.nexuse2e.messaging.Pipeline;
 import org.nexuse2e.service.ReceiverAware;
 import org.nexuse2e.service.Service;
 import org.nexuse2e.service.http.HttpReceiverService;
@@ -291,5 +292,16 @@ public class TransportReceiver implements Pipelet, ProtocolSpecific {
      */
     public void setFrontendPipelet( boolean isFrontendPipelet ) {
 
+    }
+    
+    public void setPipeline( Pipeline pipeline ) {
+        if (!(pipeline instanceof FrontendPipeline)) {
+            throw new IllegalArgumentException( "Parent pipeline for TransportReceiver must be a FrontendPipeline" );
+        }
+        this.frontendPipeline = (FrontendPipeline) pipeline;
+    }
+    
+    public Pipeline getPipeline() {
+        return getFrontendPipeline();
     }
 }

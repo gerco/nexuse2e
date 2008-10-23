@@ -33,24 +33,42 @@ import org.nexuse2e.Manageable;
 public interface Pipelet extends Configurable, Manageable, MessageProcessor {
 
     /**
-     * @return
+     * Determines if this <code>Pipelet</code> is a forward pipelet.
+     * @return The <code>forward</code> status. Defaults to <code>true</code>.
      */
     public boolean isForwardPipelet();
     
     /**
-     * @param isForwardPipelet
+     * Sets the <code>forward</code> status.
+     * @param isForwardPipelet <code>true</code> if this shall be a forward pipelet,
+     * <code>false</code> otherwise.
      */
-    public void setForwardPipelet(boolean isForwardPipelet);
+    public void setForwardPipelet( boolean isForwardPipelet );
     
     /**
-     * @return
+     * Gets the <code>frontendPipelet</code> state.
+     * @return <code>true</code> if this is a frontend pipelet, <code>false</code> 
+     * if this is a backend pipelet.
      */
     public boolean isFrontendPipelet();
     
     /**
-     * @param isFrontendPipelet
+     * Sets the <code>frontendPipelet</code> state.
+     * @param isFrontendPipelet <code>true</code> if this pipelet shall be a frontend
+     * pipelet, <code>false</code> if it shall be a backend pipelet.
      */
-    public void setFrontendPipelet(boolean isFrontendPipelet);
+    public void setFrontendPipelet( boolean isFrontendPipelet );
     
+    /**
+     * Gets the parent <code>Pipeline</code>.
+     * @return The parent pipeline.
+     */
+    public Pipeline getPipeline();
+    
+    /**
+     * Sets the parent <code>Pipeline</code>.
+     * @param pipeline The parent pipeline to set.
+     */
+    public void setPipeline( Pipeline pipeline );
  
 } // Pipelet

@@ -66,6 +66,8 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
 
     private boolean                                   frontendPipelet;
     private boolean                                   forwardPipelet;
+    
+    private Pipeline                                  pipeline;
 
     /**
      * temporary !!
@@ -544,5 +546,13 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
 
         frontendPipelet = isFrontendPipelet;
 
+    }
+
+    public Pipeline getPipeline() {
+        return pipeline;
+    }
+
+    public void setPipeline( Pipeline pipeline ) {
+        this.pipeline = pipeline;
     }
 } // FrontendInboundDispatcher

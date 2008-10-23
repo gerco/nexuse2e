@@ -21,9 +21,9 @@ package org.nexuse2e.pojo;
 
 // Generated 02.11.2006 15:39:42 by Hibernate Tools 3.2.0.beta6a
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -53,13 +53,13 @@ public class PipeletPojo implements NEXUSe2ePojo {
     private int                    modifiedNxUserId;
     private int                    position;
     private boolean                frontend;
-    private boolean                forward          = true;
+    private boolean                forward;
     private boolean                endpoint;
     private String                 name;
     private String                 description;
     @XmlElementWrapper(name = "PipeletParams")
     @XmlElement(name = "PipeletParam")
-    private List<PipeletParamPojo> pipeletParams    = new Vector<PipeletParamPojo>( 0 );
+    private List<PipeletParamPojo> pipeletParams;
 
     private int                    nxComponentId;
     
@@ -70,6 +70,8 @@ public class PipeletPojo implements NEXUSe2ePojo {
 
         createdDate = new Date();
         modifiedDate = createdDate;
+        forward          = true;
+        pipeletParams = new ArrayList<PipeletParamPojo>( 0 );
     }
 
     /** minimal constructor */

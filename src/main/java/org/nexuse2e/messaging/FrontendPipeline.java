@@ -43,6 +43,13 @@ public class FrontendPipeline extends AbstractPipeline implements ProtocolSpecif
     private ProtocolSpecificKey key;
 
     /**
+     * Constructs a new empty <code>FrontendPipeline</code>.
+     */
+    public FrontendPipeline() {
+        
+    }
+    
+    /**
      * Process a message in the NEXUSe2e frontent. Processing of inbound messages could contains steps like these:
      * <ol>
      * <li>The massage data is unpacked using an approriate MessageUnpackager</li>

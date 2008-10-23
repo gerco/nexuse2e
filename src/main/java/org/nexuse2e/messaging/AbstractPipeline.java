@@ -60,6 +60,10 @@ abstract public class AbstractPipeline implements Pipeline {
      */
     public void setPipelineEndpoint( MessageProcessor pipelineEndpoint ) {
 
+        if (pipelineEndpoint instanceof Pipelet) {
+            ((Pipelet) pipelineEndpoint).setPipeline( this );
+        }
+        
         this.pipelineEndpoint = pipelineEndpoint;
     }
 
@@ -76,6 +80,12 @@ abstract public class AbstractPipeline implements Pipeline {
      */
     public void setForwardPipelets( Pipelet[] forwardPipelets ) {
 
+        if (forwardPipelets != null) {
+            for (Pipelet pipelet : forwardPipelets) {
+                pipelet.setPipeline( this );
+            }
+        }
+        
         this.forwardPipelets = forwardPipelets;
     }
 
@@ -91,6 +101,12 @@ abstract public class AbstractPipeline implements Pipeline {
      * @param returnPipeline the returnPipeline to set
      */
     public void setReturnPipelets( Pipelet[] returnPipelets ) {
+
+        if (returnPipelets != null) {
+            for (Pipelet pipelet : returnPipelets) {
+                pipelet.setPipeline( this );
+            }
+        }
 
         this.returnPipelets = returnPipelets;
     }

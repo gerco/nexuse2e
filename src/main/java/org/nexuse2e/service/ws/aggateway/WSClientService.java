@@ -24,9 +24,11 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.security.KeyStore;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.TrustManager;
@@ -62,18 +64,24 @@ import org.apache.ws.security.WSPasswordCallback;
 import org.apache.ws.security.handler.WSHandlerConstants;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.ProtocolSpecificKey;
 import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.Constants;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ListParameter;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.messaging.FrontendPipeline;
 import org.nexuse2e.messaging.MessageContext;
+import org.nexuse2e.messaging.Pipeline;
 import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.CertificatePojo;
+import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.MessagePayloadPojo;
 import org.nexuse2e.pojo.MessagePojo;
 import org.nexuse2e.pojo.ParticipantPojo;
+import org.nexuse2e.pojo.TRPPojo;
 import org.nexuse2e.service.AbstractService;
 import org.nexuse2e.service.SenderAware;
 import org.nexuse2e.service.ws.aggateway.wsdl.DocExchangeFault;
@@ -84,6 +92,7 @@ import org.nexuse2e.service.ws.aggateway.wsdl.XmlPayload;
 import org.nexuse2e.transport.TransportSender;
 import org.nexuse2e.util.CertificateUtil;
 import org.nexuse2e.util.EncryptionUtil;
+import org.nexuse2e.util.FileUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -100,6 +109,8 @@ public class WSClientService extends AbstractService implements SenderAware {
     private static Logger   LOG = Logger.getLogger( WSClientService.class );
 
     private static final String AUTH_TYPE_PARAM_NAME = "authType";
+    private static final String SEND_RESPONSE_TO_FRONTEND_PARAM_NAME = "sendResponseToFrontend";
+    private static final String EXCEPTIONS_PARAM_NAME = "exceptions";
     
     private TransportSender transportSender;
 
@@ -111,6 +122,10 @@ public class WSClientService extends AbstractService implements SenderAware {
         authTypeDrowdown.addElement( "WS* authentication", "ws" );
         parameterMap.put( AUTH_TYPE_PARAM_NAME, new ParameterDescriptor( ParameterType.LIST, "Authentication type",
                 "The client authentication type", authTypeDrowdown ) );
+        parameterMap.put( SEND_RESPONSE_TO_FRONTEND_PARAM_NAME, new ParameterDescriptor( ParameterType.BOOLEAN, "Process response",
+                "Activate in order to process the WS response through a frontend inbound pipeline", Boolean.TRUE ) );
+        parameterMap.put( EXCEPTIONS_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "Exceptions",
+                "Comma-separated list of action names (process steps) that shall/shall not be processed through a frontend inbound pipeline", "" ) );
     }
 
     @Override
@@ -273,54 +288,30 @@ public class WSClientService extends AbstractService implements SenderAware {
             try {
                 OutboundData outboundData = theDocExchangePortType.execute( inboundData );
 
-                outboundData.getProcessStep();
-                if ( outboundData.getXmlPayload() != null ) {
-                    TransformerFactory transformerFactory = TransformerFactory.newInstance();
-                    
-                    List<MessagePayloadPojo> messagePayloads = new ArrayList<MessagePayloadPojo>( 1 );
-                    for (XmlPayload xmlPayload : outboundData.getXmlPayload()) {
-                        String document = null;
-                        try {
-                            Transformer transformer = transformerFactory.newTransformer();
-                            transformer.setOutputProperty( "indent", "yes" );
-                            StringWriter writer = new StringWriter();
-                            StreamResult result = new StreamResult( writer );
-                            Element element = (Element) xmlPayload.getAny();
-                            
-                            // hack: fix the missing namespace definition which doesn't come out for some strange reason
-                            Node node = element.getFirstChild();
-                            String prefix = node.getPrefix();
-                            element.setAttribute( "xmlns" + (StringUtils.isBlank( prefix ) ? "" : ":" + prefix), element.getNamespaceURI() );
-                            
-                            // serialize the document
-                            transformer.transform(new DOMSource( element ), result );
-                            document = writer.getBuffer().toString();
-                        } catch (TransformerException e) {
-                            throw new NexusException( e );
-                        }
-                        LOG.trace( "Returned document:\n" + document );
-                        MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo();
-                        messagePayloadPojo.setMessage( replyMessageContext.getMessagePojo() );
-                        messagePayloadPojo.setContentId( Engine.getInstance().getIdGenerator(
-                                Constants.ID_GENERATOR_MESSAGE_PAYLOAD ).getId() );
-                        messagePayloadPojo.setMimeType( "text/xml" );
-                        messagePayloadPojo.setPayloadData( (document == null ? null : document.getBytes()) );
-                        messagePayloads.add( messagePayloadPojo );
-                    }
-                    replyMessageContext.getMessagePojo().setMessagePayloads( messagePayloads );
-
-                    if ( outboundData.getProcessStep() != null ) {
-                        replyMessageContext.getMessagePojo().setMessageId( outboundData.getMessageId() );
-                    }
-
-                    if ( outboundData.getMessageId() != null ) {
-                        ActionPojo action = Engine.getInstance().getActiveConfigurationAccessService()
-                                .getActionFromChoreographyByActionId(
-                                        replyMessageContext.getMessagePojo().getConversation().getChoreography(),
-                                        outboundData.getProcessStep() );
-                        replyMessageContext.getMessagePojo().setAction( action );
+                // process messageContext through applicable frontend inbound pipeline
+                ProtocolSpecificKey key = ((FrontendPipeline) transportSender.getPipeline()).getKey();
+                EngineConfiguration config = Engine.getInstance().getCurrentConfiguration();
+                TRPPojo trp = config.getTrpByProtocolVersionAndTransport(
+                        key.getCommunicationProtocolId(), key.getCommunicationProtocolVersion(), key.getTransportProtocolId() );
+                if (trp == null) {
+                    LOG.error( "Error: No TRP configured for " + key );
+                } else {
+                    Pipeline pipeline = config.getFrontendInboundPipelines().get( trp );
+                    if (pipeline == null) {
+                        LOG.error( "Error: No frontend inbound pipeline configured for " + key );
                     } else {
-                        replyMessageContext.getMessagePojo().setMessageId( null );
+                        LOG.info( "Frontend inbound pipeline found for " + key + ", processing return message" );
+                        replyMessageContext = initializeReplyMessageContext(
+                                replyMessageContext,
+                                outboundData,
+                                messageContext.getConversation().getConversationId(),
+                                messageContext.getChoreography().getName() );
+                        if (replyMessageContext == null) { // filtered
+                            LOG.info( "Message with message ID " + outboundData.getMessageId() +
+                                    " (" + outboundData.getProcessStep() + ") filtered, not processing." );
+                        } else {
+                            pipeline.processMessage( replyMessageContext );
+                        }
                     }
                 }
 
@@ -330,10 +321,98 @@ public class WSClientService extends AbstractService implements SenderAware {
             }
         }
 
-        if ( replyMessageContext.getMessagePojo().getMessagePayloads().isEmpty() ) {
-            replyMessageContext = null;
+        return messageContext;
+    }
+    
+    private boolean filtered( String actionId ) {
+        
+        String exceptions = getParameter( EXCEPTIONS_PARAM_NAME );
+        boolean match = false;
+        if (exceptions != null) {
+            StringTokenizer st = new StringTokenizer( exceptions, "," );
+            while (st.hasMoreTokens()) {
+                String s = st.nextToken().trim();
+                if (actionId.matches( FileUtil.dosStyleToRegEx( s ) )) {
+                    match = true;
+                    break;
+                }
+            }
+        }
+        
+        Boolean b = getParameter( SEND_RESPONSE_TO_FRONTEND_PARAM_NAME );
+        return !(match ^ (b == null || b.booleanValue()));
+    }
+    
+    private MessageContext initializeReplyMessageContext(
+            MessageContext replyMessageContext,
+            OutboundData outboundData,
+            String conversationId,
+            String choreographyId ) throws NexusException {
+
+        String actionId = outboundData.getProcessStep();
+        
+        if (filtered( actionId )) {
+            return null;
         }
 
+        String messageId = outboundData.getMessageId();
+        MessagePojo message = replyMessageContext.getMessagePojo();
+        EngineConfiguration config = Engine.getInstance().getCurrentConfiguration();
+        ChoreographyPojo choreography = config.getChoreographyByChoreographyId( choreographyId );
+        if (choreography == null) {
+            throw new NexusException( "Choreography " + choreographyId + " was not found" );
+        }
+        ActionPojo action = config.getActionFromChoreographyByActionId( choreography, actionId );
+        if (action == null) {
+            throw new NexusException( "Action " + actionId + " was not found in choreography " + choreographyId );
+        }
+        message.setAction( action );
+        message.setCreatedDate( new Date() );
+        message.setMessageId( messageId );
+        message.setOutbound( false );
+        replyMessageContext.setMessagePojo( message );
+        
+        if ( outboundData.getXmlPayload() != null ) {
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            
+            List<MessagePayloadPojo> messagePayloads = new ArrayList<MessagePayloadPojo>( 1 );
+            for (XmlPayload xmlPayload : outboundData.getXmlPayload()) {
+                String document = null;
+                try {
+                    Transformer transformer = transformerFactory.newTransformer();
+                    transformer.setOutputProperty( "indent", "yes" );
+                    StringWriter writer = new StringWriter();
+                    StreamResult result = new StreamResult( writer );
+                    Element element = (Element) xmlPayload.getAny();
+                    
+                    // hack: fix the missing namespace definition which doesn't come out for some strange reason
+                    Node node = element.getFirstChild();
+                    String prefix = node.getPrefix();
+                    element.setAttribute( "xmlns" + (StringUtils.isBlank( prefix ) ? "" : ":" + prefix), element.getNamespaceURI() );
+                    
+                    // serialize the document
+                    transformer.transform(new DOMSource( element ), result );
+                    document = writer.getBuffer().toString();
+                } catch (TransformerException e) {
+                    throw new NexusException( e );
+                }
+                LOG.trace( "Returned document:\n" + document );
+                MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo();
+                messagePayloadPojo.setMessage( replyMessageContext.getMessagePojo() );
+                messagePayloadPojo.setContentId( Engine.getInstance().getIdGenerator(
+                        Constants.ID_GENERATOR_MESSAGE_PAYLOAD ).getId() );
+                messagePayloadPojo.setMimeType( "text/xml" );
+                messagePayloadPojo.setPayloadData( (document == null ? null : document.getBytes()) );
+                messagePayloads.add( messagePayloadPojo );
+            }
+            replyMessageContext.getMessagePojo().setMessagePayloads( messagePayloads );
+
+            if ( outboundData.getProcessStep() != null ) {
+                replyMessageContext.getMessagePojo().setMessageId( outboundData.getMessageId() );
+            }
+        }
+
+        
         return replyMessageContext;
     }
 
