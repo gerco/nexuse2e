@@ -423,8 +423,9 @@ public class ConnectionPojo implements NEXUSe2ePojo {
 
     
     /**
-     * Required for JAXB 
-     * @return
+     * Gets the hold flag.
+     * @return <code>true</code> if this connection is held on outbound traffic,
+     * <code>false</code> otherwise.
      */
     @XmlAttribute
     public boolean isHold() {
@@ -432,7 +433,10 @@ public class ConnectionPojo implements NEXUSe2ePojo {
         return hold;
     }
 
-    
+    /**
+     * Sets the hold flag.
+     * @param hold If <code>true</code>, this outbound messages are held, otherwise not.
+     */
     public void setHold( boolean hold ) {
     
         this.hold = hold;
@@ -440,8 +444,8 @@ public class ConnectionPojo implements NEXUSe2ePojo {
 
     
     /**
-     * Required for JAXB 
-     * @return
+     * Gets the pickUp flag.
+     * @return <code>true</code> if this connection is polled, <code>false</code> otherwise.
      */
     @XmlAttribute
     public boolean isPickUp() {
@@ -449,7 +453,10 @@ public class ConnectionPojo implements NEXUSe2ePojo {
         return pickUp;
     }
 
-    
+    /**
+     * Sets the pickUp flag.
+     * @param pickUp If <code>true</code>, this connection is polled, otherwise not.
+     */
     public void setPickUp( boolean pickUp ) {
     
         this.pickUp = pickUp;

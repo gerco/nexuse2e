@@ -51,6 +51,8 @@ public class PartnerConnectionForm extends ActionForm {
     private boolean              secure;
     private boolean              reliable;
     private boolean              synchronous;
+    private boolean              pickUp;
+    private boolean              hold;
     private int                  synchronousTimeout;
     private int                  retries;
     private String               name;
@@ -70,6 +72,7 @@ public class PartnerConnectionForm extends ActionForm {
         setSecure( false );
         setReliable( false );
         setSynchronous( false );
+        setPickUp( false );
         setSynchronousTimeout( 0 );
         setRetries( 0 );
         setName( null );
@@ -89,6 +92,8 @@ public class PartnerConnectionForm extends ActionForm {
         con.setSecure( isSecure() );
         con.setReliable( isReliable() );
         con.setSynchronous( isSynchronous() );
+        con.setHold( isHold() );
+        con.setPickUp( isPickUp() );
         con.setSynchronousTimeout( getSynchronousTimeout() );
         con.setRetries( getRetries() );
         con.setName( getName() );
@@ -143,6 +148,8 @@ public class PartnerConnectionForm extends ActionForm {
         setMessageInterval( con.getMessageInterval() );
         setSecure( con.isSecure() );
         setReliable( con.isReliable() );
+        setHold( con.isHold() );
+        setPickUp( con.isPickUp() );
         setSynchronous( con.isSynchronous() );
         setSynchronousTimeout( con.getSynchronousTimeout() );
         setRetries( con.getRetries() );
@@ -319,6 +326,39 @@ public class PartnerConnectionForm extends ActionForm {
     public void setSynchronous( boolean synchronous ) {
 
         this.synchronous = synchronous;
+    }
+
+    /**
+     * Gets the pickUp flag.
+     * @return <code>true</code> if this connection is polled, <code>false</code> otherwise.
+     */
+    public boolean isPickUp() {
+        return pickUp;
+    }
+
+    /**
+     * Sets the pickUp flag.
+     * @param pickUp If <code>true</code>, this connection is polled, otherwise not.
+     */
+    public void setPickUp( boolean pickUp ) {
+        this.pickUp = pickUp;
+    }
+
+    /**
+     * Gets the hold flag.
+     * @return <code>true</code> if this connection is held on outbound traffic,
+     * <code>false</code> otherwise.
+     */
+    public boolean isHold() {
+        return hold;
+    }
+
+    /**
+     * Sets the hold flag.
+     * @param hold If <code>true</code>, this outbound messages are held, otherwise not.
+     */
+    public void setHold(boolean hold) {
+        this.hold = hold;
     }
 
     /**

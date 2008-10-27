@@ -19,6 +19,7 @@
  */
 package org.nexuse2e.ui.form;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -47,7 +48,8 @@ public class ChoreographyActionForm extends ActionForm {
     private String             choreographyId            = null;
     private boolean            startAction               = false;
     private boolean            terminationAction         = false;
-    private Vector             followupActions           = new Vector();
+    private List<String>       followupActions           = new ArrayList<String>();
+    private String             documentType              = null;
     private int                backendInboundPipelineId  = 0;
     private int                backendOutboundPipelineId = 0;
     private int                statusUpdatePipelineId    = 0;
@@ -67,6 +69,7 @@ public class ChoreographyActionForm extends ActionForm {
     @Override
     public void reset( ActionMapping arg0, HttpServletRequest arg1 ) {
 
+        setDocumentType( null );
         setStartAction( false );
         setTerminationAction( false );
         setFollowups( new String[0] );
@@ -79,6 +82,7 @@ public class ChoreographyActionForm extends ActionForm {
 
         setActionId( null );
         setChoreographyId( null );
+        setDocumentType( null );
         setStartAction( false );
         setTerminationAction( false );
         setBackendInboundPipelineId( 0 );
@@ -91,6 +95,7 @@ public class ChoreographyActionForm extends ActionForm {
         setNxActionId( action.getNxActionId() );
         setNxChoreographyId( action.getChoreography().getNxChoreographyId() );
         setActionId( action.getName() );
+        setDocumentType( action.getDocumentType() );
         setChoreographyId( action.getChoreography().getName() );
         setStartAction( action.isStart() );
         setTerminationAction( action.isEnd() );
@@ -107,6 +112,7 @@ public class ChoreographyActionForm extends ActionForm {
 
     public ActionPojo getProperties( ActionPojo action ) {
 
+        action.setDocumentType( getDocumentType() );
         action.setName( getActionId() );
         action.setStart( isStartAction() );
         action.setEnd( isTerminationAction() );
@@ -141,13 +147,23 @@ public class ChoreographyActionForm extends ActionForm {
 
         this.choreographyId = choreographyId;
     }
+    
+    public String getDocumentType() {
 
-    public Vector getFollowupActions() {
+        return documentType;
+    }
+
+    public void setDocumentType(String documentType) {
+        
+        this.documentType = documentType;
+    }
+
+    public List<String> getFollowupActions() {
 
         return followupActions;
     }
 
-    public void setFollowupActions( Vector followupActions ) {
+    public void setFollowupActions( List<String> followupActions ) {
 
         this.followupActions = followupActions;
     }

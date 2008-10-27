@@ -84,14 +84,12 @@ public interface ConfigurationAccessService {
     /**
      * @return
      */
-    @SuppressWarnings("unchecked")
     public abstract List<PipelinePojo> getFrontendPipelinePojos(int type,
             Comparator<PipelinePojo> comparator);
 
     /**
      * @return
      */
-    @SuppressWarnings("unchecked")
     public abstract List<PipelinePojo> getBackendPipelinePojos(int type,
             Comparator<PipelinePojo> comparator);
 
@@ -172,7 +170,6 @@ public interface ConfigurationAccessService {
     public abstract List<ComponentPojo> getComponents(ComponentType type,
             Comparator comparator) throws NexusException;
 
-    @SuppressWarnings("unchecked")
     public abstract List<ComponentPojo> getPipelets(boolean frontend)
             throws NexusException;
 

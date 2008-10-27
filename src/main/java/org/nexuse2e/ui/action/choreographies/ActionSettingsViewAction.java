@@ -19,10 +19,11 @@
  */
 package org.nexuse2e.ui.action.choreographies;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -102,15 +103,15 @@ public class ActionSettingsViewAction extends NexusE2EAction {
         }
         Iterator<ActionPojo> i = followUps.iterator();
 
-        Vector followUpVector = new Vector();
-        Vector followUpSelectedVector = new Vector();
+        List<String> followUpVector = new ArrayList<String>();
+        List<String> followUpSelectedVector = new ArrayList<String>();
         while ( i.hasNext() ) {
             ActionPojo follow = i.next();
-            followUpVector.addElement( follow.getName() );
+            followUpVector.add( follow.getName() );
             Iterator<FollowUpActionPojo> followI = action.getFollowUpActions().iterator();
             while ( followI.hasNext() ) {
                 if ( follow.getName().equals( followI.next().getFollowUpAction().getName() ) ) {
-                    followUpSelectedVector.addElement( follow.getName() );
+                    followUpSelectedVector.add( follow.getName() );
                 }
             }
         }
@@ -120,7 +121,6 @@ public class ActionSettingsViewAction extends NexusE2EAction {
             followUpSelectedVector.toArray( followUpArray );
         }
         form.setFollowups( followUpArray );
-        form.setFollowupActions( followUpVector );
 
         form.setBackendInboundPipelines( engineConfiguration.getBackendPipelinePojos(
                 Constants.PIPELINE_TYPE_INBOUND, Constants.PIPELINECOMPARATOR ) );

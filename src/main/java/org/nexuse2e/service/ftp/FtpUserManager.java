@@ -52,7 +52,7 @@ public class FtpUserManager implements UserManager {
         return null;
     }
 
-    public Collection getAllUserNames() throws FtpException {
+    public Collection<String> getAllUserNames() throws FtpException {
         try {
             ConfigurationAccessService cas = Engine.getInstance().getActiveConfigurationAccessService();
             List<PartnerPojo> partners = cas.getPartners( 0, null );
