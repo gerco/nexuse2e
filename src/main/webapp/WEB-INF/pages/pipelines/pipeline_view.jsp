@@ -81,7 +81,7 @@
 			</td>
 		</tr>
 
-		<logic:iterate id="pipelet" name="pipelineForm" property="pipelets" indexId="index">
+		<logic:iterate id="pipelet" name="pipelineForm" property="forwardPipelets" indexId="index">
 			<tr>
 				<td class="NEXUSName">${index + 1}. <bean:write
 					name="pipelet" property="name" /></td>
