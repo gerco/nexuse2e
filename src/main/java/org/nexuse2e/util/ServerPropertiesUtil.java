@@ -13,13 +13,26 @@ public class ServerPropertiesUtil {
 
     public static enum ServerProperty {
 
-        ROOTDIR("${nexus.server.root}"), PARTNERID("${nexus.message.partnerid}"), PARTNERNAME(
-                "${nexus.message.partnername}"), CHOREOGRAPHY("${nexus.message.choreography}"), ACTION(
-                "${nexus.message.action}"), CONVERSATION("${nexus.message.conversation}"), MESSAGE(
-                "${nexus.message.message}"), CREATED_DATE("${nexus.message.createdDate}"), PAYLOAD_SEQUENCE(
-                "${nexus.message.payload.sequence}"), PAYLOAD_CONDITIONAL_SEQUENCE(
-                "${nexus.message.payload.conditionalsequence}"), PAYLOAD_MIME_TYPE("${nexus.message.payload.mimetype}"),
-                SERVER_CURRENTMILLIS("${nexus.server.time.millis}"),SERVER_CURRENTTIME("${nexus.server.time.formated}");
+        ROOTDIR("${nexus.server.root}"),
+        PARTNERID("${nexus.message.partnerid}"),
+        PARTNERNAME("${nexus.message.partnername}"),
+        PARTNER_ID("${nexus.message.partner.id}"),
+        PARTNER_ID_TYPE("${nexus.message.partner.id.type}"),
+        PARTNER_NAME("${nexus.message.partner.name}"),
+        LOCAL_PARTNER_ID("${nexus.message.localpartner.id}"),
+        LOCAL_PARTNER_ID_TYPE("${nexus.message.localpartner.id.type}"),
+        LOCAL_PARTNER_NAME("${nexus.message.localpartner.name}"),
+        CHOREOGRAPHY("${nexus.message.choreography}"),
+        ACTION("${nexus.message.action}"),
+        DOCUMENT_TYPE("${nexus.message.action.documenttype}"),
+        CONVERSATION("${nexus.message.conversation}"),
+        MESSAGE("${nexus.message.message}"),
+        CREATED_DATE("${nexus.message.createdDate}"),
+        PAYLOAD_SEQUENCE("${nexus.message.payload.sequence}"),
+        PAYLOAD_CONDITIONAL_SEQUENCE("${nexus.message.payload.conditionalsequence}"),
+        PAYLOAD_MIME_TYPE("${nexus.message.payload.mimetype}"),
+        SERVER_CURRENTMILLIS("${nexus.server.time.millis}"),
+        SERVER_CURRENTTIME("${nexus.server.time.formated}");
 
         private String value;
 
@@ -91,20 +104,49 @@ public class ServerPropertiesUtil {
                     value = StringUtils.replace( value, property.getValue(), df.format( new Date() ) );
                 }
                 if ( context != null ) {
-                    if ( property.equals( ServerProperty.PARTNERID ) ) {
+                    if ( property.equals( ServerProperty.PARTNERID ) || property.equals( ServerProperty.PARTNER_ID ) ) {
                         if ( context.getMessagePojo().getParticipant().getPartner() != null ) {
                             String partnerId = context.getMessagePojo().getParticipant().getPartner().getPartnerId();
                             if ( !StringUtils.isEmpty( partnerId ) ) {
                                 value = StringUtils.replace( value, property.getValue(), partnerId );
                             }
                         }
-                    } else if ( property.equals( ServerProperty.PARTNERNAME ) ) {
+                    } else if ( property.equals( ServerProperty.PARTNER_ID_TYPE ) ) {
+                        if ( context.getMessagePojo().getParticipant().getPartner() != null ) {
+                            String idType = context.getMessagePojo().getParticipant().getPartner().getPartnerIdType();
+                            if ( !StringUtils.isEmpty( idType ) ) {
+                                value = StringUtils.replace( value, property.getValue(), idType );
+                            }
+                        }
+                    } else if ( property.equals( ServerProperty.PARTNERNAME ) || property.equals( ServerProperty.PARTNER_NAME ) ) {
                         if ( context.getMessagePojo().getParticipant().getPartner() != null ) {
                             String partnerName = context.getMessagePojo().getParticipant().getPartner().getName();
                             if ( !StringUtils.isEmpty( partnerName ) ) {
                                 value = StringUtils.replace( value, property.getValue(), partnerName );
                             }
                         }
+                    } else if ( property.equals( ServerProperty.LOCAL_PARTNER_ID ) ) {
+                        if ( context.getMessagePojo().getParticipant().getPartner() != null ) {
+                            String partnerId = context.getMessagePojo().getParticipant().getLocalPartner().getPartnerId();
+                            if ( !StringUtils.isEmpty( partnerId ) ) {
+                                value = StringUtils.replace( value, property.getValue(), partnerId );
+                            }
+                        }
+                    } else if ( property.equals( ServerProperty.LOCAL_PARTNER_ID_TYPE ) ) {
+                        if ( context.getMessagePojo().getParticipant().getPartner() != null ) {
+                            String idType = context.getMessagePojo().getParticipant().getLocalPartner().getPartnerIdType();
+                            if ( !StringUtils.isEmpty( idType ) ) {
+                                value = StringUtils.replace( value, property.getValue(), idType );
+                            }
+                        }
+                    } else if ( property.equals( ServerProperty.LOCAL_PARTNER_NAME ) ) {
+                        if ( context.getMessagePojo().getParticipant().getPartner() != null ) {
+                            String partnerName = context.getMessagePojo().getParticipant().getLocalPartner().getName();
+                            if ( !StringUtils.isEmpty( partnerName ) ) {
+                                value = StringUtils.replace( value, property.getValue(), partnerName );
+                            }
+                        }
+
                     } else if ( property.equals( ServerProperty.CHOREOGRAPHY ) ) {
                         if ( context.getMessagePojo().getConversation().getChoreography() != null ) {
                             String choreography = context.getMessagePojo().getConversation().getChoreography().getName();
@@ -122,6 +164,18 @@ public class ServerPropertiesUtil {
                             String action = context.getMessagePojo().getAction().getName();
                             if ( !StringUtils.isEmpty( action ) ) {
                                 value = StringUtils.replace( value, property.getValue(), action );
+                            }
+                        }
+                    } else if (property.equals( ServerProperty.DOCUMENT_TYPE )) {
+                        if (context.getConversation() != null && context.getConversation().getCurrentAction() != null) {
+                            String docType = context.getConversation().getCurrentAction().getDocumentType();
+                            if (!StringUtils.isEmpty( docType )) {
+                                value = StringUtils.replace( value, property.getValue(), docType );
+                            }
+                        } else if(context.getMessagePojo() != null && context.getMessagePojo().getAction() != null) {
+                            String docType = context.getMessagePojo().getAction().getDocumentType();
+                            if ( !StringUtils.isEmpty( docType ) ) {
+                                value = StringUtils.replace( value, property.getValue(), docType );
                             }
                         }
                     } else if ( property.equals( ServerProperty.CONVERSATION ) ) {

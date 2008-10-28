@@ -351,7 +351,7 @@ public class WSClientService extends AbstractService implements SenderAware {
 
         String actionId = outboundData.getProcessStep();
         
-        if (filtered( actionId )) {
+        if (actionId == null || filtered( actionId )) {
             return null;
         }
 
@@ -371,6 +371,7 @@ public class WSClientService extends AbstractService implements SenderAware {
         message.setMessageId( messageId );
         message.setOutbound( false );
         replyMessageContext.setMessagePojo( message );
+        replyMessageContext.setOriginalMessagePojo( message );
         
         if ( outboundData.getXmlPayload() != null ) {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();

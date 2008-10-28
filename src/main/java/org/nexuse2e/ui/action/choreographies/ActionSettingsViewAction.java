@@ -103,24 +103,25 @@ public class ActionSettingsViewAction extends NexusE2EAction {
         }
         Iterator<ActionPojo> i = followUps.iterator();
 
-        List<String> followUpVector = new ArrayList<String>();
-        List<String> followUpSelectedVector = new ArrayList<String>();
+        List<String> followUpList = new ArrayList<String>();
+        List<String> followUpSelectedList = new ArrayList<String>();
         while ( i.hasNext() ) {
             ActionPojo follow = i.next();
-            followUpVector.add( follow.getName() );
+            followUpList.add( follow.getName() );
             Iterator<FollowUpActionPojo> followI = action.getFollowUpActions().iterator();
             while ( followI.hasNext() ) {
                 if ( follow.getName().equals( followI.next().getFollowUpAction().getName() ) ) {
-                    followUpSelectedVector.add( follow.getName() );
+                    followUpSelectedList.add( follow.getName() );
                 }
             }
         }
         String[] followUpArray = new String[0];
-        if ( followUpSelectedVector.size() > 0 ) {
-            followUpArray = new String[followUpSelectedVector.size()];
-            followUpSelectedVector.toArray( followUpArray );
+        if ( followUpSelectedList.size() > 0 ) {
+            followUpArray = new String[followUpSelectedList.size()];
+            followUpSelectedList.toArray( followUpArray );
         }
         form.setFollowups( followUpArray );
+        form.setFollowupActions( followUpList );
 
         form.setBackendInboundPipelines( engineConfiguration.getBackendPipelinePojos(
                 Constants.PIPELINE_TYPE_INBOUND, Constants.PIPELINECOMPARATOR ) );
