@@ -27,7 +27,7 @@
             </column>
         </property>
         <property name="payloadData" type="org.nexuse2e.pojo.BinaryBlobType" >
-            <column name="payload_data" not-null="true" length="8000000">
+            <column name="payload_data" not-null="true" length="33554432">
                 <comment></comment>
             </column>
         </property>

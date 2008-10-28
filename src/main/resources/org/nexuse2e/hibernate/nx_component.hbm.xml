@@ -39,7 +39,7 @@
         </property>
         
         <property name="className" type="string">
-            <column name="class_name" length="256" not-null="true">
+            <column name="class_name" length="1024" not-null="true">
                 <comment></comment>
             </column>
         </property>
