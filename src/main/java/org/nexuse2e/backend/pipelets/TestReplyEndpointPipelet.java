@@ -146,8 +146,7 @@ public class TestReplyEndpointPipelet extends AbstractPipelet {
         RequestResponseData requestResponseData = null;
         String requestString = null;
 
-        for ( Iterator iter = messageContext.getMessagePojo().getMessagePayloads().iterator(); iter.hasNext(); ) {
-            MessagePayloadPojo messagePayloadPojo = (MessagePayloadPojo) iter.next();
+        for (MessagePayloadPojo messagePayloadPojo : messageContext.getMessagePojo().getMessagePayloads()) {
 
             if ( ( directory != null ) && ( directory.length() != 0 ) ) {
                 try {

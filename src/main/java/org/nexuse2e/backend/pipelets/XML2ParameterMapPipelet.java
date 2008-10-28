@@ -24,7 +24,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
 
@@ -108,7 +107,7 @@ public class XML2ParameterMapPipelet extends AbstractPipelet {
 
         InputSource inputSource = new InputSource( new StringReader( requestResponseData.getResponseString() ) );
 
-        Map map = flattenXML( inputSource );
+        Map<String, String> map = flattenXML( inputSource );
 
         requestResponseData.setParameters( map );
 
@@ -141,9 +140,10 @@ public class XML2ParameterMapPipelet extends AbstractPipelet {
             throw new NexusException( e );
         }
 
-        for ( Iterator iter = map.keySet().iterator(); iter.hasNext(); ) {
-            String key = (String) iter.next();
-            LOG.trace( key + " - " + map.get( key ) );
+        if (LOG.isTraceEnabled()) {
+            for ( String key : map.keySet() ) {
+                LOG.trace( key + " - " + map.get( key ) );
+            }
         }
 
         return map;
@@ -174,8 +174,7 @@ public class XML2ParameterMapPipelet extends AbstractPipelet {
             // LOG.trace( "endElement: '" + localName + "'" );
             StringBuffer path = new StringBuffer();
 
-            for ( Iterator iter = stack.iterator(); iter.hasNext(); ) {
-                String element = (String) iter.next();
+            for ( String element : stack ) {
                 path.append( pathSeparator + element );
             }
             // LOG.trace( "path: " + path );
@@ -219,8 +218,7 @@ public class XML2ParameterMapPipelet extends AbstractPipelet {
             InputSource xmlSource = new InputSource( new FileInputStream( args[0] ) );
 
             Map<String, String> map = new XML2ParameterMapPipelet().flattenXML( xmlSource );
-            for ( Iterator iter = map.keySet().iterator(); iter.hasNext(); ) {
-                String key = (String) iter.next();
+            for ( String key : map.keySet() ) {
                 System.out.println( key + " - " + map.get( key ) );
             }
         } catch ( Exception e ) {

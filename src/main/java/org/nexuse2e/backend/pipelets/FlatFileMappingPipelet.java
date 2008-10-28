@@ -22,7 +22,6 @@ package org.nexuse2e.backend.pipelets;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -149,8 +148,7 @@ public class FlatFileMappingPipelet extends AbstractPipelet {
 
         try {
             List<MessagePayloadPojo> payloads = messageContext.getMessagePojo().getMessagePayloads();
-            for ( Iterator iter = payloads.iterator(); iter.hasNext(); ) {
-                MessagePayloadPojo messagePayloadPojo = (MessagePayloadPojo) iter.next();
+            for (MessagePayloadPojo messagePayloadPojo : payloads) {
                 String contentString = new String( messagePayloadPojo.getPayloadData() );
                 ByteArrayInputStream bias = new ByteArrayInputStream( contentString.getBytes() );
 

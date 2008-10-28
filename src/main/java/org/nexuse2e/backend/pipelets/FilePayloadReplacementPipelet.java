@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -110,8 +109,7 @@ public class FilePayloadReplacementPipelet extends AbstractPipelet {
 
         List<MessagePayloadPojo> messagePayloads = messageContext.getMessagePojo().getMessagePayloads();
 
-        for ( Iterator iter = messagePayloads.iterator(); iter.hasNext(); ) {
-            MessagePayloadPojo messagePayloadPojo = (MessagePayloadPojo) iter.next();
+        for (MessagePayloadPojo messagePayloadPojo : messagePayloads) {
             LOG.debug( "File to send: '" + fileName + "'" );
 
             // Only execute if a file name was specified
