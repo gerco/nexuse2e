@@ -19,6 +19,7 @@
  */
 package org.nexuse2e.service.ws.aggateway;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ import java.util.Map;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.UnsupportedCallbackException;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -46,6 +48,7 @@ import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Layer;
+import org.nexuse2e.configuration.NexusUUIDGenerator;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.messaging.Constants;
@@ -58,7 +61,10 @@ import org.nexuse2e.service.ws.aggateway.wsdl.DocExchangeFault;
 import org.nexuse2e.service.ws.aggateway.wsdl.DocExchangePortType;
 import org.nexuse2e.service.ws.aggateway.wsdl.InboundData;
 import org.nexuse2e.service.ws.aggateway.wsdl.OutboundData;
+import org.nexuse2e.service.ws.aggateway.wsdl.XmlPayload;
 import org.nexuse2e.transport.TransportReceiver;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
@@ -168,51 +174,6 @@ public class WSDispatcherService extends AbstractService implements ReceiverAwar
         this.transportReceiver = transportReceiver;
     }
 
-    private static void process( TransportReceiver transportReceiver, String choreography, String action,
-            String partner, String conversationId, String messageId, String document ) {
-
-        MessageContext messageContext = new MessageContext();
-
-        byte[] payload = ( document != null ? document.getBytes() : null );
-
-        TransportReceiver receiver = transportReceiver;
-        if ( receiver != null ) {
-            messageContext.setData( payload );
-            if ( LOG.isTraceEnabled() ) {
-                LOG.trace( "Inbound message:\n" + document );
-            }
-
-            MessagePojo messagePojo = new MessagePojo();
-            messagePojo.setType( Constants.INT_MESSAGE_TYPE_NORMAL );
-
-            messageContext.setMessagePojo( messagePojo );
-            messageContext.setOriginalMessagePojo( messagePojo );
-            messageContext.getMessagePojo().setCustomParameters( new HashMap<String, String>() );
-
-            try {
-                if ( choreography != null && action != null && partner != null && conversationId != null
-                        && messageId != null ) {
-                    Engine.getInstance().getTransactionService().initializeMessage( messagePojo, messageId,
-                            conversationId, action, partner, choreography );
-
-                    MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo();
-                    messagePayloadPojo.setMessage( messagePojo );
-                    messagePayloadPojo.setContentId( Engine.getInstance().getIdGenerator(
-                            Constants.ID_GENERATOR_MESSAGE_PAYLOAD ).getId() );
-                    messagePayloadPojo.setMimeType( "text/xml" );
-                    messagePayloadPojo.setPayloadData( payload );
-                    List<MessagePayloadPojo> messagePayloads = new ArrayList<MessagePayloadPojo>( 1 );
-                    messagePayloads.add( messagePayloadPojo );
-                    messagePojo.setMessagePayloads( messagePayloads );
-                }
-                receiver.processMessage( messageContext );
-            } catch ( NexusException nex ) {
-                nex.printStackTrace();
-                LOG.error( nex );
-            }
-        }
-    }
-
     @javax.jws.WebService(
             portName = "DocExchangePortType",
             serviceName = "AgGatewayDocumentExchange",
@@ -236,9 +197,7 @@ public class WSDispatcherService extends AbstractService implements ReceiverAwar
         public OutboundData execute( InboundData parameters ) throws DocExchangeFault {
 
             Object data = parameters.getXmlPayload().getAny();
-            System.out.println( "getBusinessProcess: " + parameters.getBusinessProcess() );
-            
-            
+
             byte[] result = null;
             try {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -255,10 +214,77 @@ public class WSDispatcherService extends AbstractService implements ReceiverAwar
                 }
             }
 
-            process( transportReceiver, parameters.getBusinessProcess(), parameters.getProcessStep(), parameters
-                    .getPartnerId(), parameters.getConversationId(), parameters.getMessageId(), new String( result ) );
+            process(
+                    parameters.getBusinessProcess(),
+                    parameters.getProcessStep(),
+                    parameters.getPartnerId(),
+                    parameters.getConversationId(),
+                    parameters.getMessageId(),
+                    new String( result ) );
 
-            return new OutboundData();
+            // TODO: test code
+            try {
+                OutboundData od = new OutboundData();
+                od.setMessageId( new NexusUUIDGenerator().getId() );
+                od.setProcessStep( "ShipNoticeList" );
+                XmlPayload xmlPayload = new XmlPayload();
+                
+                DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+                builderFactory.setNamespaceAware( true );
+                Document d = builderFactory.newDocumentBuilder().parse( new ByteArrayInputStream( "<test>Test</test>".getBytes() ) );
+                Element element = d.getDocumentElement();
+                xmlPayload.setAny( element );
+                od.getXmlPayload().add( xmlPayload );
+                return od;
+            } catch (Exception e) {
+                throw new DocExchangeFault( "Error while trying to set xmlPayload", e );
+            }
         }
+        
+        private MessageContext process( String choreography, String action,
+                String partner, String conversationId, String messageId, String document ) {
+
+            MessageContext messageContext = new MessageContext();
+
+            byte[] payload = ( document != null ? document.getBytes() : null );
+
+            if ( transportReceiver != null ) {
+                messageContext.setData( payload );
+                if ( LOG.isTraceEnabled() ) {
+                    LOG.trace( "Inbound message:\n" + document );
+                }
+
+                MessagePojo messagePojo = new MessagePojo();
+                messagePojo.setType( Constants.INT_MESSAGE_TYPE_NORMAL );
+
+                messageContext.setMessagePojo( messagePojo );
+                messageContext.setOriginalMessagePojo( messagePojo );
+                messageContext.getMessagePojo().setCustomParameters( new HashMap<String, String>() );
+
+                try {
+                    if ( choreography != null && action != null && partner != null && conversationId != null
+                            && messageId != null ) {
+                        Engine.getInstance().getTransactionService().initializeMessage( messagePojo, messageId,
+                                conversationId, action, partner, choreography );
+
+                        MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo();
+                        messagePayloadPojo.setMessage( messagePojo );
+                        messagePayloadPojo.setContentId( Engine.getInstance().getIdGenerator(
+                                Constants.ID_GENERATOR_MESSAGE_PAYLOAD ).getId() );
+                        messagePayloadPojo.setMimeType( "text/xml" );
+                        messagePayloadPojo.setPayloadData( payload );
+                        List<MessagePayloadPojo> messagePayloads = new ArrayList<MessagePayloadPojo>( 1 );
+                        messagePayloads.add( messagePayloadPojo );
+                        messagePojo.setMessagePayloads( messagePayloads );
+                    }
+                    messageContext = transportReceiver.processMessage( messageContext );
+                } catch ( NexusException nex ) {
+                    nex.printStackTrace();
+                    LOG.error( nex );
+                }
+            }
+            return messageContext;
+        }
+
     }
 }

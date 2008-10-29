@@ -236,11 +236,10 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                     } catch ( CloneNotSupportedException e ) {
                         e.printStackTrace();
                     } catch ( NexusException e ) {
-                        LOG
-                                .error( new LogMessage( "Error processing message: " + messagePojo.getMessageId()
+                        LOG.error( new LogMessage( "Error processing message: " + messagePojo.getMessageId()
                                         + " (" + messagePojo.getConversation().getChoreography().getName() + "/"
                                         + messagePojo.getConversation().getPartner().getPartnerId() + ") - " + e,
-                                        messagePojo ) );
+                                        messagePojo ), e );
                         headerInvalid = true;
                     }
                 } else {

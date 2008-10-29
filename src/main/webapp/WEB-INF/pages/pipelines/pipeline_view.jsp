@@ -9,6 +9,15 @@
 
 <% /*<nexus:helpBar helpDoc="documentation/Collaboration_Partners.htm" /> */ %>
 
+<logic:equal name="pipelineForm" property="frontend" value="true">
+<script type="text/javascript">
+function setBidirectional() {
+  b = document.forms['pipelineForm'].bidirectional.value;
+  document.getElementById("returnPipelets").visible = b;
+}
+</script>
+</logic:equal>
+
 <table class="NEXUS_TABLE" width="100%">
 	<tr>
 		<td><nexus:crumbs styleClass="NEXUSScreenPathLink"></nexus:crumbs></td>
@@ -48,9 +57,15 @@
 
 		<tr>
 			<td class="NEXUSName">Description</td>
-			<td class="NEXUSValue"><html:text property="description"
-				size="50" /></td>
+			<td class="NEXUSValue"><html:text property="description" size="50" /></td>
 		</tr>
+
+		<logic:equal name="pipelineForm" property="frontend" value="true">
+			<tr>
+				<td class="NEXUSName">Bidirectional</td>
+				<td class="NEXUSValue"><html-el:checkbox property="bidirectional" disabled="${pipelineForm.bidirectional}" onclick="var elem = document.getElementById('bidirectionalOnly'); if (document.forms['pipelineForm'].bidirectional.checked) { elem.style.visibility = 'visible' } else { elem.style.visibility = 'hidden' };"/></td>
+			</tr>
+		</logic:equal>
 
 	</table>
 
@@ -97,14 +112,14 @@
 				<logic:lessEqual name="index" value="0">
 					<img src="images/icons/bullet_arrow_up.png" class="button">
 				</logic:lessEqual>
-				<logic:lessThan name="index" value="${pipelineForm.pipeletCount - 1}">
+				<logic:lessThan name="index" value="${pipelineForm.forwardPipeletCount - 1}">
 				<nexus:submit
 					onClick="document.forms[0].sortaction.value=${index};document.forms[0].submitaction.value='sort';document.forms['pipelineForm'].sortingDirection.value=2;">
 					<img src="images/icons/bullet_arrow_down.png" class="button" value="Submit"
 						alt="Move down" id="moveDown"><span dojoType="tooltip" connectId="moveDown" toggle="explode">Move down</span>
 				</nexus:submit>
 				</logic:lessThan>
-				<logic:greaterEqual name="index" value="${pipelineForm.pipeletCount - 1}">
+				<logic:greaterEqual name="index" value="${pipelineForm.forwardPipeletCount - 1}">
 					<img src="images/icons/bullet_arrow_down.png" class="button" value="Submit" alt="Move down" id="moveDown">
 				</logic:greaterEqual>
 				<nexus:submit
@@ -155,6 +170,96 @@
 			</td>
 		</tr>
 	</table>
+		
+	<logic:equal name="pipelineForm" property="frontend" value="true">
+		<logic:equal name="pipelineForm" property="bidirectional" value="true">
+			<div id="bidirectionalOnly" style="visibility: visible">
+		</logic:equal>
+		<logic:notEqual name="pipelineForm" property="bidirectional" value="true">
+			<div id="bidirectionalOnly" style="visibility: hidden">
+		</logic:notEqual>
+
+		<table class="NEXUS_TABLE" width="100%">
+			<tr>
+				<td class="NEXUSName" colspan="3">
+				<logic:equal name="pipelineForm" property="direction" value="0"> <%/* inbound */ %>
+					NEXUSe2e backend
+				</logic:equal>
+				<logic:equal name="pipelineForm" property="direction" value="1"> <%/* outbound */ %>
+					Partner system
+				</logic:equal>
+				</td>
+			</tr>
+
+			<logic:iterate id="pipelet" name="pipelineForm" property="returnPipelets" indexId="index">
+				<tr>
+					<td class="NEXUSName">${index + 1}. <bean:write
+						name="pipelet" property="name" /></td>
+					<td class="NEXUSName"><bean:write name="pipelet"
+						property="description" /></td>
+					<td class="NEXUSName">
+					<logic:greaterThan name="index" value="0">
+					  <nexus:submit
+						onClick="document.forms[0].sortaction.value=${index};document.forms[0].submitaction.value='sortReturn';document.forms['pipelineForm'].sortingDirection.value=1;">
+						<img src="images/icons/bullet_arrow_up.png" class="button" alt="Move up"
+							id="moveUpReturn"><span dojoType="tooltip" connectId="moveUp" toggle="explode">Move up</span>
+					</nexus:submit></logic:greaterThan>
+					<logic:lessEqual name="index" value="0">
+						<img src="images/icons/bullet_arrow_up.png" class="button">
+					</logic:lessEqual>
+					<logic:lessThan name="index" value="${pipelineForm.returnPipeletCount - 1}">
+					<nexus:submit
+						onClick="document.forms[0].sortaction.value=${index};document.forms[0].submitaction.value='sortReturn';document.forms['pipelineForm'].sortingDirection.value=2;">
+						<img src="images/icons/bullet_arrow_down.png" class="button" value="Submit"
+							alt="Move down" id="moveDown"><span dojoType="tooltip" connectId="moveDownReturn" toggle="explode">Move down</span>
+					</nexus:submit>
+					</logic:lessThan>
+					<logic:greaterEqual name="index" value="${pipelineForm.returnPipeletCount - 1}">
+						<img src="images/icons/bullet_arrow_down.png" class="button" value="Submit" alt="Move down" id="moveDownReturn">
+					</logic:greaterEqual>
+					<nexus:submit
+						onClick="document.forms[0].sortaction.value=${index};document.forms[0].submitaction.value='deleteReturn';">
+						<img src="images/icons/delete.png" class="button" alt="Delete" id="deletePipelet"><span dojoType="tooltip" connectId="deletePipelet" toggle="explode">Delete Pipelet</span>
+					</nexus:submit> 
+					<logic:notEqual name="pipelet" property="nxPipeletId" value="0">
+					<nexus:submit
+						onClick="document.forms[0].sortaction.value=${index};document.forms[0].submitaction.value='config';">
+						<img src="images/icons/brick_edit.png" class="button" alt="Configure" id="configurePipelet"><span dojoType="tooltip" connectId="configurePipelet" toggle="explode">Configure Pipelet</span>
+					</nexus:submit>
+					</logic:notEqual>
+					</td>
+				</tr>
+			</logic:iterate>
+	
+			<tr>
+				<td class="NEXUSSection" colspan="2"><html:select
+					property="actionNxIdReturn">
+					<logic:iterate id="component" property="availableTemplates"
+						name="pipelineForm">
+						<html-el:option value="${component.nxComponentId}">${component.name}</html-el:option>
+					</logic:iterate>
+				</html:select> <nexus:submit
+					onClick="document.forms['pipelineForm'].submitaction.value='addReturn';" form="document.forms['pipelineForm']">
+					<img src="images/icons/add.png" class="button">
+				</nexus:submit></td>
+				<td class="NEXUSSection"></td>
+			</tr>
+			<tr>
+				<td class="NEXUSName" colspan="3">
+				<logic:equal name="pipelineForm" property="direction" value="0"> <%/* inbound */ %>
+					Partner system
+				</logic:equal>
+				<logic:equal name="pipelineForm" property="direction" value="1"> <%/* outbound */ %>
+					NEXUSe2e backend
+				</logic:equal>
+				</td>
+			</tr>
+		</table>
+	</div>
+	</logic:equal>
+
+
+
 	<table class="NEXUS_BUTTON_TABLE">
 		<tr>
 			<td>&nbsp;</td>
@@ -168,4 +273,5 @@
 				<img src="images/icons/delete.png" class="button">Delete</nexus:link></td>
 		</tr>
 	</table>
+
 </html:form>

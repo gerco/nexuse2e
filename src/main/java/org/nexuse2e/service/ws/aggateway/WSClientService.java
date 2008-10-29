@@ -296,7 +296,7 @@ public class WSClientService extends AbstractService implements SenderAware {
                 if (trp == null) {
                     LOG.error( "Error: No TRP configured for " + key );
                 } else {
-                    Pipeline pipeline = config.getFrontendInboundPipelines().get( trp );
+                    final Pipeline pipeline = config.getFrontendInboundPipelines().get( trp );
                     if (pipeline == null) {
                         LOG.error( "Error: No frontend inbound pipeline configured for " + key );
                     } else {
@@ -310,7 +310,17 @@ public class WSClientService extends AbstractService implements SenderAware {
                             LOG.info( "Message with message ID " + outboundData.getMessageId() +
                                     " (" + outboundData.getProcessStep() + ") filtered, not processing." );
                         } else {
-                            pipeline.processMessage( replyMessageContext );
+                            final MessageContext _replyMessageContext = replyMessageContext;
+                            new Thread() {
+                                public void run() {
+                                    try {
+                                        Thread.sleep( 2000 );
+                                        pipeline.processMessage( _replyMessageContext );
+                                    } catch (Exception ex) {
+                                        ex.printStackTrace();
+                                    }
+                                }
+                            }.start();
                         }
                     }
                 }

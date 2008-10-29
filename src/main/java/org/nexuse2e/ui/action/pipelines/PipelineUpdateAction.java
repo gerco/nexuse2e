@@ -19,6 +19,7 @@
  */
 package org.nexuse2e.ui.action.pipelines;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -70,8 +71,6 @@ public class PipelineUpdateAction extends NexusE2EAction {
 
         String action = form.getSubmitaction();
         LOG.trace( "action: " + action );
-        int actionNxId = form.getActionNxId();
-        LOG.trace( "actionNxId: " + actionNxId );
 
         PipelinePojo pipeline = engineConfiguration.getPipelinePojoByNxPipelineId( form.getNxPipelineId() );
 
@@ -83,14 +82,17 @@ public class PipelineUpdateAction extends NexusE2EAction {
             return error;
         }
 
-        if ( action.equals( "add" ) ) {
-            ComponentPojo component = engineConfiguration.getComponentByNxComponentId( actionNxId );
+        boolean add = action.equals( "add" );
+        boolean addReturn = action.equals( "addReturn" );
+        if ( add || addReturn ) {
+            ComponentPojo component = engineConfiguration.getComponentByNxComponentId( (add ? form.getActionNxId() : form.getActionNxIdReturn()) );
             if ( component != null ) {
                 PipeletPojo pipelet = new PipeletPojo();
                 pipelet.setComponent( component );
                 pipelet.setCreatedDate( new Date() );
                 pipelet.setModifiedDate( new Date() );
                 pipelet.setName( component.getName() );
+                pipelet.setForward( add );
                 pipelet.setDescription( component.getDescription() );
                 pipelet.setPipeline( pipeline );
                 pipelet.setPosition( form.getPipelets().size() + 1 );
@@ -121,17 +123,30 @@ public class PipelineUpdateAction extends NexusE2EAction {
         }
         if ( action.equals( "delete" ) ) {
             int deletePosition = form.getSortaction();
-            List<PipeletPojo> pipelets = form.getPipelets();
+            List<PipeletPojo> pipelets = form.getForwardPipelets();
             if ( pipelets != null && deletePosition >= 0 && deletePosition < pipelets.size() ) {
-                pipelets.remove( deletePosition );
+                form.getPipelets().remove( pipelets.get( deletePosition ) );
+            }
+            request.setAttribute( "keepData", "true" );
+        }
+        if ( action.equals( "deleteReturn" ) ) {
+            int deletePosition = form.getSortaction();
+            List<PipeletPojo> pipelets = form.getReturnPipelets();
+            if ( pipelets != null && deletePosition >= 0 && deletePosition < pipelets.size() ) {
+                form.getPipelets().remove( pipelets.get( deletePosition ) );
             }
             request.setAttribute( "keepData", "true" );
         }
 
-        if ( action.equals( "sort" ) ) {
+        boolean sort = action.equals( "sort" );
+        boolean sortReturn = action.equals( "sortReturn" );
+        if ( sort || sortReturn ) {
             int direction = form.getSortingDirection();
             int sortaction = form.getSortaction();
-            List<PipeletPojo> pipelets = form.getPipelets();
+            List<PipeletPojo> returnPipelets = form.getReturnPipelets();
+            List<PipeletPojo> forwardPipelets = form.getForwardPipelets();
+           
+            List<PipeletPojo> pipelets = sort ? forwardPipelets : returnPipelets;
 
             LOG.trace( "direction: " + direction );
             LOG.trace( "sortaction: " + form.getSortaction() );
@@ -153,6 +168,13 @@ public class PipelineUpdateAction extends NexusE2EAction {
                         pipelets.set( sortaction + 1, pipelet );
                     }
                 }
+                List<PipeletPojo> newPipeletList = new ArrayList<PipeletPojo>( forwardPipelets.size() + returnPipelets.size() );
+                newPipeletList.addAll( forwardPipelets );
+                newPipeletList.addAll( returnPipelets );
+                for (int i = 0; i < newPipeletList.size(); i++) {
+                    newPipeletList.get( i ).setPosition( i + 1 );
+                }
+                form.setPipelets( newPipeletList );
             }
             request.setAttribute( "keepData", "true" );
 
