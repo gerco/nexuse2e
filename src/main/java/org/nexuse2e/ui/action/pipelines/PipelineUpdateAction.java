@@ -59,7 +59,6 @@ public class PipelineUpdateAction extends NexusE2EAction {
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
-        ActionForward config = actionMapping.findForward( "config" );
         ActionForward error = actionMapping.findForward( ACTION_FORWARD_FAILURE );
 
         PipelineForm form = (PipelineForm) actionForm;
@@ -179,10 +178,13 @@ public class PipelineUpdateAction extends NexusE2EAction {
             request.setAttribute( "keepData", "true" );
 
         }
-        if ( action.equals( "config" ) ) {
-            LOG.trace( "config..." + config.getName() );
 
-            return config;
+        if (action.equals( "config" )) {
+            return actionMapping.findForward( "config" );
+        }
+        
+        if (action.equals( "configReturn" )) {
+            return actionMapping.findForward( "configReturn" );
         }
 
         form.getProperties( pipeline );

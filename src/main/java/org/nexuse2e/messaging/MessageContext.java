@@ -59,6 +59,8 @@ public class MessageContext implements Serializable {
     private ArrayList<ErrorDescriptor> errors       = null;
     
     private transient ConversationStateMachine conversationStateMachine = null;
+    private transient boolean                  processThroughReturnPipeline = true;
+    private transient RequestInfo              requestInfo = null;
     
     /**
      * @return the data
@@ -260,6 +262,27 @@ public class MessageContext implements Serializable {
     }
     
     /**
+     * Sets the <code>processThroughReturnPipeline</code> flag. Default is <code>true</code>.
+     * This flag can be used to mark messages on bidirectional transport mechanisms where the
+     * returned message shall be ignored by the return pipeline (e.g., if it is an acknowledgement
+     * or a message that does not have any meaning at all).
+     * @param processThroughReturnPipeline If <code>true</code>, indicates that this message context
+     * shall be processed through a return pipeline if present. Otherwise, it will not be passed
+     * to any return pielets.
+     */
+    public void setProcessThroughReturnPipeline( boolean processThroughReturnPipeline ) {
+        this.processThroughReturnPipeline = processThroughReturnPipeline;
+    }
+    
+    /**
+     * Gets the <code>processThroughReturnPipeline</code> flag. Default is <code>true</code>.
+     * @return The flag. See {@link #setProcessThroughReturnPipeline(boolean)} for details.
+     */
+    public boolean isProcessThroughReturnPipeline() {
+        return processThroughReturnPipeline;
+    }
+
+    /**
      * Gets the <code>ConversationStateMachine</code> that shall be used for
      * state transitions.
      * @return The <code>ConversationStateMachine</code>.
@@ -274,4 +297,37 @@ public class MessageContext implements Serializable {
         }
         return conversationStateMachine;
     }
+    
+    /**
+     * Determines if this context describes a request message. Please note that a
+     * <code>MessageContext</code> is marked as a non-request message until a
+     * <code>RequestInfo</code> object is set by calling {@link #setRequestInfo(RequestInfo)}.
+     * This will typically be done by a frontend pipelet. 
+     * @return <code>true</code> if this is a message that contains a document request instead of
+     * a business document itself. If <code>true</code> is returned, {@link #getRequestInfo()} will
+     * not return <code>null</code>, otherwise that method returns <code>null</code>.
+     */
+    public boolean isRequestMessage() {
+        return (requestInfo != null);
+    }
+    
+    /**
+     * Sets the request information on this <code>MessageContext</code> and marks this
+     * as a request message if <code>requestInfo</code> is not <code>null</code>.
+     * @param requestInfo The request info, or <code>null</code> if this does not denote a
+     * request message.
+     */
+    public void setRequestInfo( RequestInfo requestInfo ) {
+        this.requestInfo = requestInfo;
+    }
+    
+    /**
+     * Gets the request information available on this <code>MessageContext</code>.
+     * @return The request info, or <code>null</code> if this is not determined to denote a
+     * request message.
+     */
+    public RequestInfo getRequestInfo() {
+        return requestInfo;
+    }
+    
 } // MessageContext

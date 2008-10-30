@@ -9,15 +9,6 @@
 
 <% /*<nexus:helpBar helpDoc="documentation/Collaboration_Partners.htm" /> */ %>
 
-<logic:equal name="pipelineForm" property="frontend" value="true">
-<script type="text/javascript">
-function setBidirectional() {
-  b = document.forms['pipelineForm'].bidirectional.value;
-  document.getElementById("returnPipelets").visible = b;
-}
-</script>
-</logic:equal>
-
 <table class="NEXUS_TABLE" width="100%">
 	<tr>
 		<td><nexus:crumbs styleClass="NEXUSScreenPathLink"></nexus:crumbs></td>
@@ -223,7 +214,7 @@ function setBidirectional() {
 					</nexus:submit> 
 					<logic:notEqual name="pipelet" property="nxPipeletId" value="0">
 					<nexus:submit
-						onClick="document.forms[0].sortaction.value=${index};document.forms[0].submitaction.value='config';">
+						onClick="document.forms[0].sortaction.value=${index};document.forms[0].submitaction.value='configReturn';">
 						<img src="images/icons/brick_edit.png" class="button" alt="Configure" id="configurePipelet"><span dojoType="tooltip" connectId="configurePipelet" toggle="explode">Configure Pipelet</span>
 					</nexus:submit>
 					</logic:notEqual>

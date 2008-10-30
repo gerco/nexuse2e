@@ -102,13 +102,13 @@ public class FrontendPipeline extends AbstractPipeline implements ProtocolSpecif
         }
                 
         // Set conversation on context, should be available now
-        if(messageContext.getMessagePojo() != null) {
+        if(messageContext != null && messageContext.getMessagePojo() != null) {
             messageContext.setConversation( messageContext.getMessagePojo().getConversation() );
         }
         
         messageContext = pipelineEndpoint.processMessage( messageContext );
 
-        if ( returnPipelets != null ) {
+        if ( returnPipelets != null && messageContext != null && messageContext.isProcessThroughReturnPipeline() ) {
             for ( int i = 0; i < returnPipelets.length; i++ ) {
                 MessageProcessor messagePipelet = returnPipelets[i];
 

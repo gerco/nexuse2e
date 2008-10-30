@@ -73,6 +73,7 @@ public class PartnerConnectionForm extends ActionForm {
         setReliable( false );
         setSynchronous( false );
         setPickUp( false );
+        setHold( false );
         setSynchronousTimeout( 0 );
         setRetries( 0 );
         setName( null );
@@ -425,6 +426,8 @@ public class PartnerConnectionForm extends ActionForm {
         secure = false;
         reliable = false;
         synchronous = false;
+        pickUp = false;
+        hold = false;
     }
 
     

@@ -81,6 +81,7 @@ public class WSDispatcherService extends AbstractService implements ReceiverAwar
     private static final String WS_AUTH_PARAM_NAME = "wsAuth";
     private static final String USERNAME_PARAM_NAME = "user";
     private static final String PASSWORD_PARAM_NAME = "password";
+    private static final String CACHE_DOM_TREE_PARAM_NAME = "cacheDomTree";
 
     private Endpoint            endpoint;
     private TransportReceiver   transportReceiver;
@@ -96,6 +97,8 @@ public class WSDispatcherService extends AbstractService implements ReceiverAwar
                 "The user name for WS* authentication", "" ) );
         parameterMap.put( PASSWORD_PARAM_NAME, new ParameterDescriptor( ParameterType.PASSWORD, "Password",
                 "The password for WS* authentication", "" ) );
+        parameterMap.put( CACHE_DOM_TREE_PARAM_NAME, new ParameterDescriptor( ParameterType.BOOLEAN, "Cache DOM tree",
+                "Enable to cache the payload document's DOM tree in the message context (faster, but greater memory consumption)", Boolean.TRUE ) );
     }
 
     @Override
@@ -113,9 +116,12 @@ public class WSDispatcherService extends AbstractService implements ReceiverAwar
         String url = (String) getParameter( URL_PARAM_NAME );
         LOG.debug( "Web service URL extension: " + url );
 
+        Boolean cache = (Boolean) getParameter( CACHE_DOM_TREE_PARAM_NAME );
+
         try {
-            Object implementor = new AgGatewayDocumentExchangeImpl();
-            ( (ReceiverAware) implementor ).setTransportReceiver( transportReceiver );
+            AgGatewayDocumentExchangeImpl implementor = new AgGatewayDocumentExchangeImpl();
+            implementor.cache = (cache == null || cache.booleanValue());
+            implementor.setTransportReceiver( transportReceiver );
             endpoint = Endpoint.publish( url, implementor );
 
             Boolean b = getParameter( WS_AUTH_PARAM_NAME );
@@ -183,6 +189,7 @@ public class WSDispatcherService extends AbstractService implements ReceiverAwar
     public static class AgGatewayDocumentExchangeImpl implements DocExchangePortType, ReceiverAware {
 
         private TransportReceiver transportReceiver;
+        private boolean cache;
 
         public TransportReceiver getTransportReceiver() {
 
@@ -197,12 +204,13 @@ public class WSDispatcherService extends AbstractService implements ReceiverAwar
         public OutboundData execute( InboundData parameters ) throws DocExchangeFault {
 
             Object data = parameters.getXmlPayload().getAny();
+            Node n = (Node) data;
 
             byte[] result = null;
             try {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-                DOMSource xmlSource = new DOMSource( (Node)data );
+                DOMSource xmlSource = new DOMSource( n );
                 TransformerFactory transformerFactory = TransformerFactory.newInstance();
                 Transformer transformer = transformerFactory.newTransformer();
                 transformer.transform( xmlSource, new StreamResult( baos ) );
@@ -214,7 +222,8 @@ public class WSDispatcherService extends AbstractService implements ReceiverAwar
                 }
             }
 
-            process(
+            MessageContext messageContext = process(
+                    n,
                     parameters.getBusinessProcess(),
                     parameters.getProcessStep(),
                     parameters.getPartnerId(),
@@ -222,34 +231,47 @@ public class WSDispatcherService extends AbstractService implements ReceiverAwar
                     parameters.getMessageId(),
                     new String( result ) );
 
-            // TODO: test code
+            
             try {
                 OutboundData od = new OutboundData();
                 od.setMessageId( new NexusUUIDGenerator().getId() );
-                od.setProcessStep( "ShipNoticeList" );
-                XmlPayload xmlPayload = new XmlPayload();
-                
-                DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-                builderFactory.setNamespaceAware( true );
-                Document d = builderFactory.newDocumentBuilder().parse( new ByteArrayInputStream( "<test>Test</test>".getBytes() ) );
-                Element element = d.getDocumentElement();
-                xmlPayload.setAny( element );
-                od.getXmlPayload().add( xmlPayload );
+    
+                // TODO: test code
+
+                // send acknowledgment only
+                if (messageContext == null) {
+                    od.setProcessStep( "TechnicalAck" );
+                } else { // send 
+                    od.setProcessStep( "ShipNoticeList" );
+                    XmlPayload xmlPayload = new XmlPayload();
+                    
+                    DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+                    builderFactory.setNamespaceAware( true );
+                    Document d = builderFactory.newDocumentBuilder().parse( new ByteArrayInputStream( "<test>Test</test>".getBytes() ) );
+                    Element element = d.getDocumentElement();
+                    xmlPayload.setAny( element );
+                    od.getXmlPayload().add( xmlPayload );
+                }
+            
                 return od;
             } catch (Exception e) {
                 throw new DocExchangeFault( "Error while trying to set xmlPayload", e );
             }
         }
         
-        private MessageContext process( String choreography, String action,
+        private MessageContext process( Node n, String choreography, String action,
                 String partner, String conversationId, String messageId, String document ) {
 
             MessageContext messageContext = new MessageContext();
 
+            if (cache) {
+                messageContext.setData( n );
+            }
+            
             byte[] payload = ( document != null ? document.getBytes() : null );
 
             if ( transportReceiver != null ) {
-                messageContext.setData( payload );
+
                 if ( LOG.isTraceEnabled() ) {
                     LOG.trace( "Inbound message:\n" + document );
                 }

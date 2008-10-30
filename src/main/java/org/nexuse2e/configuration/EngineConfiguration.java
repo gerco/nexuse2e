@@ -523,10 +523,11 @@ public class EngineConfiguration implements ConfigurationAccessService {
                     }
 
                     pos = 0;
-                    int pipeletCount = inboundPipelinePojo.getPipelets().size();
+                    Collection<PipeletPojo> forwardPipelets = inboundPipelinePojo.getForwardPipelets();
+                    int pipeletCount = forwardPipelets.size();
                     pipelets = new Pipelet[pipeletCount > 0 ? pipeletCount - 1 : 0];
 
-                    for ( PipeletPojo pipeletPojo : inboundPipelinePojo.getPipelets() ) {
+                    for ( PipeletPojo pipeletPojo : forwardPipelets ) {
                         Pipelet pipelet;
                         try {
                             pipelet = getPipeletInstanceFromPojo( pipeletPojo );
@@ -552,9 +553,10 @@ public class EngineConfiguration implements ConfigurationAccessService {
 
                     backendPipeline = new BackendPipeline();
                     backendPipeline.setKey( actionSpecificKey );
+                    Collection<PipeletPojo> forwardPipeletList = outboundPipelinePojo.getForwardPipelets();
                     pos = 0;
-                    pipelets = new Pipelet[outboundPipelinePojo.getPipelets().size()];
-                    for ( PipeletPojo pipeletPojo : outboundPipelinePojo.getPipelets() ) {
+                    pipelets = new Pipelet[forwardPipeletList.size()];
+                    for ( PipeletPojo pipeletPojo : forwardPipeletList ) {
                         Pipelet pipelet = getPipeletInstanceFromPojo( pipeletPojo );
                         pipelets[pos++] = pipelet;
                     }
@@ -585,17 +587,18 @@ public class EngineConfiguration implements ConfigurationAccessService {
                 if ( pipelinePojo.isOutbound() ) {
                     getFrontendOutboundPipelines().put( pipelinePojo.getTrp(), frontendPipeline );
 
+                    Collection<PipeletPojo> forwardPipeletList = pipelinePojo.getForwardPipelets();
                     Pipelet[] forwardPipelets = null;
-                    if ( pipelinePojo.getPipelets() != null && pipelinePojo.getPipelets().size() > 0 ) {
-                        forwardPipelets = new Pipelet[pipelinePojo.getPipelets().size() - 1];
+                    if ( forwardPipeletList.size() > 0 ) {
+                        forwardPipelets = new Pipelet[forwardPipeletList.size() - 1];
                     } else {
                         forwardPipelets = new Pipelet[0];
                     }
 
                     int i = 0;
-                    for ( PipeletPojo pipeletPojo : pipelinePojo.getPipelets() ) {
+                    for ( PipeletPojo pipeletPojo : forwardPipeletList ) {
                         Pipelet pipelet = getPipeletInstanceFromPojo( pipeletPojo );
-                        if ( i == pipelinePojo.getPipelets().size() - 1 ) {
+                        if ( i == forwardPipeletList.size() - 1 ) {
                             // TransportSender
                             frontendPipeline.setPipelineEndpoint( pipelet );
                             ConfigurationUtil.configurePipelet( pipelet, pipeletPojo.getPipeletParams() );
@@ -604,19 +607,28 @@ public class EngineConfiguration implements ConfigurationAccessService {
                         }
                     }
                     frontendPipeline.setForwardPipelets( forwardPipelets );
+                    Collection<PipeletPojo> returnPipeletList = pipelinePojo.getReturnPipelets();
+                    Pipelet[] returnPipelets = new Pipelet[returnPipeletList.size()];
+                    i = 0;
+                    for ( PipeletPojo pipeletPojo : returnPipeletList ) {
+                        Pipelet pipelet = getPipeletInstanceFromPojo( pipeletPojo );
+                        returnPipelets[i++] = pipelet;
+                    }
+                    frontendPipeline.setReturnPipelets( returnPipelets );
                 } else {
                     getFrontendInboundPipelines().put( pipelinePojo.getTrp(), frontendPipeline );
                     LOG.trace( "Frontend inbound pipeline: " + pipelinePojo.getName() );
                     Pipelet[] forwardPipelets = null;
-                    if ( pipelinePojo.getPipelets() != null && pipelinePojo.getPipelets().size() > 0 ) {
-                        forwardPipelets = new Pipelet[pipelinePojo.getPipelets().size() - 1];
+                    Collection<PipeletPojo> forwardPipeletList = pipelinePojo.getForwardPipelets();
+                    if ( forwardPipeletList.size() > 0 ) {
+                        forwardPipelets = new Pipelet[forwardPipeletList.size() - 1];
                     } else {
                         forwardPipelets = new Pipelet[0];
                     }
                     int i = -1;
 
                     // Special treatment for first entry: it's a TransportReceiver
-                    for ( PipeletPojo pipeletPojo : pipelinePojo.getPipelets() ) {
+                    for ( PipeletPojo pipeletPojo : forwardPipeletList ) {
                         LOG.trace( "Pipelet: " + pipeletPojo.getName() + " - " + pipeletPojo.getPosition() + " - "
                                 + pipeletPojo.getClass() );
                         Pipelet pipelet = getPipeletInstanceFromPojo( pipeletPojo );
@@ -640,13 +652,10 @@ public class EngineConfiguration implements ConfigurationAccessService {
                             String beanKey = "TransportReceiver_" + pipelinePojo.getName() + "_"
                                     + frontendPipeline.getKey().toString();
                             if ( !staticBeanContainer.getManagableBeans().containsKey( beanKey ) ) {
-                                LOG
-                                        .trace( "Registering managable bean: " + beanKey + "(" + pipeletPojo.getName()
-                                                + ")" );
+                                LOG.trace( "Registering managable bean: " + beanKey + "(" + pipeletPojo.getName() + ")" );
                                 staticBeanContainer.getManagableBeans().put( beanKey, transportReceiver );
                             } else {
-                                LOG.warn( "Managable bean already registered, using first one: " + beanKey + "("
-                                        + pipeletPojo.getName() + ")" );
+                                LOG.warn( "Managable bean already registered, using first one: " + beanKey + "(" + pipeletPojo.getName() + ")" );
                             }
                         }
 
@@ -654,6 +663,13 @@ public class EngineConfiguration implements ConfigurationAccessService {
                     }
                     frontendPipeline.setForwardPipelets( forwardPipelets );
                     frontendPipeline.setPipelineEndpoint( getStaticBeanContainer().getFrontendInboundDispatcher() );
+                    Collection<PipeletPojo> returnPipeletList = pipelinePojo.getReturnPipelets();
+                    Pipelet[] returnPipelets = new Pipelet[returnPipeletList.size()];
+                    for ( PipeletPojo pipeletPojo : returnPipeletList ) {
+                        Pipelet pipelet = getPipeletInstanceFromPojo( pipeletPojo );
+                        returnPipelets[i++] = pipelet;
+                    }
+                    frontendPipeline.setReturnPipelets( returnPipelets );
                 }
 
             } catch (Exception e) {

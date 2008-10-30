@@ -233,14 +233,14 @@ abstract public class AbstractPipeline implements Pipeline {
         if ( forwardPipelets != null ) {
             for ( int i = 0; i < forwardPipelets.length; i++ ) {
                 if ( forwardPipelets[i] != null ) {
-                    forwardPipelets[i].initialize( null );
+                    forwardPipelets[i].initialize( config );
                 }
             }
         }
         if ( returnPipelets != null ) {
             for ( int i = 0; i < returnPipelets.length; i++ ) {
                 if ( returnPipelets[i] != null ) {
-                    returnPipelets[i].initialize( null );
+                    returnPipelets[i].initialize( config );
                 }
             }
         }

@@ -75,6 +75,7 @@ public class PipelineForm extends ActionForm {
      * may contain different nexusIds, depends on submitaction 
      */
     private int                     actionNxId         = 0;
+    private int                     actionNxIdReturn   = 0;
 
     private String                  paramName          = null;
 
@@ -95,6 +96,8 @@ public class PipelineForm extends ActionForm {
 
     private String                  key                = null;
     private String                  value              = null;
+    
+    private boolean                 bidirectional      = false;
     
     /**
      * @param component
@@ -243,6 +246,7 @@ public class PipelineForm extends ActionForm {
         } else {
         }
         pipeletParamValues = new HashMap<String, String>();
+        bidirectional = false;
     }
 
     /**
@@ -255,6 +259,7 @@ public class PipelineForm extends ActionForm {
         setDescription( null );
         setDirection( -1 );
         setPipelets( null );
+        bidirectional = false;
 
     }
 
@@ -372,10 +377,32 @@ public class PipelineForm extends ActionForm {
         this.pipelets = pipelets;
     }
     
-    public int getPipeletCount() {
-        return (pipelets == null ? 0 : pipelets.size());
+    public int getForwardPipeletCount() {
+        if (pipelets == null) {
+            return 0;
+        }
+        int c = 0;
+        for (PipeletPojo pipelet : pipelets) {
+            if (pipelet.isForward()) {
+                c++;
+            }
+        }
+        return c;
     }
 
+    public int getReturnPipeletCount() {
+        if (pipelets == null) {
+            return 0;
+        }
+        int c = 0;
+        for (PipeletPojo pipelet : pipelets) {
+            if (!pipelet.isForward()) {
+                c++;
+            }
+        }
+        return c;
+    }
+    
     /**
      * @return the availableTemplates
      */
@@ -406,6 +433,16 @@ public class PipelineForm extends ActionForm {
     public void setActionNxId( int actionNxId ) {
 
         this.actionNxId = actionNxId;
+    }
+
+    public int getActionNxIdReturn() {
+
+        return actionNxIdReturn;
+    }
+
+    public void setActionNxIdReturn( int actionNxIdReturn ) {
+
+        this.actionNxIdReturn = actionNxIdReturn;
     }
 
     /**
@@ -594,4 +631,15 @@ public class PipelineForm extends ActionForm {
 
         this.configurable = configurable;
     }
+
+    public boolean isBidirectional() {
+
+        return bidirectional || getReturnPipelets().size() > 0;
+    }
+
+    public void setBidirectional( boolean bidirectional ) {
+
+        this.bidirectional = bidirectional;
+    }
+
 }

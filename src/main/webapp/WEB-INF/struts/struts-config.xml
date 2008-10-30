@@ -509,6 +509,7 @@
       <forward name="frontendError" path="/FrontendPipelines.do"/>
       <forward name="backendError" path="/BackendPipelines.do"/>
       <forward name="config" path="/PipeletParamsView.do"/>
+      <forward name="configReturn" path="/ReturnPipeletParamsView.do"/>
       <forward name="success" path="/PipelineView.do"/>
     </action>
     <action path="/PipelineAdd" name="pipelineForm" type="org.nexuse2e.ui.action.pipelines.PipelineAddAction">
@@ -520,6 +521,9 @@
     </action>
     
     <action path="/PipeletParamsView" name="pipelineForm" type="org.nexuse2e.ui.action.pipelines.PipeletParamsViewAction">
+      <forward name="success" path="/WEB-INF/pages/pipelines/pipeletparams_view.jsp"/>
+    </action>
+    <action path="/ReturnPipeletParamsView" name="pipelineForm" type="org.nexuse2e.ui.action.pipelines.PipeletParamsViewAction" parameter="return">
       <forward name="success" path="/WEB-INF/pages/pipelines/pipeletparams_view.jsp"/>
     </action>
     <action path="/PipeletParamsUpdate" name="pipelineForm" type="org.nexuse2e.ui.action.pipelines.PipeletParamsUpdateAction">

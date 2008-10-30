@@ -64,7 +64,6 @@ import org.apache.ws.security.WSPasswordCallback;
 import org.apache.ws.security.handler.WSHandlerConstants;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
-import org.nexuse2e.ProtocolSpecificKey;
 import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.Constants;
@@ -72,16 +71,13 @@ import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ListParameter;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
-import org.nexuse2e.messaging.FrontendPipeline;
 import org.nexuse2e.messaging.MessageContext;
-import org.nexuse2e.messaging.Pipeline;
 import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.MessagePayloadPojo;
 import org.nexuse2e.pojo.MessagePojo;
 import org.nexuse2e.pojo.ParticipantPojo;
-import org.nexuse2e.pojo.TRPPojo;
 import org.nexuse2e.service.AbstractService;
 import org.nexuse2e.service.SenderAware;
 import org.nexuse2e.service.ws.aggateway.wsdl.DocExchangeFault;
@@ -289,49 +285,17 @@ public class WSClientService extends AbstractService implements SenderAware {
                 OutboundData outboundData = theDocExchangePortType.execute( inboundData );
 
                 // process messageContext through applicable frontend inbound pipeline
-                ProtocolSpecificKey key = ((FrontendPipeline) transportSender.getPipeline()).getKey();
-                EngineConfiguration config = Engine.getInstance().getCurrentConfiguration();
-                TRPPojo trp = config.getTrpByProtocolVersionAndTransport(
-                        key.getCommunicationProtocolId(), key.getCommunicationProtocolVersion(), key.getTransportProtocolId() );
-                if (trp == null) {
-                    LOG.error( "Error: No TRP configured for " + key );
-                } else {
-                    final Pipeline pipeline = config.getFrontendInboundPipelines().get( trp );
-                    if (pipeline == null) {
-                        LOG.error( "Error: No frontend inbound pipeline configured for " + key );
-                    } else {
-                        LOG.info( "Frontend inbound pipeline found for " + key + ", processing return message" );
-                        replyMessageContext = initializeReplyMessageContext(
-                                replyMessageContext,
-                                outboundData,
-                                messageContext.getConversation().getConversationId(),
-                                messageContext.getChoreography().getName() );
-                        if (replyMessageContext == null) { // filtered
-                            LOG.info( "Message with message ID " + outboundData.getMessageId() +
-                                    " (" + outboundData.getProcessStep() + ") filtered, not processing." );
-                        } else {
-                            final MessageContext _replyMessageContext = replyMessageContext;
-                            new Thread() {
-                                public void run() {
-                                    try {
-                                        Thread.sleep( 2000 );
-                                        pipeline.processMessage( _replyMessageContext );
-                                    } catch (Exception ex) {
-                                        ex.printStackTrace();
-                                    }
-                                }
-                            }.start();
-                        }
-                    }
-                }
-
+                replyMessageContext = initializeReplyMessageContext(
+                        replyMessageContext,
+                        outboundData,
+                        messageContext.getConversation().getConversationId(),
+                        messageContext.getChoreography().getName() );
             } catch ( DocExchangeFault e ) {
                 LOG.error( "Error calling web service: " + e );
                 throw new NexusException( e );
             }
         }
-
-        return messageContext;
+        return replyMessageContext;
     }
     
     private boolean filtered( String actionId ) {
@@ -361,10 +325,6 @@ public class WSClientService extends AbstractService implements SenderAware {
 
         String actionId = outboundData.getProcessStep();
         
-        if (actionId == null || filtered( actionId )) {
-            return null;
-        }
-
         String messageId = outboundData.getMessageId();
         MessagePojo message = replyMessageContext.getMessagePojo();
         EngineConfiguration config = Engine.getInstance().getCurrentConfiguration();
@@ -372,10 +332,18 @@ public class WSClientService extends AbstractService implements SenderAware {
         if (choreography == null) {
             throw new NexusException( "Choreography " + choreographyId + " was not found" );
         }
-        ActionPojo action = config.getActionFromChoreographyByActionId( choreography, actionId );
-        if (action == null) {
-            throw new NexusException( "Action " + actionId + " was not found in choreography " + choreographyId );
+        ActionPojo action = null;
+        if (actionId == null || filtered( actionId )) {
+            LOG.info( "Message with message ID " + outboundData.getMessageId() +
+                    " (" + outboundData.getProcessStep() + ") filtered, not processing through return pipeline." );
+            replyMessageContext.setProcessThroughReturnPipeline( false );
+        } else {
+            action = config.getActionFromChoreographyByActionId( choreography, actionId );
+            if (action == null) {
+                throw new NexusException( "Action " + actionId + " was not found in choreography " + choreographyId );
+            }
         }
+
         message.setAction( action );
         message.setCreatedDate( new Date() );
         message.setMessageId( messageId );
