@@ -21,8 +21,10 @@ package org.nexuse2e.pojo;
 
 // Generated 17.11.2006 11:17:45 by Hibernate Tools 3.2.0.beta6a
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -193,6 +195,32 @@ public class PipelinePojo implements NEXUSe2ePojo {
     public Collection<PipeletPojo> getPipelets() {
 
         return this.pipelets;
+    }
+
+    public Collection<PipeletPojo> getForwardPipelets() {
+
+        List<PipeletPojo> list = new ArrayList<PipeletPojo>();
+        if (pipelets != null) {
+            for (PipeletPojo p : pipelets) {
+                if (p.isForward()) {
+                    list.add( p );
+                }
+            }
+        }
+        return list;
+    }
+
+    public Collection<PipeletPojo> getReturnPipelets() {
+
+        List<PipeletPojo> list = new ArrayList<PipeletPojo>();
+        if (pipelets != null) {
+            for (PipeletPojo p : pipelets) {
+                if (!p.isForward()) {
+                    list.add( p );
+                }
+            }
+        }
+        return list;
     }
 
     public void setPipelets( Collection<PipeletPojo> pipelets ) {
