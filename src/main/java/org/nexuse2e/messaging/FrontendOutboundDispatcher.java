@@ -54,6 +54,11 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
      */
     public MessageContext processMessage( MessageContext messageContext ) throws NexusException {
 
+        // for  participants with "hold" connections, do not go on with processing
+        if (messageContext.getParticipant().getConnection().isHold()) {
+            return null;
+        }
+        
         int interval = Constants.DEFAULT_MESSAGE_INTERVAL;
 
         FrontendPipeline pipeline = getProtocolSpecificPipeline( messageContext.getProtocolSpecificKey() );

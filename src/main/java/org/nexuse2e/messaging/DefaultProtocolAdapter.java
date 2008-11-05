@@ -22,14 +22,15 @@ package org.nexuse2e.messaging;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.ProtocolSpecificKey;
+import org.nexuse2e.messaging.Constants.ErrorMessageReasonCode;
 import org.nexuse2e.messaging.ebxml.v20.Constants;
-import org.nexuse2e.messaging.ebxml.v20.ProtocolAdapter;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.MessagePojo;
 import org.nexuse2e.pojo.ParticipantPojo;
@@ -41,13 +42,11 @@ import org.nexuse2e.pojo.PartnerPojo;
  */
 public class DefaultProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
 
-    private static Logger       LOG = Logger.getLogger( ProtocolAdapter.class );
+    private static Logger       LOG = Logger.getLogger( DefaultProtocolAdapter.class );
 
     private ProtocolSpecificKey key = null;
 
-    /* (non-Javadoc)
-     * @see org.nexuse2e.messaging.ProtocolAdapter#createAcknowledge(org.nexuse2e.messaging.messageContext)
-     */
+
     public MessageContext createAcknowledgement( ChoreographyPojo choreography, MessageContext messageContext )
             throws NexusException {
 
@@ -177,9 +176,6 @@ public class DefaultProtocolAdapter implements org.nexuse2e.messaging.ProtocolAd
         return messageContext;
     }
 
-    /* (non-Javadoc)
-     * @see org.nexuse2e.messaging.ProtocolAdapter#addProtcolSpecificParameters(org.nexuse2e.messaging.MessageContext)
-     */
     public void addProtcolSpecificParameters( MessageContext messageContext ) {
 
         String localPartnerId = messageContext.getParticipant().getLocalPartner().getPartnerId();
@@ -191,20 +187,29 @@ public class DefaultProtocolAdapter implements org.nexuse2e.messaging.ProtocolAd
 
     }
 
-    /* (non-Javadoc)
-     * @see org.nexuse2e.ProtocolSpecific#getKey()
-     */
     public ProtocolSpecificKey getKey() {
 
         return key;
     }
 
-    /* (non-Javadoc)
-     * @see org.nexuse2e.ProtocolSpecific#setKey(org.nexuse2e.ProtocolSpecificKey)
-     */
     public void setKey( ProtocolSpecificKey key ) {
 
         this.key = key;
+    }
+
+    public MessageContext createErrorAcknowledgement(
+            ErrorMessageReasonCode reasonCode, ChoreographyPojo choreography,
+            MessageContext messageContext, List<ErrorDescriptor> errorMessages) {
+
+        // not supported
+        return null;
+    }
+
+    public MessageContext createResponse(MessageContext messageContext)
+            throws NexusException {
+
+        // not supported
+        return null;
     }
 
 }

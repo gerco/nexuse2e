@@ -60,6 +60,7 @@ public class MessageContext implements Serializable {
     
     private transient ConversationStateMachine conversationStateMachine = null;
     private transient boolean                  processThroughReturnPipeline = true;
+    private transient MessageContext           requestMessage = null;
     private transient RequestInfo              requestInfo = null;
     
     /**
@@ -148,6 +149,15 @@ public class MessageContext implements Serializable {
     public PartnerPojo getPartner() {
 
         return partner;
+    }
+
+    /**
+     * Sets the communication partner.
+     * @param partner The partner to set.
+     */
+    public void setPartner( PartnerPojo partner ) {
+
+        this.partner = partner;
     }
 
     /**
@@ -329,5 +339,34 @@ public class MessageContext implements Serializable {
     public RequestInfo getRequestInfo() {
         return requestInfo;
     }
+
+    /**
+     * Determines if this <code>MessageContext</code> contains a response to a (synchronous)
+     * request. This method will return <code>true</code> if this message contains a request
+     * message, meaning that {@link #getRequestMessage()} does not return <code>null</code>.
+     * @return <code>true</code> if and only if this is a response to a request message.
+     */
+    public boolean isResponseMessage() {
+        return requestMessage != null;
+    }
+    
+    /**
+     * Gets the request message that is associated with this (response) message.
+     * @return The associated request, or <code>null</code> if this message is not a response
+     * to a (synchronous) request.
+     */
+    public MessageContext getRequestMessage() {
+        return requestMessage;
+    }
+    
+    /**
+     * Sets the <code>responseMessage</code> flag.
+     * @param responseMessage <code>true</code> if and only if this is a response to a request message.
+     */
+    public void setRequestMessage( MessageContext requestMessage ) {
+        this.requestMessage = requestMessage;
+    }
+
+    
     
 } // MessageContext

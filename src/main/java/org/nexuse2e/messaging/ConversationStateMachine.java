@@ -132,6 +132,24 @@ public class ConversationStateMachine {
             }
         }
     }
+    
+    public void receivedRequestMessage() throws StateTransitionException, NexusException {
+
+        synchronized ( sync ) {
+            List<MessagePojo> messages = conversation.getMessages();
+
+            message.setStatus( Constants.MESSAGE_STATUS_SENT );
+            message.setModifiedDate( new Date() );
+
+            conversation.setStatus( Constants.CONVERSATION_STATUS_PROCESSING );
+            if ( message.getNxMessageId() <= 0 ) {
+                messages.add( message );
+                Engine.getInstance().getTransactionService().storeTransaction( conversation, message );
+            } else {
+                Engine.getInstance().getTransactionService().updateTransaction( message );
+            }
+        } // synchronized
+    }
 
     public void receivedNonReliableMessage() throws StateTransitionException, NexusException {
 

@@ -43,21 +43,16 @@ abstract public class AbstractPipeline implements Pipeline {
      * The endpoint of this pipeline handling the message when this pipeline is done processing it.
      */
     protected MessageProcessor pipelineEndpoint = null;
+    protected MessageProcessor returnPipelineEndpoint = null;
 
     abstract public MessageContext processMessage( MessageContext messageContext ) throws IllegalArgumentException,
             IllegalStateException, NexusException;
 
-    /* (non-Javadoc)
-     * @see org.nexuse2e.messaging.Pipeline#getPipelineEndpoint()
-     */
     public MessageProcessor getPipelineEndpoint() {
 
         return pipelineEndpoint;
     }
 
-    /* (non-Javadoc)
-     * @see org.nexuse2e.messaging.Pipeline#setPipelineEndpoint(org.nexuse2e.messaging.Pipelet)
-     */
     public void setPipelineEndpoint( MessageProcessor pipelineEndpoint ) {
 
         if (pipelineEndpoint instanceof Pipelet) {
@@ -65,6 +60,20 @@ abstract public class AbstractPipeline implements Pipeline {
         }
         
         this.pipelineEndpoint = pipelineEndpoint;
+    }
+
+    public MessageProcessor getReturnPipelineEndpoint() {
+
+        return returnPipelineEndpoint;
+    }
+
+    public void setReturnPipelineEndpoint( MessageProcessor returnPipelineEndpoint ) {
+
+        if (returnPipelineEndpoint instanceof Pipelet) {
+            ((Pipelet) returnPipelineEndpoint).setPipeline( this );
+        }
+        
+        this.returnPipelineEndpoint = returnPipelineEndpoint;
     }
 
     /**
@@ -82,7 +91,9 @@ abstract public class AbstractPipeline implements Pipeline {
 
         if (forwardPipelets != null) {
             for (Pipelet pipelet : forwardPipelets) {
-                pipelet.setPipeline( this );
+                if (pipelet != null) {
+                    pipelet.setPipeline( this );
+                }
             }
         }
         
@@ -104,7 +115,9 @@ abstract public class AbstractPipeline implements Pipeline {
 
         if (returnPipelets != null) {
             for (Pipelet pipelet : returnPipelets) {
-                pipelet.setPipeline( this );
+                if (pipelet != null) {
+                    pipelet.setPipeline( this );
+                }
             }
         }
 

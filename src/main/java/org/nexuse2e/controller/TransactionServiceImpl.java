@@ -328,7 +328,6 @@ public class TransactionServiceImpl implements TransactionService {
     /* (non-Javadoc)
      * @see org.nexuse2e.controller.TransactionService#getActiveMessages()
      */
-    @SuppressWarnings("unchecked")
     public List<MessagePojo> getActiveMessages() throws NexusException {
 
         return Engine.getInstance().getTransactionDAO().getActiveMessages();
@@ -845,6 +844,21 @@ public class TransactionServiceImpl implements TransactionService {
         return Engine.getInstance().getTransactionDAO().getMessagesByChoreographyAndPartner(
                 choreography, partner, field, ascending, session, transaction );
     }
+
+    public List<MessagePojo> getMessagesByActionPartnerDirectionAndStatus(
+            ActionPojo action,
+            PartnerPojo partner,
+            boolean outbound,
+            int status,
+            int field,
+            boolean ascending, 
+            Session session,
+            Transaction transaction ) throws NexusException {
+        
+        return Engine.getInstance().getTransactionDAO().getMessagesByActionPartnerDirectionAndStatus(
+                action, partner, outbound, status, field, ascending, session, transaction );
+    }
+
 
     /* (non-Javadoc)
      * @see org.nexuse2e.controller.TransactionService#getMessagesByChoreographyPartnerAndConversation(org.nexuse2e.pojo.ChoreographyPojo, org.nexuse2e.pojo.PartnerPojo, org.nexuse2e.pojo.ConversationPojo, int, boolean, org.hibernate.Session, org.hibernate.Transaction)

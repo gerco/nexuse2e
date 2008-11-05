@@ -19,7 +19,7 @@
  */
 package org.nexuse2e.messaging;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.nexuse2e.NexusException;
 import org.nexuse2e.ProtocolSpecific;
@@ -51,11 +51,23 @@ public interface ProtocolAdapter extends ProtocolSpecific {
      * @param reasonCode Code identifying the reason for the error. 
      * @param choreography The choreography for which to create the error.
      * @param messageContext  The <code>MessageContext</code> for which the acknowledgement shall be created.
-     * @param errorMessages
-     * @return
+     * @param errorMessages A list of error <code>ErrorDescriptor</code> objects.
+     * @return A newly created <code>MessageContext</code> that represents an error acknowledgement.
+     * <code>null</code> if none was created.
      */
     public MessageContext createErrorAcknowledgement( Constants.ErrorMessageReasonCode reasonCode,
-            ChoreographyPojo choreography, MessageContext messageContext, Vector<ErrorDescriptor> errorMessages );
+            ChoreographyPojo choreography, MessageContext messageContext, List<ErrorDescriptor> errorMessages );
+    
+    /**
+     * Create a response message for the given message context.
+     * 
+     * @param messageContext The message context. It is assumed to be a request
+     * ({@link MessageContext#isRequestMessage()} returns <code>true</code>). Must not be <code>null</code>.
+     * @return A newly created <code>MessageContext</code> that is a valid response to the request information
+     * set on the <code>messageContext</code> parameter. <code>null</code> if none was created.
+     * @throws NexusException If the response creation failed.
+     */
+    public MessageContext createResponse( MessageContext messageContext ) throws NexusException;
 
     public void addProtcolSpecificParameters( MessageContext messageContext );
 

@@ -29,6 +29,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.nexuse2e.Constants;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ConversationPojo;
 import org.nexuse2e.pojo.LogPojo;
@@ -653,6 +654,27 @@ public class TransactionDAO extends BasicDAO {
 
         String query = "from MessagePojo message where message.conversation.partner.nxPartnerId="
                 + partner.getNxPartnerId() + " and message.outbound=" + ( outbound ? 1 : 0 )
+                + getSortString( "message", field, ascending );
+        return getListThroughSessionFind( query.toString(), session, transaction );
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<MessagePojo> getMessagesByActionPartnerDirectionAndStatus(
+            ActionPojo action,
+            PartnerPojo partner,
+            boolean outbound,
+            int status,
+            int field,
+            boolean ascending, 
+            Session session,
+            Transaction transaction ) throws NexusException {
+
+        String query = "from MessagePojo message where message.conversation.partner.nxPartnerId="
+                + partner.getNxPartnerId() + " and message.action.name='" + action.getName()
+                + "' and message.action.choreography.name='" +  action.getChoreography().getName()
+                + "' and message.outbound=" + ( outbound ? 1 : 0 )
+                + " and message.conversation.partner.partnerId='" + partner.getPartnerId()
+                + "' and message.status=" + status
                 + getSortString( "message", field, ascending );
         return getListThroughSessionFind( query.toString(), session, transaction );
     }

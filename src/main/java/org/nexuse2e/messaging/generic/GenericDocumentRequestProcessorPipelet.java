@@ -6,12 +6,16 @@ import java.util.List;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.apache.log4j.Logger;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.FrontendInboundDispatcher;
 import org.nexuse2e.messaging.MessageContext;
+import org.nexuse2e.messaging.RequestInfo;
 import org.nexuse2e.pojo.MessagePayloadPojo;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -36,6 +40,20 @@ public class GenericDocumentRequestProcessorPipelet extends AbstractPipelet {
     public GenericDocumentRequestProcessorPipelet() {
         frontendPipelet = true;
     }
+    
+    
+    protected RequestInfo getRequestInfoFromXml( Node rootNode ) throws XPathExpressionException {
+        RequestInfo requestInfo = null;
+        
+        if (rootNode != null && "GenericDocumentRequest".equals( rootNode.getNodeName() )) { // this is a request document
+            LOG.info( "Found a GenericDocumentRequest" );
+            XPath xPath = XPathFactory.newInstance().newXPath();
+            String documentType = xPath.evaluate( "/GenericDocumentRequest/GenericDocumentRequestBody/DocumentType", rootNode );
+            requestInfo = new RequestInfo( documentType );
+        }
+        return requestInfo;
+    }
+    
     
 
     @Override
@@ -66,16 +84,15 @@ public class GenericDocumentRequestProcessorPipelet extends AbstractPipelet {
                         throw new NexusException( e );
                     }
                 }
-                
-                if ("GenericDocumentRequest".equals( n.getNodeName() )) { // this is a request document
-                    LOG.info( "Found a GenericDocumentRequest" );
-                    return messageContext;
+                try {
+                    messageContext.setRequestInfo( getRequestInfoFromXml( n ) );
+                } catch (XPathExpressionException e) {
+                    throw new NexusException( e );
                 }
             }
 
-            return messageContext;
         }
-        return null;
+        return messageContext;
     }
     
 }
