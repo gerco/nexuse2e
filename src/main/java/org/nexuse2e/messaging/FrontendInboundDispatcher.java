@@ -203,57 +203,68 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
             } else { // duplicate
 
                 // Forward the message to check the transition, persist it and pass to backend
-                FrontendActionSerializer frontendActionSerializer = frontendActionSerializers.get( messagePojo
-                        .getConversation().getChoreography().getName() );
-                if ( frontendActionSerializer != null ) {
-                    try {
-                        clonedMessageContext = (MessageContext) messageContext.clone();
-
-                        // Forward message to FrontendActionSerializer for further processing/queueing
-                        frontendActionSerializer.processMessage( messageContext );
-
-                        // Block for synchronous processing
-                        if ( participant.getConnection().isSynchronous() ) {
-                            LOG.debug( new LogMessage( "Found synchronous connection setting.", messagePojo ) );
-                            Engine.getInstance().getTransactionService().addSynchronousRequest(
-                                    messagePojo.getMessageId() );
-                            while ( responseMessageContext == null ) {
-                                synchronized ( synchronousReplies ) {
-                                    try {
-                                        LOG.debug( "Waiting for reply..." );
-                                        synchronousReplies.wait();
-                                    } catch ( InterruptedException e ) {
-                                        // TODO Auto-generated catch block
-                                        e.printStackTrace();
+                if (!messageContext.isRequestMessage()) { // request messages are not passed to backend
+                    FrontendActionSerializer frontendActionSerializer = frontendActionSerializers.get(
+                            messagePojo.getConversation().getChoreography().getName() );
+                    if ( frontendActionSerializer != null ) {
+                        try {
+                            clonedMessageContext = (MessageContext) messageContext.clone();
+    
+                            // Forward message to FrontendActionSerializer for further processing/queueing
+                            frontendActionSerializer.processMessage( messageContext );
+    
+                            // Block for synchronous processing
+                            if ( participant.getConnection().isSynchronous() && !messageContext.isRequestMessage() ) {
+                                LOG.debug( new LogMessage( "Found synchronous connection setting.", messagePojo ) );
+                                Engine.getInstance().getTransactionService().addSynchronousRequest(
+                                        messagePojo.getMessageId() );
+                                while ( responseMessageContext == null ) {
+                                    synchronized ( synchronousReplies ) {
+                                        try {
+                                            LOG.debug( "Waiting for reply..." );
+                                            synchronousReplies.wait();
+                                        } catch ( InterruptedException e ) {
+                                            // TODO Auto-generated catch block
+                                            e.printStackTrace();
+                                        }
                                     }
+    
+                                    responseMessageContext = synchronousReplies.get( messageContext.getMessagePojo()
+                                            .getMessageId() );
                                 }
-
-                                responseMessageContext = synchronousReplies.get( messageContext.getMessagePojo()
-                                        .getMessageId() );
+                                LOG.debug( "Found reply: " + responseMessageContext );
                             }
-                            LOG.debug( "Found reply: " + responseMessageContext );
+                        } catch ( CloneNotSupportedException e ) {
+                            e.printStackTrace();
+                        } catch ( NexusException e ) {
+                            LOG.error( new LogMessage( "Error processing message: " + messagePojo.getMessageId()
+                                            + " (" + messagePojo.getConversation().getChoreography().getName() + "/"
+                                            + messagePojo.getConversation().getPartner().getPartnerId() + ") - " + e,
+                                            messagePojo ), e );
+                            headerInvalid = true;
                         }
-                    } catch ( CloneNotSupportedException e ) {
-                        e.printStackTrace();
-                    } catch ( NexusException e ) {
-                        LOG.error( new LogMessage( "Error processing message: " + messagePojo.getMessageId()
-                                        + " (" + messagePojo.getConversation().getChoreography().getName() + "/"
-                                        + messagePojo.getConversation().getPartner().getPartnerId() + ") - " + e,
-                                        messagePojo ), e );
+                    } else {
+                        LOG.error( new LogMessage( "No FrontendActionSerializer found: "
+                                + messagePojo.getConversation().getChoreography().getName(), messagePojo ) );
                         headerInvalid = true;
                     }
-                } else {
-                    LOG.error( new LogMessage( "No FrontendActionSerializer found: "
-                            + messagePojo.getConversation().getChoreography().getName(), messagePojo ) );
-                    headerInvalid = true;
+                } else { // mark request message as received
+                    try {
+                        messageContext.getStateMachine().receivedRequestMessage();
+                    } catch (StateTransitionException e) {
+                        throw new NexusException( e );
+                    }
                 }
 
                 // Asynchronous processing
-                if ( !participant.getConnection().isSynchronous() ) {
+                if ( !participant.getConnection().isSynchronous() || messageContext.isRequestMessage() ) {
                     if ( !headerInvalid && messageContext.getMessagePojo().getStatus() != Constants.MESSAGE_STATUS_FAILED) {
                         LOG.trace( "No error response message found, creating ack" );
                         responseMessageContext = null;
-                        if ( messageContext.getParticipant().getConnection().isReliable() ) {
+                        if (messageContext.isRequestMessage()) {
+                            // check if we need to respond to a request message
+                            responseMessageContext = protocolAdapter.createResponse( messageContext );
+                        } else if ( messageContext.getParticipant().getConnection().isReliable() ) {
                             try {
                                 responseMessageContext = protocolAdapter.createAcknowledgement( choreography,
                                         clonedMessageContext );
@@ -285,7 +296,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
             }
 
             // Send acknowledgment/error message back asynchronously
-            if ( participant.getConnection().isSynchronous() ) {
+            if ( participant.getConnection().isSynchronous() || messageContext.isRequestMessage() ) {
                 return responseMessageContext;
             } else if ( !headerInvalid && ( responseMessageContext != null ) && responseMessageContext.getMessagePojo() != null ) {
                 try {

@@ -59,7 +59,9 @@ import org.nexuse2e.messaging.BackendOutboundDispatcher;
 import org.nexuse2e.messaging.BackendPipeline;
 import org.nexuse2e.messaging.FrontendActionSerializer;
 import org.nexuse2e.messaging.FrontendInboundDispatcher;
+import org.nexuse2e.messaging.FrontendInboundResponseEndpoint;
 import org.nexuse2e.messaging.FrontendOutboundDispatcher;
+import org.nexuse2e.messaging.FrontendOutboundResponseEndpoint;
 import org.nexuse2e.messaging.FrontendPipeline;
 import org.nexuse2e.messaging.Pipelet;
 import org.nexuse2e.messaging.ProtocolAdapter;
@@ -461,6 +463,10 @@ public class EngineConfiguration implements ConfigurationAccessService {
                 new BackendOutboundDispatcher() );
         staticBeanContainer.getManagableBeans().put( org.nexuse2e.Constants.BACKEND_PIPELINE_DISPATCHER,
                 new BackendPipelineDispatcher() );
+        staticBeanContainer.getManagableBeans().put( org.nexuse2e.Constants.FRONTEND_INBOUND_RESPONSE_ENDPOINT,
+                new FrontendInboundResponseEndpoint() );
+        staticBeanContainer.getManagableBeans().put( org.nexuse2e.Constants.FRONTEND_OUTBOUND_RESPONSE_ENDPOINT,
+                new FrontendOutboundResponseEndpoint() );
     }
 
     /**
@@ -615,6 +621,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
                         returnPipelets[i++] = pipelet;
                     }
                     frontendPipeline.setReturnPipelets( returnPipelets );
+                    frontendPipeline.setReturnPipelineEndpoint( getStaticBeanContainer().getFrontendOutboundResponseEndpoint() );
                 } else {
                     getFrontendInboundPipelines().put( pipelinePojo.getTrp(), frontendPipeline );
                     LOG.trace( "Frontend inbound pipeline: " + pipelinePojo.getName() );
@@ -670,6 +677,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
                         returnPipelets[i++] = pipelet;
                     }
                     frontendPipeline.setReturnPipelets( returnPipelets );
+                    frontendPipeline.setReturnPipelineEndpoint( getStaticBeanContainer().getFrontendInboundResponseEndpoint() );
                 }
 
             } catch (Exception e) {

@@ -67,11 +67,6 @@ public class TransportSender extends AbstractPipelet {
     public MessageContext processMessage( MessageContext messageContext ) throws NexusException {
 
         return ( (SenderAware) service ).sendMessage( messageContext );
-        
-        /* was:
-        ( (SenderAware) service ).sendMessage( messageContext );
-        return messageContext;
-        */
     }
 
     /* (non-Javadoc)

@@ -29,6 +29,7 @@ import org.hibernate.Transaction;
 import org.nexuse2e.Manageable;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.messaging.MessageContext;
+import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ConversationPojo;
 import org.nexuse2e.pojo.LogPojo;
@@ -413,6 +414,30 @@ public interface TransactionService extends Manageable {
             PartnerPojo partner, int field, boolean ascending, Session session, Transaction transaction )
             throws NexusException;
 
+    /**
+     * Gets messages by their action, partner direction and status.
+     * @param action The action. Must not be <code>null</code>.
+     * @param partner The partner. Must not be <code>null</code>.
+     * @param outbound <code>true</code> for outbound, <code>false</code> for inbound messages.
+     * @param status The message status.
+     * @param field The field to sort by.
+     * @param ascending <code>true</code> for ascending, <code>false</code> for descending.
+     * @param session The session. Can be <code>null</code>.
+     * @param transaction The transaction. Can be <code>null</code>.
+     * @return A list of messages. Empty if none were found.
+     * @throws NexusException If something went wrong.
+     */
+    public List<MessagePojo> getMessagesByActionPartnerDirectionAndStatus(
+            ActionPojo action,
+            PartnerPojo partner,
+            boolean outbound,
+            int status,
+            int field,
+            boolean ascending, 
+            Session session,
+            Transaction transaction ) throws NexusException;
+
+    
     /**
      * @param choreography
      * @param partner

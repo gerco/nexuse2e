@@ -33,31 +33,33 @@ public class Constants {
     public static String       HIBERNATESESSIONFACTORYBEANID      = "HybernateSessionFactory";
 
     // DAO bean IDs
-    public static final String ACTION_DAO                         = "actionDao";
-    public static final String CHOREOGRAPHY_DAO                   = "choreographyDao";
-    public static final String PARTICIPANT_DAO                    = "participantDao";
-    public static final String CERTIFICATE_DAO                    = "certificateDao";
-    public static final String COMMUNICATIONPARTNERDAO            = "communicationPartnerDao";
-    public static final String CONVERSATION_DAO                   = "conversationDao";
-    public static final String MESSAGE_DAO                        = "messageDao";
+    public static final String ACTION_DAO                          = "actionDao";
+    public static final String CHOREOGRAPHY_DAO                    = "choreographyDao";
+    public static final String PARTICIPANT_DAO                     = "participantDao";
+    public static final String CERTIFICATE_DAO                     = "certificateDao";
+    public static final String COMMUNICATIONPARTNERDAO             = "communicationPartnerDao";
+    public static final String CONVERSATION_DAO                    = "conversationDao";
+    public static final String MESSAGE_DAO                         = "messageDao";
 
     // skeleton bean IDs
-    public static final String FRONTEND_INBOUND_DISPATCHER        = "frontendInboundDispatcher";
-    public static final String FRONTEND_OUTBOUND_DISPATCHER       = "frontendOutboundDispatcher";
-    public static final String BACKEND_INBOUND_DISPATCHER         = "backendInboundDispatcher";
-    public static final String BACKEND_OUTBOUND_DISPATCHER        = "backendOutboundDispatcher";
-    public static final String BACKEND_PIPELINE_DISPATCHER        = "backendPipelineDispatcher";
-    public static final String TRANSACTION_SERVICE                = "transactionService";
+    public static final String FRONTEND_INBOUND_DISPATCHER         = "frontendInboundDispatcher";
+    public static final String FRONTEND_OUTBOUND_DISPATCHER        = "frontendOutboundDispatcher";
+    public static final String BACKEND_INBOUND_DISPATCHER          = "backendInboundDispatcher";
+    public static final String BACKEND_OUTBOUND_DISPATCHER         = "backendOutboundDispatcher";
+    public static final String BACKEND_PIPELINE_DISPATCHER         = "backendPipelineDispatcher";
+    public static final String TRANSACTION_SERVICE                 = "transactionService";
+    public static final String FRONTEND_INBOUND_RESPONSE_ENDPOINT  = "frontendInboundResponseEndpoint";
+    public static final String FRONTEND_OUTBOUND_RESPONSE_ENDPOINT = "frontendOutboundResponseEndpoint";
 
-    public static final String TRANSPORT_DISPATCHER_MAPPING       = "nexusTransportDispatcherMapping";
+    public static final String TRANSPORT_DISPATCHER_MAPPING        = "nexusTransportDispatcherMapping";
 
     // naming postfixes
-    public static final String POSTFIX_INBOUND_QUEUE              = "-Inbound-Queue";
-    public static final String POSTFIX_FRONTEND_ACTION_SERIALIZER = "-Frontend-Action-Serializer";
-    public static final String POSTFIX_BACKEND_ACTION_SERIALIZER  = "-Backend-Action-Serializer";
+    public static final String POSTFIX_INBOUND_QUEUE               = "-Inbound-Queue";
+    public static final String POSTFIX_FRONTEND_ACTION_SERIALIZER  = "-Frontend-Action-Serializer";
+    public static final String POSTFIX_BACKEND_ACTION_SERIALIZER   = "-Backend-Action-Serializer";
 
-    public static final String POSTFIX_BACKEND_PIPELINE           = "-Backend-Pipeline";
-    public static final String POSTFIX_FRONTEND_PIPELINE          = "-Frontend-Pipeline";
+    public static final String POSTFIX_BACKEND_PIPELINE            = "-Backend-Pipeline";
+    public static final String POSTFIX_FRONTEND_PIPELINE           = "-Frontend-Pipeline";
 
     /**
      * the possible types for mapping value pairs

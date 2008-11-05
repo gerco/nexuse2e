@@ -115,6 +115,10 @@ public class FrontendPipeline extends AbstractPipeline implements ProtocolSpecif
                 messageContext = messagePipelet.processMessage( messageContext );
             }
         }
+        
+        if (returnPipelineEndpoint != null) {
+            messageContext = returnPipelineEndpoint.processMessage( messageContext );
+        }
 
         return messageContext;
     } // processMessage

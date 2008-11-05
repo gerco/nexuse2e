@@ -482,30 +482,34 @@ public class SmtpSender extends AbstractService implements SenderAware {
                     (String) getParameter( USER_PARAM_NAME ),
                     (String) getParameter( PASSWORD_PARAM_NAME ),
                     (String) getParameter( PORT_PARAM_NAME ) );
-            session = (Session) connectionInfo[0];
-            transport = (Transport) connectionInfo[1];
-
-            // construct the message
-            Message msg = new MimeMessage( session );
-            msg.setRecipients( Message.RecipientType.TO, InternetAddress.parse( recipient, false ) );
-            msg.setHeader( "X-Mailer", "msgsend" );
-            msg.setFrom( new InternetAddress( (String) getParameter( EMAIL_PARAM_NAME ) ) );
-            if ( ( mimeBodyParts != null ) && ( mimeBodyParts.length != 0 ) ) {
-                Multipart multipart = new MimeMultipart();
-                for ( int i = 0; i < mimeBodyParts.length; i++ ) {
-                    multipart.addBodyPart( mimeBodyParts[i] );
+            if (connectionInfo != null) {
+                session = (Session) connectionInfo[0];
+                transport = (Transport) connectionInfo[1];
+    
+                // construct the message
+                Message msg = new MimeMessage( session );
+                msg.setRecipients( Message.RecipientType.TO, InternetAddress.parse( recipient, false ) );
+                msg.setHeader( "X-Mailer", "msgsend" );
+                msg.setFrom( new InternetAddress( (String) getParameter( EMAIL_PARAM_NAME ) ) );
+                if ( ( mimeBodyParts != null ) && ( mimeBodyParts.length != 0 ) ) {
+                    Multipart multipart = new MimeMultipart();
+                    for ( int i = 0; i < mimeBodyParts.length; i++ ) {
+                        multipart.addBodyPart( mimeBodyParts[i] );
+                    }
+                    msg.setContent( multipart );
+                } else {
+                    msg.setText( description );
                 }
-                msg.setContent( multipart );
+                msg.setSentDate( new Date() );
+                msg.setSubject( subjectLine );
+                msg.saveChanges();
+                // send the thing off
+                sendMessage( transport, msg, msg.getAllRecipients() );
             } else {
-                msg.setText( description );
+                LOG.warn( "Cannot send message: Unable to connect to mail host" );
             }
-            msg.setSentDate( new Date() );
-            msg.setSubject( subjectLine );
-            msg.saveChanges();
-            // send the thing off
-            sendMessage( transport, msg, msg.getAllRecipients() );
         } catch ( Exception e ) {
-            throw new NexusException( "Error composing mail Exception: " + e );
+            throw new NexusException( "Error composing mail Exception: ", e );
         }
     }
 

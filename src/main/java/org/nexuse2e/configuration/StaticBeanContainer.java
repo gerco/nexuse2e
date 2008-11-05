@@ -33,6 +33,7 @@ import org.nexuse2e.messaging.BackendInboundDispatcher;
 import org.nexuse2e.messaging.BackendOutboundDispatcher;
 import org.nexuse2e.messaging.FrontendInboundDispatcher;
 import org.nexuse2e.messaging.FrontendOutboundDispatcher;
+import org.nexuse2e.messaging.MessageProcessor;
 import org.nexuse2e.service.Service;
 
 /**
@@ -44,13 +45,6 @@ public class StaticBeanContainer {
     
     private Map<String, Manageable> managableBeans = new HashMap<String, Manageable>( 100 );
 
-    /*
-    public StaticBeanContainer() {
-        // HashMap<String, Manageable> beanContainer = new LinkedHashMap<String, Manageable>();
-        HashMap<String, Manageable> beanContainer = new HashMap<String, Manageable>( 100 );
-        setManagableBeans( beanContainer );
-    }
-    */
 
     /**
      * @return the managableBeans
@@ -143,6 +137,40 @@ public class StaticBeanContainer {
         return null;
     }
 
+    /**
+     * Gets the response pipeline endpoint for frontend inbound pipelines.
+     * 
+     * @return The frontend inbound response endpoint, or <code>null</code> if not configured.
+     */
+    public MessageProcessor getFrontendInboundResponseEndpoint() {
+        
+        if ( managableBeans != null ) {
+
+            Object bean = managableBeans.get( org.nexuse2e.Constants.FRONTEND_INBOUND_RESPONSE_ENDPOINT );
+            if ( bean instanceof MessageProcessor ) {
+                return (MessageProcessor) bean;
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Gets the response pipeline endpoint for frontend outbound pipelines.
+     * 
+     * @return The frontend outbound response endpoint, or <code>null</code> if not configured.
+     */
+    public MessageProcessor getFrontendOutboundResponseEndpoint() {
+        
+        if ( managableBeans != null ) {
+
+            Object bean = managableBeans.get( org.nexuse2e.Constants.FRONTEND_OUTBOUND_RESPONSE_ENDPOINT );
+            if ( bean instanceof MessageProcessor ) {
+                return (MessageProcessor) bean;
+            }
+        }
+        return null;
+    }
+    
     /**
      * Gets a logger by it's unique name.
      * @param name the logger name.

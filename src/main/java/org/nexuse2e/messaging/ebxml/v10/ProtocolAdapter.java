@@ -21,12 +21,14 @@ package org.nexuse2e.messaging.ebxml.v10;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.ProtocolSpecificKey;
+import org.nexuse2e.messaging.Constants.ErrorMessageReasonCode;
 import org.nexuse2e.messaging.ebxml.v20.Constants;
 import org.nexuse2e.messaging.ErrorDescriptor;
 import org.nexuse2e.messaging.MessageContext;
@@ -213,6 +215,24 @@ public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
     public void setKey( ProtocolSpecificKey key ) {
 
         this.key = key;
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.messaging.ProtocolAdapter#createErrorAcknowledgement(org.nexuse2e.messaging.Constants.ErrorMessageReasonCode, org.nexuse2e.pojo.ChoreographyPojo, org.nexuse2e.messaging.MessageContext, java.util.List)
+     */
+    public MessageContext createErrorAcknowledgement(
+            ErrorMessageReasonCode reasonCode, ChoreographyPojo choreography,
+            MessageContext messageContext, List<ErrorDescriptor> errorMessages) {
+
+        return null;
+    }
+
+
+    public MessageContext createResponse( MessageContext messageContext )
+            throws NexusException {
+
+        // request-response semantics not part of ebXML
+        return null;
     }
 
 } // ProtocolAdapter
