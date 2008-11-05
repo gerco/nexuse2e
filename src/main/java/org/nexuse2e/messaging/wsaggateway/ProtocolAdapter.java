@@ -119,13 +119,21 @@ public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
         }
         
         // go through messages that are on 'hold' and collect payloads
+        MessagePojo message = new MessagePojo();
         List<MessagePayloadPojo> payloads = new ArrayList<MessagePayloadPojo>();
         for (MessagePojo m : messages) {
-            payloads.addAll( m.getMessagePayloads() );
             m.setStatus( Constants.MESSAGE_STATUS_SENT );
+            for (MessagePayloadPojo payload : m.getMessagePayloads()) {
+                try {
+                    MessagePayloadPojo copy = (MessagePayloadPojo) payload.clone();
+                    copy.setMessage( message );
+                    payloads.add( copy );
+                } catch (CloneNotSupportedException cnsex) {
+                    LOG.error( "Unexpected error:", cnsex );
+                }
+            }
         }
         messageContext.getConversation().setCurrentAction( action );
-        MessagePojo message = new MessagePojo();
         message.setMessagePayloads( payloads );
         message.setAction( action );
         message.setConversation( messageContext.getMessagePojo().getConversation() );

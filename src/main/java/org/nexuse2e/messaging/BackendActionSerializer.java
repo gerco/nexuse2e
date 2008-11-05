@@ -126,8 +126,10 @@ public class BackendActionSerializer extends AbstractPipelet {
             LOG.warn( e.getMessage() );
         }
         
-        // Submit the message to the queue/backend
-        queue.add( messageContext );
+        // Submit the message to the queue/backend if it's not a "hold" connection
+        if (!messageContext.getParticipant().getConnection().isHold()) {
+            queue.add( messageContext );
+        }
     } // queueMessage
 
     /**

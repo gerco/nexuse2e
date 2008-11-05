@@ -236,20 +236,21 @@ public class WSDispatcherService extends AbstractService implements ReceiverAwar
                 OutboundData od = new OutboundData();
                 od.setMessageId( new NexusUUIDGenerator().getId() );
     
-                // TODO: test code
-
                 // send acknowledgment only
                 if (messageContext == null) {
                     od.setProcessStep( "TechnicalAck" );
                 } else { // send 
-                    od.setProcessStep( "ShipNoticeList" );
+                    od.setProcessStep( messageContext.getConversation().getCurrentAction().getName() );
                     XmlPayload xmlPayload = new XmlPayload();
                     
                     DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
                     builderFactory.setNamespaceAware( true );
-                    Document d = builderFactory.newDocumentBuilder().parse( new ByteArrayInputStream( "<test>Test</test>".getBytes() ) );
-                    Element element = d.getDocumentElement();
-                    xmlPayload.setAny( element );
+                    for (MessagePayloadPojo payload : messageContext.getMessagePojo().getMessagePayloads()) {
+                        Document d = builderFactory.newDocumentBuilder().parse(
+                                new ByteArrayInputStream( payload.getPayloadData() ) );
+                        Element element = d.getDocumentElement();
+                        xmlPayload.setAny( element );
+                    }
                     od.getXmlPayload().add( xmlPayload );
                 }
             
