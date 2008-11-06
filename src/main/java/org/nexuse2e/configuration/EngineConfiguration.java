@@ -672,6 +672,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
                     frontendPipeline.setPipelineEndpoint( getStaticBeanContainer().getFrontendInboundDispatcher() );
                     Collection<PipeletPojo> returnPipeletList = pipelinePojo.getReturnPipelets();
                     Pipelet[] returnPipelets = new Pipelet[returnPipeletList.size()];
+                    i = 0;
                     for ( PipeletPojo pipeletPojo : returnPipeletList ) {
                         Pipelet pipelet = getPipeletInstanceFromPojo( pipeletPojo );
                         returnPipelets[i++] = pipelet;
