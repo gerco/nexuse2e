@@ -1,12 +1,12 @@
 package org.nexuse2e.service;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
@@ -116,9 +116,9 @@ public class BackendPollingService extends AbstractService implements SchedulerC
                     String f = null;
                     byte[] data = null;
                     for (ActionPojo action : choreography.getActions()) {
-                        if (!StringUtils.isBlank( action.getDocumentType() )) {
+                        if (action.isPollingRequired()) {
                             if (LOG.isTraceEnabled()) {
-                                LOG.trace( "Polling for partner " + partner.getName() +
+                                LOG.trace( "Polling for partner " + partner.getPartnerId() +
                                         " on choreography " + choreography.getName() +
                                         ", documentType is " + action.getDocumentType() );
                             }
@@ -127,11 +127,18 @@ public class BackendPollingService extends AbstractService implements SchedulerC
                             String s = ServerPropertiesUtil.replaceServerProperties( templateLocation );
                             if (f == null || !f.equals( s )) {
                                 f = s;
+                                File file = new File( f );
+                                LOG.trace( "Using template file " + file.getAbsolutePath() );
                                 try {
-                                    data = FileUtils.readFileToByteArray( new File( f ) );
+                                    if (!file.exists()) {
+                                        throw new FileNotFoundException( "File " + file.getAbsolutePath() + " does not exist" );
+                                    }
+                                    data = FileUtils.readFileToByteArray( file );
                                 } catch (IOException e) {
                                     throw new NexusException( e );
                                 }
+                            } else {
+                                LOG.trace( "Reusing file contents from " + f );
                             }
                             
                             String conversationId = null;
@@ -147,6 +154,7 @@ public class BackendPollingService extends AbstractService implements SchedulerC
                                     null,
                                     null,
                                     data );
+                            LOG.trace( "Dispatched to backend" );
                         }
                     }
                 }
