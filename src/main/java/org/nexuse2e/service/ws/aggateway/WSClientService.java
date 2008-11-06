@@ -189,7 +189,7 @@ public class WSClientService extends AbstractService implements SenderAware {
                 outProps.put( WSHandlerConstants.PW_CALLBACK_REF, callback );
                 WSS4JOutInterceptor wssOut = new WSS4JOutInterceptor( outProps );
                 cxfEndpoint.getOutInterceptors().add( wssOut );
-                if (LOG.isDebugEnabled()) {
+                if (LOG.isTraceEnabled()) {
                     cxfEndpoint.getOutInterceptors().add( new LoggingOutInterceptor() );
                     cxfEndpoint.getInInterceptors().add( new LoggingInInterceptor() );
                 }
@@ -243,6 +243,7 @@ public class WSClientService extends AbstractService implements SenderAware {
         }
 
         replyMessageContext = new MessageContext();
+        replyMessageContext.setRequestMessage( messageContext );
         try {
             replyMessageContext.setProtocolSpecificKey( messageContext.getProtocolSpecificKey() );
             replyMessageContext.setActionSpecificKey( messageContext.getActionSpecificKey() );
@@ -254,8 +255,9 @@ public class WSClientService extends AbstractService implements SenderAware {
         }
 
         ParticipantPojo participant = messagePojo.getParticipant();
+        LOG.trace( "Calling web service at: " + receiverURL );
+
         for ( MessagePayloadPojo payload : messagePojo.getMessagePayloads() ) {
-            LOG.trace( "Calling web service at: " + receiverURL );
 
             InboundData inboundData = new InboundData();
             inboundData.setBusinessProcess( messagePojo.getConversation().getChoreography().getName() );
@@ -291,7 +293,7 @@ public class WSClientService extends AbstractService implements SenderAware {
                         messageContext.getConversation().getConversationId(),
                         messageContext.getChoreography().getName() );
             } catch ( DocExchangeFault e ) {
-                LOG.error( "Error calling web service: " + e );
+                LOG.error( "Error calling web service: ", e );
                 throw new NexusException( e );
             }
         }
@@ -350,11 +352,14 @@ public class WSClientService extends AbstractService implements SenderAware {
         message.setOutbound( false );
         replyMessageContext.setMessagePojo( message );
         replyMessageContext.setOriginalMessagePojo( message );
+        replyMessageContext.setChoreography( action.getChoreography() );
+        replyMessageContext.setPartner( message.getConversation().getPartner() );
         
         if ( outboundData.getXmlPayload() != null ) {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             
             List<MessagePayloadPojo> messagePayloads = new ArrayList<MessagePayloadPojo>( 1 );
+            int sn = 1;
             for (XmlPayload xmlPayload : outboundData.getXmlPayload()) {
                 String document = null;
                 try {
@@ -363,26 +368,33 @@ public class WSClientService extends AbstractService implements SenderAware {
                     StringWriter writer = new StringWriter();
                     StreamResult result = new StreamResult( writer );
                     Element element = (Element) xmlPayload.getAny();
-                    
-                    // hack: fix the missing namespace definition which doesn't come out for some strange reason
-                    Node node = element.getFirstChild();
-                    String prefix = node.getPrefix();
-                    element.setAttribute( "xmlns" + (StringUtils.isBlank( prefix ) ? "" : ":" + prefix), element.getNamespaceURI() );
-                    
-                    // serialize the document
-                    transformer.transform(new DOMSource( element ), result );
-                    document = writer.getBuffer().toString();
+
+                    if (element != null) {
+                        // hack: fix the missing namespace definition which doesn't come out for some strange reason
+                        Node node = element.getFirstChild();
+                        String prefix = node.getPrefix();
+                        element.setAttribute( "xmlns" + (StringUtils.isBlank( prefix ) ? "" : ":" + prefix), element.getNamespaceURI() );
+                        
+                        // serialize the document
+                        transformer.transform(new DOMSource( element ), result );
+                        document = writer.getBuffer().toString();
+                    }
                 } catch (TransformerException e) {
                     throw new NexusException( e );
                 }
-                LOG.trace( "Returned document:\n" + document );
-                MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo();
-                messagePayloadPojo.setMessage( replyMessageContext.getMessagePojo() );
-                messagePayloadPojo.setContentId( Engine.getInstance().getIdGenerator(
-                        Constants.ID_GENERATOR_MESSAGE_PAYLOAD ).getId() );
-                messagePayloadPojo.setMimeType( "text/xml" );
-                messagePayloadPojo.setPayloadData( (document == null ? null : document.getBytes()) );
-                messagePayloads.add( messagePayloadPojo );
+                if (document != null) {
+                    LOG.trace( "Returned document:\n" + document );
+                    MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo();
+                    messagePayloadPojo.setSequenceNumber( sn++ );
+                    messagePayloadPojo.setMessage( replyMessageContext.getMessagePojo() );
+                    messagePayloadPojo.setContentId( Engine.getInstance().getIdGenerator(
+                            Constants.ID_GENERATOR_MESSAGE_PAYLOAD ).getId() );
+                    messagePayloadPojo.setMimeType( "text/xml" );
+                    messagePayloadPojo.setPayloadData( (document == null ? null : document.getBytes()) );
+                    messagePayloads.add( messagePayloadPojo );
+                } else {
+                    LOG.trace( "Empty document returned" );
+                }
             }
             replyMessageContext.getMessagePojo().setMessagePayloads( messagePayloads );
 

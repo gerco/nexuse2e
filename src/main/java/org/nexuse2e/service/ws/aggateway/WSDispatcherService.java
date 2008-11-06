@@ -37,6 +37,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.ws.Endpoint;
 
+import org.apache.cxf.interceptor.LoggingInInterceptor;
+import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.jaxws.EndpointImpl;
 import org.apache.cxf.ws.security.wss4j.WSS4JInInterceptor;
 import org.apache.log4j.Logger;
@@ -148,6 +150,10 @@ public class WSDispatcherService extends AbstractService implements ReceiverAwar
                 inProps.put( WSHandlerConstants.PW_CALLBACK_REF, callback );
                 WSS4JInInterceptor wssIn = new WSS4JInInterceptor( inProps );
                 cxfEndpoint.getInInterceptors().add( wssIn );
+                if (LOG.isTraceEnabled()) {
+                    cxfEndpoint.getOutInterceptors().add( new LoggingOutInterceptor() );
+                    cxfEndpoint.getInInterceptors().add( new LoggingInInterceptor() );
+                }
             }
             
             super.start();
@@ -241,7 +247,6 @@ public class WSDispatcherService extends AbstractService implements ReceiverAwar
                     od.setProcessStep( "TechnicalAck" );
                 } else { // send 
                     od.setProcessStep( messageContext.getConversation().getCurrentAction().getName() );
-                    XmlPayload xmlPayload = new XmlPayload();
                     
                     DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
                     builderFactory.setNamespaceAware( true );
@@ -249,9 +254,10 @@ public class WSDispatcherService extends AbstractService implements ReceiverAwar
                         Document d = builderFactory.newDocumentBuilder().parse(
                                 new ByteArrayInputStream( payload.getPayloadData() ) );
                         Element element = d.getDocumentElement();
+                        XmlPayload xmlPayload = new XmlPayload();
                         xmlPayload.setAny( element );
+                        od.getXmlPayload().add( xmlPayload );
                     }
-                    od.getXmlPayload().add( xmlPayload );
                 }
             
                 return od;
