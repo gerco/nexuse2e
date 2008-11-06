@@ -80,6 +80,12 @@
             <tr>
         		<td class="NEXUSValue" colspan="2"><html:checkbox property="synchronous">Synchronous</html:checkbox></td>
 		    </tr>
+            <tr>
+        		<td class="NEXUSValue" colspan="2"><html:checkbox property="pickUp">Pick Up</html:checkbox></td>
+		    </tr>
+            <tr>
+        		<td class="NEXUSValue" colspan="2"><html:checkbox property="hold">Hold</html:checkbox></td>
+		    </tr>
 		    <tr>
                 <td class="NEXUSName">Synchronous Timeout</td>
                 <td class="NEXUSValue"><html:text size="50" property="synchronousTimeout"/></td>
