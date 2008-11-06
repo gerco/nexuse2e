@@ -48,6 +48,7 @@ public class ChoreographyActionForm extends ActionForm {
     private String             choreographyId            = null;
     private boolean            startAction               = false;
     private boolean            terminationAction         = false;
+    private boolean            pollingRequired           = false;
     private List<String>       followupActions           = new ArrayList<String>();
     private String             documentType              = null;
     private int                backendInboundPipelineId  = 0;
@@ -72,6 +73,7 @@ public class ChoreographyActionForm extends ActionForm {
         setDocumentType( null );
         setStartAction( false );
         setTerminationAction( false );
+        setPollingRequired( false );
         setFollowups( new String[0] );
         setBackendInboundPipelineId( 0 );
         setBackendOutboundPipelineId( 0 );
@@ -85,6 +87,7 @@ public class ChoreographyActionForm extends ActionForm {
         setDocumentType( null );
         setStartAction( false );
         setTerminationAction( false );
+        setPollingRequired( false );
         setBackendInboundPipelineId( 0 );
         setBackendOutboundPipelineId( 0 );
         setStatusUpdatePipelineId( 0 );
@@ -99,6 +102,7 @@ public class ChoreographyActionForm extends ActionForm {
         setChoreographyId( action.getChoreography().getName() );
         setStartAction( action.isStart() );
         setTerminationAction( action.isEnd() );
+        setPollingRequired( action.isPollingRequired() );
         if ( action.getInboundPipeline() != null ) {
             setBackendInboundPipelineId( action.getInboundPipeline().getNxPipelineId() );
         }
@@ -116,6 +120,7 @@ public class ChoreographyActionForm extends ActionForm {
         action.setName( getActionId() );
         action.setStart( isStartAction() );
         action.setEnd( isTerminationAction() );
+        action.setPollingRequired( isPollingRequired() );
         action.setInboundPipeline( Engine.getInstance().getActiveConfigurationAccessService()
                 .getPipelinePojoByNxPipelineId( getBackendInboundPipelineId() ) );
         action.setOutboundPipeline( Engine.getInstance().getActiveConfigurationAccessService()
@@ -186,6 +191,14 @@ public class ChoreographyActionForm extends ActionForm {
     public void setTerminationAction( boolean terminationAction ) {
 
         this.terminationAction = terminationAction;
+    }
+
+    public boolean isPollingRequired() {
+        return pollingRequired;
+    }
+
+    public void setPollingRequired(boolean pollingRequired) {
+        this.pollingRequired = pollingRequired;
     }
 
     public String[] getFollowups() {

@@ -65,6 +65,18 @@
 				</logic:iterate>
 			</html:select></td>
 		</tr>
+		<tr>
+			<td class="NEXUSName">Polling Required</td>
+			<td class="NEXUSValue">
+				<html:checkbox property="pollingRequired"/>
+			</td>
+		</tr>
+		<tr>
+			<td class="NEXUSName">Document Type</td>
+			<td class="NEXUSValue">
+				<html:text size="50" property="documentType"/>
+			</td>
+		</tr>
 
 	</table>
 	<table class="NEXUS_BUTTON_TABLE" width="100%">
