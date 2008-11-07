@@ -85,6 +85,7 @@ public class PipeletPojo implements NEXUSe2ePojo {
         this.modifiedNxUserId = modifiedNxUserId;
         this.position = position;
         this.name = name;
+        forward = true;
     }
 
     /** full constructor */
@@ -100,6 +101,7 @@ public class PipeletPojo implements NEXUSe2ePojo {
         this.name = name;
         this.description = description;
         this.pipeletParams = pipeletParams;
+        forward = true;
     }
 
     // Property accessors
@@ -287,6 +289,7 @@ public class PipeletPojo implements NEXUSe2ePojo {
         this.endpoint = endpoint;
     }
 
+    @XmlAttribute
     public boolean isForward() {
 
         return forward;
