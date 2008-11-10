@@ -175,6 +175,9 @@
         <nxs:page target="FileDownload.do" label="File Download" icon="images/icons/page_save.png">
           <nxs:command target="FileDownload.do" label="Execute" icon="images/icons/bullet_orange.png"/>
         </nxs:page>
+        <nxs:page target="PatchManagement.do" label="Patches" icon="images/icons/wrench.png">
+          <nxs:command target="PatchManagement.do" label="Execute" icon="images/icons/bullet_orange.png"/>
+        </nxs:page>
         <nxs:page target="ConfigurationManagement.do" label="Configuration Management" icon="images/icons/server_database.png">
           <nxs:command target="ConfigurationManagement.do" label="Execute" icon="images/icons/bullet_orange.png"/>
         </nxs:page>
