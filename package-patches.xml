@@ -1,0 +1,18 @@
+<project name="nexuse2e-patches" default="jar" basedir=".">
+  <property file="nexuse2e-build.properties" />
+
+  <property name="targetDir" value="${basedir}/target" />
+  <property name="jarDir" value="${targetDir}/patches" />
+
+
+  <target name="jar" description="Package the patches">
+    <echo message="Packaging patches.jar..." />
+    <mkdir dir="${jarDir}" />
+    <fileset dir="${jarDir}/lib" includes="*.jar" id="jars"/>
+
+    <jar destfile="${jarDir}/patches.jar">
+      <fileset dir="${targetDir}/test-classes" id="testClasses" defaultexcludes="true" includes="org/nexuse2e/patches/**" />
+    </jar>
+
+  </target>
+</project>

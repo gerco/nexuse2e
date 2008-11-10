@@ -53,6 +53,7 @@ public class LogoutAction extends NexusE2EAction {
         UserPojo userInstance = (UserPojo) session.getAttribute( NexusE2EAction.ATTRIBUTE_USER );
         if ( userInstance != null ) {
             session.removeAttribute( NexusE2EAction.ATTRIBUTE_USER );
+            session.removeAttribute( "patchManagementForm" ); // remove patches
             forward = actionMapping.findForward( NexusE2EAction.ACTION_FORWARD_SUCCESS );
             LOG.info( "Logout for \"" + userInstance.getLoginName() + "\" successful." );
         } else {

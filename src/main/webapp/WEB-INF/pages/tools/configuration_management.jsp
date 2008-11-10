@@ -25,7 +25,7 @@
 			<td colspan="2" class="NEXUSSection">Import Configuration</td>
 		</tr>
 		<tr>
-			<td class="NEXUSName">Configuration file</td>
+			<td class="NEXUSName">Configuration File</td>
 			<td class="NEXUSValue"><html:file size="50" property="payloadFile" onkeypress="return checkKey(event);" /></td>
 		</tr>
 	</table>

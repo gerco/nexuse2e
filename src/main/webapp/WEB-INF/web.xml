@@ -65,6 +65,11 @@
     <servlet-class>org.nexuse2e.ui.DataSaveAsServlet</servlet-class>
   </servlet>
 
+  <servlet>
+    <servlet-name>ExecutePatch</servlet-name>
+    <servlet-class>org.nexuse2e.ui.ExecutePatchServlet</servlet-class>
+  </servlet>
+
   <!-- Ajax servlet -->
 
   <servlet>
@@ -119,6 +124,10 @@
   <servlet-mapping>
     <servlet-name>DataSaveAs</servlet-name>
     <url-pattern>/DataSaveAs</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>ExecutePatch</servlet-name>
+    <url-pattern>/ExecutePatch</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>BirtReportServlet</servlet-name>
