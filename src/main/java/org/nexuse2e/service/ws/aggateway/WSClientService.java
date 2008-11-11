@@ -38,11 +38,6 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
@@ -62,6 +57,8 @@ import org.apache.log4j.Logger;
 import org.apache.ws.security.WSConstants;
 import org.apache.ws.security.WSPasswordCallback;
 import org.apache.ws.security.handler.WSHandlerConstants;
+import org.apache.xml.serialize.OutputFormat;
+import org.apache.xml.serialize.XMLSerializer;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
@@ -91,7 +88,6 @@ import org.nexuse2e.util.EncryptionUtil;
 import org.nexuse2e.util.FileUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 /**
@@ -356,30 +352,26 @@ public class WSClientService extends AbstractService implements SenderAware {
         replyMessageContext.setPartner( message.getConversation().getPartner() );
         
         if ( outboundData.getXmlPayload() != null ) {
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            
+
             List<MessagePayloadPojo> messagePayloads = new ArrayList<MessagePayloadPojo>( 1 );
             int sn = 1;
             for (XmlPayload xmlPayload : outboundData.getXmlPayload()) {
                 String document = null;
                 try {
-                    Transformer transformer = transformerFactory.newTransformer();
-                    transformer.setOutputProperty( "indent", "yes" );
+                    OutputFormat outputFormat = new OutputFormat( "XML", "UTF-8", true );
                     StringWriter writer = new StringWriter();
-                    StreamResult result = new StreamResult( writer );
+                    XMLSerializer xmlSerializer = new XMLSerializer( writer, outputFormat );
+                    xmlSerializer.asDOMSerializer();
+
                     Element element = (Element) xmlPayload.getAny();
 
                     if (element != null) {
-                        // hack: fix the missing namespace definition which doesn't come out for some strange reason
-                        Node node = element.getFirstChild();
-                        String prefix = node.getPrefix();
-                        element.setAttribute( "xmlns" + (StringUtils.isBlank( prefix ) ? "" : ":" + prefix), element.getNamespaceURI() );
-                        
                         // serialize the document
-                        transformer.transform(new DOMSource( element ), result );
+                        xmlSerializer.setNamespaces( true );
+                        xmlSerializer.serialize( element.getOwnerDocument() );
                         document = writer.getBuffer().toString();
                     }
-                } catch (TransformerException e) {
+                } catch (IOException e) {
                     throw new NexusException( e );
                 }
                 if (document != null) {
