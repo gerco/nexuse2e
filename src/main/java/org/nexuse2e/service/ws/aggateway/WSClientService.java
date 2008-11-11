@@ -77,7 +77,6 @@ import org.nexuse2e.pojo.MessagePojo;
 import org.nexuse2e.pojo.ParticipantPojo;
 import org.nexuse2e.service.AbstractService;
 import org.nexuse2e.service.SenderAware;
-import org.nexuse2e.service.ws.aggateway.wsdl.DocExchangeFault;
 import org.nexuse2e.service.ws.aggateway.wsdl.DocExchangePortType;
 import org.nexuse2e.service.ws.aggateway.wsdl.InboundData;
 import org.nexuse2e.service.ws.aggateway.wsdl.OutboundData;
@@ -288,7 +287,9 @@ public class WSClientService extends AbstractService implements SenderAware {
                         outboundData,
                         messageContext.getConversation().getConversationId(),
                         messageContext.getChoreography().getName() );
-            } catch ( DocExchangeFault e ) {
+            } catch ( Exception e ) {
+                messageContext.getMessagePojo().setStatus( Constants.MESSAGE_STATUS_FAILED );
+                messageContext.getMessagePojo().getConversation().setStatus( Constants.CONVERSATION_STATUS_ERROR );
                 LOG.error( "Error calling web service: ", e );
                 throw new NexusException( e );
             }
