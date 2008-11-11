@@ -19,7 +19,6 @@
  */
 package org.nexuse2e.backend.pipelets;
 
-import org.apache.log4j.Logger;
 
 /**
  * @author Sebastian Schulze
@@ -27,7 +26,7 @@ import org.apache.log4j.Logger;
  */
 public class FrontendXmlSchemaValidationPipelet extends XmlSchemaValidationPipelet {
 
-    private static Logger LOG = Logger.getLogger( FrontendXmlSchemaValidationPipelet.class );
+    //private static Logger LOG = Logger.getLogger( FrontendXmlSchemaValidationPipelet.class );
 
     public FrontendXmlSchemaValidationPipelet() {
 

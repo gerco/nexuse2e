@@ -20,7 +20,6 @@
 package org.nexuse2e.configuration;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
@@ -46,9 +45,9 @@ public class UpdateableUrlHandlerMapping extends AbstractHandlerMapping {
 
     private boolean       lazyInitHandlers;
 
-    private final Map     handlerMap    = new HashMap();
+    private final Map<String, Object>     handlerMap    = new HashMap<String, Object>();
 
-    private final Map     urlMap        = new HashMap();
+    private final Map<String, Object>     urlMap        = new HashMap<String, Object>();
 
     /**
      * Set if URL lookup should always use the full path within the current servlet
@@ -148,8 +147,7 @@ public class UpdateableUrlHandlerMapping extends AbstractHandlerMapping {
         if ( handler == null ) {
             // pattern match?
             String bestPathMatch = null;
-            for ( Iterator it = this.handlerMap.keySet().iterator(); it.hasNext(); ) {
-                String registeredPath = (String) it.next();
+            for (String registeredPath : handlerMap.keySet()) {
                 if ( this.pathMatcher.match( registeredPath, urlPath )
                         && ( bestPathMatch == null || bestPathMatch.length() <= registeredPath.length() ) ) {
                     handler = this.handlerMap.get( registeredPath );
@@ -233,7 +231,11 @@ public class UpdateableUrlHandlerMapping extends AbstractHandlerMapping {
      */
     public void setMappings( Properties mappings ) {
 
-        this.urlMap.putAll( mappings );
+        for (Object key : mappings.keySet()) {
+            if (key != null) {
+                urlMap.put( key.toString(), mappings.get( key ) );
+            }
+        }
     }
 
     /**
@@ -244,7 +246,7 @@ public class UpdateableUrlHandlerMapping extends AbstractHandlerMapping {
      * @param urlMap map with URLs as keys and beans as values
      * @see org.springframework.util.AntPathMatcher
      */
-    public void setUrlMap( Map urlMap ) {
+    public void setUrlMap( Map<String, ? extends Object> urlMap ) {
 
         this.urlMap.putAll( urlMap );
     }
@@ -266,14 +268,12 @@ public class UpdateableUrlHandlerMapping extends AbstractHandlerMapping {
      * @throws BeansException if a handler couldn't be registered
      * @throws IllegalStateException if there is a conflicting handler registered
      */
-    protected void registerHandlers( Map urlMap ) throws BeansException {
+    protected void registerHandlers( Map<String, ? extends Object> urlMap ) throws BeansException {
 
         if ( urlMap.isEmpty() ) {
             logger.debug( "Neither 'urlMap' nor 'mappings' set on UpdateableUrlHandlerMapping" );
         } else {
-            Iterator it = urlMap.keySet().iterator();
-            while ( it.hasNext() ) {
-                String url = (String) it.next();
+            for (String url : urlMap.keySet()) {
                 Object handler = urlMap.get( url );
                 // Prepend with slash if not already present.
                 if ( !url.startsWith( "/" ) ) {

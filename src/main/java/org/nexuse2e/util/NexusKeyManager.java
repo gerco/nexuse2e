@@ -111,7 +111,7 @@ public class NexusKeyManager implements X509KeyManager {
             LOG.debug( "no keystore found" );
             return null;
         }
-        Enumeration e;
+        Enumeration<String> e;
         try {
             e = keystore.aliases();
         } catch ( KeyStoreException e1 ) {
@@ -164,7 +164,7 @@ public class NexusKeyManager implements X509KeyManager {
 
         LOG.debug( "entering chooseServerAlias" );
         try {
-            Enumeration enumeration = keystore.aliases();
+            Enumeration<String> enumeration = keystore.aliases();
             while (enumeration.hasMoreElements()) {
                 String alias = (String) enumeration.nextElement();
                 if (keystore.isKeyEntry( alias )) {
@@ -188,7 +188,7 @@ public class NexusKeyManager implements X509KeyManager {
             LOG.debug( "no keystore found" );
             return null;
         }
-        Enumeration e;
+        Enumeration<String> e;
         try {
             e = keystore.aliases();
         } catch ( KeyStoreException e1 ) {

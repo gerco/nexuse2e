@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -253,9 +252,7 @@ public class ProcessXML {
             }
             lines.add( templine );
             blocks.remove( block );
-            Iterator blockI = blocks.iterator();
-            while ( blockI.hasNext() ) {
-                XMLBlock b = (XMLBlock) blockI.next();
+            for (XMLBlock b :  blocks) {
                 if ( b.getBlockEntries() == null || b.getBlockEntries().size() == 0 ) {
                     continue;
                 }
@@ -348,9 +345,8 @@ public class ProcessXML {
 
             }
         } );
-        Iterator i = children.iterator();
-        while ( i.hasNext() ) {
-            sortBySiblingSequence( (CSVLine) i.next() );
+        for (CSVLine l : children) {
+            sortBySiblingSequence( l );
         }
     }
 
@@ -394,9 +390,7 @@ public class ProcessXML {
         line.ref = refNode;
         line.setSiblingSequence( block.getSiblingSequence() );
         line.addColumn( block.getBlockID(), 0 );
-        Iterator i = block.getBlockEntries().iterator();
-        while ( i.hasNext() ) {
-            XMLBlockEntry be = (XMLBlockEntry) i.next();
+        for (XMLBlockEntry be : block.getBlockEntries()) {
             try {
 
                 XPath xpath = XPathFactory.newInstance().newXPath();

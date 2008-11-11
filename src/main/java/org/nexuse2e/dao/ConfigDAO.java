@@ -150,7 +150,7 @@ public class ConfigDAO extends BasicDAO {
         // "select partner from PartnerPojo as partner"
         StringBuffer query = new StringBuffer( "from PartnerPojo" );
 
-        return getListThroughSessionFind( query.toString(), session, transaction );
+        return (List<PartnerPojo>) getListThroughSessionFind( query.toString(), session, transaction );
     }
 
     /**
@@ -206,7 +206,7 @@ public class ConfigDAO extends BasicDAO {
 
         StringBuffer query = new StringBuffer( "from ChoreographyPojo" );
 
-        return getListThroughSessionFind( query.toString(), session, transaction );
+        return (List<ChoreographyPojo>) getListThroughSessionFind( query.toString(), session, transaction );
     }
 
     /**
@@ -259,7 +259,7 @@ public class ConfigDAO extends BasicDAO {
 
         StringBuffer query = new StringBuffer( "from PipelinePojo as pipeline where pipeline.frontend=true" );
 
-        return getListThroughSessionFind( query.toString(), session, transaction );
+        return (List<PipelinePojo>) getListThroughSessionFind( query.toString(), session, transaction );
     }
 
     /**
@@ -273,7 +273,7 @@ public class ConfigDAO extends BasicDAO {
 
         StringBuffer query = new StringBuffer( "from PipelinePojo as pipeline where pipeline.frontend=false" );
 
-        return getListThroughSessionFind( query.toString(), session, transaction );
+        return (List<PipelinePojo>) getListThroughSessionFind( query.toString(), session, transaction );
     }
 
     /**
@@ -287,7 +287,7 @@ public class ConfigDAO extends BasicDAO {
 
         StringBuffer query = new StringBuffer( "from PipelinePojo" );
 
-        return getListThroughSessionFind( query.toString(), session, transaction );
+        return (List<PipelinePojo>) getListThroughSessionFind( query.toString(), session, transaction );
     }
 
     /**
@@ -337,7 +337,7 @@ public class ConfigDAO extends BasicDAO {
 
         StringBuffer query = new StringBuffer( "from TRPPojo" );
 
-        return getListThroughSessionFind( query.toString(), session, transaction );
+        return (List<TRPPojo>) getListThroughSessionFind( query.toString(), session, transaction );
     }
 
     @SuppressWarnings("unchecked")
@@ -345,7 +345,7 @@ public class ConfigDAO extends BasicDAO {
 
         StringBuffer query = new StringBuffer( "from ComponentPojo" );
 
-        return getListThroughSessionFind( query.toString(), session, transaction );
+        return (List<ComponentPojo>) getListThroughSessionFind( query.toString(), session, transaction );
     }
 
     /**
@@ -397,7 +397,7 @@ public class ConfigDAO extends BasicDAO {
 
         StringBuffer query = new StringBuffer( "from LoggerPojo" );
 
-        return getListThroughSessionFind( query.toString(), session, transaction );
+        return (List<LoggerPojo>) getListThroughSessionFind( query.toString(), session, transaction );
     }
 
     /**
@@ -447,7 +447,7 @@ public class ConfigDAO extends BasicDAO {
     @SuppressWarnings("unchecked")
     public List<ServicePojo> getServices( Session session, Transaction transaction ) throws NexusException {
 
-        return getListThroughSessionFind( "from ServicePojo service order by service.position", session, transaction );
+        return (List<ServicePojo>) getListThroughSessionFind( "from ServicePojo service order by service.position", session, transaction );
     }
 
     /**
@@ -499,7 +499,7 @@ public class ConfigDAO extends BasicDAO {
 
         StringBuffer query = new StringBuffer( "from CertificatePojo" );
 
-        return getListThroughSessionFind( query.toString(), session, transaction );
+        return (List<CertificatePojo>) getListThroughSessionFind( query.toString(), session, transaction );
     }
 
     /**
@@ -550,7 +550,7 @@ public class ConfigDAO extends BasicDAO {
 
         StringBuffer query = new StringBuffer( "from UserPojo" );
 
-        return getListThroughSessionFind( query.toString(), session, transaction );
+        return (List<UserPojo>) getListThroughSessionFind( query.toString(), session, transaction );
     }
 
     public void updateUser( UserPojo user, Session session, Transaction transaction ) throws NexusException {
@@ -587,7 +587,7 @@ public class ConfigDAO extends BasicDAO {
 
         StringBuffer query = new StringBuffer( "from RolePojo" );
 
-        return getListThroughSessionFind( query.toString(), session, transaction );
+        return (List<RolePojo>) getListThroughSessionFind( query.toString(), session, transaction );
     }
 
     /**
@@ -640,7 +640,7 @@ public class ConfigDAO extends BasicDAO {
 
         StringBuffer query = new StringBuffer( "from GenericParamPojo" );
 
-        return getListThroughSessionFind( query.toString(), session, transaction );
+        return (List<GenericParamPojo>) getListThroughSessionFind( query.toString(), session, transaction );
     }
 
     /**
@@ -695,7 +695,7 @@ public class ConfigDAO extends BasicDAO {
 
         StringBuffer query = new StringBuffer( "from MappingPojo" );
 
-        return getListThroughSessionFind( query.toString(), session, transaction );
+        return (List<MappingPojo>) getListThroughSessionFind( query.toString(), session, transaction );
     }
 
     /**

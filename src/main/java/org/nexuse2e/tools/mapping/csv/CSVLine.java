@@ -301,9 +301,7 @@ public class CSVLine {
                 buffer.append( colVal );
             }
             if ( children != null ) {
-                Iterator i = children.iterator();
-                while ( i.hasNext() ) {
-                    CSVLine temp = (CSVLine) i.next();
+                for (CSVLine temp : children) {
                     buffer.append( "\n" ); //$NON-NLS-1$
                     buffer.append( temp );
                 }
@@ -322,9 +320,9 @@ public class CSVLine {
         if ( !StringUtils.isEmpty( entry.getMethod() ) ) {
             if ( !StringUtils.isEmpty( desc.getConversionClass() ) ) {
                 try {
-                    Class c = Class.forName( desc.getConversionClass() );
+                    Class<?> c = Class.forName( desc.getConversionClass() );
                     Object o = c.newInstance();
-                    Class[] args = new Class[2];
+                    Class<?>[] args = new Class[2];
                     args[0] = String.class;
                     args[1] = RecordEntry.class;
                     Method m;

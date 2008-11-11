@@ -55,7 +55,6 @@ public class UnZipPipelet extends AbstractPipelet {
         final int BUFFER = 4096;
 
         String mimeType = "unknown";
-        String extension = "txt";
         int count = 0;
         byte data[] = new byte[BUFFER];
 

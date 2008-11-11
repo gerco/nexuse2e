@@ -51,7 +51,6 @@ public class CertSSLProtocolSocketFactory implements SecureProtocolSocketFactory
     private KeyStore            keystore           = null;
     private String              keystorePassword   = null;
     private KeyStore            truststore         = null;
-    private String              truststorePassword = null;
     private SSLContext          sslcontext         = null;
 
     /**
@@ -75,7 +74,6 @@ public class CertSSLProtocolSocketFactory implements SecureProtocolSocketFactory
         this.keystore = keystore;
         this.keystorePassword = keystorePassword;
         this.truststore = truststore;
-        this.truststorePassword = truststorePassword;
     }
 
 //    private static KeyStore createKeyStore( final InputStream store, final String password ) throws KeyStoreException,

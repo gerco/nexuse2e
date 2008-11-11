@@ -21,7 +21,6 @@ package org.nexuse2e.messaging.ebxml;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.mail.internet.ParseException;
@@ -105,10 +104,8 @@ public class HTTPMessagePackager extends AbstractPipelet {
 
         if ( messagePojo.getMessagePayloads() != null && messagePojo.getMessagePayloads().size() > 0 ) {
 
-            Iterator i = messagePojo.getMessagePayloads().iterator();
-            while ( i.hasNext() ) {
+            for (MessagePayloadPojo payloadPojo : messagePojo.getMessagePayloads()) {
                 // add bodyparts
-                MessagePayloadPojo payloadPojo = (MessagePayloadPojo) i.next();
                 msgBuffer.append( Constants.MIMEPARTBOUNDARY + "\n" );
 
                 String payloadContentID = "Content-ID: " + "<"

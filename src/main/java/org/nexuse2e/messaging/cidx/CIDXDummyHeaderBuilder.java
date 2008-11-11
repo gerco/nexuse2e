@@ -29,9 +29,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.log4j.Logger;
-import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
-import org.nexuse2e.configuration.IdGenerator;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.MessagePayloadPojo;
@@ -53,27 +51,27 @@ public class CIDXDummyHeaderBuilder extends AbstractPipelet {
             throws NexusException {
 
         String partnerId = null;
-        String messageId = null;
-        String conversationId = null;
-        String actionId = null;
-        String choreographyId = null;
+//        String messageId = null;
+//        String conversationId = null;
+//        String actionId = null;
+//        String choreographyId = null;
 
         MessagePojo messagePojo = messageContext.getMessagePojo();
         messagePojo.setType( org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_NORMAL );
         messagePojo.setCreatedDate( new Date() );
         messagePojo.setModifiedDate( new Date() );
 
-        IdGenerator messageIdGenerator = Engine.getInstance().getIdGenerator(
-                org.nexuse2e.Constants.ID_GENERATOR_MESSAGE );
-        messageId = messageIdGenerator.getId();
+//        IdGenerator messageIdGenerator = Engine.getInstance().getIdGenerator(
+//                org.nexuse2e.Constants.ID_GENERATOR_MESSAGE );
+//        messageId = messageIdGenerator.getId();
 
-        IdGenerator conversationIdGenerator = Engine.getInstance().getIdGenerator(
-                org.nexuse2e.Constants.ID_GENERATOR_CONVERSATION );
-        conversationId = conversationIdGenerator.getId();
+//        IdGenerator conversationIdGenerator = Engine.getInstance().getIdGenerator(
+//                org.nexuse2e.Constants.ID_GENERATOR_CONVERSATION );
+//        conversationId = conversationIdGenerator.getId();
 
         partnerId = "not set";
-        choreographyId = "not set";
-        actionId = "not set";
+//        choreographyId = "not set";
+//        actionId = "not set";
 
         ByteArrayInputStream bais = new ByteArrayInputStream( (byte[])messageContext.getData() );
         XMLInputFactory factory = XMLInputFactory.newInstance();
@@ -82,8 +80,8 @@ public class CIDXDummyHeaderBuilder extends AbstractPipelet {
             while ( !parser.isStartElement() ) {
                 parser.next();
             }
-            choreographyId = parser.getLocalName().trim();
-            actionId = choreographyId;
+//            choreographyId = parser.getLocalName().trim();
+//            actionId = choreographyId;
             System.out.println( "Root: " + parser.getLocalName() );
             while ( !( parser.isStartElement() && parser.getLocalName().equals( "DocumentIdentifier" ) ) ) {
                 parser.next();

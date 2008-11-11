@@ -154,12 +154,13 @@ public class LogDAO extends BasicDAO {
      * @return
      * @throws PersistenceException
      */
+    @SuppressWarnings("unchecked")
     public List<LogPojo> getLogEntriesForReport( String severity, String messageText, Date start, Date end,
             int itemsPerPage, int page, int field, boolean ascending, Session session, Transaction transaction ) throws NexusException {
 
         // LOG.trace( "page:" + page );
         // LOG.trace( "pagesize:" + itemsPerPage );
-        return getListThroughSessionFindByPageNo( getLogEntriesForReportHQL( severity, messageText, start, end, field,
+        return (List<LogPojo>) getListThroughSessionFindByPageNo( getLogEntriesForReportHQL( severity, messageText, start, end, field,
                 ascending ), itemsPerPage, page, session, transaction );
     }
 
@@ -177,16 +178,20 @@ public class LogDAO extends BasicDAO {
     public int getLogEntriesForReportCount( String severity, String messageText, Date start, Date end, int field,
             boolean ascending ) throws NexusException {
 
-        List items = getListThroughSessionFind( getLogEntriesForReportHQL( severity, messageText, start, end, field,
+        List<?> items = getListThroughSessionFind( getLogEntriesForReportHQL( severity, messageText, start, end, field,
                 ascending ), null, null );
+        if (items == null) {
+            return 0;
+        }
         return items.size();
     }
 
-    public List getLog() throws NexusException {
+    @SuppressWarnings("unchecked")
+    public List<LogPojo> getLog() throws NexusException {
 
         StringBuffer query = new StringBuffer( "select log from LogPojo as log" );
 
-        return getListThroughSessionFind( query.toString(), null, null );
+        return (List<LogPojo>) getListThroughSessionFind( query.toString(), null, null );
     } // getLog
 
     /**

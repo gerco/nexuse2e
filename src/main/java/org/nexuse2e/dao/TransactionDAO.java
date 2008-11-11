@@ -69,7 +69,7 @@ public class TransactionDAO extends BasicDAO {
 
         StringBuffer query = new StringBuffer( "from ConversationPojo where conversationId='" + conversationId + "'" );
 
-        List<ConversationPojo> result = getListThroughSessionFind( query.toString(), session, transaction );
+        List<ConversationPojo> result = (List<ConversationPojo>) getListThroughSessionFind( query.toString(), session, transaction );
 
         if ( result != null && result.size() > 0 ) {
             return result.get( 0 );
@@ -92,7 +92,7 @@ public class TransactionDAO extends BasicDAO {
         StringBuffer query = new StringBuffer( "from ConversationPojo where conversationId='" + conversationId
                 + "' and partner.nxPartnerId=" + nxPartnerId + " and choreography.name='" + choreographyId + "'" );
 
-        List<ConversationPojo> result = getListThroughSessionFind( query.toString(), session, transaction );
+        List<ConversationPojo> result = (List<ConversationPojo>) getListThroughSessionFind( query.toString(), session, transaction );
 
         if ( result != null && result.size() > 0 ) {
             return result.get( 0 );
@@ -107,7 +107,7 @@ public class TransactionDAO extends BasicDAO {
 
         StringBuffer query = new StringBuffer( "from MessagePojo where messageId='" + messageId + "'" );
 
-        List<MessagePojo> result = getListThroughSessionFind( query.toString(), session, transaction );
+        List<MessagePojo> result = (List<MessagePojo>) getListThroughSessionFind( query.toString(), session, transaction );
 
         if ( result != null && result.size() > 0 ) {
             return result.get( 0 );
@@ -121,7 +121,7 @@ public class TransactionDAO extends BasicDAO {
 
         StringBuffer query = new StringBuffer( "from MessagePojo where referencedMessage.messageId='" + messageId + "'" );
 
-        List<MessagePojo> result = getListThroughSessionFind( query.toString(), session, transaction );
+        List<MessagePojo> result = (List<MessagePojo>) getListThroughSessionFind( query.toString(), session, transaction );
 
         if ( result != null && result.size() > 0 ) {
             return result.get( 0 );
@@ -154,7 +154,7 @@ public class TransactionDAO extends BasicDAO {
     @SuppressWarnings("unchecked")
     public List<MessagePojo> getActiveMessages() throws NexusException {
 
-        return getListThroughSessionFind( "select message from MessagePojo as message where (message.status = "
+        return (List<MessagePojo>) getListThroughSessionFind( "select message from MessagePojo as message where (message.status = "
                 + Constants.MESSAGE_STATUS_RETRYING + " or message.status = " + Constants.MESSAGE_STATUS_QUEUED
                 + ") and message.outbound=true", null, null );
     } // getActiveMessages
@@ -215,7 +215,7 @@ public class TransactionDAO extends BasicDAO {
     public List<ConversationPojo> getConversationsForReport( String status, int nxChoreographyId, int nxPartnerId, String conversationId,
             Date start, Date end, int itemsPerPage, int page, int field, boolean ascending, Session session, Transaction transaction ) throws NexusException {
 
-        return getListThroughSessionFindByPageNo( getConversationsForReportHQL( status, nxChoreographyId, nxPartnerId,
+        return (List<ConversationPojo>) getListThroughSessionFindByPageNo( getConversationsForReportHQL( status, nxChoreographyId, nxPartnerId,
                 conversationId, start, end, field, ascending, false ), itemsPerPage, page, session, transaction );
     }
 
@@ -557,7 +557,7 @@ public class TransactionDAO extends BasicDAO {
 
         String query = "from ConversationPojo conv where conv.partner.nxPartnerId=" + partner.getNxPartnerId();
 
-        return getListThroughSessionFind( query, session, transaction );
+        return (List<ConversationPojo>) getListThroughSessionFind( query, session, transaction );
 
     }
 
@@ -576,7 +576,7 @@ public class TransactionDAO extends BasicDAO {
         String query = "from ConversationPojo conv where conv.partner.nxPartnerId=" + partner.getNxPartnerId()
                 + " and conv.choreography.nxChoreographyId=" + choreography.getNxChoreographyId();
 
-        return getListThroughSessionFind( query, session, transaction );
+        return (List<ConversationPojo>) getListThroughSessionFind( query, session, transaction );
     }
     
     /**
@@ -592,7 +592,7 @@ public class TransactionDAO extends BasicDAO {
 
         String query = "from ConversationPojo conv where conv.choreography.nxChoreographyId=" + choreography.getNxChoreographyId();
 
-        return getListThroughSessionFind( query, session, transaction );
+        return (List<ConversationPojo>) getListThroughSessionFind( query, session, transaction );
     }
 
     /**
@@ -609,7 +609,7 @@ public class TransactionDAO extends BasicDAO {
         String query = "from MessagePojo message where message.conversation.partner.nxPartnerId="
                 + partner.getNxPartnerId() + getSortString( "message", field, ascending );
 
-        return getListThroughSessionFind( query.toString(), session, transaction );
+        return (List<MessagePojo>) getListThroughSessionFind( query.toString(), session, transaction );
     }
 
     /**
@@ -655,7 +655,7 @@ public class TransactionDAO extends BasicDAO {
         String query = "from MessagePojo message where message.conversation.partner.nxPartnerId="
                 + partner.getNxPartnerId() + " and message.outbound=" + ( outbound ? 1 : 0 )
                 + getSortString( "message", field, ascending );
-        return getListThroughSessionFind( query.toString(), session, transaction );
+        return (List<MessagePojo>) getListThroughSessionFind( query.toString(), session, transaction );
     }
 
     @SuppressWarnings("unchecked")
@@ -676,7 +676,7 @@ public class TransactionDAO extends BasicDAO {
                 + " and message.conversation.partner.partnerId='" + partner.getPartnerId()
                 + "' and message.status=" + status
                 + getSortString( "message", field, ascending );
-        return getListThroughSessionFind( query.toString(), session, transaction );
+        return (List<MessagePojo>) getListThroughSessionFind( query.toString(), session, transaction );
     }
 
     /**
@@ -696,7 +696,7 @@ public class TransactionDAO extends BasicDAO {
         String query = "from MessagePojo message where message.conversation.choreography.nxChoreographyId="
                 + choreography.getNxChoreographyId() + " and message.conversation.partner.nxPartnerId="
                 + partner.getNxPartnerId() + getSortString( "message", field, ascending );
-        return getListThroughSessionFind( query.toString(), session, transaction );
+        return (List<MessagePojo>) getListThroughSessionFind( query.toString(), session, transaction );
     }
 
     /**
@@ -719,7 +719,7 @@ public class TransactionDAO extends BasicDAO {
                 + conversation.getNxConversationId() + " and message.conversation.choreography.nxChoreographyId="
                 + choreography.getNxChoreographyId() + " and message.conversation.partner.nxPartnerId="
                 + partner.getNxPartnerId() + getSortString( "message", field, ascending );
-        return getListThroughSessionFind( query.toString(), session, transaction );
+        return (List<MessagePojo>) getListThroughSessionFind( query.toString(), session, transaction );
     }
 
     /**

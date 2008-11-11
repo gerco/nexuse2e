@@ -73,6 +73,10 @@ import java.util.TimeZone;
  * @see Time
  */
 public abstract class DateTimeBase implements java.io.Serializable, Cloneable {
+
+    private static final long serialVersionUID = 1L;
+
+    
     /** Public constant referring to an indeterminate Date/Time comparison. */
     public static final int       INDETERMINATE   = -1;
     /** Public constant referring to a Date/Time comparison result of "less than". */
@@ -891,30 +895,30 @@ public abstract class DateTimeBase implements java.io.Serializable, Cloneable {
 
         return INDETERMINATE;
     }
-
-    /**
-     * Copies a dateTime instance of some type -- all fields may or may not be
-     * present. Always copy all fields, even if they are 0, and create a full
-     * DateTime with all fields. This allows quick comparisons (no exceptions
-     * thrown, which are expensive).
-     */
-    private DateTimeBase copyDateTimeInstance(DateTimeBase dateTime) {
-        DateTimeBase newDateTime = new DateTime();
-        newDateTime._isNegative   = dateTime._isNegative;
-        newDateTime._century      = dateTime._century;
-        newDateTime._year         = dateTime._year;
-        newDateTime._month        = dateTime._month;
-        newDateTime._day          = dateTime._day;
-        newDateTime._hour         = dateTime._hour;
-        newDateTime._minute       = dateTime._minute;
-        newDateTime._second       = dateTime._second;
-        newDateTime._millsecond   = dateTime._millsecond;
-        newDateTime._zoneNegative = dateTime._zoneNegative;
-        newDateTime._UTC          = dateTime._UTC;
-        newDateTime._zoneHour     = dateTime._zoneHour;
-        newDateTime._zoneMinute   = dateTime._zoneMinute;
-        return newDateTime;
-    }
+//
+//    /**
+//     * Copies a dateTime instance of some type -- all fields may or may not be
+//     * present. Always copy all fields, even if they are 0, and create a full
+//     * DateTime with all fields. This allows quick comparisons (no exceptions
+//     * thrown, which are expensive).
+//     */
+//    private DateTimeBase copyDateTimeInstance(DateTimeBase dateTime) {
+//        DateTimeBase newDateTime = new DateTime();
+//        newDateTime._isNegative   = dateTime._isNegative;
+//        newDateTime._century      = dateTime._century;
+//        newDateTime._year         = dateTime._year;
+//        newDateTime._month        = dateTime._month;
+//        newDateTime._day          = dateTime._day;
+//        newDateTime._hour         = dateTime._hour;
+//        newDateTime._minute       = dateTime._minute;
+//        newDateTime._second       = dateTime._second;
+//        newDateTime._millsecond   = dateTime._millsecond;
+//        newDateTime._zoneNegative = dateTime._zoneNegative;
+//        newDateTime._UTC          = dateTime._UTC;
+//        newDateTime._zoneHour     = dateTime._zoneHour;
+//        newDateTime._zoneMinute   = dateTime._zoneMinute;
+//        return newDateTime;
+//    }
 
     public DateTimeBase clone(DateTimeBase dateTime) throws CloneNotSupportedException {
         DateTimeBase newDateTime = (DateTimeBase) super.clone();

@@ -21,8 +21,8 @@ package org.nexuse2e.dao;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -102,7 +102,7 @@ public class BasicDAO extends HibernateDaoSupport {
      * @return The retrieved record
      * @throws HibernateException
      */
-    public Object getRecordById( Class returnClass, Serializable id, Session session, Transaction transaction )
+    public Object getRecordById( Class<?> returnClass, Serializable id, Session session, Transaction transaction )
             throws NexusException {
 
         Object record = null;
@@ -547,7 +547,7 @@ public class BasicDAO extends HibernateDaoSupport {
      * @param records The collection of records to be persisted
      * @throws HibernateException
      */
-    public void updateRecords( Collection records, Session session, Transaction transaction ) throws NexusException {
+    public void updateRecords( Collection<?> records, Session session, Transaction transaction ) throws NexusException {
 
         NexusException nexusException = null;
         boolean extSessionFlag = true;
@@ -566,7 +566,7 @@ public class BasicDAO extends HibernateDaoSupport {
                     extTransactionFlag = false;
                 }
 
-                for ( Iterator iter = records.iterator(); iter.hasNext(); ) {
+                for ( Iterator<?> iter = records.iterator(); iter.hasNext(); ) {
                     record = iter.next();
                     session.update( record );
                 }
@@ -603,10 +603,10 @@ public class BasicDAO extends HibernateDaoSupport {
      * @return List with the retrieved entries.
      * @throws HibernateException
      */
-    public List getListThroughSessionFind( String queryString, Session session, Transaction transaction )
+    public List<?> getListThroughSessionFind( String queryString, Session session, Transaction transaction )
             throws NexusException {
 
-        List entries = null;
+        List<?> entries = null;
         NexusException nexusException = null;
         boolean extSessionFlag = true;
         boolean extTransactionFlag = true;
@@ -678,7 +678,7 @@ public class BasicDAO extends HibernateDaoSupport {
      * @return List with the retrieved entries.
      * @throws HibernateException
      */
-    public List getListThroughSessionFindByPageNo( String queryString, int itemsPerPage, int pageNo, Session session,
+    public List<?> getListThroughSessionFindByPageNo( String queryString, int itemsPerPage, int pageNo, Session session,
             Transaction transaction ) throws NexusException {
 
         return getListThroughSessionFind( queryString, itemsPerPage * pageNo, itemsPerPage, session, transaction );
@@ -692,10 +692,10 @@ public class BasicDAO extends HibernateDaoSupport {
      * @return List with the retrieved entries.
      * @throws HibernateException
      */
-    public List getListThroughSessionFind( String query, int fromIndex, int maximumResults, Session session,
+    public List<?> getListThroughSessionFind( String query, int fromIndex, int maximumResults, Session session,
             Transaction transaction ) throws NexusException {
 
-        List entries = null;
+        List<?> entries = null;
         NexusException nexusException = null;
         boolean extSessionFlag = true;
         boolean extTransactionFlag = true;
@@ -734,7 +734,7 @@ public class BasicDAO extends HibernateDaoSupport {
                     }
                 }
             } else {
-                entries = new ArrayList();
+                entries = Collections.EMPTY_LIST;
             }
         } catch ( HibernateException e ) {
             e.printStackTrace();
