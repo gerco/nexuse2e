@@ -32,6 +32,12 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.ParameterDescriptor;
+import org.quartz.CronExpression;
+import org.quartz.CronTrigger;
+import org.quartz.JobDetail;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.SchedulerFactory;
 
 /**
  * @author gesch
@@ -40,12 +46,16 @@ import org.nexuse2e.configuration.ParameterDescriptor;
  */
 public class SchedulingServiceImpl extends AbstractService implements SchedulingService {
 
-    private static Logger                                      LOG        = Logger
-                                                                                  .getLogger( SchedulingServiceImpl.class );
+    private static Logger LOG = Logger.getLogger( SchedulingServiceImpl.class );
 
-    private HashMap<SchedulerClient, ScheduledFuture[]>        clients    = new HashMap<SchedulerClient, ScheduledFuture[]>();
+    private final static String QUARTZGROUP = "NX_GROUP";
+    
+    private HashMap<SchedulerClient, ScheduledFuture[]>        concurrentClients    = new HashMap<SchedulerClient, ScheduledFuture[]>();
     private HashMap<SchedulerClient, ScheduledExecutorService> schedulers = new HashMap<SchedulerClient, ScheduledExecutorService>();
-
+    private Map<String, SchedulerClient>        quartzClients    = new HashMap<String,SchedulerClient>();
+    
+    private Scheduler quartzScheduler = null;
+    
     /* (non-Javadoc)
      * @see org.nexuse2e.service.AbstractService#start()
      */
@@ -91,11 +101,38 @@ public class SchedulingServiceImpl extends AbstractService implements Scheduling
         ScheduledFuture<?> handle = scheduler.scheduleAtFixedRate( thread, 0, millseconds, TimeUnit.MILLISECONDS );
 
         ScheduledFuture[] handles = { handle};
-        clients.put( client, handles );
+        concurrentClients.put( client, handles );
         schedulers.put( client, scheduler );
 
     }
 
+    /* (non-Javadoc)
+     * @see org.nexuse2e.service.SchedulingService#registerClient(org.nexuse2e.service.SchedulerClient, java.lang.String)
+     */
+    public void registerClient( SchedulerClient client, String pattern ) throws IllegalArgumentException {
+        try {
+            String jobName = client.getClass()+"@"+client.hashCode();
+            quartzClients.put( jobName,client );
+            if(quartzScheduler == null) {
+                SchedulerFactory schedulerFactory = new org.quartz.impl.StdSchedulerFactory();
+                quartzScheduler = schedulerFactory.getScheduler();
+                quartzScheduler.start();
+            }
+                        
+            JobDetail jd = new JobDetail(jobName,QUARTZGROUP,SchedulingJob.class);
+            CronTrigger ct = new CronTrigger();
+            ct.setName( "trigger"+jobName );
+            jd.getJobDataMap().put( "client", client );
+            ct.setCronExpression( new CronExpression(pattern) );
+            quartzScheduler.scheduleJob( jd, ct );
+            
+            
+        } catch ( Exception e ) {
+            throw new IllegalArgumentException(e);
+        }
+
+    }
+    
     /* (non-Javadoc)
      * @see org.nexuse2e.service.SchedulingService#registerClient(org.nexuse2e.service.SchedulerClient, java.util.Date)
      */
@@ -125,7 +162,7 @@ public class SchedulingServiceImpl extends AbstractService implements Scheduling
                 handles[handleCount++] = handle;
             }
 
-            clients.put( client, handles );
+            concurrentClients.put( client, handles );
             schedulers.put( client, scheduler );
         }
     }
@@ -136,7 +173,7 @@ public class SchedulingServiceImpl extends AbstractService implements Scheduling
     public void deregisterClient( SchedulerClient client ) throws IllegalArgumentException {
 
         LOG.trace( "deregistering client" );
-        ScheduledFuture[] handles = clients.get( client );
+        ScheduledFuture[] handles = concurrentClients.get( client );
         if ( handles != null ) {
             for ( int i = 0; i < handles.length; i++ ) {
                 ScheduledFuture handle = handles[i];
@@ -154,10 +191,32 @@ public class SchedulingServiceImpl extends AbstractService implements Scheduling
             } catch ( Exception e ) {
                 e.printStackTrace();
             }
-            clients.remove( client );
+            concurrentClients.remove( client );
         }
+        
+        
+        try {
+            if(quartzScheduler != null) {
+                
+                String jobName = client.getClass()+"@"+client.hashCode();
+                quartzScheduler.deleteJob(jobName , QUARTZGROUP );
+                
+                quartzClients.remove( jobName );
+                if(quartzClients.size() == 0) {
+                    quartzScheduler.shutdown();
+                    quartzScheduler = null;
+                }
+            }
+        } catch ( SchedulerException e ) {
+            throw new IllegalArgumentException(e);
+        }
+        
+        
+        
     }
 
+    
+    
     /**
      * @author gesch
      *

@@ -42,6 +42,18 @@ public interface SchedulingService extends Service {
      */
     public abstract void registerClient( SchedulerClient client, long millseconds ) throws IllegalArgumentException;
 
+    
+    /**
+     * Registers a <code>SchedulerClient</code> for this <code>SchedulingService</code>.
+     * It will be invoked based on the given cron pattern when the <code>SchedulingService</code>
+     * is in {@link BeanStatus#STARTED} state.
+     * @param client The client to register. Must not be <code>null</code>.
+     * @param pattern The cron based pattern.
+     * @throws IllegalArgumentException if <code>client</code> is <code>null</code> or
+     * an illegal interval was specified.
+     */
+    public abstract void registerClient( SchedulerClient client, String pattern ) throws IllegalArgumentException;
+
     /**
      * Registers a <code>SchedulerClient</code> for this <code>SchedulingService</code>.
      * It will be invoked once per day at the specified time when the <code>SchedulingService</code>
