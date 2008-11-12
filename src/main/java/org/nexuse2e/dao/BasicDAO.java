@@ -73,26 +73,21 @@ public class BasicDAO extends HibernateDaoSupport {
 
     } // BasicDAO
 
-    public Session getDBSession() {
+    public synchronized Session getDBSession() {
 
         // return getSessionFactory().getCurrentSession();
         // return getSession();
         sessionCount++;
-        // LOG.trace( "getDBSession - sessionCount: " + sessionCount );
+        System.out.println( "getDBSession - sessionCount: " + sessionCount );
         // return SessionFactoryUtils.getSession( getSessionFactory(), true );
         return getSession();
     }
 
-    public void releaseDBSession( Session session ) {
+    public synchronized void releaseDBSession( Session session ) {
 
         sessionCount--;
         // LOG.trace( "releaseDBSession - sessionCount: " + sessionCount );
         releaseSession( session );
-        /*
-         if ( session.isConnected() ) {
-         session.close();
-         }
-         */
     }
 
     /**

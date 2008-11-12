@@ -23,7 +23,9 @@ import java.util.Date;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
+import org.hibernate.Session;
 import org.nexuse2e.Engine;
+import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.dao.LogDAO;
@@ -36,7 +38,8 @@ import org.nexuse2e.pojo.LogPojo;
 public class DatabaseLogger extends AbstractLogger {
 
     private LogDAO logDao = null;
-
+    private Session session;
+    
     /**
      * Default constructor.
      */
@@ -103,11 +106,20 @@ public class DatabaseLogger extends AbstractLogger {
                 }
             }
 
-            // LogDAO logDao = null;
-            if ( logDao == null ) {
-                logDao = Engine.getInstance().getLogDAO();
+            // avoid concurrent access to session
+            synchronized (this) {
+                // LogDAO logDao = null;
+                if ( logDao == null ) {
+                    logDao = Engine.getInstance().getLogDAO();
+                }
+                if (session == null) {
+                    session = logDao.getDBSession();
+                } else if (!session.isOpen()) {
+                    logDao.releaseDBSession( session );
+                    session = logDao.getDBSession();
+                }
+                logDao.saveLog( pojo, session, null );
             }
-            logDao.saveLog( pojo, null, null );
         } catch ( Exception ex ) {
             //TODO call errorhandler ?
             ex.printStackTrace();
@@ -116,7 +128,22 @@ public class DatabaseLogger extends AbstractLogger {
 
     @Override
     public void close() {
-
+        synchronized (this) {
+            try {
+                if (session != null) {
+                    if (logDao == null) {
+                        logDao = Engine.getInstance().getLogDAO();
+                    }
+                    logDao.releaseDBSession( session );
+                }
+            } catch (NexusException e) {
+                // nothing we can do
+                e.printStackTrace();
+            } finally {
+                session = null;
+                logDao = null;
+            }
+        }
     }
 
     /* (non-Javadoc)
@@ -130,7 +157,7 @@ public class DatabaseLogger extends AbstractLogger {
     @Override
     public void teardown() {
 
-        logDao = null;
+        close();
         super.teardown();
     }
 
