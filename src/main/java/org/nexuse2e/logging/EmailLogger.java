@@ -84,7 +84,7 @@ public class EmailLogger extends AbstractLogger {
         String subject = getParameter( SUBJECT_PARAM );
         String choreography = getParameter( CHOREOGRAPHY_FILTER_PARAM );
 
-        if ( ( serviceName == null ) && ( serviceName.trim().length() == 0 ) ) {
+        if ( StringUtils.isBlank( serviceName ) ) {
             LOG.error( "EmailLogger.initialize(): Service name not specified. Please check your configuration" );
             return;
         }
