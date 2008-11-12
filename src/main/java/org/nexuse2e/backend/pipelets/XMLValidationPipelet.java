@@ -397,7 +397,7 @@ public class XMLValidationPipelet extends AbstractPipelet {
 
         //        System.out.println( "mapping Data..." );
         if ( mappingService != null ) {
-            System.out.println( "value: " + textContent );
+//            System.out.println( "value: " + textContent );
             MappingDefinition mappingDef = new MappingDefinition();
             mappingDef.setCommand( definition.getCommand() );
             return mappingService.processConversion( xPath, document, textContent, mappingDef );
