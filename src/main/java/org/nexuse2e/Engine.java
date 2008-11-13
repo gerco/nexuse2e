@@ -1078,6 +1078,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
             LOG.error( "Failed to teardown Engine, no configuration found!" );
         }
         currentConfiguration = null;
+        invalidateConfigurations();
 
     } // deactivate
 
@@ -1164,7 +1165,16 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
         }
         return configuration;
     }
+    /**
+     * Detaches all configurations.
+     * @param key The key.
+     */
+    public void invalidateConfigurations() {
 
+        if ( configurations != null ) {
+            configurations.clear();
+        }
+    }
     /**
      * Detaches the engine configuration that is associated with the given key.
      * @param key The key.
