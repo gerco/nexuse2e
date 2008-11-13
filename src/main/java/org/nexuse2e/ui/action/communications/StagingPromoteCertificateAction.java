@@ -63,7 +63,7 @@ public class StagingPromoteCertificateAction extends NexusE2EAction {
             return actionMapping.findForward( "changeServerIdentity" );
         } else {
             int certificateId = form.getNxCertificateId();
-            if (certificateId <= 0) {
+            if (certificateId == 0) {
                 ActionMessage errorMessage = new ActionMessage( "generic.error", "invalid certificate ID (" + certificateId
                         + "). No Certificate found to promote" );
                 errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );

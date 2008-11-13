@@ -68,7 +68,10 @@ public class ActionDeleteAction extends NexusE2EAction {
             ActionPojo action = engineConfiguration.getActionFromChoreographyByNxActionId(
                     choreography, nxActionId );
 
-            choreography.getActions().remove( action );
+            boolean b = choreography.getActions().remove( action );
+            if (!b) {
+                LOG.warn( "action not successfully removed from choreography" );
+            }
             Iterator<FollowUpActionPojo> i = action.getFollowUpActions().iterator();
             LOG.trace( "followup.size:" + action.getFollowUpActions().size() );
             LOG.trace( "Followed.size:" + action.getFollowedActions().size() );

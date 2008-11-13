@@ -1729,9 +1729,17 @@ public class EngineConfiguration implements ConfigurationAccessService {
      * @param parent The parent pojo.
      * @param list The child pojos that will implicitly be updated.
      */
-    protected void addToImplicitUpdateList( NEXUSe2ePojo parent, Collection<? extends NEXUSe2ePojo> list ) {
+    protected <T extends NEXUSe2ePojo> void addToImplicitUpdateList( NEXUSe2ePojo parent, Collection<T> list ) {
         if (list != null) {
-            for (NEXUSe2ePojo pojo : list) {
+            // Sets have problems if the object was added with another hash value
+            // avoid this by removing and re-adding after nxId has been set
+            Collection<T> collection = list;
+            if (list instanceof Set) {
+                collection = new ArrayList<T>( list );
+                list.clear();
+            }
+            
+            for (T pojo : collection) {
                 if (pojo.getNxId() == 0) {
                     pojo.setNxId( recentNxId-- );
                     List<NEXUSe2ePojo> l = implicitUpdateList.get( parent );
@@ -1740,6 +1748,9 @@ public class EngineConfiguration implements ConfigurationAccessService {
                         implicitUpdateList.put( parent, l );
                     }
                     l.add( pojo );
+                }
+                if (collection != list) { // add to original set (if Set is used)
+                    list.add( pojo );
                 }
             }
         }
