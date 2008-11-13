@@ -78,7 +78,7 @@ public class BasicDAO extends HibernateDaoSupport {
         // return getSessionFactory().getCurrentSession();
         // return getSession();
         sessionCount++;
-        System.out.println( "getDBSession - sessionCount: " + sessionCount );
+        //System.out.println( "getDBSession - sessionCount: " + sessionCount );
         // return SessionFactoryUtils.getSession( getSessionFactory(), true );
         return getSession();
     }
