@@ -50,4 +50,9 @@ public interface EngineControllerStub {
     
     public String getMachineId();
     
+    /**
+     * @return
+     */
+    public boolean isPrimaryNode();
+    
 } // EngineControllerStub
