@@ -95,4 +95,13 @@ public class DefaultEngineControllerStub implements EngineControllerStub {
     public void broadcastAck( MessageContext message ) {
         
     }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.EngineControllerStub#isPrimaryNode()
+     */
+    public boolean isPrimaryNode() {
+        return true;
+    }
+    
+    
 }
