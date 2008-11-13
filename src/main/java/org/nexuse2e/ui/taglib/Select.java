@@ -129,8 +129,8 @@ public class Select extends BodyTagSupport {
             writer.print( "\t\t\tpanel = dojo.widget.byId(\"" + widgetId + "\");\n" );
             writer.print( "\t\t\tpanel.setContent(data);\n" );
             writer.print( "\t\t}\n" );
-            writer.print( "\t}));\n" );
-            writer.print( "}\n" );
+            writer.print( "\t})\n" );
+            writer.print( "});\n" );
             writer.print( "</script>\n" );
         } catch ( IOException e ) {
             throw new JspException( e );
