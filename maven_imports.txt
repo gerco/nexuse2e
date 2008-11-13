@@ -31,7 +31,17 @@ mvn install:install-file -DgroupId=org.eclipse.birt -DartifactId=scriptapi -Dver
 mvn install:install-file -DgroupId=org.eclipse.birt -DartifactId=modelapi -Dversion=2.2.1 -Dpackaging=jar -Dfile=lib/modelapi.jar
 
 # jgroups
-mvn install:install-file -DgroupId=jgroups -DartifactId=jgroups-all -Dversion=2.6.2 -Dpackaging=jar -Dfile=lib/jgroups-all.jar
+#mvn install:install-file -DgroupId=jgroups -DartifactId=jgroups-all -Dversion=2.6.2 -Dpackaging=jar -Dfile=lib/jgroups-all.jar
+mvn install:install-file -DgroupId=jgroups -DartifactId=jgroups-all -Dversion=2.6.6.GA -Dpackaging=jar -Dfile=lib/jgroups-all.jar
 
 # jsch
 mvn install:install-file -DgroupId=com.jcraft -DartifactId=jsch -Dversion=0.1.40 -Dpackaging=jar -Dfile=lib/jsch-0.1.40.jar
+
+
+
+
+#local added
+mvn install:install-file -DgroupId=javax.ws.rs -DartifactId=jsr311-api -Dversion=0.8 -Dpackaging=jar -Dfile=lib/jsr311-api-0.8.jar
+mvn install:install-file -DgroupId=org.apache.abdera -DartifactId=abdera-core -Dversion=0.4.0-incubating -Dpackaging=jar -Dfile=lib/abdera-core-0.4.0-incubating.jar
+mvn install:install-file -DgroupId=org.apache.abdera -DartifactId=abdera-parser -Dversion=0.4.0-incubating -Dpackaging=jar -Dfile=lib/abdera-parser-0.4.0-incubating.jar
+mvn install:install-file -DgroupId=org.apache.abdera -DartifactId=abdera-extensions-json -Dversion=0.4.0-incubating -Dpackaging=jar -Dfile=lib/abdera-extensions-json-0.4.0-incubating.jar
