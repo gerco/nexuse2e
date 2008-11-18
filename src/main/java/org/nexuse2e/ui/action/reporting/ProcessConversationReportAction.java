@@ -73,10 +73,10 @@ public class ProcessConversationReportAction extends ReportingAction {
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
 
         ReportingSettingsForm reportingSettings = new ReportingSettingsForm();
-        fillForm( engineConfiguration, reportingSettings );
-
-
         ReportingPropertiesForm form = (ReportingPropertiesForm) actionForm;
+        fillForm( engineConfiguration, reportingSettings, form );
+
+
         List<String> participants = new ArrayList<String>();
         List<PartnerPojo> partners = engineConfiguration.getPartners(
                 Constants.PARTNER_TYPE_PARTNER, Constants.PARTNERCOMPARATOR );
@@ -227,7 +227,7 @@ public class ProcessConversationReportAction extends ReportingAction {
         }
 
         String status = null;
-        if ( form.getStatus() != null && !form.getStatus().equals( "" ) ) {
+        if ( form.getStatus() != null && !form.getStatus().equals( "" ) && !form.getStatus().startsWith( "all" ) ) {
             status = form.getStatus();
         }
         String participantId = null;

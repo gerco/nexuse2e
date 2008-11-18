@@ -47,7 +47,7 @@ public class ReportingSettingsViewAction extends ReportingAction {
 
         ReportingSettingsForm form = (ReportingSettingsForm) actionForm;
         
-        fillForm( engineConfiguration, form );
+        fillForm( engineConfiguration, form, null );
 
         return actionMapping.findForward( ACTION_FORWARD_SUCCESS );
     }

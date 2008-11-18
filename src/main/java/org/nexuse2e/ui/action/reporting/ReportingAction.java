@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.ui.action.NexusE2EAction;
+import org.nexuse2e.ui.form.ReportingPropertiesForm;
 import org.nexuse2e.ui.form.ReportingSettingsForm;
 
 /**
@@ -33,11 +34,11 @@ import org.nexuse2e.ui.form.ReportingSettingsForm;
  */
 public abstract class ReportingAction extends NexusE2EAction {
 
-    protected void fillForm( EngineConfiguration engineConfiguration, ReportingSettingsForm form ) {
+    protected void fillForm( EngineConfiguration engineConfiguration, ReportingSettingsForm form, ReportingPropertiesForm props ) {
         Map<String, Object> values =
             engineConfiguration.getGenericParameters(
                     "log_display_configuration", null, form.getParameterMap() );
-        fillForm( values, form );
+        fillForms( values, form, props );
     }
 
 
@@ -45,7 +46,7 @@ public abstract class ReportingAction extends NexusE2EAction {
      * @param values
      * @param form
      */
-    private void fillForm( Map<String, Object> values, ReportingSettingsForm form ) {
+    private void fillForms( Map<String, Object> values, ReportingSettingsForm form, ReportingPropertiesForm props ) {
 
         form.setEngineColSeverity( getBooleanValue( values, ReportingSettingsForm.PARAM_NAME_ENGCOL_SEVERITY, true ) );
         form.setEngineColClassName( getBooleanValue( values, ReportingSettingsForm.PARAM_NAME_ENGCOL_CLASSNAME,
@@ -82,6 +83,11 @@ public abstract class ReportingAction extends NexusE2EAction {
 
         form.setTimezone( getStringValue( values, ReportingSettingsForm.PARAM_NAME_TIMEZONE, "" ) );
         form.setPageSize( getIntValue( values, ReportingSettingsForm.PARAM_NAME_ROWCOUNT, 20 ) );
+
+        if (props != null) {
+            props.setPageSize( form.getPageSize() );
+            props.setTimezone( form.getTimezone() );
+        }
 
     }
 

@@ -204,7 +204,7 @@ public class ProcessEngineLogAction extends ReportingAction {
             }
 
             ReportingSettingsForm reportingSettings = new ReportingSettingsForm();
-            fillForm( engineConfiguration, reportingSettings );
+            fillForm( engineConfiguration, reportingSettings, form );
             request.setAttribute( "reportingSettingsForm", reportingSettings );
             request.setAttribute( ATTRIBUTE_COLLECTION, logItems );
 

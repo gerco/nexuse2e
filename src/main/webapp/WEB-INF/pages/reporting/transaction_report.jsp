@@ -75,46 +75,50 @@
     }
     
     this.searchForMessages = function () {
-			document.getElementById('messageIdText').className='NEXUSValue';
-			document.forms['reportingPropertiesForm'].messageEnabled.disabled=false;
-			document.forms['reportingPropertiesForm'].messageId.disabled=false;
+		if (document.forms['reportingPropertiesForm'].status.options[0].value == 'allMessages') {
+			return;
+		}
+
+		document.getElementById('messageIdText').className='NEXUSValue';
+		document.forms['reportingPropertiesForm'].messageEnabled.disabled=false;
+		document.forms['reportingPropertiesForm'].messageId.disabled=false;
+
+
+		var length = document.forms['reportingPropertiesForm'].status.options.length;
 			
-			var length = document.forms['reportingPropertiesForm'].status.options.length;
-      if(length == 11) {
-        return;
-      }
       for (x = length ; x >= 0; x--) {
       	document.forms['reportingPropertiesForm'].status.options[x] = null;
       }
-         
-      document.forms['reportingPropertiesForm'].status.options[0] = new Option('','');
+      document.forms['reportingPropertiesForm'].status.options[0] = new Option('','allMessages');
+      document.forms['reportingPropertiesForm'].status.options[1] = new Option('Unknown','0');
       document.forms['reportingPropertiesForm'].status.options[2] = new Option('Queued','2');
       document.forms['reportingPropertiesForm'].status.options[3] = new Option('Error','-1');
       document.forms['reportingPropertiesForm'].status.options[4] = new Option('Stopped','4');
       document.forms['reportingPropertiesForm'].status.options[5] = new Option('Retrying','1');
-      document.forms['reportingPropertiesForm'].status.options[6] = new Option('Transmitted','3');
-      document.forms['reportingPropertiesForm'].status.options[1] = new Option('Unknown','0');
+      document.forms['reportingPropertiesForm'].status.options[6] = new Option('Sent','3');
       document.forms['reportingPropertiesForm'].status.options[7] = new Option('#active#','1,2');
       document.forms['reportingPropertiesForm'].status.options[8] = new Option('#inactive#','-1,3,4');
     }
     
     this.searchForConversations = function () {
-      var length = document.forms['reportingPropertiesForm'].status.options.length;
-      if(length == 9) {
-        return;
-      }
-      for (x = length ; x >= 0; x--) { 
+		if (document.forms['reportingPropertiesForm'].status.options[0].value == 'allConversations') {
+			return;
+		}
+
+		var length = document.forms['reportingPropertiesForm'].status.options.length;
+
+		for (x = length ; x >= 0; x--) { 
 					document.forms['reportingPropertiesForm'].status.options[x] = null;
     	}
     	
     	
     	
-    	document.forms['reportingPropertiesForm'].status.options[0] = new Option('','');
-		document.forms['reportingPropertiesForm'].status.options[2] = new Option('Active','2');
-		document.forms['reportingPropertiesForm'].status.options[5] = new Option('Completed','9');
+    	document.forms['reportingPropertiesForm'].status.options[0] = new Option('','allConversations');
 		document.forms['reportingPropertiesForm'].status.options[1] = new Option('Created','1');
+		document.forms['reportingPropertiesForm'].status.options[2] = new Option('Active','2');
 		document.forms['reportingPropertiesForm'].status.options[3] = new Option('Error','-1');
   		document.forms['reportingPropertiesForm'].status.options[4] = new Option('Idle','4');
+		document.forms['reportingPropertiesForm'].status.options[5] = new Option('Completed','9');
 		document.forms['reportingPropertiesForm'].status.options[6] = new Option('Unkown','0');
 		document.forms['reportingPropertiesForm'].status.options[7] = new Option('#active#','1,2,3,5,6,7,8');
 		document.forms['reportingPropertiesForm'].status.options[8] = new Option('#inactive#','4,9,-1');
@@ -224,34 +228,34 @@
 
 
 			<td class="NEXUSValue">Status</td>
-			<td class="NEXUSValue"><html:select
-				onchange="javascript: scriptScope.disableLinks();"
-				styleClass="fixedsize" property="status">
-				<logic:equal name="reportingPropertiesForm" property="searchFor"
-					value="message">
-					<html:option value="" />
-					<html:option value="2">Queued</html:option>
-					<html:option value="-1">Error</html:option>
-					<html:option value="4">Stopped</html:option>
-					<html:option value="1">Retrying</html:option>
-					<html:option value="30">Transmitted</html:option>
-					<html:option value="0">Unknown</html:option>
-					<html:option value="1,2">#active#</html:option>
-					<html:option value="-1,3,4">#inactive#</html:option>
+			<td class="NEXUSValue">
+				<logic:equal name="reportingPropertiesForm" property="searchFor" value="message">
+					<html:select onchange="javascript: scriptScope.disableLinks();" styleClass="fixedsize" property="status">
+						<html:option value="allMessages">&nbsp;</html:option>
+						<html:option value="2">Queued</html:option>
+						<html:option value="-1">Error</html:option>
+						<html:option value="4">Stopped</html:option>
+						<html:option value="1">Retrying</html:option>
+						<html:option value="30">Sent</html:option>
+						<html:option value="0">Unknown</html:option>
+						<html:option value="1,2">#active#</html:option>
+						<html:option value="-1,3,4">#inactive#</html:option>
+					</html:select>
 				</logic:equal>
-				<logic:notEqual name="reportingPropertiesForm" property="searchFor"
-					value="message">
-					<html:option value="" />
-					<html:option value="2">Active</html:option>
-					<html:option value="9">Completed</html:option>
-					<html:option value="1">Created</html:option>
-					<html:option value="-1">Error</html:option>
-					<html:option value="4">Idle</html:option>
-					<html:option value="0">Unknown</html:option>
-					<html:option value="1,2,3,5,6,7,8">#active#</html:option>
-					<html:option value="4,9,-1">#inactive#</html:option>
+				<logic:notEqual name="reportingPropertiesForm" property="searchFor" value="message">
+					<html:select onchange="javascript: scriptScope.disableLinks();" styleClass="fixedsize" property="status">
+						<html:option value="allConversations">&nbsp;</html:option>
+						<html:option value="2">Active</html:option>
+						<html:option value="9">Completed</html:option>
+						<html:option value="1">Created</html:option>
+						<html:option value="-1">Error</html:option>
+						<html:option value="4">Idle</html:option>
+						<html:option value="0">Unknown</html:option>
+						<html:option value="1,2,3,5,6,7,8">#active#</html:option>
+						<html:option value="4,9,-1">#inactive#</html:option>
+					</html:select>
 				</logic:notEqual>
-			</html:select></td>
+			</td>
 
 
 			<td id="messageIdText" class="NEXUSValue">Message ID<html:checkbox
