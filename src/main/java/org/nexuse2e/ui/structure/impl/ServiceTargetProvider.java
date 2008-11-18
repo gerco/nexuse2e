@@ -40,7 +40,6 @@ public class ServiceTargetProvider implements TargetProvider {
     /* (non-Javadoc)
      * @see org.nexuse2e.ui.structure.TargetProvider#getStructure(org.nexuse2e.ui.structure.StructureNode)
      */
-    @SuppressWarnings("unchecked")
     public List<StructureNode> getStructure(
             StructureNode pattern, ParentalStructureNode parent, EngineConfiguration engineConfiguration ) {
 

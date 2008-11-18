@@ -20,7 +20,6 @@ import org.nexuse2e.ui.structure.TargetProvider;
  */
 public class UserTargetProvider implements TargetProvider {
 
-    @SuppressWarnings("unchecked")
     public List<StructureNode> getStructure(
             StructureNode pattern, ParentalStructureNode parent, EngineConfiguration engineConfiguration ) {
 

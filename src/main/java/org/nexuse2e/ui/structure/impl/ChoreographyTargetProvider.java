@@ -35,7 +35,6 @@ public class ChoreographyTargetProvider implements TargetProvider {
     /* (non-Javadoc)
      * @see org.nexuse2e.ui.structure.TargetProvider#getStructure(org.nexuse2e.ui.structure.StructureNode, org.nexuse2e.ui.structure.ParentalStructureNode)
      */
-    @SuppressWarnings("unchecked")
     public List<StructureNode> getStructure(
             StructureNode pattern, ParentalStructureNode parent, EngineConfiguration engineConfiguration ) {
 

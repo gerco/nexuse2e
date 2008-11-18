@@ -40,7 +40,7 @@ public class ParticipantTargetProvider implements TargetProvider {
 
     private static Logger LOG = Logger.getLogger( ParticipantTargetProvider.class );
 
-    @SuppressWarnings("unchecked")
+    
     public List<StructureNode> getStructure(
             StructureNode pattern, ParentalStructureNode parent, EngineConfiguration engineConfiguration ) {
 
