@@ -933,6 +933,8 @@ public class ConfigDAO extends BasicDAO {
                 throw (NexusException) ex;
             }
             throw new NexusException( ex );
+        } finally {
+            releaseDBSession( session );
         }
     }
     

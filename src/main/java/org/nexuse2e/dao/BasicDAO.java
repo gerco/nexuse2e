@@ -75,11 +75,9 @@ public class BasicDAO extends HibernateDaoSupport {
 
     public synchronized Session getDBSession() {
 
-        // return getSessionFactory().getCurrentSession();
-        // return getSession();
         sessionCount++;
         //System.out.println( "getDBSession - sessionCount: " + sessionCount );
-        // return SessionFactoryUtils.getSession( getSessionFactory(), true );
+
         return getSession();
     }
 
@@ -602,68 +600,63 @@ public class BasicDAO extends HibernateDaoSupport {
             throws NexusException {
 
         List<?> entries = null;
-        NexusException nexusException = null;
         boolean extSessionFlag = true;
         boolean extTransactionFlag = true;
+        boolean createdSession = false;
+
+        if ( session == null ) {
+            try {
+                session = getDBSession();
+                createdSession = true;
+            } catch ( Exception e ) {
+                throw new NexusException( e );
+            }
+            extSessionFlag = false;
+        }
 
         try {
-            if ( session == null ) {
+            Query query;
+            if ( transaction == null ) {
                 try {
-                    session = getDBSession();
+                    transaction = session.beginTransaction();
                 } catch ( Exception e ) {
-                    throw new NexusException( e );
-                }
-                extSessionFlag = false;
-            }
-
-            try {
-                Query query;
-                if ( transaction == null ) {
-                    try {
-                        transaction = session.beginTransaction();
-                    } catch ( Exception e ) {
-                        if ( !extSessionFlag && session != null ) {
-                            try {
-                                session.close();
-                            } catch ( RuntimeException e1 ) {
-                                // Cleanup failed
-                            }
+                    if ( !extSessionFlag && session != null ) {
+                        try {
+                            session.close();
+                        } catch ( RuntimeException e1 ) {
+                            // Cleanup failed
                         }
-                        throw new NexusException(e);
                     }
-                    extTransactionFlag = false;
+                    throw new NexusException(e);
                 }
-                if ( session.isConnected() ) {
-                    query = session.createQuery( queryString );
-                    entries = query.list();
-                    if ( !extTransactionFlag ) {
-                        transaction.commit();
-                    }
-                }
-
-            } catch ( HibernateException e ) {
-                if ( transaction != null && !extTransactionFlag ) {
-                    transaction.rollback();
-                }
-                LOG.error( "Error retrieving list for query: " + queryString );
-                //                e.printStackTrace();
-                nexusException = new NexusException( e );
-            } finally {
-                if ( !extSessionFlag ) {
-                    releaseDBSession( session );
+                extTransactionFlag = false;
+            }
+            if ( session.isConnected() ) {
+                query = session.createQuery( queryString );
+                entries = query.list();
+                if ( !extTransactionFlag ) {
+                    transaction.commit();
                 }
             }
 
         } catch ( HibernateException e ) {
-            e.printStackTrace();
-            // record does not exist
-            nexusException = new NexusException( e );
+            if ( transaction != null && !extTransactionFlag ) {
+                transaction.rollback();
+            }
+            LOG.error( "Error retrieving list for query: " + queryString );
+            //                e.printStackTrace();
+            throw new NexusException( e );
         } finally {
-            if ( nexusException != null ) {
-                throw nexusException;
+            if ( !extSessionFlag ) {
+                releaseDBSession( session );
+                createdSession = false;
             }
         }
 
+        if (createdSession) {
+            throw new RuntimeException("Session created but not released");
+        }
+        
         return entries;
     } // getListThroughSessionFind
 
