@@ -187,7 +187,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
         } else {
             LOG.info( new LogMessage( "Received  " + msgType + " message (" + messagePojo.getMessageId() + ") from "
                     + messagePojo.getParticipant().getPartner().getPartnerId() + " for " + choreography.getName()
-                    + (messagePojo.getConversation() != null ? "/"
+                    + (messagePojo.getConversation() != null && messagePojo.getConversation().getCurrentAction() != null ? "/"
                             + messagePojo.getConversation().getCurrentAction().getName() : ""), messagePojo ) );
         }
 
