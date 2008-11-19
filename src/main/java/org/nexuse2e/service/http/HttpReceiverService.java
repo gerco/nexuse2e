@@ -33,6 +33,7 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.namespace.QName;
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPBody;
 import javax.xml.soap.SOAPEnvelope;
@@ -175,25 +176,19 @@ public class HttpReceiverService extends AbstractControllerService implements Re
                 SOAPPart soapPart = soapMessage.getSOAPPart();
                 SOAPEnvelope soapEnvelope = soapPart.getEnvelope();
                 soapEnvelope.addNamespaceDeclaration( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-                soapEnvelope
-                .addAttribute( soapFactory.createName( "xsi:schemaLocation" ),
+                soapEnvelope.addAttribute( soapFactory.createName( "xsi:schemaLocation" ),
                         "http://schemas.xmlsoap.org/soap/envelope/ http://www.oasis-open.org/committees/ebxml-msg/schema/envelope.xsd" );
-                /*
-                soapEnvelope
-                        .addAttribute( soapFactory.createName( "http://www.w3.org/2001/XMLSchema-instance",
-                                "schemaLocation", "xsi" ),
-                                "http://schemas.xmlsoap.org/soap/envelope/ http://www.oasis-open.org/committees/ebxml-msg/schema/envelope.xsd" );
-                                */
+
                 SOAPBody soapBody = soapEnvelope.getBody();
-                // QName faultName = new QName( SOAPConstants.URI_NS_SOAP_ENVELOPE, "Server" );
+                QName faultName = new QName( javax.xml.soap.SOAPConstants.URI_NS_SOAP_ENVELOPE, "Server" );
                 SOAPFault soapFault = soapBody.addFault();
-                soapFault.setFaultCode( "soapenv:Server" );
+                soapFault.setFaultCode( faultName );
                 soapFault.setFaultString( message );
                 soapMessage.saveChanges();
                 soapMessage.writeTo( response.getOutputStream() );
                 response.setContentType( "text/xml" );
             } catch ( Exception e ) {
-                LOG.error( "NEXUSe2e - Processing error creating SOAPFault " + e );
+                LOG.error( "NEXUSe2e - Processing error creating SOAPFault ", e );
                 response.sendError( 500, "NEXUSe2e - Processing error creating SOAPFault " + e );
             }
         } else {
