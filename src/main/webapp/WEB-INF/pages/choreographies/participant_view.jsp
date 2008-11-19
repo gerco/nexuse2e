@@ -9,20 +9,18 @@
 
 <% /*<nexus:helpBar helpDoc="documentation/Participants.htm"/> */ %>
 
-    <center>
-
-<table class="NEXUS_TABLE" width="100%">
-    <tr>
-        <td>
-        	<nexus:crumbs/>
-      </td>
-  </tr>
-	<tr>
-		<td class="NEXUSScreenName">Update Participant</td>
-	</tr>
-</table>
-
 <html:form action="ParticipantUpdate">
+	<table class="NEXUS_TABLE" width="100%">
+	    <tr>
+	        <td>
+	        	<nexus:crumbs/>
+	      </td>
+	  </tr>
+		<tr>
+			<td class="NEXUSScreenName">Update Participant</td>
+		</tr>
+	</table>
+
 	<html:hidden property="nxChoreographyId" />
 	<html:hidden property="nxPartnerId" />
 	<html:hidden property="submitted" value="false" />
@@ -39,8 +37,7 @@
 
 		<tr>
 			<td class="NEXUSName">Local Partner ID</td>
-			<td class="NEXUSValue"><nexus:select submitOnChange="true"
-				name="nxLocalPartnerId">
+			<td class="NEXUSValue"><nexus:select submitOnChange="true" name="nxLocalPartnerId" form="participantForm">
 				<logic:iterate id="localPartner" property="localPartners"
 					name="participantForm">
 					<logic:equal name="participantForm" property="nxLocalPartnerId"
@@ -77,9 +74,9 @@
 			</html:select></td>
 		</tr>
 
-
-
 	</table>
+</html:form>
+
 	<table class="NEXUS_BUTTON_TABLE" width="100%">
 		<tr>
 			<td>&nbsp;</td>
@@ -94,4 +91,3 @@
 				<img src="images/icons/delete.png" class="button">Delete</nexus:link></td>
 		</tr>
 	</table>
-</html:form></center>

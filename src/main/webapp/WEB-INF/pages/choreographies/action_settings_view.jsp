@@ -5,7 +5,6 @@
 <%@ taglib uri="/tags/struts-tiles" prefix="tiles"%>
 <%@ taglib uri="/tags/struts-logic" prefix="logic"%>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
-
 <%@ taglib uri="/tags/struts-html-el" prefix="html-el"%>
 
 <% /*<nexus:helpBar helpDoc="documentation/Action.htm"/> */ %>
