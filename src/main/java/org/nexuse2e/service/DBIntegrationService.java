@@ -115,6 +115,8 @@ public class DBIntegrationService extends AbstractService implements SchedulerCl
     @Override
     public void initialize( EngineConfiguration config ) throws InstantiationException {
 
+        
+        
         LOG.trace( "initializing" );
         String dbServiceName = getParameter( DATABASESERVICE );
         String schedulingServiceName = getParameter( SCHEDULINGSERVICE );

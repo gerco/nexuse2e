@@ -19,16 +19,27 @@
  */
 package org.nexuse2e.service;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.nexuse2e.Engine;
+import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.dao.TransactionDAO;
+import org.nexuse2e.pojo.ConversationPojo;
+import org.nexuse2e.pojo.LogPojo;
 
 /**
  * @author gesch
@@ -44,11 +55,14 @@ public class DBCleanupService extends AbstractService implements SchedulerClient
     public static String      PURGELOGS         = "purgelogs";
     public static String      TIMEPATTERN       = "timepattern";
     public static String      DAYSREMAINING     = "daysremaining";
+    public static String      DEBUG             = "debug";
 
+    
 //    protected DatabaseService   dbService         = null;
     protected SchedulingService schedulingService = null;
     protected Boolean            purgeMessages      = false;
     protected Boolean            purgeLogs            = false;
+    protected Boolean            debug            = true;
     protected String            timepattern         = null;
     protected int               daysremaining          = 90;
 
@@ -67,6 +81,8 @@ public class DBCleanupService extends AbstractService implements SchedulerClient
                 "cron based time pattern e.g. 0 0/5 * * * ?", "" ) );
         parameterMap.put( DAYSREMAINING, new ParameterDescriptor( ParameterType.STRING, "Days remaining",
                 "data within this days is not purged", "90" ) );
+        parameterMap.put( DEBUG, new ParameterDescriptor( ParameterType.BOOLEAN, "Debug Only",
+                "Data is not removed. Only a detailed log output is generated", Boolean.TRUE ) );
     }
 
     @Override
@@ -82,8 +98,13 @@ public class DBCleanupService extends AbstractService implements SchedulerClient
     public void start() {
 
         LOG.trace( "starting" );
-        ( (SchedulingService) schedulingService ).registerClient( this, timepattern );
-        super.start();
+        try {
+            ( (SchedulingService) schedulingService ).registerClient( this, timepattern );
+            super.start();
+        } catch ( Throwable e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     /* (non-Javadoc)
@@ -113,6 +134,7 @@ public class DBCleanupService extends AbstractService implements SchedulerClient
         purgeLogs = getParameter( PURGELOGS );
         timepattern = getParameter( TIMEPATTERN );
         daysremaining = Integer.parseInt((String) getParameter( DAYSREMAINING ) );
+        debug = getParameter( DEBUG );
 
         if ( !StringUtils.isEmpty( schedulingServiceName ) ) {
 
@@ -158,6 +180,96 @@ public class DBCleanupService extends AbstractService implements SchedulerClient
         // LOG.debug( "do something" );
         if ( status == BeanStatus.STARTED ) {
             LOG.debug( "is primary: "+Engine.getInstance().getEngineController().getEngineControllerStub().isPrimaryNode() );
+            LOG.debug( "DebugMode: "+debug );
+            Calendar cal = Calendar.getInstance();
+            cal.add( Calendar.DAY_OF_YEAR, (-1)*daysremaining );
+            
+            Date endDate = cal.getTime();
+            List<ConversationPojo> convEntries = null;
+            List<LogPojo> logEntries = null;
+            LOG.debug( "Remaining data: "+endDate );
+            if(purgeLogs) {
+                try {
+                    logEntries =  Engine.getInstance().getTransactionService().getLogEntriesForReport( null, null, null, endDate, 0, 0, TransactionDAO.SORT_NONE, false , null,null);
+                    LOG.debug( "Log entries to purge: "+logEntries.size() );
+                } catch ( NexusException e ) {
+                    e.printStackTrace();
+                }
+            }
+            if(purgeMessages) {
+                try {
+                    convEntries =   Engine.getInstance().getTransactionService().getConversationsForReport( null,0, 0, null, null, endDate, 0, 0, TransactionDAO.SORT_NONE, false, null, null );
+                    LOG.debug( "Conversations to purge: "+convEntries.size() );
+                } catch ( NexusException e ) {
+                    e.printStackTrace();
+                }    
+            }
+            
+            if(!debug) {
+                try {
+                    if(purgeMessages) {
+                        LOG.debug( "purging selected messages" );
+                        Session session = Engine.getInstance().getTransactionService().getDBSession();
+                        Transaction transaction = session.beginTransaction();
+                        
+                        try {
+                            if ( convEntries != null && convEntries.size() > 0 ) {
+                                for ( ConversationPojo pojo : convEntries ) {
+                                    Engine.getInstance().getTransactionService().deleteConversation( pojo, session, transaction );
+                                }
+                            }
+                            transaction.commit();
+                            Engine.getInstance().getTransactionService().releaseDBSession( session );
+                        } catch ( Exception e ) {
+                            LOG.error( "Error while deleting conversations: "+e.getMessage()  );
+                            transaction.rollback();
+                            Engine.getInstance().getTransactionService().releaseDBSession( session );
+                            e.printStackTrace();
+                        }    
+                    }
+                    if(purgeLogs) {
+                        LOG.debug( "purging selected log entries" );
+                        Session session = Engine.getInstance().getTransactionService().getDBSession();
+                        Transaction transaction = session.beginTransaction();
+                        try {
+                            if ( logEntries != null && logEntries.size() > 0 ) {
+                                for ( LogPojo pojo : logEntries ) {
+                                    Engine.getInstance().getTransactionService().deleteLogEntry( pojo, session, transaction );
+                                }
+                            }
+                            transaction.commit();
+                            Engine.getInstance().getTransactionService().releaseDBSession( session );
+                        } catch ( Exception e ) {
+                            LOG.error( "Error while deleting conversations: "+e.getMessage()  );
+                            transaction.rollback();
+                            Engine.getInstance().getTransactionService().releaseDBSession( session );
+                            e.printStackTrace();
+                        }    
+                    }
+                } catch ( HibernateException e ) {
+                    e.printStackTrace();
+                } catch ( NexusException e ) {
+                    e.printStackTrace();
+                }
+            } else {
+                try {
+                    LOG.info( "---------- Database Cleanup ------------" );
+                    LOG.info( "Remaining Date: "+ endDate);
+                    LOG.info("Purge Logs:"+purgeLogs);
+                    if(purgeLogs){
+                        LOG.info( "Log entries to purge: "+logEntries.size() );
+                    }
+                    LOG.info("Purge Messages:"+purgeMessages);
+                    if(purgeMessages){
+                        LOG.info( "Conversations to purge: "+convEntries.size() );
+                    }
+                    LOG.info( "----------------------------------------" );
+                } catch ( Exception e ) {
+                    e.printStackTrace();
+                }
+            }
+            
+            
         }
     }
 

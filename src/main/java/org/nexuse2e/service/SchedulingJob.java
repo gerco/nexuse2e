@@ -23,6 +23,7 @@ public class SchedulingJob implements Job {
         SchedulerClient client = (SchedulerClient)jobExecutionContext.getMergedJobDataMap().get( "client" );        
         if ( client != null ) {
             client.scheduleNotify();
+            LOG.debug("next Schedule Date: "+jobExecutionContext.getTrigger().getNextFireTime());
         } else {
             LOG.error( "SchedulerClient must not benull" );
         }

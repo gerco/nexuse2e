@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -38,6 +39,8 @@ import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerFactory;
+import org.quartz.Trigger;
+import org.quartz.TriggerListener;
 
 /**
  * @author gesch
@@ -125,7 +128,8 @@ public class SchedulingServiceImpl extends AbstractService implements Scheduling
             jd.getJobDataMap().put( "client", client );
             ct.setCronExpression( new CronExpression(pattern) );
             quartzScheduler.scheduleJob( jd, ct );
-            
+            LOG.debug( "next Schedule Date: "+ct.getNextFireTime() );
+             
             
         } catch ( Exception e ) {
             throw new IllegalArgumentException(e);
