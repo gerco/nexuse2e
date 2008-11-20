@@ -179,97 +179,101 @@ public class DBCleanupService extends AbstractService implements SchedulerClient
 
         // LOG.debug( "do something" );
         if ( status == BeanStatus.STARTED ) {
-            LOG.debug( "is primary: "+Engine.getInstance().getEngineController().getEngineControllerStub().isPrimaryNode() );
-            LOG.debug( "DebugMode: "+debug );
-            Calendar cal = Calendar.getInstance();
-            cal.add( Calendar.DAY_OF_YEAR, (-1)*daysremaining );
+            boolean isPrimary = Engine.getInstance().getEngineController().getEngineControllerStub().isPrimaryNode() ;
+            LOG.debug( "is primary: "+isPrimary);
             
-            Date endDate = cal.getTime();
-            List<ConversationPojo> convEntries = null;
-            List<LogPojo> logEntries = null;
-            LOG.debug( "Remaining data: "+endDate );
-            if(purgeLogs) {
-                try {
-                    logEntries =  Engine.getInstance().getTransactionService().getLogEntriesForReport( null, null, null, endDate, 0, 0, TransactionDAO.SORT_NONE, false , null,null);
-                    LOG.debug( "Log entries to purge: "+logEntries.size() );
-                } catch ( NexusException e ) {
-                    e.printStackTrace();
+            if(isPrimary) {
+            
+                LOG.debug( "DebugMode: "+debug );
+                Calendar cal = Calendar.getInstance();
+                cal.add( Calendar.DAY_OF_YEAR, (-1)*daysremaining );
+                
+                Date endDate = cal.getTime();
+                List<ConversationPojo> convEntries = null;
+                List<LogPojo> logEntries = null;
+                LOG.debug( "Remaining data: "+endDate );
+                if(purgeLogs) {
+                    try {
+                        logEntries =  Engine.getInstance().getTransactionService().getLogEntriesForReport( null, null, null, endDate, 0, 0, TransactionDAO.SORT_NONE, false , null,null);
+                        LOG.debug( "Log entries to purge: "+logEntries.size() );
+                    } catch ( NexusException e ) {
+                        e.printStackTrace();
+                    }
                 }
-            }
-            if(purgeMessages) {
-                try {
-                    convEntries =   Engine.getInstance().getTransactionService().getConversationsForReport( null,0, 0, null, null, endDate, 0, 0, TransactionDAO.SORT_NONE, false, null, null );
-                    LOG.debug( "Conversations to purge: "+convEntries.size() );
-                } catch ( NexusException e ) {
-                    e.printStackTrace();
-                }    
-            }
-            
-            if(!debug) {
-                try {
-                    if(purgeMessages) {
-                        LOG.debug( "purging selected messages" );
-                        Session session = Engine.getInstance().getTransactionService().getDBSession();
-                        Transaction transaction = session.beginTransaction();
-                        
-                        try {
-                            if ( convEntries != null && convEntries.size() > 0 ) {
-                                for ( ConversationPojo pojo : convEntries ) {
-                                    Engine.getInstance().getTransactionService().deleteConversation( pojo, session, transaction );
+                if(purgeMessages) {
+                    try {
+                        convEntries =   Engine.getInstance().getTransactionService().getConversationsForReport( null,0, 0, null, null, endDate, 0, 0, TransactionDAO.SORT_NONE, false, null, null );
+                        LOG.debug( "Conversations to purge: "+convEntries.size() );
+                    } catch ( NexusException e ) {
+                        e.printStackTrace();
+                    }    
+                }
+                
+                if(!debug) {
+                    try {
+                        if(purgeMessages) {
+                            LOG.debug( "purging selected messages" );
+                            Session session = Engine.getInstance().getTransactionService().getDBSession();
+                            Transaction transaction = session.beginTransaction();
+                            
+                            try {
+                                if ( convEntries != null && convEntries.size() > 0 ) {
+                                    for ( ConversationPojo pojo : convEntries ) {
+                                        Engine.getInstance().getTransactionService().deleteConversation( pojo, session, transaction );
+                                    }
                                 }
-                            }
-                            transaction.commit();
-                            Engine.getInstance().getTransactionService().releaseDBSession( session );
-                        } catch ( Exception e ) {
-                            LOG.error( "Error while deleting conversations: "+e.getMessage()  );
-                            transaction.rollback();
-                            Engine.getInstance().getTransactionService().releaseDBSession( session );
-                            e.printStackTrace();
-                        }    
-                    }
-                    if(purgeLogs) {
-                        LOG.debug( "purging selected log entries" );
-                        Session session = Engine.getInstance().getTransactionService().getDBSession();
-                        Transaction transaction = session.beginTransaction();
-                        try {
-                            if ( logEntries != null && logEntries.size() > 0 ) {
-                                for ( LogPojo pojo : logEntries ) {
-                                    Engine.getInstance().getTransactionService().deleteLogEntry( pojo, session, transaction );
+                                transaction.commit();
+                                Engine.getInstance().getTransactionService().releaseDBSession( session );
+                            } catch ( Exception e ) {
+                                LOG.error( "Error while deleting conversations: "+e.getMessage()  );
+                                transaction.rollback();
+                                Engine.getInstance().getTransactionService().releaseDBSession( session );
+                                e.printStackTrace();
+                            }    
+                        }
+                        if(purgeLogs) {
+                            LOG.debug( "purging selected log entries" );
+                            Session session = Engine.getInstance().getTransactionService().getDBSession();
+                            Transaction transaction = session.beginTransaction();
+                            try {
+                                if ( logEntries != null && logEntries.size() > 0 ) {
+                                    for ( LogPojo pojo : logEntries ) {
+                                        Engine.getInstance().getTransactionService().deleteLogEntry( pojo, session, transaction );
+                                    }
                                 }
-                            }
-                            transaction.commit();
-                            Engine.getInstance().getTransactionService().releaseDBSession( session );
-                        } catch ( Exception e ) {
-                            LOG.error( "Error while deleting conversations: "+e.getMessage()  );
-                            transaction.rollback();
-                            Engine.getInstance().getTransactionService().releaseDBSession( session );
-                            e.printStackTrace();
-                        }    
+                                transaction.commit();
+                                Engine.getInstance().getTransactionService().releaseDBSession( session );
+                            } catch ( Exception e ) {
+                                LOG.error( "Error while deleting conversations: "+e.getMessage()  );
+                                transaction.rollback();
+                                Engine.getInstance().getTransactionService().releaseDBSession( session );
+                                e.printStackTrace();
+                            }    
+                        }
+                    } catch ( HibernateException e ) {
+                        e.printStackTrace();
+                    } catch ( NexusException e ) {
+                        e.printStackTrace();
                     }
-                } catch ( HibernateException e ) {
-                    e.printStackTrace();
-                } catch ( NexusException e ) {
-                    e.printStackTrace();
+                } else {
+                    try {
+                        LOG.info( "---------- Database Cleanup ------------" );
+                        LOG.info( "Remaining Date: "+ endDate);
+                        LOG.info("Purge Logs:"+purgeLogs);
+                        if(purgeLogs){
+                            LOG.info( "Log entries to purge: "+logEntries.size() );
+                        }
+                        LOG.info("Purge Messages:"+purgeMessages);
+                        if(purgeMessages){
+                            LOG.info( "Conversations to purge: "+convEntries.size() );
+                        }
+                        LOG.info( "----------------------------------------" );
+                    } catch ( Exception e ) {
+                        e.printStackTrace();
+                    }
                 }
-            } else {
-                try {
-                    LOG.info( "---------- Database Cleanup ------------" );
-                    LOG.info( "Remaining Date: "+ endDate);
-                    LOG.info("Purge Logs:"+purgeLogs);
-                    if(purgeLogs){
-                        LOG.info( "Log entries to purge: "+logEntries.size() );
-                    }
-                    LOG.info("Purge Messages:"+purgeMessages);
-                    if(purgeMessages){
-                        LOG.info( "Conversations to purge: "+convEntries.size() );
-                    }
-                    LOG.info( "----------------------------------------" );
-                } catch ( Exception e ) {
-                    e.printStackTrace();
-                }
+            
             }
-            
-            
         }
     }
 
