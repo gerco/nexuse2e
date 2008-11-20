@@ -19,6 +19,7 @@ public class ServerPropertiesUtil {
         PARTNER_ID("${nexus.message.partner.id}"),
         PARTNER_ID_TYPE("${nexus.message.partner.id.type}"),
         PARTNER_NAME("${nexus.message.partner.name}"),
+        PARTNER_COMPANY("${nexus.message.partner.company}"),
         LOCAL_PARTNER_ID("${nexus.message.localpartner.id}"),
         LOCAL_PARTNER_ID_TYPE("${nexus.message.localpartner.id.type}"),
         LOCAL_PARTNER_NAME("${nexus.message.localpartner.name}"),
@@ -123,6 +124,13 @@ public class ServerPropertiesUtil {
                             String partnerName = context.getMessagePojo().getParticipant().getPartner().getName();
                             if ( !StringUtils.isEmpty( partnerName ) ) {
                                 value = StringUtils.replace( value, property.getValue(), partnerName );
+                            }
+                        }
+                    } else if ( property.equals( ServerProperty.PARTNER_COMPANY ) ) {
+                        if ( context.getMessagePojo().getParticipant().getPartner() != null ) {
+                            String company = context.getMessagePojo().getParticipant().getPartner().getCompanyName();
+                            if ( !StringUtils.isEmpty( company ) ) {
+                                value = StringUtils.replace( value, property.getValue(), company );
                             }
                         }
                     } else if ( property.equals( ServerProperty.LOCAL_PARTNER_ID ) ) {
