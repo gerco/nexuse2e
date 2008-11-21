@@ -31,6 +31,8 @@ import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.MappingPojo;
+import org.nexuse2e.pojo.ParticipantPojo;
+import org.nexuse2e.pojo.PartnerPojo;
 
 /**
  * This <code>Pipelet</code> implementation uses the global NEXUS mapping table in order
@@ -102,8 +104,10 @@ public class MessageMappingPipelet extends AbstractPipelet {
                                 mappedChoreography );
                         if (newChoreography != null) {
                             // set new choreography on message and message context
-                            messageContext.setActionSpecificKey(
-                                    new ActionSpecificKey( messageContext.getActionSpecificKey().getActionId(), mappedChoreography ) );
+                            if (messageContext.getActionSpecificKey() != null) {
+                                messageContext.setActionSpecificKey(
+                                        new ActionSpecificKey( messageContext.getActionSpecificKey().getActionId(), mappedChoreography ) );
+                            }
                             if (messageContext.getMessagePojo().getConversation() != null) {
                                 messageContext.getMessagePojo().getConversation().setChoreography( newChoreography );
                                 messageContext.getConversation().setChoreography( newChoreography );
@@ -143,8 +147,10 @@ public class MessageMappingPipelet extends AbstractPipelet {
                             choreography, mappedAction );
                     if (newAction != null) {
                         // set new action on message and message context
-                        messageContext.setActionSpecificKey(
-                                new ActionSpecificKey( mappedAction, messageContext.getActionSpecificKey().getChoreographyId() ) );
+                        if (messageContext.getActionSpecificKey() != null) {
+                            messageContext.setActionSpecificKey(
+                                    new ActionSpecificKey( mappedAction, messageContext.getActionSpecificKey().getChoreographyId() ) );
+                        }
                         messageContext.getMessagePojo().setAction( newAction );
                         messageContext.getConversation().setCurrentAction( newAction );
                     } else {
@@ -164,7 +170,46 @@ public class MessageMappingPipelet extends AbstractPipelet {
         
         // map partner
         if (!StringUtils.isBlank( partnerCategory )) {
-            
+            partnerCategory = partnerCategory.trim();
+            ParticipantPojo participant = messageContext.getMessagePojo().getParticipant();
+            if (participant != null && messageContext.getConversation() != null) {
+                PartnerPojo partner = participant.getPartner();
+                if (partner != null) {
+                    MappingPojo mp = Engine.getInstance().getCurrentConfiguration().getMappingByCategoryDirectionAndKey( partnerCategory, true, partner.getPartnerId() );
+                    String mappedPartner = (mp == null ? null : mp.getRightValue());
+                    if (!StringUtils.isBlank( mappedPartner )) {
+                        PartnerPojo newPartner = Engine.getInstance().getCurrentConfiguration().getPartnerByPartnerId( mappedPartner );
+                        if (newPartner != null && messageContext.getMessagePojo().getConversation().getChoreography() != null) {
+                            ParticipantPojo newParticipant = Engine.getInstance().getCurrentConfiguration().getParticipantFromChoreographyByPartner(
+                                    messageContext.getMessagePojo().getConversation().getChoreography(), newPartner );
+                            if (newParticipant != null) {
+                                // set all fields to new values newPartner and newParticipant
+                                messageContext.setParticipant( newParticipant );
+                                messageContext.setPartner( newPartner );
+                                messageContext.getConversation().setPartner( newPartner );
+                                messageContext.getMessagePojo().getConversation().setPartner( newPartner );
+                            } else {
+                                LOG.warn( getClass().getSimpleName() + " cannot map partner because no participant with partner ID " + mappedPartner +
+                                        " is configured for choreography " + messageContext.getMessagePojo().getConversation().getChoreography().getName() );
+                            }
+                        } else {
+                            if (newPartner == null) {
+                                LOG.warn( getClass().getSimpleName() + " cannot map partner because no partner with partner ID " + mappedPartner + " was found" );
+                            } else {
+                                LOG.warn( getClass().getSimpleName() + " cannot map partner because no choreography is set on conversation" );
+                            }
+                        }
+                    } else {
+                        LOG.warn( getClass().getSimpleName() + " cannot map partner because mapping for key " +
+                                partner.getPartnerId() + " and category " + partnerCategory + " was not found" );
+                    }
+                } else {
+                    LOG.warn( getClass().getSimpleName() + " cannot map partner because no partner is set on message" );
+                }
+            } else {
+                LOG.warn( getClass().getSimpleName() + " cannot map partner because no " +
+                        (messageContext.getMessagePojo().getParticipant() == null ? "participant" : "conversation") + "is set" );
+            }
         }
         
         return messageContext;
