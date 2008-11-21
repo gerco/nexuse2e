@@ -342,6 +342,7 @@
 	 	var kw = {
 	 		url: form.action,
 	 		mimetype: "text/html",
+	 		transport: "IframeTransport",
 	 		formNode: form,
 	 		load: function(load, data, e) {
 	 			var res = dojo.byId( 'dojoIoIframe' ).contentWindow.document.body.innerHTML;
