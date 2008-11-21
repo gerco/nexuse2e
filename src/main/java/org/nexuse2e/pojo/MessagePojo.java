@@ -164,8 +164,6 @@ public class MessagePojo implements NEXUSe2ePojo {
      */
     public ParticipantPojo getParticipant() {
 
-        ParticipantPojo participantPojo = null;
-
         if ( conversation != null ) {
             ChoreographyPojo choreographyPojo = conversation.getChoreography();
             PartnerPojo partnerPojo = conversation.getPartner();
@@ -182,7 +180,7 @@ public class MessagePojo implements NEXUSe2ePojo {
             }
         }
 
-        return participantPojo;
+        return null;
     }
 
     // Property accessors
