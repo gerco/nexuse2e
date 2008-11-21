@@ -23,7 +23,6 @@ package org.nexuse2e.integration;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -46,10 +45,9 @@ public class DebugController implements Controller {
      */
     public ModelAndView handleRequest( HttpServletRequest request, HttpServletResponse response ) throws Exception {
 
-        Map parameters = request.getParameterMap();
         String line = null;
 
-        for ( Object parameterName : parameters.keySet() ) {
+        for ( Object parameterName : request.getParameterMap().keySet() ) {
             LOG.debug( parameterName + " = " + request.getParameter( (String)parameterName ) );
         }
 
