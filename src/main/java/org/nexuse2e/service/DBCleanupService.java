@@ -180,7 +180,7 @@ public class DBCleanupService extends AbstractService implements SchedulerClient
         // LOG.debug( "do something" );
         if ( status == BeanStatus.STARTED ) {
             boolean isPrimary = Engine.getInstance().getEngineController().getEngineControllerStub().isPrimaryNode() ;
-            LOG.debug( "is primary: "+isPrimary);
+            LOG.debug( "is primary Node: "+isPrimary);
             
             if(isPrimary) {
             
