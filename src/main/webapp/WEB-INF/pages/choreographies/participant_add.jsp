@@ -29,13 +29,13 @@
 	<table class="NEXUS_TABLE" width="100%">
 		<tr>
 			<td class="NEXUSName">Partner ID</td>
-			<td class="NEXUSValue"><nexus:select submitOnChange="true"
+			<td class="NEXUSValue"><nexus:select submitOnChange="true" form="participantForm"
 				name="nxPartnerId">
 				<logic:iterate id="partner" property="partners"
 					name="participantForm">
 					<logic:equal name="participantForm" property="nxPartnerId"
 						value="${partner.nxPartnerId}">
-						<option value="${partner.nxPartnerId}" selected="true">${partner.name}
+						<option value="${partner.nxPartnerId}" selected="selected">${partner.name}
 						(${partner.partnerId})</option>
 					</logic:equal>
 					<logic:notEqual name="participantForm" property="nxPartnerId"
@@ -53,7 +53,7 @@
 		<tr>
 			<td class="NEXUSName">Local Partner ID</td>
 			<td class="NEXUSValue">
-			  <nexus:select submitOnChange="true"
+			  <nexus:select submitOnChange="true" form="participantForm"
 				name="nxLocalPartnerId">
 				<logic:iterate id="localPartner" property="localPartners"
 					name="participantForm">
