@@ -56,6 +56,7 @@ import org.nexuse2e.dao.LogDAO;
 import org.nexuse2e.dao.TransactionDAO;
 import org.nexuse2e.integration.NEXUSe2eInterface;
 import org.nexuse2e.integration.NEXUSe2eInterfaceImpl;
+import org.nexuse2e.messaging.BackendOutboundDispatcher;
 import org.nexuse2e.messaging.TimestampFormatter;
 import org.nexuse2e.messaging.ebxml.EBXMLTimestampFormatter;
 import org.nexuse2e.messaging.mime.binary_base64;
@@ -964,7 +965,10 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
             }
 
             // Recover any pending messages...
-            currentConfiguration.getStaticBeanContainer().getBackendOutboundDispatcher().recoverMessages();
+            BackendOutboundDispatcher backendOutboundDispatcher = currentConfiguration.getStaticBeanContainer().getBackendOutboundDispatcher();
+            if (backendOutboundDispatcher != null) {
+                backendOutboundDispatcher.recoverMessages();
+            }
 
             LOG.info( "***** Nexus E2E engine started. *****" );
         } else {
