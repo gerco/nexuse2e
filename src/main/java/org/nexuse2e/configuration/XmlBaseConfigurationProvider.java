@@ -250,7 +250,12 @@ public class XmlBaseConfigurationProvider implements BaseConfigurationProvider {
                     if ( choreography.getParticipants() != null ) {
                         for ( ParticipantPojo participant : choreography.getParticipants() ) {
                             participant.setChoreography( choreography );
-                            participant.setPartner( partnerMap.get( participant.getNxPartnerId() ) );
+                            PartnerPojo partner = partnerMap.get( participant.getNxPartnerId() );
+                            if (partner.getParticipants() == null) {
+                                partner.setParticipants( new ArrayList<ParticipantPojo>() );
+                            }
+                            partner.getParticipants().add( participant );
+                            participant.setPartner( partner );
                             participant.setLocalPartner( partnerMap.get( participant.getNxLocalPartnerId() ) );
                             participant
                                     .setLocalCertificate( certificateMap.get( participant.getNxLocalCertificateId() ) );
