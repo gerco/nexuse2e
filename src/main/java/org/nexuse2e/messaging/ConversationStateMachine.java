@@ -274,7 +274,25 @@ public class ConversationStateMachine {
         } // synchronized
     }
 
+    /**
+     * Sets the current conversation message to <code>QUEUED</code> without forcing
+     * a state transition.
+     * @throws StateTransitionException if the state transition is invalid.
+     * @throws NexusException if another error occurred (e.g. on the persistence layer).
+     */
     public void queueMessage() throws StateTransitionException, NexusException {
+        queueMessage( false );
+    }
+
+    /**
+     * Sets the current conversation message to <code>QUEUED</code>.
+     * @param force If <code>true</code>, indicates that the message shall be queued with no
+     * respect to state maintenance.
+     * @throws StateTransitionException if the state transition is invalid. Not thrown if
+     * <code>force</code> is <code>true</code>.
+     * @throws NexusException if another error occurred (e.g. on the persistence layer).
+     */
+    public void queueMessage( boolean force ) throws StateTransitionException, NexusException {
 
         synchronized ( sync ) {
             List<MessagePojo> messages = conversation.getMessages();
@@ -289,7 +307,7 @@ public class ConversationStateMachine {
                 messages.add( message );
                 Engine.getInstance().getTransactionService().storeTransaction( conversation, message );
             } else {
-                Engine.getInstance().getTransactionService().updateTransaction( message );
+                Engine.getInstance().getTransactionService().updateTransaction( message, force );
             }
         } // synchronized
     }

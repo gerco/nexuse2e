@@ -96,7 +96,7 @@ public class BackendActionSerializer extends AbstractPipelet {
 
             // Persist and queue the message
             try {
-                queueMessage( messageContext );
+                queueMessage( messageContext, false );
             } catch ( Exception e ) {
                 e.printStackTrace();
                 LOG.error( new LogMessage(
@@ -117,11 +117,11 @@ public class BackendActionSerializer extends AbstractPipelet {
      * @param conversationPojo
      * @throws NexusException
      */
-    private void queueMessage( MessageContext messageContext )
+    private void queueMessage( MessageContext messageContext, boolean force )
             throws NexusException {
 
         try {
-            messageContext.getStateMachine().queueMessage();
+            messageContext.getStateMachine().queueMessage( force );
         } catch (StateTransitionException e) {
             LOG.warn( e.getMessage() );
         }
@@ -142,7 +142,7 @@ public class BackendActionSerializer extends AbstractPipelet {
             LOG.error( "No MessageContext supplied!" );
             throw new NexusException( "No MessageContext supplied!" );
         }
-        queueMessage( messageContext );
+        queueMessage( messageContext, true );
     } // requeueMessage
 
     /**
@@ -173,7 +173,7 @@ public class BackendActionSerializer extends AbstractPipelet {
             throws NexusException {
 
         if ( messageContext != null ) {
-            queueMessage( messageContext );
+            queueMessage( messageContext, true );
         } else {
             LOG.error( new LogMessage( "Message: " + messageId
                     + " could not be found in database, cancelled requeueing!", conversationId, messageId ) );
