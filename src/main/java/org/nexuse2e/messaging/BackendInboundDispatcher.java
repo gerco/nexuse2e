@@ -31,6 +31,9 @@ import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.logging.LogMessage;
+import org.nexuse2e.pojo.ActionPojo;
+import org.nexuse2e.pojo.ChoreographyPojo;
+import org.nexuse2e.pojo.ConversationPojo;
 import org.nexuse2e.pojo.MessagePojo;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -59,8 +62,11 @@ public class BackendInboundDispatcher implements InitializingBean, Manageable {
         LOG.debug( "BackendInboundDispatcher.processMessage..." );
 
         if ( backendInboundPipelines != null ) {
-            ActionSpecificKey actionSpecificKey = new ActionSpecificKey( messageContext.getMessagePojo().getAction()
-                    .getName(), messageContext.getMessagePojo().getConversation().getChoreography().getName() );
+            ActionPojo action = messageContext.getMessagePojo().getAction();
+            ConversationPojo conversation = messageContext.getMessagePojo().getConversation();
+            ChoreographyPojo choreography = (conversation == null ? null : conversation.getChoreography());
+            ActionSpecificKey actionSpecificKey = new ActionSpecificKey(
+                    (action == null ? null : action.getName()), (choreography == null ? null : choreography.getName()) );
             BackendPipeline backendInboundPipeline = backendInboundPipelines.get( actionSpecificKey );
             if ( backendInboundPipeline != null ) {
                 LOG.debug( new LogMessage( "Found pipeline: " + backendInboundPipeline + " - " + actionSpecificKey,
