@@ -152,7 +152,6 @@ public class MessageMappingPipelet extends AbstractPipelet {
                                     new ActionSpecificKey( mappedAction, messageContext.getActionSpecificKey().getChoreographyId() ) );
                         }
                         messageContext.getMessagePojo().setAction( newAction );
-                        messageContext.getConversation().setCurrentAction( newAction );
                     } else {
                         LOG.warn(
                                 getClass().getSimpleName() +

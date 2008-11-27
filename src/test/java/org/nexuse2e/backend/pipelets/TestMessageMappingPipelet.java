@@ -90,7 +90,7 @@ public class TestMessageMappingPipelet {
         conversation = new ConversationPojo();
         conversation.setChoreography( choreography );
         conversation.setConversationId( "12345" );
-        conversation.setCurrentAction( action );
+        conversation.setCurrentAction( null );
         conversation.setPartner( partner );
         
         participant = new ParticipantPojo();
@@ -180,7 +180,7 @@ public class TestMessageMappingPipelet {
         Assert.assertEquals( "partner", messageContext.getPartner().getPartnerId() );
         Assert.assertSame( participant, messageContext.getMessagePojo().getParticipant() );
         Assert.assertEquals( "partner", messageContext.getParticipant().getPartner().getPartnerId() );
-        Assert.assertEquals( "action", messageContext.getConversation().getCurrentAction().getName() );
+        Assert.assertSame( null, messageContext.getConversation().getCurrentAction() );
     }
 
     @Test 
@@ -190,7 +190,7 @@ public class TestMessageMappingPipelet {
 
         // go
         pipelet.processMessage( messageContext );
-        Assert.assertEquals( "mappedAction", messageContext.getConversation().getCurrentAction().getName() );
+        Assert.assertSame( null, messageContext.getConversation().getCurrentAction() );
         Assert.assertEquals( "mappedAction", messageContext.getMessagePojo().getAction().getName() );
 
         Assert.assertEquals( "choreography", messageContext.getChoreography().getName() );
