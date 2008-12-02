@@ -24,7 +24,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -39,8 +38,6 @@ import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerFactory;
-import org.quartz.Trigger;
-import org.quartz.TriggerListener;
 
 /**
  * @author gesch
@@ -53,7 +50,7 @@ public class SchedulingServiceImpl extends AbstractService implements Scheduling
 
     private final static String QUARTZGROUP = "NX_GROUP";
     
-    private HashMap<SchedulerClient, ScheduledFuture[]>        concurrentClients    = new HashMap<SchedulerClient, ScheduledFuture[]>();
+    private HashMap<SchedulerClient, ScheduledFuture<?>[]>        concurrentClients    = new HashMap<SchedulerClient, ScheduledFuture<?>[]>();
     private HashMap<SchedulerClient, ScheduledExecutorService> schedulers = new HashMap<SchedulerClient, ScheduledExecutorService>();
     private Map<String, SchedulerClient>        quartzClients    = new HashMap<String,SchedulerClient>();
     
@@ -103,7 +100,7 @@ public class SchedulingServiceImpl extends AbstractService implements Scheduling
         SchedulingThread thread = new SchedulingThread( client );
         ScheduledFuture<?> handle = scheduler.scheduleAtFixedRate( thread, 0, millseconds, TimeUnit.MILLISECONDS );
 
-        ScheduledFuture[] handles = { handle};
+        ScheduledFuture<?>[] handles = { handle};
         concurrentClients.put( client, handles );
         schedulers.put( client, scheduler );
 
@@ -148,7 +145,7 @@ public class SchedulingServiceImpl extends AbstractService implements Scheduling
         if ( !times.isEmpty() ) {
 
             ScheduledExecutorService scheduler = Executors.newScheduledThreadPool( 1 );
-            ScheduledFuture[] handles = new ScheduledFuture[times.size()];
+            ScheduledFuture<?>[] handles = new ScheduledFuture<?>[times.size()];
             int handleCount = 0;
 
             for ( Date time : times ) {
@@ -177,10 +174,10 @@ public class SchedulingServiceImpl extends AbstractService implements Scheduling
     public void deregisterClient( SchedulerClient client ) throws IllegalArgumentException {
 
         LOG.trace( "deregistering client" );
-        ScheduledFuture[] handles = concurrentClients.get( client );
+        ScheduledFuture<?>[] handles = concurrentClients.get( client );
         if ( handles != null ) {
             for ( int i = 0; i < handles.length; i++ ) {
-                ScheduledFuture handle = handles[i];
+                ScheduledFuture<?> handle = handles[i];
                 if ( handle != null ) {
                     handle.cancel( false );
                     LOG.debug( "deregisterClient - processing cancelled!" );
