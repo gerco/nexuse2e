@@ -123,6 +123,7 @@
         <value>org/nexuse2e/hibernate/nx_logger_param.hbm.xml</value>
         <value>org/nexuse2e/hibernate/nx_generic_param.hbm.xml</value>
         <value>org/nexuse2e/hibernate/nx_mapping.hbm.xml</value>
+        <value>org/nexuse2e/hibernate/nx_persistent_property.hbm.xml</value>
       </list>
     </property>
     <property name="hibernateProperties">
@@ -146,6 +147,9 @@
     <property name="sessionFactory" ref="hibernateSessionFactory" />
   </bean>
   <bean id="transactionDao" class="org.nexuse2e.dao.TransactionDAO">
+    <property name="sessionFactory" ref="hibernateSessionFactory" />
+  </bean>
+  <bean id="persistentPropertyDao" class="org.nexuse2e.dao.PersistentPropertyDAO">
     <property name="sessionFactory" ref="hibernateSessionFactory" />
   </bean>
 
