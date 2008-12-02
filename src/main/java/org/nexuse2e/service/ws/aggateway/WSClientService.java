@@ -349,8 +349,12 @@ public class WSClientService extends AbstractService implements SenderAware {
         message.setOutbound( false );
         replyMessageContext.setMessagePojo( message );
         replyMessageContext.setOriginalMessagePojo( message );
-        replyMessageContext.setChoreography( action.getChoreography() );
-        replyMessageContext.setPartner( message.getConversation().getPartner() );
+        if (action != null) {
+            replyMessageContext.setChoreography( action.getChoreography() );
+        }
+        if (message != null && message.getConversation() != null) {
+            replyMessageContext.setPartner( message.getConversation().getPartner() );
+        }
         
         if ( outboundData.getXmlPayload() != null ) {
 
