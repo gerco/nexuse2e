@@ -42,6 +42,8 @@
     
     <form-bean name="databasePurgeForm" type="org.nexuse2e.ui.form.DatabasePurgeForm"/>
     <form-bean name="mappingMaintenanceForm" type="org.nexuse2e.ui.form.MappingMaintenanceForm"/>
+
+    <form-bean name="persistentPropertiesForm" type="org.nexuse2e.ui.form.PersistentPropertiesForm"/>
     
     <form-bean name="certificateChainImportForm" type="org.nexuse2e.ui.form.CertificateChainImportForm"/>
     
@@ -459,6 +461,10 @@
     
     <action path="/MappingMaintenance" name="mappingMaintenanceForm" type="org.nexuse2e.ui.action.tools.MappingMaintenanceAction">
       <forward name="success" path="/WEB-INF/pages/tools/mapping_maintenance.jsp"/>
+    </action>
+    
+    <action path="/PersistentProperties" name="persistentPropertiesForm" type="org.nexuse2e.ui.action.tools.PersistentPropertiesAction">
+      <forward name="success" path="/WEB-INF/pages/tools/persistent_properties.jsp"/>
     </action>
     
     <action path="/RequestImportBackup" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.RequestImportBackupAction">

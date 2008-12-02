@@ -40,6 +40,7 @@ public class Constants {
     public static final String COMMUNICATIONPARTNERDAO             = "communicationPartnerDao";
     public static final String CONVERSATION_DAO                    = "conversationDao";
     public static final String MESSAGE_DAO                         = "messageDao";
+    public static final String PERSISTENT_PROPERTY_DAO             = "persistentPropertyDao";
 
     // skeleton bean IDs
     public static final String FRONTEND_INBOUND_DISPATCHER         = "frontendInboundDispatcher";

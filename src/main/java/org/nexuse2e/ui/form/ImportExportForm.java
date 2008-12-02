@@ -26,6 +26,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.upload.FormFile;
+import org.nexuse2e.pojo.ChoreographyPojo;
+import org.nexuse2e.pojo.PartnerPojo;
 
 /**
  * TODO To change the template for this generated type comment go to
@@ -40,11 +42,11 @@ public class ImportExportForm extends ActionForm {
      */
     private static final long serialVersionUID         = -7760013405323559900L;
 
-    private List              choreographyList         = null;
+    private List<ChoreographyPojo> choreographyList         = null;
     private String[]          choreographies           = null;
     private String            choreographyImportPath   = null;
     private FormFile          choreographyImportFile   = null;
-    private List              partnerList              = null;
+    private List<PartnerPojo> partnerList              = null;
     private String[]          partners                 = null;
     private String            partnerImportPath        = null;
     private FormFile          partnerImportFile        = null;
@@ -82,7 +84,7 @@ public class ImportExportForm extends ActionForm {
     /**
      * @return Returns the choreographyList.
      */
-    public List getChoreographyList() {
+    public List<ChoreographyPojo> getChoreographyList() {
 
         return choreographyList;
     }
@@ -90,7 +92,7 @@ public class ImportExportForm extends ActionForm {
     /**
      * @param choreographyList The choreographyList to set.
      */
-    public void setChoreographyList( List choreographyList ) {
+    public void setChoreographyList( List<ChoreographyPojo> choreographyList ) {
 
         this.choreographyList = choreographyList;
     }
@@ -146,7 +148,7 @@ public class ImportExportForm extends ActionForm {
     /**
      * @return Returns the partnerList.
      */
-    public List getPartnerList() {
+    public List<PartnerPojo> getPartnerList() {
 
         return partnerList;
     }
@@ -154,7 +156,7 @@ public class ImportExportForm extends ActionForm {
     /**
      * @param partnerList The partnerList to set.
      */
-    public void setPartnerList( List partnerList ) {
+    public void setPartnerList( List<PartnerPojo> partnerList ) {
 
         this.partnerList = partnerList;
     }
