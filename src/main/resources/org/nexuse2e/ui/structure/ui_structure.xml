@@ -172,6 +172,9 @@
         <nxs:page target="MappingMaintenance.do" label="Mapping Maintenance" icon="images/icons/database_table.png">
           <nxs:command target="MappingMaintenance.do" label="Execute" icon="images/icons/bullet_orange.png"/>
         </nxs:page>
+        <nxs:page target="PersistentProperties.do" label="Persistent Properties" icon="images/icons/database_table.png">
+          <nxs:command target="PersistentProperties.do" label="Execute" icon="images/icons/bullet_orange.png"/>
+        </nxs:page>
         <nxs:page target="FileDownload.do" label="File Download" icon="images/icons/page_save.png">
           <nxs:command target="FileDownload.do" label="Execute" icon="images/icons/bullet_orange.png"/>
         </nxs:page>
