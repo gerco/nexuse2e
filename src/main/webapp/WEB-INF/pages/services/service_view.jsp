@@ -163,7 +163,7 @@
 					value="<%= ParameterType.SERVICE.toString() %>">
 					<tr>
 						<td class="NEXUSValue">${parameter.label}</td>
-						<td class="NEXUSValue"><nexus:select name="<%= key %>">
+						<td class="NEXUSValue"><nexus:select name="<%= key %>" form="document.forms['serviceForm']">
 							<logic:iterate id="service" name="service_collection">
 								<%
 								org.nexuse2e.pojo.ServiceParamPojo prm = (org.nexuse2e.pojo.ServiceParamPojo) pageContext.getAttribute( "parameter" );

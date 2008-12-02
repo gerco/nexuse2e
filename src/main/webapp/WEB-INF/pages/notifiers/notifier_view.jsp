@@ -188,7 +188,7 @@
 					value="<%= ParameterType.SERVICE.toString() %>">
 					<tr>
 						<td class="NEXUSValue">${parameter.label}</td>
-						<td class="NEXUSValue"><nexus:select name="${key}">
+						<td class="NEXUSValue"><nexus:select name="${key}" form="document.forms['loggerForm']">
 							<logic:iterate id="service" name="service_collection">
 								<%
 								org.nexuse2e.pojo.LoggerParamPojo prm = (org.nexuse2e.pojo.LoggerParamPojo) pageContext.getAttribute( "parameter" );
