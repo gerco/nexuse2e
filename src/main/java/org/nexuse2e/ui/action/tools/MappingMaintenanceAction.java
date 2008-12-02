@@ -58,6 +58,7 @@ public class MappingMaintenanceAction extends NexusE2EAction {
         System.out.println( "form.rightValue: " + form.getRightValue() );
 
         String action = form.getSubmitaction();
+        form.setSubmitaction( null );
 
         System.out.println("values:"+MappingType.values());
         
