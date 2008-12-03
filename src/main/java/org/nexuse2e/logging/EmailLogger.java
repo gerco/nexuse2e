@@ -145,6 +145,7 @@ public class EmailLogger extends AbstractLogger {
     @Override
     protected void append( LoggingEvent loggingEvent ) {
 
+        LOG.debug( "("+status+")creating mail notification for event: "+loggingEvent.getMessage().toString() );
         ChoreographyPojo choreographyPojo = null;
         boolean matchedChoreography = false;
 
@@ -159,7 +160,7 @@ public class EmailLogger extends AbstractLogger {
         if ( !loggingEvent.getLevel().isGreaterOrEqual( Level.toLevel( getLogThreshold(), Level.ERROR ) ) ) {
             return;
         }
-
+        LOG.trace( "checkChoreography: "+ checkChoreography );
         if ( checkChoreography && ( loggingEvent.getMessage() instanceof LogMessage ) ) {
             LogMessage logMessage = (LogMessage) loggingEvent.getMessage();
             if ( logMessage.getConversationId() != null ) {
@@ -182,6 +183,7 @@ public class EmailLogger extends AbstractLogger {
         if ( !checkChoreography || matchedChoreography ) {
 
             SmtpSender smtpSender = findService();
+            LOG.trace( "using Senderservice ("+smtpSender != null ? smtpSender.getStatus() : "null"+"): "+smtpSender );
             if ( smtpSender != null ) {
                 if ( smtpSender.getStatus() == BeanStatus.STARTED ) {
                     try {
