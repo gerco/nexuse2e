@@ -231,6 +231,7 @@ public class SmtpSender extends AbstractService implements SenderAware {
             authenticate = true;
         }
 
+        
         String protocol = ssl ? "smtps" : "smtp";
 
         if ( host != null && !host.trim().equals( "" ) ) {
@@ -469,6 +470,7 @@ public class SmtpSender extends AbstractService implements SenderAware {
     public void sendMessage( String recipient, String subjectLine, String description, MimeBodyPart[] mimeBodyParts )
             throws NexusException {
 
+        LOG.trace("sending notification mail");
         Session session = null;
         Transport transport = null;
 
