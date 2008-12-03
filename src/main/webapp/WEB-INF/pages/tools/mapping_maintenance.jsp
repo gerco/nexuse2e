@@ -27,6 +27,56 @@
 		<html:hidden property="leftValue" value="unknown" />
 		<html:hidden property="rightType" value="unknown" />
 		<html:hidden property="rightValue" value="unknown" />
+
+		<table class="NEXUS_BUTTON_TABLE" width="100%">
+		<tr>
+			<td class="button" width="100%">
+			<center>
+			<logic:greaterThan name="mappingMaintenanceForm" property="currentPage" value="0">
+				<nexus:submit id="startLink"
+					onClick="document.forms['mappingMaintenanceForm'].currentPage.value='0';"
+					styleClass="NexusHeaderLink">Start</nexus:submit>
+			</logic:greaterThan>
+			<logic:lessEqual name="mappingMaintenanceForm" property="currentPage" value="0">Start
+			</logic:lessEqual> | 
+			<logic:greaterThan name="mappingMaintenanceForm" property="currentPage" value="0">
+				<nexus:submit id="previousLink"
+					onClick="document.forms['mappingMaintenanceForm'].currentPage.value='${mappingMaintenanceForm.currentPage - 1}';"
+					styleClass="NexusHeaderLink">Previous</nexus:submit>
+			</logic:greaterThan>
+			<logic:lessEqual name="mappingMaintenanceForm" property="currentPage" value="0">Previous
+			</logic:lessEqual>
+				|
+				<nexus:select name="currentPage" form="mappingMaintenanceForm" submitOnChange="true">
+					<% 
+					int pageCount = ((org.nexuse2e.ui.form.MappingMaintenanceForm) session.getAttribute( "mappingMaintenanceForm" )).getPageCount();
+					for (int i = 0; i < pageCount; i++) {
+						pageContext.setAttribute( "index", i ); %>
+						<logic:equal name="mappingMaintenanceForm" property="currentPage" value="${index}">
+							<option value="${index}" selected="selected">Page ${index + 1} of ${mappingMaintenanceForm.pageCount}</option>
+						</logic:equal>
+						<logic:notEqual name="mappingMaintenanceForm" property="currentPage" value="${index}">
+							<option value="${index}">Page ${index + 1} of ${mappingMaintenanceForm.pageCount}</option>
+						</logic:notEqual>
+					<% } %>
+				</nexus:select> 
+				|
+			<logic:lessThan name="mappingMaintenanceForm" property="currentPage" value="${mappingMaintenanceForm.pageCount - 1}">
+				<nexus:submit id="nextLink" onClick="document.forms['mappingMaintenanceForm'].currentPage.value='${mappingMaintenanceForm.currentPage + 1}';" styleClass="NexusHeaderLink">Next</nexus:submit>
+			</logic:lessThan>
+			<logic:greaterEqual name="mappingMaintenanceForm" property="currentPage" value="${mappingMaintenanceForm.pageCount - 1}">Next</logic:greaterEqual> |
+			<logic:lessThan name="mappingMaintenanceForm" property="currentPage" value="${mappingMaintenanceForm.pageCount - 1}">
+				<nexus:submit id="endLink"
+					onClick="document.forms['mappingMaintenanceForm'].currentPage.value='${mappingMaintenanceForm.pageCount - 1}';"
+					styleClass="NexusHeaderLink">End</nexus:submit>
+			</logic:lessThan>
+			<logic:greaterEqual name="mappingMaintenanceForm" property="currentPage" value="${mappingMaintenanceForm.pageCount - 1}">End</logic:greaterEqual></center>
+			</center>
+			</td>
+		</tr>
+		</table>
+
+
 		<table width="100%">
 			<tr>
 				<td class="NEXUSName">Category</td>

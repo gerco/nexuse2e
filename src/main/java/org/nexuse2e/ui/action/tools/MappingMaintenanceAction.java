@@ -20,7 +20,9 @@
 package org.nexuse2e.ui.action.tools;
 
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
 
@@ -41,6 +43,8 @@ import org.nexuse2e.ui.form.MappingMaintenanceForm;
 
 public class MappingMaintenanceAction extends NexusE2EAction {
 
+    public static final int RECORDS_PER_PAGE = 100;
+    
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
             HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
@@ -117,8 +121,43 @@ public class MappingMaintenanceAction extends NexusE2EAction {
                 }
             }
         }
-        List<MappingPojo> mappings = engineConfiguration.getMappings( null );
-
+        List<MappingPojo> list = engineConfiguration.getMappings( new Comparator<MappingPojo>() {
+            public int compare( MappingPojo m1, MappingPojo m2 ) {
+                String c1 = m1.getCategory();
+                String c2 = m2.getCategory();
+                if (c1 == null) {
+                    c1 = "";
+                }
+                if (c2 == null) {
+                    c2 = "";
+                }
+                int c = c1.compareTo( c2 );
+                if (c == 0) {
+                    String l1 = m1.getLeftValue();
+                    String l2 = m2.getLeftValue();
+                    if (l1 == null) {
+                        l1 = "";
+                    }
+                    if (l2 == null) {
+                        l2 = "";
+                    }
+                    c = l1.compareTo( l2 );
+                }
+                return c;
+            }
+        } );
+        form.setPageCount( list.size() / RECORDS_PER_PAGE + (list.size() % RECORDS_PER_PAGE == 0 ? 0 : 1) );
+        List<MappingPojo> mappings;
+        if (list.size() > RECORDS_PER_PAGE) {
+            mappings = new ArrayList<MappingPojo>( RECORDS_PER_PAGE );
+            int startIndex = form.getCurrentPage() * RECORDS_PER_PAGE;
+            for (int i = startIndex; i < startIndex + RECORDS_PER_PAGE && i < list.size(); i++) {
+                mappings.add( list.get( i ) );
+            }
+        } else {
+            mappings = list;
+        }
+        
         if (mappings == null) {
             request.setAttribute( ATTRIBUTE_COLLECTION, Collections.EMPTY_LIST );
         } else {

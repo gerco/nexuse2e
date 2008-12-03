@@ -44,7 +44,7 @@
 			<td class="NEXUSValue"><logic:equal name="loggerForm"
 				property="nxLoggerId" value="0">
 				<nexus:select name="nxComponentId"
-					form="document.forms['loggerForm']"
+					form="loggerForm"
 					onSubmit="document.forms['loggerForm'].action='NotifierAdd.do';"
 					submitOnChange="true">
 					<nexus:options collection="collection"
@@ -188,7 +188,7 @@
 					value="<%= ParameterType.SERVICE.toString() %>">
 					<tr>
 						<td class="NEXUSValue">${parameter.label}</td>
-						<td class="NEXUSValue"><nexus:select name="${key}" form="document.forms['loggerForm']">
+						<td class="NEXUSValue"><nexus:select name="${key}" form="loggerForm">
 							<logic:iterate id="service" name="service_collection">
 								<%
 								org.nexuse2e.pojo.LoggerParamPojo prm = (org.nexuse2e.pojo.LoggerParamPojo) pageContext.getAttribute( "parameter" );

@@ -43,7 +43,7 @@
 			<td class="NEXUSValue"><logic:equal name="serviceForm"
 				property="nxServiceId" value="0">
 				<nexus:select name="nxComponentId"
-					form="document.forms['serviceForm']"
+					form="serviceForm"
 					onSubmit="document.forms['serviceForm'].action='ServiceAdd.do';"
 					submitOnChange="true">
 					<nexus:options collection="collection"
@@ -163,7 +163,7 @@
 					value="<%= ParameterType.SERVICE.toString() %>">
 					<tr>
 						<td class="NEXUSValue">${parameter.label}</td>
-						<td class="NEXUSValue"><nexus:select name="<%= key %>" form="document.forms['serviceForm']">
+						<td class="NEXUSValue"><nexus:select name="<%= key %>" form="serviceForm">
 							<logic:iterate id="service" name="service_collection">
 								<%
 								org.nexuse2e.pojo.ServiceParamPojo prm = (org.nexuse2e.pojo.ServiceParamPojo) pageContext.getAttribute( "parameter" );

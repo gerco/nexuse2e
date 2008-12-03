@@ -37,6 +37,9 @@ public class PersistentPropertiesForm extends ActionForm {
     private String name;
     private String version;
     private String value;
+    private int currentPage;
+    private int pageCount;
+    
     
     /**
      * @return the category
@@ -129,6 +132,21 @@ public class PersistentPropertiesForm extends ActionForm {
     
         this.nxPersistentPropertyId = nxMappingId;
     }
-    
-    
+
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public void setCurrentPage( int page ) {
+        this.currentPage = page;
+    }
+
+    public int getPageCount() {
+        return pageCount;
+    }
+
+    public void setPageCount( int pageCount ) {
+        this.pageCount = pageCount;
+    }
+
 }

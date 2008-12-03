@@ -31,7 +31,7 @@ public class PersistentPropertyDAO extends BasicDAO {
      * @throws NexusException If the property could not be deleted.
      */
     public void savePersistentProperty( PersistentPropertyPojo property ) throws NexusException {
-        saveRecord( property, null, null );
+        saveOrUpdateRecord( property, null, null );
     }
     
     /**
@@ -58,7 +58,7 @@ public class PersistentPropertyDAO extends BasicDAO {
         return (PersistentPropertyPojo) getRecordById(PersistentPropertyPojo.class, nxPersistentPropertyId, session, transaction );
     }
     
-    private String getQuery( String namespace, String version ) {
+    private String getQuery( String namespace, String version, boolean order ) {
         StringBuilder query = new StringBuilder( "from PersistentPropertyPojo p " );
         if (namespace != null || version != null) {
             query.append( "where " );
@@ -72,6 +72,9 @@ public class PersistentPropertyDAO extends BasicDAO {
             if (version != null) {
                 query.append( "p.version='" + version + "'" );
             }
+        }
+        if (order) {
+            query.append( " order by p.namespace, p.version, p.name" );
         }
 
         return query.toString();
@@ -101,7 +104,7 @@ public class PersistentPropertyDAO extends BasicDAO {
     @SuppressWarnings("unchecked")
     public List<PersistentPropertyPojo> getPersistentProperties(
             String namespace, String version, Session session, Transaction transaction ) throws NexusException {
-        String query = getQuery( namespace, version );
+        String query = getQuery( namespace, version, true );
         return (List<PersistentPropertyPojo>) getListThroughSessionFind( query, session, transaction );
     }
     
@@ -125,7 +128,7 @@ public class PersistentPropertyDAO extends BasicDAO {
             int pageNo,
             Session session,
             Transaction transaction ) throws NexusException {
-        String query = getQuery( namespace, version );
+        String query = getQuery( namespace, version, true );
         return (List<PersistentPropertyPojo>) getListThroughSessionFindByPageNo( query, itemsPerPage, pageNo, session, transaction );
     }
     
@@ -152,7 +155,7 @@ public class PersistentPropertyDAO extends BasicDAO {
      */
     public int getPersistentPropertyCount(
             String namespace, String version, Session session, Transaction transaction ) throws NexusException {
-        String query = getQuery( namespace, version );
+        String query = getQuery( namespace, version, false );
         return getCountThroughSessionFind( query, session, transaction );
     }
     
@@ -167,7 +170,7 @@ public class PersistentPropertyDAO extends BasicDAO {
      */
     public PersistentPropertyPojo getPersistentProperty(
             String namespace, String version, String name ) throws NexusException {
-        return getPersistentProperty( namespace, version, name );
+        return getPersistentProperty( namespace, version, name, null, null );
     }
     
     /**
@@ -187,7 +190,7 @@ public class PersistentPropertyDAO extends BasicDAO {
         if (namespace == null || version == null || name == null) {
             throw new IllegalArgumentException( "namespace, version and name may not be null" );
         }
-        List<?> l = getListThroughSessionFind( getQuery( namespace, version ) + " and p.name='" + name + "'", session, transaction );
+        List<?> l = getListThroughSessionFind( getQuery( namespace, version, false ) + " and p.name='" + name + "'", session, transaction );
         if (l == null || l.isEmpty()) {
             return null;
         }

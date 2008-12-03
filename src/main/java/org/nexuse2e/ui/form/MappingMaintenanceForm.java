@@ -41,6 +41,8 @@ public class MappingMaintenanceForm extends ActionForm {
     private int leftType;
     private int rightType;
     private List<String> typenames;
+    private int pageCount;
+    private int currentPage;
     
     /**
      * @return the category
@@ -175,6 +177,21 @@ public class MappingMaintenanceForm extends ActionForm {
     
         this.nxMappingId = nxMappingId;
     }
-    
-    
+
+    public int getPageCount() {
+        return pageCount;
+    }
+
+    public void setPageCount( int pageCount ) {
+        this.pageCount = pageCount;
+    }
+
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public void setCurrentPage( int currentPage ) {
+        this.currentPage = currentPage;
+    }
+
 }
