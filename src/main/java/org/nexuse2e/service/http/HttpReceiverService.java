@@ -43,6 +43,7 @@ import javax.xml.soap.SOAPMessage;
 import javax.xml.soap.SOAPPart;
 
 import org.apache.log4j.Logger;
+import org.nexuse2e.ClusterException;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
@@ -92,9 +93,9 @@ public class HttpReceiverService extends AbstractControllerService implements Re
                 response.setStatus( HttpServletResponse.SC_SERVICE_UNAVAILABLE );
                 return null;
             }
-
+            
             MessageContext messageContext = new MessageContext();
-
+            
             messageContext.setData( getContentFromRequest( request ) );
             if ( LOG.isTraceEnabled() ) {
                 LOG.trace( "Inbound message:\n" + new String( (byte[]) messageContext.getData() ) );
@@ -119,6 +120,14 @@ public class HttpReceiverService extends AbstractControllerService implements Re
                         Constants.PARAMETER_PREFIX_HTTP_REQUEST_PARAM + key, value );
             }
 
+            try {
+                messageContext.getMessagePojo().addCustomParameter("remoteAddr",request.getRemoteAddr() );
+                messageContext.getMessagePojo().addCustomParameter("remoteHost",request.getRemoteHost() );
+                messageContext.getMessagePojo().addCustomParameter("remotePort",""+request.getRemotePort() );
+            } catch ( RuntimeException e ) {
+                e.printStackTrace();
+            }
+            
             processMessage( messageContext );
             LOG.trace( "Processing Done" );
 
@@ -127,7 +136,11 @@ public class HttpReceiverService extends AbstractControllerService implements Re
             // out.println( "\n" );
             //out.flush();
             //out.close();
-
+        } catch ( ClusterException ce ) {
+            ce.printStackTrace();
+            LOG.error(ce.getMessage());
+            response.setStatus( ce.getResponseCode() );
+            
         } catch ( Exception e ) {
             e.printStackTrace();
             createErrorResponse( request, response, e.getMessage() );
