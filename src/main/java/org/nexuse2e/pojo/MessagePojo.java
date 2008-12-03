@@ -375,6 +375,17 @@ public class MessagePojo implements NEXUSe2ePojo {
     }
 
     /**
+     * @param key
+     * @param value
+     */
+    public void addCustomParameter(String key, String value) {
+        if(customParameters == null) {
+            customParameters = new HashMap<String, String>();
+        }
+        customParameters.put( key, value );
+    }
+    
+    /**
      * @return the customParameters
      */
     public Map<String, String> getCustomParameters() {
