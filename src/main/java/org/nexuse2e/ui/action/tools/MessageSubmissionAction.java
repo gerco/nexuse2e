@@ -20,6 +20,7 @@
 package org.nexuse2e.ui.action.tools;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -97,7 +98,7 @@ public class MessageSubmissionAction extends NexusE2EAction {
                     actions.add( actionIterator.next().getName() );
                 }
                 // Receivers
-                List<ParticipantPojo> participantSet = choreography.getParticipants();
+                Collection<ParticipantPojo> participantSet = choreography.getParticipants();
                 Iterator<ParticipantPojo> participantIterator = participantSet.iterator();
                 while ( participantIterator.hasNext() ) {
                     receiverList.add( participantIterator.next().getPartner() );

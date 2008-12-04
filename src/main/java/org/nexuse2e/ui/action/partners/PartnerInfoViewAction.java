@@ -19,8 +19,9 @@
  */
 package org.nexuse2e.ui.action.partners;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -71,11 +72,11 @@ public class PartnerInfoViewAction extends NexusE2EAction {
             if ( partnerPojo != null ) {
                 form.setProperties( partnerPojo );
 
-                form.setChoreographies( new Vector() );
+                form.setChoreographies( new ArrayList<String>() );
                 List<ChoreographyPojo> choreographies = engineConfiguration
                         .getChoreographies();
                 for ( ChoreographyPojo choreographyPojo : choreographies ) {
-                    List<ParticipantPojo> participants = choreographyPojo.getParticipants();
+                    Collection<ParticipantPojo> participants = choreographyPojo.getParticipants();
                     for ( ParticipantPojo participantPojo : participants ) {
                         if ( participantPojo.getPartner().getNxPartnerId() == nxPartnerId ) {
                             form.addChoreography( choreographyPojo.getName() );

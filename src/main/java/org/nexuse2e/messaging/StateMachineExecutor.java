@@ -19,6 +19,7 @@
  */
 package org.nexuse2e.messaging;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -166,7 +167,7 @@ public class StateMachineExecutor {
         if ( choreography == null ) {
             throw new NexusException( "Choreography must not be null" );
         }
-        List<ParticipantPojo> participants = choreography.getParticipants();
+        Collection<ParticipantPojo> participants = choreography.getParticipants();
         if ( participants == null || participants.size() == 0 ) {
             throw new NexusException( "No particpants found for choreography: " + choreography.getName() );
         }

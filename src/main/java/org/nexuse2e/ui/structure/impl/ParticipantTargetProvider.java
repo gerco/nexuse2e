@@ -20,6 +20,7 @@
 package org.nexuse2e.ui.structure.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -50,7 +51,7 @@ public class ParticipantTargetProvider implements TargetProvider {
             ChoreographyPojo choreographyPojo = engineConfiguration.getChoreographyByNxChoreographyId(
                     Integer.parseInt( parent.getProperty( "nxChoreographyId" ) ) );
             if ( choreographyPojo != null ) {
-                List<ParticipantPojo> participants = choreographyPojo.getParticipants();
+                Collection<ParticipantPojo> participants = choreographyPojo.getParticipants();
                 TreeSet<ParticipantPojo> sortedParticipants = new TreeSet<ParticipantPojo>(
                         new GenericComparator<ParticipantPojo>( "description;partner.partnerId", true ) );
                 sortedParticipants.addAll( participants );

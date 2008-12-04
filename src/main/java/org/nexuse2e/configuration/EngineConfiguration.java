@@ -1615,7 +1615,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
      */
     public ParticipantPojo getParticipantFromChoreographyByNxPartnerId( ChoreographyPojo choreography, int nxPartnerId ) {
     
-        List<ParticipantPojo> participants = choreography.getParticipants();
+        Collection<ParticipantPojo> participants = choreography.getParticipants();
         ParticipantPojo participant = null;
         Iterator<ParticipantPojo> i = participants.iterator();
         while ( i.hasNext() ) {
@@ -1668,7 +1668,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
      */
     public ParticipantPojo getParticipantFromChoreographyByPartner( ChoreographyPojo choreography, PartnerPojo partner ) {
     
-        List<ParticipantPojo> participants = choreography.getParticipants();
+        Collection<ParticipantPojo> participants = choreography.getParticipants();
         if ( participants != null && participants.size() > 0 ) {
             Iterator<ParticipantPojo> i = participants.iterator();
             while ( i.hasNext() ) {

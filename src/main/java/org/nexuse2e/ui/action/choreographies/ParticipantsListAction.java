@@ -20,6 +20,7 @@
 package org.nexuse2e.ui.action.choreographies;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -71,7 +72,7 @@ public class ParticipantsListAction extends NexusE2EAction {
         try {
             ChoreographyPojo choreography = engineConfiguration
                     .getChoreographyByNxChoreographyId( nxChoreographyId );
-            List<ParticipantPojo> participantPojos = choreography.getParticipants();
+            Collection<ParticipantPojo> participantPojos = choreography.getParticipants();
             for ( ParticipantPojo participant : participantPojos ) {
                 ParticipantForm pform = new ParticipantForm();
                 pform.setPartnerDisplayName( participant.getPartner().getPartnerId() );
