@@ -106,6 +106,14 @@ public interface TransactionService extends Manageable {
             String conversationId, Date start, Date end, int field, boolean ascending ) throws NexusException;
 
     /**
+     * Creates a <code>MessageContext</code> from a given <code>MessagePojo</code>.
+     * @param messagePojo The <code>MessagePojo</code> to be wrapped in a <code>MessageContext</code>.
+     * @return A newly created <code>MessageContext</code> wrapping the given <code>MessagePojo</code>,
+     * or <code>null</code> if <code>messagePojo</code> is <code>null</code>.
+     */
+    public abstract MessageContext createMessageContext( MessagePojo messagePojo );
+    
+    /**
      * @param messageId
      * @return
      * 

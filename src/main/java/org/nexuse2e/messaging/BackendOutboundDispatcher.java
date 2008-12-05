@@ -32,6 +32,7 @@ import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
+import org.nexuse2e.controller.TransactionService;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.MessagePojo;
 import org.nexuse2e.pojo.ParticipantPojo;
@@ -108,25 +109,34 @@ public class BackendOutboundDispatcher extends StateMachineExecutor implements P
 
         List<MessagePojo> activeMessagePojos = null;
 
+        long totalQueueingTime = 0;
+        long totalGetMessageTime = 0;
+        
         try {
-            activeMessagePojos = Engine.getInstance().getTransactionService().getActiveMessages();
+            TransactionService transactionService = Engine.getInstance().getTransactionService();
+            activeMessagePojos = transactionService.getActiveMessages();
             LOG.trace( "Found active messages: " + activeMessagePojos.size() );
+            long startTime = System.currentTimeMillis();
             for ( MessagePojo messagePojo : activeMessagePojos ) {
 
-                MessageContext messageContext = Engine.getInstance().getTransactionService().getMessageContext(
-                        messagePojo.getMessageId() );
+                long time = System.currentTimeMillis();
+                MessageContext messageContext = transactionService.createMessageContext( messagePojo );
+                totalGetMessageTime += (System.currentTimeMillis() - time);
 
                 if ( ( messageContext != null ) && messagePojo.isOutbound() ) {
                     LOG.debug( "Recovered message: " + messagePojo.getMessageId() );
-                    BackendActionSerializer backendActionSerializer = backendActionSerializers.get( messagePojo
-                            .getConversation().getChoreography().getName() );
+                    BackendActionSerializer backendActionSerializer = backendActionSerializers.get(
+                            messagePojo.getConversation().getChoreography().getName() );
 
+                    time = System.currentTimeMillis();
                     backendActionSerializer.requeueMessage( messageContext );
+                    totalQueueingTime += (System.currentTimeMillis() - time);
                 }
             }
+            LOG.trace( "took " + totalQueueingTime + " ms for message queueing and " + totalGetMessageTime +
+                    " ms for retrieving messages, total time is " + (System.currentTimeMillis() - startTime ) + " ms" );
         } catch ( NexusException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error( e );
         }
 
     } // recoverMessages

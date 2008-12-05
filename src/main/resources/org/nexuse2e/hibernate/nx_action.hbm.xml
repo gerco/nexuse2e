@@ -2,14 +2,14 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping default-cascade="all">
-    <class name="org.nexuse2e.pojo.ActionPojo" table="nx_action" lazy="false">
+    <class name="org.nexuse2e.pojo.ActionPojo" table="nx_action" lazy="true">
         <comment></comment>
         <id name="nxActionId" type="int">
             <column name="nx_action_id" sql-type="integer"/>
             <generator class="native" />
         </id>
         
-        <many-to-one foreign-key="fk__action__choreography_id" name="choreography" column="nx_choreography_id" class="org.nexuse2e.pojo.ChoreographyPojo" not-null="true" cascade="none" index="ix_action_1"/>
+        <many-to-one foreign-key="fk__action__choreography_id" name="choreography" column="nx_choreography_id" class="org.nexuse2e.pojo.ChoreographyPojo" not-null="true" cascade="none" index="ix_action_1" lazy="false"/>
         
         
         <property name="createdDate" type="timestamp">
@@ -47,11 +47,11 @@
         </property>
         
        
-        <many-to-one foreign-key="fk__action__in_pipeline_id" name="inboundPipeline" column="inbound_nx_pipeline_id" class="org.nexuse2e.pojo.PipelinePojo" not-null="true" cascade="none" index="ix_action_2"/>
+        <many-to-one foreign-key="fk__action__in_pipeline_id" name="inboundPipeline" column="inbound_nx_pipeline_id" class="org.nexuse2e.pojo.PipelinePojo" not-null="true" cascade="none" index="ix_action_2" lazy="false"/>
         
-        <many-to-one foreign-key="fk__action__out_pipeline_id" name="outboundPipeline" column="outbound_nx_pipeline_id" class="org.nexuse2e.pojo.PipelinePojo" not-null="true" cascade="none" index="ix_action_3"/>
+        <many-to-one foreign-key="fk__action__out_pipeline_id" name="outboundPipeline" column="outbound_nx_pipeline_id" class="org.nexuse2e.pojo.PipelinePojo" not-null="true" cascade="none" index="ix_action_3" lazy="false"/>
         
-        <many-to-one foreign-key="fk__action__st_upd_pipeline_id" name="statusUpdatePipeline" column="status_update_nx_pipeline_id" class="org.nexuse2e.pojo.PipelinePojo" not-null="false" cascade="none" index="ix_action_4"/>
+        <many-to-one foreign-key="fk__action__st_upd_pipeline_id" name="statusUpdatePipeline" column="status_update_nx_pipeline_id" class="org.nexuse2e.pojo.PipelinePojo" not-null="false" cascade="none" index="ix_action_4" lazy="false"/>
         
         <property name="name" type="string">
             <column name="name" length="64" not-null="true">

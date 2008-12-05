@@ -143,6 +143,127 @@ public class TransactionServiceImpl implements TransactionService {
                     Constants.MESSAGE_STATUS_QUEUED } );
     }
     
+    /**
+     * Completes the given <code>ConversationPojo</code> list by using the current engine configuration.
+     * @param conversations The conversations to be completed.
+     * @return A conversation pojo list filled with the fields that were initially set up with proxies
+     * for lazy loading. This is a reference to the object passed as argument.
+     * @throws NexusException If something went wrong
+     */
+    protected List<ConversationPojo> completeConversations( List<ConversationPojo> conversations ) throws NexusException {
+        if (conversations == null) {
+            return null;
+        }
+        for (ConversationPojo c : conversations) {
+            if (c != null) {
+                complete( c );
+            }
+        }
+        return conversations;
+    }
+    
+    /**
+     * Completes the given <code>ConversationPojo</code> by using the current engine configuration.
+     * @param conversation The conversation to be completed.
+     * @return A conversation pojo filled with the fields that were initially set up with proxies
+     * for lazy loading. This is a reference to the object passed as argument.
+     * @throws NexusException If something went wrong
+     */
+    protected ConversationPojo complete( ConversationPojo conversation ) throws NexusException {
+        return complete( conversation, true );
+    }
+    
+    /**
+     * Completes the given <code>ConversationPojo</code> by using the current engine configuration.
+     * @param message The conversation to be completed.
+     * @param completeMessages If <code>true</code>, child messages will be completed as well.
+     * Pass <code>true</code> if in doubt.
+     * @return A conversation pojo filled with the fields that were initially set up with proxies
+     * for lazy loading. This is a reference to the object passed as argument.
+     * @throws NexusException If something went wrong
+     */
+    protected ConversationPojo complete( ConversationPojo conversation, boolean completeMessages ) throws NexusException {
+        if (conversation == null) {
+            return null;
+        }
+        
+        EngineConfiguration c = Engine.getInstance().getCurrentConfiguration();
+        if (conversation.getChoreography() != null) {
+            conversation.setChoreography( c.getChoreographyByNxChoreographyId( conversation.getChoreography().getNxChoreographyId() ) );
+        }
+        if (conversation.getPartner() != null) {
+            conversation.setPartner( c.getPartnerByNxPartnerId( conversation.getPartner().getNxPartnerId() ) );
+        }
+        if (conversation.getCurrentAction() != null && conversation.getChoreography() != null) {
+            conversation.setCurrentAction(
+                    c.getActionFromChoreographyByNxActionId( conversation.getChoreography(), conversation.getCurrentAction().getNxActionId() ) );
+        }
+        
+        if (completeMessages) {
+            for (MessagePojo m : conversation.getMessages()) {
+                complete( m, false );
+            }
+        }
+        
+        return conversation;
+    }
+    
+    /**
+     * Completes the given <code>MessagePojo</code> list by using the current engine configuration.
+     * @param messages The messages to be completed.
+     * @return A message pojo list filled with the fields that were initially set up with proxies
+     * for lazy loading. This is a reference to the object passed as argument.
+     * @throws NexusException If something went wrong
+     */
+    protected List<MessagePojo> completeMessages( List<MessagePojo> messages ) throws NexusException {
+        if (messages == null) {
+            return null;
+        }
+        for (MessagePojo c : messages) {
+            if (c != null) {
+                complete( c );
+            }
+        }
+        return messages;
+    }
+    
+    /**
+     * Completes the given <code>MessagePojo</code> by using the current engine configuration.
+     * @param message The message to be completed.
+     * @return A message pojo filled with the fields that were initially set up with proxies
+     * for lazy loading. This is a reference to the object passed as argument.
+     * @throws NexusException if something went wrong.
+     */
+    protected MessagePojo complete( MessagePojo message ) throws NexusException {
+        return complete( message, true );
+    }
+    
+    /**
+     * Completes the given <code>MessagePojo</code> by using the current engine configuration.
+     * @param message The message to be completed.
+     * @param completeConversation If <code>true</code>, parent conversation will be completed as well.
+     * Pass <code>true</code> if in doubt.
+     * @return A message pojo filled with the fields that were initially set up with proxies
+     * for lazy loading. This is a reference to the object passed as argument.
+     * @throws NexusException if something went wrong.
+     */
+    protected MessagePojo complete( MessagePojo message, boolean completeConversation ) throws NexusException {
+        if (message == null || message.getAction() == null || message.getConversation() == null || message.getConversation().getChoreography() == null) {
+            return message;
+        }
+        
+        EngineConfiguration c = Engine.getInstance().getCurrentConfiguration();
+        if (completeConversation) {
+            complete( message.getConversation(), false );
+        }
+        if (message.getConversation() != null) {
+            ActionPojo action = c.getActionFromChoreographyByNxActionId( message.getConversation().getChoreography(), message.getAction().getNxActionId() );
+            message.setAction( action );
+        }
+
+        return message;
+    }
+    
 
     public ConversationPojo createConversation( String choreographyId, String partnerId, String conversationId )
             throws NexusException {
@@ -192,7 +313,7 @@ public class TransactionServiceImpl implements TransactionService {
     public ConversationPojo getConversation( String conversationId ) throws NexusException {
 
         LOG.trace( "Entering TransactionDataService.getConversation..." );
-        return Engine.getInstance().getTransactionDAO().getConversationByConversationId( conversationId, null, null );
+        return complete( Engine.getInstance().getTransactionDAO().getConversationByConversationId( conversationId, null, null ) );
 
     }
 
@@ -209,8 +330,8 @@ public class TransactionServiceImpl implements TransactionService {
             return null;
         }
 
-        return Engine.getInstance().getTransactionDAO().getConversationByConversationId(
-                choreographyId, conversationId, partner.getNxPartnerId(), null, null );
+        return complete( Engine.getInstance().getTransactionDAO().getConversationByConversationId(
+                choreographyId, conversationId, partner.getNxPartnerId(), null, null ) );
 
     }
 
@@ -221,9 +342,9 @@ public class TransactionServiceImpl implements TransactionService {
             String conversationId, Date start, Date end, int itemsPerPage, int page, int field, boolean ascending,
             Session session, Transaction transaction ) throws NexusException {
 
-        return Engine.getInstance().getTransactionDAO().getConversationsForReport(
+        return completeConversations( Engine.getInstance().getTransactionDAO().getConversationsForReport(
                 status, nxChoreographyId, nxPartnerId, conversationId, start,
-                end, itemsPerPage, page, field, ascending, session, transaction );
+                end, itemsPerPage, page, field, ascending, session, transaction ) );
 
     }
 
@@ -250,10 +371,11 @@ public class TransactionServiceImpl implements TransactionService {
      */
     public MessagePojo getMessage( String messageId, boolean isReferencedMessageId ) throws NexusException {
 
+        TransactionDAO dao = Engine.getInstance().getTransactionDAO();
         if ( isReferencedMessageId ) {
-            return Engine.getInstance().getTransactionDAO().getMessageByReferencedMessageId( messageId, null, null );
+            return complete( dao.getMessageByReferencedMessageId( messageId, null, null ) );
         } else {
-            return Engine.getInstance().getTransactionDAO().getMessageByMessageId( messageId, null, null );
+            return complete( dao.getMessageByMessageId( messageId, null, null ) );
         }
     }
 
@@ -264,9 +386,9 @@ public class TransactionServiceImpl implements TransactionService {
             String conversationId, String messageId, String type, Date start, Date end, int itemsPerPage, int page,
             int field, boolean ascending ) throws NexusException {
 
-        return Engine.getInstance().getTransactionDAO().getMessagesForReport(
+        return completeMessages( Engine.getInstance().getTransactionDAO().getMessagesForReport(
                 status, nxChoreographyId, nxPartnerId, conversationId, messageId,
-                type, start, end, itemsPerPage, page, field, ascending );
+                type, start, end, itemsPerPage, page, field, ascending ) );
     }
 
     /* (non-Javadoc)
@@ -294,7 +416,7 @@ public class TransactionServiceImpl implements TransactionService {
         messages.size();
         transactionDao.releaseDBSession( session );
 
-        return messages;
+        return completeMessages( messages );
     }
 
     /* (non-Javadoc)
@@ -330,7 +452,7 @@ public class TransactionServiceImpl implements TransactionService {
      */
     public List<MessagePojo> getActiveMessages() throws NexusException {
 
-        return Engine.getInstance().getTransactionDAO().getActiveMessages();
+        return completeMessages( Engine.getInstance().getTransactionDAO().getActiveMessages() );
     } // getActiveMessages
 
     /* (non-Javadoc)
@@ -403,8 +525,8 @@ public class TransactionServiceImpl implements TransactionService {
             action = new ActionPojo( choreography, new Date(), new Date(), 0, false, false, null, null, actionId );
         }
 
-        ConversationPojo conversation = transactionDao.getConversationByConversationId( choreographyId, conversationId,
-                partner.getNxPartnerId(), null, null );
+        ConversationPojo conversation = complete( transactionDao.getConversationByConversationId( choreographyId, conversationId,
+                partner.getNxPartnerId(), null, null ), false );
 
         if ( conversation == null ) {
             conversation = new ConversationPojo();
@@ -418,28 +540,15 @@ public class TransactionServiceImpl implements TransactionService {
             conversation.setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_CREATED );
         }
 
-        message.setConversation( conversation );
+        message.setConversation( complete( conversation ) );
         message.setAction( action );
 
         return message;
     } // initializeMessage
-
-    /* (non-Javadoc)
-     * @see org.nexuse2e.controller.TransactionService#getMessageContext(java.lang.String)
-     */
-    public MessageContext getMessageContext( String messageId ) throws NexusException {
-
-        return getMessageContext( messageId, false );
-    }
-
-    /* (non-Javadoc)
-     * @see org.nexuse2e.controller.TransactionService#getMessageContext(java.lang.String)
-     */
-    public MessageContext getMessageContext( String messageId, boolean isReferencedMessageId ) throws NexusException {
+    
+    public MessageContext createMessageContext( MessagePojo messagePojo ) {
 
         MessageContext messageContext = null;
-        MessagePojo messagePojo = Engine.getInstance().getTransactionService().getMessage( messageId,
-                isReferencedMessageId );
 
         if ( messagePojo != null ) {
             messageContext = new MessageContext();
@@ -464,6 +573,22 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         return messageContext;
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.controller.TransactionService#getMessageContext(java.lang.String)
+     */
+    public MessageContext getMessageContext( String messageId ) throws NexusException {
+
+        return getMessageContext( messageId, false );
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.controller.TransactionService#getMessageContext(java.lang.String)
+     */
+    public MessageContext getMessageContext( String messageId, boolean isReferencedMessageId ) throws NexusException {
+
+        return createMessageContext( getMessage( messageId, isReferencedMessageId ) );
     } // getMessageContext
 
     /* (non-Javadoc)
@@ -792,8 +917,8 @@ public class TransactionServiceImpl implements TransactionService {
     public List<MessagePojo> getMessagesByPartnerAndDirection( PartnerPojo partner, boolean outbound, int sort,
             boolean ascending, Session session, Transaction transaction ) throws NexusException {
 
-        return Engine.getInstance().getTransactionDAO().getMessagesByPartnerAndDirection(
-                partner, outbound, sort, ascending, session, transaction );
+        return completeMessages( Engine.getInstance().getTransactionDAO().getMessagesByPartnerAndDirection(
+                partner, outbound, sort, ascending, session, transaction ) );
     }
 
     /* (non-Javadoc)
@@ -802,7 +927,7 @@ public class TransactionServiceImpl implements TransactionService {
     public List<ConversationPojo> getConversationsByPartner( PartnerPojo partner, Session session,
             Transaction transaction ) throws NexusException {
 
-        return Engine.getInstance().getTransactionDAO().getConversationsByPartner( partner, session, transaction );
+        return completeConversations( Engine.getInstance().getTransactionDAO().getConversationsByPartner( partner, session, transaction ) );
     }
 
     /* (non-Javadoc)
@@ -811,8 +936,8 @@ public class TransactionServiceImpl implements TransactionService {
     public List<ConversationPojo> getConversationsByChoreography( ChoreographyPojo choreography, Session session,
             Transaction transaction ) throws NexusException {
 
-        return Engine.getInstance().getTransactionDAO().getConversationsByChoreography(
-                choreography, session, transaction );
+        return completeConversations( Engine.getInstance().getTransactionDAO().getConversationsByChoreography(
+                choreography, session, transaction ) );
     }
 
     /* (non-Javadoc)
@@ -821,8 +946,8 @@ public class TransactionServiceImpl implements TransactionService {
     public List<ConversationPojo> getConversationsByPartnerAndChoreography( PartnerPojo partner,
             ChoreographyPojo choreography, Session session, Transaction transaction ) throws NexusException {
 
-        return Engine.getInstance().getTransactionDAO().getConversationsByPartnerAndChoreography(
-                partner, choreography, session, transaction );
+        return completeConversations( Engine.getInstance().getTransactionDAO().getConversationsByPartnerAndChoreography(
+                partner, choreography, session, transaction ) );
     }
 
     /* (non-Javadoc)
@@ -831,8 +956,8 @@ public class TransactionServiceImpl implements TransactionService {
     public List<MessagePojo> getMessagesByPartner( PartnerPojo partner, int field, boolean ascending, Session session,
             Transaction transaction ) throws NexusException {
 
-        return Engine.getInstance().getTransactionDAO().getMessagesByPartner(
-                partner, field, ascending, session, transaction );
+        return completeMessages( Engine.getInstance().getTransactionDAO().getMessagesByPartner(
+                partner, field, ascending, session, transaction ) );
     }
 
     /* (non-Javadoc)
@@ -841,8 +966,8 @@ public class TransactionServiceImpl implements TransactionService {
     public List<MessagePojo> getMessagesByChoreographyAndPartner( ChoreographyPojo choreography, PartnerPojo partner,
             int field, boolean ascending, Session session, Transaction transaction ) throws NexusException {
 
-        return Engine.getInstance().getTransactionDAO().getMessagesByChoreographyAndPartner(
-                choreography, partner, field, ascending, session, transaction );
+        return completeMessages( Engine.getInstance().getTransactionDAO().getMessagesByChoreographyAndPartner(
+                choreography, partner, field, ascending, session, transaction ) );
     }
 
     public List<MessagePojo> getMessagesByActionPartnerDirectionAndStatus(
@@ -855,8 +980,8 @@ public class TransactionServiceImpl implements TransactionService {
             Session session,
             Transaction transaction ) throws NexusException {
         
-        return Engine.getInstance().getTransactionDAO().getMessagesByActionPartnerDirectionAndStatus(
-                action, partner, outbound, status, field, ascending, session, transaction );
+        return completeMessages( Engine.getInstance().getTransactionDAO().getMessagesByActionPartnerDirectionAndStatus(
+                action, partner, outbound, status, field, ascending, session, transaction ) );
     }
 
 
@@ -867,8 +992,8 @@ public class TransactionServiceImpl implements TransactionService {
             PartnerPojo partner, ConversationPojo conversation, int field, boolean ascending, Session session,
             Transaction transaction ) throws NexusException {
 
-        return Engine.getInstance().getTransactionDAO().getMessagesByChoreographyPartnerAndConversation(
-                choreography, partner, conversation, field, ascending, session, transaction );
+        return completeMessages( Engine.getInstance().getTransactionDAO().getMessagesByChoreographyPartnerAndConversation(
+                choreography, partner, conversation, field, ascending, session, transaction ) );
     }
 
     /* (non-Javadoc)

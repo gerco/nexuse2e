@@ -35,7 +35,6 @@ import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.nexuse2e.Constants;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.MappingType;
@@ -100,7 +99,7 @@ public class PersistentPropertiesAction extends NexusE2EAction {
         String action = form.getSubmitaction();
         form.setSubmitaction( null );
 
-        PersistentPropertyDAO dao = (PersistentPropertyDAO) Engine.getInstance().getDao( Constants.PERSISTENT_PROPERTY_DAO );
+        PersistentPropertyDAO dao = Engine.getInstance().getPersistentPropertyDAO();
         
         if ( !StringUtils.isEmpty( action ) && action.equals( "add" ) ) {
             if ( !StringUtils.isEmpty( form.getNamespace() ) && !StringUtils.isEmpty( form.getName() ) && !StringUtils.isEmpty( form.getVersion() ) ) {

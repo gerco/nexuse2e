@@ -211,9 +211,13 @@ public class WSClientService extends AbstractService implements SenderAware {
         if ( messageContext.getMessagePojo().getParticipant().getConnection().isSecure() ) {
             try {
 
+                ParticipantPojo participant = messagePojo.getParticipant();
+                if (participant == null || participant.getLocalCertificate() == null) {
+                    throw new NexusException( "Connection to participant " + participant.getDescription() + " configured 'secure', but no certificate was selected" );
+                }
                 CertificatePojo localCert = Engine.getInstance().getActiveConfigurationAccessService()
                         .getCertificateByNxCertificateId( Constants.CERTIFICATE_TYPE_LOCAL,
-                                messagePojo.getParticipant().getLocalCertificate().getNxCertificateId() );
+                                participant.getLocalCertificate().getNxCertificateId() );
                 KeyStore privateKeyChain = CertificateUtil.getPKCS12KeyStore( localCert );
                 KeyManager[] keyManagers = CertificateUtil.createKeyManagers( privateKeyChain, EncryptionUtil
                         .decryptString( localCert.getPassword() ) );
@@ -232,6 +236,8 @@ public class WSClientService extends AbstractService implements SenderAware {
 
                 httpConduit.setTlsClientParameters( tlsClientParameters );
 
+            } catch (NexusException nex) {
+                throw nex;
             } catch ( Exception e ) {
                 throw new NexusException( e );
             }

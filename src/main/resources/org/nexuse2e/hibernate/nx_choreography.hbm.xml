@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping default-cascade="all">
-    <class name="org.nexuse2e.pojo.ChoreographyPojo" table="nx_choreography" lazy="false">
+    <class name="org.nexuse2e.pojo.ChoreographyPojo" table="nx_choreography">
         <comment></comment>
         <id name="nxChoreographyId" type="int">
             <column name="nx_choreography_id" sql-type="integer"/>

@@ -53,6 +53,7 @@ import org.nexuse2e.controller.TransactionServiceImpl;
 import org.nexuse2e.dao.BasicDAO;
 import org.nexuse2e.dao.ConfigDAO;
 import org.nexuse2e.dao.LogDAO;
+import org.nexuse2e.dao.PersistentPropertyDAO;
 import org.nexuse2e.dao.TransactionDAO;
 import org.nexuse2e.integration.NEXUSe2eInterface;
 import org.nexuse2e.integration.NEXUSe2eInterfaceImpl;
@@ -718,6 +719,11 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
         return (LogDAO) getDao( "logDao" );
     }
 
+    public PersistentPropertyDAO getPersistentPropertyDAO() throws NexusException {
+
+        return (PersistentPropertyDAO) getDao( "persistentPropertyDao" );
+    }
+    
     @SuppressWarnings("unchecked")
     private void createEngineConfiguration() throws InstantiationException {
 
