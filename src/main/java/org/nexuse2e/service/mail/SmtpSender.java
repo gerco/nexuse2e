@@ -511,6 +511,7 @@ public class SmtpSender extends AbstractService implements SenderAware {
                 LOG.warn( "Cannot send message: Unable to connect to mail host" );
             }
         } catch ( Exception e ) {
+            e.printStackTrace();
             throw new NexusException( "Error composing mail Exception: ", e );
         }
     }
