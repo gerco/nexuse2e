@@ -20,14 +20,22 @@
 
 package org.nexuse2e.service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.nexuse2e.Constants.Layer;
@@ -54,6 +62,8 @@ public class SchedulingServiceImpl extends AbstractService implements Scheduling
     private HashMap<SchedulerClient, ScheduledExecutorService> schedulers = new HashMap<SchedulerClient, ScheduledExecutorService>();
     private Map<String, SchedulerClient>        quartzClients    = new HashMap<String,SchedulerClient>();
     
+    private SimpleDateFormat   simpleDateFormat            = new SimpleDateFormat( "HH:mm" );
+
     private Scheduler quartzScheduler = null;
     
     /* (non-Javadoc)
@@ -110,6 +120,41 @@ public class SchedulingServiceImpl extends AbstractService implements Scheduling
      * @see org.nexuse2e.service.SchedulingService#registerClient(org.nexuse2e.service.SchedulerClient, java.lang.String)
      */
     public void registerClient( SchedulerClient client, String pattern ) throws IllegalArgumentException {
+        
+        Pattern p = Pattern.compile("\\d+");
+        Matcher m = p.matcher(pattern);
+        if(m.matches()) {
+            registerClient(client,Long.parseLong( pattern ));
+            return;
+        } 
+        if(pattern.contains( ":" ) ) {
+            try {
+                StringTokenizer st = new StringTokenizer( pattern, "," );
+                ArrayList<Date> times = new ArrayList<Date>();
+                while ( st.hasMoreTokens() ) {
+                    String time = st.nextToken();
+                    LOG.debug( "Parsing scheduled time: " + time );
+                    Date scheduledTime = simpleDateFormat.parse( time );
+                    Calendar tempCalendar = new GregorianCalendar();
+                    tempCalendar.setTime( scheduledTime );
+                    Calendar scheduledCalendar = new GregorianCalendar();
+                    scheduledCalendar.set( Calendar.HOUR_OF_DAY, tempCalendar.get( Calendar.HOUR_OF_DAY ) );
+                    scheduledCalendar.set( Calendar.MINUTE, tempCalendar.get( Calendar.MINUTE ) );
+                    scheduledCalendar.set( Calendar.SECOND, 0 );
+                    scheduledCalendar.set( Calendar.MILLISECOND, 0 );
+                    scheduledTime = new Date( scheduledCalendar.getTimeInMillis() );
+                    times.add( scheduledTime );
+                    LOG.debug( "Scheduled time: " + scheduledTime );
+                }
+                registerClient( client, times );                
+            } catch ( ParseException e ) {
+                throw new IllegalArgumentException("invalid time pattern:"+pattern,e);
+            }
+            return;
+        }
+        
+        
+        
         try {
             String jobName = client.getClass()+"@"+client.hashCode();
             quartzClients.put( jobName,client );
