@@ -23,10 +23,13 @@ import org.apache.commons.cli.MissingOptionException;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpHost;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
@@ -58,9 +61,11 @@ public class HttpTestClient {
         String  participantId;
         String  senderId;
         String  content;
+        String  user;
+        String  password;
 
         RunnableImpl( int threadNum, int repeat, boolean plain, URL url, String choreographyId, String actionId,
-                String participantId, String senderId, String content ) {
+                String participantId, String senderId, String content, String user, String password ) {
 
             this.threadNum = threadNum;
             this.repeat = repeat;
@@ -71,6 +76,8 @@ public class HttpTestClient {
             this.participantId = participantId;
             this.senderId = senderId;
             this.content = content;
+            this.user = user;
+            this.password = password;
         }
 
         public void run() {
@@ -127,6 +134,11 @@ public class HttpTestClient {
                         //out( "Request: " + replaced );
                         method.setRequestEntity( requestEntity );
                     }
+                    if (!StringUtils.isBlank( user ) && !StringUtils.isBlank( password )) {
+                        Credentials credentials = new UsernamePasswordCredentials( user, password );
+                        client.getState().setCredentials( AuthScope.ANY, credentials );
+                        method.setDoAuthentication( true );
+                    }
                     long time = System.currentTimeMillis();
                     int result = client.executeMethod( method );
                     time = System.currentTimeMillis() - time;
@@ -155,14 +167,14 @@ public class HttpTestClient {
     }
 
     private static void request( URL url, File file, boolean plain, int repeat, int threads, String choreographyId,
-            String actionId, String participantId, String senderId ) throws IOException {
+            String actionId, String participantId, String senderId, String user, String password ) throws IOException {
 
         String content = FileUtils.readFileToString( file, "UTF-8" );
         ExecutorService threadPool = Executors.newFixedThreadPool( threads );
         List<RunnableImpl> runnables = new ArrayList<RunnableImpl>();
         for ( int i = 0; i < threads; i++ ) {
             RunnableImpl runnable = new RunnableImpl( i, repeat, plain, url, choreographyId, actionId, participantId,
-                    senderId, content );
+                    senderId, content, user, password );
             runnables.add( runnable );
             threadPool.execute( runnable );
         }
@@ -227,6 +239,12 @@ public class HttpTestClient {
         option.setArgName( "id" );
         option.setRequired( true );
         options.addOption( option );
+        option = new Option( "u", "user", true, "the HTTP basic auth user name" );
+        option.setArgName( "id" );
+        options.addOption( option );
+        option = new Option( "pass", "password", true, "the HTTP basic auth password" );
+        option.setArgName( "id" );
+        options.addOption( option );
         try {
             CommandLine commandLine = parser.parse( options, args );
             if ( commandLine.hasOption( "?" ) ) {
@@ -263,6 +281,16 @@ public class HttpTestClient {
             } catch ( NumberFormatException nfex ) {
                 throw new ParseException( "Thread option must be followed by integer" );
             }
+            
+            String user = null;
+            if (commandLine.hasOption( "u" )) {
+                user = commandLine.getOptionValue( "u" );
+            }
+
+            String password = null;
+            if (commandLine.hasOption( "pass" )) {
+                password = commandLine.getOptionValue( "pass" );
+            }
 
             String choreographyId = commandLine.getOptionValue( "cid" );
             String actionId = commandLine.getOptionValue( "aid" );
@@ -271,7 +299,7 @@ public class HttpTestClient {
 
             System.out.println( "requesting " + url + ( plain ? " using plain HTTP" : "" ) + ", posting file " + file );
 
-            request( url, new File( file ), plain, repeat, threads, choreographyId, actionId, participantId, senderId );
+            request( url, new File( file ), plain, repeat, threads, choreographyId, actionId, participantId, senderId, user, password );
         } catch ( ParseException e ) {
             printHelp( e, options );
             System.exit( -1 );
