@@ -164,6 +164,7 @@ public class HttpSenderService extends AbstractService implements SenderAware {
             if ( ( user != null ) && ( user.length() != 0 ) && ( pwd != null ) ) {
                 Credentials credentials = new UsernamePasswordCredentials( user, pwd );
                 LOG.debug( "HTTPBackendConnector: Using basic auth." );
+                client.getParams().setAuthenticationPreemptive( true );
                 client.getState().setCredentials( AuthScope.ANY, credentials );
                 method.setDoAuthentication( true );
             }
