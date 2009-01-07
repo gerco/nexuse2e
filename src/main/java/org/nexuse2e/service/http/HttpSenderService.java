@@ -44,6 +44,7 @@ import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.configuration.ParameterDescriptor;
+import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.CertificatePojo;
@@ -67,11 +68,16 @@ public class HttpSenderService extends AbstractService implements SenderAware {
 
     private static Logger   LOG = Logger.getLogger( HttpSenderService.class );
 
+    /** PARAMETERS **/
+    public static final String PREEMPTIVE_AUTH_PARAM_NAME = "preemptiveAuth";
+    
     private TransportSender transportSender;
 
     @Override
     public void fillParameterMap( Map<String, ParameterDescriptor> parameterMap ) {
-
+        parameterMap.put( PREEMPTIVE_AUTH_PARAM_NAME, new ParameterDescriptor(
+            ParameterType.BOOLEAN, "Preemptive Authentication",
+            "Check, if the HTTP client should use preemtive authentication.", Boolean.FALSE ) );
     }
 
     @Override
@@ -164,7 +170,7 @@ public class HttpSenderService extends AbstractService implements SenderAware {
             if ( ( user != null ) && ( user.length() != 0 ) && ( pwd != null ) ) {
                 Credentials credentials = new UsernamePasswordCredentials( user, pwd );
                 LOG.debug( "HTTPBackendConnector: Using basic auth." );
-                client.getParams().setAuthenticationPreemptive( true );
+                client.getParams().setAuthenticationPreemptive( (Boolean) getParameter( PREEMPTIVE_AUTH_PARAM_NAME ) );
                 client.getState().setCredentials( AuthScope.ANY, credentials );
                 method.setDoAuthentication( true );
             }
