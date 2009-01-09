@@ -26,6 +26,19 @@
 	<div dojoType="ContentPane" layoutAlign="top" id="header">
 		<tiles:insert attribute="header"/>
 	</div>
+	<div dojoType="ContentPane" layoutAlign="top">
+	<table id="toolbar" cellpadding="0" cellspacing="0">
+		<tr style="margin: 0px; padding: 0px">
+			<td id="toolbar-left"></td>
+			<td style="text-align: left;"></td>
+			<td style="text-align: right;padding-right: 10px">
+				<span style="margin: 6px 0 0 22px;">
+					<a href="documentation/nexuse2e_help.html" target="_blank" class="navigationactive"><img src="images/icons/help.png" class="navigationactive">&nbsp;help</a>
+				</span>
+			</td>
+		</tr>
+	</table>
+	</div>
 	<div dojoType="ContentPane" layoutAlign="client" id="docpane" executeScripts="true" cacheContent="false" preventCache="true" useCache="false">
 		<tiles:insert attribute="document"/>
 	</div>

@@ -12,7 +12,7 @@ html,body {
 
 a:link {
 	color: #000000;
-	text-decoration: none
+	text-decoration: none;
 }
 
 a:visited {
@@ -27,8 +27,7 @@ a:active {
 
 a:hover {
 	color: #000000;
-	text-decoration: none
-    font-style: italic;
+	text-decoration: none;
 }
 
 form {
@@ -39,16 +38,42 @@ form {
 	position: absolute;
 	top: 0px;
 	left: 0px;
-	background-color: #F0CD90;
-	height: 80px;
+	background-color: #666666;
+	height: 164px;
 	width: 100%;
-	text-align: right;
+	text-align: left;
 	vertical-align: bottom;
 	color: #FFFFFF;
 	font-weight: bold;
-	background-image: url(../images/nexuse2e_banner.png);
-	background-repeat: no-repeat;
+	background-image: url(../images/banner.jpg);
+	background-repeat: repeat;
 	background-position: 0px 0px;
+}
+
+#toolbar {
+	top: 0px;
+	left: 0px;
+	margin: 0px;
+	padding: 0px;
+	background-color: #666666;
+	height: 32px;
+	width: 100%;
+	text-align: left;
+	vertical-align: bottom;
+	color: #FFFFFF;
+	font-weight: bold;
+	background-image: url(../images/navigation.gif);
+	background-repeat: repeat;
+	background-position: 0px 0px;
+}
+
+#toolbar-left {
+	width: 235px;
+	top: 0px;
+	left: 0px;
+	padding: 0px;
+	margin: 0px;
+	background-image: url(../images/reflection.jpg);
 }
 
 #content {
@@ -57,6 +82,82 @@ form {
 	left: 0%;
 	top: 0%;
 	position: relative;
+}
+
+a.navigationactive:link {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 15px;
+	font-weight: bold;
+	font-variant: small-caps;
+	color: #EEEEEE;
+}
+
+a.navigationactive:active {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 15px;
+	font-weight: bold;
+	font-variant: small-caps;
+	color: #EEEEEE;
+}
+
+a.navigationactive:visited {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 15px;
+	font-weight: bold;
+	font-variant: small-caps;
+	color: #EEEEEE;
+}
+
+a.navigationactive:hover {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 15px;
+	font-weight: bold;
+	font-variant: small-caps;
+	color: #444444;
+}
+
+img.navigationactive {
+	border-width: 0px;
+	border-style: none;
+	vertical-align: middle;
+}
+
+a.navigationnonactive:link {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 15px;
+	font-weight: bold;
+	font-variant: small-caps;
+	color: #999999;
+}
+
+a.navigationnonactive:active {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 15px;
+	font-weight: bold;
+	font-variant: small-caps;
+	color: #999999;
+}
+
+a.navigationnonactive:visited {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 15px;
+	font-weight: bold;
+	font-variant: small-caps;
+	color: #999999;
+}
+
+a.navigationnonactive:hover {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 15px;
+	font-weight: bold;
+	font-variant: small-caps;
+	color: #444444;
+}
+
+img.navigationnonactive {
+	border-width: 0px;
+	border-style: none;
+	vertical-align: middle;
 }
 
 #navigator {
@@ -70,38 +171,6 @@ form {
 #docpane {
 	padding: 10px;
 	background-color: #FFFFFF;
-}
-
-div.helpBar {
-	text-align: right;
-	padding-top: 2px;
-	padding-right: 10px;
-	padding-bottom: 2px;
-	margin-bottom: 5px;
-	background-color: #FFFFFF;
-	color: #E56009;
-}
-
-a.helpBar {
-	font-weight: bold;
-    font-size: 10pt;
-	color: #E56009;
-}
-
-a.helpBarDisabled {
-	font-weight: bold;
-	color: #B0B0B0;
-}
-
-a.helpBar:visited {
-    font-size: 10pt;
-	color: #E56009;
-}
-
-img.helpBar {
-	border-width: 0px;
-	border-style: none;
-	vertical-align: middle;
 }
 
 img.button {
