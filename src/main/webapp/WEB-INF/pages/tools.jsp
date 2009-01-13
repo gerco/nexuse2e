@@ -50,6 +50,14 @@
 		<td class="NEXUSNameNoWidth"><nexus:link styleClass="NexusLink"
 			href="MappingMaintenance.do">Mapping Maintenance</nexus:link></td>
 	</tr>
+	<tr>
+		<td class="NEXUSIcon"><nexus:link styleClass="NexusImgLink"
+			href="PersistentProperties.do">
+			<img border="0" src="images/icons/database_save.png">
+		</nexus:link></td>
+		<td class="NEXUSNameNoWidth"><nexus:link styleClass="NexusLink"
+			href="MappingMaintenance.do">Persistent Properties</nexus:link></td>
+	</tr>
     <tr>
         <td class="NEXUSIcon"><nexus:link styleClass="NexusImgLink"
             href="ConfigurationManagement.do">
@@ -57,6 +65,14 @@
         </nexus:link></td>
         <td class="NEXUSNameNoWidth"><nexus:link styleClass="NexusLink"
             href="FileDownload.do">File Download</nexus:link></td>
+    </tr>
+    <tr>
+        <td class="NEXUSIcon"><nexus:link styleClass="NexusImgLink"
+            href="ConfigurationManagement.do">
+            <img border="0" src="images/icons/wrench.png">
+        </nexus:link></td>
+        <td class="NEXUSNameNoWidth"><nexus:link styleClass="NexusLink"
+            href="PatchManagement.do">Patches</nexus:link></td>
     </tr>
 	<tr>
 		<td class="NEXUSIcon"><nexus:link styleClass="NexusImgLink"
