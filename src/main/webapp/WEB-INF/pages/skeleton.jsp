@@ -13,6 +13,8 @@
 <meta http-equiv="pragma" content="no-cache">
 <meta http-equiv="Content-Style-Type" content="text/css">
 
+<LINK REL="SHORTCUT ICON" HREF="./favicon.ico">
+
 <link type="text/css" rel="stylesheet" href="html/nexuse2e.css">
 <script src="javascript/Generic.js" language="JavaScript"
 	type="text/javascript">
