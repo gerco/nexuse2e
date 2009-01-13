@@ -81,7 +81,7 @@ public class ForwardPipelinesPatch implements Patch {
     }
 
     public String getVersionInformation() {
-        return "Update from 4.x version to 4.2.x. Do NOT run after you have updated to 4.2.0 or a later version!";
+        return "Update from 4.x version to 4.2.x. Only run this directly after you have updated from a 4.1.x or earlier version!";
     }
 
     public boolean isExecutedSuccessfully() {
