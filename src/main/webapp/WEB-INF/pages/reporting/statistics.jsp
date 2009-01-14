@@ -17,37 +17,42 @@
 	</tr>
 </table>
 
-<nexus:reportsAvailable>
-	<table width="100%">
-		<tr>
-			<td>
-				<nexus:report name="message_stati_24h">
-					<nexus:reportParam name="startDate" value="${last24Hours}"/>
-				</nexus:report>
-			</td>
-			<td>
-				<nexus:report name="conversation_stati_24h">
-					<nexus:reportParam name="startDate" value="${last24Hours}"/>
-				</nexus:report>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<nexus:report name="messages_by_choreography_24h">
-                    <nexus:reportParam name="startDate" value="${last24Hours}"/>
-				</nexus:report>
-			</td>
-			<td>
-				<nexus:report name="messages_per_hour">
-					<nexus:reportParam name="startDate" value="${last24HoursRounded}"/>
-				</nexus:report>
-			</td>
-		</tr>
-	</table>
-</nexus:reportsAvailable>
-<nexus:reportsUnavailable>
-	Statistics cannot be displayed because the reporting add-on is not installed.
-</nexus:reportsUnavailable>
+<logic:greaterThan name="messageCount" value="0">
+	<nexus:reportsAvailable>
+		<table width="100%">
+			<tr>
+				<td>
+					<nexus:report name="message_stati_24h">
+						<nexus:reportParam name="startDate" value="${last24Hours}"/>
+					</nexus:report>
+				</td>
+				<td>
+					<nexus:report name="conversation_stati_24h">
+						<nexus:reportParam name="startDate" value="${last24Hours}"/>
+					</nexus:report>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<nexus:report name="messages_by_choreography_24h">
+	                    <nexus:reportParam name="startDate" value="${last24Hours}"/>
+					</nexus:report>
+				</td>
+				<td>
+					<nexus:report name="messages_per_hour">
+						<nexus:reportParam name="startDate" value="${last24HoursRounded}"/>
+					</nexus:report>
+				</td>
+			</tr>
+		</table>
+	</nexus:reportsAvailable>
+	<nexus:reportsUnavailable>
+		Statistics cannot be displayed because the reporting add-on is not installed.
+	</nexus:reportsUnavailable>
+</logic:greaterThan>
+<logic:lessEqual name="messageCount" value="0">
+	No messages have been created within the last 24 hours. Please try again when messages have been received or sent.
+</logic:lessEqual>
 
 <center><logic:messagesPresent>
 	<div class="NexusError"><html:errors /></div>

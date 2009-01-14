@@ -10,6 +10,7 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
+import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.ui.action.NexusE2EAction;
 
@@ -31,7 +32,12 @@ public class ReportingStatisticsAction extends NexusE2EAction {
 
         Calendar cal = Calendar.getInstance();
         cal.add( Calendar.DATE, -1 );
-        request.setAttribute( "last24Hours", new Timestamp( cal.getTimeInMillis() ) );
+        Timestamp timestamp = new Timestamp( cal.getTimeInMillis() );
+        
+        // check if there are any messages that have been created after timestamp
+        request.setAttribute( "messageCount", Engine.getInstance().getTransactionDAO().getCreatedMessagesSinceCount( timestamp ) );
+        
+        request.setAttribute( "last24Hours", timestamp );
         
         cal.set( Calendar.MINUTE, 0 );
         cal.set( Calendar.SECOND, 0 );
