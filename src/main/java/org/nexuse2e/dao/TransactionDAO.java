@@ -731,4 +731,15 @@ public class TransactionDAO extends BasicDAO {
 
         deleteRecord( logEntry, session, transaction );
     }
+
+    /**
+     * Gets a count of messages that have been created since the given time. 
+     * @param since The earliest creation date of messages that shall be counted.
+     * @return A count.
+     * @throws NexusException if something went wrong.
+     */
+    public int getCreatedMessagesSinceCount( Date since ) throws NexusException {
+        return getCountThroughSessionFind(
+                "from MessagePojo message where message.createdDate >= " + getTimestampString( since ), null, null );
+    }
 }
