@@ -92,7 +92,7 @@
       document.forms['reportingPropertiesForm'].status.options[0] = new Option('','allMessages');
       document.forms['reportingPropertiesForm'].status.options[1] = new Option('Unknown','0');
       document.forms['reportingPropertiesForm'].status.options[2] = new Option('Queued','2');
-      document.forms['reportingPropertiesForm'].status.options[3] = new Option('Error','-1');
+      document.forms['reportingPropertiesForm'].status.options[3] = new Option('Failed','-1');
       document.forms['reportingPropertiesForm'].status.options[4] = new Option('Stopped','4');
       document.forms['reportingPropertiesForm'].status.options[5] = new Option('Retrying','1');
       document.forms['reportingPropertiesForm'].status.options[6] = new Option('Sent','3');
@@ -115,7 +115,7 @@
     	
     	document.forms['reportingPropertiesForm'].status.options[0] = new Option('','allConversations');
 		document.forms['reportingPropertiesForm'].status.options[1] = new Option('Created','1');
-		document.forms['reportingPropertiesForm'].status.options[2] = new Option('Active','2');
+		document.forms['reportingPropertiesForm'].status.options[2] = new Option('Processing','2');
 		document.forms['reportingPropertiesForm'].status.options[3] = new Option('Error','-1');
   		document.forms['reportingPropertiesForm'].status.options[4] = new Option('Idle','4');
 		document.forms['reportingPropertiesForm'].status.options[5] = new Option('Completed','9');
@@ -233,10 +233,10 @@
 					<html:select onchange="javascript: scriptScope.disableLinks();" styleClass="fixedsize" property="status">
 						<html:option value="allMessages">&nbsp;</html:option>
 						<html:option value="2">Queued</html:option>
-						<html:option value="-1">Error</html:option>
+						<html:option value="-1">Failed</html:option>
 						<html:option value="4">Stopped</html:option>
 						<html:option value="1">Retrying</html:option>
-						<html:option value="30">Sent</html:option>
+						<html:option value="3">Sent</html:option>
 						<html:option value="0">Unknown</html:option>
 						<html:option value="1,2">#active#</html:option>
 						<html:option value="-1,3,4">#inactive#</html:option>
@@ -245,7 +245,7 @@
 				<logic:notEqual name="reportingPropertiesForm" property="searchFor" value="message">
 					<html:select onchange="javascript: scriptScope.disableLinks();" styleClass="fixedsize" property="status">
 						<html:option value="allConversations">&nbsp;</html:option>
-						<html:option value="2">Active</html:option>
+						<html:option value="2">Processing</html:option>
 						<html:option value="9">Completed</html:option>
 						<html:option value="1">Created</html:option>
 						<html:option value="-1">Error</html:option>
