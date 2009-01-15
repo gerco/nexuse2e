@@ -54,18 +54,19 @@ import org.quartz.SchedulerFactory;
  */
 public class SchedulingServiceImpl extends AbstractService implements SchedulingService {
 
-    private static Logger LOG = Logger.getLogger( SchedulingServiceImpl.class );
+    private static Logger                                      LOG               = Logger
+                                                                                         .getLogger( SchedulingServiceImpl.class );
 
-    private final static String QUARTZGROUP = "NX_GROUP";
-    
-    private HashMap<SchedulerClient, ScheduledFuture<?>[]>        concurrentClients    = new HashMap<SchedulerClient, ScheduledFuture<?>[]>();
-    private HashMap<SchedulerClient, ScheduledExecutorService> schedulers = new HashMap<SchedulerClient, ScheduledExecutorService>();
-    private Map<String, SchedulerClient>        quartzClients    = new HashMap<String,SchedulerClient>();
-    
-    private SimpleDateFormat   simpleDateFormat            = new SimpleDateFormat( "HH:mm" );
+    private final static String                                QUARTZGROUP       = "NX_GROUP";
 
-    private Scheduler quartzScheduler = null;
-    
+    private HashMap<SchedulerClient, ScheduledFuture<?>[]>     concurrentClients = new HashMap<SchedulerClient, ScheduledFuture<?>[]>();
+    private HashMap<SchedulerClient, ScheduledExecutorService> schedulers        = new HashMap<SchedulerClient, ScheduledExecutorService>();
+    private Map<String, SchedulerClient>                       quartzClients     = new HashMap<String, SchedulerClient>();
+
+    private SimpleDateFormat                                   simpleDateFormat  = new SimpleDateFormat( "HH:mm" );
+
+    private Scheduler                                          quartzScheduler   = null;
+
     /* (non-Javadoc)
      * @see org.nexuse2e.service.AbstractService#start()
      */
@@ -89,6 +90,21 @@ public class SchedulingServiceImpl extends AbstractService implements Scheduling
     @Override
     public void fillParameterMap( Map<String, ParameterDescriptor> parameterMap ) {
 
+    }
+
+    @Override
+    public void teardown() {
+
+        for ( ScheduledFuture<?>[] handles : concurrentClients.values() ) {
+            for ( int i = 0; i < handles.length; i++ ) {
+                handles[i].cancel( true );
+            }
+        }
+        for ( ScheduledExecutorService scheduledExecutorService : schedulers.values() ) {
+            scheduledExecutorService.shutdown();
+        }
+
+        super.teardown();
     }
 
     @Override
@@ -120,14 +136,14 @@ public class SchedulingServiceImpl extends AbstractService implements Scheduling
      * @see org.nexuse2e.service.SchedulingService#registerClient(org.nexuse2e.service.SchedulerClient, java.lang.String)
      */
     public void registerClient( SchedulerClient client, String pattern ) throws IllegalArgumentException {
-        
-        Pattern p = Pattern.compile("\\d+");
-        Matcher m = p.matcher(pattern);
-        if(m.matches()) {
-            registerClient(client,Long.parseLong( pattern ));
+
+        Pattern p = Pattern.compile( "\\d+" );
+        Matcher m = p.matcher( pattern );
+        if ( m.matches() ) {
+            registerClient( client, Long.parseLong( pattern ) );
             return;
-        } 
-        if(pattern.contains( ":" ) ) {
+        }
+        if ( pattern.contains( ":" ) ) {
             try {
                 StringTokenizer st = new StringTokenizer( pattern, "," );
                 ArrayList<Date> times = new ArrayList<Date>();
@@ -146,39 +162,36 @@ public class SchedulingServiceImpl extends AbstractService implements Scheduling
                     times.add( scheduledTime );
                     LOG.debug( "Scheduled time: " + scheduledTime );
                 }
-                registerClient( client, times );                
+                registerClient( client, times );
             } catch ( ParseException e ) {
-                throw new IllegalArgumentException("invalid time pattern:"+pattern,e);
+                throw new IllegalArgumentException( "invalid time pattern:" + pattern, e );
             }
             return;
         }
-        
-        
-        
+
         try {
-            String jobName = client.getClass()+"@"+client.hashCode();
-            quartzClients.put( jobName,client );
-            if(quartzScheduler == null) {
+            String jobName = client.getClass() + "@" + client.hashCode();
+            quartzClients.put( jobName, client );
+            if ( quartzScheduler == null ) {
                 SchedulerFactory schedulerFactory = new org.quartz.impl.StdSchedulerFactory();
                 quartzScheduler = schedulerFactory.getScheduler();
                 quartzScheduler.start();
             }
-                        
-            JobDetail jd = new JobDetail(jobName,QUARTZGROUP,SchedulingJob.class);
+
+            JobDetail jd = new JobDetail( jobName, QUARTZGROUP, SchedulingJob.class );
             CronTrigger ct = new CronTrigger();
-            ct.setName( "trigger"+jobName );
+            ct.setName( "trigger" + jobName );
             jd.getJobDataMap().put( "client", client );
-            ct.setCronExpression( new CronExpression(pattern) );
+            ct.setCronExpression( new CronExpression( pattern ) );
             quartzScheduler.scheduleJob( jd, ct );
-            LOG.debug( "next Schedule Date: "+ct.getNextFireTime() );
-             
-            
+            LOG.debug( "next Schedule Date: " + ct.getNextFireTime() );
+
         } catch ( Exception e ) {
-            throw new IllegalArgumentException(e);
+            throw new IllegalArgumentException( e );
         }
 
     }
-    
+
     /* (non-Javadoc)
      * @see org.nexuse2e.service.SchedulingService#registerClient(org.nexuse2e.service.SchedulerClient, java.util.Date)
      */
@@ -239,30 +252,25 @@ public class SchedulingServiceImpl extends AbstractService implements Scheduling
             }
             concurrentClients.remove( client );
         }
-        
-        
+
         try {
-            if(quartzScheduler != null) {
-                
-                String jobName = client.getClass()+"@"+client.hashCode();
-                quartzScheduler.deleteJob(jobName , QUARTZGROUP );
-                
+            if ( quartzScheduler != null ) {
+
+                String jobName = client.getClass() + "@" + client.hashCode();
+                quartzScheduler.deleteJob( jobName, QUARTZGROUP );
+
                 quartzClients.remove( jobName );
-                if(quartzClients.size() == 0) {
+                if ( quartzClients.size() == 0 ) {
                     quartzScheduler.shutdown();
                     quartzScheduler = null;
                 }
             }
         } catch ( SchedulerException e ) {
-            throw new IllegalArgumentException(e);
+            throw new IllegalArgumentException( e );
         }
-        
-        
-        
+
     }
 
-    
-    
     /**
      * @author gesch
      *
