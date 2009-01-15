@@ -369,12 +369,13 @@
 	<tr style="margin: 0px; padding: 0px">
 		<td id="toolbar-left"></td>
 		<td style="text-align: left;">
-		<span style="margin: 6px 0 0 22px;">
-			<nexus:link id="applyConfiguration" href="#" styleClass="navigationnonactive"><img class="navigationnonactive" alt="" src="images/icons/server_go.png">apply</nexus:link>
-		</span>
-		<span style="margin: 6px 0 0 22px;">
-			<nexus:link id="revertConfiguration" href="#" styleClass="navigationnonactive"><img class="navigationnonactive" alt="" src="images/icons/arrow_rotate_anticlockwise.png">revert</nexus:link></td>
-		</span>
+			<span style="margin: 6px 0 0 22px;">
+				<nexus:link id="applyConfiguration" href="#" styleClass="navigationnonactive"><img class="navigationnonactive" alt="" src="images/icons/server_go.png">apply</nexus:link>
+			</span>
+			<span style="margin: 6px 0 0 22px;">
+				<nexus:link id="revertConfiguration" href="#" styleClass="navigationnonactive"><img class="navigationnonactive" alt="" src="images/icons/arrow_rotate_anticlockwise.png">revert</nexus:link>
+			</span>
+		</td>
 		<td style="text-align: right;padding-right: 10px">
 			<span style="margin: 6px 0 0 22px;">
 				<a href="documentation/nexuse2e_help.html" target="_blank" class="navigationactive"><img src="images/icons/help.png" class="navigationactive">&nbsp;help</a>
