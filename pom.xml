@@ -561,7 +561,7 @@
            **/geronimo-servlet_*.jar,
            **/geronimo-activation_*.jar,
            **/geronimo-stax-api_*.jar,
-           **/geronimo-jaxws_*.jar,
+           **/jaxws-api-*.jar,
            **/xercesImpl-2.6.2.jar,
            WEB-INF/classes/tldCache.ser,
            WEB-INF/classes/org/**,
