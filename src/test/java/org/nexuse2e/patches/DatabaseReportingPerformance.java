@@ -16,7 +16,7 @@ import org.nexuse2e.pojo.ConversationPojo;
 import org.nexuse2e.pojo.MessagePojo;
 
 
-public class DatabasePerformanceTest implements Patch {
+public class DatabaseReportingPerformance implements Patch {
 
     private PatchReporter reporter = null;
     
