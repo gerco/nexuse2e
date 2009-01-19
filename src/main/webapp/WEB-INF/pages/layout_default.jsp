@@ -161,14 +161,14 @@
   
   function checkForChangedConfiguration(changed) {
   	if (changed) {
-  	  document.getElementById('applyConfiguration').className="navigationactive";
+  	  document.getElementById('applyConfiguration').className="apply_active";
   	  document.getElementById('applyConfiguration').href="javascript: getMenuTreeSelector().deselect(); setContentUrl('ApplyConfiguration.do')";
-  	  document.getElementById('revertConfiguration').className="navigationactive";
+  	  document.getElementById('revertConfiguration').className="apply_active";
   	  document.getElementById('revertConfiguration').href="javascript: getMenuTreeSelector().deselect(); setContentUrl('RevertConfiguration.do')";
   	} else {
-  	  document.getElementById('applyConfiguration').className="navigationnonactive";
+  	  document.getElementById('applyConfiguration').className="apply_inactive";
   	  document.getElementById('applyConfiguration').href="#";
-  	  document.getElementById('revertConfiguration').className="navigationnonactive";
+  	  document.getElementById('revertConfiguration').className="apply_inactive";
   	  document.getElementById('revertConfiguration').href="#";
   	}
   }
@@ -370,10 +370,10 @@
 		<td id="toolbar-left"></td>
 		<td style="text-align: left;">
 			<span style="margin: 6px 0 0 22px;">
-				<nexus:link id="applyConfiguration" href="#" styleClass="navigationnonactive"><img class="navigationnonactive" alt="" src="images/icons/server_go.png">apply</nexus:link>
+				<nexus:link id="applyConfiguration" href="#" styleClass="apply_inactive"><img class="apply_inactive" alt="" src="images/icons/server_go.png">apply</nexus:link>
 			</span>
 			<span style="margin: 6px 0 0 22px;">
-				<nexus:link id="revertConfiguration" href="#" styleClass="navigationnonactive"><img class="navigationnonactive" alt="" src="images/icons/arrow_rotate_anticlockwise.png">revert</nexus:link>
+				<nexus:link id="revertConfiguration" href="#" styleClass="apply_inactive"><img class="apply_inactive" alt="" src="images/icons/arrow_rotate_anticlockwise.png">revert</nexus:link>
 			</span>
 		</td>
 		<td style="text-align: right;padding-right: 10px">

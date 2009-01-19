@@ -84,6 +84,82 @@ form {
 	position: relative;
 }
 
+a.apply_active:link {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    font-weight: bold;
+    font-variant: small-caps;
+    color: #F37F36;
+}
+
+a.apply_active:active {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    font-weight: bold;
+    font-variant: small-caps;
+    color: #F37F36;
+}
+
+a.apply_active:visited {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    font-weight: bold;
+    font-variant: small-caps;
+    color: #F37F36;
+}
+
+a.apply_active:hover {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    font-weight: bold;
+    font-variant: small-caps;
+    color: #E56009;
+}
+
+img.apply_active {
+    border-width: 0px;
+    border-style: none;
+    vertical-align: middle;
+}
+
+a.apply_inactive:link {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    font-weight: bold;
+    font-variant: small-caps;
+    color: #999999;
+}
+
+a.apply_inactive:active {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    font-weight: bold;
+    font-variant: small-caps;
+    color: #999999;
+}
+
+a.apply_inactive:visited {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    font-weight: bold;
+    font-variant: small-caps;
+    color: #999999;
+}
+
+a.apply_inactive:hover {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    font-weight: bold;
+    font-variant: small-caps;
+    color: #444444;
+}
+
+img.apply_inactive {
+    border-width: 0px;
+    border-style: none;
+    vertical-align: middle;
+}
+
 a.navigationactive:link {
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 15px;
