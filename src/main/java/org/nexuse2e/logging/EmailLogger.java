@@ -145,57 +145,61 @@ public class EmailLogger extends AbstractLogger {
     @Override
     protected void append( LoggingEvent loggingEvent ) {
 
-        //LOG.debug( "("+status+")creating mail notification for event: "+loggingEvent.getMessage().toString() );
-        ChoreographyPojo choreographyPojo = null;
-        boolean matchedChoreography = false;
+        try {
+            //LOG.debug( "("+status+")creating mail notification for event: "+loggingEvent.getMessage().toString() );
+            ChoreographyPojo choreographyPojo = null;
+            boolean matchedChoreography = false;
 
-        if ( status != BeanStatus.ACTIVATED ) {
-            return;
-        }
+            if ( status != BeanStatus.ACTIVATED ) {
+                return;
+            }
 
-        //        System.out.println( "*** loggingEvent.getLevel(): " + loggingEvent.getLevel() );
-        //        System.out.println( "*** getLogThreshold()      : " + getLogThreshold() );
-        //        System.out.println( "*** Level.toLevel()        : " + Level.toLevel( getLogThreshold(), Level.ERROR ) );
+            //        System.out.println( "*** loggingEvent.getLevel(): " + loggingEvent.getLevel() );
+            //        System.out.println( "*** getLogThreshold()      : " + getLogThreshold() );
+            //        System.out.println( "*** Level.toLevel()        : " + Level.toLevel( getLogThreshold(), Level.ERROR ) );
 
-        if ( !loggingEvent.getLevel().isGreaterOrEqual( Level.toLevel( getLogThreshold(), Level.ERROR ) ) ) {
-            return;
-        }
-        //LOG.trace( "checkChoreography: "+ checkChoreography );
-        if ( checkChoreography && ( loggingEvent.getMessage() instanceof LogMessage ) ) {
-            LogMessage logMessage = (LogMessage) loggingEvent.getMessage();
-            if ( logMessage.getConversationId() != null ) {
-                ConversationPojo conversationPojo;
-                try {
-                    conversationPojo = Engine.getInstance().getTransactionService().getConversation(
-                            logMessage.getConversationId() );
-                    if ( conversationPojo != null ) {
-                        choreographyPojo = conversationPojo.getChoreography();
-                        if ( choreographyPojo != null ) {
-                            matchedChoreography = choreographyFilter.equals( choreographyPojo.getName() );
+            if ( !loggingEvent.getLevel().isGreaterOrEqual( Level.toLevel( getLogThreshold(), Level.ERROR ) ) ) {
+                return;
+            }
+            //LOG.trace( "checkChoreography: "+ checkChoreography );
+            if ( checkChoreography && ( loggingEvent.getMessage() instanceof LogMessage ) ) {
+                LogMessage logMessage = (LogMessage) loggingEvent.getMessage();
+                if ( logMessage.getConversationId() != null ) {
+                    ConversationPojo conversationPojo;
+                    try {
+                        conversationPojo = Engine.getInstance().getTransactionService().getConversation(
+                                logMessage.getConversationId() );
+                        if ( conversationPojo != null ) {
+                            choreographyPojo = conversationPojo.getChoreography();
+                            if ( choreographyPojo != null ) {
+                                matchedChoreography = choreographyFilter.equals( choreographyPojo.getName() );
+                            }
+                        }
+                    } catch ( NexusException e ) {
+                        System.err.println( "Error identifying choreography when filtering email notification: " + e );
+                    }
+                }
+            }
+            
+            if ( !checkChoreography || matchedChoreography ) {
+                SmtpSender smtpSender = findService();
+                //LOG.trace( "using Senderservice ( "+smtpSender != null ? smtpSender.getStatus() : "null"+" ): "+smtpSender );
+                if ( smtpSender != null ) {
+                    if ( smtpSender.getStatus() == BeanStatus.STARTED ) {
+                        try {
+                            smtpSender.sendMessage( recipient, subject, loggingEvent.getRenderedMessage() );
+                        } catch ( NexusException e ) {
+                            System.err.println( "Error sending log email: " + e );
+                            e.printStackTrace();
                         }
                     }
-                } catch ( NexusException e ) {
-                    System.err.println( "Error identifying choreography when filtering email notification: " + e );
+                } else {
+                    System.err.println( "SMTP service not available!" );
                 }
             }
-        }
-
-        if ( !checkChoreography || matchedChoreography ) {
-
-            SmtpSender smtpSender = findService();
-            LOG.trace( "using Senderservice ("+smtpSender != null ? smtpSender.getStatus() : "null"+"): "+smtpSender );
-            if ( smtpSender != null ) {
-                if ( smtpSender.getStatus() == BeanStatus.STARTED ) {
-                    try {
-                        smtpSender.sendMessage( recipient, subject, loggingEvent.getRenderedMessage() );
-                    } catch ( NexusException e ) {
-                        System.err.println( "Error sending log email: " + e );
-                        e.printStackTrace();
-                    }
-                }
-            } else {
-                System.err.println( "SMTP service not available!" );
-            }
+        } catch ( Exception e ) {
+            System.out.println("An Excpetion occured while creating email notification: "+e.getMessage());
+            e.printStackTrace();
         }
 
     }
