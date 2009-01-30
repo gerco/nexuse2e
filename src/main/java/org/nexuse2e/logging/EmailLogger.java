@@ -183,7 +183,7 @@ public class EmailLogger extends AbstractLogger {
             
             if ( !checkChoreography || matchedChoreography ) {
                 SmtpSender smtpSender = findService();
-                //LOG.trace( "using Senderservice ( "+smtpSender != null ? smtpSender.getStatus() : "null"+" ): "+smtpSender );
+                
                 if ( smtpSender != null ) {
                     if ( smtpSender.getStatus() == BeanStatus.STARTED ) {
                         try {
