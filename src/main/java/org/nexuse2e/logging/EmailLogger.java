@@ -25,7 +25,6 @@ import java.util.LinkedHashMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
@@ -44,7 +43,6 @@ import org.nexuse2e.service.mail.SmtpSender;
  */
 public class EmailLogger extends AbstractLogger {
 
-    private static Logger       LOG                       = Logger.getLogger( EmailLogger.class );
     private static final String SERVICE_PARAM_NAME        = "service";
     private static final String RECIPIENT_PARAM           = "recipient";
     private static final String SUBJECT_PARAM             = "subject";
@@ -85,21 +83,21 @@ public class EmailLogger extends AbstractLogger {
         String choreography = getParameter( CHOREOGRAPHY_FILTER_PARAM );
 
         if ( StringUtils.isBlank( serviceName ) ) {
-            LOG.error( "EmailLogger.initialize(): Service name not specified. Please check your configuration" );
+            System.err.println( "EmailLogger.initialize(): Service name not specified. Please check your configuration" );
             return;
         }
 
         if ( ( recipient == null ) || ( recipient.length() == 0 ) ) {
-            LOG.error( "EmailLogger.initialize(): Recipient(s) not specified. Please check your configuration" );
+            System.err.println( "EmailLogger.initialize(): Recipient(s) not specified. Please check your configuration" );
             return;
         }
         if ( ( subject == null ) || ( subject.length() == 0 ) ) {
-            LOG.error( "EmailLogger.initialize(): Subject not specified. Please check your configuration" );
+            System.err.println( "EmailLogger.initialize(): Subject not specified. Please check your configuration" );
             return;
         }
 
         if ( !StringUtils.isEmpty( choreography ) ) {
-            LOG.info( "EmailLogger.initialize(): Filtering on choreography: " + choreography );
+            System.err.println( "EmailLogger.initialize(): Filtering on choreography: " + choreography );
             choreographyFilter = choreography;
             checkChoreography = true;
         }
@@ -120,19 +118,19 @@ public class EmailLogger extends AbstractLogger {
             if ( engineConfiguration != null ) {
                 Service service = engineConfiguration.getStaticBeanContainer().getService( serviceName );
                 if ( service == null ) {
-                    LOG.error( "EmailLogger.initialize(): Service \"" + serviceName
+                    System.err.println( "EmailLogger.initialize(): Service \"" + serviceName
                             + "\" not found. Please check your configuration" );
                     return null;
                 }
                 if ( !( service instanceof SmtpSender ) ) {
-                    LOG.error( "EmailLogger.initialize(): Service \"" + serviceName
+                    System.err.println( "EmailLogger.initialize(): Service \"" + serviceName
                             + "\" not of type SmtpSender. Please check your configuration" );
                     return null;
                 }
                 smtpSender = (SmtpSender) service;
             }
         } else {
-            LOG.error( "No SMTP service found. Please check your configuration" );
+            System.err.println( "No SMTP service found. Please check your configuration" );
             return null;
         }
 
@@ -198,7 +196,7 @@ public class EmailLogger extends AbstractLogger {
                 }
             }
         } catch ( Exception e ) {
-            System.out.println("An Excpetion occured while creating email notification: "+e.getMessage());
+            System.err.println("An Excpetion occured while creating email notification: "+e.getMessage());
             e.printStackTrace();
         }
 
