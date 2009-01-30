@@ -48,6 +48,14 @@
 		<td class="NEXUSNameNoWidth">${java_classpath}</td>
 	</tr>
 	<tr>
+		<td class="NEXUSNameNoWidth">Service Uptime</td>
+		<td class="NEXUSNameNoWidth">${service_uptime}</td>
+	</tr>
+	<tr>
+		<td class="NEXUSNameNoWidth">Engine Uptime</td>
+		<td class="NEXUSNameNoWidth">${engine_uptime}</td>
+	</tr>
+	<tr>
 		<td class="NEXUSNameNoWidth">License</td>
 		<td class="NEXUSNameNoWidth"><a href="html/lgpl.html" target="#blank">GNU Lesser General Public License</a> (LGPL), Version 2.1</td>
 	</tr>
