@@ -73,6 +73,8 @@ public abstract class NexusE2EAction extends Action {
     public static final String    JAVA_VERSION                 = "java_version";
     public static final String    JAVA_HOME                    = "java_home";
     public static final String    JAVA_CLASSPATH               = "java_classpath";
+    public static final String    SERVICE_UPTIME               = "service_uptime";
+    public static final String    ENGINE_UPTIME                = "engine_uptime";
 
     protected static final String SUBMIT_BUTTON                = "Submit";
 
@@ -106,6 +108,22 @@ public abstract class NexusE2EAction extends Action {
         request.setAttribute( JAVA_CLASSPATH, System.getProperty( "java.class.path" ) );
         request.setAttribute( JAVA_HOME, System.getProperty( "java.home" ) );
 
+        request.setAttribute( SERVICE_UPTIME, "n/d" );
+        request.setAttribute( ENGINE_UPTIME, "n/d" );
+
+        try {
+            long serviceUptime = System.currentTimeMillis() - Engine.getInstance().getServiceStartTime();
+            long engineUptime = System.currentTimeMillis() - Engine.getInstance().getEngineStartTime();
+            
+            
+            request.setAttribute( SERVICE_UPTIME, formatUptime(serviceUptime) );
+            request.setAttribute( ENGINE_UPTIME, formatUptime(engineUptime) );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+        }
+
+        
+        
         if ( user != null ) {
             // check access
             if ( AccessController.hasAccess( user, request ) ) {
@@ -131,6 +149,22 @@ public abstract class NexusE2EAction extends Action {
 
         return actionForward;
     } // execute
+
+    private String formatUptime( long serviceUptime ) {
+
+        int dayLength = 1000*60*60*24;
+        int hourlength = 1000*60*60;
+        int minutelength = 1000*60;
+        int secondlength = 1000;
+        
+        
+        int days = (int)serviceUptime/dayLength;
+        int hours = (int)(serviceUptime-(days*dayLength))/hourlength;
+        int minutes = (int)(serviceUptime-(days*dayLength) - (hours*hourlength))/minutelength;
+        int seconds = (int)(serviceUptime-(days*dayLength) - (hours*hourlength) - (minutes*minutelength))/secondlength;
+        
+        return days+ " days " +hours+" hours "+minutes+" minutes "+seconds+" seconds";
+    }
 
     public void addRedirect( HttpServletRequest request, String urlCode, String timeCode ) {
 
