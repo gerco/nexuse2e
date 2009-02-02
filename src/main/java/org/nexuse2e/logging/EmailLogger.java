@@ -22,6 +22,8 @@ package org.nexuse2e.logging;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
@@ -43,16 +45,18 @@ import org.nexuse2e.service.mail.SmtpSender;
  */
 public class EmailLogger extends AbstractLogger {
 
-    private static final String SERVICE_PARAM_NAME        = "service";
-    private static final String RECIPIENT_PARAM           = "recipient";
-    private static final String SUBJECT_PARAM             = "subject";
-    private static final String CHOREOGRAPHY_FILTER_PARAM = "choreographyFilter";
+    private static final String     NEW_LINE                  = " \n ";
+    private static final String     SERVICE_PARAM_NAME        = "service";
+    private static final String     RECIPIENT_PARAM           = "recipient";
+    private static final String     SUBJECT_PARAM             = "subject";
+    private static final String     CHOREOGRAPHY_FILTER_PARAM = "choreographyFilter";
 
-    private String              serviceName               = null;
-    private String              recipient                 = null;
-    private String              subject                   = null;
-    private String              choreographyFilter        = null;
-    private boolean             checkChoreography         = false;
+    private String                  serviceName               = null;
+    private String                  recipient                 = null;
+    private String                  subject                   = null;
+    private String                  choreographyFilter        = null;
+    private boolean                 checkChoreography         = false;
+    private BlockingQueue<String[]> mailQueue;
 
     /**
      * Default constructor.
@@ -107,6 +111,24 @@ public class EmailLogger extends AbstractLogger {
         this.subject = subject;
 
         status = BeanStatus.INITIALIZED;
+    }
+    
+    public void activate() {
+        // ensure mail queue thread is killed
+        if (mailQueue != null) {
+            mailQueue.offer( new String[0] );
+        }
+        mailQueue = new LinkedBlockingQueue<String[]>();
+        new LoggerThread( mailQueue ).start();
+        super.activate();
+    }
+    
+    public void deactivate() {
+        // kill mail queue thread
+        if (mailQueue != null) {
+            mailQueue.offer( new String[0] );
+        }
+        super.deactivate();
     }
 
     private SmtpSender findService() {
@@ -179,21 +201,8 @@ public class EmailLogger extends AbstractLogger {
                 }
             }
             
-            if ( !checkChoreography || matchedChoreography ) {
-                SmtpSender smtpSender = findService();
-                
-                if ( smtpSender != null ) {
-                    if ( smtpSender.getStatus() == BeanStatus.STARTED ) {
-                        try {
-                            smtpSender.sendMessage( recipient, subject, loggingEvent.getRenderedMessage() );
-                        } catch ( NexusException e ) {
-                            System.err.println( "Error sending log email: " + e );
-                            e.printStackTrace();
-                        }
-                    }
-                } else {
-                    System.err.println( "SMTP service not available!" );
-                }
+            if ( (!checkChoreography || matchedChoreography) && mailQueue != null ) {
+                mailQueue.offer( new String[] { loggingEvent.getRenderedMessage() } );
             }
         } catch ( Exception e ) {
             System.err.println("An Excpetion occured while creating email notification: "+e.getMessage());
@@ -207,7 +216,53 @@ public class EmailLogger extends AbstractLogger {
      */
     @Override
     public void close() {
-
     }
 
+    class LoggerThread extends Thread {
+        
+        BlockingQueue<String[]> mailQueue;
+        
+        public LoggerThread( BlockingQueue<String[]> mailQueue ) {
+            super( "EmailLogger thread" );
+            this.mailQueue = mailQueue;
+        }
+        
+        public void run() {
+        
+            // loop until shutdown signal (string array of length 0 passed to queue)
+            try {
+                for (String[] logEntry = mailQueue.take(); logEntry.length != 0; logEntry = mailQueue.take()) {
+                    SmtpSender smtpSender = findService();
+                    
+                    StringBuilder message = new StringBuilder( logEntry[0] );
+                    
+                    // get messages from queue if available without blocking
+                    for (String[] entry = mailQueue.peek(); entry != null; entry = mailQueue.peek()) {
+                        if (entry.length == 0) { // logger shut down
+                            break;
+                        } else {
+                            message.append( NEW_LINE + NEW_LINE + entry[0] );
+                            mailQueue.poll(); // make sure entry is removed
+                        }
+                    }
+                    
+                    if ( smtpSender != null ) {
+                        if ( smtpSender.getStatus() == BeanStatus.STARTED ) {
+                            try {
+                                smtpSender.sendMessage( recipient, subject, message.toString() );
+                            } catch ( NexusException e ) {
+                                System.err.println( "Error sending log email: " + e );
+                                e.printStackTrace();
+                            }
+                        }
+                    } else {
+                        System.err.println( "SMTP service not available!" );
+                    }
+                }
+            } catch (InterruptedException iex) {
+                iex.printStackTrace();
+            }
+            //System.out.println( "shutdown mail thread" );
+        }
+    }
 } // EmailLogger
