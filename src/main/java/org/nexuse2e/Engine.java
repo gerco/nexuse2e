@@ -118,7 +118,8 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
      */
     private Map<String, MimeMapping>         mimeMappings                   = new HashMap<String, MimeMapping>();
     private Map<String, MimeMapping>         fileExt2MimeMappings           = new HashMap<String, MimeMapping>();
-
+    private long engineStartTime = 0;
+    private long serviceStartTime = 0;
     private String                           timestampPattern               = null;
 
     // TRUE to allow submission of business reply while inbound pipeline is blocking/synchronously
@@ -140,7 +141,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
      * Singleton pattern constructor ?
      */
     public Engine() {
-
+        serviceStartTime = System.currentTimeMillis();
         LOG.trace( "creating engine instance" );
         if ( instance == null ) {
             instance = this;
@@ -947,7 +948,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
      * @see org.nexuse2e.Manageable#start()
      */
     public void start() {
-
+        
         LOG.info( "*** NEXUSe2e Server Version: " + Version.getVersion() + " ***" );
         LOG.debug( "Engine.start..." );
 
@@ -975,7 +976,8 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
             if (backendOutboundDispatcher != null) {
                 backendOutboundDispatcher.recoverMessages();
             }
-
+            engineStartTime = System.currentTimeMillis();
+            
             LOG.info( "***** Nexus E2E engine started. *****" );
         } else {
             LOG.error( "Failed to start Engine, no configuration found!" );
@@ -1356,6 +1358,42 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     public void setLenientBackendStateMachine( boolean lenientBackendStateMachine ) {
     
         this.lenientBackendStateMachine = lenientBackendStateMachine;
+    }
+
+    
+    /**
+     * @return the engineStartTime
+     */
+    public long getEngineStartTime() {
+    
+        return engineStartTime;
+    }
+
+    
+    /**
+     * @param engineStartTime the engineStartTime to set
+     */
+    public void setEngineStartTime( long engineStartTime ) {
+    
+        this.engineStartTime = engineStartTime;
+    }
+
+    
+    /**
+     * @return the serviceStartTime
+     */
+    public long getServiceStartTime() {
+    
+        return serviceStartTime;
+    }
+
+    
+    /**
+     * @param serviceStartTime the serviceStartTime to set
+     */
+    public void setServiceStartTime( long serviceStartTime ) {
+    
+        this.serviceStartTime = serviceStartTime;
     }
 
 } // Engine
