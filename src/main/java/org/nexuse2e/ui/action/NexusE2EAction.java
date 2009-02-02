@@ -130,8 +130,17 @@ public abstract class NexusE2EAction extends Action {
                 // execute action
                 EngineConfiguration config = Engine.getInstance().getConfiguration( user.getNxUserId() );
                 request.setAttribute( ATTRIBUTE_CONFIGURATION, config );
-                actionForward = executeNexusE2EAction(
-                        actionMapping, actionForm, request, response, config, errors, messages );
+                try {
+                    actionForward = executeNexusE2EAction(
+                            actionMapping, actionForm, request, response, config, errors, messages );
+                } catch (Exception ex) {
+                    LOG.error( ex );
+                    String message = ex.getMessage();
+                    if (message == null) {
+                        message = ex.getClass().getName();
+                    }
+                    messages.add( ActionMessages.GLOBAL_MESSAGE, new ActionMessage( "generic.error", message ) );
+                }
             } else {
                 errors.add( ActionMessages.GLOBAL_MESSAGE, new ActionMessage( "access.denied" ) );
                 actionForward = actionMapping.findForward( ACTION_FORWARD_ACCESS_DENIED );
