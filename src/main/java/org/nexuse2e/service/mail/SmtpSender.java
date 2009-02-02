@@ -88,6 +88,7 @@ public class SmtpSender extends AbstractService implements SenderAware {
 
     public static final String HOST_PARAM_NAME     = "host";
     public static final String PORT_PARAM_NAME     = "port";
+    public static final String TIMEOUT_PARAM_NAME  = "timeout";
     public static final String EMAIL_PARAM_NAME    = "email";
     public static final String USER_PARAM_NAME     = "user";
     public static final String PASSWORD_PARAM_NAME = "password";
@@ -106,6 +107,8 @@ public class SmtpSender extends AbstractService implements SenderAware {
                 "SMTP host name or IP address", "" ) );
         parameterMap.put( PORT_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "Port",
                 "SMTP port number (default is 25 or 465 for SSL)", "25" ) );
+        parameterMap.put( TIMEOUT_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "Timeout",
+                "Connection and I/O timeout in milliseconds (default is 10000)", "10000" ) );
         parameterMap.put( EMAIL_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "Email",
                 "Sender email address", "" ) );
         parameterMap.put( USER_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "User",
@@ -181,7 +184,8 @@ public class SmtpSender extends AbstractService implements SenderAware {
             Object[] connectionInfo = connect( (String) getParameter( HOST_PARAM_NAME ),
                     (String) getParameter( USER_PARAM_NAME ),
                     (String) getParameter( PASSWORD_PARAM_NAME ),
-                    (String) getParameter( PORT_PARAM_NAME ) );
+                    (String) getParameter( PORT_PARAM_NAME ),
+                    (String) getParameter( TIMEOUT_PARAM_NAME ) );
             if ( connectionInfo != null ) {
                 session = (Session) connectionInfo[0];
                 transport = (Transport) connectionInfo[1];
@@ -206,7 +210,7 @@ public class SmtpSender extends AbstractService implements SenderAware {
                 }
 
                 // Send the message
-                sendMessage( transport, mimeMsg, new Address[] { addr} );
+                sendMessage( transport, mimeMsg, new Address[] { addr } );
                 
                 transport.close();
             } else {
@@ -221,7 +225,7 @@ public class SmtpSender extends AbstractService implements SenderAware {
         return null;
     }
 
-    private Object[] connect( String host, String user, String password, String port ) throws Exception {
+    private Object[] connect( String host, String user, String password, String port, String timeout ) throws Exception {
 
         boolean ssl = isSslEnabled();
         boolean tls = isTlsEnabled();
@@ -253,6 +257,11 @@ public class SmtpSender extends AbstractService implements SenderAware {
             props.put( "mail." + protocol + ".starttls.enable", Boolean.toString( tls ) );
 
             props.put( "mail.host", host );
+
+            if (timeout != null) {
+                props.put( "mail." + protocol + ".connectiontimeout", timeout );
+                props.put( "mail." + protocol + ".timeout", timeout );
+            }
 
             // Get a Session object
             Session session = Session.getInstance( props, null );
@@ -427,7 +436,8 @@ public class SmtpSender extends AbstractService implements SenderAware {
             Object[] connectionInfo = connect( (String) getParameter( HOST_PARAM_NAME ),
                     (String) getParameter( USER_PARAM_NAME ),
                     (String) getParameter( PASSWORD_PARAM_NAME ),
-                    (String) getParameter( PORT_PARAM_NAME ) );
+                    (String) getParameter( PORT_PARAM_NAME ),
+                    (String) getParameter( TIMEOUT_PARAM_NAME ) );
             session = (Session) connectionInfo[0];
             transport = (Transport) connectionInfo[1];
 
@@ -470,12 +480,11 @@ public class SmtpSender extends AbstractService implements SenderAware {
     public void sendMessage( String recipient, String subjectLine, String description, MimeBodyPart[] mimeBodyParts )
             throws NexusException {
 
-        LOG.trace("sending notification mail");
         Session session = null;
         Transport transport = null;
 
         if ( BeanStatus.STARTED != status ) {
-            LOG.warn( "SMTP service not started!" );
+            System.err.println( "SMTP service not started!" );
             return;
         }
 
@@ -483,7 +492,8 @@ public class SmtpSender extends AbstractService implements SenderAware {
             Object[] connectionInfo = connect( (String) getParameter( HOST_PARAM_NAME ),
                     (String) getParameter( USER_PARAM_NAME ),
                     (String) getParameter( PASSWORD_PARAM_NAME ),
-                    (String) getParameter( PORT_PARAM_NAME ) );
+                    (String) getParameter( PORT_PARAM_NAME ),
+                    (String) getParameter( TIMEOUT_PARAM_NAME ) );
             if (connectionInfo != null) {
                 session = (Session) connectionInfo[0];
                 transport = (Transport) connectionInfo[1];
@@ -508,7 +518,7 @@ public class SmtpSender extends AbstractService implements SenderAware {
                 // send the thing off
                 sendMessage( transport, msg, msg.getAllRecipients() );
             } else {
-                LOG.warn( "Cannot send message: Unable to connect to mail host" );
+                throw new NexusException( "Cannot send message: Unable to connect to mail host" );
             }
         } catch ( Exception e ) {
             e.printStackTrace();
@@ -519,7 +529,7 @@ public class SmtpSender extends AbstractService implements SenderAware {
     private void sendMessage( Transport transport, Message message, Address[] addresses ) throws MessagingException {
 
         if ( BeanStatus.STARTED != status ) {
-            LOG.warn( "SMTP service not started!" );
+            System.err.println( "SMTP service not started!" );
             return;
         }
 
