@@ -124,16 +124,15 @@ public class HttpSenderService extends AbstractService implements SenderAware {
                     }
                 }
 
-                if ( participant.getLocalCertificate() == null ) {
+                CertificatePojo localCert = participant.getLocalCertificate();
+                if ( localCert == null ) {
                     LOG.error( "No local certificate selected for using SSL with partner "
                             + participant.getPartner().getName() );
                     throw new NexusException( "No local certificate selected for using SSL with partner "
                             + participant.getPartner().getName() );
                 }
 
-                CertificatePojo localCert = Engine.getInstance().getActiveConfigurationAccessService()
-                        .getCertificateByNxCertificateId( Constants.CERTIFICATE_TYPE_LOCAL,
-                                participant.getLocalCertificate().getNxCertificateId() );
+                CertificatePojo partnerCert = participant.getConnection().getCertificate();
                 CertificatePojo metaPojo = Engine.getInstance().getActiveConfigurationAccessService()
                         .getFirstCertificateByType( Constants.CERTIFICATE_TYPE_CACERT_METADATA, true );
 
@@ -146,10 +145,11 @@ public class HttpSenderService extends AbstractService implements SenderAware {
 
                 KeyStore privateKeyChain = CertificateUtil.getPKCS12KeyStore( localCert );
 
-                myhttps = new Protocol( "https", (ProtocolSocketFactory) new CertSSLProtocolSocketFactory(
-                        privateKeyChain, EncryptionUtil.decryptString( localCert.getPassword() ), Engine.getInstance()
-                                .getActiveConfigurationAccessService().getCacertsKeyStore(), EncryptionUtil
-                                .decryptString( metaPojo.getPassword() ) ), 443 );
+                myhttps = new Protocol( "https",
+                        (ProtocolSocketFactory) new CertSSLProtocolSocketFactory(
+                                privateKeyChain, EncryptionUtil.decryptString( localCert.getPassword() ),
+                                Engine.getInstance().getActiveConfigurationAccessService().getCacertsKeyStore(),
+                                EncryptionUtil.decryptString( metaPojo.getPassword() ), partnerCert ), 443 );
 
                 client.getHostConfiguration().setHost( receiverURL.getHost(), receiverURL.getPort(), myhttps );
 

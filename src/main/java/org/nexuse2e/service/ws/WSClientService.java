@@ -37,7 +37,6 @@ import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Layer;
-import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.configuration.ListParameter;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
@@ -154,14 +153,12 @@ public class WSClientService extends AbstractService implements SenderAware {
 
             // Enable SSL, see also http://cwiki.apache.org/confluence/display/CXF20DOC/Client+HTTP+Transport+%28including+SSL+support%29
             try {
-                CertificatePojo localCert = Engine.getInstance().getActiveConfigurationAccessService()
-                        .getCertificateByNxCertificateId( Constants.CERTIFICATE_TYPE_LOCAL,
-                                messagePojo.getParticipant().getLocalCertificate().getNxCertificateId() );
+                KeyStore caCerts = Engine.getInstance().getActiveConfigurationAccessService().getCacertsKeyStore();
+                CertificatePojo localCert = messagePojo.getParticipant().getLocalCertificate();
+                CertificatePojo partnerCert = messagePojo.getParticipant().getConnection().getCertificate();
                 KeyStore privateKeyChain = CertificateUtil.getPKCS12KeyStore( localCert );
-                KeyManager[] keyManagers = CertificateUtil.createKeyManagers( privateKeyChain, EncryptionUtil
-                        .decryptString( localCert.getPassword() ) );
-                TrustManager[] trustManagers = CertificateUtil.createTrustManagers( Engine.getInstance()
-                        .getActiveConfigurationAccessService().getCacertsKeyStore() );
+                KeyManager[] keyManagers = CertificateUtil.createKeyManagers( privateKeyChain, EncryptionUtil.decryptString( localCert.getPassword() ) );
+                TrustManager[] trustManagers = CertificateUtil.createTrustManagers( caCerts, partnerCert  );
 
                 FiltersType filters = new FiltersType();
                 filters.getInclude().add( ".*_EXPORT_.*" );

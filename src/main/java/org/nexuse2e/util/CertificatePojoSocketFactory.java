@@ -25,7 +25,7 @@ import org.nexuse2e.pojo.CertificatePojo;
 
 /**
  * {@link SocketFactory} implementation that uses a {@link CertificatePojo} to create
- * SSL sockets.
+ * SSL sockets. It does not support authentication of a certain leaf certificate.
  *
  * @author Jonas Reese
  * @version $LastChangedRevision:  $ - $LastChangedDate:  $ by $LastChangedBy:  $
@@ -86,7 +86,7 @@ public class CertificatePojoSocketFactory implements SocketFactory {
                         .getPassword() ) );
             }
             if ( truststore != null ) {
-                trustmanagers = CertificateUtil.createTrustManagers( truststore );
+                trustmanagers = CertificateUtil.createTrustManagers( truststore, null );
             }
             SSLContext sslcontext = SSLContext.getInstance( "TLS" );
             sslcontext.init( keymanagers, trustmanagers, null );

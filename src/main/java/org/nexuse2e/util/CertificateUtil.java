@@ -1196,17 +1196,23 @@ public class CertificateUtil {
     /**
      * Creates the <code>TrustManager</code>s for the given trusted keystore.
      * @param keystore The keystore.
+     * @param leafCertificate The expected leaf certificate. Can be <code>null</code> if any valid certificate
+     * with a trusted chain is expected, this argument can be <code>null</code>.
      * @return An array of <code>TrustManager</code> objects.
      * @throws KeyStoreException
      * @throws NoSuchAlgorithmException
      */
-    public static TrustManager[] createTrustManagers( final KeyStore keystore )
+    public static TrustManager[] createTrustManagers( final KeyStore keystore, CertificatePojo leafCertificate )
     throws KeyStoreException, NoSuchAlgorithmException {
     
         if ( keystore == null ) {
             throw new IllegalArgumentException( "Keystore may not be null" );
         }
         LOG.debug( "Initializing trust manager" );
+        X509Certificate leaf = null;
+        if (leafCertificate != null) {
+            leaf = getX509Certificate( leafCertificate );
+        }
         TrustManagerFactory tmfactory = TrustManagerFactory.getInstance( TrustManagerFactory.getDefaultAlgorithm() );
         tmfactory.init( keystore );
         TrustManager[] trustmanagers = tmfactory.getTrustManagers();
@@ -1214,7 +1220,7 @@ public class CertificateUtil {
             if ( trustmanagers[i] instanceof X509TrustManager ) {
                 trustmanagers[i] = new AuthSSLX509TrustManager(
                         (X509TrustManager)
-                        trustmanagers[i], keystore );
+                        trustmanagers[i], keystore, leaf );
             }
         }
         return trustmanagers;

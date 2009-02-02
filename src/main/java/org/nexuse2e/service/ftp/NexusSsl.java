@@ -133,7 +133,7 @@ public class NexusSsl implements ISsl {
                         keystore, EncryptionUtil.decryptString( cert.getPassword() ) );
             }
             if (truststore != null) {
-                trustmanagers = CertificateUtil.createTrustManagers( truststore );
+                trustmanagers = CertificateUtil.createTrustManagers( truststore, null );
             }
             SSLContext sslcontext = SSLContext.getInstance( protocol );
             sslcontext.init( keymanagers, trustmanagers, null );

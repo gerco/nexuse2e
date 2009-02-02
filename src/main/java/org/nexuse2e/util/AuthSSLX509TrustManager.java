@@ -30,10 +30,12 @@
 package org.nexuse2e.util;
 
 import java.security.KeyStore;
+import java.security.Principal;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.net.ssl.X509TrustManager;
 
@@ -56,36 +58,42 @@ import org.apache.log4j.Logger;
 
 public class AuthSSLX509TrustManager implements X509TrustManager {
 
-    private X509TrustManager    defaultTrustManager = null;
-
-    private HashMap             trustedCertificates = new HashMap();
+    private X509TrustManager                defaultTrustManager = null;
+    private Map<Principal, X509Certificate> trustedCertificates;
+    X509Certificate                         leafCertificate;
 
     /** Log object for this class. */
     private static final Logger LOG                 = Logger.getLogger( AuthSSLX509TrustManager.class );
 
     /**
-     * Constructor for AuthSSLX509TrustManager.
+     * Constructs a new <code>AuthSSLX509TrustManager</code>.
+     * @param defaultTrustManager The default (parent) trust manager that is used for trusted CA checking.
+     * Must not be <code>null</code>.
+     * @param keyStore The client certificate <code>KeyStore</code>.
+     * @param leafCertificate A special certificate that is expected when connecting to a server. Can be <code>null</code>
+     * if no special leaf is expected but just a valid one with a trusted root.
      */
-    public AuthSSLX509TrustManager( final X509TrustManager defaultTrustManager, KeyStore keyStore ) {
+    public AuthSSLX509TrustManager( final X509TrustManager defaultTrustManager, KeyStore keyStore, X509Certificate leafCertificate ) {
 
         super();
+        trustedCertificates = new HashMap<Principal, X509Certificate>();
         try {
-            Enumeration enumeration = keyStore.aliases();
+            Enumeration<String> enumeration = keyStore.aliases();
             while ( enumeration.hasMoreElements() ) {
-                String alias = (String) enumeration.nextElement();
+                String alias = enumeration.nextElement();
                 X509Certificate cert = (X509Certificate) keyStore.getCertificate( alias );
                 trustedCertificates.put( cert.getSubjectDN(), cert );
                 LOG.debug( "Found trusted cert: " + cert.getSubjectDN() );
             }
         } catch ( Exception ex ) {
-            LOG.error( "Error processing trusted certificates! " + ex );
-            System.err.println( "Error processing trusted certificates! " + ex );
+            LOG.error( "Error processing trusted certificates! ", ex );
         }
         if ( defaultTrustManager == null ) {
             throw new IllegalArgumentException( "Trust manager may not be null" );
         }
         this.defaultTrustManager = defaultTrustManager;
         LOG.debug( "AuthSSLX509TrustManager - defaultTrustManager: " + defaultTrustManager.getClass().getName() );
+        this.leafCertificate = leafCertificate;
     }
 
     /**
@@ -233,11 +241,17 @@ public class AuthSSLX509TrustManager implements X509TrustManager {
              */
         }
 
-        try {
-            this.defaultTrustManager.checkServerTrusted( certificates, authType );
-        } catch (Exception ex) {
-            ex.getCause().printStackTrace();
-        }
+        // let parent check the trusted roots
+        this.defaultTrustManager.checkServerTrusted( certificates, authType );
 
+        // if leaf cert is given, check if that certificate matches
+        if (leafCertificate != null) {
+            if (!leafCertificate.equals( certificates[0] )) {
+                throw new CertificateException(
+                        "Expected certificate for subject DN '" + leafCertificate.getSubjectDN().getName() +
+                        "' does not match provided certificate (subject DN '" + certificates[0].getSubjectDN().getName() + "'" );
+            }
+            LOG.debug( "Provided certificate for subject DN '" + certificates[0].getSubjectDN().getName() + "' matches expected certificate" );
+        }
     }
 }

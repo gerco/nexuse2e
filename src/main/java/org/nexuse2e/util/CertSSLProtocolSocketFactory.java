@@ -38,6 +38,7 @@ import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.apache.commons.httpclient.protocol.ControllerThreadSocketFactory;
 import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
 import org.apache.log4j.Logger;
+import org.nexuse2e.pojo.CertificatePojo;
 
 /**
  * @author gesch
@@ -52,74 +53,43 @@ public class CertSSLProtocolSocketFactory implements SecureProtocolSocketFactory
     private String              keystorePassword   = null;
     private KeyStore            truststore         = null;
     private SSLContext          sslcontext         = null;
+    private CertificatePojo     trustedPartnerCert = null;
 
     /**
      * Constructor for AuthSSLProtocolSocketFactory. Either a keystore or truststore file
      * must be given. Otherwise SSL context initialization error will result.
      * 
-     * @param keystoreUrl URL of the keystore file. May be <tt>null</tt> if HTTPS client
-     *        authentication is not to be used.
-     * @param keystorePassword Password to unlock the keystore. IMPORTANT: this implementation
-     *        assumes that the same password is used to protect the key and the keystore itself.
-     * @param truststoreUrl URL of the truststore file. May be <tt>null</tt> if HTTPS server
-     *        authentication is not to be used.
-     * @param truststorePassword Password to unlock the truststore.
+     * @param keystore The keystore that shall be used for client authentication. Can be <code>null</code> if
+     * client auth is not used.
+     * @param keystorePassword The password to decrypt <code>keystore</code>.
+     * @param truststore The keystore that shall be used for trusted roots server authentication.
+     * @param truststorePassword The password to decrypt <code>truststore</code>.
+     * @param trustedPartnerCert The trusted partner certificate to be checked. May be <code>null</code>
+     * if no special leaf certificate is expected and the certificate shall be checked for trusted root
+     * and validity only.
      */
     public CertSSLProtocolSocketFactory( final KeyStore keystore, final String keystorePassword,
-            final KeyStore truststore, final String truststorePassword ) {
+            final KeyStore truststore, final String truststorePassword, CertificatePojo trustedPartnerCert ) {
 
         super();
-        //        System.out.println( "keystore:" + keystore.toString() );
 
         this.keystore = keystore;
         this.keystorePassword = keystorePassword;
         this.truststore = truststore;
+        this.trustedPartnerCert = trustedPartnerCert;
     }
-
-//    private static KeyStore createKeyStore( final InputStream store, final String password ) throws KeyStoreException,
-//            NoSuchAlgorithmException, CertificateException, IOException {
-//
-//        if ( store == null ) {
-//            throw new IllegalArgumentException( "Keystore stream may not be null" );
-//        }
-//        LOG.debug( "Initializing key store" );
-//        KeyStore keystore = KeyStore.getInstance( "jks" );
-//        keystore.load( store, password != null ? password.toCharArray() : null );
-//        return keystore;
-//    }
-
 
     private SSLContext createSSLContext() {
 
-        //        System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
-        //
-        //        System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
-        //
-        //        System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire.header", "debug");
-        //
-        //        System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "debug");
-        //        
-        //        LOG.debug( "------------------------- createSSLContext -----------------------------" );
         try {
             KeyManager[] keymanagers = null;
             TrustManager[] trustmanagers = null;
             if ( keystore != null ) {
-                //                System.out.println( "creating keymanagers" );
                 keymanagers = CertificateUtil.createKeyManagers( keystore, this.keystorePassword );
-                //                SLOG.debug( "......................................................." );
-                //                LOG.debug( "count:" + keymanagers.length );
-                //                for ( int i = 0; i < keymanagers.length; i++ ) {
-                //                    LOG.debug(keymanagers[i].toString());
-                //                    X509KeyManager impl = (X509KeyManager)keymanagers[i];
-                //                    X509Certificate[] chain = impl.getCertificateChain("nexuscert");
-                //                    LOG.debug("cert:"+chain[0].getPublicKey().getAlgorithm());
-                //                    LOG.debug("cert:"+chain[0].getIssuerX500Principal());
-                //                }
-                //                LOG.debug( "......................................................." );
             }
             if ( truststore != null ) {
-                //                System.out.println( "creating trustedkeymanagers" );
-                trustmanagers = CertificateUtil.createTrustManagers( truststore );
+
+                trustmanagers = CertificateUtil.createTrustManagers( truststore, trustedPartnerCert );
                 LOG.debug( "......................................................." );
 
                 LOG.debug( "count:" + trustmanagers.length );
