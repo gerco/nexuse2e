@@ -801,5 +801,16 @@
        </os>
      </activation>
    </profile>
+   <profile>
+     <id>Unix.profile</id>
+     <properties>
+       <tools.jar>${java.home}/../lib/tools.jar</tools.jar>
+     </properties>
+     <activation>
+       <os>
+         <family>unix</family>
+       </os>
+     </activation>
+   </profile>
  </profiles>
 </project>
