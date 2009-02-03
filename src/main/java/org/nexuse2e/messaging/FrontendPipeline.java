@@ -106,6 +106,11 @@ public class FrontendPipeline extends AbstractPipeline implements ProtocolSpecif
             messageContext.setConversation( messageContext.getMessagePojo().getConversation() );
         }
         
+        if (pipelineEndpoint == null) {
+            throw new NexusException(
+                    "No pipeline endpoint configured in frontend pipeline (" + key + "). Add at least one pipelet" );
+        }
+        
         messageContext = pipelineEndpoint.processMessage( messageContext );
 
         if ( returnPipelets != null && messageContext != null && messageContext.isProcessThroughReturnPipeline() ) {
