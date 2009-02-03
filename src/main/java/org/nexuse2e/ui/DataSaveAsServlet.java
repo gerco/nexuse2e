@@ -392,7 +392,9 @@ public class DataSaveAsServlet extends HttpServlet {
                 res.setHeader( "Content-Disposition", "attachment; filename=\"" + message.getMessageId() + "_payload-"
                         + contentNo + "." + fileExtension + "\"" );
                 OutputStream os = res.getOutputStream();
-                os.write( data );
+                if (data != null) {
+                    os.write( data );
+                }
                 os.flush();
             }
         } catch ( Exception e ) {
