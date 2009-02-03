@@ -63,6 +63,10 @@
 			<FileType>xml</FileType>
 			<FileType>XML</FileType>
 		</MimeMapping>
+		<MimeMapping MimeType="application/xml">
+			<FileType>xml</FileType>
+			<FileType>XML</FileType>
+		</MimeMapping>
 		<MimeMapping MimeType="text/xsl">
 			<FileType>xsl</FileType>
 			<FileType>XSL</FileType>
