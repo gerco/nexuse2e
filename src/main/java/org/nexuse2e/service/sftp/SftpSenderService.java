@@ -183,6 +183,12 @@ public class SftpSenderService extends AbstractService implements SenderAware {
         } catch ( Exception e ) {
             e.printStackTrace();
             LOG.error( "Error uploading to FTP account (" + messageContext.getMessagePojo().getParticipant().getConnection().getUri() + "): " + e );
+            // bugfix: #10
+            if ( e instanceof NexusException ) {
+                throw (NexusException) e;
+            } else {
+                throw new NexusException( e );
+            }
         } finally {
             if ( ( channelSftp != null ) && channelSftp.isConnected() ) {
                 channelSftp.disconnect();
