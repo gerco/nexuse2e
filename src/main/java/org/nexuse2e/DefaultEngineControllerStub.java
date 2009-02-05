@@ -54,7 +54,7 @@ public class DefaultEngineControllerStub implements EngineControllerStub {
             transportReceiver = (TransportReceiver) Class.forName( className ).newInstance();
             LOG.trace( "Returning transportReceiver: " + transportReceiver );
         } catch ( Exception e ) {
-            LOG.error( e.getClass().getName() + ": unable to create Instance of " + className );
+            LOG.error( e.getClass().getName() + ": unable to create Instance of " + className + " - class must be of type org.nexuse2e.transport.TransportReceiver" );
             e.printStackTrace();
         }
 
