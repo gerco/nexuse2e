@@ -34,12 +34,15 @@ public class EngineStatusInterfaceImpl implements EngineStatusInterface {
      * @see org.nexuse2e.integration.EngineStatusInterface#getEngineStatus()
      */
     public String getEngineStatus() {
+        try {
+            EngineMonitor engineMonitor = Engine.getInstance().getEngineController().getEngineMonitor();
+            EngineStatusSummary engineStatusSummary = engineMonitor.getStatus();
 
-        EngineMonitor engineMonitor = Engine.getInstance().getEngineController().getEngineMonitor();
-        EngineStatusSummary engineStatusSummary = engineMonitor.getStatus();
-
-        if ( engineStatusSummary != null ) {
-            return EngineStatusSummary.getStatusString( engineStatusSummary.getStatus() );
+            if ( engineStatusSummary != null ) {
+                return EngineStatusSummary.getStatusString( engineStatusSummary.getStatus() );
+            }
+        } catch ( Exception e ) {
+            return e.getMessage();
         }
 
         return "Unknown";
