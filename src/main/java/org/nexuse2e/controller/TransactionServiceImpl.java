@@ -740,7 +740,7 @@ public class TransactionServiceImpl implements TransactionService {
             }
             throw new NexusException( (Exception) t );
         } finally {
-            session.close();
+            //session.close();
             releaseDBSession( session );
         }
         
