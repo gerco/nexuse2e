@@ -19,12 +19,14 @@
  */
 package org.nexuse2e.dao;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.nexuse2e.Constants;
@@ -219,6 +221,316 @@ public class TransactionDAO extends BasicDAO {
                 conversationId, start, end, field, ascending, false ), itemsPerPage, page, session, transaction );
     }
 
+    /**
+     * @param start
+     * @param end
+     * @param session
+     * @param transaction
+     * @return
+     * @throws NexusException
+     */
+    public long getConversationsCount(Date start, Date end, Session session, Transaction transaction) throws NexusException {
+    
+        long count = 0;
+        
+        NexusException nexusException = null;
+        boolean extSessionFlag = true;
+        boolean extTransactionFlag = true;
+
+        try {
+            
+            if ( session == null ) {
+                session = getDBSession();
+                extSessionFlag = false;
+            }
+            try {
+                if ( transaction == null ) {
+                    transaction = session.beginTransaction();
+                    extTransactionFlag = false;
+                }
+                
+                String query ="select count(nx_conversation_id) from nx_conversation as conv ";
+                query = appendQueryDate( query, "conv", start, end );
+                Query sqlquery = session.createSQLQuery( query );
+                count = ((Number)sqlquery.uniqueResult()).longValue();
+                
+                if ( !extTransactionFlag ) {
+                    transaction.commit();
+                }
+                
+            } catch ( HibernateException e ) {
+                if ( transaction != null && !extTransactionFlag ) {
+                    transaction.rollback();
+                }
+                LOG.error( "Error retrieving count!" );
+                e.printStackTrace();
+                nexusException = new NexusException( e );
+            } finally {
+                if ( !extSessionFlag ) {
+                    releaseDBSession( session );
+                }
+            }
+            
+        } catch ( HibernateException e ) {
+            e.printStackTrace();
+            nexusException = new NexusException( e );
+        } finally {
+            if ( nexusException != null ) {
+                throw nexusException;
+            }
+        }
+        
+        
+        return count; 
+    }
+    
+    /**
+     * @param start
+     * @param end
+     * @param session
+     * @param transaction
+     * @return
+     * @throws NexusException
+     */
+    public long getLogCount(Date start, Date end, Session session, Transaction transaction) throws NexusException {
+    
+        long count = 0;
+        
+        NexusException nexusException = null;
+        boolean extSessionFlag = true;
+        boolean extTransactionFlag = true;
+        try {
+            
+            if ( session == null ) {
+                session = getDBSession();
+                extSessionFlag = false;
+            }
+            try {
+                if ( transaction == null ) {
+                    transaction = session.beginTransaction();
+                    extTransactionFlag = false;
+                }
+                String query ="select count(nx_log_id) from nx_log as log ";
+                query = appendQueryDate( query, "log", start, end );
+                Query sqlquery = session.createSQLQuery( query );
+                count = ((Number)sqlquery.uniqueResult()).longValue();
+                
+                if ( !extTransactionFlag ) {
+                    transaction.commit();
+                }
+                
+            } catch ( HibernateException e ) {
+                if ( transaction != null && !extTransactionFlag ) {
+                    transaction.rollback();
+                }
+                LOG.error( "Error retrieving count!" );
+                e.printStackTrace();
+                nexusException = new NexusException( e );
+            } finally {
+                if ( !extSessionFlag ) {
+                    releaseDBSession( session );
+                }
+            }
+            
+        } catch ( HibernateException e ) {
+            e.printStackTrace();
+            nexusException = new NexusException( e );
+        } finally {
+            if ( nexusException != null ) {
+                throw nexusException;
+            }
+        }
+        
+        
+        return count; 
+    }
+
+    /**
+     * @param start
+     * @param end
+     * @param session
+     * @param transaction
+     * @return
+     * @throws NexusException
+     */
+    public long removeLogEntries(Date start, Date end, Session session, Transaction transaction) throws NexusException {
+        
+        long count = 0;
+        
+        NexusException nexusException = null;
+        boolean extSessionFlag = true;
+        boolean extTransactionFlag = true;
+
+        try {
+            
+            if ( session == null ) {
+                session = getDBSession();
+                extSessionFlag = false;
+            }
+            try {
+                if ( transaction == null ) {
+                    transaction = session.beginTransaction();
+                    extTransactionFlag = false;
+                }
+                
+                String query ="delete from nx_log as log ";
+                query = appendQueryDate( query,"log", start, end );
+                Query sqlquery = session.createSQLQuery( query );
+                count = ((Number)sqlquery.uniqueResult()).longValue();
+                
+                if ( !extTransactionFlag ) {
+                    transaction.commit();
+                }
+                
+            } catch ( HibernateException e ) {
+                if ( transaction != null && !extTransactionFlag ) {
+                    transaction.rollback();
+                }
+                LOG.error( "Error retrieving count!" );
+                e.printStackTrace();
+                nexusException = new NexusException( e );
+            } finally {
+                if ( !extSessionFlag ) {
+                    releaseDBSession( session );
+                }
+            }
+            
+        } catch ( HibernateException e ) {
+            e.printStackTrace();
+            nexusException = new NexusException( e );
+        } finally {
+            if ( nexusException != null ) {
+                throw nexusException;
+            }
+        }
+        
+        
+        return count; 
+    }
+    
+    /**
+     * @param start
+     * @param end
+     * @return
+     */
+    private String appendQueryDate(String queryString, String prefix, Date start, Date end) {
+        StringBuffer query = new StringBuffer(queryString);
+        boolean first = !queryString.contains("where");
+        if ( start != null ) {
+            if ( !first ) {
+                query.append( " and " );
+            } else {
+                query.append( " where " );
+            }
+            query.append( prefix+".created_date >= " + getTimestampString( start ) );
+            first = false;
+        }
+        if ( end != null ) {
+            if ( !first ) {
+                query.append( " and " );
+            } else {
+                query.append( " where " );
+            }
+            query.append( prefix+".created_date <= " + getTimestampString( end ) );
+            first = false;
+        }
+        return query.toString();
+    }
+    
+    
+    
+    /**
+     * @param start
+     * @param end
+     * @param session
+     * @param transaction
+     * @return
+     * @throws NexusException
+     */
+    public long removeConversations(Date start, Date end, Session session, Transaction transaction) throws NexusException {
+        
+        long count = 0;
+        
+        NexusException nexusException = null;
+        boolean extSessionFlag = true;
+        boolean extTransactionFlag = true;
+
+        try {
+            
+            if ( session == null ) {
+                session = getDBSession();
+                extSessionFlag = false;
+            }
+            try {
+                if ( transaction == null ) {
+                    transaction = session.beginTransaction();
+                    extTransactionFlag = false;
+                }
+                
+                
+                String query ="delete label from nx_message_label as label, nx_message as message, nx_conversation as conv where label.nx_message_id = message.nx_message_id and message.nx_conversation_id = conv.nx_conversation_id ";
+                
+                query = appendQueryDate( query, "conv", start, end );
+                LOG.debug( "sql1: "+ query);
+                Query sqlquery1 = session.createSQLQuery( query );
+                
+                query ="delete payload from nx_message_payload as payload, nx_message as message, nx_conversation as conv where payload.nx_message_id = message.nx_message_id and message.nx_conversation_id = conv.nx_conversation_id ";
+                
+                query = appendQueryDate( query, "conv", start, end );
+                LOG.debug( "sql2: "+ query);
+                Query sqlquery2 = session.createSQLQuery( query );
+                
+                query ="delete message from nx_message as message, nx_conversation as conv where message.nx_conversation_id = conv.nx_conversation_id ";
+                
+                query = appendQueryDate( query, "conv", start, end );
+                LOG.debug( "sql3: "+ query);
+                Query sqlquery3 = session.createSQLQuery( query );
+                
+                query ="delete conv from nx_conversation as conv";
+                
+                query = appendQueryDate( query, "conv", start, end );
+                LOG.debug( "sql4: "+ query);
+                Query sqlquery4 = session.createSQLQuery( query );
+                
+                sqlquery1.executeUpdate();
+                sqlquery2.executeUpdate();
+                sqlquery3.executeUpdate();
+                sqlquery4.executeUpdate();
+                
+                if ( !extTransactionFlag ) {
+                    transaction.commit();
+                }
+                
+            } catch ( HibernateException e ) {
+                if ( transaction != null && !extTransactionFlag ) {
+                    transaction.rollback();
+                }
+                LOG.error( "Error retrieving count!" );
+                e.printStackTrace();
+                nexusException = new NexusException( e );
+            } finally {
+                if ( !extSessionFlag ) {
+                    releaseDBSession( session );
+                }
+            }
+            
+        } catch ( HibernateException e ) {
+            e.printStackTrace();
+            nexusException = new NexusException( e );
+        } finally {
+            if ( nexusException != null ) {
+                throw nexusException;
+            }
+        }
+        
+        
+        return count; 
+    }
+    
+    
+    
+    
+    
     /**
      * @param status
      * @param choreographyId
