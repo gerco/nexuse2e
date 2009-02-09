@@ -65,7 +65,7 @@ public class FrontendActionSerializer implements Manageable {
     public FrontendActionSerializer( String choreographyId ) {
 
         this.choreographyId = choreographyId;
-        queueName = choreographyId + org.nexuse2e.Constants.POSTFIX_INBOUND_QUEUE;
+        queueName = choreographyId + org.nexuse2e.Constants.POSTFIX_OUTBOUND_QUEUE;
 
     } // constructor
 
