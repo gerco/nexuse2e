@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-<beans>
+
+<!-- <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+ <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">-->
+<!--  <beans> -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+
 
   <bean id="placeholderConfig" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="properties">
@@ -37,8 +49,16 @@
   <bean id="engineController" class="org.nexuse2e.EngineController" init-method="initialize" destroy-method="shutdown">
     <property name="engineControllerStubClass" value="${engineController.stub.class}" />
     <property name="engine" ref="engine" />
-    <property name="monitorAutoStart" value="true" />
+    <property name="engineMonitor" ref="engineMonitor" />
   </bean>
+
+  <bean id="engineMonitor" class="org.nexuse2e.EngineMonitor">
+    <property name="timeout" value="10"/>
+  	<property name="interval" value="10000"/>
+  	<property name="autoStart" value="true" />
+  </bean>
+
+
 
   <bean id="baseConfigurationProvider" class="org.nexuse2e.configuration.XmlBaseConfigurationProvider">
     <constructor-arg value="${configuration.base.xmlFile}"/>
@@ -83,6 +103,18 @@
     <property name="username" value="${database.user}" />
     <property name="password" value="${database.password}" />
     <property name="maxActive" value="-1" />
+    
+    <!--  needs to be disabled while inital database creation -->
+    <!-- 
+    <property name="testOnBorrow" value="true" />
+    <property name="validationQuery" value="select count(*) from nx_trp"/>
+     -->
+     
+    <!--  8 = serialize --> 
+    <property name="defaultTransactionIsolation" value="8"/>
+    
+    
+    
   </bean>
 
   <!-- 
@@ -95,6 +127,7 @@
     <property name="dataSource" ref="${datasource.type}" />
     <!-- <property name="dataSource" ref="external"/> -->
     <property name="useTransactionAwareDataSource" value="false" />
+    
     <property name="mappingResources">
       <list>
         <value>org/nexuse2e/hibernate/nx_conversation.hbm.xml</value>
@@ -126,11 +159,16 @@
         <value>org/nexuse2e/hibernate/nx_persistent_property.hbm.xml</value>
       </list>
     </property>
+    
     <property name="hibernateProperties">
       <props>        <prop key="hibernate.show_sql">${database.showSQL}</prop>        <prop key="hibernate.dialect">${database.dialect}</prop>
         <prop key="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</prop>
         <prop key="hibernate.current_session_context_class">org.hibernate.context.ThreadLocalSessionContext</prop>
-        <prop key="hibernate.connection.isolation">2</prop>       <!--
+        <prop key="hibernate.query.substitutions">true 1, false 0, yes 'Y', no 'N'</prop>
+       	
+       	<!--  isolation needs to be configured on the datasource -->
+        
+        <!--
         <prop key="hibernate.c3p0.min_size">2</prop>
         <prop key="hibernate.c3p0.max_size">20</prop>
         <prop key="hibernate.c3p0.timeout">1800</prop>
@@ -139,6 +177,24 @@
         -->      </props>
     </property>
   </bean>
+<!-- 
+  <bean id="txManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+    <property name="sessionFactory" ref="hibernateSessionFactory" />
+  </bean>
+
+  <aop:config>
+    <aop:pointcut id="transactionServices" expression="execution(* org.nexuse2e.controller.TransactionServiceImpl.*(..))"/>
+    <aop:advisor advice-ref="txAdvice" pointcut-ref="transactionServices"/>
+  </aop:config>
+
+  <tx:advice id="txAdvice" transaction-manager="txManager">
+    <tx:attributes>
+      <tx:method name="get*" read-only="true"/> 
+      <tx:method name="*" propagation="REQUIRED" isolation="SERIALIZABLE"/>
+    </tx:attributes>
+  </tx:advice>
+
+ -->
 
   <bean id="logDao" class="org.nexuse2e.dao.LogDAO">
     <property name="sessionFactory" ref="hibernateSessionFactory" />
