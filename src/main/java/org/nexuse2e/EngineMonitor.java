@@ -20,16 +20,19 @@
 
 package org.nexuse2e;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
 import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.StatusSummary.Status;
 import org.nexuse2e.dao.ConfigDAO;
-import org.nexuse2e.pojo.TRPPojo;
 
 /**
  * @author gesch
@@ -42,6 +45,18 @@ public class EngineMonitor {
     private List<EngineMonitorListener> listeners;
     private Timer                       timer;
     private boolean                     shutdownInitiated          = false;
+    private boolean                     autoStart                  = true;
+    
+    /**
+     * Database Timeout in seconds 
+     */
+    private int                         timeout                    = 30; 
+    
+    /**
+     * Monitor probe Interval in miliseconds
+     */
+    private int                         interval                    = 10000; 
+    
     protected EngineStatusSummary       currentEngineStatusSummary = null;
 
     /**
@@ -52,7 +67,7 @@ public class EngineMonitor {
         LOG.debug( "Engine monitor initalized" );
         timer = new Timer();
         TestSuite suite = new TestSuite();
-        timer.schedule( suite, 0, 10000 );
+        timer.schedule( suite, 0, interval );
     }
 
     /**
@@ -116,20 +131,39 @@ public class EngineMonitor {
             summary.setStatus( Status.ERROR );
             return summary;
         }
-        List<TRPPojo> trps = null;
+        String sql = "select count(nx_trp_id) from nx_trp";
+        Session session = configDao.getDBSession();
+        
+        
+        Query query = session.createSQLQuery( sql );
+        
+        query.setTimeout( timeout ); // interval seconds
+        long count = -1;
         try {
-            trps = configDao.getTrps( null, null );
-        } catch ( Exception e ) {
-            summary.setCause( "Error while fetching testdata from database: " + e );
-            summary.setDatabaseStatus( Status.ERROR );
-            summary.setStatus( Status.ERROR );
-            return summary;
-        } catch ( Error e ) {
-            System.out.println( "Error: " + e );
+            count = ((Number)query.uniqueResult()).longValue();
+        } catch ( HibernateException e ) {
+            e.printStackTrace();
         }
-        summary.setDatabaseStatus( Status.ACTIVE );
-        if ( trps == null || trps.size() == 0 ) {
-
+        
+        configDao.releaseDBSession( session );
+        
+        
+//        List<TRPPojo> trps = null;
+//        try {
+//            trps = configDao.getTrps( null, null );
+//        } catch ( Exception e ) {
+//            summary.setCause( "Error while fetching testdata from database: " + e );
+//            summary.setDatabaseStatus( Status.ERROR );
+//            summary.setStatus( Status.ERROR );
+//            return summary;
+//        } catch ( Error e ) {
+//            System.out.println( "Error: " + e );
+//        }
+//        summary.setDatabaseStatus( Status.ACTIVE );
+        //if ( trps == null || trps.size() == 0 ) {
+        
+        
+        if(count < 1) {
             summary.setCause( "no TRP's found in database" );
             summary.setStatus( Status.ERROR );
             return summary;
@@ -194,6 +228,61 @@ public class EngineMonitor {
                 e.printStackTrace();
             }
         }
-
     }
+
+    
+    /**
+     * @return the timeout
+     */
+    public int getTimeout() {
+    
+        return timeout;
+    }
+
+    
+    /**
+     * @param timeout the timeout to set
+     */
+    public void setTimeout( int timeout ) {
+    
+        this.timeout = timeout;
+    }
+
+    
+    /**
+     * @return the interval
+     */
+    public int getInterval() {
+    
+        return interval;
+    }
+
+    
+    /**
+     * @param interval the interval to set
+     */
+    public void setInterval( int interval ) {
+    
+        this.interval = interval;
+    }
+
+    
+    /**
+     * @return the autoStart
+     */
+    public boolean isAutoStart() {
+    
+        return autoStart;
+    }
+
+    
+    /**
+     * @param autoStart the autoStart to set
+     */
+    public void setAutoStart( boolean autoStart ) {
+    
+        this.autoStart = autoStart;
+    }
+    
+    
 }

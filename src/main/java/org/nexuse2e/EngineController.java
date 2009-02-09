@@ -38,8 +38,7 @@ public class EngineController {
 
     private EngineMonitor        engineMonitor             = null;
 
-    private boolean              monitorAutoStart          = true;
-
+    
     /**
      * 
      */
@@ -59,21 +58,21 @@ public class EngineController {
                     return;
                 }
 
-                if ( monitorAutoStart ) {
-                    engineMonitor = new EngineMonitor();
+                if(engineMonitor == null) {
+                    LOG.error("engine monitor not configured properly");
+                    return;
+                }
+                if ( engineMonitor.isAutoStart() ) {
                     engineMonitor.start();
                 }
                 engineControllerStub.initialize();
                 engine.changeStatus( BeanStatus.STARTED );
 
             } catch ( InstantiationException e ) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch ( IllegalAccessException e ) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch ( ClassNotFoundException e ) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -174,8 +173,11 @@ public class EngineController {
     /**
      * @return the engineMonitor
      */
-    public EngineMonitor getEngineMonitor() {
+    public EngineMonitor getEngineMonitor() throws NexusException{
 
+        if(engineMonitor == null) {
+            throw new NexusException("engine monitor not configured");
+        }
         return engineMonitor;
     }
 
@@ -185,16 +187,6 @@ public class EngineController {
     public void setEngineMonitor( EngineMonitor engineMonitor ) {
 
         this.engineMonitor = engineMonitor;
-    }
-
-    public boolean isMonitorAutoStart() {
-
-        return monitorAutoStart;
-    }
-
-    public void setMonitorAutoStart( boolean monitorAutoStart ) {
-
-        this.monitorAutoStart = monitorAutoStart;
     }
 
 } // EngineController
