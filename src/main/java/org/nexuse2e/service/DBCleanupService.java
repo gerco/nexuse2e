@@ -21,7 +21,6 @@ package org.nexuse2e.service;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -36,9 +35,6 @@ import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
-import org.nexuse2e.dao.TransactionDAO;
-import org.nexuse2e.pojo.ConversationPojo;
-import org.nexuse2e.pojo.LogPojo;
 
 /**
  * @author gesch
@@ -176,7 +172,6 @@ public class DBCleanupService extends AbstractService implements SchedulerClient
      */
     public void scheduleNotify() {
 
-        // LOG.debug( "do something" );
         if ( status == BeanStatus.STARTED ) {
             boolean isPrimary = Engine.getInstance().getEngineController().getEngineControllerStub().isPrimaryNode() ;
             LOG.debug( "is primary Node: "+isPrimary);
@@ -188,21 +183,23 @@ public class DBCleanupService extends AbstractService implements SchedulerClient
                 cal.add( Calendar.DAY_OF_YEAR, (-1)*daysremaining );
                 
                 Date endDate = cal.getTime();
-                List<ConversationPojo> convEntries = null;
-                List<LogPojo> logEntries = null;
+                long logCount = -1;
+                long convCount = -1;
                 LOG.debug( "Remaining data: "+endDate );
                 if(purgeLogs) {
+                    
+                    // for automated pruge the start date is unlimited and end date is (now - days remaining)
                     try {
-                        logEntries =  Engine.getInstance().getTransactionService().getLogEntriesForReport( null, null, null, endDate, 0, 0, TransactionDAO.SORT_NONE, false , null,null);
-                        LOG.debug( "Log entries to purge: "+logEntries.size() );
+                        logCount =  Engine.getInstance().getTransactionDAO().getLogCount(null,endDate,null,null);
+                        LOG.debug( "Log entries to purge: "+logCount );
                     } catch ( NexusException e ) {
                         e.printStackTrace();
                     }
                 }
                 if(purgeMessages) {
                     try {
-                        convEntries =   Engine.getInstance().getTransactionService().getConversationsForReport( null,0, 0, null, null, endDate, 0, 0, TransactionDAO.SORT_NONE, false, null, null );
-                        LOG.debug( "Conversations to purge: "+convEntries.size() );
+                        convCount =   Engine.getInstance().getTransactionDAO().getConversationsCount( null, endDate, null, null );
+                        LOG.debug( "Conversations to purge: "+convCount );
                     } catch ( NexusException e ) {
                         e.printStackTrace();
                     }    
@@ -216,10 +213,8 @@ public class DBCleanupService extends AbstractService implements SchedulerClient
                             Transaction transaction = session.beginTransaction();
                             
                             try {
-                                if ( convEntries != null && convEntries.size() > 0 ) {
-                                    for ( ConversationPojo pojo : convEntries ) {
-                                        Engine.getInstance().getTransactionService().deleteConversation( pojo, session, transaction );
-                                    }
+                                if ( convCount > 0 ) {
+                                        Engine.getInstance().getTransactionDAO().removeConversations( null, endDate, session, transaction );
                                 }
                                 transaction.commit();
                                 Engine.getInstance().getTransactionService().releaseDBSession( session );
@@ -235,10 +230,8 @@ public class DBCleanupService extends AbstractService implements SchedulerClient
                             Session session = Engine.getInstance().getTransactionService().getDBSession();
                             Transaction transaction = session.beginTransaction();
                             try {
-                                if ( logEntries != null && logEntries.size() > 0 ) {
-                                    for ( LogPojo pojo : logEntries ) {
-                                        Engine.getInstance().getTransactionService().deleteLogEntry( pojo, session, transaction );
-                                    }
+                                if ( logCount > 0 ) {
+                                    Engine.getInstance().getTransactionDAO().removeLogEntries( null, endDate, session, transaction );
                                 }
                                 transaction.commit();
                                 Engine.getInstance().getTransactionService().releaseDBSession( session );
@@ -260,11 +253,11 @@ public class DBCleanupService extends AbstractService implements SchedulerClient
                         LOG.info( "Remaining Date: "+ endDate);
                         LOG.info("Purge Logs:"+purgeLogs);
                         if(purgeLogs){
-                            LOG.info( "Log entries to purge: "+logEntries.size() );
+                            LOG.info( "Log entries to purge: "+logCount );
                         }
                         LOG.info("Purge Messages:"+purgeMessages);
                         if(purgeMessages){
-                            LOG.info( "Conversations to purge: "+convEntries.size() );
+                            LOG.info( "Conversations to purge: "+convCount );
                         }
                         LOG.info( "----------------------------------------" );
                     } catch ( Exception e ) {
