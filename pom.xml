@@ -524,7 +524,7 @@
          <include>**/*.png</include>
        </includes>
      </resource>
-      -->
+     -->
    </resources>
    <plugins>
      <plugin>
@@ -581,6 +581,13 @@
                <include>**/*.properties</include>
              </includes>
            </resource>
+             <!--
+           <resource>
+               <directory>${project.build.directory}/reporting/platform</directory>
+               <targetPath>WEB-INF/platform</targetPath>
+               <filtering>false</filtering>
+           </resource>
+               -->
          </webResources>
        </configuration>
      </plugin>
@@ -784,6 +791,7 @@
    </plugins>
  </build>
  <profiles>
+   <!-- interoperation profiles -->
    <profile>
      <id>Windows.profile</id>
      <properties>
@@ -816,6 +824,61 @@
          <family>mac</family>
        </os>
      </activation>
+   </profile>
+   <!-- dependency related -->
+   <profile>
+     <id>with-reporting-module</id>
+     <activation>
+         <activeByDefault>false</activeByDefault>
+     </activation>
+     <build>
+         <plugins>
+             <plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-dependency-plugin</artifactId>
+                 <executions>
+                     <execution>
+                         <id>gather-reporting-module</id>
+                         <phase>generate-resources</phase>
+                         <goals>
+                             <goal>unpack</goal>
+                         </goals>
+                         <configuration>
+                             <artifactItems>
+                                 <artifactItem>
+                                     <groupId>org.nexuse2e</groupId>
+                                     <artifactId>nexuse2e-reporting</artifactId>
+                                     <version>1.0</version>
+                                     <type>jar</type>
+                                 </artifactItem>
+                             </artifactItems>
+                             <outputDirectory>${project.build.directory}/reporting</outputDirectory>
+                             <overWriteReleases>false</overWriteReleases>
+                             <overWriteSnapshots>true</overWriteSnapshots>
+                         </configuration>
+                     </execution>
+                 </executions>
+             </plugin>
+             <plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-war-plugin</artifactId>
+                 <version>2.0.2</version>
+                 <extensions>true</extensions>
+                 <configuration>
+                     <webResources>
+                         <resource>
+                             <directory>${project.build.directory}/reporting/platform</directory>
+                             <includes>
+                                 <include>**</include>
+                             </includes>
+                             <targetPath>WEB-INF/platform</targetPath>
+                             <filtering>false</filtering>
+                         </resource>
+                     </webResources>
+                 </configuration>
+             </plugin>
+         </plugins>
+     </build>
    </profile>
  </profiles>
 </project>
