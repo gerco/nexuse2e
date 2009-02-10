@@ -119,10 +119,12 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
      */
     private FrontendPipeline getProtocolSpecificPipeline( ProtocolSpecificKey protocolSpecificKey ) {
 
-        for ( int i = 0; i < frontendOutboundPipelines.length; i++ ) {
-            LOG.debug( "comparing keys:" + protocolSpecificKey + " - " + frontendOutboundPipelines[i].getKey() );
-            if ( frontendOutboundPipelines[i].getKey().equals( protocolSpecificKey ) ) {
-                return frontendOutboundPipelines[i];
+        if (frontendOutboundPipelines != null) {
+            for ( int i = 0; i < frontendOutboundPipelines.length; i++ ) {
+                LOG.debug( "comparing keys:" + protocolSpecificKey + " - " + frontendOutboundPipelines[i].getKey() );
+                if ( frontendOutboundPipelines[i].getKey().equals( protocolSpecificKey ) ) {
+                    return frontendOutboundPipelines[i];
+                }
             }
         }
         return null;
