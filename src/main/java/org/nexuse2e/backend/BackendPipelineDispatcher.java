@@ -196,46 +196,49 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
                 conversationId, actionId, partnerId, choreographyId,
                 org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_NORMAL );
         messagePojo.setOutbound( true );
-        
-        // Set conversation on MessageContext
+
         messageContext.setConversation( messagePojo.getConversation() );
 
-        if ( primaryKey != null ) {
-            messageContext.setData( primaryKey );
-        }
-        List<MessagePayloadPojo> bodyParts = new ArrayList<MessagePayloadPojo>();
-        for ( byte[] payload : payloads ) {
-            if ( payload != null && payload.length > 0 ) {
-                MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo();
-                messagePayloadPojo.setMessage( messagePojo );
-                messagePayloadPojo.setPayloadData( payload );
-                // TODO: MIME type must be determined!
-                messagePayloadPojo.setMimeType( "text/xml" );
-                messagePayloadPojo.setContentId( messagePojo.getMessageId() + "-body1" );
-                messagePayloadPojo.setSequenceNumber( new Integer( 1 ) );
-                messagePayloadPojo.setCreatedDate( messagePojo.getCreatedDate() );
-                messagePayloadPojo.setModifiedDate( messagePojo.getCreatedDate() );
-
-                bodyParts.add( messagePayloadPojo );
-                //messageContext.setData( payload );    
+        Object syncObj = Engine.getInstance().getTransactionService().getSyncObjectForConversation( messageContext.getConversation() );
+        synchronized (syncObj) {
+            // Set conversation on MessageContext
+            if ( primaryKey != null ) {
+                messageContext.setData( primaryKey );
             }
+            List<MessagePayloadPojo> bodyParts = new ArrayList<MessagePayloadPojo>();
+            for ( byte[] payload : payloads ) {
+                if ( payload != null && payload.length > 0 ) {
+                    MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo();
+                    messagePayloadPojo.setMessage( messagePojo );
+                    messagePayloadPojo.setPayloadData( payload );
+                    // TODO: MIME type must be determined!
+                    messagePayloadPojo.setMimeType( "text/xml" );
+                    messagePayloadPojo.setContentId( messagePojo.getMessageId() + "-body1" );
+                    messagePayloadPojo.setSequenceNumber( new Integer( 1 ) );
+                    messagePayloadPojo.setCreatedDate( messagePojo.getCreatedDate() );
+                    messagePayloadPojo.setModifiedDate( messagePojo.getCreatedDate() );
+    
+                    bodyParts.add( messagePayloadPojo );
+                    //messageContext.setData( payload );    
+                }
+            }
+            messagePojo.setMessagePayloads( bodyParts );
+    
+            if ( errors != null ) {
+                messagePojo.setErrors( errors );
+            }
+    
+            messageContext.setMessagePojo( messagePojo );
+            try {
+                pipeline.processMessage( messageContext );
+            } catch ( NexusException e ) {
+                throw e;
+            } catch ( Error e ) {
+                throw new NexusException( e.toString() );
+            }
+    
+            return messageContext;
         }
-        messagePojo.setMessagePayloads( bodyParts );
-
-        if ( errors != null ) {
-            messagePojo.setErrors( errors );
-        }
-
-        messageContext.setMessagePojo( messagePojo );
-        try {
-            pipeline.processMessage( messageContext );
-        } catch ( NexusException e ) {
-            throw e;
-        } catch ( Error e ) {
-            throw new NexusException( e.toString() );
-        }
-
-        return messageContext;
     } // processMessage
 
     /* (non-Javadoc)

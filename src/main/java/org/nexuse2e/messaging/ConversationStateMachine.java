@@ -128,6 +128,7 @@ public class ConversationStateMachine {
             try {
                 Engine.getInstance().getTransactionService().updateTransaction( message );
             } catch ( StateTransitionException stex ) {
+                stex.printStackTrace();
                 LOG.warn( stex.getMessage() );
             }
         }
@@ -142,8 +143,10 @@ public class ConversationStateMachine {
             message.setModifiedDate( new Date() );
 
             conversation.setStatus( Constants.CONVERSATION_STATUS_PROCESSING );
-            if ( message.getNxMessageId() <= 0 ) {
+            if (message.getNxMessageId() <= 0) {
                 messages.add( message );
+            }
+            if ( conversation.getNxConversationId() <= 0 ) {
                 Engine.getInstance().getTransactionService().storeTransaction( conversation, message );
             } else {
                 Engine.getInstance().getTransactionService().updateTransaction( message );
@@ -192,8 +195,9 @@ public class ConversationStateMachine {
                     Engine.getInstance().getTransactionService().updateTransaction( referencedMessage );
                 } else {
                     throw new StateTransitionException(
-                            "Ack message received where it was not expected: Message status was "
-                                    + referencedMessage.getStatus() );
+                            "Ack message received where it was not expected: Referenced message id is " +
+                            referencedMessage.getMessageId() + ", status was " + MessagePojo.getStatusName( referencedMessage.getStatus() ) +
+                            ", conversation status is " + ConversationPojo.getStatusName( referencedMessage.getConversation().getStatus() ) );
                 }
             } else {
                 throw new NexusException( "Error using referenced message on acknowledgment (ack message ID: "
@@ -303,8 +307,11 @@ public class ConversationStateMachine {
             if ( message.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_NORMAL ) {
                 conversation.setStatus( Constants.CONVERSATION_STATUS_PROCESSING );
             }
-            if ( message.getNxMessageId() <= 0 ) {
+            if (message.getNxMessageId() <= 0) {
                 messages.add( message );
+            }
+            messages.add( message );
+            if ( conversation.getNxConversationId() <= 0 ) {
                 Engine.getInstance().getTransactionService().storeTransaction( conversation, message );
             } else {
                 Engine.getInstance().getTransactionService().updateTransaction( message, force );

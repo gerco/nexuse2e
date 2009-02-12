@@ -257,4 +257,32 @@ public class ConversationPojo implements NEXUSe2ePojo {
         this.messageCount = messageCount;
     }
 
+    
+    public static String getStatusName( int status ) {
+        switch (status) {
+        case Constants.CONVERSATION_STATUS_ERROR:
+            return "ERROR";
+        case Constants.CONVERSATION_STATUS_UNKNOWN:
+            return "UNKNOWN";
+        case Constants.CONVERSATION_STATUS_CREATED:
+            return "CREATED";
+        case Constants.CONVERSATION_STATUS_PROCESSING:
+            return "PROCESSING";
+        case Constants.CONVERSATION_STATUS_AWAITING_ACK:
+            return "AWAITING_ACK";
+        case Constants.CONVERSATION_STATUS_IDLE:
+            return "IDLE";
+        case Constants.CONVERSATION_STATUS_SENDING_ACK:
+            return "SENDING_ACK";
+        case Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND:
+            return "ACK_SENT_AWAITING_BACKEND";
+        case Constants.CONVERSATION_STATUS_AWAITING_BACKEND:
+            return "AWAITING_BACKEND";
+        case Constants.CONVERSATION_STATUS_BACKEND_SENT_SENDING_ACK:
+            return "BACKEND_SENT_SENDING_ACK";
+        case Constants.CONVERSATION_STATUS_COMPLETED:
+            return "COMPLETED";
+        }
+        return "UNKNOWN";
+    }
 }

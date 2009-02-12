@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.nexuse2e.messaging.Constants;
 import org.nexuse2e.messaging.ErrorDescriptor;
 
 /**
@@ -447,4 +448,22 @@ public class MessagePojo implements NEXUSe2ePojo {
         return nxMessageId;
     }
 
+    
+    public static String getStatusName( int status ) {
+        switch (status) {
+        case Constants.MESSAGE_STATUS_FAILED:
+            return "FAILED";
+        case Constants.MESSAGE_STATUS_UNKNOWN:
+            return "UNKNOWN";
+        case Constants.MESSAGE_STATUS_RETRYING:
+            return "RETRYING";
+        case Constants.MESSAGE_STATUS_QUEUED:
+            return "QUEUED";
+        case Constants.MESSAGE_STATUS_SENT:
+            return "SENT";
+        case Constants.MESSAGE_STATUS_STOPPED:
+            return "STOPPED";
+        }
+        return "UNKNOWN";
+    }
 }

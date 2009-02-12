@@ -19,7 +19,6 @@
  */
 package org.nexuse2e.dao;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -57,6 +56,57 @@ public class TransactionDAO extends BasicDAO {
     //    public static final String TYPE_ACK      = "Acknowledgment";
     //    public static final String TYPE_DEFAULT  = "Normal";
 
+    private String getType( int messageType ) {
+        switch (messageType) {
+        case org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_NORMAL:
+            return "normal";
+        case org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ACK:
+            return "acknowledgement";
+        case org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ERROR:
+            return "error";
+        }
+        return "unknown";
+    }
+    
+    /**
+     * Helper method for trace log level output
+     */
+    private void printConversationInfo( String prefix, ConversationPojo pojo, MessagePojo lastMessage ) {
+        if (pojo != null) {
+            
+            // DEBUG
+            int id = pojo.getNxConversationId();
+            pojo.setNxConversationId( 0 );
+            String s = pojo.toString();
+            pojo.setNxConversationId( id );
+            // END OF DEBUG
+            
+            
+            List<MessagePojo> messages = pojo.getMessages();
+            if (lastMessage == null) {
+                lastMessage = (messages == null || messages.isEmpty() ? null : messages.get( messages.size() - 1 ));
+            }
+            org.nexuse2e.configuration.EngineConfiguration cfg = org.nexuse2e.Engine.getInstance().getCurrentConfiguration();
+            ActionPojo action = null;
+            if (lastMessage != null) {
+                try {
+                    action = cfg.getActionFromChoreographyByNxActionId(
+                            cfg.getChoreographyByNxChoreographyId( lastMessage.getConversation().getChoreography().getNxChoreographyId() ),
+                            lastMessage.getAction().getNxActionId() );
+                } catch (NexusException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            LOG.trace( prefix + s + " conversationId: " + pojo.getConversationId() + " " +
+                    (messages == null ? 0 : messages.size()) + " messages" +
+                    (lastMessage == null ? "" : ", last message type is " + getType( lastMessage.getType() ) +
+                    ", messageId is " + lastMessage.getMessageId()) + (action == null ? "" : " (" + action.getName() + ")") +
+                    ", thread " + Thread.currentThread().getName() );
+        } else if (lastMessage != null) {
+            LOG.trace( prefix + " message type is " + getType( lastMessage.getType() ) + ", messageId is " + lastMessage.getMessageId() );
+        }
+    }
+    
     /**
      * Find a conversation by its identifier
      * @param conversationId The converstaion identifier
@@ -74,7 +124,11 @@ public class TransactionDAO extends BasicDAO {
         List<ConversationPojo> result = (List<ConversationPojo>) getListThroughSessionFind( query.toString(), session, transaction );
 
         if ( result != null && result.size() > 0 ) {
-            return result.get( 0 );
+            ConversationPojo pojo = result.get( 0 );
+            if (LOG.isTraceEnabled()) {
+                printConversationInfo( "loaded conversation:", pojo, null );
+            }
+            return pojo;
         }
 
         return null;
@@ -97,7 +151,11 @@ public class TransactionDAO extends BasicDAO {
         List<ConversationPojo> result = (List<ConversationPojo>) getListThroughSessionFind( query.toString(), session, transaction );
 
         if ( result != null && result.size() > 0 ) {
-            return result.get( 0 );
+            ConversationPojo pojo = result.get( 0 );
+            if (LOG.isTraceEnabled()) {
+                printConversationInfo( "loaded conversation:", pojo, null );
+            }
+            return pojo;
         }
 
         return null;
@@ -107,6 +165,7 @@ public class TransactionDAO extends BasicDAO {
     public MessagePojo getMessageByMessageId( String messageId, Session session, Transaction transaction )
             throws NexusException {
 
+        LOG.trace( "messageId: " + messageId );
         StringBuffer query = new StringBuffer( "from MessagePojo where messageId='" + messageId + "'" );
 
         List<MessagePojo> result = (List<MessagePojo>) getListThroughSessionFind( query.toString(), session, transaction );
@@ -121,6 +180,7 @@ public class TransactionDAO extends BasicDAO {
     public MessagePojo getMessageByReferencedMessageId( String messageId, Session session, Transaction transaction )
             throws NexusException {
 
+        LOG.trace( "messageId: " + messageId );
         StringBuffer query = new StringBuffer( "from MessagePojo where referencedMessage.messageId='" + messageId + "'" );
 
         List<MessagePojo> result = (List<MessagePojo>) getListThroughSessionFind( query.toString(), session, transaction );
@@ -758,20 +818,21 @@ public class TransactionDAO extends BasicDAO {
 
     public void storeTransaction( ConversationPojo conversationPojo, MessagePojo messagePojo ) throws NexusException {
 
-        LOG.debug( "storeTransaction: " + conversationPojo + " - " + messagePojo );
-
         Session session = null;
         Transaction transaction = null;
 
         saveOrUpdateRecord( conversationPojo, session, transaction );
-
+        if (LOG.isTraceEnabled()) {
+            printConversationInfo( "stored conversation:", conversationPojo, null );
+        }
     } // storeTransaction
 
     public void reattachConversation( ConversationPojo conversationPojo ) throws NexusException {
 
-        LOG.debug( "updateTransaction: " + conversationPojo );
-
         reattachRecord( conversationPojo );
+        if (LOG.isTraceEnabled()) {
+            printConversationInfo( "reattached conversation:", conversationPojo, null );
+        }
     }
 
     public void updateMessage( MessagePojo messagePojo ) throws NexusException {
@@ -782,17 +843,21 @@ public class TransactionDAO extends BasicDAO {
         Transaction transaction = null;
 
         mergeRecord( messagePojo, session, transaction );
+        if (LOG.isTraceEnabled()) {
+            printConversationInfo( "updated message:", null, messagePojo );
+        }
     } // updateMessage
 
     public void updateConversation( ConversationPojo conversationPojo ) throws NexusException {
-
-        LOG.debug( "updateConversation: " + conversationPojo );
 
         Session session = null;
         Transaction transaction = null;
 
         reattachRecord( conversationPojo );
         mergeRecord( conversationPojo, session, transaction );
+        if (LOG.isTraceEnabled()) {
+            printConversationInfo( "merged conversation:", conversationPojo, null );
+        }
     } // updateMessage
     
     /**

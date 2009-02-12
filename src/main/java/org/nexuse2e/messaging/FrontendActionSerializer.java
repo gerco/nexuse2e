@@ -290,27 +290,31 @@ public class FrontendActionSerializer implements Manageable {
             while ( !stopRequested ) {
                 try {
                     messageContext = queue.take();
-
-                    // Initiate the backend process
-                    FrontendActionSerializer.this.backendInboundDispatcher.processMessage( messageContext );
-
-                    messageContext.getStateMachine().processedBackend();
-                } catch ( NexusException nex ) {
-                    LOG.error( "InboundQueueListener.run detected an exception: ", nex );
-                    nex.printStackTrace();
-                    try {
-                        messageContext.getStateMachine().processingFailed();
-                    } catch (StateTransitionException e) {
-                        LOG.warn( e.getMessage() );
-                    } catch (NexusException e) {
-                        e.printStackTrace();
-                        LOG.error( "Error while setting conversation status to ERROR", e );
+                    Object syncObj = Engine.getInstance().getTransactionService().getSyncObjectForConversation( messageContext.getConversation() );
+                    synchronized (syncObj) {
+                        try {
+                            // Initiate the backend process
+                            FrontendActionSerializer.this.backendInboundDispatcher.processMessage( messageContext );
+                            
+                            messageContext.getStateMachine().processedBackend();
+                        } catch ( NexusException nex ) {
+                            LOG.error( "InboundQueueListener.run detected an exception: ", nex );
+                            nex.printStackTrace();
+                            try {
+                                messageContext.getStateMachine().processingFailed();
+                            } catch (StateTransitionException e) {
+                                LOG.warn( e.getMessage() );
+                            } catch (NexusException e) {
+                                e.printStackTrace();
+                                LOG.error( "Error while setting conversation status to ERROR", e );
+                            }
+                        } catch (StateTransitionException stex) {
+                            LOG.warn( stex.getMessage() );
+                        }
                     }
                 } catch ( InterruptedException ex ) {
                     LOG.debug( new LogMessage( "Interrupted while listening on queue ",
                             (messageContext == null ? null : messageContext.getMessagePojo() ) ) );
-                } catch (StateTransitionException stex) {
-                    LOG.warn( stex.getMessage() );
                 }
             } // while
             LOG.info( new LogMessage( "Stopped InboundQueueListener (FrontendActionSerializer) "

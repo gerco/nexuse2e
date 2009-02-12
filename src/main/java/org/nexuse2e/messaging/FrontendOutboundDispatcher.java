@@ -221,58 +221,61 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
 
             LOG.trace( "Message ( " + messagePojo.getMessageId() + " ) end timestamp: " + messagePojo.getEndDate() );
 
-            if ( retryCount <= retries ) {
-                LOG.debug( new LogMessage( "Sending message...", messagePojo ) );
-
-                MessageContext returnedMessageContext = null;
-
-                try {
-                    retryCount++;
-                    if ( messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_NORMAL
-                            && messagePojo.getEndDate() != null ) {
-                        // If message has been ack'ed while we were waiting do nothing
-                        LOG.info( "Cancelled sending message (ack was just received): " + messagePojo.getMessageId() );
-                        cancelRetrying( false );
-                        return;
-                    }
-                    // Send message
-                    messageContext.getMessagePojo().setRetries( retryCount - 1 );
-                    returnedMessageContext = pipeline.processMessage( messageContext );
-
-                    messageContext.getStateMachine().sentMessage();
-
-                    LOG.debug( new LogMessage( "Message sent.", messagePojo ) );
-                } catch ( Throwable e ) {
-                    // Persist retry count changes
+            Object syncObj = Engine.getInstance().getTransactionService().getSyncObjectForConversation( messageContext.getConversation() );
+            synchronized (syncObj) {
+                if ( retryCount <= retries ) {
+                    LOG.debug( new LogMessage( "Sending message...", messagePojo ) );
+    
+                    MessageContext returnedMessageContext = null;
+    
                     try {
-                        Engine.getInstance().getTransactionService().updateTransaction( messagePojo );
-                    } catch ( NexusException e1 ) {
-                        LOG.error( new LogMessage( "Error saving message: " + e1, messagePojo ) );
-                    } catch ( StateTransitionException stex ) {
-                        LOG.warn( stex.getMessage() );
+                        retryCount++;
+                        if ( messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_NORMAL
+                                && messagePojo.getEndDate() != null ) {
+                            // If message has been ack'ed while we were waiting do nothing
+                            LOG.info( "Cancelled sending message (ack was just received): " + messagePojo.getMessageId() );
+                            cancelRetrying( false );
+                            return;
+                        }
+                        // Send message
+                        messageContext.getMessagePojo().setRetries( retryCount - 1 );
+    
+                        returnedMessageContext = pipeline.processMessage( messageContext );
+                        messageContext.getStateMachine().sentMessage();
+    
+                        LOG.debug( new LogMessage( "Message sent.", messagePojo ) );
+                    } catch ( Throwable e ) {
+                        // Persist retry count changes
+                        try {
+                            Engine.getInstance().getTransactionService().updateTransaction( messagePojo );
+                        } catch ( NexusException e1 ) {
+                            LOG.error( new LogMessage( "Error saving message: " + e1, messagePojo ) );
+                        } catch ( StateTransitionException stex ) {
+                            LOG.warn( stex.getMessage() );
+                        }
+    
+                        LOG.error( new LogMessage( "Error sending message: " + e, messagePojo ), e );
                     }
-
-                    LOG.error( new LogMessage( "Error sending message: " + e, messagePojo ), e );
-                }
-
-                if ( ( returnedMessageContext != null ) && !returnedMessageContext.equals( messageContext ) ) {
-                    try {
-                        Engine.getInstance().getCurrentConfiguration().getStaticBeanContainer()
-                                .getFrontendInboundDispatcher().processMessage( returnedMessageContext );
-                    } catch ( NexusException e ) {
-                        LOG.error( "Error processing synchronous reply: " + e );
+    
+                    if ( ( returnedMessageContext != null ) && !returnedMessageContext.equals( messageContext ) ) {
+                        try {
+                            Engine.getInstance().getCurrentConfiguration().getStaticBeanContainer()
+                                    .getFrontendInboundDispatcher().processMessage( returnedMessageContext );
+                        } catch ( NexusException e ) {
+                            LOG.error( "Error processing synchronous reply: " + e );
+                        }
                     }
-                }
-
-            } else {
-                if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
-                    LOG.error( new LogMessage(
-                            "Maximum number of retries reached without receiving acknowledgment - choreography: "
-                                    + messagePojo.getConversation().getChoreography().getName() + ", partner: " + messagePojo.getConversation().getPartner().getPartnerId(), messagePojo ) );
+    
                 } else {
-                    LOG.debug( new LogMessage( "Max number of retries reached!", messagePojo ) );
+                    if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
+                        LOG.error( new LogMessage(
+                                "Maximum number of retries reached without receiving acknowledgment - choreography: "
+                                        + messagePojo.getConversation().getChoreography().getName() + ", partner: " + messagePojo.getConversation().getPartner().getPartnerId(), messagePojo ) );
+                    } else {
+                        LOG.debug( new LogMessage( "Max number of retries reached!", messagePojo ) );
+                    }
+                    cancelRetrying();
                 }
-                cancelRetrying();
             }
         } // run
 

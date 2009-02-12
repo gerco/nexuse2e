@@ -41,6 +41,9 @@ public class ShortCircuitPipelet extends AbstractPipelet {
     private static Logger         LOG          = Logger.getLogger( ShortCircuitPipelet.class );
 
     protected static final String PARAM_ACTION = "action";
+    protected static final String PARAM_SYNCHRONOUS = "synchonous";
+    protected static final String PARAM_SYNCHONOUS_DELAY = "synchronousDelay";
+    protected static final String PARAM_DELAY = "delay";
 
     protected String              action;
 
@@ -51,6 +54,12 @@ public class ShortCircuitPipelet extends AbstractPipelet {
 
         parameterMap.put( PARAM_ACTION, new ParameterDescriptor( ParameterType.STRING, "Action",
                 "Action for return message", "" ) );
+        parameterMap.put( PARAM_SYNCHRONOUS, new ParameterDescriptor( ParameterType.BOOLEAN,
+                "Synchronous", "Process return message in same thread", Boolean.TRUE ) );
+        parameterMap.put( PARAM_SYNCHONOUS_DELAY, new ParameterDescriptor( ParameterType.STRING,
+                "Inbound pipeline delay", "Time to wait until returning control to backend inbound pipeline (in ms)", "0" ) );
+        parameterMap.put( PARAM_DELAY, new ParameterDescriptor( ParameterType.STRING,
+                "Return message delay", "Time to wait until sending return message (in ms)", "0" ) );
     }
 
     @Override
@@ -67,21 +76,44 @@ public class ShortCircuitPipelet extends AbstractPipelet {
     }
 
     @Override
-    public MessageContext processMessage( MessageContext messageContext ) throws IllegalArgumentException,
+    public MessageContext processMessage( final MessageContext messageContext ) throws IllegalArgumentException,
             IllegalStateException, NexusException {
 
-        BackendPipelineDispatcher backendPipelineDispatcher = Engine.getInstance().getCurrentConfiguration()
-                .getStaticBeanContainer().getBackendPipelineDispatcher();
+        Runnable r = new Runnable() {
 
-        if ( backendPipelineDispatcher != null ) {
-            try {
-                backendPipelineDispatcher.processMessage( messageContext.getMessagePojo().getConversation()
-                        .getConversationId(), action, null, "<?xml version=\"1.0\" encoding=\"UTF-8\"?><test />"
-                        .getBytes() );
-            } catch ( NexusException e ) {
-                LOG.debug( "sendStringMessage - error: " + e );
-                e.printStackTrace();
+            public void run() {
+                
+                try {
+                    String s = (String) getParameter( PARAM_DELAY );
+                    Thread.sleep( s == null ? 0 : Integer.parseInt( s ) );
+                } catch (Exception ignored) {
+                }
+                
+                BackendPipelineDispatcher backendPipelineDispatcher = Engine.getInstance().getCurrentConfiguration()
+                        .getStaticBeanContainer().getBackendPipelineDispatcher();
+
+                if ( backendPipelineDispatcher != null ) {
+                    try {
+                        backendPipelineDispatcher.processMessage( messageContext.getMessagePojo().getConversation()
+                                .getConversationId(), action, null, "<?xml version=\"1.0\" encoding=\"UTF-8\"?><test />"
+                                .getBytes() );
+                    } catch ( NexusException e ) {
+                        LOG.debug( "sendStringMessage - error: " + e );
+                        e.printStackTrace();
+                    }
+                }
             }
+        };
+        Boolean b = getParameter( PARAM_SYNCHRONOUS );
+        if (b == null || b.booleanValue()) {
+            r.run();
+        } else {
+            new Thread( r, "ShortCircuitPipelet async return thread" ).start();
+        }
+        try {
+            String s = (String) getParameter( PARAM_SYNCHONOUS_DELAY );
+            Thread.sleep( s == null ? 0 : Integer.parseInt( s ) );
+        } catch (Exception ignored) {
         }
         return messageContext;
     }

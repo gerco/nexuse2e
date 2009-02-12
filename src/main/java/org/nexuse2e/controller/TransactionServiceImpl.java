@@ -604,6 +604,7 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         Engine.getInstance().getTransactionDAO().storeTransaction( conversationPojo, messagePojo );
+        Engine.getInstance().getTransactionDAO().reattachConversation( conversationPojo );
     } // storeTransaction
 
 
@@ -747,14 +748,16 @@ public class TransactionServiceImpl implements TransactionService {
         String errMsg = null;
         
         if (allowedMessageStatus != messageStatus) {
-            errMsg = "Illegal transition: Cannot set message status from " + allowedMessageStatus + " to " + messageStatus;
+            errMsg = "Illegal transition: Cannot set message status from " +
+            MessagePojo.getStatusName( allowedMessageStatus ) + " to " + MessagePojo.getStatusName( messageStatus );
         }
         if (allowedConversationStatus != conversationStatus) {
             if (errMsg != null) {
-                errMsg += ", cannot set conversation status from " + allowedConversationStatus + " to " + conversationStatus;
+                errMsg += ", cannot set conversation status from " + ConversationPojo.getStatusName( allowedConversationStatus ) +
+                    " to " + ConversationPojo.getStatusName( conversationStatus );
             } else {
                 errMsg = "Illegal transition: Cannot set conversation status from "
-                    + allowedConversationStatus + " to " + conversationStatus;
+                    + ConversationPojo.getStatusName( allowedConversationStatus ) + " to " + ConversationPojo.getStatusName( conversationStatus );
             }
         }
         if (errMsg != null) {
