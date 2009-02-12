@@ -354,7 +354,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                 currentConfiguration.init();
             }
 
-            // Add transaction service to static beans so its life cylcle is managed correctly
+            // Add transaction service to static beans so its life cycle is managed correctly
             currentConfiguration.getStaticBeanContainer().getManagableBeans().put( Constants.TRANSACTION_SERVICE,
                     transactionService );
 
