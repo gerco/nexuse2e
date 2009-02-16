@@ -98,7 +98,7 @@ public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
 
         TransactionService ts = Engine.getInstance().getTransactionService();
         List<MessagePojo> messages = ts.getMessagesByActionPartnerDirectionAndStatus(
-                action, messageContext.getPartner(), true, Constants.MESSAGE_STATUS_QUEUED, 0, false, null, null );
+                action, messageContext.getPartner(), true, Constants.MESSAGE_STATUS_QUEUED, 0, false );
 
         // mark messages as 'sent'
         for (MessagePojo m : messages) {
