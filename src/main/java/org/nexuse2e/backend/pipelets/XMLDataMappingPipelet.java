@@ -49,6 +49,7 @@ import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.MessagePayloadPojo;
+import org.nexuse2e.service.DataConversionException;
 import org.nexuse2e.service.DataConversionService;
 import org.nexuse2e.service.Service;
 import org.nexuse2e.tools.mapping.xmldata.MappingDefinition;
@@ -180,7 +181,7 @@ public class XMLDataMappingPipelet extends AbstractPipelet {
      * @param document
      * @return
      */
-    private Document processMappings( Document document ) {
+    private Document processMappings( Document document ) throws DataConversionException {
 
         Document result = null;
 
@@ -222,7 +223,7 @@ public class XMLDataMappingPipelet extends AbstractPipelet {
         return result;
     }
 
-    private String mapData( XPath xPath, Document document, String sourceValue, MappingDefinition mappingDefinition ) {
+    private String mapData( XPath xPath, Document document, String sourceValue, MappingDefinition mappingDefinition ) throws DataConversionException {
         String result = null;
         
         

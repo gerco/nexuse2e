@@ -38,6 +38,7 @@ import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
+import org.nexuse2e.service.DataConversionException;
 import org.nexuse2e.service.DataConversionService;
 import org.nexuse2e.service.Service;
 import org.nexuse2e.tools.mapping.FlatFileRecord;
@@ -207,7 +208,7 @@ public class IntermediateDataMappingPipelet extends AbstractPipelet {
      * @param mappingDefinition
      * @return
      */
-    private String mapData( String sourceValue, MappingDefinition mappingDefinition ) {
+    private String mapData( String sourceValue, MappingDefinition mappingDefinition ) throws DataConversionException {
 
         String result = null;
 

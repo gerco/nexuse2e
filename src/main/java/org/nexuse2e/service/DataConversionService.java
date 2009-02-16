@@ -20,11 +20,14 @@
 
 package org.nexuse2e.service;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
@@ -63,6 +66,11 @@ public class DataConversionService extends AbstractService {
     public final static String STRIP_LEADING           = "stripLeading";
     public final static String CONCAT                  = "concat";
     public final static String XPATH                   = "xpath";
+    public final static String NUMBERFORMAT            = "numberFormat";
+    public final static String ADD                     = "add";
+    public final static String SUBTRACT                = "subtract";
+    public final static String MULTIPLY                = "multiply";
+    public final static String DIVIDE                  = "divide";
 
     @Override
     public void fillParameterMap( Map<String, ParameterDescriptor> parameterMap ) {
@@ -81,7 +89,7 @@ public class DataConversionService extends AbstractService {
      * @param definition The mapping definition.
      * @return The converted value.
      */
-    public String processConversion( String value, MappingDefinition definition ) {
+    public String processConversion( String value, MappingDefinition definition ) throws DataConversionException {
 
         return processConversion( null, null, value, definition, null );
     }
@@ -95,7 +103,7 @@ public class DataConversionService extends AbstractService {
      * @param definition The mapping definition.
      * @return The converted value.
      */
-    public String processConversion( XPath xPath, Document document, String value, MappingDefinition definition ) {
+    public String processConversion( XPath xPath, Document document, String value, MappingDefinition definition ) throws DataConversionException {
 
         return processConversion( xPath, document, value, definition, null );
     }
@@ -108,7 +116,7 @@ public class DataConversionService extends AbstractService {
      * May be <code>null</code>.
      * @return The converted value.
      */
-    public String processConversion( String value, MappingDefinition definition, Map<String, String> additionalValues ) {
+    public String processConversion( String value, MappingDefinition definition, Map<String, String> additionalValues ) throws DataConversionException {
 
         return processConversion( null, null, value, definition, additionalValues );
     }
@@ -125,18 +133,18 @@ public class DataConversionService extends AbstractService {
      * @return The converted value.
      */
     public String processConversion( XPath xPath, Document document, String value, MappingDefinition definition,
-            Map<String, String> aditionalValues ) {
+            Map<String, String> additionalValues ) throws DataConversionException {
 
         // We return the unchanged value in case no command was found
         String result = value;
 
         String command = definition.getCommand();
 
-        if ( aditionalValues == null ) {
-            aditionalValues = new HashMap<String, String>();
+        if ( additionalValues == null ) {
+            additionalValues = new HashMap<String, String>();
         }
         if ( value != null ) {
-            aditionalValues.put( "$value", value );
+            additionalValues.put( "$value", value );
         }
 
         Pattern pattern = Pattern.compile( "[a-zA-Z]+" );
@@ -169,7 +177,7 @@ public class DataConversionService extends AbstractService {
             if ( paramList != null && paramList.size() > 0 ) {
                 paramArray = paramList.toArray( new String[paramList.size()] );
             }
-            result = executeCommand( xPath, document, commandName, paramArray, definition, aditionalValues );
+            result = executeCommand( xPath, document, commandName, paramArray, definition, additionalValues );
         }
 
         // Process any formatting rules (length etc.)
@@ -181,7 +189,7 @@ public class DataConversionService extends AbstractService {
     }
 
     private String executeCommand( XPath xPath, Document document, String name, String[] params,
-            MappingDefinition definition, Map<String, String> additionalValues ) {
+            MappingDefinition definition, Map<String, String> additionalValues ) throws DataConversionException {
 
         if ( name == null ) {
             return null;
@@ -231,6 +239,21 @@ public class DataConversionService extends AbstractService {
         } else if ( name.equals( XPATH ) ) {
             LOG.trace( "dispatching: xpath" );
             return processXPath( xPath, document, params, definition, additionalValues );
+        } else if ( name.equals( NUMBERFORMAT ) ) {
+            LOG.trace( "dispatching: " + name );
+            return processNumberFormat( params, additionalValues );
+        } else if ( name.equals( ADD ) ) {
+            LOG.trace( "dispatching: " + name );
+            return processAdd( params, additionalValues );
+        } else if ( name.equals( SUBTRACT ) ) {
+            LOG.trace( "dispatching: " + name );
+            return processSubtract( params, additionalValues );
+        } else if ( name.equals( MULTIPLY ) ) {
+            LOG.trace( "dispatching: " + name );
+            return processMultiply( params, additionalValues );
+        } else if ( name.equals( DIVIDE ) ) {
+            LOG.trace( "dispatching: " + name );
+            return processDivide( params, additionalValues );
         } else {
             LOG.trace( "Method: " + name + " is not a valid conversion method!" );
         }
@@ -241,10 +264,10 @@ public class DataConversionService extends AbstractService {
     /**
      * @param params
      * @param definition
-     * @param aditionalValues
+     * @param additionalValues
      * @return
      */
-    private String processModify( String[] params, MappingDefinition definition, Map<String, String> aditionalValues ) {
+    private String processModify( String[] params, MappingDefinition definition, Map<String, String> additionalValues ) {
 
         if ( params == null || params.length < 3 ) {
             LOG.error( "modify requires at least 3 parameter: modify[$value,'aa.aa','aa,aa']" );
@@ -258,17 +281,17 @@ public class DataConversionService extends AbstractService {
     /**
      * @param params
      * @param definition
-     * @param aditionalValues
+     * @param additionalValues
      * @return
      */
     private String processValidateLength( String[] params, MappingDefinition definition,
-            Map<String, String> aditionalValues ) {
+            Map<String, String> additionalValues ) {
 
         if ( params == null || params.length < 3 ) {
             LOG.error( "validateLength requires at least 3 parameter: validateLength[$value,'30','true']" );
             return null;
         }
-        String value = aditionalValues.get( "$value" );
+        String value = additionalValues.get( "$value" );
         String lengthStr = stripParameter( params[1] );
         String emptyAllowed = stripParameter( params[2] );
         if ( emptyAllowed.toLowerCase().equals( "true" ) ) {
@@ -297,11 +320,11 @@ public class DataConversionService extends AbstractService {
     /**
      * @param params
      * @param definition
-     * @param aditionalValues
+     * @param additionalValues
      * @return
      */
     private String processValidatePattern( String[] params, MappingDefinition definition,
-            Map<String, String> aditionalValues ) {
+            Map<String, String> additionalValues ) {
 
         if ( params == null || params.length < 3 ) {
             LOG
@@ -309,7 +332,7 @@ public class DataConversionService extends AbstractService {
             return null;
         }
 
-        String value = aditionalValues.get( "$value" );
+        String value = additionalValues.get( "$value" );
         String pattern = stripParameter( params[1] );
 
         if ( pattern.equals( "decimal" ) ) {
@@ -359,10 +382,10 @@ public class DataConversionService extends AbstractService {
      * @param value
      * @param params
      * @param definition
-     * @param aditionalValues
+     * @param additionalValues
      * @return
      */
-    private String processRegex( String[] params, MappingDefinition definition, Map<String, String> aditionalValues ) {
+    private String processRegex( String[] params, MappingDefinition definition, Map<String, String> additionalValues ) {
 
         if ( params == null || params.length < 1 ) {
             LOG.error( "regex requires at least 1 parameter: regex['the_static_value']" );
@@ -375,7 +398,7 @@ public class DataConversionService extends AbstractService {
         String value = null;
         try {
             if ( isVariable( params[0] ) ) {
-                value = substitute( params[0], aditionalValues );
+                value = substitute( params[0], additionalValues );
             } else {
                 value = stripParameter( params[0] );
             }
@@ -406,18 +429,18 @@ public class DataConversionService extends AbstractService {
     /**
      * @param params
      * @param definition
-     * @param aditionalValues
+     * @param additionalValues
      * @return
      */
     private String processReplaceString( String[] params, MappingDefinition definition,
-            Map<String, String> aditionalValues ) {
+            Map<String, String> additionalValues ) {
 
         if ( params == null || params.length < 2 ) {
-            LOG.error( "replaceString requires at least 3 parameter: replaceString['.',',']" );
+            LOG.error( "replaceString requires at least 2 parameter: replaceString['.',',']" );
             return null;
         }
         try {
-            String value = aditionalValues.get( "$value" );
+            String value = additionalValues.get( "$value" );
             if ( !StringUtils.isEmpty( value ) ) {
                 String target = stripParameter( params[0] );
                 String replacement = stripParameter( params[1] );
@@ -432,7 +455,7 @@ public class DataConversionService extends AbstractService {
     }
 
     private String processFill( boolean left, String[] params, MappingDefinition definition,
-            Map<String, String> aditionalValues ) {
+            Map<String, String> additionalValues ) {
 
         String n;
         if ( left ) {
@@ -446,7 +469,7 @@ public class DataConversionService extends AbstractService {
             return null;
         }
         try {
-            String value = aditionalValues.get( "$value" );
+            String value = additionalValues.get( "$value" );
             if ( !StringUtils.isEmpty( value ) ) {
                 String character = stripParameter( params[0] );
                 if ( StringUtils.isEmpty( character ) ) {
@@ -482,14 +505,14 @@ public class DataConversionService extends AbstractService {
     }
 
     private String processStripLeading( String[] params, MappingDefinition definition,
-            Map<String, String> aditionalValues ) {
+            Map<String, String> additionalValues ) {
 
         if ( params == null || params.length < 1 ) {
             LOG.error( "stripLeading requires at least one parameters: stripLeading[char]" );
             return null;
         }
 
-        String value = aditionalValues.get( "$value" );
+        String value = additionalValues.get( "$value" );
         if ( value != null ) {
             String character = stripParameter( params[0] );
             if ( StringUtils.isEmpty( character ) ) {
@@ -507,13 +530,13 @@ public class DataConversionService extends AbstractService {
     }
 
     private String processConcat( XPath xPath, Document document, String[] params, MappingDefinition definition,
-            Map<String, String> aditionalValues ) {
+            Map<String, String> additionalValues ) {
 
         if ( xPath == null || document == null ) {
             LOG.error( "concat can only be executed on XML documents" );
         }
         try {
-            String value = aditionalValues.get( "$value" );
+            String value = additionalValues.get( "$value" );
             if ( !StringUtils.isEmpty( value ) ) {
                 StringBuilder sb = new StringBuilder( value );
                 if ( params != null ) {
@@ -532,7 +555,7 @@ public class DataConversionService extends AbstractService {
     }
 
     private String processXPath( XPath xPath, Document document, String[] params, MappingDefinition definition,
-            Map<String, String> aditionalValues ) {
+            Map<String, String> additionalValues ) {
 
         Object xPathResult = null;
 
@@ -562,10 +585,10 @@ public class DataConversionService extends AbstractService {
      * @param value
      * @param params
      * @param definition
-     * @param aditionalValues
+     * @param additionalValues
      * @return
      */
-    private String processSubstring( String[] params, MappingDefinition definition, Map<String, String> aditionalValues ) {
+    private String processSubstring( String[] params, MappingDefinition definition, Map<String, String> additionalValues ) {
 
         if ( params == null || params.length < 3 ) {
             LOG.error( "substring requires at least 3 parameter: substring[$value,'startIndex','endIndex']" );
@@ -575,7 +598,7 @@ public class DataConversionService extends AbstractService {
         try {
             String value = null;
             if ( isVariable( params[0] ) ) {
-                value = substitute( params[0], aditionalValues );
+                value = substitute( params[0], additionalValues );
                 if ( StringUtils.isEmpty( value ) ) {
                     LOG.error( "unable to substitute variable: " + params[0] );
                     return null;
@@ -617,10 +640,10 @@ public class DataConversionService extends AbstractService {
      * @param value
      * @param params
      * @param definition
-     * @param aditionalValues
+     * @param additionalValues
      * @return
      */
-    private String processStatic( String[] params, MappingDefinition definition, Map<String, String> aditionalValues ) {
+    private String processStatic( String[] params, MappingDefinition definition, Map<String, String> additionalValues ) {
 
         if ( params == null || params.length < 1 ) {
             LOG.error( "static requires at least 1 parameter: static['the_static_value']" );
@@ -633,10 +656,10 @@ public class DataConversionService extends AbstractService {
      * @param category
      * @param left
      * @param value
-     * @param aditionalValues
+     * @param additionalValues
      * @return
      */
-    private String processDBMapping( String category, boolean left, String[] params, Map<String, String> aditionalValues ) {
+    private String processDBMapping( String category, boolean left, String[] params, Map<String, String> additionalValues ) {
 
         if ( category == null ) {
             LOG.error( "category must not be empty!" );
@@ -644,11 +667,11 @@ public class DataConversionService extends AbstractService {
         }
 
         MappingPojo pojo = Engine.getInstance().getActiveConfigurationAccessService()
-                .getMappingByCategoryDirectionAndKey( category, left, aditionalValues.get( "$value" ) );
+                .getMappingByCategoryDirectionAndKey( category, left, additionalValues.get( "$value" ) );
         if ( pojo != null ) {
             return left ? pojo.getRightValue() : pojo.getLeftValue();
         } else {
-            LOG.error( "no mapping entry found for " + aditionalValues.get( "$value" ) + " and category " + category );
+            LOG.error( "no mapping entry found for " + additionalValues.get( "$value" ) + " and category " + category );
         }
         return null;
     }
@@ -657,9 +680,9 @@ public class DataConversionService extends AbstractService {
      * @param value
      * @param params
      * @param definition
-     * @param aditionalValues
+     * @param additionalValues
      */
-    private String processDateFormat( String[] params, MappingDefinition definition, Map<String, String> aditionalValues ) {
+    private String processDateFormat( String[] params, MappingDefinition definition, Map<String, String> additionalValues ) {
 
         if ( params == null || params.length < 2 ) {
             LOG
@@ -674,7 +697,7 @@ public class DataConversionService extends AbstractService {
                     date = new Date();
                 }
             } else {
-                String dateValue = aditionalValues.get( "$value" ).trim();
+                String dateValue = additionalValues.get( "$value" ).trim();
 
                 // TODO: configurable  ?
 
@@ -763,10 +786,10 @@ public class DataConversionService extends AbstractService {
 
     /**
      * @param param
-     * @param aditionalValues
+     * @param additionalValues
      * @return
      */
-    private String substitute( String param, Map<String, String> aditionalValues ) throws ParseException {
+    private String substitute( String param, Map<String, String> additionalValues ) throws ParseException {
 
         if ( StringUtils.isEmpty( param ) ) {
             throw new ParseException( "Parameter must not be empty!", 0 );
@@ -774,7 +797,219 @@ public class DataConversionService extends AbstractService {
         if ( !param.startsWith( "$" ) ) {
             throw new ParseException( "replaceable variables must start with $", 0 );
         }
-        return aditionalValues.get( param );
+        return additionalValues.get( param );
     }
+    
+    /**
+     * Converts a number into a particular format.
+     * @param params An array of Strings containing the parameters for the conversion.
+     * 			     The first element is the input pattern for parsing the original number (as understood by {@link java.text.DecimalFormat}).
+     *               The second element is the language code for which the input pattern is valid (must be a language code as specified by ISO-639).
+     * 				 The third element is the output pattern for the number after conversion (as understood by {@link java.text.DecimalFormat}).
+     *               The fourth element is the language code for which the output pattern is valid (must be a language code as specified by ISO-639).
+     * @param additionalValues A mapping that should contain at least the value (mapped as <code>"$value"</code>)
+     *                         that should be the operand. It must be a number in the format of the input pattern (<code>params[0]</code>)
+     *                         which is valid for the specified language (<code>params[1]</code>).
+     * @return The converted number or the value of <code>$value</code>, or <code>$value</code>, if it is <code>null</code> or an empty string.
+     * @throws DataConversionException if an error occurs during conversion.
+     */
+    private String processNumberFormat( String[] params, Map<String, String> additionalValues ) throws DataConversionException {
+        String result = null;
+        String value = additionalValues.get( "$value" );
+        
+        if ( value != null && value.length() > 0 ) {
+            if ( params.length >= 4 ) {
+                String pattern_in = stripParameter( params[0] );
+                String lang_code_in = stripParameter( params[1] );
+                String pattern_out = stripParameter( params[2] );
+                String lang_code_out = stripParameter( params[3] );
+                try {
+	                result = new DecimalFormat( pattern_out, new DecimalFormatSymbols( new Locale( lang_code_out ) ) ).format(
+	                    new DecimalFormat( pattern_in, new DecimalFormatSymbols( new Locale( lang_code_in ) ) ).parse( value ) );
+                } catch ( Exception e ) {
+                	throw new DataConversionException( "Cannot convert " + value + " from " + pattern_in + " (" + lang_code_in + ") to "
+                			+ pattern_out + " (" + lang_code_out + ")", e );
+                }
+            } else {
+                LOG.error( "numberFormat requires at least 4 parameters: numberFormat['pattern_in','lang_code_in','pattern_out','lang_code_out'] (patterns as understood by java.text.DecimalFormat, language codes as specified by ISO-639)" );
+            }
+        } else {
+            result = value;
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Adds a scalar number to a numeric value.
+     * @param params An array of Strings containing the parameters for the operation.
+     * 			     The first element is the input pattern for parsing the original number (as understood by {@link java.text.DecimalFormat}).
+     *               The second element is the language code for which the input pattern is valid (must be a language code as specified by ISO-639).
+     * 				 The third element is the output pattern for the number after conversion (as understood by {@link java.text.DecimalFormat}).
+     *               The fourth element is the language code for which the output pattern is valid (must be a language code as specified by ISO-639).
+     *               The fifth element is the operand for the operation. It is assumed that it is in the format of the input pattern/language.
+     * @param additionalValues A mapping that should contain at least the value (mapped as <code>"$value"</code>)
+     *                         that should be the other operand. It must be a number in the format of the input pattern (<code>params[0]</code>)
+     *                         which is valid for the specified language (<code>params[1]</code>).
+     * @return The sum of the value of <code>$value</code> and the scalar number, or <code>$value</code>, if it is <code>null</code> or an empty string.
+     * @throws DataConversionException if an error occurs during conversion.
+     */
+    private String processAdd( String[] params, Map<String, String> additionalValues ) throws DataConversionException {
+    	String result = null;
+        String value = additionalValues.get( "$value" );
+        
+        if ( value != null && value.length() > 0 ) {
+            if ( params.length >= 5 ) {
+            	String pattern_in = stripParameter( params[0] );
+                String lang_code_in = stripParameter( params[1] );
+                String pattern_out = stripParameter( params[2] );
+                String lang_code_out = stripParameter( params[3] );
+                String operand = stripParameter( params[4] );
+                try {
+	                Number valueNumber = new DecimalFormat( pattern_in, new DecimalFormatSymbols( new Locale( lang_code_in ) ) ).parse( value );
+	                Number operandValue = new DecimalFormat( pattern_in, new DecimalFormatSymbols( new Locale( lang_code_in ) ) ).parse( operand );
+	                double resultValue = valueNumber.doubleValue() + operandValue.doubleValue(); 
+	                result = new DecimalFormat( pattern_out, new DecimalFormatSymbols( new Locale( lang_code_out ) ) ).format( resultValue );
+                } catch ( Exception e ) {
+                	throw new DataConversionException( "Cannot add " + operand + " to " + value, e );
+                }
+            } else {
+            	LOG.error( "add requires at least 5 parameters: add['pattern_in','lang_code_in','pattern_out','lang_code_out','operand'] (patterns as understood by java.text.DecimalFormat, language codes as specified by ISO-639; it is assumed that the operand is in format of pattern_in/lang_code_in)" );
+            }
+        } else {
+            result = value;
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Subtracts a scalar number to a numeric value.
+     * @param params An array of Strings containing the parameters for the operation.
+     * 			     The first element is the input pattern for parsing the original number (as understood by {@link java.text.DecimalFormat}).
+     *               The second element is the language code for which the input pattern is valid (must be a language code as specified by ISO-639).
+     * 				 The third element is the output pattern for the number after conversion (as understood by {@link java.text.DecimalFormat}).
+     *               The fourth element is the language code for which the output pattern is valid (must be a language code as specified by ISO-639).
+     *               The fifth element is the operand for the operation. It is assumed that it is in the format of the input pattern/language.
+     * @param additionalValues A mapping that should contain at least the value (mapped as <code>"$value"</code>)
+     *                         that should be the other operand. It must be a number in the format of the input pattern (<code>params[0]</code>)
+     *                         which is valid for the specified language (<code>params[1]</code>).
+     * @return The difference of the value of <code>$value</code> and the scalar number, or <code>$value</code>, if it is <code>null</code> or an empty string.
+     * @throws DataConversionException if an error occurs during conversion.
+     */
+    private String processSubtract( String[] params, Map<String, String> additionalValues ) throws DataConversionException {
+    	String result = null;
+        String value = additionalValues.get( "$value" );
+        
+        if ( value != null && value.length() > 0 ) {
+            if ( params.length >= 5 ) {
+            	String pattern_in = stripParameter( params[0] );
+                String lang_code_in = stripParameter( params[1] );
+                String pattern_out = stripParameter( params[2] );
+                String lang_code_out = stripParameter( params[3] );
+                String operand = stripParameter( params[4] );
+                try {
+                	Number valueNumber = new DecimalFormat( pattern_in, new DecimalFormatSymbols( new Locale( lang_code_in ) ) ).parse( value );
+	                Number operandValue = new DecimalFormat( pattern_in, new DecimalFormatSymbols( new Locale( lang_code_in ) ) ).parse( operand );
+	                double resultValue = valueNumber.doubleValue() - operandValue.doubleValue(); 
+	                result = new DecimalFormat( pattern_out, new DecimalFormatSymbols( new Locale( lang_code_out ) ) ).format( resultValue );
+                } catch ( Exception e ) {
+                	throw new DataConversionException( "Cannot subtract " + operand + " from " + value, e );
+                }
+            } else {
+            	LOG.error( "subtract requires at least 5 parameters: subtract['pattern_in','lang_code_in','pattern_out','lang_code_out','operand'] (patterns as understood by java.text.DecimalFormat, language codes as specified by ISO-639; it is assumed that the operand is in format of pattern_in/lang_code_in)" );
+            }
+        } else {
+            result = value;
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Multiplies a numeric value by a scalar number.
+     * @param params An array of Strings containing the parameters for the operation.
+     * 			     The first element is the input pattern for parsing the original number (as understood by {@link java.text.DecimalFormat}).
+     *               The second element is the language code for which the input pattern is valid (must be a language code as specified by ISO-639).
+     * 				 The third element is the output pattern for the number after conversion (as understood by {@link java.text.DecimalFormat}).
+     *               The fourth element is the language code for which the output pattern is valid (must be a language code as specified by ISO-639).
+     *               The fifth element is the operand for the operation. It is assumed that it is in the format of the input pattern/language.
+     * @param additionalValues A mapping that should contain at least the value (mapped as <code>"$value"</code>)
+     *                         that should be the other operand. It must be a number in the format of the input pattern (<code>params[0]</code>)
+     *                         which is valid for the specified language (<code>params[1]</code>).
+     * @return The product of the value of <code>$value</code> and the scalar number, or <code>$value</code>, if it is <code>null</code> or an empty string.
+     * @throws DataConversionException if an error occurs during conversion.
+     */
+    private String processMultiply( String[] params, Map<String, String> additionalValues ) throws DataConversionException {
+    	String result = null;
+        String value = additionalValues.get( "$value" );
+        
+        if ( value != null && value.length() > 0 ) {
+            if ( params.length >= 5 ) {
+            	String pattern_in = stripParameter( params[0] );
+                String lang_code_in = stripParameter( params[1] );
+                String pattern_out = stripParameter( params[2] );
+                String lang_code_out = stripParameter( params[3] );
+                String operand = stripParameter( params[4] );
+                try {
+                	Number valueNumber = new DecimalFormat( pattern_in, new DecimalFormatSymbols( new Locale( lang_code_in ) ) ).parse( value );
+	                Number operandValue = new DecimalFormat( pattern_in, new DecimalFormatSymbols( new Locale( lang_code_in ) ) ).parse( operand );
+	                double resultValue = valueNumber.doubleValue() + operandValue.doubleValue(); 
+	                result = new DecimalFormat( pattern_out, new DecimalFormatSymbols( new Locale( lang_code_out ) ) ).format( resultValue );
+                } catch ( Exception e ) {
+                	throw new DataConversionException( "Cannot multiply " + value + " by " + operand, e );
+                }
+            } else {
+            	LOG.error( "multiply requires at least 5 parameters: multiply['pattern_in','lang_code_in','pattern_out','lang_code_out','operand'] (patterns as understood by java.text.DecimalFormat, language codes as specified by ISO-639; it is assumed that the operand is in format of pattern_in/lang_code_in)" );
+            }
+        } else {
+            result = value;
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Divides a numeric value by a scalar number.
+     * @param params An array of Strings containing the parameters for the operation.
+     * 			     The first element is the input pattern for parsing the original number (as understood by {@link java.text.DecimalFormat}).
+     *               The second element is the language code for which the input pattern is valid (must be a language code as specified by ISO-639).
+     * 				 The third element is the output pattern for the number after conversion (as understood by {@link java.text.DecimalFormat}).
+     *               The fourth element is the language code for which the output pattern is valid (must be a language code as specified by ISO-639).
+     *               The fifth element is the operand for the operation. It is assumed that it is in the format of the input pattern/language.
+     * @param additionalValues A mapping that should contain at least the value (mapped as <code>"$value"</code>)
+     *                         that should be the other operand. It must be a number in the format of the input pattern (<code>params[0]</code>)
+     *                         which is valid for the specified language (<code>params[1]</code>).
+     * @return The quotient of the value of <code>$value</code> and the scalar number, or <code>$value</code>, if it is <code>null</code> or an empty string.
+     * @throws DataConversionException if an error occurs during conversion.
+     */
+    private String processDivide( String[] params, Map<String, String> additionalValues ) throws DataConversionException {
+    	String result = null;
+        String value = additionalValues.get( "$value" );
+        
+        if ( value != null && value.length() > 0 ) {
+            if ( params.length >= 5 ) {
+            	String pattern_in = stripParameter( params[0] );
+                String lang_code_in = stripParameter( params[1] );
+                String pattern_out = stripParameter( params[2] );
+                String lang_code_out = stripParameter( params[3] );
+                String operand = stripParameter( params[4] );
+                try {
+                	Number valueNumber = new DecimalFormat( pattern_in, new DecimalFormatSymbols( new Locale( lang_code_in ) ) ).parse( value );
+	                Number operandValue = new DecimalFormat( pattern_in, new DecimalFormatSymbols( new Locale( lang_code_in ) ) ).parse( operand );
+	                double resultValue = valueNumber.doubleValue() / operandValue.doubleValue(); 
+	                result = new DecimalFormat( pattern_out, new DecimalFormatSymbols( new Locale( lang_code_out ) ) ).format( resultValue );
+                } catch ( Exception e ) {
+                	throw new DataConversionException( "Cannot divide " + value + " by " + operand, e );
+                }
+            } else {
+            	LOG.error( "divide requires at least 5 parameters: divide['pattern_in','lang_code_in','pattern_out','lang_code_out','operand'] (patterns as understood by java.text.DecimalFormat, language codes as specified by ISO-639; it is assumed that the operand is in format of pattern_in/lang_code_in)" );
+            }
+        } else {
+            result = value;
+        }
+        
+        return result;
+    }    
 
 }

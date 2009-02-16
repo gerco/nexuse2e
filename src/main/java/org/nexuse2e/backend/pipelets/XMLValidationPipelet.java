@@ -54,6 +54,7 @@ import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.ErrorDescriptor;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.MessagePayloadPojo;
+import org.nexuse2e.service.DataConversionException;
 import org.nexuse2e.service.DataConversionService;
 import org.nexuse2e.service.Service;
 import org.nexuse2e.tools.mapping.xmldata.MappingDefinition;
@@ -393,7 +394,7 @@ public class XMLValidationPipelet extends AbstractPipelet {
         return result;
     }
 
-    private String mapData( XPath xPath, Document document, String textContent, ValidationDefinition definition ) {
+    private String mapData( XPath xPath, Document document, String textContent, ValidationDefinition definition ) throws DataConversionException {
 
         //        System.out.println( "mapping Data..." );
         if ( mappingService != null ) {
