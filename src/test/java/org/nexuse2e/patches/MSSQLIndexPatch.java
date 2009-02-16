@@ -3,7 +3,6 @@ package org.nexuse2e.patches;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.patch.Patch;
 import org.nexuse2e.patch.PatchException;
-import org.nexuse2e.patch.PatchReporter;
 
 
 public class MSSQLIndexPatch extends DatabasePatch implements Patch {

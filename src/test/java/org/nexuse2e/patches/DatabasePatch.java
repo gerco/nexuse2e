@@ -17,7 +17,7 @@ import org.hibernate.Session;
 import org.hibernate.jdbc.Work;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
-import org.nexuse2e.dao.ConfigDAO;
+import org.nexuse2e.dao.TransactionDAO;
 import org.nexuse2e.patch.PatchReporter;
 
 
@@ -36,9 +36,9 @@ public abstract class DatabasePatch {
             report("engine not initialized");
             return null;
         }
-        ConfigDAO dao;
+        TransactionDAO dao;
         try {
-            dao = Engine.getInstance().getConfigDAO();
+            dao = Engine.getInstance().getTransactionDAO();
             if(dao == null) {
                 report("no config dao available");
                 return null;
@@ -58,9 +58,9 @@ public abstract class DatabasePatch {
             report("engine not initialized");
             return;
         }
-        ConfigDAO dao;
+        TransactionDAO dao;
         try {
-            dao = Engine.getInstance().getConfigDAO();
+            dao = Engine.getInstance().getTransactionDAO();
             if(dao == null) {
                 report("no config dao available");
                 return;

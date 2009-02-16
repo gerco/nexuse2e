@@ -3,6 +3,7 @@ package org.nexuse2e.dao;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.Session;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.controller.StateTransitionException;
 import org.nexuse2e.pojo.ActionPojo;
@@ -290,5 +291,18 @@ public interface TransactionDAO {
      * @throws NexusException if something went wrong.
      */
     public abstract int getCreatedMessagesSinceCount( Date since ) throws NexusException;
+    
+    /**
+     * Convenience method for direct hibernate session access. This method shall only
+     * be called if advanced features are required that are not directly supported by
+     * <code>TransactionDAO</code>.
+     * @return A DB session.
+     */
+    public Session getDBSession();
 
+    /**
+     * Release the given session.
+     * @param session The session to be released.
+     */
+    public void releaseDBSession( Session session );
 }

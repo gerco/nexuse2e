@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.hibernate.CacheMode;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.nexuse2e.Constants;
 import org.nexuse2e.Engine;
@@ -40,9 +41,9 @@ public class DatabaseReportingPerformance implements Patch {
            
            for(int i = 0; i < count; i++) {
                start = System.currentTimeMillis();
-               msgs =  (List<MessagePojo>) Engine.getInstance().getTransactionDAO().getListThroughSessionFind( "select message from MessagePojo as message where (message.status = "
+               msgs =  (List<MessagePojo>) session.createQuery( "select message from MessagePojo as message where (message.status = "
                        + Constants.MESSAGE_STATUS_RETRYING + " or message.status = " + Constants.MESSAGE_STATUS_QUEUED
-                       + ") and message.outbound=true", session, null );
+                       + ") and message.outbound=true" ).list();
                end = System.currentTimeMillis();
                
                dif = end-start;
@@ -66,7 +67,7 @@ public class DatabaseReportingPerformance implements Patch {
            for(int i = 0; i < count; i++) {
            
                start = System.currentTimeMillis();
-               convs = Engine.getInstance().getTransactionDAO().getConversationsForReport( "9", 0,0, null, null, endDate, 100, 0, 0, true, session, null );
+               convs = Engine.getInstance().getTransactionDAO().getConversationsForReport( "9", 0,0, null, null, endDate, 100, 0, 0, true );
                end = System.currentTimeMillis();
                
                dif = end-start;
@@ -82,7 +83,10 @@ public class DatabaseReportingPerformance implements Patch {
            for(int i = 0; i < count; i++) {
                start = System.currentTimeMillis();
                
-               repMsgs = (List<MessagePojo>)Engine.getInstance().getTransactionDAO().getListThroughSessionFind( "select message from MessagePojo as message where message.status=3", 0, 100, session, null );
+               Query query = session.createQuery( "select message from MessagePojo as message where message.status=3" );
+               query.setFirstResult( 0 );
+               query.setMaxResults( 100 );
+               repMsgs = (List<MessagePojo>) query.list();
                
                Engine.getInstance().getTransactionDAO().getMessagesForReport( "3", 0,0, null, null, null,null,endDate, 100, 0, 0, true );
                end = System.currentTimeMillis();

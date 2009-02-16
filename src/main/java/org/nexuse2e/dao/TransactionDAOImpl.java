@@ -945,4 +945,12 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         dc.add( Restrictions.ge( "createdDate", since ) );
         return getCountThroughSessionFind( dc );
     }
+    
+    public Session getDBSession() {
+        return super.getSession();
+    }
+    
+    public void releaseDBSession( Session session ) {
+        super.releaseSession( session );
+    }
 }
