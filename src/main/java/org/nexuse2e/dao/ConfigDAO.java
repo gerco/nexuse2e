@@ -53,7 +53,6 @@ public interface ConfigDAO {
     /**
      * @return
      */
-    @SuppressWarnings("unchecked")
     public abstract List<PartnerPojo> getPartners();
 
     /**
@@ -74,7 +73,6 @@ public interface ConfigDAO {
     /**
      * @return
      */
-    @SuppressWarnings("unchecked")
     public abstract List<ChoreographyPojo> getChoreographies();
 
     /**
@@ -95,19 +93,16 @@ public interface ConfigDAO {
     /**
      * @return
      */
-    @SuppressWarnings("unchecked")
     public abstract List<PipelinePojo> getFrontendPipelines();
 
     /**
      * @return
      */
-    @SuppressWarnings("unchecked")
     public abstract List<PipelinePojo> getBackendPipelines();
 
     /**
      * @return
      */
-    @SuppressWarnings("unchecked")
     public abstract List<PipelinePojo> getPipelines();
 
     /**
@@ -128,10 +123,8 @@ public interface ConfigDAO {
     /**
      * @return
      */
-    @SuppressWarnings("unchecked")
     public abstract List<TRPPojo> getTrps();
 
-    @SuppressWarnings("unchecked")
     public abstract List<ComponentPojo> getComponents() throws NexusException;
 
     /**
@@ -152,7 +145,6 @@ public interface ConfigDAO {
     /**
      * @return
      */
-    @SuppressWarnings("unchecked")
     public abstract List<LoggerPojo> getLoggers();
 
     /**
@@ -174,7 +166,6 @@ public interface ConfigDAO {
      * Gets a list ofall services.
      * @return A list of all services, ordered by their positions.
      */
-    @SuppressWarnings("unchecked")
     public abstract List<ServicePojo> getServices();
 
     /**
@@ -198,7 +189,6 @@ public interface ConfigDAO {
     /**
      * @return
      */
-    @SuppressWarnings("unchecked")
     public abstract List<CertificatePojo> getCertificates();
 
     /**
@@ -219,7 +209,6 @@ public interface ConfigDAO {
     /*
      * USER SECTION
      */
-    @SuppressWarnings("unchecked")
     public abstract List<UserPojo> getUsers();
 
     public abstract void updateUser( UserPojo user );
@@ -235,7 +224,6 @@ public interface ConfigDAO {
     /*
      * ROLE SECTION
      */
-    @SuppressWarnings("unchecked")
     public abstract List<RolePojo> getRoles();
 
     /**
@@ -257,7 +245,6 @@ public interface ConfigDAO {
     /**
      * @return
      */
-    @SuppressWarnings("unchecked")
     public abstract List<GenericParamPojo> getGenericParameters();
 
     /**
@@ -279,7 +266,6 @@ public interface ConfigDAO {
     /**
      * @return
      */
-    @SuppressWarnings("unchecked")
     public abstract List<MappingPojo> getMappings();
 
     /**

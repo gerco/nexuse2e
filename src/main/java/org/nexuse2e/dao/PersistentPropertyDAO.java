@@ -52,7 +52,6 @@ public interface PersistentPropertyDAO {
      * otherwise.
      * @throws NexusException if an error occurred accessing the persitent layer.
      */
-    @SuppressWarnings("unchecked")
     public abstract List<PersistentPropertyPojo> getPersistentProperties( String namespace, String version,
             Session session, Transaction transaction ) throws NexusException;
 
@@ -68,7 +67,6 @@ public interface PersistentPropertyDAO {
      * otherwise.
      * @throws NexusException if an error occurred accessing the persitent layer.
      */
-    @SuppressWarnings("unchecked")
     public abstract List<PersistentPropertyPojo> getPersistentProperties( String namespace, String version,
             int itemsPerPage, int pageNo ) throws NexusException;
 

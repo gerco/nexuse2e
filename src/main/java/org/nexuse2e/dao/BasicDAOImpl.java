@@ -27,13 +27,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.LockMode;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Projections;
 import org.nexuse2e.Engine;
-import org.nexuse2e.NexusException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
@@ -43,14 +41,14 @@ import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
  */
 public class BasicDAOImpl extends HibernateDaoSupport implements BasicDAO {
 
-    private static Logger         LOG                 = Logger.getLogger( BasicDAOImpl.class );
+    //private static Logger         LOG                 = Logger.getLogger( BasicDAOImpl.class );
 
     protected static final String SELECT_COUNT_PREFIX = "select count(*) ";
     protected static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
     private static boolean         iSeriesServer       = false;
     private static boolean         msSqlServer         = false;
 
-    private static int            sessionCount        = 0;
+    //private static int            sessionCount        = 0;
 
     private static String         timestampPattern    = null;
 

@@ -36,7 +36,6 @@ public interface LogDAO {
      * @return
      * @throws PersistenceException
      */
-    @SuppressWarnings("unchecked")
     public abstract List<LogPojo> getLogEntriesForReport( String severity, String messageText, Date start, Date end,
             int itemsPerPage, int page, int field, boolean ascending ) throws NexusException;
 
@@ -54,7 +53,6 @@ public interface LogDAO {
     public abstract int getLogEntriesForReportCount( String severity, String messageText, Date start, Date end,
             int field, boolean ascending ) throws NexusException;
 
-    @SuppressWarnings("unchecked")
     public abstract List<LogPojo> getLog() throws NexusException; // getLog
 
 }

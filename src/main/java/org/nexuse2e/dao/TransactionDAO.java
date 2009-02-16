@@ -27,21 +27,17 @@ public interface TransactionDAO {
      * @param conversationId The converstaion identifier
      * @return
      */
-    @SuppressWarnings("unchecked")
     public abstract ConversationPojo getConversationByConversationId( String conversationId ); // getConversationByConversationId
 
     /**
      * @param conversationId
      * @return
      */
-    @SuppressWarnings("unchecked")
     public abstract ConversationPojo getConversationByConversationId( String choreographyId, String conversationId,
             int nxPartnerId ); // getConversationByConversationId
 
-    @SuppressWarnings("unchecked")
     public abstract MessagePojo getMessageByMessageId( String messageId ) throws NexusException;
 
-    @SuppressWarnings("unchecked")
     public abstract MessagePojo getMessageByReferencedMessageId( String messageId ) throws NexusException;
 
     /**
@@ -62,7 +58,6 @@ public interface TransactionDAO {
      * @return
      * @throws NexusException
      */
-    @SuppressWarnings("unchecked")
     public abstract List<MessagePojo> getActiveMessages() throws NexusException; // getActiveMessages
 
     /**
@@ -81,7 +76,6 @@ public interface TransactionDAO {
      * @return
      * @throws NexusException
      */
-    @SuppressWarnings("unchecked")
     public abstract List<MessagePojo> getMessagesForReport( String status, int nxChoreographyId, int nxPartnerId,
             String conversationId, String messageId, String type, Date start, Date end, int itemsPerPage, int page,
             int field, boolean ascending ) throws NexusException;
@@ -100,7 +94,6 @@ public interface TransactionDAO {
      * @return
      * @throws NexusException
      */
-    @SuppressWarnings("unchecked")
     public abstract List<ConversationPojo> getConversationsForReport( String status, int nxChoreographyId,
             int nxPartnerId, String conversationId, Date start, Date end, int itemsPerPage, int page, int field,
             boolean ascending ) throws NexusException;
@@ -176,7 +169,6 @@ public interface TransactionDAO {
      * @return
      * @throws NexusException
      */
-    @SuppressWarnings("unchecked")
     public abstract List<ConversationPojo> getConversationsByPartner( PartnerPojo partner );
 
     /**
@@ -187,7 +179,6 @@ public interface TransactionDAO {
      * @return
      * @throws NexusException
      */
-    @SuppressWarnings("unchecked")
     public abstract List<ConversationPojo> getConversationsByPartnerAndChoreography( PartnerPojo partner,
             ChoreographyPojo choreography ) throws NexusException;
 
@@ -195,7 +186,6 @@ public interface TransactionDAO {
      * @param choreography
      * @return
      */
-    @SuppressWarnings("unchecked")
     public abstract List<ConversationPojo> getConversationsByChoreography( ChoreographyPojo choreography );
 
     /**
@@ -205,7 +195,6 @@ public interface TransactionDAO {
      * @return
      * @throws NexusException
      */
-    @SuppressWarnings("unchecked")
     public abstract List<MessagePojo> getMessagesByPartner( PartnerPojo partner, int field, boolean ascending )
             throws NexusException;
 
@@ -235,11 +224,9 @@ public interface TransactionDAO {
      * @return
      * @throws NexusException
      */
-    @SuppressWarnings("unchecked")
     public abstract List<MessagePojo> getMessagesByPartnerAndDirection( PartnerPojo partner, boolean outbound,
             int field, boolean ascending ) throws NexusException;
 
-    @SuppressWarnings("unchecked")
     public abstract List<MessagePojo> getMessagesByActionPartnerDirectionAndStatus( ActionPojo action,
             PartnerPojo partner, boolean outbound, int status, int field, boolean ascending );
 
@@ -250,7 +237,6 @@ public interface TransactionDAO {
      * @param ascending
      * @return
      */
-    @SuppressWarnings("unchecked")
     public abstract List<MessagePojo> getMessagesByChoreographyAndPartner( ChoreographyPojo choreography,
             PartnerPojo partner, int field, boolean ascending );
 
@@ -262,7 +248,6 @@ public interface TransactionDAO {
      * @param ascending
      * @return
      */
-    @SuppressWarnings("unchecked")
     public abstract List<MessagePojo> getMessagesByChoreographyPartnerAndConversation( ChoreographyPojo choreography,
             PartnerPojo partner, ConversationPojo conversation, int field, boolean ascending );
 

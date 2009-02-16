@@ -27,7 +27,6 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -617,7 +616,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
     @SuppressWarnings("unchecked")
     public List<ConversationPojo> getConversationsByPartner( PartnerPojo partner ) {
 
-        String query = "from ConversationPojo conv where conv.partner.nxPartnerId=" + partner.getNxPartnerId();
+        //String query = "from ConversationPojo conv where conv.partner.nxPartnerId=" + partner.getNxPartnerId();
 
         DetachedCriteria dc = DetachedCriteria.forClass( ConversationPojo.class );
         dc.createCriteria( "partner" ).add( Restrictions.eq( "nxPartnerId", partner.getNxPartnerId() ) );
