@@ -107,6 +107,13 @@
             </tr>
             
         </table>
+
+        <center> 
+          <logic:messagesPresent> 
+            <div class="NexusError"><html:errors/></div>
+          </logic:messagesPresent>
+        </center>
+
         <table class="NEXUS_BUTTON_TABLE">
           <tr>
             <td>

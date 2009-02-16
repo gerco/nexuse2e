@@ -86,7 +86,7 @@ public class PartnerCertificateDeleteAction extends NexusE2EAction {
         } catch ( ReferencedCertificateException e ) {
             for (ConnectionPojo connection : e.getReferringObjects()) {
                 ActionMessage errorMessage = new ActionMessage(
-                        "error.referenced.object.connection", connection.getName() );
+                        "error.referenced.object.certificate", connection.getName() );
                 errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
             }
             addRedirect( request, URL, TIMEOUT );

@@ -29,7 +29,9 @@ import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.EngineConfiguration;
+import org.nexuse2e.configuration.ReferencedConnectionException;
 import org.nexuse2e.pojo.ConnectionPojo;
+import org.nexuse2e.pojo.ParticipantPojo;
 import org.nexuse2e.pojo.PartnerPojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.PartnerConnectionForm;
@@ -42,8 +44,8 @@ import org.nexuse2e.ui.form.PartnerConnectionForm;
  */
 public class PartnerConnectionDeleteAction extends NexusE2EAction {
 
-    private static String URL     = "partner.error.url";
-    private static String TIMEOUT = "partner.error.timeout";
+    private static String URL     = "connection.error.url";
+    private static String TIMEOUT = "connection.error.timeout";
 
     /* (non-Javadoc)
      * @see com.tamgroup.nexus.e2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages)
@@ -73,6 +75,14 @@ public class PartnerConnectionDeleteAction extends NexusE2EAction {
             ConnectionPojo connection = engineConfiguration
                     .getConnectionFromPartnerByNxConnectionId( partner, form.getNxConnectionId() );
             engineConfiguration.deleteConnection( connection );
+        } catch ( ReferencedConnectionException e ) {
+            for (ParticipantPojo participant : e.getReferringObjects()) {
+                ActionMessage errorMessage = new ActionMessage(
+                        "error.referenced.object.connection", participant.getChoreography().getName() );
+                errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
+            }
+            addRedirect( request, URL, TIMEOUT );
+            return error;
         } catch ( NexusException e ) {
             ActionMessage errorMessage = new ActionMessage( "generic.error", e.getMessage() );
             errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );

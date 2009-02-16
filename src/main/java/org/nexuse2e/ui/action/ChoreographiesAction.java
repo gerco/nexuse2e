@@ -51,7 +51,6 @@ public class ChoreographiesAction extends NexusE2EAction {
     /* (non-Javadoc)
      * @see com.tamgroup.nexus.e2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages)
      */
-    @SuppressWarnings("unchecked")
     @Override
     public ActionForward executeNexusE2EAction( ActionMapping actionMapping, ActionForm actionForm,
             HttpServletRequest request, HttpServletResponse response, EngineConfiguration engineConfiguration, ActionMessages errors, ActionMessages messages )
