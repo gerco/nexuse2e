@@ -130,6 +130,8 @@
             <nxs:command target="RequestSavePKCS12File" label="Export Temporary KeyStructure" icon="images/icons/bullet_orange.png"/>
             <nxs:command target="RequestVerifyCertChainCert.do" label="Save Certificate" icon="images/icons/bullet_orange.png"/>
             <nxs:command target="RequestSaveCSRFile.do" label="Save CSR File" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="DataSaveAs.do?type=request" label="Download Request (CSR)" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="DataSaveAs.do?type=privatepem" label="Download Full Key Information (Backup)" icon="images/icons/bullet_orange.png"/>
           </nxs:page>
           <nxs:page target="StagingList.do" label="Certificate Staging" icon="images/icons/medal_silver_3.png">
             <nxs:command target="StagingImportCertificate.do" label="Import Certificate" icon="images/icons/bullet_orange.png"/>
@@ -139,6 +141,7 @@
             <nxs:command target="StagingExportCertificate.do" label="Export Certificate" icon="images/icons/bullet_orange.png"/>
             <nxs:command target="StagingPromoteCertificate.do" label="Promote Certificate" icon="images/icons/bullet_orange.png"/>
             <nxs:command target="StagingStoreExported.do" label="Perform Certificate Export " icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="DataSaveAs.do?type=serverCert" label="Download Server Certificate" icon="images/icons/bullet_orange.png"/>
           </nxs:page>
         </nxs:page>
         <nxs:page target="CACertificatesList.do" label="CA Certificates" icon="images/icons/medal_gold_3.png">
@@ -150,6 +153,7 @@
           </nxs:page>
           <nxs:page target="CACertificateExportKeyStore.do" label="Export CA Certificate" icon="images/icons/disk.png">
             <nxs:command target="CACertificateFinishExport.do" label="Save CA KeyStore to Filesystem" icon="images/icons/bullet_orange.png"/>
+            <nxs:command target="DataSaveAs.do?type=cacerts" label="Download CA KeyStore" icon="images/icons/bullet_orange.png"/>
           </nxs:page>
           <nxs:page target="CACertificateChangePWD.do" label="Change Keystore Password" icon="images/icons/lock_edit.png">
             <nxs:command target="CACertificateSavePWD.do" label="Save Password" icon="images/icons/bullet_orange.png"/>
@@ -227,7 +231,10 @@
       </nxs:page>
       <nxs:page target="ReportingStatistics.do" label="Reporting" icon="images/icons/chart_curve.png">
         <nxs:page target="ProcessConversationReport.do?command=first" label="Transaction Reporting" icon="images/icons/report.png">
-          <nxs:command target="ProcessConversationReport.do" label="Process Conversation Report" icon="images/icons/bullet_orange.png"/> 
+          <nxs:command target="ProcessConversationReport.do" label="Process Conversation Report" icon="images/icons/bullet_orange.png"/>
+          <nxs:command target="ConversationView.do" label="View Specific Conversation" icon="images/icons/bullet_orange.png"/>
+          <nxs:command target="MessageView.do" label="View Specific Message" icon="images/icons/bullet_orange.png"/>
+          <nxs:command target="DataSaveAs.do?type=content" label="Download Message Header/Content" icon="images/icons/bullet_orange.png"/>
         </nxs:page>
         <nxs:page target="ProcessEngineLog.do" label="Engine Log" icon="images/icons/server_chart.png">
           <nxs:command target="ProcessEngineLog.do?noReset=true" label="Process Engine Log" icon="images/bullet_orange.png"/> 
