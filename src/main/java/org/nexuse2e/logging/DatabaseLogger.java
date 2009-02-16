@@ -37,8 +37,6 @@ import org.nexuse2e.pojo.LogPojo;
  */
 public class DatabaseLogger extends AbstractLogger {
 
-    private LogDAO logDao = null;
-    private Session session;
     
     /**
      * Default constructor.
@@ -51,6 +49,13 @@ public class DatabaseLogger extends AbstractLogger {
     @Override
     protected void append( LoggingEvent loggingevent ) {
 
+        LogDAO logDao;
+        try {
+            logDao = (LogDAO)Engine.getInstance().getDao( "logDao" );
+        } catch ( NexusException e ) {
+            e.printStackTrace();
+            return;
+        }
         //        loggingevent.get
         if ( status != BeanStatus.ACTIVATED ) {
             return;
@@ -108,17 +113,8 @@ public class DatabaseLogger extends AbstractLogger {
 
             // avoid concurrent access to session
             synchronized (this) {
-                // LogDAO logDao = null;
-                if ( logDao == null ) {
-                    logDao = Engine.getInstance().getLogDAO();
-                }
-                if (session == null) {
-                    session = logDao.getDBSession();
-                } else if (!session.isOpen()) {
-                    logDao.releaseDBSession( session );
-                    session = logDao.getDBSession();
-                }
-                logDao.saveLog( pojo, session, null );
+                
+                logDao.saveLog( pojo );
             }
         } catch ( Exception ex ) {
             //TODO call errorhandler ?
@@ -128,22 +124,9 @@ public class DatabaseLogger extends AbstractLogger {
 
     @Override
     public void close() {
-        synchronized (this) {
-            try {
-                if (session != null) {
-                    if (logDao == null) {
-                        logDao = Engine.getInstance().getLogDAO();
-                    }
-                    logDao.releaseDBSession( session );
-                }
-            } catch (NexusException e) {
-                // nothing we can do
-                e.printStackTrace();
-            } finally {
-                session = null;
-                logDao = null;
-            }
-        }
+        
+                
+        
     }
 
     /* (non-Javadoc)

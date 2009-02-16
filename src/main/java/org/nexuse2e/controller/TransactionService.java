@@ -87,7 +87,7 @@ public interface TransactionService extends Manageable {
      * @throws NexusException
      */
     public abstract List<ConversationPojo> getConversationsForReport( String status, int nxChoreographyId, int nxPartnerId,
-            String conversationId, Date start, Date end, int itemsPerPage, int page, int field, boolean ascending, Session session, Transaction transaction )
+            String conversationId, Date start, Date end, int itemsPerPage, int page, int field, boolean ascending )
             throws NexusException;
 
     /**
@@ -322,46 +322,35 @@ public interface TransactionService extends Manageable {
 
     /**
      * @param partner
-     * @param session
-     * @param transaction
      * @return
      * @throws NexusException
      */
-    public abstract List<ConversationPojo> getConversationsByPartner( PartnerPojo partner, Session session,
-            Transaction transaction ) throws NexusException;
+    public abstract List<ConversationPojo> getConversationsByPartner( PartnerPojo partner ) throws NexusException;
 
     /**
      * @param partner
      * @param choreography
-     * @param session
-     * @param transaction
      * @return
      * @throws NexusException
      */
     public abstract List<ConversationPojo> getConversationsByPartnerAndChoreography( PartnerPojo partner,
-            ChoreographyPojo choreography, Session session, Transaction transaction ) throws NexusException;
+            ChoreographyPojo choreography ) throws NexusException;
 
     /**
      * @param choreography
-     * @param session
-     * @param transaction
      * @return
      * @throws NexusException
      */
-    public abstract List<ConversationPojo> getConversationsByChoreography( ChoreographyPojo choreography, 
-            Session session, Transaction transaction ) throws NexusException;
+    public abstract List<ConversationPojo> getConversationsByChoreography( ChoreographyPojo choreography ) throws NexusException;
 
     /**
      * @param partner
      * @param field
      * @param ascending
-     * @param session
-     * @param transaction
      * @return
      * @throws NexusException
      */
-    public abstract List<MessagePojo> getMessagesByPartner( PartnerPojo partner, int field, boolean ascending,
-            Session session, Transaction transaction ) throws NexusException;
+    public abstract List<MessagePojo> getMessagesByPartner( PartnerPojo partner, int field, boolean ascending ) throws NexusException;
 
     /**
      * @param partner
@@ -374,7 +363,7 @@ public interface TransactionService extends Manageable {
      * @throws NexusException
      */
     public abstract List<MessagePojo> getMessagesByPartnerAndDirection( PartnerPojo partner, boolean outbound,
-            int field, boolean ascending, Session session, Transaction transaction ) throws NexusException;
+            int field, boolean ascending ) throws NexusException;
 
     /**
      * @param message
@@ -382,27 +371,23 @@ public interface TransactionService extends Manageable {
      * @param transaction
      * @throws NexusException
      */
-    public abstract void deleteMessage( MessagePojo message, Session session, Transaction transaction )
+    public abstract void deleteMessage( MessagePojo message )
             throws NexusException;
 
     
     /**
      * @param conversation
-     * @param session
-     * @param transaction
      * @throws NexusException
      */
-    public abstract void deleteConversation( ConversationPojo conversation, Session session, Transaction transaction )
+    public abstract void deleteConversation( ConversationPojo conversation )
     throws NexusException;
 
     
     /**
      * @param logEntry
-     * @param session
-     * @param transaction
      * @throws NexusException
      */
-    public abstract void deleteLogEntry( LogPojo logEntry, Session session, Transaction transaction )
+    public abstract void deleteLogEntry( LogPojo logEntry )
     throws NexusException;
 
     
@@ -413,13 +398,11 @@ public interface TransactionService extends Manageable {
      * @param partner
      * @param field
      * @param ascending
-     * @param session
-     * @param transaction
      * @return
      * @throws NexusException
      */
     public abstract List<MessagePojo> getMessagesByChoreographyAndPartner( ChoreographyPojo choreography,
-            PartnerPojo partner, int field, boolean ascending, Session session, Transaction transaction )
+            PartnerPojo partner, int field, boolean ascending )
             throws NexusException;
 
     /**
@@ -430,8 +413,6 @@ public interface TransactionService extends Manageable {
      * @param status The message status.
      * @param field The field to sort by.
      * @param ascending <code>true</code> for ascending, <code>false</code> for descending.
-     * @param session The session. Can be <code>null</code>.
-     * @param transaction The transaction. Can be <code>null</code>.
      * @return A list of messages. Empty if none were found.
      * @throws NexusException If something went wrong.
      */
@@ -441,9 +422,7 @@ public interface TransactionService extends Manageable {
             boolean outbound,
             int status,
             int field,
-            boolean ascending, 
-            Session session,
-            Transaction transaction ) throws NexusException;
+            boolean ascending ) throws NexusException;
 
     
     /**
@@ -452,14 +431,11 @@ public interface TransactionService extends Manageable {
      * @param conversation
      * @param field
      * @param ascending
-     * @param session
-     * @param transcaction
      * @return
      * @throws NexusException
      */
     public abstract List<MessagePojo> getMessagesByChoreographyPartnerAndConversation( ChoreographyPojo choreography,
-            PartnerPojo partner, ConversationPojo conversation, int field, boolean ascending, Session session,
-            Transaction transcaction ) throws NexusException;
+            PartnerPojo partner, ConversationPojo conversation, int field, boolean ascending ) throws NexusException;
 
     /**
      * @param origin
@@ -488,22 +464,10 @@ public interface TransactionService extends Manageable {
      * @throws PersistenceException
      */
     public abstract List<LogPojo> getLogEntriesForReport( String severity, String messageText, Date start, Date end,
-            int itemsPerPage, int page, int field, boolean ascending, Session session, Transaction transaction ) throws NexusException;
+            int itemsPerPage, int page, int field, boolean ascending ) throws NexusException;
     
     
-    /**
-     * @return
-     * @throws NexusException
-     */
-    public abstract Session getDBSession()  throws NexusException;
-    
-    
-    /**
-     * @param session
-     * @throws NexusException
-     */
-    public abstract void releaseDBSession(Session session)  throws NexusException;
-    
+   
     
     /**
      * Gets the synchronization <code>Object</code> for the given <code>ConversationPojo</code>.

@@ -64,7 +64,7 @@ public class DatabasePurgeAction extends NexusE2EAction {
             LOG.debug( "start: "+ dbForm.getStartDay()+"."+dbForm.getStartMonth()+"."+dbForm.getStartYear()+" "+dbForm.getStartHour()+":"+dbForm.getStartMin() );
             
             if(dbForm.isPurgeMessages()) {
-                List<ConversationPojo> conversations = getConversationsByForm( dbForm, null, null);
+                List<ConversationPojo> conversations = getConversationsByForm( dbForm);
                 dbForm.setConvCount( conversations.size() );
                 int messageCount = 0;
                 for ( ConversationPojo pojo : conversations ) {
@@ -76,7 +76,7 @@ public class DatabasePurgeAction extends NexusE2EAction {
                 // System.out.println("size: "+conversations.size());
             }
             if(dbForm.isPurgeLog()) {
-                List<LogPojo> logEntries = getLogEntiesByForm( dbForm, null, null );
+                List<LogPojo> logEntries = getLogEntiesByForm( dbForm );
                 if(logEntries != null) {
                     dbForm.setLogEntryCount( logEntries.size() );
                 } else {
@@ -93,42 +93,30 @@ public class DatabasePurgeAction extends NexusE2EAction {
                 
             if(dbForm.isPurgeMessages()) {
                 LOG.debug( "purging selected messages" );
-                Session session = Engine.getInstance().getTransactionService().getDBSession();
-                Transaction transaction = session.beginTransaction();
                 
                 try {
-                    List<ConversationPojo> conversations = getConversationsByForm( dbForm, session, transaction );
+                    List<ConversationPojo> conversations = getConversationsByForm( dbForm );
                     if ( conversations != null && conversations.size() > 0 ) {
                         for ( ConversationPojo pojo : conversations ) {
-                            Engine.getInstance().getTransactionService().deleteConversation( pojo, session, transaction );
+                            Engine.getInstance().getTransactionService().deleteConversation( pojo );
                         }
                     }
-                    transaction.commit();
-                    Engine.getInstance().getTransactionService().releaseDBSession( session );
                 } catch ( Exception e ) {
                     LOG.error( "Error while deleting conversations: "+e.getMessage()  );
-                    transaction.rollback();
-                    Engine.getInstance().getTransactionService().releaseDBSession( session );
                     e.printStackTrace();
                 }    
             }
             if(dbForm.isPurgeLog()) {
                 LOG.debug( "purging selected log entries" );
-                Session session = Engine.getInstance().getTransactionService().getDBSession();
-                Transaction transaction = session.beginTransaction();
                 try {
-                    List<LogPojo> logEnties = getLogEntiesByForm( dbForm, session, transaction );
+                    List<LogPojo> logEnties = getLogEntiesByForm( dbForm );
                     if ( logEnties != null && logEnties.size() > 0 ) {
                         for ( LogPojo pojo : logEnties ) {
-                            Engine.getInstance().getTransactionService().deleteLogEntry( pojo, session, transaction );
+                            Engine.getInstance().getTransactionService().deleteLogEntry( pojo );
                         }
                     }
-                    transaction.commit();
-                    Engine.getInstance().getTransactionService().releaseDBSession( session );
                 } catch ( Exception e ) {
                     LOG.error( "Error while deleting conversations: "+e.getMessage()  );
-                    transaction.rollback();
-                    Engine.getInstance().getTransactionService().releaseDBSession( session );
                     e.printStackTrace();
                 }    
             }
@@ -139,7 +127,7 @@ public class DatabasePurgeAction extends NexusE2EAction {
 
         return success;
     }
-    private List<LogPojo> getLogEntiesByForm(DatabasePurgeForm form,Session session,Transaction transaction) throws NexusException{
+    private List<LogPojo> getLogEntiesByForm(DatabasePurgeForm form) throws NexusException{
         
         Date startDate = null;
         Date endDate = null;
@@ -168,10 +156,10 @@ public class DatabasePurgeAction extends NexusE2EAction {
         // System.out.println("Messages: "+form.isPurgeMessages());
         // System.out.println("LogEntries: "+form.isPurgeLog());
         
-        return Engine.getInstance().getTransactionService().getLogEntriesForReport( null, null, startDate, endDate, 0, 0, TransactionDAO.SORT_NONE, false , session,transaction);
+        return Engine.getInstance().getTransactionService().getLogEntriesForReport( null, null, startDate, endDate, 0, 0, TransactionDAO.SORT_NONE, false);
     }
     
-    private List<ConversationPojo> getConversationsByForm(DatabasePurgeForm form,Session session,Transaction transaction) throws NexusException{
+    private List<ConversationPojo> getConversationsByForm(DatabasePurgeForm form) throws NexusException{
         Date startDate = null;
         Date endDate = null;
         
@@ -200,7 +188,7 @@ public class DatabasePurgeAction extends NexusE2EAction {
         // System.out.println("LogEntries: "+form.isPurgeLog());
         
         
-        return Engine.getInstance().getTransactionService().getConversationsForReport( null,0, 0, null, startDate, endDate, 0, 0, TransactionDAO.SORT_NONE, false, session, transaction );
+        return Engine.getInstance().getTransactionService().getConversationsForReport( null,0, 0, null, startDate, endDate, 0, 0, TransactionDAO.SORT_NONE, false );
         
     }
 }

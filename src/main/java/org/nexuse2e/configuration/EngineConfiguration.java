@@ -1791,7 +1791,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
     
         ChoreographyPojo oldChoreography = getChoreographyByChoreographyId( choreography.getName() );
         List<ConversationPojo> conversations = Engine.getInstance().getTransactionService().getConversationsByChoreography(
-                choreography, null, null );
+                choreography );
         if (conversations != null && !conversations.isEmpty()) {
             throw new ReferencedChoreographyException( conversations );
         }

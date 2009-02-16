@@ -104,8 +104,7 @@ public class ProcessEngineLogAction extends ReportingAction {
                 int pos = form.getStartCount();
                 if ( pos == 0 || ( !"engine".equals( dir ) ) ) {
                     reportMessages = Engine.getInstance().getTransactionService().getLogEntriesForReport( severity,
-                            messageText, startDate, endDate, form.getPageSize(), 0, LogDAO.SORT_CREATED, false, null,
-                            null );
+                            messageText, startDate, endDate, form.getPageSize(), 0, LogDAO.SORT_CREATED, false );
 
                     if ( items > 0 ) {
                         form.setStartCount( 1 );
@@ -123,8 +122,7 @@ public class ProcessEngineLogAction extends ReportingAction {
                 } else {
                     int page = pos / form.getPageSize();
                     reportMessages = Engine.getInstance().getTransactionService().getLogEntriesForReport( severity,
-                            messageText, startDate, endDate, form.getPageSize(), page, LogDAO.SORT_CREATED, false,
-                            null, null );
+                            messageText, startDate, endDate, form.getPageSize(), page, LogDAO.SORT_CREATED, false );
 
                     if ( form.getStartCount() + form.getPageSize() > items ) {
                         form.setEndCount( items );
@@ -138,14 +136,13 @@ public class ProcessEngineLogAction extends ReportingAction {
                 int pos = form.getStartCount();
                 if ( pos < form.getPageSize() ) {
                     reportMessages = Engine.getInstance().getTransactionService().getLogEntriesForReport( severity,
-                            messageText, startDate, endDate, form.getPageSize(), 0, LogDAO.SORT_CREATED, false, null,
-                            null );
+                            messageText, startDate, endDate, form.getPageSize(), 0, LogDAO.SORT_CREATED, false );
                     form.setStartCount( 1 );
                     form.setEndCount( form.getPageSize() );
                 } else {
                     reportMessages = Engine.getInstance().getTransactionService().getLogEntriesForReport( severity,
                             messageText, startDate, endDate, form.getPageSize(), ( pos / form.getPageSize() ) - 1,
-                            LogDAO.SORT_CREATED, false, null, null );
+                            LogDAO.SORT_CREATED, false );
                     form.setStartCount( pos - form.getPageSize() );
                     form.setEndCount( form.getStartCount() + form.getPageSize() - 1 );
                 }
@@ -155,14 +152,13 @@ public class ProcessEngineLogAction extends ReportingAction {
                 if ( pos + 2 * form.getPageSize() >= items ) {
                     reportMessages = Engine.getInstance().getTransactionService().getLogEntriesForReport( severity,
                             messageText, startDate, endDate, form.getPageSize(), pos / form.getPageSize() + 1,
-                            LogDAO.SORT_CREATED, false, null, null );
+                            LogDAO.SORT_CREATED, false );
                     form.setStartCount( form.getStartCount() + form.getPageSize() );
                     form.setEndCount( items );
                 } else {
                     int page = pos / form.getPageSize();
                     reportMessages = Engine.getInstance().getTransactionService().getLogEntriesForReport( severity,
-                            messageText, startDate, endDate, form.getPageSize(), page + 1, LogDAO.SORT_CREATED, false,
-                            null, null );
+                            messageText, startDate, endDate, form.getPageSize(), page + 1, LogDAO.SORT_CREATED, false );
                     form.setStartCount( form.getStartCount() + form.getPageSize() );
                     form.setEndCount( form.getStartCount() + form.getPageSize() - 1 );
                 }
@@ -170,7 +166,7 @@ public class ProcessEngineLogAction extends ReportingAction {
             } else if ( dir.equals( "last" ) ) {
                 reportMessages = Engine.getInstance().getTransactionService().getLogEntriesForReport( severity,
                         messageText, startDate, endDate, form.getPageSize(), items / form.getPageSize(),
-                        LogDAO.SORT_CREATED, false, null, null );
+                        LogDAO.SORT_CREATED, false );
                 form.setStartCount( items / form.getPageSize() * form.getPageSize() + 1 );
                 form.setEndCount( items );
             }

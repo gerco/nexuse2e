@@ -135,6 +135,7 @@ public abstract class NexusE2EAction extends Action {
                             actionMapping, actionForm, request, response, config, errors, messages );
                 } catch (Exception ex) {
                     LOG.error( "Caught exception in Action", ex );
+                    ex.printStackTrace();
                     String message = ex.getMessage();
                     if (message == null) {
                         message = ex.getClass().getName();

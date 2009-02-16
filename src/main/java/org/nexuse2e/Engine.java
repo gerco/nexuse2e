@@ -51,6 +51,7 @@ import org.nexuse2e.configuration.XmlBaseConfigurationProvider;
 import org.nexuse2e.controller.TransactionService;
 import org.nexuse2e.controller.TransactionServiceImpl;
 import org.nexuse2e.dao.BasicDAO;
+import org.nexuse2e.dao.BasicDAOImpl;
 import org.nexuse2e.dao.ConfigDAO;
 import org.nexuse2e.dao.LogDAO;
 import org.nexuse2e.dao.PersistentPropertyDAO;
@@ -311,10 +312,11 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                     Configuration configuration = localSessionFactoryBean.getConfiguration();
                     String dialect = configuration.getProperty( "hibernate.dialect" );
                     if ( ( dialect != null ) && ( dialect.length() != 0 ) ) {
+                        BasicDAO dao = getDao( "configDao" );
                         if ( dialect.indexOf( "DB2400" ) != -1 ) {
-                            BasicDAO.setISeriesServer( true );
+                            dao.setISeriesServer( true );
                         } else if ( dialect.indexOf( "SQLServer" ) != -1 ) {
-                            BasicDAO.setMsSqlServer( true );
+                            dao.setMsSqlServer( true );
                         }
                         LOG.info( "DB dialect: " + dialect );
                     }

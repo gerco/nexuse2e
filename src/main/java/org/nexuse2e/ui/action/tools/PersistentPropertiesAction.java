@@ -33,8 +33,6 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.MappingType;
@@ -53,20 +51,18 @@ public class PersistentPropertiesAction extends NexusE2EAction {
     private static void saveIfNoDuplicate(
             PersistentPropertyDAO dao, int nxId, PersistentPropertiesForm form, ActionMessages errors ) throws NexusException {
         
-        Session session = dao.getDBSession();
-        Transaction transaction = session.beginTransaction();
         try {
             PersistentPropertyPojo property;
             if (nxId == 0) {
                 property = new PersistentPropertyPojo();
             } else {
-                property = dao.getPersistentPropertyById( nxId, session, transaction );
+                property = dao.getPersistentPropertyById( nxId );
                 if (property == null) {
                     property = new PersistentPropertyPojo();
                     nxId = 0;
                 }
             }
-            PersistentPropertyPojo existingProperty = dao.getPersistentProperty( form.getNamespace(), form.getVersion(), form.getName(), session, transaction );
+            PersistentPropertyPojo existingProperty = dao.getPersistentProperty( form.getNamespace(), form.getVersion(), form.getName() );
             if (existingProperty != null &&
                     (nxId == 0 || existingProperty.getNxPersistentPropertyId() != nxId)) {
                 errors.add( ActionMessages.GLOBAL_MESSAGE, new ActionMessage( "properties.exists.error" ) );
@@ -78,13 +74,9 @@ public class PersistentPropertiesAction extends NexusE2EAction {
 
                 dao.savePersistentProperty( property );
             }
-            transaction.commit();
-        } catch (NexusException e) {
-            transaction.rollback();
-            throw e;
-        } finally {
-            dao.releaseDBSession( session );
-        }
+        } catch (Exception e) {
+            throw new NexusException(e);
+        } 
     }
     
     
@@ -137,7 +129,7 @@ public class PersistentPropertiesAction extends NexusE2EAction {
         int recordCount = dao.getPersistentPropertyCount( null, null );
         int pageCount = recordCount / RECORDS_PER_PAGE + (recordCount % RECORDS_PER_PAGE == 0 ? 0 : 1);
         form.setPageCount( pageCount );
-        List<PersistentPropertyPojo> properties = dao.getPersistentProperties( null, null, RECORDS_PER_PAGE, form.getCurrentPage(), null, null );
+        List<PersistentPropertyPojo> properties = dao.getPersistentProperties( null, null, RECORDS_PER_PAGE, form.getCurrentPage() );
 
         if (properties == null) {
             request.setAttribute( ATTRIBUTE_COLLECTION, Collections.EMPTY_LIST );

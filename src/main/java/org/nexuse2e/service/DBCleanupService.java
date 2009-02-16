@@ -190,7 +190,7 @@ public class DBCleanupService extends AbstractService implements SchedulerClient
                     
                     // for automated pruge the start date is unlimited and end date is (now - days remaining)
                     try {
-                        logCount =  Engine.getInstance().getTransactionDAO().getLogCount(null,endDate,null,null);
+                        logCount =  Engine.getInstance().getTransactionDAO().getLogCount(null,endDate);
                         LOG.debug( "Log entries to purge: "+logCount );
                     } catch ( NexusException e ) {
                         e.printStackTrace();
@@ -198,7 +198,7 @@ public class DBCleanupService extends AbstractService implements SchedulerClient
                 }
                 if(purgeMessages) {
                     try {
-                        convCount =   Engine.getInstance().getTransactionDAO().getConversationsCount( null, endDate, null, null );
+                        convCount =   Engine.getInstance().getTransactionDAO().getConversationsCount( null, endDate );
                         LOG.debug( "Conversations to purge: "+convCount );
                     } catch ( NexusException e ) {
                         e.printStackTrace();
@@ -209,44 +209,30 @@ public class DBCleanupService extends AbstractService implements SchedulerClient
                     try {
                         if(purgeMessages) {
                             LOG.debug( "purging selected messages" );
-                            Session session = Engine.getInstance().getTransactionService().getDBSession();
-                            Transaction transaction = session.beginTransaction();
                             
                             try {
                                 if ( convCount > 0 ) {
-                                        Engine.getInstance().getTransactionDAO().removeConversations( null, endDate, session, transaction );
+                                        Engine.getInstance().getTransactionDAO().removeConversations( null, endDate );
                                 }
-                                transaction.commit();
-                                Engine.getInstance().getTransactionService().releaseDBSession( session );
                             } catch ( Exception e ) {
                                 LOG.error( "Error while deleting conversations: "+e.getMessage()  );
-                                transaction.rollback();
-                                Engine.getInstance().getTransactionService().releaseDBSession( session );
                                 e.printStackTrace();
                             }    
                         }
                         if(purgeLogs) {
                             LOG.debug( "purging selected log entries" );
-                            Session session = Engine.getInstance().getTransactionService().getDBSession();
-                            Transaction transaction = session.beginTransaction();
                             try {
                                 if ( logCount > 0 ) {
-                                    Engine.getInstance().getTransactionDAO().removeLogEntries( null, endDate, session, transaction );
+                                    Engine.getInstance().getTransactionDAO().removeLogEntries( null, endDate );
                                 }
-                                transaction.commit();
-                                Engine.getInstance().getTransactionService().releaseDBSession( session );
                             } catch ( Exception e ) {
                                 LOG.error( "Error while deleting conversations: "+e.getMessage()  );
-                                transaction.rollback();
-                                Engine.getInstance().getTransactionService().releaseDBSession( session );
                                 e.printStackTrace();
                             }    
                         }
                     } catch ( HibernateException e ) {
                         e.printStackTrace();
-                    } catch ( NexusException e ) {
-                        e.printStackTrace();
-                    }
+                    } 
                 } else {
                     try {
                         LOG.info( "---------- Database Cleanup ------------" );
