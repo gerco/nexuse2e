@@ -1824,8 +1824,11 @@ public class EngineConfiguration implements ConfigurationAccessService {
     /* (non-Javadoc)
      * @see org.nexuse2e.configuration.ConfigurationAccessService#deleteConnection(org.nexuse2e.pojo.ConnectionPojo)
      */
-    public void deleteConnection( ConnectionPojo connection ) throws NexusException {
+    public void deleteConnection( ConnectionPojo connection ) throws ReferencedConnectionException, NexusException {
         
+        if (connection.getPartcipants() != null && !connection.getPartcipants().isEmpty()) {
+            throw new ReferencedConnectionException( connection.getPartcipants() );
+        }
         Set<ConnectionPojo> connections = connection.getPartner().getConnections();
         connections = new HashSet<ConnectionPojo>( connections );
         if (connections.remove( connection )) {
@@ -2339,9 +2342,9 @@ public class EngineConfiguration implements ConfigurationAccessService {
         RolePojo oldRole = getRoleByNxRoleId( role.getNxRoleId() );
         if ( oldRole != null ) {
             getRoles( null ).remove( oldRole );
-            addToUpdateList( oldRole );
         }
         getRoles( null ).add( role );
+        addToUpdateList( role );
     }
     
     /* (non-Javadoc)

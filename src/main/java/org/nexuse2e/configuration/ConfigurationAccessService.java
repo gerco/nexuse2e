@@ -302,10 +302,12 @@ public interface ConfigurationAccessService {
     /**
      * Removes a connection from the configuration.
      * @param connection The connection to be removed.
+     * @throws ReferencedConnectionException if the connection is being referenced
+     * by one or more participants.
      * @throws NexusException if something else went wrong.
      */
     public abstract void deleteConnection(ConnectionPojo connection)
-            throws NexusException;
+            throws ReferencedConnectionException, NexusException;
 
     public abstract void updateTrp(TRPPojo trp) throws NexusException;
 
