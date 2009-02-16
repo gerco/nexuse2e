@@ -591,6 +591,7 @@
     </action>
     <action path="/PartnerConnectionDelete" name="partnerConnectionForm" type="org.nexuse2e.ui.action.partners.PartnerConnectionDeleteAction">
       <forward name="success" path="/PartnerConnectionList.do"/>
+      <forward name="error" path="/PartnerConnectionView.do"/>
     </action>
     <action path="/PartnerConnectionSave" name="partnerConnectionForm" type="org.nexuse2e.ui.action.partners.PartnerConnectionSaveAction">
       <forward name="success" path="/PartnerConnectionList.do"/>
