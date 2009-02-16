@@ -111,8 +111,8 @@
      -->
      
     <!--  8 = serialize --> 
-    <property name="defaultTransactionIsolation" value="8"/>
-    
+    <!-- <property name="defaultTransactionIsolation" value="8"/>
+     -->
     
     
   </bean>
@@ -177,35 +177,35 @@
         -->      </props>
     </property>
   </bean>
-<!-- 
+
   <bean id="txManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
     <property name="sessionFactory" ref="hibernateSessionFactory" />
   </bean>
 
   <aop:config>
-    <aop:pointcut id="transactionServices" expression="execution(* org.nexuse2e.controller.TransactionServiceImpl.*(..))"/>
+    <aop:pointcut id="transactionServices" expression="execution(* org.nexuse2e.dao.*Impl.*(..))"/>
     <aop:advisor advice-ref="txAdvice" pointcut-ref="transactionServices"/>
   </aop:config>
 
   <tx:advice id="txAdvice" transaction-manager="txManager">
     <tx:attributes>
+      <!-- 
       <tx:method name="get*" read-only="true"/> 
+      -->
       <tx:method name="*" propagation="REQUIRED" isolation="SERIALIZABLE"/>
     </tx:attributes>
   </tx:advice>
 
- -->
-
-  <bean id="logDao" class="org.nexuse2e.dao.LogDAO">
+  <bean id="logDao" class="org.nexuse2e.dao.LogDAOImpl">
     <property name="sessionFactory" ref="hibernateSessionFactory" />
   </bean>
-  <bean id="configDao" class="org.nexuse2e.dao.ConfigDAO">
+  <bean id="configDao" class="org.nexuse2e.dao.ConfigDAOImpl">
     <property name="sessionFactory" ref="hibernateSessionFactory" />
   </bean>
-  <bean id="transactionDao" class="org.nexuse2e.dao.TransactionDAO">
+  <bean id="transactionDao" class="org.nexuse2e.dao.TransactionDAOImpl">
     <property name="sessionFactory" ref="hibernateSessionFactory" />
   </bean>
-  <bean id="persistentPropertyDao" class="org.nexuse2e.dao.PersistentPropertyDAO">
+  <bean id="persistentPropertyDao" class="org.nexuse2e.dao.PersistentPropertyDAOImpl">
     <property name="sessionFactory" ref="hibernateSessionFactory" />
   </bean>
 
