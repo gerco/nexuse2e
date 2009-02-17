@@ -21,7 +21,6 @@ package org.nexuse2e.ui.action.tools;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,14 +30,9 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.EngineConfiguration;
-import org.nexuse2e.dao.TransactionDAO;
-import org.nexuse2e.pojo.ConversationPojo;
-import org.nexuse2e.pojo.LogPojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.DatabasePurgeForm;
 
@@ -62,27 +56,14 @@ public class DatabasePurgeAction extends NexusE2EAction {
             
         } else if ( dbForm.getType().equals( "preview" ) ) {
             LOG.debug( "start: "+ dbForm.getStartDay()+"."+dbForm.getStartMonth()+"."+dbForm.getStartYear()+" "+dbForm.getStartHour()+":"+dbForm.getStartMin() );
+            Date[] dates = getTimestamps( dbForm );
             
             if(dbForm.isPurgeMessages()) {
-                List<ConversationPojo> conversations = getConversationsByForm( dbForm);
-                dbForm.setConvCount( conversations.size() );
-                int messageCount = 0;
-                for ( ConversationPojo pojo : conversations ) {
-                    if(pojo.getMessages() != null) {
-                        messageCount += pojo.getMessages().size();
-                    }
-                }
-                dbForm.setMessageCount( messageCount );
-                // System.out.println("size: "+conversations.size());
+                dbForm.setConvCount( (int) Engine.getInstance().getTransactionDAO().getConversationsCount( dates[0], dates[1] ) );
+                dbForm.setMessageCount( (int) Engine.getInstance().getTransactionDAO().getMessagesCount( dates[0], dates[1] ) );
             }
             if(dbForm.isPurgeLog()) {
-                List<LogPojo> logEntries = getLogEntiesByForm( dbForm );
-                if(logEntries != null) {
-                    dbForm.setLogEntryCount( logEntries.size() );
-                } else {
-                    LOG.debug( "no log entries found" );
-                    dbForm.setLogEntryCount( 0);
-                }
+                dbForm.setLogEntryCount( (int) Engine.getInstance().getTransactionDAO().getLogCount( dates[0], dates[1] ) );
             }
             
             
@@ -90,34 +71,23 @@ public class DatabasePurgeAction extends NexusE2EAction {
         } else if ( dbForm.getType().equals( "remove" ) ) {
            
             LOG.debug( "removing data" );
-                
+            Date[] dates = getTimestamps( dbForm );
+            
             if(dbForm.isPurgeMessages()) {
                 LOG.debug( "purging selected messages" );
                 
                 try {
-                    List<ConversationPojo> conversations = getConversationsByForm( dbForm );
-                    if ( conversations != null && conversations.size() > 0 ) {
-                        for ( ConversationPojo pojo : conversations ) {
-                            Engine.getInstance().getTransactionService().deleteConversation( pojo );
-                        }
-                    }
+                    Engine.getInstance().getTransactionDAO().removeConversations( dates[0], dates[1] );
                 } catch ( Exception e ) {
-                    LOG.error( "Error while deleting conversations: "+e.getMessage()  );
-                    e.printStackTrace();
+                    LOG.error( "Error while deleting conversations", e );
                 }    
             }
             if(dbForm.isPurgeLog()) {
                 LOG.debug( "purging selected log entries" );
                 try {
-                    List<LogPojo> logEnties = getLogEntiesByForm( dbForm );
-                    if ( logEnties != null && logEnties.size() > 0 ) {
-                        for ( LogPojo pojo : logEnties ) {
-                            Engine.getInstance().getTransactionService().deleteLogEntry( pojo );
-                        }
-                    }
+                    Engine.getInstance().getTransactionDAO().removeLogEntries( dates[0], dates[1] );
                 } catch ( Exception e ) {
-                    LOG.error( "Error while deleting conversations: "+e.getMessage()  );
-                    e.printStackTrace();
+                    LOG.error( "Error while deleting conversations", e );
                 }    
             }
              
@@ -127,7 +97,7 @@ public class DatabasePurgeAction extends NexusE2EAction {
 
         return success;
     }
-    private List<LogPojo> getLogEntiesByForm(DatabasePurgeForm form) throws NexusException{
+    private Date[] getTimestamps(DatabasePurgeForm form) throws NexusException{
         
         Date startDate = null;
         Date endDate = null;
@@ -150,45 +120,6 @@ public class DatabasePurgeAction extends NexusE2EAction {
             end.set( Calendar.MINUTE, Integer.parseInt( form.getEndMin()) );
             endDate = end.getTime();
         }
-        // System.out.println("startdate("+form.isStartEnabled()+"): "+startDate);
-        // System.out.println("enddate("+form.isEndEnabled()+"): "+endDate);
-
-        // System.out.println("Messages: "+form.isPurgeMessages());
-        // System.out.println("LogEntries: "+form.isPurgeLog());
-        
-        return Engine.getInstance().getTransactionService().getLogEntriesForReport( null, null, startDate, endDate, 0, 0, TransactionDAO.SORT_NONE, false);
-    }
-    
-    private List<ConversationPojo> getConversationsByForm(DatabasePurgeForm form) throws NexusException{
-        Date startDate = null;
-        Date endDate = null;
-        
-        if(form.isStartEnabled()){
-            Calendar start = Calendar.getInstance();
-            start.set( Calendar.DAY_OF_MONTH, Integer.parseInt( form.getStartDay()) );
-            start.set( Calendar.MONTH, Integer.parseInt( form.getStartMonth())-1 );
-            start.set( Calendar.YEAR, Integer.parseInt( form.getStartYear()) );
-            start.set( Calendar.HOUR_OF_DAY, Integer.parseInt( form.getStartHour()) );
-            start.set( Calendar.MINUTE, Integer.parseInt( form.getStartMin()) );
-            startDate = start.getTime();
-        }
-        if(form.isEndEnabled()){
-            Calendar end = Calendar.getInstance();
-            end.set( Calendar.DAY_OF_MONTH, Integer.parseInt( form.getEndDay()) );
-            end.set( Calendar.MONTH, Integer.parseInt( form.getEndMonth())-1 );
-            end.set( Calendar.YEAR, Integer.parseInt( form.getEndYear()) );
-            end.set( Calendar.HOUR_OF_DAY, Integer.parseInt( form.getEndHour()) );
-            end.set( Calendar.MINUTE, Integer.parseInt( form.getEndMin()) );
-            endDate = end.getTime();
-        }
-        // System.out.println("startdate("+form.isStartEnabled()+"): "+startDate);
-        // System.out.println("enddate("+form.isEndEnabled()+"): "+endDate);
-
-        // System.out.println("Messages: "+form.isPurgeMessages());
-        // System.out.println("LogEntries: "+form.isPurgeLog());
-        
-        
-        return Engine.getInstance().getTransactionService().getConversationsForReport( null,0, 0, null, startDate, endDate, 0, 0, TransactionDAO.SORT_NONE, false );
-        
+        return new Date[] { startDate, endDate };
     }
 }

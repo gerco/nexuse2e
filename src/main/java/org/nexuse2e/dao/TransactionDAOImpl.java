@@ -717,6 +717,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
     public void deleteConversation( ConversationPojo conversationPojo ) throws NexusException {
 
         LOG.debug( "deleteMessage: " + conversationPojo );
+        deleteRecords( conversationPojo.getMessages() );
         deleteRecord( conversationPojo );
     } // updateMessage
 
