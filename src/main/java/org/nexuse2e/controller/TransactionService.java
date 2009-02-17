@@ -63,12 +63,11 @@ public interface TransactionService extends Manageable {
     public abstract ConversationPojo getConversation( String conversationId ) throws NexusException;
 
     /**
-     * TODO ConversationId, unique for CPA (choreography) context, not partner
-     * @param MessageId
-     * @return
+     * Gets a conversation by it's primary key.
+     * @param nxConversationId The NEXUS conversation ID.
+     * @return The <code>ConversationPojo</code> with the given ID, or <code>null</code> if none exists.
      */
-    public abstract ConversationPojo getConversation( String choreographyId, String conversationId, String partnerId )
-            throws NexusException;
+    public abstract ConversationPojo getConversation( int nxConversationId ) throws NexusException;
 
     /**
      * @param status

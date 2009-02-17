@@ -41,6 +41,7 @@ public class ReportMessageEntryForm extends ActionForm {
     private String            participantId    = null;
     private String            messageId        = null;
     private String            conversationId   = null;
+    private int               nxConversationId = 0;
     private String            type             = null;
     private String            referencedId     = null;
     private String            status           = null;
@@ -62,6 +63,7 @@ public class ReportMessageEntryForm extends ActionForm {
         setMessageId( messagePojo.getMessageId() );
 
         setConversationId( messagePojo.getConversation().getConversationId() );
+        setNxConversationId( messagePojo.getConversation().getNxConversationId() );
         if ( messagePojo.getReferencedMessage() == null ) {
             setReferencedId( "n/a" );
         } else {
@@ -209,6 +211,14 @@ public class ReportMessageEntryForm extends ActionForm {
     public void setConversationId( String conversationId ) {
 
         this.conversationId = conversationId;
+    }
+    
+    public int getNxConversationId() {
+        return nxConversationId;
+    }
+
+    public void setNxConversationId(int nxConversationId) {
+        this.nxConversationId = nxConversationId;
     }
 
     public String getParticipantId() {

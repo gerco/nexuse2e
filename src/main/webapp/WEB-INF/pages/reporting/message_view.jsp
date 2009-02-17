@@ -40,7 +40,7 @@
 	<tr>
 		<td class="NEXUSName">Conversation ID</td>
 		<td class="NEXUSValue"><nexus:link styleClass="NexusLink"
-			href="ConversationView.do?convId=${reportMessageEntryForm.conversationId}&choreographyId=${reportMessageEntryForm.choreographyId}&partnerId=${reportMessageEntryForm.participantId}">
+			href="ConversationView.do?convId=${reportMessageEntryForm.nxConversationId}">
 			<bean:write name="reportMessageEntryForm" property="conversationId" />
 		</nexus:link></td>
 	</tr>
@@ -136,7 +136,7 @@
 
 	<logic:equal name="reportingPropertiesForm" property="searchFor" value="conversation">
 		<td class="BUTTON_RIGHT"><nobr><nexus:link
-			href="ConversationView.do?noReset&choreographyId=${reportMessageEntryForm.choreographyId}&convId=${reportMessageEntryForm.conversationId}&partnerId=${reportMessageEntryForm.participantId}"
+			href="ConversationView.do?noReset&choreographyId=${reportMessageEntryForm.choreographyId}&convId=${reportMessageEntryForm.nxConversationId}"
 			styleClass="NexusHeaderLink">
 			<img src="images/icons/resultset_previous.png" border="0" alt="" class="button">Back</nexus:link></nobr></td>
 	</logic:equal>

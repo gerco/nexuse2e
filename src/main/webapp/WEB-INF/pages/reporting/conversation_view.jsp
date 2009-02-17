@@ -70,16 +70,16 @@
                 <th class="NEXUSSection">End Date</th>
                 <th class="NEXUSSection">Turnaround Time</th>
             </tr>
-      <logic:iterate indexId="counter" id="messages" name="collection">
+      <logic:iterate indexId="counter" id="message" name="collection">
             <tr>
-                <td class="NEXUSValue"><nexus:link styleClass="NexusLink" href="MessageView.do?mId=${messages.messageId}&convId=${messages.conversationId}&chorId=${messages.choreographyId}&partnerId=${messages.participantId}"><bean:write name="messages" property="messageId"/></nexus:link></td>
-                <td class="NEXUSValue"><bean:write name="messages" property="status"/></td>
-                <td class="NEXUSValue"><bean:write name="messages" property="type"/></td>
-                <td class="NEXUSValue"><bean:write name="messages" property="action"/></td>
-                <td class="NEXUSValue"><bean:write name="messages" property="direction"/></td>
-                <td class="NEXUSValue"><bean:write name="messages" property="createdDate"/></td>
-                <td class="NEXUSValue"><bean:write name="messages" property="endDate"/></td>
-                <td class="NEXUSValue"><bean:write name="messages" property="turnaroundTime"/></td>
+                <td class="NEXUSValue"><nexus:link styleClass="NexusLink" href="MessageView.do?mId=${message.messageId}&convId=${message.conversationId}&chorId=${message.choreographyId}&partnerId=${message.participantId}"><bean:write name="message" property="messageId"/></nexus:link></td>
+                <td class="NEXUSValue"><bean:write name="message" property="status"/></td>
+                <td class="NEXUSValue"><bean:write name="message" property="type"/></td>
+                <td class="NEXUSValue"><bean:write name="message" property="action"/></td>
+                <td class="NEXUSValue"><bean:write name="message" property="direction"/></td>
+                <td class="NEXUSValue"><bean:write name="message" property="createdDate"/></td>
+                <td class="NEXUSValue"><bean:write name="message" property="endDate"/></td>
+                <td class="NEXUSValue"><bean:write name="message" property="turnaroundTime"/></td>
             </tr>
       </logic:iterate>
         </table>

@@ -42,6 +42,7 @@ public class ReportConversationEntryForm extends ActionForm {
     private static final long serialVersionUID = -2341300310540390803L;
     private String            choreographyId   = null;
     private String            conversationId   = null;
+    private int               nxConversationId = 0;
     private String            participantId    = null;
     private String            status           = null;
     private String            action           = null;
@@ -55,6 +56,7 @@ public class ReportConversationEntryForm extends ActionForm {
 
         setChoreographyId( pojo.getChoreography().getName() );
         setConversationId( pojo.getConversationId() );
+        setNxConversationId( pojo.getNxConversationId() );
         setParticipantId( pojo.getPartner().getPartnerId() );
 
         setStatus( "" + pojo.getStatus() );
@@ -194,6 +196,14 @@ public class ReportConversationEntryForm extends ActionForm {
     public void setConversationId( String conversationId ) {
 
         this.conversationId = conversationId;
+    }
+    
+    public int getNxConversationId() {
+        return nxConversationId;
+    }
+
+    public void setNxConversationId(int nxConversationId) {
+        this.nxConversationId = nxConversationId;
     }
 
     public String getEndDate() {

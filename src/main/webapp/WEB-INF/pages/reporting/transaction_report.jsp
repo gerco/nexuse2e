@@ -679,7 +679,7 @@
 								property="choreographyId" /></td>
 						</logic:equal>
 						<td class="NEXUSValue"><nexus:link styleClass="NexusLink"
-							href="ConversationView.do?convId=${conv.conversationId}&choreographyId=${conv.choreographyId}&partnerId=${conv.participantId}">
+							href="ConversationView.do?convId=${conv.nxConversationId}">
 							<bean:write name="conv" property="conversationId" />
 						</nexus:link></td>
 						<logic:equal name="reportingSettingsForm"

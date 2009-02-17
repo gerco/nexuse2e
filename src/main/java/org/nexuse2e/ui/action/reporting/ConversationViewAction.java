@@ -65,10 +65,7 @@ public class ConversationViewAction extends NexusE2EAction {
         ReportConversationEntryForm form = (ReportConversationEntryForm) actionForm;
 
         String conversationId = request.getParameter( "convId" );
-        String choreographyId = request.getParameter( "choreographyId" );
-        String partnerId = request.getParameter( "partnerId" );
-        ConversationPojo cPojo = Engine.getInstance().getTransactionService().getConversation( choreographyId,
-                conversationId, partnerId );
+        ConversationPojo cPojo = Engine.getInstance().getTransactionService().getConversation( Integer.parseInt( conversationId ) );
         if ( cPojo == null ) {
             ActionMessage errorMessage = new ActionMessage( "generic.error", "Selected Conversation not found" );
             errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );

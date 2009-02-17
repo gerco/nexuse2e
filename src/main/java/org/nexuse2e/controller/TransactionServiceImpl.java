@@ -73,17 +73,20 @@ public class TransactionServiceImpl implements TransactionService {
     /**
      * Completes the given <code>ConversationPojo</code> list by using the current engine configuration.
      * @param conversations The conversations to be completed.
+     * @param completeMessages If <code>true</code>, indicates that message associations shall be
+     * completed, too.
      * @return A conversation pojo list filled with the fields that were initially set up with proxies
      * for lazy loading. This is a reference to the object passed as argument.
      * @throws NexusException If something went wrong
      */
-    protected List<ConversationPojo> completeConversations( List<ConversationPojo> conversations ) throws NexusException {
+    protected List<ConversationPojo> completeConversations(
+            List<ConversationPojo> conversations, boolean completeMessages ) throws NexusException {
         if (conversations == null) {
             return null;
         }
         for (ConversationPojo c : conversations) {
             if (c != null) {
-                complete( c );
+                complete( c, completeMessages );
             }
         }
         return conversations;
@@ -218,16 +221,16 @@ public class TransactionServiceImpl implements TransactionService {
             conversationPojo.setConversationId( conversationId );
             conversationPojo.setPartner( partner );
 
-            Engine.getInstance().getTransactionService().storeTransaction( conversationPojo, null );
+            storeTransaction( conversationPojo, null );
         } else {
-            conversationPojo = Engine.getInstance().getTransactionService().getConversation( conversationId );
+            conversationPojo = getConversation( conversationId );
             if ( conversationPojo == null ) {
                 conversationPojo = new ConversationPojo();
                 conversationPojo.setChoreography( choreography );
                 conversationPojo.setConversationId( conversationId );
                 conversationPojo.setPartner( partner );
 
-                Engine.getInstance().getTransactionService().storeTransaction( conversationPojo, null );
+                storeTransaction( conversationPojo, null );
             }
         }
 
@@ -244,21 +247,11 @@ public class TransactionServiceImpl implements TransactionService {
 
     }
 
-    /* (non-Javadoc)
-     * @see org.nexuse2e.controller.TransactionService#getConversation(java.lang.String, java.lang.String, java.lang.String)
-     */
-    public ConversationPojo getConversation( String choreographyId, String conversationId, String partnerId )
+    public ConversationPojo getConversation( int nxConversationId )
             throws NexusException {
 
         LOG.trace( "Entering TransactionDataService.getConversation..." );
-        PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByPartnerId(
-                partnerId );
-        if ( partner == null ) {
-            return null;
-        }
-
-        return complete( Engine.getInstance().getTransactionDAO().getConversationByConversationId(
-                choreographyId, conversationId, partner.getNxPartnerId() ) );
+        return complete( Engine.getInstance().getTransactionDAO().getConversationByConversationId( nxConversationId ) );
 
     }
 
@@ -270,7 +263,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         return completeConversations( Engine.getInstance().getTransactionDAO().getConversationsForReport(
                 status, nxChoreographyId, nxPartnerId, conversationId, start,
-                end, itemsPerPage, page, field, ascending ) );
+                end, itemsPerPage, page, field, ascending ), false );
 
     }
 
@@ -437,8 +430,7 @@ public class TransactionServiceImpl implements TransactionService {
             action = new ActionPojo( choreography, new Date(), new Date(), 0, false, false, null, null, actionId );
         }
 
-        ConversationPojo conversation = complete( transactionDao.getConversationByConversationId( choreographyId, conversationId,
-                partner.getNxPartnerId() ), false );
+        ConversationPojo conversation = complete( transactionDao.getConversationByConversationId( conversationId ), false );
 
         if ( conversation == null ) {
             conversation = new ConversationPojo();
@@ -698,7 +690,7 @@ public class TransactionServiceImpl implements TransactionService {
      */
     public List<ConversationPojo> getConversationsByPartner( PartnerPojo partner ) throws NexusException {
 
-        return completeConversations( Engine.getInstance().getTransactionDAO().getConversationsByPartner( partner ) );
+        return completeConversations( Engine.getInstance().getTransactionDAO().getConversationsByPartner( partner ), true );
     }
 
     /* (non-Javadoc)
@@ -707,7 +699,7 @@ public class TransactionServiceImpl implements TransactionService {
     public List<ConversationPojo> getConversationsByChoreography( ChoreographyPojo choreography ) throws NexusException {
 
         return completeConversations( Engine.getInstance().getTransactionDAO().getConversationsByChoreography(
-                choreography ) );
+                choreography ), true );
     }
 
     /* (non-Javadoc)
@@ -717,7 +709,7 @@ public class TransactionServiceImpl implements TransactionService {
             ChoreographyPojo choreography ) throws NexusException {
 
         return completeConversations( Engine.getInstance().getTransactionDAO().getConversationsByPartnerAndChoreography(
-                partner, choreography ) );
+                partner, choreography ), true );
     }
 
     /* (non-Javadoc)

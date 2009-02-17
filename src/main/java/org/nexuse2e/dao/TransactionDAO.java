@@ -31,11 +31,11 @@ public interface TransactionDAO {
     public abstract ConversationPojo getConversationByConversationId( String conversationId ); // getConversationByConversationId
 
     /**
-     * @param conversationId
-     * @return
+     * Gets a <code>ConversationPojo</code> by it's primary key.
+     * @param nxConversationId The NEXUS conversation ID.
+     * @return The conversation, or <code>null</code> if none with the given ID exists.
      */
-    public abstract ConversationPojo getConversationByConversationId( String choreographyId, String conversationId,
-            int nxPartnerId ); // getConversationByConversationId
+    public abstract ConversationPojo getConversationByConversationId( int nxConversationId ); // getConversationByConversationId
 
     public abstract MessagePojo getMessageByMessageId( String messageId ) throws NexusException;
 
@@ -100,22 +100,31 @@ public interface TransactionDAO {
             boolean ascending ) throws NexusException;
 
     /**
-     * @param start
-     * @param end
-     * @param session
-     * @param transaction
-     * @return
-     * @throws NexusException
+     * Gets the number of conversations created between the given start and end dates.
+     * @param start The start date. May be <code>null</code> for stone age.
+     * @param end The end date. May be <code>null</code> for Star Wars age.
+     * @return The number of conversations that have been created between <code>start</code> and <code>end</code>.
+     * @throws NexusException If something went wrong.
      */
     public abstract long getConversationsCount( Date start, Date end ) throws NexusException;
 
     /**
-     * @param start
-     * @param end
-     * @param session
-     * @param transaction
-     * @return
-     * @throws NexusException
+     * Gets the number of messages associated with a conversation that has been created
+     * between the given start and end dates.
+     * @param start The start date. May be <code>null</code> for stone age.
+     * @param end The end date. May be <code>null</code> for Star Wars age.
+     * @return The number of messages in conversations that have been created between
+     * <code>start</code> and <code>end</code>.
+     * @throws NexusException If something went wrong.
+     */
+    public abstract long getMessagesCount( Date start, Date end ) throws NexusException;
+
+    /**
+     * Gets the number of log entries created between the given start and end dates.
+     * @param start The start date. May be <code>null</code> for stone age.
+     * @param end The end date. May be <code>null</code> for Star Wars age.
+     * @return The number of log entries that have been created between <code>start</code> and <code>end</code>.
+     * @throws NexusException If something went wrong.
      */
     public abstract long getLogCount( Date start, Date end ) throws NexusException;
 
@@ -130,12 +139,11 @@ public interface TransactionDAO {
     public abstract long removeLogEntries( Date start, Date end ) throws NexusException;
 
     /**
-     * @param start
-     * @param end
-     * @param session
-     * @param transaction
-     * @return
-     * @throws NexusException
+     * Removes all conversations that have been created between the given start and end dates.
+     * @param start The start date. May be <code>null</code> for stone age.
+     * @param end The end date. May be <code>null</code> for Star Wars age.
+     * @return The number of conversations that have been deleted.
+     * @throws NexusException If something went wrong.
      */
     public abstract long removeConversations( Date start, Date end ) throws NexusException;
 
