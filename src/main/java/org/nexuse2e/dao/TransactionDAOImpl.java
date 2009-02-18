@@ -19,7 +19,6 @@
  */
 package org.nexuse2e.dao;
 
-import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +26,6 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.DetachedCriteria;
@@ -43,7 +41,6 @@ import org.nexuse2e.pojo.LogPojo;
 import org.nexuse2e.pojo.MessagePayloadPojo;
 import org.nexuse2e.pojo.MessagePojo;
 import org.nexuse2e.pojo.PartnerPojo;
-import org.springframework.orm.hibernate3.HibernateCallback;
 
 /**
  * Data access object (DAO) to provide persistence services for transaction related entities.
@@ -902,15 +899,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
                 }
 
                 // now, update the conversation status
-                final int status = message.getConversation().getStatus();
-                final int id = message.getConversation().getNxConversationId();
-                getHibernateTemplate().execute( new HibernateCallback() {
-                    public Object doInHibernate( Session session )
-                            throws HibernateException, SQLException {
-                        Query q = session.createQuery( "update ConversationPojo set status=" + status + " where nxConversationId=" + id );
-                        return q.executeUpdate();
-                    }
-                } );
+                getHibernateTemplate().merge( message.getConversation() );
             }
         }
             
