@@ -310,8 +310,8 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     @SuppressWarnings("unchecked")
     public List<LoggerPojo> getLoggers() {
 
-        DetachedCriteria dc = DetachedCriteria.forClass( LoggerPojo.class );
-        return (List<LoggerPojo>) getListThroughSessionFind( dc,0,0 );
+        //DetachedCriteria dc = DetachedCriteria.forClass( LoggerPojo.class );
+        return (List<LoggerPojo>) getHibernateTemplate().find( "from LoggerPojo" ); //getListThroughSessionFind( dc,0,0 );
     }
 
     /* (non-Javadoc)

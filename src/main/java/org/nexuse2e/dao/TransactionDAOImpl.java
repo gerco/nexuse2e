@@ -363,39 +363,59 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
 
         Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
 
-        StringBuilder query = new StringBuilder(
-                "delete label from nx_message_label label, nx_message message, nx_conversation conv where " +
-                "label.nx_message_id = message.nx_message_id and message.nx_conversation_id = conv.nx_conversation_id" );
-
-        Map<String, Date> map = appendQueryDate( query, "conv", start, end );
+        StringBuilder query = new StringBuilder( "delete from nx_message_label" );
+        Map<String, Date> map = null;
+        if (start != null || end != null) {
+            query.append( " label where (select message.nx_message_id from nx_message message, nx_conversation conv where " +
+            		"label.nx_message_id = message.nx_message_id and message.nx_conversation_id = conv.nx_conversation_id" );
+            map = appendQueryDate( query, "conv", start, end );
+            query.append( ") is not null" );
+        }
         LOG.debug( "sql1: " + query );
         Query sqlquery1 = session.createSQLQuery( query.toString() );
-        for (String name : map.keySet()) {
-            sqlquery1.setDate( name, map.get( name ) );
+        if (map != null) {
+            for (String name : map.keySet()) {
+                sqlquery1.setDate( name, map.get( name ) );
+            }
         }
 
-        query = new StringBuilder(
-                "delete payload from nx_message_payload payload, nx_message message, nx_conversation conv where " +
-                "payload.nx_message_id = message.nx_message_id and message.nx_conversation_id = conv.nx_conversation_id" );
+        map = null;
+        query = new StringBuilder( "delete from nx_message_payload" );
+        if (start != null || end != null) {
+            query.append( " payload where (select message.nx_message_id from nx_message message, nx_conversation conv where " +
+                    "payload.nx_message_id = message.nx_message_id and message.nx_conversation_id = conv.nx_conversation_id" );
+            map = appendQueryDate( query, "conv", start, end );
+            query.append( ") is not null" );
+        }
 
-        map = appendQueryDate( query, "conv", start, end );
         LOG.debug( "sql2: " + query );
         Query sqlquery2 = session.createSQLQuery( query.toString() );
-        for (String name : map.keySet()) {
-            sqlquery2.setDate( name, map.get( name ) );
+        if (map != null) {
+            for (String name : map.keySet()) {
+                sqlquery2.setDate( name, map.get( name ) );
+            }
         }
         
-        query = new StringBuilder(
-                "delete message from nx_message message, nx_conversation conv where message.nx_conversation_id = conv.nx_conversation_id " );
-
-        map = appendQueryDate( query, "conv", start, end );
-        LOG.debug( "sql3: " + query );
-        Query sqlquery3 = session.createSQLQuery( query.toString() );
-        for (String name : map.keySet()) {
-            sqlquery3.setDate( name, map.get( name ) );
+        map = null;
+        query = new StringBuilder( "delete from nx_message" );
+        if (start != null || end != null) {
+            query.append( " message where (select conv.nx_conversation_id from nx_conversation conv where message.nx_conversation_id = conv.nx_conversation_id" );
+            map = appendQueryDate( query, "conv", start, end );
+            query.append( ") is not null" );
         }
 
-        query = new StringBuilder( "delete conv from nx_conversation conv" );
+        LOG.debug( "sql3: " + query );
+        Query sqlquery3 = session.createSQLQuery( query.toString() );
+        if (map != null) {
+            for (String name : map.keySet()) {
+                sqlquery3.setDate( name, map.get( name ) );
+            }
+        }
+
+        query = new StringBuilder( "delete from nx_conversation" );
+        if (start != null || end != null) {
+            query.append( " conv" );
+        }
 
         map = appendQueryDate( query, "conv", start, end );
         LOG.debug( "sql4: " + query );
