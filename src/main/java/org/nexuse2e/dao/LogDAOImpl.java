@@ -61,7 +61,7 @@ public class LogDAOImpl extends BasicDAOImpl implements LogDAO {
         
         
         if ( severity != null ) {
-            dc.add( Restrictions.eq( "severity", severity ) );
+            dc.add( Restrictions.eq( "severity", Integer.parseInt( severity ) ) );
         }
 
         if ( messageText != null ) {
