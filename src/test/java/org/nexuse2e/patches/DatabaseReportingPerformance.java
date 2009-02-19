@@ -10,6 +10,7 @@ import org.hibernate.Session;
 import org.nexuse2e.Constants;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.dao.TransactionDAO;
 import org.nexuse2e.patch.Patch;
 import org.nexuse2e.patch.PatchException;
 import org.nexuse2e.patch.PatchReporter;
@@ -24,6 +25,7 @@ public class DatabaseReportingPerformance implements Patch {
     @SuppressWarnings("unchecked")
     public void executePatch() throws PatchException {
         Session session = null;
+        TransactionDAO dao = (TransactionDAO) Engine.getInstance().getBeanFactory().getBean( "transactionDao" );
        try {
            long min = -1;
            long max = -1;
@@ -36,7 +38,7 @@ public class DatabaseReportingPerformance implements Patch {
            List<ConversationPojo> convs = null;
            List<MessagePojo> repMsgs = null;
            
-           session = Engine.getInstance().getTransactionDAO().getDBSession();
+           session = dao.getDBSession();
            session.setCacheMode( CacheMode.IGNORE );
            
            for(int i = 0; i < count; i++) {
@@ -67,7 +69,7 @@ public class DatabaseReportingPerformance implements Patch {
            for(int i = 0; i < count; i++) {
            
                start = System.currentTimeMillis();
-               convs = Engine.getInstance().getTransactionDAO().getConversationsForReport( "9", 0,0, null, null, endDate, 100, 0, 0, true );
+               convs = dao.getConversationsForReport( "9", 0,0, null, null, endDate, 100, 0, 0, true );
                end = System.currentTimeMillis();
                
                dif = end-start;
@@ -88,7 +90,7 @@ public class DatabaseReportingPerformance implements Patch {
                query.setMaxResults( 100 );
                repMsgs = (List<MessagePojo>) query.list();
                
-               Engine.getInstance().getTransactionDAO().getMessagesForReport( "3", 0,0, null, null, null,null,endDate, 100, 0, 0, true );
+               dao.getMessagesForReport( "3", 0,0, null, null, null,null,endDate, 100, 0, 0, true );
                end = System.currentTimeMillis();
                
                dif = end-start;
@@ -109,8 +111,8 @@ public class DatabaseReportingPerformance implements Patch {
         }finally {
             if(session != null) {
                 try {
-                    Engine.getInstance().getTransactionDAO().releaseDBSession( session );
-                } catch ( NexusException e ) {
+                    dao.releaseDBSession( session );
+                } catch ( Exception e ) {
                     e.printStackTrace();
                 }
             }

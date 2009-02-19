@@ -38,12 +38,12 @@ public abstract class DatabasePatch {
         }
         TransactionDAO dao;
         try {
-            dao = Engine.getInstance().getTransactionDAO();
+            dao = (TransactionDAO) Engine.getInstance().getBeanFactory().getBean( "transactionDao" );
             if(dao == null) {
                 report("no config dao available");
                 return null;
             }
-        } catch ( NexusException e ) {
+        } catch ( Exception e ) {
             report("Exception: "+e.getMessage());
             return null;
         }
@@ -60,12 +60,12 @@ public abstract class DatabasePatch {
         }
         TransactionDAO dao;
         try {
-            dao = Engine.getInstance().getTransactionDAO();
+            dao = (TransactionDAO) Engine.getInstance().getBeanFactory().getBean( "transactionDao" );
             if(dao == null) {
                 report("no config dao available");
                 return;
             }
-        } catch ( NexusException e ) {
+        } catch ( Exception e ) {
             report("Exception: "+e.getMessage());
             return;
         }
