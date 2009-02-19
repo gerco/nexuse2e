@@ -19,6 +19,7 @@
  */
 package org.nexuse2e.dao;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -263,11 +264,11 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
     public long getConversationsCount( Date start, Date end ) throws NexusException {
 
         Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
-        StringBuilder query = new StringBuilder( "select count(nx_conversation_id) from nx_conversation conv " );
-        Map<String, Date> map = appendQueryDate( query, "conv", start, end );
+        StringBuilder query = new StringBuilder( "select count(*) from nx_conversation conv " );
+        Map<String, Timestamp> map = appendQueryDate( query, "conv", start, end );
         Query sqlquery = session.createSQLQuery( query.toString() );
         for (String name : map.keySet()) {
-            sqlquery.setDate( name, map.get( name ) );
+            sqlquery.setTimestamp( name, map.get( name ) );
         }
         return ( (Number) sqlquery.uniqueResult() ).longValue();
 
@@ -276,11 +277,11 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
     public long getMessagesCount( Date start, Date end ) throws NexusException {
 
         Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
-        StringBuilder query = new StringBuilder( "select count(nx_message_id) from nx_message msg inner join nx_conversation conv on (msg.nx_conversation_id = conv.nx_conversation_id) " );
-        Map<String, Date> map = appendQueryDate( query, "conv", start, end );
+        StringBuilder query = new StringBuilder( "select count(*) from nx_message msg inner join nx_conversation conv on (msg.nx_conversation_id = conv.nx_conversation_id) " );
+        Map<String, Timestamp> map = appendQueryDate( query, "conv", start, end );
         Query sqlquery = session.createSQLQuery( query.toString() );
         for (String name : map.keySet()) {
-            sqlquery.setDate( name, map.get( name ) );
+            sqlquery.setTimestamp( name, map.get( name ) );
         }
         return ( (Number) sqlquery.uniqueResult() ).longValue();
 
@@ -293,10 +294,10 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
 
         Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
         StringBuilder query = new StringBuilder( "select count(nx_log_id) from nx_log log " );
-        Map<String, Date> map = appendQueryDate( query, "log", start, end );
+        Map<String, Timestamp> map = appendQueryDate( query, "log", start, end );
         Query sqlquery = session.createSQLQuery( query.toString() );
         for (String name : map.keySet()) {
-            sqlquery.setDate( name, map.get( name ) );
+            sqlquery.setTimestamp( name, map.get( name ) );
         }
         return ( (Number) sqlquery.uniqueResult() ).longValue();
 
@@ -310,10 +311,10 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
 
         StringBuilder query = new StringBuilder( "delete from nx_log " );
-        Map<String, Date> map = appendQueryDate( query, "", start, end );
+        Map<String, Timestamp> map = appendQueryDate( query, "", start, end );
         Query sqlquery = session.createSQLQuery( query.toString() );
         for (String name : map.keySet()) {
-            sqlquery.setDate( name, map.get( name ) );
+            sqlquery.setTimestamp( name, map.get( name ) );
         }
         return sqlquery.executeUpdate();
 
@@ -324,15 +325,18 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
      * @param end
      * @return
      */
-    private Map<String, Date> appendQueryDate( StringBuilder queryString, String prefix, Date start, Date end ) {
+    private Map<String, Timestamp> appendQueryDate( StringBuilder queryString, String prefix, Date start, Date end ) {
 
+        Timestamp startTs = (start == null ? null : (start instanceof Timestamp ? (Timestamp) start : new Timestamp( start.getTime() )));
+        Timestamp endTs = (end == null ? null : (end instanceof Timestamp ? (Timestamp) end : new Timestamp( end.getTime() )));
+        
         if (StringUtils.isEmpty( prefix )) {
             prefix = "";
         } else {
             prefix += ".";
         }
         boolean first = queryString.indexOf( "where" ) < 0;
-        Map<String, Date> map = new HashMap<String, Date>( 2 );
+        Map<String, Timestamp> map = new HashMap<String, Timestamp>( 2 );
         if ( start != null ) {
             if ( !first ) {
                 queryString.append( " and " );
@@ -340,7 +344,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
                 queryString.append( " where " );
             }
             queryString.append( prefix + "created_date >= :startDate" );
-            map.put( "startDate", start );
+            map.put( "startDate", startTs );
             first = false;
         }
         if ( end != null ) {
@@ -350,7 +354,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
                 queryString.append( " where " );
             }
             queryString.append( prefix + "created_date <= :endDate" );
-            map.put( "endDate", end );
+            map.put( "endDate", endTs );
             first = false;
         }
         return map;
@@ -364,7 +368,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         Session session = getHibernateTemplate().getSessionFactory().getCurrentSession();
 
         StringBuilder query = new StringBuilder( "delete from nx_message_label" );
-        Map<String, Date> map = null;
+        Map<String, Timestamp> map = null;
         if (start != null || end != null) {
             query.append( " label where (select message.nx_message_id from nx_message message, nx_conversation conv where " +
             		"label.nx_message_id = message.nx_message_id and message.nx_conversation_id = conv.nx_conversation_id" );
@@ -375,7 +379,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         Query sqlquery1 = session.createSQLQuery( query.toString() );
         if (map != null) {
             for (String name : map.keySet()) {
-                sqlquery1.setDate( name, map.get( name ) );
+                sqlquery1.setTimestamp( name, map.get( name ) );
             }
         }
 
@@ -392,7 +396,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         Query sqlquery2 = session.createSQLQuery( query.toString() );
         if (map != null) {
             for (String name : map.keySet()) {
-                sqlquery2.setDate( name, map.get( name ) );
+                sqlquery2.setTimestamp( name, map.get( name ) );
             }
         }
         
@@ -408,7 +412,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         Query sqlquery3 = session.createSQLQuery( query.toString() );
         if (map != null) {
             for (String name : map.keySet()) {
-                sqlquery3.setDate( name, map.get( name ) );
+                sqlquery3.setTimestamp( name, map.get( name ) );
             }
         }
 
@@ -421,7 +425,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         LOG.debug( "sql4: " + query );
         Query sqlquery4 = session.createSQLQuery( query.toString() );
         for (String name : map.keySet()) {
-            sqlquery4.setDate( name, map.get( name ) );
+            sqlquery4.setTimestamp( name, map.get( name ) );
         }
 
         sqlquery1.executeUpdate();
