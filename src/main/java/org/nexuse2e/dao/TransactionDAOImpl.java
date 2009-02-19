@@ -1001,10 +1001,10 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
     }
     
     public Session getDBSession() {
-        return super.getSession();
+        return getHibernateTemplate().getSessionFactory().openSession();
     }
     
     public void releaseDBSession( Session session ) {
-        super.releaseSession( session );
+        session.close();
     }
 }
