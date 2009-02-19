@@ -51,8 +51,8 @@ public class DatabaseLogger extends AbstractLogger {
 
         LogDAO logDao;
         try {
-            logDao = (LogDAO)Engine.getInstance().getDao( "logDao" );
-        } catch ( NexusException e ) {
+            logDao = (LogDAO)Engine.getInstance().getBeanFactory().getBean( "logDao" );
+        } catch ( Exception e ) {
             e.printStackTrace();
             return;
         }

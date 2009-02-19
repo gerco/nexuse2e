@@ -33,6 +33,7 @@ import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.dao.TransactionDAO;
 
 /**
  * @author gesch
@@ -184,11 +185,12 @@ public class DBCleanupService extends AbstractService implements SchedulerClient
                 long logCount = -1;
                 long convCount = -1;
                 LOG.debug( "Remaining data: "+endDate );
+                TransactionDAO tDao = (TransactionDAO)Engine.getInstance().getBeanFactory().getBean( "transactionDao" );
                 if(purgeLogs) {
                     
                     // for automated pruge the start date is unlimited and end date is (now - days remaining)
                     try {
-                        logCount =  Engine.getInstance().getTransactionDAO().getLogCount(null,endDate);
+                        logCount =  tDao.getLogCount(null,endDate);
                         LOG.debug( "Log entries to purge: "+logCount );
                     } catch ( NexusException e ) {
                         e.printStackTrace();
@@ -196,7 +198,7 @@ public class DBCleanupService extends AbstractService implements SchedulerClient
                 }
                 if(purgeMessages) {
                     try {
-                        convCount =   Engine.getInstance().getTransactionDAO().getConversationsCount( null, endDate );
+                        convCount =   tDao.getConversationsCount( null, endDate );
                         LOG.debug( "Conversations to purge: "+convCount );
                     } catch ( NexusException e ) {
                         e.printStackTrace();
@@ -210,7 +212,7 @@ public class DBCleanupService extends AbstractService implements SchedulerClient
                             
                             try {
                                 if ( convCount > 0 ) {
-                                        Engine.getInstance().getTransactionDAO().removeConversations( null, endDate );
+                                    tDao.removeConversations( null, endDate );
                                 }
                             } catch ( Exception e ) {
                                 LOG.error( "Error while deleting conversations: "+e.getMessage()  );
@@ -221,7 +223,7 @@ public class DBCleanupService extends AbstractService implements SchedulerClient
                             LOG.debug( "purging selected log entries" );
                             try {
                                 if ( logCount > 0 ) {
-                                    Engine.getInstance().getTransactionDAO().removeLogEntries( null, endDate );
+                                    tDao.removeLogEntries( null, endDate );
                                 }
                             } catch ( Exception e ) {
                                 LOG.error( "Error while deleting conversations: "+e.getMessage()  );

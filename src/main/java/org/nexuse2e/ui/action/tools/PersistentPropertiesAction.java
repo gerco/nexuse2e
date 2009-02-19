@@ -91,7 +91,7 @@ public class PersistentPropertiesAction extends NexusE2EAction {
         String action = form.getSubmitaction();
         form.setSubmitaction( null );
 
-        PersistentPropertyDAO dao = Engine.getInstance().getPersistentPropertyDAO();
+        PersistentPropertyDAO dao = (PersistentPropertyDAO)Engine.getInstance().getBeanFactory().getBean( "persistentPropertyDao" );
         
         if ( !StringUtils.isEmpty( action ) && action.equals( "add" ) ) {
             if ( !StringUtils.isEmpty( form.getNamespace() ) && !StringUtils.isEmpty( form.getName() ) && !StringUtils.isEmpty( form.getVersion() ) ) {

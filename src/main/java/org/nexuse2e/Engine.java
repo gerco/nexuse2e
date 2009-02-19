@@ -97,7 +97,8 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     private NEXUSe2eInterface                inProcessNEXUSe2eInterface     = new NEXUSe2eInterfaceImpl();
 
     private TransactionService               transactionService;
-
+    private ConfigDAO                        configDao;
+    
     private Map<String, IdGenerator>         idGenrators                    = null;
 
     private Map<String, TimestampFormatter>  timestampFormatters            = null;
@@ -311,7 +312,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                     Configuration configuration = localSessionFactoryBean.getConfiguration();
                     String dialect = configuration.getProperty( "hibernate.dialect" );
                     if ( ( dialect != null ) && ( dialect.length() != 0 ) ) {
-                        BasicDAO dao = getDao( "configDao" );
+                        BasicDAO dao = (BasicDAO)getConfigDao();
                         if ( dialect.indexOf( "DB2400" ) != -1 ) {
                             dao.setISeriesServer( true );
                         } else if ( dialect.indexOf( "SQLServer" ) != -1 ) {
@@ -339,7 +340,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
             idGenrators.put( "conversationId", new NexusUUIDGenerator() );
 
             //initialize TransactionDataService
-            transactionService = new TransactionServiceImpl();
+            transactionService = (TransactionService)Engine.getInstance().getBeanFactory().getBean( "transactionService" );
 
             // create new Config
             if ( currentConfiguration == null ) {
@@ -360,8 +361,11 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                     transactionService );
 
             for ( Manageable bean : currentConfiguration.getStaticBeanContainer().getManagableBeans().values() ) {
-                if ( bean.getStatus().getValue() < BeanStatus.INITIALIZED.getValue() ) {
-                    LOG.trace( "Initializing bean: " + bean.getClass().getName() );
+                LOG.trace( "Initializing bean: " + bean.getClass().getName() );
+                
+                
+                if ( bean.getStatus() == null || bean.getStatus().getValue() < BeanStatus.INITIALIZED.getValue() ) {
+                    
                     try {
                         bean.initialize( currentConfiguration );
                     } catch ( Exception e ) {
@@ -672,65 +676,65 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
      * if <code>daoName</code> is <code>null</code>.
      * @throws NexusException if the given bean name does not exist or has an invalid type.
      */
-    public BasicDAO getDao( String daoName ) throws NexusException {
-
-        if ( daoName != null ) {
-            if ( getBeanFactory().containsBean( daoName ) ) {
-                Object daoBean = null;
-                daoBean = getBeanFactory().getBean( daoName );
-
-                if ( daoBean instanceof BasicDAO ) {
-                    return (BasicDAO) daoBean;
-                } else {
-                    throw new NexusException( "invalid Object Type:" + daoBean.getClass().getName() );
-                }
-            } else {
-                throw new NexusException( "Requested daoBean: " + daoName + " not found!" );
-            }
-        }
-        return null;
-    }
+//    public BasicDAO getDao( String daoName ) throws NexusException {
+//
+//        if ( daoName != null ) {
+//            if ( getBeanFactory().containsBean( daoName ) ) {
+//                Object daoBean = null;
+//                daoBean = getBeanFactory().getBean( daoName );
+//
+//                if ( daoBean instanceof BasicDAO ) {
+//                    return (BasicDAO) daoBean;
+//                } else {
+//                    throw new NexusException( "invalid Object Type:" + daoBean.getClass().getName() );
+//                }
+//            } else {
+//                throw new NexusException( "Requested daoBean: " + daoName + " not found!" );
+//            }
+//        }
+//        return null;
+//    }
 
     /**
      * Convenience method to get the configuration DAO.
      * @return The configuration DAO.
      * @throws NexusException If the configuration DAO is not available.
      */
-    public ConfigDAO getConfigDAO() throws NexusException {
-
-        return (ConfigDAO) getDao( "configDao" );
-    }
+//    public ConfigDAO getConfigDAO() throws NexusException {
+//
+//        return (ConfigDAO) getDao( "configDao" );
+//    }
 
     /**
      * Convenience method to get the transaction DAO.
      * @return The transaction DAO.
      * @throws NexusException If the transaction DAO is not available.
      */
-    public TransactionDAO getTransactionDAO() throws NexusException {
-
-        return (TransactionDAO) getDao( "transactionDao" );
-    }
+//    public TransactionDAO getTransactionDAO() throws NexusException {
+//
+//        return (TransactionDAO) getDao( "transactionDao" );
+//    }
 
     /**
      * Convenience method to get the log DAO.
      * @return The log DAO.
      * @throws NexusException If the log DAO is not available.
      */
-    public LogDAO getLogDAO() throws NexusException {
+//    public LogDAO getLogDAO() throws NexusException {
+//
+//        return (LogDAO) getDao( "logDao" );
+//    }
 
-        return (LogDAO) getDao( "logDao" );
-    }
-
-    public PersistentPropertyDAO getPersistentPropertyDAO() throws NexusException {
-
-        return (PersistentPropertyDAO) getDao( "persistentPropertyDao" );
-    }
+//    public PersistentPropertyDAO getPersistentPropertyDAO() throws NexusException {
+//
+//        return (PersistentPropertyDAO) getDao( "persistentPropertyDao" );
+//    }
     
     @SuppressWarnings("unchecked")
     private void createEngineConfiguration() throws InstantiationException {
 
         try {
-            ConfigDAO configDAO = getConfigDAO();
+            ConfigDAO configDAO = getConfigDao();
             currentConfiguration = new EngineConfiguration();
             if ( configDAO.isDatabasePopulated() ) {
                 configDAO.loadDatafromDB( currentConfiguration );
@@ -783,7 +787,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
         BaseConfigurationProvider provider = new XmlBaseConfigurationProvider( xmlInput );
 
         try {
-            ConfigDAO configDao = getConfigDAO();
+            ConfigDAO configDao = getConfigDao();
             configDao.deleteAll();
             EngineConfiguration newConfig = new EngineConfiguration();
             newConfig.createBaseConfiguration( provider );
@@ -829,7 +833,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                     status = BeanStatus.INSTANTIATED;
                 }
                 LOG.debug( "Saving configuration..." );
-                getConfigDAO().saveDelta( newConfiguration );
+                getConfigDao().saveDelta( newConfiguration );
                 //                if ( oldServicePojo != null ) {
                 //                    service = getService( oldServicePojo.getName() );
                 //                    services.remove( oldServicePojo );
@@ -858,7 +862,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
             }
             try {
                 LOG.debug( "Re-load  configuration to make sure it's consistent" );
-                getConfigDAO().loadDatafromDB( newConfiguration );
+                getConfigDao().loadDatafromDB( newConfiguration );
             } catch ( Exception e ) {
                 LOG.error( "Error loading configuration: " + e );
                 e.printStackTrace();
@@ -1395,6 +1399,33 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     public void setServiceStartTime( long serviceStartTime ) {
     
         this.serviceStartTime = serviceStartTime;
+    }
+
+    
+    /**
+     * @return the configDao
+     */
+    public ConfigDAO getConfigDao() {
+    
+        return configDao;
+    }
+
+    
+    /**
+     * @param configDao the configDao to set
+     */
+    public void setConfigDao( ConfigDAO configDao ) {
+    
+        this.configDao = configDao;
+    }
+
+    
+    /**
+     * @param transactionService the transactionService to set
+     */
+    public void setTransactionService( TransactionService transactionService ) {
+    
+        this.transactionService = transactionService;
     }
 
 } // Engine

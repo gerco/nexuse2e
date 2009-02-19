@@ -59,11 +59,11 @@ public class DatabasePurgeAction extends NexusE2EAction {
             Date[] dates = getTimestamps( dbForm );
             
             if(dbForm.isPurgeMessages()) {
-                dbForm.setConvCount( (int) Engine.getInstance().getTransactionDAO().getConversationsCount( dates[0], dates[1] ) );
-                dbForm.setMessageCount( (int) Engine.getInstance().getTransactionDAO().getMessagesCount( dates[0], dates[1] ) );
+                dbForm.setConvCount( (int) Engine.getInstance().getTransactionService().getConversationsCount( dates[0], dates[1] ) );
+                dbForm.setMessageCount( (int) Engine.getInstance().getTransactionService().getMessagesCount( dates[0], dates[1] ) );
             }
             if(dbForm.isPurgeLog()) {
-                dbForm.setLogEntryCount( (int) Engine.getInstance().getTransactionDAO().getLogCount( dates[0], dates[1] ) );
+                dbForm.setLogEntryCount( (int) Engine.getInstance().getTransactionService().getLogCount( dates[0], dates[1] ) );
             }
             
             
@@ -77,7 +77,7 @@ public class DatabasePurgeAction extends NexusE2EAction {
                 LOG.debug( "purging selected messages" );
                 
                 try {
-                    Engine.getInstance().getTransactionDAO().removeConversations( dates[0], dates[1] );
+                    Engine.getInstance().getTransactionService().removeConversations( dates[0], dates[1] );
                 } catch ( Exception e ) {
                     LOG.error( "Error while deleting conversations", e );
                 }    
@@ -85,7 +85,7 @@ public class DatabasePurgeAction extends NexusE2EAction {
             if(dbForm.isPurgeLog()) {
                 LOG.debug( "purging selected log entries" );
                 try {
-                    Engine.getInstance().getTransactionDAO().removeLogEntries( dates[0], dates[1] );
+                    Engine.getInstance().getTransactionService().removeLogEntries( dates[0], dates[1] );
                 } catch ( Exception e ) {
                     LOG.error( "Error while deleting conversations", e );
                 }    

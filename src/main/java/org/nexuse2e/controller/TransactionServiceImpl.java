@@ -20,6 +20,7 @@
 package org.nexuse2e.controller;
 
 import java.lang.ref.WeakReference;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -39,6 +40,7 @@ import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.IdGenerator;
+import org.nexuse2e.dao.LogDAO;
 import org.nexuse2e.dao.TransactionDAO;
 import org.nexuse2e.messaging.Constants;
 import org.nexuse2e.messaging.MessageContext;
@@ -68,9 +70,11 @@ public class TransactionServiceImpl implements TransactionService {
 
     private Constants.BeanStatus                      status             = Constants.BeanStatus.UNDEFINED;
 
+    private TransactionDAO                            transactionDao     = null;
+    private LogDAO                                    logDao             = null;    
     
     
-    /**
+    /*
      * Completes the given <code>ConversationPojo</code> list by using the current engine configuration.
      * @param conversations The conversations to be completed.
      * @param completeMessages If <code>true</code>, indicates that message associations shall be
@@ -243,7 +247,7 @@ public class TransactionServiceImpl implements TransactionService {
     public ConversationPojo getConversation( String conversationId ) throws NexusException {
 
         LOG.trace( "Entering TransactionDataService.getConversation..." );
-        return complete( Engine.getInstance().getTransactionDAO().getConversationByConversationId( conversationId ) );
+        return complete( getTransactionDao().getConversationByConversationId( conversationId ) );
 
     }
 
@@ -251,7 +255,9 @@ public class TransactionServiceImpl implements TransactionService {
             throws NexusException {
 
         LOG.trace( "Entering TransactionDataService.getConversation..." );
-        return complete( Engine.getInstance().getTransactionDAO().getConversationByConversationId( nxConversationId ) );
+        return complete( getTransactionDao().getConversationByConversationId( nxConversationId ) );
+
+        
 
     }
 
@@ -261,7 +267,7 @@ public class TransactionServiceImpl implements TransactionService {
     public List<ConversationPojo> getConversationsForReport( String status, int nxChoreographyId, int nxPartnerId,
             String conversationId, Date start, Date end, int itemsPerPage, int page, int field, boolean ascending ) throws NexusException {
 
-        return completeConversations( Engine.getInstance().getTransactionDAO().getConversationsForReport(
+        return completeConversations( getTransactionDao().getConversationsForReport(
                 status, nxChoreographyId, nxPartnerId, conversationId, start,
                 end, itemsPerPage, page, field, ascending ), false );
 
@@ -273,7 +279,7 @@ public class TransactionServiceImpl implements TransactionService {
     public int getConversationsCount( String status, int nxChoreographyId, int nxPartnerId, String conversationId,
             Date start, Date end, int field, boolean ascending ) throws NexusException {
 
-        return Engine.getInstance().getTransactionDAO().getConversationsCount(
+        return getTransactionDao().getConversationsCount(
                 status, nxChoreographyId, nxPartnerId, conversationId, start, end, field, ascending );
     }
 
@@ -290,11 +296,10 @@ public class TransactionServiceImpl implements TransactionService {
      */
     public MessagePojo getMessage( String messageId, boolean isReferencedMessageId ) throws NexusException {
 
-        TransactionDAO dao = Engine.getInstance().getTransactionDAO();
         if ( isReferencedMessageId ) {
-            return complete( dao.getMessageByReferencedMessageId( messageId ) );
+            return complete( getTransactionDao().getMessageByReferencedMessageId( messageId ) );
         } else {
-            return complete( dao.getMessageByMessageId( messageId ) );
+            return complete( getTransactionDao().getMessageByMessageId( messageId ) );
         }
     }
 
@@ -305,7 +310,7 @@ public class TransactionServiceImpl implements TransactionService {
             String conversationId, String messageId, String type, Date start, Date end, int itemsPerPage, int page,
             int field, boolean ascending ) throws NexusException {
 
-        return completeMessages( Engine.getInstance().getTransactionDAO().getMessagesForReport(
+        return completeMessages( getTransactionDao().getMessagesForReport(
                 status, nxChoreographyId, nxPartnerId, conversationId, messageId,
                 type, start, end, itemsPerPage, page, field, ascending ) );
     }
@@ -316,7 +321,7 @@ public class TransactionServiceImpl implements TransactionService {
     public int getMessagesCount( String status, int nxChoreographyId, int nxPartnerId, String conversationId,
             String messageId, Date startDate, Date endDate ) throws NexusException {
 
-        return Engine.getInstance().getTransactionDAO().getMessagesCount(
+        return getTransactionDao().getMessagesCount(
                 status, nxChoreographyId, nxPartnerId, conversationId, messageId, startDate, endDate );
 
     }
@@ -326,8 +331,7 @@ public class TransactionServiceImpl implements TransactionService {
      */
     public List<MessagePojo> getMessagesFromConversation( ConversationPojo conversation ) throws NexusException {
 
-        TransactionDAO transactionDao = Engine.getInstance().getTransactionDAO();
-        List<MessagePojo> messages = transactionDao.fetchLazyMessages( conversation );
+        List<MessagePojo> messages = getTransactionDao().fetchLazyMessages( conversation );
         return completeMessages( messages );
     }
 
@@ -336,8 +340,7 @@ public class TransactionServiceImpl implements TransactionService {
      */
     public List<MessagePayloadPojo> getMessagePayloadsFromMessage( MessagePojo message ) throws NexusException {
 
-        TransactionDAO transactionDao = Engine.getInstance().getTransactionDAO();
-        List<MessagePayloadPojo> payloads = transactionDao.fetchLazyPayloads( message );
+        List<MessagePayloadPojo> payloads = getTransactionDao().fetchLazyPayloads( message );
         return payloads;
     }
 
@@ -357,7 +360,7 @@ public class TransactionServiceImpl implements TransactionService {
      */
     public List<MessagePojo> getActiveMessages() throws NexusException {
 
-        return completeMessages( Engine.getInstance().getTransactionDAO().getActiveMessages() );
+        return completeMessages( getTransactionDao().getActiveMessages() );
     } // getActiveMessages
 
     /* (non-Javadoc)
@@ -387,7 +390,7 @@ public class TransactionServiceImpl implements TransactionService {
         if ( message.getModifiedDate() == null ) {
             message.setModifiedDate( date );
         }
-        TransactionDAO transactionDao = Engine.getInstance().getTransactionDAO();
+        TransactionDAO transactionDao = getTransactionDao();
         PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByPartnerId(
                 partnerId );
         if ( partner == null ) {
@@ -506,8 +509,8 @@ public class TransactionServiceImpl implements TransactionService {
         } else if ( conversationPojo != null ) {
             LOG.debug( "storeTransaction: " + conversationPojo.getConversationId() );
         }
-        Engine.getInstance().getTransactionDAO().storeTransaction( conversationPojo, messagePojo );
-        Engine.getInstance().getTransactionDAO().reattachConversation( conversationPojo );
+        getTransactionDao().storeTransaction( conversationPojo, messagePojo );
+        getTransactionDao().reattachConversation( conversationPojo );
     } // storeTransaction
 
 
@@ -522,9 +525,23 @@ public class TransactionServiceImpl implements TransactionService {
 
     public void updateTransaction( MessagePojo message, boolean force )
     throws NexusException, StateTransitionException {
-
-        TransactionDAO transactionDAO = Engine.getInstance().getTransactionDAO();
-        transactionDAO.updateTransaction( message, force );
+//        Exception ex = null;
+//        for(int i = 0; i < 20; i++ ) {
+//            
+//            try {
+                getTransactionDao().updateTransaction( message, force );
+//                return;
+//            } catch ( Exception e ) {
+//                try {
+//                    Thread.sleep( 2000 );
+//                } catch ( InterruptedException e1 ) {
+//                }
+//                LOG.warn("retrying update");
+//                ex = e;
+//            }
+//        }
+//        throw new NexusException("retry failed: ",ex);
+        
     } // updateTransaction
 
     /* (non-Javadoc)
@@ -534,7 +551,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         LOG.debug( "updateMessage: " + messagePojo.getMessageId() );
 
-        Engine.getInstance().getTransactionDAO().updateMessage( messagePojo );
+        getTransactionDao().updateMessage( messagePojo );
     } // updateMessage
 
     /* (non-Javadoc)
@@ -544,7 +561,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         LOG.debug( "updateConversation: " + conversationPojo.getConversationId() );
 
-        Engine.getInstance().getTransactionDAO().updateConversation( conversationPojo );
+        getTransactionDao().updateConversation( conversationPojo );
     } // updateMessage
 
     /* (non-Javadoc)
@@ -656,7 +673,7 @@ public class TransactionServiceImpl implements TransactionService {
      */
     public void deleteMessage( MessagePojo message ) throws NexusException {
 
-        Engine.getInstance().getTransactionDAO().deleteMessage( message );
+        getTransactionDao().deleteMessage( message );
 
     }
 
@@ -670,7 +687,7 @@ public class TransactionServiceImpl implements TransactionService {
             throws NexusException {
 
         if (conversation != null) {
-            Engine.getInstance().getTransactionDAO().deleteConversation( conversation );
+            getTransactionDao().deleteConversation( conversation );
         }
 
     }
@@ -681,7 +698,7 @@ public class TransactionServiceImpl implements TransactionService {
     public List<MessagePojo> getMessagesByPartnerAndDirection( PartnerPojo partner, boolean outbound, int sort,
             boolean ascending ) throws NexusException {
 
-        return completeMessages( Engine.getInstance().getTransactionDAO().getMessagesByPartnerAndDirection(
+        return completeMessages( getTransactionDao().getMessagesByPartnerAndDirection(
                 partner, outbound, sort, ascending ) );
     }
 
@@ -690,15 +707,15 @@ public class TransactionServiceImpl implements TransactionService {
      */
     public List<ConversationPojo> getConversationsByPartner( PartnerPojo partner ) throws NexusException {
 
-        return completeConversations( Engine.getInstance().getTransactionDAO().getConversationsByPartner( partner ), true );
+        return completeConversations( getTransactionDao().getConversationsByPartner( partner ), true );
     }
 
     /* (non-Javadoc)
      * @see org.nexuse2e.controller.TransactionService#getConversationsByChoreography(org.nexuse2e.pojo.ChoreographyPojo, org.hibernate.Session, org.hibernate.Transaction)
      */
     public List<ConversationPojo> getConversationsByChoreography( ChoreographyPojo choreography ) throws NexusException {
-
-        return completeConversations( Engine.getInstance().getTransactionDAO().getConversationsByChoreography(
+       
+        return completeConversations( getTransactionDao().getConversationsByChoreography(
                 choreography ), true );
     }
 
@@ -708,7 +725,7 @@ public class TransactionServiceImpl implements TransactionService {
     public List<ConversationPojo> getConversationsByPartnerAndChoreography( PartnerPojo partner,
             ChoreographyPojo choreography ) throws NexusException {
 
-        return completeConversations( Engine.getInstance().getTransactionDAO().getConversationsByPartnerAndChoreography(
+        return completeConversations( getTransactionDao().getConversationsByPartnerAndChoreography(
                 partner, choreography ), true );
     }
 
@@ -717,7 +734,7 @@ public class TransactionServiceImpl implements TransactionService {
      */
     public List<MessagePojo> getMessagesByPartner( PartnerPojo partner, int field, boolean ascending ) throws NexusException {
 
-        return completeMessages( Engine.getInstance().getTransactionDAO().getMessagesByPartner(
+        return completeMessages( getTransactionDao().getMessagesByPartner(
                 partner, field, ascending ) );
     }
 
@@ -727,7 +744,7 @@ public class TransactionServiceImpl implements TransactionService {
     public List<MessagePojo> getMessagesByChoreographyAndPartner( ChoreographyPojo choreography, PartnerPojo partner,
             int field, boolean ascending ) throws NexusException {
 
-        return completeMessages( Engine.getInstance().getTransactionDAO().getMessagesByChoreographyAndPartner(
+        return completeMessages( getTransactionDao().getMessagesByChoreographyAndPartner(
                 choreography, partner, field, ascending ) );
     }
 
@@ -739,7 +756,7 @@ public class TransactionServiceImpl implements TransactionService {
             int field,
             boolean ascending ) throws NexusException{
         
-        return completeMessages( Engine.getInstance().getTransactionDAO().getMessagesByActionPartnerDirectionAndStatus(
+        return completeMessages( getTransactionDao().getMessagesByActionPartnerDirectionAndStatus(
                 action, partner, outbound, status, field, ascending ) );
     }
 
@@ -750,7 +767,7 @@ public class TransactionServiceImpl implements TransactionService {
     public List<MessagePojo> getMessagesByChoreographyPartnerAndConversation( ChoreographyPojo choreography,
             PartnerPojo partner, ConversationPojo conversation, int field, boolean ascending ) throws NexusException {
 
-        return completeMessages( Engine.getInstance().getTransactionDAO().getMessagesByChoreographyPartnerAndConversation(
+        return completeMessages( getTransactionDao().getMessagesByChoreographyPartnerAndConversation(
                 choreography, partner, conversation, field, ascending ) );
     }
 
@@ -760,7 +777,7 @@ public class TransactionServiceImpl implements TransactionService {
     public int getLogEntriesForReportCount( String severity, String messageText, Date start, Date end, int field,
             boolean ascending ) throws NexusException {
 
-        return Engine.getInstance().getLogDAO().getLogEntriesForReportCount(
+        return getLogDao().getLogEntriesForReportCount(
                 severity, messageText, start, end, field, ascending );
     }
 
@@ -771,7 +788,7 @@ public class TransactionServiceImpl implements TransactionService {
             int itemsPerPage, int page, int field, boolean ascending )
             throws NexusException {
 
-        return Engine.getInstance().getLogDAO().getLogEntriesForReport(
+        return getLogDao().getLogEntriesForReport(
                 severity, messageText, start, end, itemsPerPage, page, field, ascending );
     }
 
@@ -837,7 +854,7 @@ public class TransactionServiceImpl implements TransactionService {
     
     public void deleteLogEntry( LogPojo logEntry ) throws NexusException {
 
-        Engine.getInstance().getTransactionDAO().deleteLogEntry( logEntry );
+        getTransactionDao().deleteLogEntry( logEntry );
 
     }
 
@@ -870,6 +887,82 @@ public class TransactionServiceImpl implements TransactionService {
             syncObjects.put( conversation.getConversationId(), new WeakReference<Object>( obj ) );
             return obj;
         }
+    }
+
+    
+    /**
+     * @return the dao
+     */
+    public TransactionDAO getTransactionDao() {
+    
+        return transactionDao;
+    }
+
+    
+    /**
+     * @param dao the dao to set
+     */
+    public void setTransactionDao( TransactionDAO dao ) {
+    
+        this.transactionDao = dao;
+    }
+
+    
+    /**
+     * @return the logDao
+     */
+    public LogDAO getLogDao() {
+    
+        return logDao;
+    }
+
+    
+    /**
+     * @param logDao the logDao to set
+     */
+    public void setLogDao( LogDAO logDao ) {
+    
+        this.logDao = logDao;
+    }
+
+    public int getCreatedMessagesSinceCount( Timestamp timestamp ) throws NexusException {
+
+        return getTransactionDao().getCreatedMessagesSinceCount( timestamp );
+        
+    }
+
+    
+    /**
+     * @param status the status to set
+     */
+    public void setStatus( Constants.BeanStatus status ) {
+    
+        this.status = status;
+    }
+
+    public long getConversationsCount( Date start, Date end ) throws NexusException {
+
+        return getTransactionDao().getConversationsCount( start, end );
+    }
+
+    public long getLogCount( Date start, Date end ) throws NexusException {
+
+        return getTransactionDao().getLogCount( start, end );
+    }
+
+    public long getMessagesCount( Date start, Date end ) throws NexusException {
+
+        return getTransactionDao().getMessagesCount( start, end );
+    }
+
+    public long removeConversations( Date start, Date end ) throws NexusException {
+
+        return getTransactionDao().removeConversations( start, end );
+    }
+
+    public long removeLogEntries( Date start, Date end ) throws NexusException {
+
+        return getTransactionDao().removeLogEntries( start, end );
     }
 
 } // TransactionService

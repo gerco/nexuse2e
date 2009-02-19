@@ -35,7 +35,7 @@ public class ReportingStatisticsAction extends NexusE2EAction {
         Timestamp timestamp = new Timestamp( cal.getTimeInMillis() );
         
         // check if there are any messages that have been created after timestamp
-        request.setAttribute( "messageCount", Engine.getInstance().getTransactionDAO().getCreatedMessagesSinceCount( timestamp ) );
+        request.setAttribute( "messageCount", Engine.getInstance().getTransactionService().getCreatedMessagesSinceCount( timestamp ) );
         
         request.setAttribute( "last24Hours", timestamp );
         

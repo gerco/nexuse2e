@@ -57,6 +57,7 @@ public class EngineMonitor {
     
     protected EngineStatusSummary       currentEngineStatusSummary = null;
 
+    
     /**
      * 
      */
@@ -123,7 +124,7 @@ public class EngineMonitor {
         // LOG.debug( "EngineMonitor probing..." );
         ConfigDAO configDao = null;
         try {
-            configDao = Engine.getInstance().getConfigDAO();
+            configDao = Engine.getInstance().getConfigDao();
         } catch ( Exception e ) {
             summary.setCause( "Error while searching configDao: " + e );
             summary.setStatus( Status.ERROR );
