@@ -545,26 +545,6 @@ public class TransactionServiceImpl implements TransactionService {
     } // updateTransaction
 
     /* (non-Javadoc)
-     * @see org.nexuse2e.controller.TransactionService#updateMessage(org.nexuse2e.pojo.MessagePojo)
-     */
-    public void updateMessage( MessagePojo messagePojo ) throws NexusException {
-
-        LOG.debug( "updateMessage: " + messagePojo.getMessageId() );
-
-        getTransactionDao().updateMessage( messagePojo );
-    } // updateMessage
-
-    /* (non-Javadoc)
-     * @see org.nexuse2e.controller.TransactionService#updateConversation(org.nexuse2e.pojo.ConversationPojo)
-     */
-    public void updateConversation( ConversationPojo conversationPojo ) throws NexusException {
-
-        LOG.debug( "updateConversation: " + conversationPojo.getConversationId() );
-
-        getTransactionDao().updateConversation( conversationPojo );
-    } // updateMessage
-
-    /* (non-Javadoc)
      * @see org.nexuse2e.controller.TransactionService#isProcessingMessage(java.lang.String)
      */
     public boolean isProcessingMessage( String id ) {

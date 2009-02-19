@@ -261,18 +261,6 @@ public interface TransactionService extends Manageable {
             throws NexusException, StateTransitionException;
 
     /**
-     * @param messagePojo
-     * @throws NexusException
-     */
-    public abstract void updateMessage( MessagePojo messagePojo ) throws NexusException; // updateMessage
-
-    /**
-     * @param messagePojo
-     * @throws NexusException
-     */
-    public abstract void updateConversation( ConversationPojo conversationPojo ) throws NexusException; // updateMessage
-
-    /**
      * Determine whether a message is being processed.
      * @param id The message ID
      * @return TRUE if the message is being processed.
