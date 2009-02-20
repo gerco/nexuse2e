@@ -510,7 +510,6 @@ public class TransactionServiceImpl implements TransactionService {
             LOG.debug( "storeTransaction: " + conversationPojo.getConversationId() );
         }
         getTransactionDao().storeTransaction( conversationPojo, messagePojo );
-        getTransactionDao().reattachConversation( conversationPojo );
     } // storeTransaction
 
 

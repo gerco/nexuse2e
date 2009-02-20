@@ -21,7 +21,7 @@ public class MSSQLLockInterceptor implements MethodInterceptor { //, ThrowsAdvic
                 rval = invocation.proceed();
                 return rval;
             } catch ( Exception e ) {
-                if(e.getCause() instanceof HibernateException) { // org.hibernate.exception.LockAcquisitionException
+                if(e.getCause() instanceof org.hibernate.exception.LockAcquisitionException) { // org.hibernate.exception.LockAcquisitionException
                     
                     Thread.sleep( 2000 );
                     System.out.println("retrying");

@@ -165,12 +165,6 @@ public interface TransactionDAO {
     public abstract void storeTransaction( ConversationPojo conversationPojo, MessagePojo messagePojo )
             throws NexusException; // storeTransaction
 
-    public abstract void reattachConversation( ConversationPojo conversationPojo ) throws NexusException;
-
-    public abstract void updateMessage( MessagePojo messagePojo ) throws NexusException; // updateMessage
-
-    public abstract void updateConversation( ConversationPojo conversationPojo ) throws NexusException; // updateMessage
-
     /**
      * @param partner
      * @param session

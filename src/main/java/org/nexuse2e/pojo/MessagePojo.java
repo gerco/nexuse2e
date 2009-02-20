@@ -448,6 +448,28 @@ public class MessagePojo implements NEXUSe2ePojo {
         return nxMessageId;
     }
 
+    /**
+     * Performs a flat copy of all properties (except for non-persistent properties, object references
+     * and ID) from the given <code>MessagePojo</code> onto this object.
+     * @param message The message to be copied onto this message object.
+     */
+    public void setProperties( MessagePojo message ) {
+        if (message == null || message == this) {
+            return;
+        }
+        
+        this.messageId = message.messageId;
+        this.headerData = message.headerData;
+        this.type = message.type;
+        this.status = message.status;
+        this.retries = message.retries;
+        this.outbound = message.outbound;
+        this.expirationDate = message.expirationDate;
+        this.endDate = message.endDate;
+        this.createdDate = message.createdDate;
+        this.modifiedDate = message.modifiedDate;
+        this.modifiedNxUserId = message.modifiedNxUserId;
+    }
     
     public static String getStatusName( int status ) {
         switch (status) {

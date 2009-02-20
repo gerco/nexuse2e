@@ -245,6 +245,55 @@ public class ConversationPojo implements NEXUSe2ePojo {
         return nxConversationId;
     }
 
+
+    /**
+     * Performs a flat copy of all properties (except for non-persistent properties,
+     * and ID) from the given <code>ConversationPojo</code> onto this object.
+     * @param conversation The conversation to be copied onto this conversation object.
+     */
+    public void setProperties( ConversationPojo conversation ) {
+        if (conversation == null || conversation == this) {
+            return;
+        }
+
+        this.conversationId = conversation.conversationId;
+        this.partner = conversation.partner;
+        this.choreography = conversation.choreography;
+        this.currentAction = conversation.currentAction;
+        this.createdDate = conversation.createdDate;
+        this.endDate = conversation.endDate;
+        this.modifiedDate = conversation.modifiedDate;
+        this.modifiedNxUserId = conversation.modifiedNxUserId;
+        this.status = conversation.status;
+        this.messageCount = conversation.messageCount;
+    }
+    
+    /**
+     * Adds a <code>MessagePojo</code> to this <code>ConversationPojo</code>, checking if the
+     * given message is already present on this <code>ConversationPojo</code> and merging
+     * the given message if necessary.
+     * @param message The message to be added.
+     */
+    public void addMessage( MessagePojo message ) {
+        if (messages == null) {
+            messages = new ArrayList<MessagePojo>();
+        }
+        boolean added = false;
+        for (MessagePojo m : messages) {
+            if (m == message) {
+                added = true;
+                break;
+            }
+            if (m.getNxMessageId() > 0 && m.getNxMessageId() == message.getNxMessageId()) {
+                m.setProperties( message );
+                added = true;
+                break;
+            }
+        }
+        if (!added) {
+            messages.add( message );
+        }
+    }
     
     public int getMessageCount() {
     
