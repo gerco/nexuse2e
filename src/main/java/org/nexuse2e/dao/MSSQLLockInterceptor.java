@@ -5,25 +5,29 @@ package org.nexuse2e.dao;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.hibernate.HibernateException;
+import org.hibernate.exception.LockAcquisitionException;
 
 
 
 
 public class MSSQLLockInterceptor implements MethodInterceptor { //, ThrowsAdvice
 
+    private int timeout = 3000;
+    private int retries = 3; 
+    
     public Object invoke( MethodInvocation invocation ) throws Throwable {
         
         Object rval = null;
         Exception ex = null;
-        for(int i = 0; i<20; i++) {
+        for(int i = 0; i<getRetries(); i++) {
             try {
 //                System.out.println("invocation: "+invocation);
                 rval = invocation.proceed();
                 return rval;
             } catch ( Exception e ) {
-                if(e.getCause() instanceof org.hibernate.exception.LockAcquisitionException) { // org.hibernate.exception.LockAcquisitionException
+                if(e.getCause() instanceof LockAcquisitionException) { // org.hibernate.exception.LockAcquisitionException
                     
-                    Thread.sleep( 2000 );
+                    Thread.sleep( getTimeout() );
                     System.out.println("retrying");
                     continue;
                     
@@ -53,4 +57,40 @@ public class MSSQLLockInterceptor implements MethodInterceptor { //, ThrowsAdvic
 //        }
 //        throw new RuntimeException("retry failed");
 //    }
+
+    
+    /**
+     * @return the timeout
+     */
+    public int getTimeout() {
+    
+        return timeout;
+    }
+
+    
+    /**
+     * @param timeout the timeout to set
+     */
+    public void setTimeout( int timeout ) {
+    
+        this.timeout = timeout;
+    }
+
+    
+    /**
+     * @return the retries
+     */
+    public int getRetries() {
+    
+        return retries;
+    }
+
+    
+    /**
+     * @param retries the retries to set
+     */
+    public void setRetries( int retries ) {
+    
+        this.retries = retries;
+    }
 }
