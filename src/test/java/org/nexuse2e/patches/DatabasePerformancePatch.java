@@ -30,6 +30,7 @@ public class DatabasePerformancePatch extends DatabasePatch implements Patch {
                     isPresent = isIndexPresent( statement[1],statement[0],statement[2],null );
                     patchReporter.info( "isIndexPresent:"+ isPresent );
                 } catch ( NexusException e ) {
+                    e.printStackTrace();
                     patchReporter.info( "index for columns("+statement[2]+") already exists" );
                     continue;
                     
