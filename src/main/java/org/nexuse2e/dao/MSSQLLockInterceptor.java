@@ -4,6 +4,7 @@ package org.nexuse2e.dao;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.exception.LockAcquisitionException;
 
@@ -12,6 +13,7 @@ import org.hibernate.exception.LockAcquisitionException;
 
 public class MSSQLLockInterceptor implements MethodInterceptor { //, ThrowsAdvice
 
+    Logger LOG = Logger.getLogger( MSSQLLockInterceptor.class );
     private int timeout = 3000;
     private int retries = 3; 
     
@@ -21,14 +23,13 @@ public class MSSQLLockInterceptor implements MethodInterceptor { //, ThrowsAdvic
         Exception ex = null;
         for(int i = 0; i<getRetries(); i++) {
             try {
-//                System.out.println("invocation: "+invocation);
                 rval = invocation.proceed();
                 return rval;
             } catch ( Exception e ) {
                 if(e.getCause() instanceof LockAcquisitionException) { // org.hibernate.exception.LockAcquisitionException
                     
                     Thread.sleep( getTimeout() );
-                    System.out.println("retrying");
+                    LOG.trace( "LockAcquisitionException occured, retrying" );
                     continue;
                     
                 }
