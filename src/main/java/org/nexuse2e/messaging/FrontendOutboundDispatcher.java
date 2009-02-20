@@ -249,7 +249,7 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                         try {
                             Engine.getInstance().getTransactionService().updateTransaction( messagePojo );
                         } catch ( NexusException e1 ) {
-                            LOG.error( new LogMessage( "Error saving message: " + e1, messagePojo ) );
+                            LOG.error( new LogMessage( "Error saving message: " + e1, messagePojo ), e1 );
                         } catch ( StateTransitionException stex ) {
                             LOG.warn( stex.getMessage() );
                         }
