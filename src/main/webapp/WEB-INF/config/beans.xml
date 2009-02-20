@@ -194,9 +194,7 @@
       <!-- 
       <tx:method name="get*" read-only="true"/> 
       -->
-      <!-- 
-      <tx:method name="*ForReport" isolation="READ_UNCOMMITTED"/>
-       -->
+      <tx:method name="*ForReport" propagation="SUPPORTS" isolation="READ_UNCOMMITTED"/>
       <tx:method name="*" propagation="REQUIRED" isolation="READ_COMMITTED"/> <!-- isolation="SERIALIZABLE" READ_COMMITTED-->
     </tx:attributes>
   </tx:advice>
@@ -216,7 +214,10 @@
     <property name="sessionFactory" ref="hibernateSessionFactory" />
   </bean>
 
-  <bean id="mssqlInterceptor" class="org.nexuse2e.dao.MSSQLLockInterceptor"/>
+  <bean id="mssqlInterceptor" class="org.nexuse2e.dao.MSSQLLockInterceptor">
+  	<property name="timeout" value="500" />
+  	<property name="retries" value="20" />
+  </bean>
 
 <!-- 
 <bean id="transactionService" class="org.nexuse2e.controller.TransactionServiceImpl">
