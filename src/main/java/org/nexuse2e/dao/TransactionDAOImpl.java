@@ -460,9 +460,9 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         DetachedCriteria dc = DetachedCriteria.forClass( ConversationPojo.class );
         
         if ( status != null ) {
-
+            
             if ( status.indexOf( ',' ) == -1 ) {
-                dc.add( Restrictions.eq( "status", status ) );
+                dc.add( Restrictions.eq( "status", Integer.parseInt( status ) ) );
 
             } else {
                 String[] statusValues = status.split( "," );
@@ -482,6 +482,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
             dc.add( Restrictions.ge( "createdDate", start ) );
         }
         if ( end != null ) {
+            
             dc.add( Restrictions.le( "createdDate", end ) );
         }
 
@@ -513,7 +514,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
 
         if ( status != null ) {
             if ( status.indexOf( ',' ) == -1 ) {
-                dc.add( Restrictions.eq( "status", status ) );
+                dc.add( Restrictions.eq( "status", Integer.parseInt( status ) ) );
 
             } else {
                 String[] statusList = status.split( "," );
