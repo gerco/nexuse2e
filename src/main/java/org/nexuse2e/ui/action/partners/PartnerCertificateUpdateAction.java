@@ -138,7 +138,9 @@ public class PartnerCertificateUpdateAction extends NexusE2EAction {
             if (b != null && b.length > 0) {
                 try {
                     X509Certificate cacert = CertificateUtil.getX509Certificate( b );
-                    allCertificates.add( cacert );
+                    if ( cacert != null ) { // #39
+                    	allCertificates.add( cacert );
+                    }
                 } catch (Exception ignored) {}
             }
         }
