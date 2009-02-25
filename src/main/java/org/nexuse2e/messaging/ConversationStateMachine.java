@@ -86,8 +86,10 @@ public class ConversationStateMachine {
                                 message.getMessageId() );
                         message.setStatus( Constants.MESSAGE_STATUS_SENT );
                         message.setModifiedDate( new Date() );
+                        message.setEndDate( message.getModifiedDate() );
                         if ( conversation.getCurrentAction().isEnd() ) {
                             conversation.setStatus( Constants.CONVERSATION_STATUS_COMPLETED );
+                            conversation.setEndDate( new Date() );
                         } else {
                             conversation.setStatus( Constants.CONVERSATION_STATUS_IDLE );
                         }
@@ -99,10 +101,9 @@ public class ConversationStateMachine {
             } else {
                 // Engine.getInstance().getTransactionService().deregisterProcessingMessage( message.getMessageId() );
                 message.setStatus( Constants.MESSAGE_STATUS_SENT );
-                Date endDate = new Date();
-                message.setModifiedDate( endDate );
-                message.setEndDate( endDate );
-                message.getReferencedMessage().setEndDate( endDate );
+                message.setModifiedDate( new Date() );
+                message.setEndDate( message.getModifiedDate() );
+                message.getReferencedMessage().setEndDate( message.getModifiedDate() );
                 if ( conversation.getStatus() == Constants.CONVERSATION_STATUS_SENDING_ACK
                         || conversation.getStatus() == Constants.CONVERSATION_STATUS_PROCESSING ) {
                     conversation.setStatus( Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND );
@@ -111,6 +112,7 @@ public class ConversationStateMachine {
                         || ( conversation.getStatus() == Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND ) ) {
                     if ( conversation.getCurrentAction().isEnd() ) {
                         conversation.setStatus( Constants.CONVERSATION_STATUS_COMPLETED );
+                        conversation.setEndDate( new Date() );
                     } else {
                         conversation.setStatus( Constants.CONVERSATION_STATUS_IDLE );
                     }
@@ -141,7 +143,7 @@ public class ConversationStateMachine {
 
             message.setStatus( Constants.MESSAGE_STATUS_SENT );
             message.setModifiedDate( new Date() );
-
+            message.setEndDate( message.getModifiedDate() );
             conversation.setStatus( Constants.CONVERSATION_STATUS_PROCESSING );
             if (message.getNxMessageId() <= 0) {
                 messages.add( message );
@@ -158,6 +160,7 @@ public class ConversationStateMachine {
 
         synchronized ( sync ) {
             if ( message.getConversation().getCurrentAction().isEnd() ) {
+                message.getConversation().setEndDate( new Date() );
                 message.getConversation().setStatus( Constants.CONVERSATION_STATUS_COMPLETED );
             } else {
                 message.getConversation().setStatus( Constants.CONVERSATION_STATUS_IDLE );
@@ -176,6 +179,7 @@ public class ConversationStateMachine {
                         || ( referencedMessage.getConversation().getStatus() == Constants.CONVERSATION_STATUS_PROCESSING )
                         || ( referencedMessage.getConversation().getStatus() == Constants.CONVERSATION_STATUS_ERROR ) ) {
                     if ( referencedMessage.getConversation().getCurrentAction().isEnd() ) {
+                        referencedMessage.getConversation().setEndDate( new Date() );
                         referencedMessage.getConversation().setStatus( Constants.CONVERSATION_STATUS_COMPLETED );
                     } else {
                         referencedMessage.getConversation().setStatus( Constants.CONVERSATION_STATUS_IDLE );
@@ -244,11 +248,13 @@ public class ConversationStateMachine {
         synchronized ( sync ) {
             message.setStatus( Constants.MESSAGE_STATUS_SENT );
             message.setModifiedDate( new Date() );
+            message.setEndDate( message.getModifiedDate() );
             if ( ( conversation.getStatus() == Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND )
                     || ( conversation.getStatus() == Constants.CONVERSATION_STATUS_ERROR ) // requeued message
                     || ( conversation.getStatus() == Constants.CONVERSATION_STATUS_IDLE ) ) {
                 if ( conversation.getCurrentAction().isEnd() ) {
                     conversation.setStatus( Constants.CONVERSATION_STATUS_COMPLETED );
+                    conversation.setEndDate( new Date() );
                 } else {
                     conversation.setStatus( Constants.CONVERSATION_STATUS_IDLE );
                 }
