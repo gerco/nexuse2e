@@ -21,20 +21,27 @@ public class MSSQLLockInterceptor implements MethodInterceptor { //, ThrowsAdvic
         
         Object rval = null;
         Exception ex = null;
+        
+        
         for(int i = 0; i<getRetries(); i++) {
+            boolean lockFound = false;
             try {
                 rval = invocation.proceed();
                 return rval;
             } catch ( Exception e ) {
-                if(e.getCause() instanceof LockAcquisitionException) { // org.hibernate.exception.LockAcquisitionException
-                    
-                    Thread.sleep( getTimeout() );
-                    LOG.trace( "LockAcquisitionException occured, retrying" );
-                    continue;
-                    
-                }
                 ex = e;
-                throw e;
+                Throwable cause = e;
+                while(cause != null) {
+                    if(cause instanceof LockAcquisitionException) { // org.hibernate.exception.LockAcquisitionException
+                        lockFound = true;
+                        Thread.sleep( getTimeout() );
+                        LOG.trace( "LockAcquisitionException occured, retrying" );
+                    }
+                    cause = cause.getCause();
+                }
+                if(!lockFound) {
+                    throw e;
+                }
             }
         }
         throw new HibernateException("Lock Exception retries exceeded",ex);
