@@ -123,6 +123,7 @@ public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
         List<MessagePayloadPojo> payloads = new ArrayList<MessagePayloadPojo>();
         for (MessagePojo m : messages) {
             m.setStatus( Constants.MESSAGE_STATUS_SENT );
+            m.setEndDate( new Date());
             for (MessagePayloadPojo payload : m.getMessagePayloads()) {
                 try {
                     MessagePayloadPojo copy = (MessagePayloadPojo) payload.clone();
