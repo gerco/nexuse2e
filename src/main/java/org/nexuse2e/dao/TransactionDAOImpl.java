@@ -466,7 +466,11 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
 
             } else {
                 String[] statusValues = status.split( "," );
-                dc.add( Restrictions.in( "status", statusValues ) );
+                Integer[] intValues = new Integer[statusValues.length]; 
+                for(int i = 0; i < statusValues.length; i ++){
+                    intValues[i]=Integer.parseInt( statusValues[i] );
+                }
+                dc.add( Restrictions.in( "status", intValues ) );
             }
         }
         if ( nxChoreographyId != 0 ) {
@@ -517,8 +521,12 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
                 dc.add( Restrictions.eq( "status", Integer.parseInt( status ) ) );
 
             } else {
-                String[] statusList = status.split( "," );
-                dc.add( Restrictions.in( "status", statusList ) );
+                String[] statusValues = status.split( "," );
+                Integer[] intValues = new Integer[statusValues.length]; 
+                for(int i = 0; i < statusValues.length; i ++){
+                    intValues[i]=Integer.parseInt( statusValues[i] );
+                }
+                dc.add( Restrictions.in( "status", intValues ) );
             }
         }
         if ( nxChoreographyId != 0 ) {
@@ -970,6 +978,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
                             persistentConversation.addMessage( m );
                         }
                     }
+                    persistentConversation.setModifiedDate( new Date() );
                     getHibernateTemplate().saveOrUpdate( persistentConversation );
                 }
             }
