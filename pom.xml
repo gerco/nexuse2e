@@ -170,7 +170,7 @@
      <scope>compile</scope>
    </dependency>
    <dependency>
-     <groupId>ehcache</groupId>
+     <groupId>net.sf.ehcache</groupId>
      <artifactId>ehcache</artifactId>
      <version>1.2.3</version>
      <scope>compile</scope>
@@ -239,7 +239,7 @@
      <scope>provided</scope>
    </dependency>
    <dependency>
-     <groupId>jstl</groupId>
+     <groupId>javax.servlet</groupId>
      <artifactId>jstl</artifactId>
      <version>1.1.2</version>
      <scope>compile</scope>
@@ -601,14 +601,20 @@
                <include>**/*.properties</include>
              </includes>
            </resource>
-             <!--
-           <resource>
-               <directory>${project.build.directory}/reporting/platform</directory>
-               <targetPath>WEB-INF/platform</targetPath>
-               <filtering>false</filtering>
-           </resource>
-               -->
          </webResources>
+         <manifest>
+           <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+         </manifest>
+         <archive>
+           <manifestEntries>
+             <Application-Name>${project.name}</Application-Name>
+             <Application-Artifact-Id>${project.artifactId}</Application-Artifact-Id>
+             <Application-Group-Id>${project.groupId}</Application-Group-Id>
+             <Implementation-Svn-Revision>${env.SVN_REVISION}</Implementation-Svn-Revision>
+             <Implementation-Version>${project.version}</Implementation-Version>
+             <Implementation-Build-Date>${env.BUILD_ID}</Implementation-Build-Date>
+           </manifestEntries>
+         </archive>
        </configuration>
      </plugin>
      <plugin>
@@ -623,13 +629,24 @@
      <plugin>
        <groupId>org.apache.maven.plugins</groupId>
        <artifactId>maven-jar-plugin</artifactId>
-       <version>2.2</version>
        <configuration>
          <finalName>nexuse2e</finalName>
          <archive>
+           <index>true</index>
            <manifest>
-             <mainClass>org.nexuse2e.Version</mainClass>
+             <manifest>
+               <addClasspath>true</addClasspath>
+               <mainClass>org.nexuse2e.Version</mainClass>
+             </manifest>
            </manifest>
+           <manifestEntries>
+             <Application-Name>${project.name}</Application-Name>
+             <Application-Artifact-Id>${project.artifactId}</Application-Artifact-Id>
+             <Application-Group-Id>${project.groupId}</Application-Group-Id>
+             <Implementation-Svn-Revision>${env.SVN_REVISION}</Implementation-Svn-Revision>
+             <Implementation-Version>${project.version}</Implementation-Version>
+             <Implementation-Build-Date>${env.BUILD_ID}</Implementation-Build-Date>
+           </manifestEntries>
          </archive>
        </configuration>
      </plugin>
@@ -880,11 +897,10 @@
                  </executions>
              </plugin>
              <plugin>
-                 <groupId>org.apache.maven.plugins</groupId>
-                 <artifactId>maven-war-plugin</artifactId>
-                 <version>2.0.2</version>
-                 <extensions>true</extensions>
-                 <configuration>
+                   <groupId>org.apache.maven.plugins</groupId>
+                   <artifactId>maven-war-plugin</artifactId>
+                   <extensions>true</extensions>
+                   <configuration>
                      <webResources>
                          <resource>
                              <directory>${project.build.directory}/reporting/platform</directory>
