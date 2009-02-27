@@ -680,20 +680,6 @@
        </dependencies>
        <executions>
          <execution>
-           <id>generate-sources</id>
-           <phase>generate-sources</phase>
-           <configuration>
-             <tasks>
-               <ant antfile="${basedir}/nexuse2e-build.xml">
-                 <target name="VersionNumber" />
-               </ant>
-             </tasks>
-           </configuration>
-           <goals>
-             <goal>run</goal>
-           </goals>
-         </execution>
-         <execution>
            <id>build-testclient</id>
            <phase>package</phase>
            <configuration>
