@@ -837,13 +837,13 @@
            <exclude>src/main/webapp/WEB-INF/backup/**</exclude>
            <exclude>src/main/webapp/WEB-INF/classes/**</exclude>
            <exclude>src/main/webapp/WEB-INF/config/database/**</exclude>
-           <exclude>src/main/webapp/WEB-INF/config/machine_name.txt</exclude>
            <exclude>src/main/webapp/WEB-INF/struts/taglibs/c*</exclude>
            <exclude>src/main/webapp/WEB-INF/struts/taglibs/struts*</exclude>
            <exclude>src/main/webapp/WEB-INF/struts/taglibs/fmt*</exclude>
            <exclude>work/**</exclude>
            <exclude>**/*.txt</exclude>
            <exclude>**/*.TXT</exclude>
+           <exclude>**/lgpl.*</exclude>
          </excludes>
          <useDefaultMapping>true</useDefaultMapping>
          <encoding>UTF-8</encoding>
