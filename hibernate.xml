@@ -1,3 +1,24 @@
+<!--
+
+     NEXUSe2e Business Messaging Open Source
+     Copyright 2000-2009, Tamgroup and X-ioma GmbH
+
+     This is free software; you can redistribute it and/or modify it
+     under the terms of the GNU Lesser General Public License as
+     published by the Free Software Foundation version 2.1 of
+     the License.
+
+     This software is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+     Lesser General Public License for more details.
+
+     You should have received a copy of the GNU Lesser General Public
+     License along with this software; if not, write to the Free
+     Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+     02110-1301 USA, or see the FSF site: http://www.fsf.org.
+
+-->
 <?xml version="1.0" encoding="UTF-8"?><project basedir="." default="schemaexport" name="NEXUSe2e_hiberante">	<property environment="env" />	<property name="target" value="1.5" />	<property name="source" value="1.5" />	<property name="dir.webinf" value="${basedir}/src/main/webapp/WEB-INF" />	<property name="dir.classes" value="${dir.webinf}/classes" />	<property name="dir.source" value="src" />	<property name="dir.resources" value="src/main/resources" />	<property name="dir.services" value="${dir.webinf}/services" />	<property name="dir.distribution" value="dist" />	<path id="NEXUSe2e.classpath">		<pathelement location="${dir.webinf}/classes" />
 		<fileset dir="${dir.webinf}/lib" />	</path>
 		<target name="schemaexport">		<property name="dbtype" value="oracle" />		<!--		<property name="dbtype" value="derby" />		    <property name="dbtype" value="mysql"/>			-->

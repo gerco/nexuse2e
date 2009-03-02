@@ -810,7 +810,52 @@
          </execution>
        </executions>
      </plugin>
-
+     <plugin>
+       <!--
+         Usage:
+         license:check: verify if some files miss license header
+         license:format: add the license header when missing. If a header is existing, it is updated to the new one.
+         license:remove: remove existing license header      
+       -->
+       <groupId>com.google.code.maven-license-plugin</groupId>
+       <artifactId>maven-license-plugin</artifactId>
+       <version>1.4.0</version>
+       <configuration>
+         <header>license_header_template.txt</header>
+         <properties>
+           <!-- change this property yearly -->
+           <year>2000-2009</year>
+         </properties>
+         <useDefaultExcludes>true</useDefaultExcludes>
+         <excludes>
+           <exclude>.*</exclude>
+           <exclude>**/.*</exclude>
+           <exclude>src/main/webapp/javascript/dijit/**</exclude>
+           <exclude>src/main/webapp/javascript/dojo/**</exclude>
+           <exclude>src/main/webapp/javascript/dojox/**</exclude>
+           <exclude>src/main/webapp/temp/**</exclude>
+           <exclude>src/main/webapp/WEB-INF/backup/**</exclude>
+           <exclude>src/main/webapp/WEB-INF/classes/**</exclude>
+           <exclude>src/main/webapp/WEB-INF/config/database/**</exclude>
+           <exclude>src/main/webapp/WEB-INF/config/machine_name.txt</exclude>
+           <exclude>src/main/webapp/WEB-INF/struts/taglibs/c*</exclude>
+           <exclude>src/main/webapp/WEB-INF/struts/taglibs/struts*</exclude>
+           <exclude>src/main/webapp/WEB-INF/struts/taglibs/fmt*</exclude>
+           <exclude>work/**</exclude>
+           <exclude>**/*.txt</exclude>
+           <exclude>**/*.TXT</exclude>
+         </excludes>
+         <useDefaultMapping>true</useDefaultMapping>
+         <encoding>UTF-8</encoding>
+         <mapping>
+           <!-- handle files with extension .wsdl as XML -->
+           <wsdl>XML_STYLE</wsdl>
+           <rptconfig>XML_STYLE</rptconfig>
+           <rptdesign>XML_STYLE</rptdesign>
+           <tld>XML_STYLE</tld>
+         </mapping>
+       </configuration>
+     </plugin>
    </plugins>
  </build>
  <profiles>
