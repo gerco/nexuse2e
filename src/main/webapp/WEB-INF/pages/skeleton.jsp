@@ -16,6 +16,16 @@
 <LINK REL="SHORTCUT ICON" HREF="./favicon.ico">
 
 <link type="text/css" rel="stylesheet" href="html/nexuse2e.css">
+<!-- dojo/dijit library -->
+<tiles:insert attribute="dojo"/>
+<!-- dojo/dijit styles -->
+<style type="text/css">
+	@import "javascript/dijit/themes/tundra/tundra.css";
+	@import "javascript/dojo/resources/dojo.css"
+</style>
+<style type="text/css" title="generatedCSS">
+	/* container for automatically generated style classes */
+</style>
 <script src="javascript/Generic.js" language="JavaScript"
 	type="text/javascript">
     </script>
@@ -55,7 +65,7 @@
 			 }
     </script>
 </head>
-<body>
+<body class="tundra">
 <div id="logDisplay"
 	style="position: fixed; top: 10%; left: 10%; height: 80%; width: 80%; display: none; margin: 10px; color: #FFFFFF; background-color: #900000; font-weight: bold; font-family: courier; padding: 10px; text-align: left; z-index: 1000; filter: Alpha(opacity=80); -moz-opacity: 0.80;">
 <div style="position: relative; width: 100%; height: 5%;">DEBUG

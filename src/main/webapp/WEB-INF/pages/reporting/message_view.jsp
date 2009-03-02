@@ -117,7 +117,7 @@
 		<td class="NEXUSName">Header</td>
 		<td class="NEXUSValue">text/xml</td>
 		<td class="NEXUSValue"><a class="NexusLink"
-			href="DataSaveAs?type=content&choreographyId=${reportMessageEntryForm.choreographyId}&participantId=${reportMessageEntryForm.participantId}&conversationId=${reportMessageEntryForm.conversationId}&messageId=${reportMessageEntryForm.messageId}"
+			href="DataSaveAs.do?type=content&choreographyId=${reportMessageEntryForm.choreographyId}&participantId=${reportMessageEntryForm.participantId}&conversationId=${reportMessageEntryForm.conversationId}&messageId=${reportMessageEntryForm.messageId}"
 			target="_blank"> View</a></td>
 	</tr>
 	<logic:iterate indexId="counter" id="payloads" name="collection">
@@ -125,7 +125,7 @@
 			<td class="NEXUSName">Payload <bean:write name="counter" /></td>
 			<td class="NEXUSValue"><bean:write name="payloads" /></td>
 			<td class="NEXUSValue"><a class="NexusLink"
-				href="DataSaveAs?type=content&choreographyId=${reportMessageEntryForm.choreographyId}&participantId=${reportMessageEntryForm.participantId}&conversationId=${reportMessageEntryForm.conversationId}&messageId=${reportMessageEntryForm.messageId}&no=${counter}"
+				href="DataSaveAs.do?type=content&choreographyId=${reportMessageEntryForm.choreographyId}&participantId=${reportMessageEntryForm.participantId}&conversationId=${reportMessageEntryForm.conversationId}&messageId=${reportMessageEntryForm.messageId}&no=${counter}"
 				target="_blank"> View</a></td>
 		</tr>
 	</logic:iterate>

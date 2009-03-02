@@ -28,7 +28,7 @@
             <tr>
                 <td class="NEXUSValue">Severity</td>                  
                 <td class="NEXUSValue">
-                  <html:select onchange="javascript: scriptScope.disableLinks();" styleClass="fixedsize" property="severity">
+                  <html:select onchange="javascript: disableLinks();" styleClass="fixedsize" property="severity">
                       <html:option value=""/>
                       <html:option value='<%=org.apache.log4j.Level.ERROR.toInt()+"" %>'>Error</html:option>
                       <html:option value='<%=org.apache.log4j.Level.WARN.toInt()+"" %>'>Warn</html:option>
@@ -37,16 +37,16 @@
                       <html:option value='<%=org.apache.log4j.Level.TRACE.toInt()+"" %>'>Trace</html:option>
                  </html:select>
                 </td>
-                <td class="NEXUSValue">Message Text <html:checkbox onclick="javascript: scriptScope.disableLinks();" name="reportingPropertiesForm" property="messageTextEnabled"/></td>
+                <td class="NEXUSValue">Message Text <html:checkbox onclick="javascript: disableLinks();" name="reportingPropertiesForm" property="messageTextEnabled"/></td>
                 <td class="NEXUSValue">
-                  <html:text onkeydown="javascript: scriptScope.disableLinks();" styleClass="fixedsize" property="messageText"></html:text>
+                  <html:text onkeydown="javascript: disableLinks();" styleClass="fixedsize" property="messageText"></html:text>
                 </td>
             </tr>
             
             <tr>
-                <td class="NEXUSValue">Start Date <html:checkbox name="reportingPropertiesForm" property="startEnabled"/></td>
+                <td class="NEXUSValue">Start Date <html:checkbox onchange="javascript: disableLinks();" name="reportingPropertiesForm" property="startEnabled"/></td>
                 <td class="NEXUSValue" align="left">
-                <html:select onchange="javascript: scriptScope.disableLinks();" property="startYear">
+                <html:select onchange="javascript: disableLinks();" property="startYear">
                     <html:option value="2012" />
                     <html:option value="2011" />
                     <html:option value="2010" />
@@ -58,7 +58,7 @@
                     <html:option value="2004"/>
                     <html:option value="2003"/>
                 </html:select>
-                <html:select onchange="javascript: scriptScope.disableLinks();" property="startMonth">
+                <html:select onchange="javascript: disableLinks();" property="startMonth">
                     <html:option value="01">January</html:option>
                     <html:option value="02">February</html:option>
                     <html:option value="03">March</html:option>
@@ -72,7 +72,7 @@
                     <html:option value="11">November</html:option>
                     <html:option value="12">December</html:option>
                 </html:select>
-                <html:select onchange="javascript: scriptScope.disableLinks();" property="startDay">
+                <html:select onchange="javascript: disableLinks();" property="startDay">
                   <html:option value="01">1</html:option>
                   <html:option value="02">2</html:option>
                   <html:option value="03">3</html:option>
@@ -105,7 +105,7 @@
                   <html:option value="30">30</html:option>
                   <html:option value="31">31</html:option>
                 </html:select>
-                <html:select onchange="javascript: scriptScope.disableLinks();" property="startHour">
+                <html:select onchange="javascript: disableLinks();" property="startHour">
                     <html:option value="00">12 A.M.</html:option>
                     <html:option value="01">1 A.M.</html:option>
                     <html:option value="02">2 A.M.</html:option>
@@ -131,7 +131,7 @@
                     <html:option value="22">10 P.M.</html:option>
                     <html:option value="23">11 P.M.</html:option>
                 </html:select>
-              <html:select onchange="javascript: scriptScope.disableLinks();" property="startMin">
+              <html:select onchange="javascript: disableLinks();" property="startMin">
               <html:option value="00">0</html:option>
                <html:option value="10">10</html:option>
                  <html:option value="20">20</html:option>
@@ -141,9 +141,9 @@
                  
                 </html:select></td>
               
-              <td class="NEXUSValue">End Date <html:checkbox name="reportingPropertiesForm" property="endEnabled"/></td>
+              <td class="NEXUSValue">End Date <html:checkbox onchange="javascript: disableLinks();" name="reportingPropertiesForm" property="endEnabled"/></td>
                 <td class="NEXUSValue" align="left">
-                <html:select onchange="javascript: scriptScope.disableLinks();" property="endYear">
+                <html:select onchange="javascript: disableLinks();" property="endYear">
                     <html:option value="2012" />
                     <html:option value="2011" />
                     <html:option value="2010" />
@@ -155,7 +155,7 @@
                     <html:option value="2004"/>
                     <html:option value="2003"/>
                 </html:select>
-                <html:select onchange="javascript: scriptScope.disableLinks();" property="endMonth">
+                <html:select onchange="javascript: disableLinks();" property="endMonth">
                     <html:option value="01">January</html:option>
                     <html:option value="02">February</html:option>
                     <html:option value="03">March</html:option>
@@ -169,7 +169,7 @@
                     <html:option value="11">November</html:option>
                     <html:option value="12">December</html:option>
                 </html:select>
-                <html:select onchange="javascript: scriptScope.disableLinks();" property="endDay">
+                <html:select onchange="javascript: disableLinks();" property="endDay">
                   <html:option value="01">1</html:option>
                   <html:option value="02">2</html:option>
                   <html:option value="03">3</html:option>
@@ -203,7 +203,7 @@
                   <html:option value="31">31</html:option>
                 
                 </html:select>
-                <html:select onchange="javascript: scriptScope.disableLinks();" property="endHour">
+                <html:select onchange="javascript: disableLinks();" property="endHour">
                     <html:option value="00">12 A.M.</html:option>
                     <html:option value="01">1 A.M.</html:option>
                     <html:option value="02">2 A.M.</html:option>
@@ -229,7 +229,7 @@
                     <html:option value="22">10 P.M.</html:option>
                     <html:option value="23">11 P.M.</html:option>
                 </html:select>
-                <html:select onchange="javascript: scriptScope.disableLinks();" property="endMin">
+                <html:select onchange="javascript: disableLinks();" property="endMin">
               <html:option value="00">0</html:option>
                <html:option value="10">10</html:option>
                  <html:option value="20">20</html:option>
@@ -245,7 +245,7 @@
             <tr>                
 				<td class="BUTTON_LEFT"><nobr><a class="button"
 					href="#"
-					onclick="javascript: scriptScope.Clear(); scriptScope.disableLinks();"><img
+					onclick="javascript: Clear(); disableLinks();"><img
 					src="images/icons/arrow_rotate_anticlockwise.png" name="clearButton" class="button">Reset
 					Fields</a></nobr>
 				</td>
@@ -264,7 +264,7 @@
                 </center></td>
 				<td class="BUTTON_RIGHT">
 					<nobr>
-						<nexus:submit onClick="javascript: document.forms['reportingPropertiesForm'].command.value='first'; scriptScope.enableLinks();">
+						<nexus:submit onClick="javascript: document.forms['reportingPropertiesForm'].command.value='first'; enableLinks();">
 							<img src="images/icons/tick.png" name="resultsButton" class="button" />Refresh Results
 						</nexus:submit>
 					</nobr>
@@ -290,7 +290,7 @@
         if (link.onclick) {
           link.oldOnClick = link.onclick;
         }
-        link.onclick = _container_.scriptScope.cancelLink;
+        link.onclick = cancelLink;
         if (link.style) {
         	link.style.cursor = 'default';
        	}
@@ -311,17 +311,17 @@
       }
       
       this.disableLinks = function () {
-  	    _container_.scriptScope.disableLink(document.getElementById('nextLink'));
-        _container_.scriptScope.disableLink(document.getElementById('startLink'));
-        _container_.scriptScope.disableLink(document.getElementById('previousLink'));
-        _container_.scriptScope.disableLink(document.getElementById('endLink'));
+  	    disableLink(document.getElementById('nextLink'));
+        disableLink(document.getElementById('startLink'));
+        disableLink(document.getElementById('previousLink'));
+        disableLink(document.getElementById('endLink'));
     	}
           
       this.enableLinks = function () {
-      	_container_.scriptScope.enableLink(document.getElementById('nextLink'));
-        _container_.scriptScope.enableLink(document.getElementById('previousLink'));
-        _container_.scriptScope.enableLink(document.getElementById('startLink'));
-        _container_.scriptScope.enableLink(document.getElementById('endLink'));
+      	enableLink(document.getElementById('nextLink'));
+        enableLink(document.getElementById('previousLink'));
+        enableLink(document.getElementById('startLink'));
+        enableLink(document.getElementById('endLink'));
       }
       </script> 
    </html:form> 

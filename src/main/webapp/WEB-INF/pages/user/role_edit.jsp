@@ -69,10 +69,10 @@
 	 			</script>
 	 			Grants
 	 			<p>
-		 			<a href="javascript: scriptScope.grantAll();" class="NexusLink">Check all</a>
+		 			<a href="javascript: grantAll();" class="NexusLink">Check all</a>
 		 		</p>
 		 		<p>
-		 			<a href="javascript: scriptScope.grantNone();" class="NexusLink">Uncheck all</a>
+		 			<a href="javascript: grantNone();" class="NexusLink">Uncheck all</a>
 		 		</p>
 	 		</td>
 	 		<td class="NEXUSValue">

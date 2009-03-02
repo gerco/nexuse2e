@@ -48,7 +48,7 @@
 							document.forms[0].version.value=document.getElementsByName('htmlnewversion')[0].value;
                             document.forms[0].adapterClassName.value=document.getElementsByName('htmlnewadapterclassname')[0].value;
 							">
-					<img src="images/icons/add.png" class="button" alt="Configure" id="addTrp"><span dojoType="tooltip" connectId="addTrp" toggle="explode">Add TRP Entry</span>
+					<img src="images/icons/add.png" class="button" alt="Configure" id="addTrp"><span dojoType="dijit.Tooltip" connectId="addTrp" toggle="explode">Add TRP Entry</span>
 				</nexus:submit>
 				</td>
 			</tr>
@@ -71,7 +71,7 @@
 							document.forms[0].version.value=document.getElementsByName('htmlversion${counter}')[0].value;
                             document.forms[0].adapterClassName.value=document.getElementsByName('htmladapterclassname${counter}')[0].value;
 							">
-					<img src="images/icons/delete.png" class="button" alt="Delete" id="deleteTrp"><span dojoType="tooltip" connectId="deleteTrp" toggle="explode">Delete TRP Entry</span>
+					<img src="images/icons/delete.png" class="button" alt="Delete" id="deleteTrp"><span dojoType="dijit.Tooltip" connectId="deleteTrp" toggle="explode">Delete TRP Entry</span>
 				</nexus:submit> 
 				<nexus:submit
 					onClick="document.forms[0].submitaction.value='update';
@@ -81,7 +81,7 @@
 							document.forms[0].version.value=document.getElementsByName('htmlversion${counter}')[0].value;
                             document.forms[0].adapterClassName.value=document.getElementsByName('htmladapterclassname${counter}')[0].value;
 					">
-					<img src="images/icons/tick.png" class="button" alt="Configure" id="updateTrp"><span dojoType="tooltip" connectId="updateTrp" toggle="explode">Update TRP Entry</span>
+					<img src="images/icons/tick.png" class="button" alt="Configure" id="updateTrp"><span dojoType="dijit.Tooltip" connectId="updateTrp" toggle="explode">Update TRP Entry</span>
 				</nexus:submit>
 				</td>
 			</tr>

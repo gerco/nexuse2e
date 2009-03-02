@@ -5,20 +5,20 @@
 <%@ taglib uri="/tags/struts-logic" prefix="logic" %>
 <%@ taglib uri="/tags/nexus" prefix="nexus" %>
 
+<nexus:fileUploadResponse>
 <% /*<nexus:helpBar helpDoc="documentation/SSL.htm"/> */ %>
-
-    <center>
+		<center>
         <table class="NEXUS_TABLE" width="100%">
 				    <tr>
 				        <td>
-				        	<nexus:crumbs/>
+				        	<nexus:crumbs />
 				        </td>
 				    </tr>
 				    <tr>
 				        <td class="NEXUSScreenName">Add CA Certificate</td>
 				    </tr>
 				</table>
-
+				
         <html:form action="CACertificateVerifyAddCert.do" method="POST" enctype="multipart/form-data"> 
             <table class="NEXUS_TABLE" width="100%">
                 <tr>
@@ -51,3 +51,4 @@
             </table>
         </html:form>
     </center>
+</nexus:fileUploadResponse>

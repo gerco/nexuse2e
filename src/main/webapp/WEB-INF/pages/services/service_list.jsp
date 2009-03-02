@@ -58,11 +58,11 @@
           </td>
           <td class="NEXUSValue">
             <c:if test="${service.serviceInstance.status == 'STARTED'}">
-              <nexus:link href="ServiceStop.do?nxServiceId=${service.nxServiceId}"><img width="16" height="16" src="images/icons/stop.png" class="button" alt="Stop" id="stop"><span dojoType="tooltip" connectId="stop" toggle="explode">Stop Service</span></nexus:link>
+              <nexus:link href="ServiceStop.do?nxServiceId=${service.nxServiceId}"><img width="16" height="16" src="images/icons/stop.png" class="button" alt="Stop" id="stop"><span dojoType="dijit.Tooltip" connectId="stop" toggle="explode">Stop Service</span></nexus:link>
             </c:if>
             <c:if test="${service.serviceInstance.status != 'STARTED'}">
             <c:if test="${service.serviceInstance.status != 'ERROR'}">
-              <nexus:link href="ServiceStart.do?nxServiceId=${service.nxServiceId}"><img width="16" height="16" src="images/icons/resultset_next.png" class="button" alt="Start" id="start"><span dojoType="tooltip" connectId="start" toggle="explode">Start Service</span></nexus:link>
+              <nexus:link href="ServiceStart.do?nxServiceId=${service.nxServiceId}"><img width="16" height="16" src="images/icons/resultset_next.png" class="button" alt="Start" id="start"><span dojoType="dijit.Tooltip" connectId="start" toggle="explode">Start Service</span></nexus:link>
             </c:if>
             </c:if>
           </td>

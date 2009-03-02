@@ -19,6 +19,7 @@
  */
 package org.nexuse2e.ui.structure.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -147,8 +148,6 @@ public class CachedXmlStructureServer extends XmlStructureServer {
         }
     }
     
-
-    
     /* (non-Javadoc)
      * @see org.nexuse2e.ui.structure.impl.XmlStructureServer#getMenuStructure()
      */
@@ -156,21 +155,28 @@ public class CachedXmlStructureServer extends XmlStructureServer {
     public List<StructureNode> getMenuStructure( EngineConfiguration engineConfiguration ) throws StructureException {
 
         synchronized ( this ) {
-            List<StructureNode> result = null;
+            List<StructureNode> originalStructure = null;
             // lookup structure in cache
             if ( menuStructureCache.containsKey( spec ) ) {
                 // get structure from cache
-                result = menuStructureCache.get( spec );
+                originalStructure = menuStructureCache.get( spec );
             } else {
                 // parse spec
-                result = super.getMenuStructure( null );
-                menuStructureCache.put( spec, result );
+                originalStructure = super.getMenuStructure( null );
+                menuStructureCache.put( spec, originalStructure );
+            }
+            
+            // create working copy of originalStructure
+            List<StructureNode> workingStructure = new ArrayList<StructureNode>();
+            
+            for ( StructureNode currNode : originalStructure ) {
+                workingStructure.add( currNode.createCopy() );
             }
 
             // patch dynamic nodes
-            patchNodes( result, engineConfiguration );
-
-            return result;
+            patchNodes( workingStructure, engineConfiguration );
+            
+            return workingStructure;
         }
     }
 

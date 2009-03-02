@@ -39,7 +39,7 @@ form {
 	top: 0px;
 	left: 0px;
 	background-color: #666666;
-	height: 164px;
+	height: 196px;
 	width: 100%;
 	text-align: left;
 	vertical-align: bottom;
@@ -51,7 +51,7 @@ form {
 }
 
 #toolbar {
-	top: 0px;
+	top: 196px;
 	left: 0px;
 	margin: 0px;
 	padding: 0px;
@@ -90,6 +90,7 @@ a.apply_active:link {
     font-weight: bold;
     font-variant: small-caps;
     color: #F37F36;
+    cursor: pointer;
 }
 
 a.apply_active:active {
@@ -98,6 +99,7 @@ a.apply_active:active {
     font-weight: bold;
     font-variant: small-caps;
     color: #F37F36;
+    cursor: pointer;
 }
 
 a.apply_active:visited {
@@ -106,6 +108,7 @@ a.apply_active:visited {
     font-weight: bold;
     font-variant: small-caps;
     color: #F37F36;
+    cursor: pointer;
 }
 
 a.apply_active:hover {
@@ -114,12 +117,14 @@ a.apply_active:hover {
     font-weight: bold;
     font-variant: small-caps;
     color: #E56009;
+    cursor: pointer;
 }
 
 img.apply_active {
     border-width: 0px;
     border-style: none;
     vertical-align: middle;
+    cursor: pointer;
 }
 
 a.apply_inactive:link {
@@ -128,6 +133,7 @@ a.apply_inactive:link {
     font-weight: bold;
     font-variant: small-caps;
     color: #999999;
+    cursor: default;
 }
 
 a.apply_inactive:active {
@@ -136,6 +142,7 @@ a.apply_inactive:active {
     font-weight: bold;
     font-variant: small-caps;
     color: #999999;
+    cursor: default;
 }
 
 a.apply_inactive:visited {
@@ -144,6 +151,7 @@ a.apply_inactive:visited {
     font-weight: bold;
     font-variant: small-caps;
     color: #999999;
+    cursor: default;
 }
 
 a.apply_inactive:hover {
@@ -152,12 +160,14 @@ a.apply_inactive:hover {
     font-weight: bold;
     font-variant: small-caps;
     color: #444444;
+    cursor: default;
 }
 
 img.apply_inactive {
     border-width: 0px;
     border-style: none;
     vertical-align: middle;
+    cursor: default;
 }
 
 a.navigationactive:link {

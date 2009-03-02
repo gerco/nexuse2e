@@ -99,7 +99,7 @@
 							document.forms['persistentPropertiesForm'].name.value=document.getElementsByName('name_')[0].value;
 							document.forms['persistentPropertiesForm'].value.value=document.getElementsByName('value_')[0].value;
 							">
-					<img src="images/icons/add.png" class="button" alt="Configure" id="addProperty"><span dojoType="tooltip" connectId="addProperty" toggle="explode">Add Property</span>
+					<img src="images/icons/add.png" class="button" alt="Configure" id="addProperty"><span dojoType="dijit.Tooltip" connectId="addProperty" toggle="explode">Add Property</span>
 				</nexus:submit>
 				</td>
 			</tr>
@@ -132,7 +132,7 @@
 							document.forms['persistentPropertiesForm'].name.value=document.getElementsByName('name${counter}')[0].value;
 							document.forms['persistentPropertiesForm'].value.value=document.getElementsByName('value${counter}')[0].value;
 							">
-					<img src="images/icons/delete.png" class="button" alt="Configure" id="addProperty"><span dojoType="tooltip" connectId="addProperty" toggle="explode">Delete Property</span>
+					<img src="images/icons/delete.png" class="button" alt="Configure" id="addProperty"><span dojoType="dijit.Tooltip" connectId="addProperty" toggle="explode">Delete Property</span>
 				</nexus:submit>
 				<nexus:submit
 					onClick="document.forms['persistentPropertiesForm'].submitaction.value='update'; 
@@ -142,7 +142,7 @@
 							document.forms['persistentPropertiesForm'].name.value=document.getElementsByName('name${counter}')[0].value;
 							document.forms['persistentPropertiesForm'].value.value=document.getElementsByName('value${counter}')[0].value;
 							">
-					<img src="images/icons/tick.png" class="button" alt="Configure" id="addProperty"><span dojoType="tooltip" connectId="addProperty" toggle="explode">Update Property</span>
+					<img src="images/icons/tick.png" class="button" alt="Configure" id="addProperty"><span dojoType="dijit.Tooltip" connectId="addProperty" toggle="explode">Update Property</span>
 				</nexus:submit>
 				</td>
 			</tr>

@@ -7,6 +7,7 @@
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
 <%@ taglib uri="/tags/struts-html-el" prefix="html-el"%>
 
+<nexus:fileUploadResponse>
 <% /* <nexus:helpBar /> */ %>
 
 <center>
@@ -70,3 +71,4 @@
 		<br />
 	</html:messages>
 </logic:messagesPresent></center>
+</nexus:fileUploadResponse>

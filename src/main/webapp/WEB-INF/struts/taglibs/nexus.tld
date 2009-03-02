@@ -120,6 +120,14 @@
       <rtexprvalue>false</rtexprvalue>
     </attribute>
   </tag>
+  <!-- This tag provides the ability to render a page for either usual display as plain html,
+    and as an additionally copy wrapped by a hidden &lt;textarea&gt;-tag as required by dojo.io.iframe for forms with file uploads. -->
+  <tag>
+    <name>fileUploadResponse</name>
+    <tag-class>org.nexuse2e.ui.taglib.FileUploadResponse</tag-class>
+    <description>provides the ability to render a page for either usual display as plain html,
+      and as an additionally copy wrapped by a hidden &lt;textarea&gt;-tag as required by dojo.io.iframe for forms with file uploads</description>    
+  </tag>
   <!-- resets the specified form or the form this tag is placed within  -->
   <tag>
     <name>reset</name>

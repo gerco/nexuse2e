@@ -7,6 +7,7 @@
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
 <%@ taglib uri="/tags/struts-html-el" prefix="html-el"%>
 
+<nexus:fileUploadResponse>
 <% /* <nexus:helpBar /> */ %>
 
 <center>
@@ -70,7 +71,7 @@
 				<td class="NEXUSName">
 					<a href="ExecutePatch?index=${index}" target="_blank">
 						<img src="images/icons/resultset_next.png" id="run" name="ExportButton" alt="Run Patch" class="button">
-						<span dojoType="tooltip" connectId="run" toggle="explode">Run Patch</span>
+						<span dojoType="dijit.Tooltip" connectId="run" toggle="explode">Run Patch</span>
 					</a>
 				</td>
 			</tr>
@@ -88,3 +89,4 @@
 		<br />
 	</html:messages>
 </logic:messagesPresent></center>
+</nexus:fileUploadResponse>

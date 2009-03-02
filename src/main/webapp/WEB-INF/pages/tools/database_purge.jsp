@@ -33,9 +33,9 @@
 		
 		
 		<tr>
-                <td class="NEXUSValue">Start Date <html:checkbox onchange="scriptScope.disableLinks();" property="startEnabled"/></td>
+                <td class="NEXUSValue">Start Date <html:checkbox property="startEnabled"/></td>
                 <td class="NEXUSValue" align="left">
-                <html:select onchange="javascript: scriptScope.disableLinks();" property="startYear">
+                <html:select property="startYear">
                     <html:option value="2009"/>
                     <html:option value="2008"/>
                     <html:option value="2007"/>
@@ -44,7 +44,7 @@
                     <html:option value="2004"/>
                     <html:option value="2003"/>
                 </html:select>
-                <html:select onchange="javascript: scriptScope.disableLinks();" property="startMonth">
+                <html:select property="startMonth">
                     <html:option value="01">January</html:option>
                     <html:option value="02">February</html:option>
                     <html:option value="03">March</html:option>
@@ -58,7 +58,7 @@
                     <html:option value="11">November</html:option>
                     <html:option value="12">December</html:option>
                 </html:select>
-                <html:select onchange="javascript: scriptScope.disableLinks();" property="startDay">
+                <html:select property="startDay">
                   <html:option value="01">1</html:option>
                   <html:option value="02">2</html:option>
                   <html:option value="03">3</html:option>
@@ -91,7 +91,7 @@
                   <html:option value="30">30</html:option>
                   <html:option value="31">31</html:option>
                 </html:select>
-                <html:select onchange="javascript: scriptScope.disableLinks();" property="startHour">
+                <html:select property="startHour">
                     <html:option value="00">12 A.M.</html:option>
                     <html:option value="01">1 A.M.</html:option>
                     <html:option value="02">2 A.M.</html:option>
@@ -117,7 +117,7 @@
                     <html:option value="22">10 P.M.</html:option>
                     <html:option value="23">11 P.M.</html:option>
                 </html:select>
-              <html:select onchange="javascript: scriptScope.disableLinks();" property="startMin">
+              <html:select property="startMin">
               <html:option value="00">0</html:option>
                <html:option value="10">10</html:option>
                  <html:option value="20">20</html:option>
@@ -127,9 +127,9 @@
                  
                 </html:select></td>
               
-              <td class="NEXUSValue">End Date <html:checkbox onchange="javascript: scriptScope.disableLinks();" property="endEnabled"/></td>
+              <td class="NEXUSValue">End Date <html:checkbox property="endEnabled"/></td>
                 <td class="NEXUSValue" align="left">
-                <html:select onchange="javascript: scriptScope.disableLinks();" property="endYear">
+                <html:select property="endYear">
                     <html:option value="2009"/>
                     <html:option value="2008"/>
                     <html:option value="2007"/>
@@ -138,7 +138,7 @@
                     <html:option value="2004"/>
                     <html:option value="2003"/>
                 </html:select>
-                <html:select onchange="javascript: scriptScope.disableLinks();" property="endMonth">
+                <html:select property="endMonth">
                     <html:option value="01">January</html:option>
                     <html:option value="02">February</html:option>
                     <html:option value="03">March</html:option>
@@ -152,7 +152,7 @@
                     <html:option value="11">November</html:option>
                     <html:option value="12">December</html:option>
                 </html:select>
-                <html:select onchange="javascript: scriptScope.disableLinks();" property="endDay">
+                <html:select property="endDay">
                   <html:option value="01">1</html:option>
                   <html:option value="02">2</html:option>
                   <html:option value="03">3</html:option>
@@ -186,7 +186,7 @@
                   <html:option value="31">31</html:option>
                 
                 </html:select>
-                <html:select onchange="javascript: scriptScope.disableLinks();" property="endHour">
+                <html:select property="endHour">
                     <html:option value="00">12 A.M.</html:option>
                     <html:option value="01">1 A.M.</html:option>
                     <html:option value="02">2 A.M.</html:option>
@@ -212,7 +212,7 @@
                     <html:option value="22">10 P.M.</html:option>
                     <html:option value="23">11 P.M.</html:option>
                 </html:select>
-                <html:select onchange="javascript: scriptScope.disableLinks();" property="endMin">
+                <html:select property="endMin">
               <html:option value="00">0</html:option>
                <html:option value="10">10</html:option>
                  <html:option value="20">20</html:option>

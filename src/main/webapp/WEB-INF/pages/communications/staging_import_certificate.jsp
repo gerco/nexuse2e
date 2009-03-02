@@ -5,6 +5,7 @@
 <%@ taglib uri="/tags/struts-logic" prefix="logic"%>
 <%@ taglib uri="/tags/nexus" prefix="nexus"%>
 
+<nexus:fileUploadResponse>
 <% /*<nexus:helpBar helpDoc="documentation/SSL.htm" /> */ %>
 
 <center>
@@ -48,3 +49,4 @@
 		</tr>
 	</table>
 </html:form></center>
+</nexus:fileUploadResponse>

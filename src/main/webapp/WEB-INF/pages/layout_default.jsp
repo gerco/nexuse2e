@@ -3,54 +3,15 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <script type="text/javascript">
-   var djConfig = {isDebug: true };
-</script>
-  
-<script type="text/javascript" src="javascript/dojo/dojo.js"></script>
-
-<script language="JavaScript" type="text/javascript">
-	dojo.require("dojo.event.*");
-	dojo.require("dojo.io.*");
-	dojo.require("dojo.widget.LayoutContainer");
-	dojo.require("dojo.widget.LinkPane");
-	dojo.require("dojo.widget.ContentPane");
-	dojo.require("dojo.widget.Tree");
-	dojo.require("dojo.widget.TreeLoadingController");
-	dojo.require("dojo.widget.TreeNode");
-	dojo.require("dojo.widget.TreeSelector");
-	dojo.require("dojo.widget.FloatingPane");
-	dojo.require("dojo.widget.Dialog");
-	dojo.require("dojo.widget.ProgressBar");
-	dojo.require("dojo.widget.Tooltip");
-	dojo.require("dojo.io.IframeIO"); // Needed for file uploads
-
-
-</script>
-
-<script>
-	/*
-   * Initializes the tree.
-   */
-  function init() {
-      <!-- get a reference to the treeSelector -->
-      var menuTreeSelector = dojo.widget.manager.getWidgetById('menuTreeSelector');
-  
-      <!-- connect the select event to the function treeSelectFired() -->
-      dojo.event.connect(menuTreeSelector,'select','update');
-  }
-  
   /*
    * Updates the content of the docpane by callback of the tree select event.
    */
-  function update() {
-      var menuTreeSelector = dojo.widget.manager.getWidgetById('menuTreeSelector');
-      var menuTreeNode = menuTreeSelector.selectedNode;
-			var docPane = dojo.widget.byId("docpane");
-			var file = menuTreeNode.widgetId;
-			if (!file){
-				docPane.setContent("Unknown document \"" + file + "\"");
-			}else{
-				setContentUrl(file);
+  function update(url) {
+			var docPane = dijit.byId("docpane");
+			if (!url){
+				docPane.setContent("Unknown document \"" + url + "\"");
+			} else {
+				setContentUrl(url);
 			}
   }
   
@@ -59,16 +20,49 @@
    * based on the currently selected tree node.
    */
   function getCrumbs() {
-  	var selectedNode = getSelectedTreeNode();
+	  var selectedNode = getSelectedTreeNode();
   	if(selectedNode) {
-	  	var crumbString = '<a href="javascript: getMenuTreeSelector().deselect(); getMenuTreeSelector().select({source: getTreeNode(\'' + selectedNode.widgetId + '\')});">' + selectedNode.title + '</a>';
-	    while(selectedNode.parent.title != null) {
-	    	selectedNode = selectedNode.parent;
-	    	crumbString = '<a href="javascript: getMenuTreeSelector().select({source: getTreeNode(\'' + selectedNode.widgetId + '\')});">' + selectedNode.title + '</a>' + ' &gt ' + crumbString;
+	  	var crumbString = getCrumbLink(selectedNode);
+	    while(selectedNode.getParent() && selectedNode.getParent().label && selectedNode.getParent().label.length > 0) {
+	    	selectedNode = selectedNode.getParent();
+	    	crumbString = getCrumbLink(selectedNode) + ' &gt ' + crumbString;
 	    }
 	    return crumbString;
 	  } else {
 	  	return "";
+	  }
+		return crumbString;
+  }
+
+  /*
+   * Renders a crumb link for a specified node.
+   */
+  function getCrumbLink(selectedNode) {
+		return "<a href=\"javascript: expandTreePath('" + selectedNode.id + "'); focusNode('" + selectedNode.id + "'); update( '" + selectedNode.item.widgetId + "' );\">" + selectedNode.label + '</a>';
+  }
+
+  /*
+   * Recursively expands the tree to a specific node.
+   */
+  function expandTreePath(selectedNode) {
+	  if ( !selectedNode.getParent ) {
+	  	selectedNode = dijit.byId( selectedNode );
+	  }
+		if (selectedNode && selectedNode.getParent()) {
+			expandTreePath(selectedNode.getParent());
+		}
+		if ( !selectedNode.isExpanded ) {
+			getTree()._expandNode( selectedNode );
+		}
+  }
+
+  /*
+   * Focus a node specified by it's id.
+   */
+  function focusNode(id) {
+	  var node = dijit.byId( id );
+	  if ( node ) {
+			getTree().focusNode( node );
 	  }
   }
   
@@ -76,79 +70,58 @@
    * Returns the widget the displays the content.
    */
   function getDocPane() {
-  	return dojo.widget.byId('docpane');
+  	return dijit.byId('docpane');
   }
   
   /*
    * Returns the widget the displays the menu tree.
    */
   function getNavPane() {
-  	return dojo.widget.byId('navigator');
-  }
-  
-  /*
-   * Returns the TreeSelector for the menu.
-   */
-  function getMenuTreeSelector() {
-  	return dojo.widget.byId('menuTreeSelector');
-  }
-  
-  /*
-   * Returns the TreeController for the tree.
-   */
-  function getMenuTreeLoadingController() {
-  	return dojo.widget.byId('menuTreeController');
+  	return dojo.byId('navigator');
   }
   
   /*
    * Returns the currently selected node.
    */
   function getSelectedTreeNode() {
-  	return getMenuTreeSelector().selectedNode;
-  }
-  
-  /*
-   * Returns the tree node with the given widgetId.
-   */
-  function getTreeNode(widgetId) {
-  	return dojo.widget.byId(widgetId);
+  	return getTree().lastFocused;
   }
   
   /*
    * Returns the tree widget.
    */
   function getTree() {
-  	return dojo.widget.byId('menuTree');
+  	return dijit.byId('menuTree');
   }
-  
+
   /*
-   * Returns the progress dialog.
+   * Returns the tree's model.
    */
-  function getProgressDialog() {
-  	return dojo.widget.byId('progressDialog');
+  function getTreeModel() {
+  	return getTree().model;
   }
   
   /*
    * Returns the progress bar.
    */
   function getProgressBar() {
-  	return dojo.widget.byId('progressBar');
+  	return dijit.byId('progressBar');
   }
   
   /*
    * Show the progress bar dialog.
    */
-  function showProgressBarDialog() {
-  	getProgressDialog().show();
-  	getProgressBar().startAnimation();
+  function showInProgress() {
+		dojo.query("html *").style("cursor", "wait");
+		dojo.style("downloadProgress", "visibility", "visible");
   }
-  
+
   /*
    * Hide the progress bar dialog.
    */
-  function hideProgressBarDialog() {
-  	getProgressBar().stopAnimation();
-  	getProgressDialog().hide();
+  function hideInProgress() {
+	  dojo.style("downloadProgress", "visibility", "hidden");
+	  dojo.query("html *").style("cursor", "");	  
   }
   
   /*
@@ -156,15 +129,18 @@
    */
   function displayError(message) {
   	alert(message);
-	hideProgressBarDialog();
+		hideInProgress();
   }
-  
+
+  /*
+   * Check whether the configuration was changed.
+   */
   function checkForChangedConfiguration(changed) {
-  	if (changed) {
+	  if (changed) {
   	  document.getElementById('applyConfiguration').className="apply_active";
-  	  document.getElementById('applyConfiguration').href="javascript: getMenuTreeSelector().deselect(); setContentUrl('ApplyConfiguration.do')";
+  	  document.getElementById('applyConfiguration').href="javascript: update('ApplyConfiguration.do')";
   	  document.getElementById('revertConfiguration').className="apply_active";
-  	  document.getElementById('revertConfiguration').href="javascript: getMenuTreeSelector().deselect(); setContentUrl('RevertConfiguration.do')";
+  	  document.getElementById('revertConfiguration').href="javascript: update('RevertConfiguration.do')";
   	} else {
   	  document.getElementById('applyConfiguration').className="apply_inactive";
   	  document.getElementById('applyConfiguration').href="#";
@@ -174,18 +150,21 @@
   }
   
   /*
-   * Refreshes all expanded dynamic nodes in the tree. 
+   * Refreshes all dynamic nodes in the tree. 
    */
   function refreshMenuTree() {
-  	
-	var rootNode = getTreeNode('Home.do');
-		//debug("Attempting to refresh the tree ...");
-		//debug("Root node expandend: " + rootNode.isExpanded);
-		//debug("Root has children: " + rootNode.children.length);
-		if(rootNode && rootNode.isExpanded && rootNode.children) {
-			reloadChildren(rootNode.children);
+
+		if ( getTree() && getTree().rootNode ) {
+		  // the tree's root is virtual, so we take it's first child as our root
+		  var rootNode = getTree().rootNode.getChildren()[0]; 
+			//debug("Attempting to refresh the tree ...");
+			//debug("Root node expandend: " + rootNode.isExpanded);
+			//debug("Root has children: " + rootNode.getChildren().length);
+			if(rootNode && rootNode.isExpanded && rootNode.getChildren()) {
+				reloadChildren(rootNode.getChildren());
+			}
+			//debug("... done");
 		}
-		//debug("... done");
 	}
 	
 	/*
@@ -195,25 +174,16 @@
 	 */
 	function reloadChildren(nodes) {
 		if(nodes && nodes[0]) { // not null not empty
-	  	//debug("Updating " + nodes.length + " child nodes of " + nodes[0].parent.widgetId);
 	  	for(var i=0; i < nodes.length; i++) {
-	  		//debug(i + ". node is " + nodes[i].widgetId);
-	  		if(nodes[i].isFolder && nodes[i].isExpanded) { // process only expanded nodes
-	  			//debug(nodes[i].widgetId + " is expanded");
-	  			if(nodes[i].objectId.substring(0,1) == "d") { // load children, 'cause "d" stands for "reload me"
-	  				//debug(nodes[i].widgetId + " is dynamic parent -> reloading");
-	  				updateChildren(nodes[i]);
-	  				//debug(nodes[i].widgetId + "'s children reloaded");
-	  			}
-	  			
-	  			// check whether child nodes need refresh
-	  			//debug("recursively calling reload children of " + nodes[i].widgetId);
-	  			reloadChildren(nodes[i].children);
-	  			//debug("finished recursion step for " + nodes[i].widgetId);
-	  		}
+  			if(nodes[i].item.type == "folder" && nodes[i].item.objectId.substring(0,1) == "d") { // load children, 'cause "d" stands for "reload me"
+	  			//debug( "updating node '" + nodes[i].item.widgetId + "' " + nodes[i].item.type + " " + nodes[i].item.objectId );
+  				updateChildren(nodes[i]);
+  			}
+  			
+  			// check whether child nodes need refresh
+  			reloadChildren(nodes[i].getChildren());
 	  	}
 	  }
-	  //debug("finished");
 	}
 	
 	/*
@@ -222,181 +192,124 @@
 	 * and reloads or removes them.
 	 */
 	function updateChildren(node) {
-		//debug("reloadChildrenPrototype");
-		var tlc = getMenuTreeLoadingController();
-		var oldChildren = node.children;
-		var newChildren = new Array();
-		var sync;
-    var params = {
-      node: tlc.getInfo(node),
-      tree: tlc.getInfo(node.tree)
-    };
-    tlc.runRPC({
-      url: tlc.getRPCUrl('getChildren'),
-      load: function(result) {
-	      cleanUpOldNodes(oldChildren, result);
-      	for(var i=0; i < result.length; i++) {
-        	//debug(result[i].widgetId + " (" + result[i].objectId + ")") ;
-        	if(containsNode(oldChildren, result[i])) {
-        		//debug(result[i].widgetId + " (" + result[i].objectId + ")" + " exists already");
-        	} else {
-        		//debug(result[i].widgetId + " (" + result[i].objectId + ")" + " is new");
-        		var newChild = dojo.widget.createWidget(node.widgetType, result[i]);
-      			node.addChild(newChild, i);
-        	}
-        }
-      },
-      sync: true,
-      lock: [node],
-      params: params
-    });
-		//debug("done");
+		//console.log("Update children of: " + node.item.widgetId + " (" + node.item.objectId + ")");
+		getTreeModel().getChildren(node.item, function(children) {
+			getTree()._onItemChildrenChange(node.item,children);
+		} );		
 	}
-	
+
 	/*
-	 * Removes all nodes of the oldNodes array
-	 * which are not contained in the newNodes array
-	 * from the tree.
+	 * Loads content into the document pane.
+	 * You may want to use the "update(url)" method instead of calling this directly.
 	 */
-	function cleanUpOldNodes(oldNodes, newNodes) {
-		for(var i=0; i < oldNodes.length; i++) {
-			if(!containsNode(newNodes, oldNodes[i])) {
-				// if this node is selected, select its parent node before it is removed
-				if(getSelectedTreeNode() && getSelectedTreeNode().objectId == oldNodes[i].objectId) {
-					getMenuTreeSelector().deselect();
-					getMenuTreeSelector().doSelect(oldNodes[i].parent);
-				}
-				getTree().removeNode(oldNodes[i]);
-			}
-		}
-	}
-	
-	/*
-	 * Determines whether a given node is contained
-	 * in a node array. Retruns true if the node
-	 * is contained in the array; false otherwise.
-	 */	
-	function containsNode(nodes, node) {
-		var result = false;
-		if(nodes && node) {
-			for(var i=0; i < nodes.length && !result; i++) {
-				result = (nodes[i].objectId == node.objectId);
-				//debug(nodes[i].title + " (" + nodes[i].objectId + ")" + " " + node.title + " (" + node.objectId + ")");
-			}
-		}
-		
-		return result;
-	}
-	
 	function setContentUrl(contentUrl) {
 		// alert( 'Form: '  );
-		showProgressBarDialog();
-		//debug(form);
-		// alert( 'Action: ' + form.action );
-	 	var kw = {
-	 		url: contentUrl,
-	 		mimetype: "text/html",
-	 		formNode: null,
-	 		load: function(load, data, e) {	
-	 			//debug( 'Data: ' + data );
-	 			getDocPane().setContent(data);
-	 			hideProgressBarDialog();
-	 		},		
-	 		error: function(t, e) {
-	 			displayError(e.message);
-	 		}
-	 	};
-	 	dojo.io.bind(kw);
-	}
-  
-	function submitForm(form){	
-		showProgressBarDialog();
-		//debug(form);
-		// alert( 'Form: ' + form  );
-		// alert( 'Action: ' + form.action );
-	 	var kw = {
-	 		url: form.action,
-	 		mimetype: "text/html",
-	 		formNode: form,
-	 		load: function(load, data, e) {	
-	 			//debug( 'Data: ' + data );
-	 			getDocPane().setContent(data);
-	 			hideProgressBarDialog();
-	 		},		
-	 		error: function(t, e) {
-	 			displayError(e.message);
-	 		}
-	 	};
-	 	dojo.io.bind(kw);
-	 }
+		showInProgress();
 
+		//debug(form);
+		// alert( 'Action: ' + form.action );
+	 	dojo.xhrGet({
+				url: contentUrl,
+				handleAs: "text",
+				load: function(data){
+		    		//console.log(data);
+						getDocPane().attr("content", data);
+						hideInProgress();
+				},
+				error: function(t, e) {
+		 			displayError(e.message);
+		 		}
+			});
+	}
+
+	/*
+	 * This method submits a form and displays
+	 * the result in the document pane. 
+	 */
+	function submitForm(form) {
+		// alert( 'Form: '  );
+		showInProgress();
+
+		//debug(form);
+		// alert( 'Action: ' + form.action );
+	 	dojo.xhrPost({
+				handleAs: "text",
+				form: form,
+				load: function(data){
+		    		//console.log(data);
+						getDocPane().attr("content", data);
+						hideInProgress();
+				},
+				error: function(t, e) {
+		 			displayError(e.message);
+		 		}
+			});
+	}
+
+	/*
+	 * Special submit method for forms that contain a file to upload.
+	 */
 	function submitFileForm(form){
-	  dojo.event.connect(form, "onsubmit", submitFileFormData(form) );
-	  form.submit();
+	  //dojo.connect(form, "onSubmit", myFileSubmit(form) );
+	  submitFileFormData(form);
+	  //form.submit();
 	}
-	
-	function submitFileFormData(form){	
-		showProgressBarDialog();
-		//debug( 'Form: ' + form  );
-		//debug( 'Action: ' + form.action );
-	 	var kw = {
-	 		url: form.action,
-	 		mimetype: "text/html",
-	 		transport: "IframeTransport",
-	 		formNode: form,
-	 		load: function(load, data, e) {
-	 			var res = dojo.byId( 'dojoIoIframe' ).contentWindow.document.body.innerHTML;
-	 			//debug( 'Data: ' + res );
-	 			getDocPane().setContent(res);
-	 			hideProgressBarDialog();
-	 		},		
-	 		error: function(t, e) {
-	 			displayError(e.message);
-	 		}
-	 	};
-	 	dojo.io.bind(kw);
-	 }
 
-  dojo.addOnLoad(init);
+	/*
+	 * Called by submitFileForm(form).
+	 */
+	function submitFileFormData(form) {
+		//console.log(form.name);
+		dojo.io.iframe.send( {
+		    form: form,
+		    load: function(data, ioArgs) {
+		    	//console.log(data);
+		    	//console.log(ioArgs);
+					getDocPane().attr("content", data);
+					hideInProgress();
+		    },
+		    error: function(t, e) {
+			    hideInProgress();
+			    //console.log("error");
+			    //console.log(t);
+			    //console.log(e);
+					displayError(e.message);
+		 		}
+		} );
+	}
  </script>
-
-<div dojoType="LayoutContainer" id="content" layoutChildPriority="top-bottom">
-	<div dojoType="ContentPane" layoutAlign="top" id="header" width="100%">
-		<tiles:insert attribute="header"/>
+ 
+<div dojoType="dijit.layout.BorderContainer" id="content" design="headline" gutters="false" style="width: 100%; height: 100%;">
+  <div dojoType="dijit.layout.ContentPane" id="header" region="top">
+  	<tiles:insert attribute="header"/>
+  	<table id="toolbar" cellpadding="0" cellspacing="0" style="margin: 0px; padding: 0px;>
+			<tr style="margin: 0px; padding: 0px">
+				<td id="toolbar-left">
+					<div dojoType="dijit.ProgressBar" style="width:120px; margin-left: 95px; visibility: hidden;" jsId="progressBar" id="downloadProgress" places="0" indeterminate="true"></div>
+				</td>
+				<td style="text-align: left;">
+					<span style="margin: 6px 0 0 22px;">
+						<nexus:link id="applyConfiguration" href="#" styleClass="apply_inactive"><img class="apply_inactive" alt="" src="images/icons/server_go.png">apply</nexus:link>
+					</span>
+					<span style="margin: 6px 0 0 22px;">
+						<nexus:link id="revertConfiguration" href="#" styleClass="apply_inactive"><img class="apply_inactive" alt="" src="images/icons/arrow_rotate_anticlockwise.png">revert</nexus:link>
+					</span>
+				</td>
+				<td style="text-align: right;padding-right: 10px">
+					<span style="margin: 6px 0 0 22px;">
+						<a href="documentation/nexuse2e_help.html" target="_blank" class="navigationactive"><img src="images/icons/help.png" class="navigationactive">&nbsp;help</a>
+					</span>
+					<span style="margin: 6px 0 0 22px;">	
+						<a href="Logout.do" class="navigationactive">logout</a>
+					</span>
+				</td>
+			</tr>
+		</table>
 	</div>
-<div dojoType="ContentPane" layoutAlign="top">
-<table id="toolbar" cellpadding="0" cellspacing="0">
-	<tr style="margin: 0px; padding: 0px">
-		<td id="toolbar-left"></td>
-		<td style="text-align: left;">
-			<span style="margin: 6px 0 0 22px;">
-				<nexus:link id="applyConfiguration" href="#" styleClass="apply_inactive"><img class="apply_inactive" alt="" src="images/icons/server_go.png">apply</nexus:link>
-			</span>
-			<span style="margin: 6px 0 0 22px;">
-				<nexus:link id="revertConfiguration" href="#" styleClass="apply_inactive"><img class="apply_inactive" alt="" src="images/icons/arrow_rotate_anticlockwise.png">revert</nexus:link>
-			</span>
-		</td>
-		<td style="text-align: right;padding-right: 10px">
-			<span style="margin: 6px 0 0 22px;">
-				<a href="documentation/nexuse2e_help.html" target="_blank" class="navigationactive"><img src="images/icons/help.png" class="navigationactive">&nbsp;help</a>
-			</span>
-			<span style="margin: 6px 0 0 22px;">	
-				<a href="Logout.do" class="navigationactive">logout</a>
-			</span>
-		</td>
-	</tr>
-</table>
-</div>
-<div dojoType="ContentPane" layoutAlign="left" style="overflow:auto;" id="navigator" cacheContent="false" preventCache="true" useCache="false">
-		<div id="progressDialog" dojoType="Dialog">
-			<div id="dialogContent" style="background-color: #FFFFFF; padding: 20px;">
-				<div style="margin: 10px;">Please wait ...</div>
-				<div id="progressBar" dojoType="ProgressBar"></div>
-			</div>
-		</div>
+  <div dojoType="dijit.layout.ContentPane" id="navigator" region="leading">
 		<tiles:insert attribute="menu"/>
 	</div>
-	<div dojoType="ContentPane" layoutAlign="client" style="overflow:true;" id="docpane" executeScripts="true" cacheContent="false" preventCache="true" useCache="false">
+  <div dojoType="dojox.layout.ContentPane" id="docpane" region="center" preventCache="true" executeScripts="true" scriptHasHooks="false" cleanContent="true">
 		<tiles:insert attribute="document"/>
-	</div>	
+	</div>
 </div>

@@ -6,6 +6,7 @@
 <%@ taglib uri="/tags/struts-logic" prefix="logic" %>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %> 
 
+<nexus:fileUploadResponse>
 <% /*<nexus:helpBar helpDoc="documentation/Collaboration_Partners.htm"/> */ %>
 
     <table class="NEXUS_TABLE" width="100%">
@@ -47,3 +48,4 @@
           </tr>
         </table>
     </html:form>
+</nexus:fileUploadResponse>

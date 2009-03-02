@@ -61,11 +61,6 @@
   </servlet>
 
   <servlet>
-    <servlet-name>DataSaveAs</servlet-name>
-    <servlet-class>org.nexuse2e.ui.DataSaveAsServlet</servlet-class>
-  </servlet>
-
-  <servlet>
     <servlet-name>ExecutePatch</servlet-name>
     <servlet-class>org.nexuse2e.ui.ExecutePatchServlet</servlet-class>
   </servlet>
@@ -120,10 +115,6 @@
   <servlet-mapping>
     <servlet-name>NexusDynamicWebServiceDispatcher</servlet-name>
     <url-pattern>/wshandler/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>DataSaveAs</servlet-name>
-    <url-pattern>/DataSaveAs</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>ExecutePatch</servlet-name>

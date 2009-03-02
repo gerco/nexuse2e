@@ -25,7 +25,6 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -76,7 +75,7 @@ public class Select extends BodyTagSupport {
     private String                 name;
     private String                 sendFileForm               = null;
     // generated button id
-    private String                 buttonId;
+    //private String                 buttonId;
 
     /* (non-Javadoc)
      * @see javax.servlet.jsp.tagext.BodyTagSupport#doStartTag()
@@ -88,7 +87,7 @@ public class Select extends BodyTagSupport {
         try {
             // create hidden button
             // first we need a UID as DOM id (in order to support multiple usage of this tag on one page) 
-            buttonId = RandomStringUtils.randomAlphabetic( DEFAULT_BUTTON_ID_LENGTH );
+            //buttonId = RandomStringUtils.randomAlphabetic( DEFAULT_BUTTON_ID_LENGTH );
             // create link that clicks the hidden button
             writer.print( "<select"
                     + ( name != null ? " name=\"" + name + "\"" : "" )
@@ -114,6 +113,7 @@ public class Select extends BodyTagSupport {
             // close anchor tag
             writer.print( "</select>\n" );
             // add scriptlet that handles the click event and loads the data
+            /*
             writer.print( "<script>\n" );
             // we need a UID as method name (in order to support multiple usage of this tag on one page)
             writer.print( "dojo.addOnLoad(" );
@@ -132,6 +132,7 @@ public class Select extends BodyTagSupport {
             writer.print( "\t})\n" );
             writer.print( "});\n" );
             writer.print( "</script>\n" );
+            */
         } catch ( IOException e ) {
             throw new JspException( e );
         }

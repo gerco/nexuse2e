@@ -205,7 +205,7 @@ public class XmlStructureServer implements StructureService {
     /**
      * Returns the site structure if a valid XML structure file has been set.
      * @param rootPath the xpath under which the structure is located.
-     * @param Defines wheather to evaluate dynamic nodes (<code>type="provider"</code>) or return the skeleton only.
+     * @param Defines whether to evaluate dynamic nodes (<code>type="provider"</code>) or return the skeleton only.
      * @param engineConfiguration The applicable engine configuration.
      * @return The site's structure or an empty list if the specified path or file is invalid.
      * @throws StructureException if an error occurred during the structure build process.

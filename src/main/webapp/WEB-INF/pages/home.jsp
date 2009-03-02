@@ -6,15 +6,6 @@
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
 <%@ taglib uri="/tags/nexus" prefix="nexus"%>
 
-<!-- expand tree -->
-<script>
-	dojo.addOnLoad( function() {
-		var rootNode = getTreeNode('Home.do');
-		getMenuTreeLoadingController().expand(rootNode);
-		getMenuTreeSelector().doSelect(rootNode);
-	});
-</script>
-
 <% /*<nexus:helpBar helpDoc="documentation/NEXUSe2e.html" /> */ %>
 
 <table class="NEXUS_TABLE" width="100%">

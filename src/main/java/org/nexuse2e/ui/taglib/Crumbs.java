@@ -69,7 +69,7 @@ public class Crumbs extends TagSupport {
             // first we need a UID as DOM id (in order to support multiple usage of this tag on one page) 
             String containerId = RandomStringUtils.randomAlphabetic( DEFAULT_CONTAINER_ID_LENGTH );
             writer.write( "<div id=\"" + containerId + "\" class=\"" + styleClass + "\">&nbsp;</div>\n" );
-            writer.write( "<script>\n" );
+            writer.write( "<script type=\"text/javascript\">\n" );
             writer.write( "\tdojo.addOnLoad(function() {\n" );
             writer.print( "\t\trefreshMenuTree();\n" );
             if (engineConfiguration != null) {

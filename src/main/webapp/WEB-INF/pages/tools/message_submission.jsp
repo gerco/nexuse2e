@@ -6,6 +6,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="/tags/struts-html-el" prefix="html-el"%>
 
+<nexus:fileUploadResponse>
 <% /* <nexus:helpBar /> */ %>
 
 <script language="JavaScript" type="text/javascript">
@@ -33,6 +34,7 @@
 		<tr>
 			<td class="NEXUSName">Choreography ID</td>
 			<td class="NEXUSValue">
+			
 				<nexus:select name="choreographyId" submitOnChange="true" form="messageSubmissionForm" sendFileForm="true">
 					<logic:iterate name="messageSubmissionForm" property="choreographies" id="choreography">
 					<logic:equal name="messageSubmissionForm" property="choreographyId"
@@ -45,6 +47,7 @@
 					</logic:notEqual>
 					</logic:iterate>
 				</nexus:select>
+
 			</td>
 		</tr>
 
@@ -77,7 +80,7 @@
 		<tr>
 			<td class="NEXUSName">Conversation ID</td>
 			<td class="NEXUSValue"><html:text property="conversationId" size="50" onkeypress="return checkKey(event);" /> <a href="#"
-				onClick="javascript:scriptScope.clearConvId()" class="button">Clear</a>
+				onClick="javascript:clearConvId()" class="button">Clear</a>
 			</td>
 		</tr>
 
@@ -115,3 +118,4 @@
 		<br />
 	</html:messages>
 </logic:messagesPresent></center>
+</nexus:fileUploadResponse>

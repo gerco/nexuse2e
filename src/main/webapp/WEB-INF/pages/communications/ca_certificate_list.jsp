@@ -10,7 +10,7 @@
 
 <logic:equal name="protectedFileAccessForm" property="status" value="3">
 	<script type="text/javascript">
-window.open('DataSaveAs?type=cacerts','Save as...')
+window.open('DataSaveAs.do?type=cacerts','Save as...')
 </script>
 </logic:equal>
 

@@ -120,7 +120,7 @@
 							document.forms[0].rightType.value=document.getElementsByName('htmlnewrightType${counter}')[0].value;
 							document.forms[0].rightValue.value=document.getElementsByName('htmlnewrightValue${counter}')[0].value;
 							">
-					<img src="images/icons/add.png" class="button" alt="Configure" id="addMapping"><span dojoType="tooltip" connectId="addMapping" toggle="explode">Add Mapping Entry</span>
+					<img src="images/icons/add.png" class="button" alt="Configure" id="addMapping"><span dojoType="dijit.Tooltip" connectId="addMapping" toggle="explode">Add Mapping Entry</span>
 				</nexus:submit>
 				</td>
 			</tr>
@@ -175,7 +175,7 @@
 							document.forms[0].rightType.value=document.getElementsByName('htmlrightType${counter}')[0].value;
 							document.forms[0].rightValue.value=document.getElementsByName('htmlrightValue${counter}')[0].value;
 							">
-					<img src="images/icons/delete.png" class="button" alt="Delete" id="deleteMapping"><span dojoType="tooltip" connectId="deleteMapping" toggle="explode">Delete Mapping Entry</span>
+					<img src="images/icons/delete.png" class="button" alt="Delete" id="deleteMapping"><span dojoType="dijit.Tooltip" connectId="deleteMapping" toggle="explode">Delete Mapping Entry</span>
 				</nexus:submit> 
 				<nexus:submit
 					onClick="document.forms[0].submitaction.value='update';
@@ -186,7 +186,7 @@
 							document.forms[0].rightType.value=document.getElementsByName('htmlrightType${counter}')[0].value;
 							document.forms[0].rightValue.value=document.getElementsByName('htmlrightValue${counter}')[0].value;
 					">
-					<img src="images/icons/tick.png" class="button" alt="Configure" id="updateMapping"><span dojoType="tooltip" connectId="updateMapping" toggle="explode">Update Mapping Entry</span>
+					<img src="images/icons/tick.png" class="button" alt="Configure" id="updateMapping"><span dojoType="dijit.Tooltip" connectId="updateMapping" toggle="explode">Update Mapping Entry</span>
 				</nexus:submit>
 				</td>
 			</tr>

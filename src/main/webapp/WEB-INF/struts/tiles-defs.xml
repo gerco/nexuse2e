@@ -15,21 +15,22 @@
   Layout definitions
   **************************************************************************
   -->
-	<definition name="skeleton" path="/WEB-INF/pages/skeleton.jsp">
-		<put name="title" value="NEXUSe2e Server" />
-		<put name="content" value="" />
-	</definition>
+  <definition name="skeleton" path="/WEB-INF/pages/skeleton.jsp">
+    <put name="dojo" value="/WEB-INF/pages/dojo.jsp"/>
+    <put name="title" value="NEXUSe2e Server" />
+  	<put name="content" value="" />
+  </definition>
   
   <definition name="layout.default" path="/WEB-INF/pages/layout_default.jsp">
-		<put name="header" value="/WEB-INF/pages/banner.jsp" />
+	<put name="header" value="/WEB-INF/pages/banner.jsp" />
     <put name="menu" value="/WEB-INF/pages/navigator.jsp" />
     <put name="document" value="" />
-	</definition>
+  </definition>
   
   <definition name="layout.noNavigator" path="/WEB-INF/pages/layout_no_navigator.jsp">
-		<put name="header" value="/WEB-INF/pages/banner.jsp" />
+    <put name="header" value="/WEB-INF/pages/banner.jsp" />
     <put name="document" value="" />
-	</definition>
+  </definition>
   
   <!-- 
   **************************************************************************

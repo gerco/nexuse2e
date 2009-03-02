@@ -336,6 +336,9 @@
       <forward name="success" path="/CACertificatesList.do"/>
       <forward name="error" path="/WEB-INF/pages/communications/ca_certificate_import.jsp"/>
     </action>
+    
+    <action path="/DataSaveAs" type="org.nexuse2e.ui.DataSaveAsAction"/>
+    
     <action path="/RequestOverview" name="requestButtonStateForm" type="org.nexuse2e.ui.action.communications.RequestOverviewAction">
       <forward name="success" path="/WEB-INF/pages/communications/request_overview.jsp"/>
     </action>

@@ -6,6 +6,7 @@
 <%@ taglib uri="/tags/struts-logic" prefix="logic"%>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
 
+<nexus:fileUploadResponse>
 <% /*<nexus:helpBar helpDoc="documentation/Collaboration_Partners.htm" /> */ %>
 
 <table class="NEXUS_TABLE" width="100%">
@@ -82,7 +83,7 @@
 		<td>&nbsp;</td>
 		<td class="BUTTON_RIGHT" style="text-align: right;"><logic:equal
 			name="collaborationPartnerForm" property="type" value="1">
-			<td class="NexusHeaderLink">Use Certificates -> CertificateStaging to
+			<td class="NexusHeaderLink">Use Certificates -&gt; CertificateStaging to
 			add Certificate</td>
 		</logic:equal> <logic:equal name="collaborationPartnerForm" property="type"
 			value="2">
@@ -93,3 +94,4 @@
 		</logic:equal></td>
 	</tr>
 </table>
+</nexus:fileUploadResponse>
