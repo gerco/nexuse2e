@@ -76,7 +76,7 @@ public class Version {
      *         is present.
      */
     public static String getVersion() {
-    	String result = "";
+    	String result = "No version information found";
     	try {
     		String version = getMainAttribute( MainAttribute.ImplementationVersion );
     		String revision = getMainAttribute( MainAttribute.ImplementationSvnRevision );
