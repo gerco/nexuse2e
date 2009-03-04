@@ -529,18 +529,28 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
                 dc.add( Restrictions.in( "status", intValues ) );
             }
         }
+        
+        DetachedCriteria conv = null;
+        if ( conversationId != null ) {
+            conv = dc.createCriteria( "conversation");
+            conv.add(Restrictions.like( "conversationId", "%" + conversationId.trim() + "%" ) );
+        }
+        
         if ( nxChoreographyId != 0 ) {
-            dc.createCriteria( "conversation" ).createCriteria( "choreographyId" ).add(
+            if(conv == null) {
+                conv = dc.createCriteria( "conversation");
+            }
+            conv.createCriteria( "choreography" ).add(
                     Restrictions.eq( "nxChoreographyId", nxChoreographyId ) );
         }
         if ( nxPartnerId != 0 ) {
-            dc.createCriteria( "conversation" ).createCriteria( "partner" ).add(
+            if(conv == null) {
+                conv = dc.createCriteria( "conversation");
+            }
+            conv.createCriteria( "partner" ).add(
                     Restrictions.eq( "nxPartnerId", nxPartnerId ) );
         }
-        if ( conversationId != null ) {
-            dc.createCriteria( "conversation" ).add(
-                    Restrictions.like( "conversationId", "%" + conversationId.trim() + "%" ) );
-        }
+        
         if ( messageId != null ) {
             dc.add( Restrictions.like( "messageId", "%" + messageId.trim() + "%" ) );
         }
