@@ -119,25 +119,23 @@
   <bean id="engineStatusInterfaceBean" class="org.nexuse2e.integration.EngineStatusInterfaceImpl" />
   <bean id="nexuse2eUtilitiesBean" class="org.nexuse2e.integration.NEXUSe2eUtilitiesImpl" />
 
-  <!--  DatabaseConfig -->
-  <bean id="internal" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-    <property name="driverClassName" value="${database.driverClassName}" />
-    <property name="url" value="${database.url}" />
-    <property name="username" value="${database.user}" />
-    <property name="password" value="${database.password}" />
-    <property name="maxActive" value="-1" />
+  <bean id="internal"
+    class="com.mchange.v2.c3p0.ComboPooledDataSource"
+    destroy-method="close">
     
-    <!--  needs to be disabled while inital database creation -->
-    <!-- 
-    <property name="testOnBorrow" value="true" />
-    <property name="validationQuery" value="select count(*) from nx_trp"/>
-     -->
-     
-    <!--  8 = serialize --> 
-    <!-- <property name="defaultTransactionIsolation" value="8"/>
-     -->
+    <property name="driverClass"><value>${database.driverClassName}</value></property>
+    <property name="jdbcUrl"><value>${database.url}</value></property>
+    <property name="user"><value>${database.user}</value></property>
+    <property name="password"><value>${database.password}</value></property>
     
-    
+    <property name="initialPoolSize"><value>3</value></property>
+    <property name="minPoolSize"><value>3</value></property>
+    <property name="maxPoolSize"><value>50</value></property>
+    <!-- <property name="timeout"><value>0</value></property> -->   <!-- 0 means: no timeout -->
+    <property name="idleConnectionTestPeriod"><value>200</value></property>
+    <property name="acquireIncrement"><value>1</value></property>
+    <property name="maxStatements"><value>0</value></property>  <!-- 0 means: statement caching is turned off.  -->
+    <property name="numHelperThreads"><value>3</value></property>  <!-- 3 is default -->
   </bean>
 
   <!-- 
