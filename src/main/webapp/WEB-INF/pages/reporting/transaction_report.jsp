@@ -59,7 +59,7 @@
         if (link.onclick) {
           link.oldOnClick = link.onclick;
         }
-        link.onclick = _container_.scriptScope.cancelLink;
+        link.onclick = cancelLink;
         if (link.style) {
         	link.style.cursor = 'text';
           link.style.color = '#000080';
@@ -82,17 +82,17 @@
     }
     
     this.disableLinks = function () {
-			_container_.scriptScope.disableLink(document.getElementById('nextLink'));
-			_container_.scriptScope.disableLink(document.getElementById('startLink'));
-			_container_.scriptScope.disableLink(document.getElementById('previousLink'));
-			_container_.scriptScope.disableLink(document.getElementById('endLink'));
+			disableLink(document.getElementById('nextLink'));
+			disableLink(document.getElementById('startLink'));
+			disableLink(document.getElementById('previousLink'));
+			disableLink(document.getElementById('endLink'));
 		}
     
     this.enableLinks = function () {
-    	_container_.scriptScope.enableLink(document.getElementById('nextLink'));
-      _container_.scriptScope.enableLink(document.getElementById('previousLink'));
-      _container_.scriptScope.enableLink(document.getElementById('startLink'));
-      _container_.scriptScope.enableLink(document.getElementById('endLink'));
+    	enableLink(document.getElementById('nextLink'));
+      enableLink(document.getElementById('previousLink'));
+      enableLink(document.getElementById('startLink'));
+      enableLink(document.getElementById('endLink'));
     }
     
     this.searchForMessages = function () {
@@ -149,7 +149,7 @@
     	document.forms['reportingPropertiesForm'].messageId.disabled=true;
   	}
 
-    _container_.addOnLoad( function () {  
+    dojo.addOnLoad( function () {  
 			var seqNo = 0;
 			var msg = "";
 	    var check = 0;      
@@ -163,12 +163,12 @@
 			}
 			if (check == 1) {
 	    	if ( msg == "message" ) {
-	        _container_.scriptScope.searchForMessages();
+	        searchForMessages();
 	        document.getElementById('messageIdText').className='NEXUSValue';
 	        document.forms['reportingPropertiesForm'].messageEnabled.disabled=false;
 	        document.forms['reportingPropertiesForm'].messageId.disabled=false;
 	      } else {
-	        _container_.scriptScope.searchForConversations();
+	        searchForConversations();
           document.getElementById('messageIdText').className='NEXUSValueDisabled';
           document.forms['reportingPropertiesForm'].messageEnabled.disabled=true;
           document.forms['reportingPropertiesForm'].messageId.disabled=true;
@@ -204,14 +204,14 @@
 		<tr>
 			<td class="NEXUSValue">Search for</td>
 			<td class="NEXUSValue"><html:radio styleId="convSearch"
-				onclick="javascript: scriptScope.disableLinks(); scriptScope.searchForConversations();"
+				onclick="javascript: disableLinks(); searchForConversations();"
 				property="searchFor" value="conversation" />Conversations&nbsp;&nbsp;&nbsp;<html:radio
-				onclick="javascript: scriptScope.disableLinks(); scriptScope.searchForMessages();"
+				onclick="javascript: disableLinks(); searchForMessages();"
 				property="searchFor" value="message" />Messages</td>
 
 			<td class="NEXUSValue">Choreography ID</td>
 			<td class="NEXUSValue"><html:select
-				onchange="javascript: scriptScope.disableLinks();"
+				onchange="javascript: disableLinks();"
 				styleClass="fixedsize" property="choreographyId">
 				<html-el:option value="" />
 				<logic:notEmpty name="reportingPropertiesForm"
@@ -226,7 +226,7 @@
 		<tr>
 			<td class="NEXUSValue">Participant ID</td>
 			<td class="NEXUSValue"><html:select
-				onchange="javascript: scriptScope.disableLinks();"
+				onchange="javascript: disableLinks();"
 				styleClass="fixedsize" property="participantId">
 				<html-el:option value="" />
 				<logic:notEmpty name="reportingPropertiesForm"
@@ -238,10 +238,10 @@
 				</logic:notEmpty>
 			</html:select></td>
 			<td class="NEXUSValue">Conversation ID <html:checkbox
-				onchange="javascript: scriptScope.disableLinks();"
+				onchange="javascript: disableLinks();"
 				name="reportingPropertiesForm" property="conversationEnabled" /></td>
 			<td class="NEXUSValue"><html:text
-				onchange="javascript: scriptScope.disableLinks();"
+				onchange="javascript: disableLinks();"
 				styleClass="fixedsize" property="conversationId"></html:text></td>
 		</tr>
 
@@ -251,7 +251,7 @@
 			<td class="NEXUSValue">Status</td>
 			<td class="NEXUSValue">
 				<logic:equal name="reportingPropertiesForm" property="searchFor" value="message">
-					<html:select onchange="javascript: scriptScope.disableLinks();" styleClass="fixedsize" property="status">
+					<html:select onchange="javascript: disableLinks();" styleClass="fixedsize" property="status">
 						<html:option value="allMessages">&nbsp;</html:option>
 						<html:option value="2">Queued</html:option>
 						<html:option value="-1">Failed</html:option>
@@ -264,7 +264,7 @@
 					</html:select>
 				</logic:equal>
 				<logic:notEqual name="reportingPropertiesForm" property="searchFor" value="message">
-					<html:select onchange="javascript: scriptScope.disableLinks();" styleClass="fixedsize" property="status">
+					<html:select onchange="javascript: disableLinks();" styleClass="fixedsize" property="status">
 						<html:option value="allConversations">&nbsp;</html:option>
 						<html:option value="2">Processing</html:option>
 						<html:option value="9">Completed</html:option>
@@ -280,19 +280,19 @@
 
 
 			<td id="messageIdText" class="NEXUSValue">Message ID<html:checkbox
-				onchange="javascript: scriptScope.disableLinks();"
+				onchange="javascript: disableLinks();"
 				name="reportingPropertiesForm" property="messageEnabled" /></td>
 			<td class="NEXUSValue"><html:text
-				onchange="javascript: scriptScope.disableLinks();"
+				onchange="javascript: disableLinks();"
 				styleClass="fixedsize" property="messageId"></html:text></td>
 		</tr>
 
 		<tr>
 			<td class="NEXUSValue">Start Date <html:checkbox
-				onchange="scriptScope.disableLinks();"
+				onchange="disableLinks();"
 				name="reportingPropertiesForm" property="startEnabled" /></td>
 			<td class="NEXUSValue" align="left"><html:select
-				onchange="javascript: scriptScope.disableLinks();"
+				onchange="javascript: disableLinks();"
 				property="startYear">
                 <html:option value="2012" />
                 <html:option value="2011" />
@@ -304,7 +304,7 @@
 				<html:option value="2005" />
 				<html:option value="2004" />
 				<html:option value="2003" />
-			</html:select> <html:select onchange="javascript: scriptScope.disableLinks();"
+			</html:select> <html:select onchange="javascript: disableLinks();"
 				property="startMonth">
 				<html:option value="01">January</html:option>
 				<html:option value="02">February</html:option>
@@ -318,7 +318,7 @@
 				<html:option value="10">October</html:option>
 				<html:option value="11">November</html:option>
 				<html:option value="12">December</html:option>
-			</html:select> <html:select onchange="javascript: scriptScope.disableLinks();"
+			</html:select> <html:select onchange="javascript: disableLinks();"
 				property="startDay">
 				<html:option value="01">1</html:option>
 				<html:option value="02">2</html:option>
@@ -351,7 +351,7 @@
 				<html:option value="29">29</html:option>
 				<html:option value="30">30</html:option>
 				<html:option value="31">31</html:option>
-			</html:select> <html:select onchange="javascript: scriptScope.disableLinks();"
+			</html:select> <html:select onchange="javascript: disableLinks();"
 				property="startHour">
 				<html:option value="00">12 A.M.</html:option>
 				<html:option value="01">1 A.M.</html:option>
@@ -377,7 +377,7 @@
 				<html:option value="21">9 P.M.</html:option>
 				<html:option value="22">10 P.M.</html:option>
 				<html:option value="23">11 P.M.</html:option>
-			</html:select> <html:select onchange="javascript: scriptScope.disableLinks();"
+			</html:select> <html:select onchange="javascript: disableLinks();"
 				property="startMin">
 				<html:option value="00">0</html:option>
 				<html:option value="10">10</html:option>
@@ -389,10 +389,10 @@
 			</html:select></td>
 
 			<td class="NEXUSValue">End Date <html:checkbox
-				onchange="javascript: scriptScope.disableLinks();"
+				onchange="javascript: disableLinks();"
 				name="reportingPropertiesForm" property="endEnabled" /></td>
 			<td class="NEXUSValue" align="left"><html:select
-				onchange="javascript: scriptScope.disableLinks();"
+				onchange="javascript: disableLinks();"
 				property="endYear">
                 <html:option value="2012" />
                 <html:option value="2011" />
@@ -404,7 +404,7 @@
 				<html:option value="2005" />
 				<html:option value="2004" />
 				<html:option value="2003" />
-			</html:select> <html:select onchange="javascript: scriptScope.disableLinks();"
+			</html:select> <html:select onchange="javascript: disableLinks();"
 				property="endMonth">
 				<html:option value="01">January</html:option>
 				<html:option value="02">February</html:option>
@@ -418,7 +418,7 @@
 				<html:option value="10">October</html:option>
 				<html:option value="11">November</html:option>
 				<html:option value="12">December</html:option>
-			</html:select> <html:select onchange="javascript: scriptScope.disableLinks();"
+			</html:select> <html:select onchange="javascript: disableLinks();"
 				property="endDay">
 				<html:option value="01">1</html:option>
 				<html:option value="02">2</html:option>
@@ -452,7 +452,7 @@
 				<html:option value="30">30</html:option>
 				<html:option value="31">31</html:option>
 
-			</html:select> <html:select onchange="javascript: scriptScope.disableLinks();"
+			</html:select> <html:select onchange="javascript: disableLinks();"
 				property="endHour">
 				<html:option value="00">12 A.M.</html:option>
 				<html:option value="01">1 A.M.</html:option>
@@ -478,7 +478,7 @@
 				<html:option value="21">9 P.M.</html:option>
 				<html:option value="22">10 P.M.</html:option>
 				<html:option value="23">11 P.M.</html:option>
-			</html:select> <html:select onchange="javascript: scriptScope.disableLinks();"
+			</html:select> <html:select onchange="javascript: disableLinks();"
 				property="endMin">
 				<html:option value="00">0</html:option>
 				<html:option value="10">10</html:option>
@@ -495,7 +495,7 @@
 		<tr>
 			<td class="BUTTON_LEFT"><nobr><a class="button"
 				href="#"
-				onclick="javascript: scriptScope.Clear(); scriptScope.disableLinks();"><img
+				onclick="javascript: Clear(); disableLinks();"><img
 				src="images/icons/arrow_rotate_anticlockwise.png" name="clearButton" class="button">Reset
 			Fields</a></nobr></td>
 			<td class="button" width="100%">
@@ -530,7 +530,7 @@
 			</td>
 			<td class="BUTTON_RIGHT">
 				<nobr>
-					<nexus:submit onClick="javascript: document.forms['reportingPropertiesForm'].command.value='first'; scriptScope.enableLinks();">
+					<nexus:submit onClick="javascript: document.forms['reportingPropertiesForm'].command.value='first'; enableLinks();">
 						<img src="images/icons/tick.png" name="resultsButton" class="button" />Refresh Results
 					</nexus:submit>
 				</nobr>
@@ -629,11 +629,11 @@
 				value="true">
 				<table class="NEXUS_BUTTON_TABLE" width="100%">
 					<tr>
-						<td class="BUTTON_LEFT" width="75px"><a href=#" id="startLink"
-							onClick="javascript: scriptScope.selectAll(true);return false;" class="NexusLink">
+						<td class="BUTTON_LEFT" width="75px"><a href="#" id="startLink"
+							onClick="javascript: selectAll(true);return false;" class="NexusLink">
 							<nobr>Select all</nobr>
 						</a><br /><a href="#" id="startLink"
-							onClick="javascript: scriptScope.selectAll(false)" class="NexusLink">
+							onClick="javascript: selectAll(false)" class="NexusLink">
 							<nobr>Deselect all</nobr>
 						</a></td>
 
@@ -734,11 +734,11 @@
 			<logic:equal name="reportingSettingsForm" property="convColSelect" value="true">
 				<table class="NEXUS_BUTTON_TABLE" width="100%" border="1">
 					<tr>
-						<td class="BUTTON_LEFT" width="75px"><a href=#" id="startLink"
-							onClick="javascript: scriptScope.selectAll(true);return false;" class="NexusLink">
+						<td class="BUTTON_LEFT" width="75px"><a href="#" id="startLink"
+							onClick="javascript: selectAll(true);return false;" class="NexusLink">
 							<nobr>Select all</nobr>
 						</a><br /><a href="#" id="startLink"
-							onClick="javascript: scriptScope.selectAll(false)" class="NexusLink">
+							onClick="javascript: selectAll(false)" class="NexusLink">
 							<nobr>Deselect all</nobr>
 						</a></td>
 						<td  class="BUTTON_RIGHT"><nexus:submit
