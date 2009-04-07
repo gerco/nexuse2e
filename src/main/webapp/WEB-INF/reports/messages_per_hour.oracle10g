@@ -1,0 +1,1 @@
+hourFunction=EXTRACT(HOUR FROM created_date)
