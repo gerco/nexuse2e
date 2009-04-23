@@ -96,7 +96,7 @@ public class ConversationStateMachine {
                     }
                 } else {
                     throw new StateTransitionException( "Unexpected conversation state after sending normal message: "
-                            + conversation.getStatus() );
+                            + ConversationPojo.getStatusName( conversation.getStatus() ) );
                 }
             } else {
                 // Engine.getInstance().getTransactionService().deregisterProcessingMessage( message.getMessageId() );
@@ -122,7 +122,7 @@ public class ConversationStateMachine {
                 } else if ( ( conversation.getStatus() != Constants.CONVERSATION_STATUS_COMPLETED )
                         && ( conversation.getStatus() != Constants.CONVERSATION_STATUS_ERROR ) ) {
                     LOG.error( new LogMessage( "Unexpected conversation state after sending ack message: "
-                            + conversation.getStatus(), message ) );
+                            + ConversationPojo.getStatusName( conversation.getStatus() ), message ) );
                 }
             }
 
@@ -264,7 +264,7 @@ public class ConversationStateMachine {
             } else if ( conversation.getStatus() == Constants.CONVERSATION_STATUS_COMPLETED ) {
                 LOG.debug( new LogMessage( "Processing message for completed conversation.", message ) );
             } else {
-                LOG.error( new LogMessage( "Unexpected conversation state detected: " + conversation.getStatus(),
+                LOG.error( new LogMessage( "Unexpected conversation state detected: " + ConversationPojo.getStatusName( conversation.getStatus() ),
                         message ) );
             }
 
