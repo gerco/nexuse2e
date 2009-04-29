@@ -92,13 +92,14 @@ public class FrontendPipeline extends AbstractPipeline implements ProtocolSpecif
                 messageContext = messagePipelet.processMessage( messageContext );
             }
     
-        } catch ( Exception e ) {
-            e.printStackTrace();
-            
-            if( messageContext.getErrors() == null || messageContext.getErrors().size() == 0) {
-                messageContext.addError( new ErrorDescriptor("Pipelet processing aborted: "+e) );
-            }
-            
+        } catch ( RuntimeException e ) {
+            handlePipeletException( messageContext, e);
+            // abort message processing
+            throw e;
+        } catch ( NexusException e ) {
+        	handlePipeletException( messageContext, e);
+        	// abort message processing
+            throw e;
         }
                 
         // Set conversation on context, should be available now
@@ -127,6 +128,21 @@ public class FrontendPipeline extends AbstractPipeline implements ProtocolSpecif
 
         return messageContext;
     } // processMessage
+    
+    /**
+     * Convenience method to avoid duplicate code.
+     * @param messageContext The message context to store the exception in.
+     * @param e The exception to store.
+     */
+    private void handlePipeletException( MessageContext messageContext, Exception e ) {
+    	e.printStackTrace();
+        
+        if( messageContext.getErrors() == null || messageContext.getErrors().size() == 0) {
+        	ErrorDescriptor ed = new ErrorDescriptor("Pipelet processing aborted: " + e.getMessage() );
+        	ed.setCause( e );
+            messageContext.addError( ed );
+        }
+    }
 
     /**
      * @param protocolSpecificKey

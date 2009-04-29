@@ -22,6 +22,8 @@ package org.nexuse2e.service.http;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -142,8 +144,20 @@ public class HttpReceiverService extends AbstractControllerService implements Re
             response.setStatus( ce.getResponseCode() );
             
         } catch ( Exception e ) {
+        	// print stack trace to console
             e.printStackTrace();
-            createErrorResponse( request, response, e.getMessage() );
+            // prepare the response string (basically the SOAP faultString)
+            if ( e.getMessage() == null || e instanceof RuntimeException ) {
+            	// createErrorResponse() must not get a message that is null.
+                // RuntimeExceptions are usually unexpected. For easier debugging, we include the complete stack trace in the message.
+            	StringWriter sw = new StringWriter();
+            	e.printStackTrace( new PrintWriter( sw ) );
+            	createErrorResponse( request, response, sw.toString() );
+            } else {
+            	// Usually we will have a NexusException here. Hence we have a meaningful message that can be passed to the sender.
+            	// NexusExceptions should always be related to expected errors, so there is no need for a stack trace.
+            	createErrorResponse( request, response, e.getMessage() );
+            }
         }
 
         return null;

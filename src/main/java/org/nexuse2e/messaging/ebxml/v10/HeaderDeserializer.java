@@ -64,7 +64,7 @@ public class HeaderDeserializer extends AbstractPipelet {
      * @see org.nexuse2e.messaging.HeaderDeserializer#processMessage(com.tamgroup.nexus.e2e.persistence.pojo.MessagePojo)
      */
     public MessageContext processMessage( MessageContext messageContext ) throws IllegalArgumentException,
-            IllegalStateException {
+            IllegalStateException, NexusException {
 
         LOG.trace( "enter EbXMLV10HeaderDeserializer.processMessageImpl" );
 
@@ -157,14 +157,14 @@ public class HeaderDeserializer extends AbstractPipelet {
             }
             LOG.trace( "unmarshall done" );
         } catch ( NexusException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            // e.printStackTrace();
+            throw e;
         } catch ( SOAPException e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
+            throw new NexusException( e );
         } catch ( IOException e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
+            throw new NexusException( e );
         }
         // 
         //        Iterator bodyElements = soapBody.getChildElements();
