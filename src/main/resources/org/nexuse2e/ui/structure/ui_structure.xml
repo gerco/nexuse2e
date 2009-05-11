@@ -188,9 +188,11 @@
         <nxs:page target="MessageSubmission.do" label="Message Submission" icon="images/icons/lorry_go.png">
           <nxs:command target="MessageSubmission.do" label="Execute" icon="images/icons/bullet_orange.png"/>
         </nxs:page>
+        <!-- Commented out, because the feature is not working
         <nxs:page target="ProvisioningSubmission.do" label="Provisioning" icon="images/icons/television_add.png">
           <nxs:command target="ProvisioningSubmission.do" label="Execute" icon="images/icons/bullet_orange.png"/>
         </nxs:page>
+        -->
         <nxs:page target="DatabasePurge.do?type=select" label="Database Purge" icon="images/icons/database_lightning.png">
           <nxs:command target="DatabasePurge.do?type=select" label="Execute" icon="images/icons/bullet_orange.png"/>
         </nxs:page>
