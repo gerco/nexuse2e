@@ -41,7 +41,7 @@
         </Partner>
         <Partner type="2" partnerIdType="Custom" partnerId="Xioma" nxPartnerId="2" name="Xioma">
             <Connections>
-                <Connection uri="http://localhost:8080/NEXUSe2e/handler/ebxml20" timeout="30000" synchronousTimeout="0" synchronous="false" secure="true" retries="3" reliable="true" nxTrpId="2" nxConnectionId="1" nxCertificateId="0" name="Xioma HTTP" messageInterval="3000"/>
+                <Connection uri="http://localhost:8080/NEXUSe2e/handler/ebxml20" timeout="30" synchronousTimeout="0" synchronous="false" secure="true" retries="3" reliable="true" nxTrpId="2" nxConnectionId="1" nxCertificateId="0" name="Xioma HTTP" messageInterval="30"/>
             </Connections>
         </Partner>
     </Partners>
