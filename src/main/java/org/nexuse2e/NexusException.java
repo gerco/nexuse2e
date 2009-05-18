@@ -21,6 +21,8 @@ package org.nexuse2e;
 
 import javax.xml.ws.WebFault;
 
+import org.nexuse2e.logging.LogMessage;
+
 @WebFault(name = "NexusException", targetNamespace="http://integration.nexuse2e.org")
 public class NexusException extends Exception {
 
@@ -57,6 +59,35 @@ public class NexusException extends Exception {
     public NexusException( String message, Exception nested ) {
 
         super( message, nested );
+    }
+    
+    /**
+     * Initializes the exception from a LogMessage instance.
+     * @param logMessage The LogMessage that carries the information for this exception.
+     */
+    public NexusException( LogMessage logMessage ) {
+    	super( logMessage.toString() );
+    	setInfoFromLogMessage( logMessage );
+    }
+    
+    /**
+     * Initializes the exception from a LogMessage instance.
+     * @param logMessage The LogMessage that carries the information for this exception.
+     * @param nested The nested cause of this exception.
+     */
+    public NexusException( LogMessage logMessage, Exception nested ) {
+    	super( logMessage.toString(), nested );
+    	setInfoFromLogMessage( logMessage );
+    }
+    
+    /**
+     * Initializes the <code>conversationId</code> and <code>messageId</code>
+     * fields of this instance from the given <code>logMessage</code>.
+     * @param logMessage The LogMessage that carries the information for this exception.
+     */
+    private void setInfoFromLogMessage( LogMessage logMessage ) {
+    	setConversationId( logMessage.getConversationId() );
+    	setMessageId( logMessage.getMessageId() );
     }
 
     public String getConversationDetails() {
