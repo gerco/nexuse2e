@@ -32,6 +32,7 @@ import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.ConnectionPojo;
 import org.nexuse2e.pojo.MessagePayloadPojo;
@@ -51,6 +52,12 @@ import com.jcraft.jsch.SftpException;
  * <p>
  * Service implementation for sending via the FTP protocol.
  * </p>
+ * Extended: 15.05.2009
+ * <ul>
+ * 	<li>Added support for public key authentication.</li>
+ *  <li>To provide a password is not necessary anymore.</li>
+ *  <li>The date pattern is configurable now.</li>
+ * </ui>
  *
  * @author jonas.reese
  * @version $LastChangedRevision: 162 $ - $LastChangedDate: 2007-07-30 13:52:13 +0000 (Mo, 30 Jul 2007) $ by $LastChangedBy: gesch $
@@ -59,18 +66,20 @@ public class SftpSenderService extends AbstractService implements SenderAware {
 
     private static Logger      LOG                       = Logger.getLogger( SftpSenderService.class );
 
-    public static final String URL_PARAM_NAME            = "url";
-    public static final String USER_PARAM_NAME           = "username";
-    public static final String PASSWORD_PARAM_NAME       = "password";
+    public static final String PRIVATE_KEY 			     = "privateKey";
     public static final String BASE_FILE_NAME_PARAM_NAME = "baseFileName";
     public static final String FILE_EXTENSION_PARAM_NAME = "fileExtension";
     public static final String TEMP_FILE_PARAM_NAME      = "useTempFile";
     public static final String APPEND_TIMESTAMP          = "appendTimestamp";
+    public static final String TIMESTAMP_PATTERN         = "timestampPattern";
+    
+    public static final String DEFAULT_TIMESTAMP_PATTERN = "yyyyMMddHHmmssSSS";
 
     private TransportSender    transportSender           = null;
     private String             baseFileName              = null;
     private String             fileExtension             = null;
     private boolean            useTimestamp              = true;
+    private String             timestampPattern          = DEFAULT_TIMESTAMP_PATTERN;
     private boolean            useTempFileName           = true;
 
     /* (non-Javadoc)
@@ -90,6 +99,17 @@ public class SftpSenderService extends AbstractService implements SenderAware {
 
         parameterMap.put( APPEND_TIMESTAMP, new ParameterDescriptor( ParameterType.BOOLEAN, "Append Timestamp",
                 "Flag whether to append a timestamp to the filename", Boolean.TRUE ) );
+        
+        parameterMap.put( TIMESTAMP_PATTERN, new ParameterDescriptor( ParameterType.STRING, "Timestamp Pattern",
+                "The pattern of the timestamp that should be appended. Use pattern syntax of <a href=\"http://java.sun.com/j2se/1.5.0/docs/api/java/text/SimpleDateFormat.html\">SimpleDateFormat</a>.", DEFAULT_TIMESTAMP_PATTERN ) );
+        
+        parameterMap
+        .put( PRIVATE_KEY,
+              new ParameterDescriptor(
+                      ParameterType.STRING,
+                      "Private Key File",
+                      "File that contains the private key (DSA or RSA) for SFTP authentication in PEM format. ",
+                      "" ) );
     }
 
     @Override
@@ -119,6 +139,13 @@ public class SftpSenderService extends AbstractService implements SenderAware {
             useTempFileName = false;
             LOG.info( "Not using temporary file name during upload." );
         }
+        
+        timestampPattern = getParameter( TIMESTAMP_PATTERN );
+        // An empty timestamp pattern makes no sense (you could deactivate the timestamp at all, if you want).
+        // That's why we use the default here, if the pattern is empty
+        if ( timestampPattern == null || timestampPattern.length() == 0 ) {
+        	timestampPattern = DEFAULT_TIMESTAMP_PATTERN;
+        }
 
         super.initialize( config );
     }
@@ -134,29 +161,36 @@ public class SftpSenderService extends AbstractService implements SenderAware {
 
             ConnectionPojo connection = messageContext.getMessagePojo().getParticipant().getConnection();
             if ( connection.getUri() == null ) {
-                LOG.error( "No URL provided!" );
-                throw new NexusException( "No URL provided!" );
+                //LOG.error( "No URL provided!" ); // this should be logged by the sender
+                throw new NexusException( new LogMessage( "No URL provided!", messageContext.getMessagePojo() ) );
             }
             if ( connection.getLoginName() == null ) {
-                LOG.error( "No user name provided!" );
-                throw new NexusException( "No user name provided!" );
-            }
-            if ( connection.getPassword() == null ) {
-                LOG.error( "No password provided!" );
-                throw new NexusException( "No password provided!" );
+                //LOG.error( "No user name provided!" ); // this should be logged by the sender
+            	throw new NexusException( new LogMessage( "No user name provided!", messageContext.getMessagePojo() ) );
             }
             URL url = new URL( connection.getUri() );
+            
+            // set private key file, if configured
+            String pk_file = getParameter( PRIVATE_KEY );
+            if ( pk_file != null && pk_file.length() > 0 ) {
+            	LOG.trace( "Using public key authentication." );
+	            jsch.addIdentity( (String) getParameter( PRIVATE_KEY ) );
+            }
 
             LOG.trace( "Trying to connect to " + url.getHost() + " with user " + connection.getLoginName() + "..." );
             Session session = jsch.getSession( connection.getLoginName(), url.getHost(), 22 );
 
-            UserInfo userInfo = new UserInfo( connection.getPassword() );
-            session.setUserInfo( userInfo );
+            // only set password, if specified
+            if ( connection.getPassword() != null && connection.getPassword().length() > 0 ) {
+            	session.setUserInfo( new UserInfo( connection.getPassword() ) );
+            } else {
+            	LOG.warn( "No password provided!" );
+            }
 
             try {
                 session.connect();
             } catch ( JSchException jSchEx ) {
-                throw new NexusException( "SFTP connection/authentication failed: " + jSchEx );
+                throw new NexusException( new LogMessage( "SFTP connection/authentication failed", messageContext.getMessagePojo() ), jSchEx );
             }
             LOG.trace( "Connected to " + url.getHost() + "." );
 
@@ -175,12 +209,12 @@ public class SftpSenderService extends AbstractService implements SenderAware {
                 try {
                     channelSftp.cd( directory );
                 } catch ( SftpException sftpEx ) {
-                    throw new NexusException( "SFTP server did not change directory: " + sftpEx );
+                    throw new NexusException( new LogMessage( "SFTP server did not change directory", messageContext.getMessagePojo() ), sftpEx );
                 }
             }
             LOG.trace( "Working Directory: " + channelSftp.pwd() );
 
-            SimpleDateFormat sdf = new SimpleDateFormat( "yyyyMMddHHmmssSSS" );
+            SimpleDateFormat sdf = new SimpleDateFormat( timestampPattern );
             for ( MessagePayloadPojo messagePayloadPojo : messageContext.getMessagePojo().getMessagePayloads() ) {
                 ByteArrayInputStream bais = new ByteArrayInputStream( messagePayloadPojo.getPayloadData() );
 
@@ -201,12 +235,12 @@ public class SftpSenderService extends AbstractService implements SenderAware {
 
         } catch ( Exception e ) {
             e.printStackTrace();
-            LOG.error( "Error uploading to FTP account (" + messageContext.getMessagePojo().getParticipant().getConnection().getUri() + "): " + e );
+            LOG.error( new LogMessage( "Error uploading to SFTP account (" + messageContext.getMessagePojo().getParticipant().getConnection().getUri() + "): " + e, messageContext.getMessagePojo() ), e );
             // bugfix: #10
             if ( e instanceof NexusException ) {
                 throw (NexusException) e;
             } else {
-                throw new NexusException( e );
+                throw new NexusException( new LogMessage( "Error uploading to SFTP account (" + messageContext.getMessagePojo().getParticipant().getConnection().getUri() + ")", messageContext.getMessagePojo() ), e );
             }
         } finally {
             if ( ( channelSftp != null ) && channelSftp.isConnected() ) {
@@ -214,7 +248,7 @@ public class SftpSenderService extends AbstractService implements SenderAware {
             }
         }
         
-        return null;
+        return messageContext;
     }
 
     /* (non-Javadoc)
