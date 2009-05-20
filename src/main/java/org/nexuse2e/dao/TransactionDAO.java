@@ -21,7 +21,9 @@ package org.nexuse2e.dao;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.log4j.Level;
 import org.hibernate.Session;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.controller.StateTransitionException;
@@ -146,6 +148,19 @@ public interface TransactionDAO {
      * @throws NexusException If something went wrong.
      */
     public abstract long getLogCount( Date start, Date end ) throws NexusException;
+
+    /**
+     * Gets the number of log entries created between the given start and end dates and the
+     * given severity levels.
+     * @param start The start date. May be <code>null</code> for stone age.
+     * @param end The end date. May be <code>null</code> for Star Wars age.
+     * @param minLevel The minimum log level. Can be <code>null</code> to indicate all levels.
+     * @param maxLevel The maximum log level. Can be <code>null</code> to indicate min level only.
+     * @return The number of log entries per severity level that have been created between
+     * <code>start</code> and <code>end</code>, mapped from their severity <code>Level</code>.
+     * @throws NexusException If something went wrong.
+     */
+    public abstract Map<Level,Long> getLogCount( Date start, Date end, Level minLevel, Level maxLevel ) throws NexusException;
 
     /**
      * @param start
@@ -312,6 +327,38 @@ public interface TransactionDAO {
      * @throws NexusException if something went wrong.
      */
     public abstract int getCreatedMessagesSinceCount( Date since ) throws NexusException;
+    
+    /**
+     * Gets a list of <code>int[]</code> objects mapping the conversation states (index 0) to their
+     * conversation counts (index 1).
+     * @param since The date boundary.
+     * @return The mapping list as described above. If no conversations were found, an empty list is returned.
+     */
+    public abstract List<int[]> getConversationStatesSince( Date since );
+    
+    /**
+     * Gets a list of <code>int[]</code> objects mapping the message states (index 0) to their
+     * message counts (index 1).
+     * @param since The date boundary.
+     * @return The mapping list as described above. If no messages were found, an empty list is returned.
+     */
+    public abstract List<int[]> getMessageStatesSince( Date since );
+    
+    /**
+     * Gets a list of string arrays mapping conversation names (index 0) to their message counts
+     * (as a string, index 1).
+     * @param since The date boundary.
+     * @return The mapping list as described above.
+     */
+    public List<String[]> getMessagesPerConversationSince( Date since );
+
+    /**
+     * Gets a list of <code>int[]</code> objects mapping the hour of the day (index 0, values 0 to 23) to their
+     * message counts (index 1).
+     * @return A mapping list as described above with 24 entries (including 0-message entries). The first entry
+     * contains the least recent hour of day.
+     */
+    public List<int[]> getMessagesPerHourLast24Hours();
     
     /**
      * Convenience method for direct hibernate session access. This method shall only

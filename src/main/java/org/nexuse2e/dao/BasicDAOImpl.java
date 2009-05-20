@@ -40,6 +40,18 @@ import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
  *
  */
 public class BasicDAOImpl extends HibernateDaoSupport implements BasicDAO {
+    
+    /**
+     * This enumeration type is a coarse categorization of the
+     * used DB management system, including only the most common DBMSs.
+     */
+    public enum DatabaseType {
+        DERBY,
+        MYSQL,
+        MSSQL,
+        ORACLE,
+        UNKNOWN
+    }
 
     //private static Logger         LOG                 = Logger.getLogger( BasicDAOImpl.class );
 
@@ -240,6 +252,27 @@ public class BasicDAOImpl extends HibernateDaoSupport implements BasicDAO {
     public void setMsSqlServer( boolean msSqlServer ) {
 
         BasicDAOImpl.msSqlServer = msSqlServer;
+    }
+    
+    /**
+     * Tries to find out the DB type.
+     * @return The DBMS type, or <code>DatabaseType.UNKNOWN</code> if it could not be determined.
+     */
+    public DatabaseType getDatabaseType() {
+        String dialect = Engine.getInstance().getDatabaseDialect();
+        if (dialect != null) {
+            dialect = dialect.toLowerCase();
+            if (dialect.contains( "derby" )) {
+                return DatabaseType.DERBY;
+            } else if (dialect.contains( "oracle" )) {
+                return DatabaseType.ORACLE;
+            } else if (dialect.contains( "mysql" )) {
+                return DatabaseType.MYSQL;
+            } else if (dialect.contains( "sqlserver" )) {
+                return DatabaseType.MSSQL;
+            }
+        }
+        return DatabaseType.UNKNOWN;
     }
 
 } // BasicDAO

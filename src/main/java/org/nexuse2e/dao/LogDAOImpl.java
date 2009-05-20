@@ -54,7 +54,7 @@ public class LogDAOImpl extends BasicDAOImpl implements LogDAO {
      * @param ascending
      * @return
      */
-    private DetachedCriteria getLogEntriesForReportHQL( String severity, String messageText, Date start, Date end, int field,
+    private DetachedCriteria getLogEntriesForReportCriteria( String severity, String messageText, Date start, Date end, int field,
             boolean ascending ) {
 
         DetachedCriteria dc = DetachedCriteria.forClass( LogPojo.class );
@@ -98,7 +98,7 @@ public class LogDAOImpl extends BasicDAOImpl implements LogDAO {
 
         // LOG.trace( "page:" + page );
         // LOG.trace( "pagesize:" + itemsPerPage );
-        return (List<LogPojo>) getListThroughSessionFind( getLogEntriesForReportHQL( severity, messageText, start, end,
+        return (List<LogPojo>) getListThroughSessionFind( getLogEntriesForReportCriteria( severity, messageText, start, end,
                 field, ascending ), itemsPerPage * page, itemsPerPage );
     }
 
@@ -108,7 +108,7 @@ public class LogDAOImpl extends BasicDAOImpl implements LogDAO {
     public int getLogEntriesForReportCount( String severity, String messageText, Date start, Date end, int field,
             boolean ascending ) throws NexusException {
 
-        List<?> items = getListThroughSessionFind( getLogEntriesForReportHQL( severity, messageText, start, end, field,
+        List<?> items = getListThroughSessionFind( getLogEntriesForReportCriteria( severity, messageText, start, end, field,
                 ascending ),0,0 );
         if ( items == null ) {
             return 0;
