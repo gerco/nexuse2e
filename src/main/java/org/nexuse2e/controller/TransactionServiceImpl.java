@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.nexuse2e.ActionSpecificKey;
 import org.nexuse2e.Engine;
@@ -929,6 +930,11 @@ public class TransactionServiceImpl implements TransactionService {
         return getTransactionDao().getLogCount( start, end );
     }
 
+    public Map<Level, Long> getLogCount( Date start, Date end, Level minLevel, Level maxLevel ) throws NexusException {
+
+        return getTransactionDao().getLogCount( start, end, minLevel, maxLevel );
+    }
+
     public long getMessagesCount( Date start, Date end ) throws NexusException {
 
         return getTransactionDao().getMessagesCount( start, end );
@@ -938,6 +944,27 @@ public class TransactionServiceImpl implements TransactionService {
 
         return getTransactionDao().removeConversations( start, end );
     }
+    
+    public List<int[]> getConversationStatesSince( Date since ) {
+        
+        return getTransactionDao().getConversationStatesSince( since );
+    }
+
+    public List<int[]> getMessageStatesSince( Date since ) {
+        
+        return getTransactionDao().getMessageStatesSince( since );
+    }
+
+    public List<String[]> getMessagesPerConversationSince( Date since ) {
+        
+        return getTransactionDao().getMessagesPerConversationSince( since );
+    }
+    
+    public List<int[]> getMessagesPerHourLast24Hours() {
+        
+        return getTransactionDao().getMessagesPerHourLast24Hours();
+    }
+
 
     public long removeLogEntries( Date start, Date end ) throws NexusException {
 
