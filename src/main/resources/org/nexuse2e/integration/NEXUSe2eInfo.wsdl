@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+     NEXUSe2e Business Messaging Open Source
+     Copyright 2000-2009, Tamgroup and X-ioma GmbH
+
+     This is free software; you can redistribute it and/or modify it
+     under the terms of the GNU Lesser General Public License as
+     published by the Free Software Foundation version 2.1 of
+     the License.
+
+     This software is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+     Lesser General Public License for more details.
+
+     You should have received a copy of the GNU Lesser General Public
+     License along with this software; if not, write to the Free
+     Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+     02110-1301 USA, or see the FSF site: http://www.fsf.org.
+
+-->
+<wsdl:definitions targetNamespace="http://integration.nexuse2e.org/NEXUSe2eInfo/"
+    xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+    xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:wsoap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+    xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:ws="http://integration.nexuse2e.org/NEXUSe2eInfo/">
+    
+    <wsdl:types>
+        <xsd:schema attributeFormDefault="unqualified" elementFormDefault="unqualified"
+            targetNamespace="http://integration.nexuse2e.org/NEXUSe2eInfo/">
+            <xsd:element name="getNexusVersion" />
+            <xsd:element name="nexusVersion">
+                <xsd:complexType>
+                    <xsd:sequence maxOccurs="1">
+                        <xsd:element name="version" type="xsd:string" />
+                        <xsd:element name="buildDate" type="xsd:date"/>
+                        <xsd:element name="javaVersion" type="xsd:string" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:complexType name="uptime">
+                <xsd:sequence minOccurs="1" maxOccurs="1">
+                    <xsd:element name="days" type="xsd:int" />
+                    <xsd:element name="hours" type="xsd:int" />
+                    <xsd:element name="minutes" type="xsd:int" />
+                    <xsd:element name="seconds" type="xsd:int" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="getNexusUptime" />
+            <xsd:element name="nexusUptime">
+                <xsd:complexType>
+                    <xsd:sequence minOccurs="1" maxOccurs="1">
+                        <xsd:element name="serviceUptime" type="ws:uptime" minOccurs="1" maxOccurs="1" />
+                        <xsd:element name="engineUptime" type="ws:uptime" minOccurs="1" maxOccurs="1" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:simpleType name="logLevel">
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="ALL"/>
+                    <xsd:enumeration value="TRACE"/>
+                    <xsd:enumeration value="DEBUG"/>
+                    <xsd:enumeration value="INFO"/>
+                    <xsd:enumeration value="WARN"/>
+                    <xsd:enumeration value="ERROR"/>
+                    <xsd:enumeration value="FATAL"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+            <xsd:element name="getLogMessageCounts">
+                <xsd:complexType>
+                    <xsd:sequence minOccurs="1" maxOccurs="1">
+                        <xsd:element name="pastMinutes" type="xsd:int" minOccurs="1" maxOccurs="1" />
+                        <xsd:element name="minLogLevel" type="ws:logLevel" minOccurs="1" maxOccurs="1" />
+                        <xsd:element name="maxLogLevel" type="ws:logLevel" minOccurs="0" maxOccurs="1" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="logMessageCounts">
+                <xsd:complexType>
+                    <xsd:sequence maxOccurs="unbounded">
+                        <xsd:element name="logMessageCount">
+                            <xsd:complexType>
+                                <xsd:simpleContent>
+                                    <xsd:extension base="xsd:int">
+                                        <xsd:attribute name="logLevel" use="required" type="ws:logLevel"/>
+                                    </xsd:extension>
+                                </xsd:simpleContent>
+                            </xsd:complexType>
+                        </xsd:element>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="getLogMessages">
+                <xsd:complexType>
+                    <xsd:sequence minOccurs="1" maxOccurs="1">
+                        <xsd:element name="pastMinutes" type="xsd:int" minOccurs="1" maxOccurs="1" />
+                        <xsd:element name="maximumMessages" type="xsd:int" minOccurs="0" maxOccurs="1" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="logMessages">
+                <xsd:complexType>
+                    <xsd:sequence maxOccurs="unbounded">
+                        <xsd:element name="logMessage">
+                            <xsd:complexType>
+                                <xsd:simpleContent>
+                                    <xsd:extension base="xsd:string">
+                                        <xsd:attribute name="logLevel" use="required" type="ws:logLevel"/>
+                                        <xsd:attribute name="timestamp" use="required" type="xsd:dateTime"/>
+                                    </xsd:extension>
+                                </xsd:simpleContent>
+                            </xsd:complexType>
+                        </xsd:element>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:complexType name="statisticsItem">
+                <xsd:sequence maxOccurs="1">
+                    <xsd:element name="name" type="xsd:string" />
+                    <xsd:element name="quantity" type="xsd:int" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:element name="statisticsResponse">
+                <xsd:complexType>
+                    <xsd:sequence maxOccurs="unbounded">
+                        <xsd:element name="item" minOccurs="0" maxOccurs="unbounded" type="ws:statisticsItem"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="getMessageStatesLast24Hours" />
+            <xsd:element name="getConversationStatesLast24Hours" />
+            <xsd:element name="getMessagesPerChoreographyLast24Hours" />
+            <xsd:element name="getMessagesPerHourLast24Hours" />
+            <xsd:element name="getChoreographies" />
+            <xsd:element name="choreographies">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="choreography" minOccurs="0" maxOccurs="unbounded" type="xsd:string" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:schema>
+    </wsdl:types>
+    <wsdl:message name="getNexusVersion">
+        <wsdl:part element="ws:getNexusVersion" name="getNexusVersion" />
+    </wsdl:message>
+    <wsdl:message name="getNexusVersionResponse">
+        <wsdl:part element="ws:nexusVersion" name="nexusVersion" />
+    </wsdl:message>
+    <wsdl:message name="getNexusUptime">
+        <wsdl:part element="ws:getNexusUptime" name="getNexusUptime" />
+    </wsdl:message>
+    <wsdl:message name="getNexusUptimeResponse">
+        <wsdl:part element="ws:nexusUptime" name="nexusUptime" />
+    </wsdl:message>
+    <wsdl:message name="getLogMessageCounts">
+        <wsdl:part element="ws:getLogMessageCounts" name="getLogMessageCounts" />
+    </wsdl:message>
+    <wsdl:message name="getLogMessageCountsResponse">
+        <wsdl:part element="ws:logMessageCounts" name="logMessageCounts" />
+    </wsdl:message>
+    <wsdl:message name="getLogMessages">
+        <wsdl:part element="ws:getLogMessages" name="getLogMessages" />
+    </wsdl:message>
+    <wsdl:message name="getLogMessagesResponse">
+        <wsdl:part element="ws:logMessages" name="logMessages" />
+    </wsdl:message>
+    <wsdl:message name="getMessageStatesLast24Hours">
+        <wsdl:part element="ws:getMessageStatesLast24Hours" name="getMessageStatesLast24Hours" />
+    </wsdl:message>
+    <wsdl:message name="getMessageStatesLast24HoursResponse">
+        <wsdl:part element="ws:statisticsResponse" name="statisticsResponse" />
+    </wsdl:message>
+    <wsdl:message name="getConversationStatesLast24Hours">
+        <wsdl:part element="ws:getConversationStatesLast24Hours" name="getConversationStatesLast24Hours" />
+    </wsdl:message>
+    <wsdl:message name="getConversationStatesLast24HoursResponse">
+        <wsdl:part element="ws:statisticsResponse" name="statisticsResponse" />
+    </wsdl:message>
+    <wsdl:message name="getMessagesPerChoreographyLast24Hours">
+        <wsdl:part element="ws:getMessagesPerChoreographyLast24Hours" name="getMessagesPerChoreographyLast24Hours" />
+    </wsdl:message>
+    <wsdl:message name="getMessagesPerChoreographyLast24HoursResponse">
+        <wsdl:part element="ws:statisticsResponse" name="statisticsResponse" />
+    </wsdl:message>
+    <wsdl:message name="getMessagesPerHourLast24Hours">
+        <wsdl:part element="ws:getMessagesPerHourLast24Hours" name="getMessagesPerHourLast24Hours" />
+    </wsdl:message>
+    <wsdl:message name="getMessagesPerHourLast24HoursResponse">
+        <wsdl:part element="ws:statisticsResponse" name="statisticsResponse" />
+    </wsdl:message>
+    <wsdl:message name="getChoreographies">
+        <wsdl:part element="ws:getChoreographies" name="getChoreographies" />
+    </wsdl:message>
+    <wsdl:message name="getChoreographiesResponse">
+        <wsdl:part element="ws:choreographies" name="choreographies" />
+    </wsdl:message>
+    
+    <wsdl:portType name="NEXUSe2eInfo">
+        <wsdl:operation name="getNexusVersion">
+            <wsdl:input message="ws:getNexusVersion" name="getNexusVersion" />
+            <wsdl:output message="ws:getNexusVersionResponse" name="getNexusVersionResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="getNexusUptime">
+            <wsdl:input message="ws:getNexusUptime" name="getNexusUptime" />
+            <wsdl:output message="ws:getNexusUptimeResponse" name="getNexusUptimeResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="getLogMessageCounts">
+            <wsdl:input message="ws:getLogMessageCounts" name="getLogMessageCounts" />
+            <wsdl:output message="ws:getLogMessageCountsResponse" name="getLogMessageCountsResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="getLogMessages">
+            <wsdl:input message="ws:getLogMessages" name="getLogMessages" />
+            <wsdl:output message="ws:getLogMessagesResponse" name="getLogMessagesResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="getMessageStatesLast24Hours">
+            <wsdl:input message="ws:getMessageStatesLast24Hours" name="getMessageStatesLast24Hours" />
+            <wsdl:output message="ws:getMessageStatesLast24HoursResponse" name="getMessageStatesLast24HoursResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="getConversationStatesLast24Hours">
+            <wsdl:input message="ws:getConversationStatesLast24Hours" name="getConversationStatesLast24Hours" />
+            <wsdl:output message="ws:getConversationStatesLast24HoursResponse" name="getConversationStatesLast24HoursResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="getMessagesPerChoreographyLast24Hours">
+            <wsdl:input message="ws:getMessagesPerChoreographyLast24Hours" name="getMessagesPerChoreographyLast24Hours" />
+            <wsdl:output message="ws:getMessagesPerChoreographyLast24HoursResponse" name="getMessagesPerChoreographyLast24HoursResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="getMessagesPerHourLast24Hours">
+            <wsdl:input message="ws:getMessagesPerHourLast24Hours" name="getMessagesPerHourLast24Hours" />
+            <wsdl:output message="ws:getMessagesPerHourLast24HoursResponse" name="getMessagesPerHourLast24HoursResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="getChoreographies">
+            <wsdl:input message="ws:getChoreographies" name="getChoreographies" />
+            <wsdl:output message="ws:getChoreographiesResponse" name="getChoreographiesResponse" />
+        </wsdl:operation>
+    </wsdl:portType>
+    
+    <wsdl:binding name="NEXUSe2eInfoServiceSoapBinding" type="ws:NEXUSe2eInfo">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+        
+        <wsdl:operation name="getNexusVersion">
+            <soap:operation soapAction="http://integration.nexuse2e.org/NEXUSe2eInfo/getNexusVersion" style="document" />
+            <wsdl:input name="getNexusVersion">
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="getNexusVersionResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="getNexusUptime">
+            <soap:operation soapAction="http://integration.nexuse2e.org/NEXUSe2eInfo/getNexusUptime" style="document" />
+            <wsdl:input name="getNexusUptime">
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="getNexusUptimeResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="getLogMessageCounts">
+            <soap:operation soapAction="http://integration.nexuse2e.org/NEXUSe2eInfo/getLogMessageCounts" style="document" />
+            <wsdl:input name="getLogMessageCounts">
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="getLogMessageCountsResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="getLogMessages">
+            <soap:operation soapAction="http://integration.nexuse2e.org/NEXUSe2eInfo/getLogMessages" style="document" />
+            <wsdl:input name="getLogMessages">
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="getLogMessagesResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="getMessageStatesLast24Hours">
+            <soap:operation soapAction="http://integration.nexuse2e.org/NEXUSe2eInfo/getMessageStatesLast24Hours" style="document" />
+            <wsdl:input name="getMessageStatesLast24Hours">
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="getMessageStatesLast24HoursResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="getConversationStatesLast24Hours">
+            <soap:operation soapAction="http://integration.nexuse2e.org/NEXUSe2eInfo/getConversationStatesLast24Hours" style="document" />
+            <wsdl:input name="getConversationStatesLast24Hours">
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="getConversationStatesLast24HoursResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="getMessagesPerChoreographyLast24Hours">
+            <soap:operation soapAction="http://integration.nexuse2e.org/NEXUSe2eInfo/getMessagesPerChoreographyLast24Hours" style="document" />
+            <wsdl:input name="getMessagesPerChoreographyLast24Hours">
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="getMessagesPerChoreographyLast24HoursResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="getMessagesPerHourLast24Hours">
+            <soap:operation soapAction="http://integration.nexuse2e.org/NEXUSe2eInfo/getMessagesPerHourLast24Hours" style="document" />
+            <wsdl:input name="getMessagesPerHourLast24Hours">
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="getMessagesPerHourLast24HoursResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="getChoreographies">
+            <soap:operation soapAction="http://integration.nexuse2e.org/NEXUSe2eInfo/getChoreographies" style="document" />
+            <wsdl:input name="getChoreographies">
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="getChoreographiesResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    
+    <wsdl:service name="NEXUSe2eInfoService">
+        <wsdl:port binding="ws:NEXUSe2eInfoServiceSoapBinding" name="NEXUSe2eInfoPort">
+            <soap:address location="http://localhost:8080/NEXUSe2e/webservice/NEXUSe2eInfo" />
+        </wsdl:port>
+    </wsdl:service>
+    
+</wsdl:definitions>
