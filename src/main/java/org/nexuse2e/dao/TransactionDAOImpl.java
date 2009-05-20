@@ -1193,13 +1193,6 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
             hourFunction = "EXTRACT(HOUR FROM created_date)";
         }
         
-        DetachedCriteria dc = DetachedCriteria.forClass( MessagePojo.class );
-        ProjectionList pros = Projections.projectionList();
-        pros.add( Projections.sqlGroupProjection(
-                hourFunction + " AS messageHour, COUNT(nx_message_id) AS messageCount", hourFunction,
-                new String[] { "messageHour", "messageCount" },
-                new Type[] { new IntegerType(), new IntegerType() } ) );
-        dc.setProjection( pros );
         Calendar cal = Calendar.getInstance();
         
         cal.add( Calendar.DATE, -1 );
@@ -1208,36 +1201,68 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         cal.set( Calendar.MILLISECOND, 0 );
         cal.add( Calendar.HOUR_OF_DAY, 1 );
         int currentHourOfDay = cal.get( Calendar.HOUR_OF_DAY );
-        dc.add( Restrictions.ge( "createdDate", cal.getTime() ) );
-        dc.add( Restrictions.eq( "type", 1 ) );
-        dc.addOrder( Order.asc( "createdDate" ) );
-
-        List<?> l = getListThroughSessionFind( dc, 0, Integer.MAX_VALUE );
-
-        // put into result list and fill up 0-message entries
         List<int[]> list = new ArrayList<int[]>( 24 );
-        for (Object o : l) {
-            int hourOfDay = ((Number) ((Object[]) o)[0]).intValue();
-            while (hourOfDay != currentHourOfDay) {
-                list.add( new int[] { currentHourOfDay, 0 } );
+        
+        if (t == DatabaseType.DERBY) {
+            // derby doesn't like functional expressions in GRUP BY, so we create one query per hour
+            for (int i = 0; i < 24; i++) {
+                DetachedCriteria dc = DetachedCriteria.forClass( MessagePojo.class );
+                dc.setProjection( Projections.count( "nxMessageId" ) );
+                Date from = cal.getTime();
+                int hourOfDay = cal.get( Calendar.HOUR_OF_DAY );
+                cal.add( Calendar.HOUR_OF_DAY, 1 );
+                Date to = cal.getTime();
+                dc.add( Restrictions.eq( "type", 1 ) );
+                dc.add( Restrictions.ge( "createdDate", from ) );
+                dc.add( Restrictions.lt( "createdDate", to ) );
+        
+                List<?> l = getListThroughSessionFind( dc, 0, Integer.MAX_VALUE );
+                Object o = l.get( 0 );
+                int[] kv = new int[] {
+                        hourOfDay,
+                        ((Number) o).intValue()
+                };
+                list.add( kv );
+            }
+        } else {
+            // default implementation for "normal" DBMS
+            DetachedCriteria dc = DetachedCriteria.forClass( MessagePojo.class );
+            ProjectionList pros = Projections.projectionList();
+            pros.add( Projections.sqlGroupProjection(
+                    hourFunction + " AS messageHour, COUNT(nx_message_id) AS messageCount", "messageHour",
+                    new String[] { "messageHour", "messageCount" },
+                    new Type[] { new IntegerType(), new IntegerType() } ) );
+            dc.setProjection( pros );
+            dc.add( Restrictions.ge( "createdDate", cal.getTime() ) );
+            dc.add( Restrictions.eq( "type", 1 ) );
+            dc.addOrder( Order.asc( "createdDate" ) );
+    
+            List<?> l = getListThroughSessionFind( dc, 0, Integer.MAX_VALUE );
+    
+            // put into result list and fill up 0-message entries
+            for (Object o : l) {
+                int hourOfDay = ((Number) ((Object[]) o)[0]).intValue();
+                while (hourOfDay != currentHourOfDay) {
+                    list.add( new int[] { currentHourOfDay, 0 } );
+                    currentHourOfDay++;
+                    if (currentHourOfDay > 23) {
+                        currentHourOfDay = 0;
+                    }
+                }
+                int[] kv = new int[] {
+                        hourOfDay,
+                        ((Number) ((Object[]) o)[1]).intValue()
+                };
+                list.add( kv );
+            }
+            // fill up trailing 0-messages
+            while (list.size() < 24) {
                 currentHourOfDay++;
                 if (currentHourOfDay > 23) {
                     currentHourOfDay = 0;
                 }
+                list.add( new int[] { currentHourOfDay, 0 } );
             }
-            int[] kv = new int[] {
-                    hourOfDay,
-                    ((Number) ((Object[]) o)[1]).intValue()
-            };
-            list.add( kv );
-        }
-        // fill up trailing 0-messages
-        while (list.size() < 24) {
-            currentHourOfDay++;
-            if (currentHourOfDay > 23) {
-                currentHourOfDay = 0;
-            }
-            list.add( new int[] { currentHourOfDay, 0 } );
         }
         
         return list;
