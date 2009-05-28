@@ -247,9 +247,9 @@
                <nxs:command target="ParticipantDelete.do" label="Delete Participant" icon="images/icons/bullet_orange.png"/>
             </nxs:page>
           </nxs:page>
-          <nxs:page target="ReportingForward.do?nxChoreographyId=${nxChoreographyId}" label="Reports" icon="images/icons/chart_curve.png">
+          <!-- <nxs:page target="ReportingForward.do?nxChoreographyId=${nxChoreographyId}" label="Reports" icon="images/icons/chart_curve.png">
             <nxs:command target="ProcessConversationReport.do" label="Process Conversation Report" icon="images/icons/bullet_orange.png"/> 
-          </nxs:page>
+          </nxs:page> -->
         </nxs:page>
       </nxs:page>
       <nxs:page target="ReportingStatistics.do" label="Reporting" icon="images/icons/chart_curve.png">
