@@ -47,10 +47,12 @@ import org.nexuse2e.integration.info.wsdl.StatisticsResponse;
 import org.nexuse2e.integration.info.wsdl.Uptime;
 import org.nexuse2e.integration.info.wsdl.LogMessageCounts.LogMessageCount;
 import org.nexuse2e.integration.info.wsdl.LogMessages.LogMessage;
+import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ConversationPojo;
 import org.nexuse2e.pojo.LogPojo;
 import org.nexuse2e.pojo.MessagePojo;
+import org.nexuse2e.pojo.ParticipantPojo;
 
 import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
 
@@ -228,7 +230,7 @@ public class NEXUSe2eInfoServiceImpl implements NEXUSe2EInfo {
     /* (non-Javadoc)
      * @see org.nexuse2e.integration.info.wsdl.NEXUSe2EInfo#getChoreographies(java.lang.Object)
      */
-    public Choreographies getChoreographies(Object getChoreographies) {
+    public Choreographies getChoreographies( Object getChoreographies ) {
         Choreographies c = new Choreographies();
         List<ChoreographyPojo> choreos = Engine.getInstance().getCurrentConfiguration().getChoreographies();
         List<String> result = c.getChoreography();
@@ -238,6 +240,46 @@ public class NEXUSe2eInfoServiceImpl implements NEXUSe2EInfo {
             }
         }
         return c;
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.integration.info.wsdl.NEXUSe2EInfo#getActions(java.lang.String)
+     */
+    public List<String> getActions( String choreography ) {
+        List<String> result = new ArrayList<String>();
+        try {
+            ChoreographyPojo cp = Engine.getInstance().getCurrentConfiguration().getChoreographyByChoreographyId( choreography );
+            if (cp != null) {
+                for (ActionPojo action : cp.getActions()) {
+                    if (action != null && action.getName() != null) {
+                        result.add( action.getName() );
+                    }
+                }
+            }
+        } catch (NexusException nex) {
+            nex.printStackTrace();
+        }
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.integration.info.wsdl.NEXUSe2EInfo#getParticipants(java.lang.String)
+     */
+    public List<String> getParticipants( String choreography ) {
+        List<String> result = new ArrayList<String>();
+        try {
+            ChoreographyPojo cp = Engine.getInstance().getCurrentConfiguration().getChoreographyByChoreographyId( choreography );
+            if (cp != null) {
+                for (ParticipantPojo participant : cp.getParticipants()) {
+                    if (participant != null && participant.getPartner() != null && participant.getPartner().getPartnerId() != null) {
+                        result.add( participant.getPartner().getPartnerId() );
+                    }
+                }
+            }
+        } catch (NexusException nex) {
+            nex.printStackTrace();
+        }
+        return result;
     }
 
 }
