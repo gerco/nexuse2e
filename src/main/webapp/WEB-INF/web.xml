@@ -142,10 +142,6 @@
     <url-pattern>/ExecutePatch</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>BirtReportServlet</servlet-name>
-    <url-pattern>/report</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
     <servlet-name>ReportImageHandlerServlet</servlet-name>
     <url-pattern>/reportimage/*</url-pattern>
   </servlet-mapping>
