@@ -42,10 +42,14 @@ import org.eclipse.birt.report.engine.api.IReportRunnable;
 import org.eclipse.birt.report.engine.api.IRunAndRenderTask;
 import org.eclipse.birt.report.engine.api.script.IReportContext;
 import org.nexuse2e.Engine;
+import org.nexuse2e.ui.taglib.Report;
 import org.springframework.beans.BeansException;
 
 /**
  * This servlet initializes the BIRT engine for using it within the NEXUSe2e application.
+ * It should not be mapped to a path. Instead, reports shall be generated using the
+ * {@link Report} tag. However, for testing purposes the {@link #doGet(HttpServletRequest, HttpServletResponse)}
+ * method of this servlet is implemented properly.
  *
  * @author Jonas Reese
  * @version $LastChangedRevision:  $ - $LastChangedDate:  $ by $LastChangedBy:  $
@@ -79,10 +83,8 @@ public class BirtReportServlet extends HttpServlet {
 
 
     /**
-     * The doGet method of the servlet. <br>
-     *
-     * This method is called when a form has its tag value method equals to get.
-     * 
+     * The <code>doGet</code> implementation for testing purposes.
+     * @see Report Use the report tag in order to render reports.
      * @param request the request send by the client to the server
      * @param response the response send by the server to the client
      * @throws ServletException if an error occurred
