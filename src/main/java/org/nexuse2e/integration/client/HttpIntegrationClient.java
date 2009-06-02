@@ -23,6 +23,7 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Date;
 
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
@@ -134,7 +135,7 @@ public class HttpIntegrationClient {
             System.exit( 0 );
         }
 
-        System.out.println( "Creating request: choreography - " + choreographyId + ", participant - " + participantId
+        System.out.println( "(090602/02: ("+new Date()+")Creating request: choreography - " + choreographyId + ", participant - " + participantId
                 + ", action - " + actionId + ", file - " + fileName );
 
         HostConfiguration configuration = new HostConfiguration();
@@ -142,6 +143,9 @@ public class HttpIntegrationClient {
 
         HttpClient client = new HttpClient();
         client.setHostConfiguration( configuration );
+        client.getHttpConnectionManager().getParams().setConnectionTimeout( SOCKET_TIMEOUT );
+        client.getHttpConnectionManager().getParams().setSoTimeout( SOCKET_TIMEOUT );
+        
         PostMethod method = new PostMethod( url.toExternalForm() );
         method.getParams().setSoTimeout( SOCKET_TIMEOUT );
         method.setParameter( PARAM_CHOREOGRAPY_ID, choreographyId );
