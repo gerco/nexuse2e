@@ -135,7 +135,7 @@ public class ConversationStateMachine {
             }
         }
     }
-    
+
     public void receivedRequestMessage() throws StateTransitionException, NexusException {
 
         synchronized ( sync ) {
@@ -145,7 +145,7 @@ public class ConversationStateMachine {
             message.setModifiedDate( new Date() );
             message.setEndDate( message.getModifiedDate() );
             conversation.setStatus( Constants.CONVERSATION_STATUS_PROCESSING );
-            if (message.getNxMessageId() <= 0) {
+            if ( message.getNxMessageId() <= 0 ) {
                 messages.add( message );
             }
             if ( conversation.getNxConversationId() <= 0 ) {
@@ -199,9 +199,11 @@ public class ConversationStateMachine {
                     Engine.getInstance().getTransactionService().updateTransaction( referencedMessage );
                 } else {
                     throw new StateTransitionException(
-                            "Ack message received where it was not expected: Referenced message id is " +
-                            referencedMessage.getMessageId() + ", status was " + MessagePojo.getStatusName( referencedMessage.getStatus() ) +
-                            ", conversation status is " + ConversationPojo.getStatusName( referencedMessage.getConversation().getStatus() ) );
+                            "Ack message received where it was not expected: Referenced message id is "
+                                    + referencedMessage.getMessageId() + ", status was "
+                                    + MessagePojo.getStatusName( referencedMessage.getStatus() )
+                                    + ", conversation status is "
+                                    + ConversationPojo.getStatusName( referencedMessage.getConversation().getStatus() ) );
                 }
             } else {
                 throw new NexusException( "Error using referenced message on acknowledgment (ack message ID: "
@@ -264,8 +266,8 @@ public class ConversationStateMachine {
             } else if ( conversation.getStatus() == Constants.CONVERSATION_STATUS_COMPLETED ) {
                 LOG.debug( new LogMessage( "Processing message for completed conversation.", message ) );
             } else {
-                LOG.error( new LogMessage( "Unexpected conversation state detected: " + ConversationPojo.getStatusName( conversation.getStatus() ),
-                        message ) );
+                LOG.error( new LogMessage( "Unexpected conversation state detected: "
+                        + ConversationPojo.getStatusName( conversation.getStatus() ), message ) );
             }
 
             // Persist the message
@@ -281,6 +283,26 @@ public class ConversationStateMachine {
 
             // Persist the message
             Engine.getInstance().getTransactionService().updateTransaction( message );
+
+            // Trigger error status update
+            MessageContext messageContext = new MessageContext();
+            messageContext.setMessagePojo( new MessagePojo() );
+            messageContext.setOriginalMessagePojo( messageContext.getMessagePojo() );
+            messageContext.getMessagePojo().setReferencedMessage( message );
+            messageContext.getMessagePojo().setType( org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ERROR );
+            Engine.getInstance().getTransactionService().initializeMessage( messageContext.getMessagePojo(),
+                    Engine.getInstance().getIdGenerator( org.nexuse2e.Constants.ID_GENERATOR_MESSAGE ).getId(),
+                    conversation.getConversationId(), conversation.getCurrentAction().getName(),
+                    conversation.getPartner().getPartnerId(), conversation.getChoreography().getName() );
+            messageContext.setConversation( conversation );
+            StatusUpdateSerializer statusUpdateSerializer = Engine.getInstance().getCurrentConfiguration()
+                    .getStatusUpdateSerializers().get(
+                            messageContext.getMessagePojo().getConversation().getChoreography().getName() );
+            if ( statusUpdateSerializer != null ) {
+                // Forward message to StatusUpdateSerializer for further processing/queueing
+                statusUpdateSerializer.processMessage( messageContext );
+            }
+
         } // synchronized
     }
 
@@ -291,6 +313,7 @@ public class ConversationStateMachine {
      * @throws NexusException if another error occurred (e.g. on the persistence layer).
      */
     public void queueMessage() throws StateTransitionException, NexusException {
+
         queueMessage( false );
     }
 
@@ -313,7 +336,7 @@ public class ConversationStateMachine {
             if ( message.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_NORMAL ) {
                 conversation.setStatus( Constants.CONVERSATION_STATUS_PROCESSING );
             }
-            if (message.getNxMessageId() <= 0) {
+            if ( message.getNxMessageId() <= 0 ) {
                 messages.add( message );
             }
             messages.add( message );

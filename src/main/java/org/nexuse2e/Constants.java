@@ -30,7 +30,7 @@ public class Constants {
         INFO, WARN, ERROR;
     }
 
-    public static String       HIBERNATESESSIONFACTORYBEANID      = "HybernateSessionFactory";
+    public static String       HIBERNATESESSIONFACTORYBEANID       = "HybernateSessionFactory";
 
     // DAO bean IDs
     public static final String ACTION_DAO                          = "actionDao";
@@ -58,9 +58,11 @@ public class Constants {
     public static final String POSTFIX_OUTBOUND_QUEUE              = "-Outbound-Queue";
     public static final String POSTFIX_FRONTEND_ACTION_SERIALIZER  = "-Frontend-Action-Serializer";
     public static final String POSTFIX_BACKEND_ACTION_SERIALIZER   = "-Backend-Action-Serializer";
+    public static final String POSTFIX_STATUS_UPDATE_SERIALIZER    = "-Status-Update-Serializer";
 
     public static final String POSTFIX_BACKEND_PIPELINE            = "-Backend-Pipeline";
     public static final String POSTFIX_FRONTEND_PIPELINE           = "-Frontend-Pipeline";
+    public static final String POSTFIX_STATUS_UPDATE_PIPELINE      = "-Status-Update-Pipeline";
 
     /**
      * the possible types for mapping value pairs
@@ -145,5 +147,29 @@ public class Constants {
     public static enum Layer {
         UNKNOWN, CREATED, CONFIGURATION, CORE, OUTBOUND_PIPELINES, INBOUND_PIPELINES, INTERFACES
     };
+
+    public static String getMessageStatusString( int messageStatus ) {
+
+        switch ( messageStatus ) {
+            case org.nexuse2e.Constants.MESSAGE_STATUS_FAILED:
+                // setStatus( "Failed (" + messagePojo.getStatus() + ")" );
+                return "Failed";
+            case org.nexuse2e.Constants.MESSAGE_STATUS_QUEUED:
+                // setStatus( "Queued (" + messagePojo.getStatus() + ")" );
+                return "Queued";
+            case org.nexuse2e.Constants.MESSAGE_STATUS_RETRYING:
+                // setStatus( "Retrying (" + messagePojo.getStatus() + ")" );
+                return "Retrying";
+            case org.nexuse2e.Constants.MESSAGE_STATUS_SENT:
+                // setStatus( "Sent (" + messagePojo.getStatus() + ")" );
+                return "Sent";
+            case org.nexuse2e.Constants.MESSAGE_STATUS_STOPPED:
+                // setStatus( "Stopped (" + messagePojo.getStatus() + ")" );
+                return "Stopped";
+            default:
+                // setStatus( "unknown (" + messagePojo.getStatus() + ")" );
+                return "Unknown";
+        }
+    }
 
 }
