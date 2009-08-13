@@ -29,7 +29,10 @@
     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" 
     xmlns:ws="http://integration.nexuse2e.org/NEXUSe2eInfo/">
+    
+    <wsp:UsingPolicy xmlns:n1="http://schemas.xmlsoap.org/wsdl/" n1:Required="false"/>
     
     <wsdl:types>
         <xsd:schema attributeFormDefault="unqualified" elementFormDefault="unqualified"
@@ -145,6 +148,34 @@
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
+            <xsd:element name="getActions">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="choreography" minOccurs="1" maxOccurs="1" type="xsd:string" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="actions">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="action" minOccurs="0" maxOccurs="unbounded" type="xsd:string" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="getParticipants">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="choreography" minOccurs="1" maxOccurs="1" type="xsd:string" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="participants">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="participant" minOccurs="0" maxOccurs="unbounded" type="xsd:string" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
         </xsd:schema>
     </wsdl:types>
     <wsdl:message name="getNexusVersion">
@@ -201,6 +232,18 @@
     <wsdl:message name="getChoreographiesResponse">
         <wsdl:part element="ws:choreographies" name="choreographies" />
     </wsdl:message>
+    <wsdl:message name="getActions">
+        <wsdl:part element="ws:getActions" name="getActions" />
+    </wsdl:message>
+    <wsdl:message name="getActionsResponse">
+        <wsdl:part element="ws:actions" name="actions" />
+    </wsdl:message>
+    <wsdl:message name="getParticipants">
+        <wsdl:part element="ws:getParticipants" name="getParticipants" />
+    </wsdl:message>
+    <wsdl:message name="getParticipantsResponse">
+        <wsdl:part element="ws:participants" name="participants" />
+    </wsdl:message>
     
     <wsdl:portType name="NEXUSe2eInfo">
         <wsdl:operation name="getNexusVersion">
@@ -238,6 +281,14 @@
         <wsdl:operation name="getChoreographies">
             <wsdl:input message="ws:getChoreographies" name="getChoreographies" />
             <wsdl:output message="ws:getChoreographiesResponse" name="getChoreographiesResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="getActions">
+            <wsdl:input message="ws:getActions" name="getActions" />
+            <wsdl:output message="ws:getActionsResponse" name="getActionsResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="getParticipants">
+            <wsdl:input message="ws:getParticipants" name="getParticipants" />
+            <wsdl:output message="ws:getParticipantsResponse" name="getParticipantsResponse" />
         </wsdl:operation>
     </wsdl:portType>
     
@@ -333,12 +384,35 @@
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>
+        
+        <wsdl:operation name="getActions">
+            <soap:operation soapAction="http://integration.nexuse2e.org/NEXUSe2eInfo/getActions" style="document" />
+            <wsdl:input name="getActions">
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="getActionsResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="getParticipants">
+            <soap:operation soapAction="http://integration.nexuse2e.org/NEXUSe2eInfo/getParticipants" style="document" />
+            <wsdl:input name="getParticipants">
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="getParticipantsResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
     </wsdl:binding>
     
     <wsdl:service name="NEXUSe2eInfoService">
         <wsdl:port binding="ws:NEXUSe2eInfoServiceSoapBinding" name="NEXUSe2eInfoPort">
-            <soap:address location="http://localhost:8080/NEXUSe2e/webservice/NEXUSe2eInfo" />
+            <soap:address location="http://localhost:8080/NEXUSe2e/webservice/NEXUSe2eInfo"/>
+            <wsp:Policy>
+                <wsp:PolicyReference URI="policy:userNameTokenPolicy"/>
+            </wsp:Policy>
         </wsdl:port>
     </wsdl:service>
-    
+
 </wsdl:definitions>
