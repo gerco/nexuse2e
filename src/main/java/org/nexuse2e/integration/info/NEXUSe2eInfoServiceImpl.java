@@ -19,7 +19,6 @@
  */
 package org.nexuse2e.integration.info;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -53,8 +52,6 @@ import org.nexuse2e.pojo.ConversationPojo;
 import org.nexuse2e.pojo.LogPojo;
 import org.nexuse2e.pojo.MessagePojo;
 import org.nexuse2e.pojo.ParticipantPojo;
-
-import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
 
 /**
  * Implementation for NEXUSe2e info web service.
@@ -160,13 +157,13 @@ public class NEXUSe2eInfoServiceImpl implements NEXUSe2EInfo {
         String date = null;
         try {
             date = Version.getMainAttribute( Version.MainAttribute.ImplementationBuildDate );
-        } catch (IOException ioex) {
-            
+            XMLGregorianCalendar cal = (date == null ? null : DatatypeFactory.newInstance().newXMLGregorianCalendar());
+            version.setBuildDate( cal );
+            version.setJavaVersion( System.getProperty( "java.version" ) );
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-        XMLGregorianCalendar cal = (date == null ? null : new XMLGregorianCalendarImpl());
-        
-        version.setBuildDate( cal );
-        version.setJavaVersion( System.getProperty( "java.version" ) );
+
         return version;
     }
 
