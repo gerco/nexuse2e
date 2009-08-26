@@ -33,9 +33,10 @@ var myTreeModel = {
 		_loadChildren: function (parentItem,onComplete) {
 
 			// get some data, convert to JSON
+			// dummy parameter added to avoid ie get method caching
 			//console.log(parentItem);
 			dojo.xhrGet({
-				url:"ajax/menu?action=getChildren" + ( parentItem == undefined || parentItem.widgetId == undefined ? "" : "&parentId=" + encodeURI(parentItem.widgetId) ),
+				url:"ajax/menu?action=getChildren" + ( parentItem == undefined || parentItem.widgetId == undefined ? "" : "&parentId=" + encodeURI(parentItem.widgetId+"&dummy="+Math.random()) ),
 				handleAs:"json",
 				load: function(data){
 		    		//console.log(data);

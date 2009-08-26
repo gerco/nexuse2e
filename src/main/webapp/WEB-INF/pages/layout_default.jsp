@@ -222,8 +222,15 @@
 	/*
 	 * Loads content into the document pane.
 	 * You may want to use the "update(url)" method instead of calling this directly.
+	 *
+	 * dummy parameter added to avoid ie get method caching
 	 */
 	function setContentUrl(contentUrl) {
+		var separator = "?";
+		if(contentUrl.indexOf('?') > -1) {
+			separator = "&";
+		}
+		contentUrl = contentUrl + separator+"dummy="+Math.random();
 		// alert( 'Form: '  );
 		showInProgress();
 
@@ -330,7 +337,7 @@
   <div dojoType="dijit.layout.ContentPane" id="navigator" region="leading">
 		<tiles:insert attribute="menu"/>
 	</div>
-  <div dojoType="dojox.layout.ContentPane" id="docpane" region="center" preventCache="true" executeScripts="true" scriptHasHooks="false" cleanContent="true">
+  <div dojoType="dojox.layout.ContentPane" refreshOnShow="true" id="docpane" region="center" preventCache="true" executeScripts="true" scriptHasHooks="false" cleanContent="true">
 		<tiles:insert attribute="document"/>
 	</div>
 </div>
