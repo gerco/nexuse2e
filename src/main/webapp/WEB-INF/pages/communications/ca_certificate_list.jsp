@@ -29,6 +29,8 @@
 
 <% /*<nexus:helpBar helpDoc="documentation/SSL.htm" /> */ %>
 
+<nexus:fileUploadResponse>
+
 <logic:equal name="protectedFileAccessForm" property="status" value="3">
 	<script type="text/javascript">
 window.open('DataSaveAs.do?type=cacerts','Save as...')
@@ -89,3 +91,4 @@ window.open('DataSaveAs.do?type=cacerts','Save as...')
 	</tr>
 </table>
 </center>
+</nexus:fileUploadResponse>
