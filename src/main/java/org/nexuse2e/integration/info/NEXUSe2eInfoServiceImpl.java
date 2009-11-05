@@ -36,6 +36,7 @@ import org.nexuse2e.NexusException;
 import org.nexuse2e.Version;
 import org.nexuse2e.controller.TransactionService;
 import org.nexuse2e.dao.LogDAO;
+import org.nexuse2e.integration.NEXUSe2eInterfaceImpl;
 import org.nexuse2e.integration.info.wsdl.Choreographies;
 import org.nexuse2e.integration.info.wsdl.LogLevel;
 import org.nexuse2e.integration.info.wsdl.NEXUSe2EInfo;
@@ -277,6 +278,21 @@ public class NEXUSe2eInfoServiceImpl implements NEXUSe2EInfo {
             nex.printStackTrace();
         }
         return result;
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.integration.info.wsdl.NEXUSe2EInfo#sendNewStringMessage(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     */
+    public String sendNewStringMessage( String choreographyId,
+            String businessPartnerId, String actionId, String payload ) {
+
+        try {
+            return new NEXUSe2eInterfaceImpl().sendNewStringMessage(choreographyId, businessPartnerId, actionId, null, payload);
+        } catch (NexusException e) {
+            e.printStackTrace();
+        }
+        
+        return null;
     }
 
 }
