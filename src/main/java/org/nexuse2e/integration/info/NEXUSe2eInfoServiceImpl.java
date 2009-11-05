@@ -38,6 +38,8 @@ import org.nexuse2e.controller.TransactionService;
 import org.nexuse2e.dao.LogDAO;
 import org.nexuse2e.integration.NEXUSe2eInterfaceImpl;
 import org.nexuse2e.integration.info.wsdl.Choreographies;
+import org.nexuse2e.integration.info.wsdl.EngineStatus;
+import org.nexuse2e.integration.info.wsdl.GetEngineStatusResponse;
 import org.nexuse2e.integration.info.wsdl.LogLevel;
 import org.nexuse2e.integration.info.wsdl.NEXUSe2EInfo;
 import org.nexuse2e.integration.info.wsdl.NexusUptime;
@@ -293,6 +295,16 @@ public class NEXUSe2eInfoServiceImpl implements NEXUSe2EInfo {
         }
         
         return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.integration.info.wsdl.NEXUSe2EInfo#getEngineStatus(java.lang.Object)
+     */
+    public GetEngineStatusResponse getEngineStatus( Object getEngineStatus ) {
+        
+        GetEngineStatusResponse response = new GetEngineStatusResponse();
+        response.setStatus(EngineStatus.valueOf(Engine.getInstance().getStatus().toString()));
+        return response;
     }
 
 }
