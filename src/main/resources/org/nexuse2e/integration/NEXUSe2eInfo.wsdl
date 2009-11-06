@@ -176,6 +176,55 @@
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
+            <xsd:element name="getEngineStatus"/>
+            <xsd:simpleType name="engineStatus">
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="ERROR"/>
+                    <xsd:enumeration value="UNDEFINED"/>
+                    <xsd:enumeration value="INSTANTIATED"/>
+                    <xsd:enumeration value="INITIALIZED"/>
+                    <xsd:enumeration value="ACTIVATED"/>
+                    <xsd:enumeration value="STARTED"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+            <xsd:element name="getEngineStatusResponse">
+                <xsd:complexType>
+                    <xsd:sequence minOccurs="1" maxOccurs="1">
+                        <xsd:element name="status" type="ws:engineStatus" minOccurs="1" maxOccurs="1" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="restartEngine"/>
+            <xsd:simpleType name="restartEngineResult">
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="SUCCESS"/>
+                    <xsd:enumeration value="ERROR"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+            <xsd:element name="restartEngineResponse">
+                <xsd:complexType>
+                    <xsd:sequence minOccurs="1" maxOccurs="1">
+                        <xsd:element name="result" type="ws:restartEngineResult" minOccurs="1" maxOccurs="1" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="sendNewStringMessage">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element maxOccurs="1" minOccurs="1" name="choreographyId" nillable="true" type="xsd:string" />
+                        <xsd:element maxOccurs="1" minOccurs="1" name="businessPartnerId" nillable="true" type="xsd:string" />
+                        <xsd:element maxOccurs="1" minOccurs="1" name="actionId" nillable="true" type="xsd:string" />
+                        <xsd:element maxOccurs="1" minOccurs="1" name="payload" nillable="true" type="xsd:string" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="sendNewStringMessageResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element maxOccurs="1" minOccurs="1" name="conversationId" nillable="true" type="xsd:string" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
         </xsd:schema>
     </wsdl:types>
     <wsdl:message name="getNexusVersion">
@@ -244,6 +293,24 @@
     <wsdl:message name="getParticipantsResponse">
         <wsdl:part element="ws:participants" name="participants" />
     </wsdl:message>
+    <wsdl:message name="getEngineStatus">
+        <wsdl:part element="ws:getEngineStatus" name="getEngineStatus" />
+    </wsdl:message>
+    <wsdl:message name="getEngineStatusResponse">
+        <wsdl:part element="ws:getEngineStatusResponse" name="getEngineStatusResponse" />
+    </wsdl:message>
+    <wsdl:message name="restartEngine">
+        <wsdl:part element="ws:restartEngine" name="restartEngine" />
+    </wsdl:message>
+    <wsdl:message name="restartEngineResponse">
+        <wsdl:part element="ws:restartEngineResponse" name="restartEngineResponse" />
+    </wsdl:message>
+    <wsdl:message name="sendNewStringMessage">
+        <wsdl:part element="ws:sendNewStringMessage" name="sendNewStringMessage" />
+    </wsdl:message>
+    <wsdl:message name="sendNewStringMessageResponse">
+        <wsdl:part element="ws:sendNewStringMessageResponse" name="sendNewStringMessageResponse" />
+    </wsdl:message>
     
     <wsdl:portType name="NEXUSe2eInfo">
         <wsdl:operation name="getNexusVersion">
@@ -289,6 +356,18 @@
         <wsdl:operation name="getParticipants">
             <wsdl:input message="ws:getParticipants" name="getParticipants" />
             <wsdl:output message="ws:getParticipantsResponse" name="getParticipantsResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="getEngineStatus">
+            <wsdl:input message="ws:getEngineStatus" name="getEngineStatus" />
+            <wsdl:output message="ws:getEngineStatusResponse" name="getEngineStatusResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="restartEngine">
+            <wsdl:input message="ws:restartEngine" name="restartEngine" />
+            <wsdl:output message="ws:restartEngineResponse" name="restartEngineResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="sendNewStringMessage">
+            <wsdl:input message="ws:sendNewStringMessage" name="sendNewStringMessage" />
+            <wsdl:output message="ws:sendNewStringMessageResponse" name="sendNewStringMessageResponse" />
         </wsdl:operation>
     </wsdl:portType>
     
@@ -401,6 +480,36 @@
                 <soap:body use="literal" />
             </wsdl:input>
             <wsdl:output name="getParticipantsResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="getEngineStatus">
+            <soap:operation soapAction="http://integration.nexuse2e.org/NEXUSe2eInfo/getEngineStatus" style="document" />
+            <wsdl:input name="getEngineStatus">
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="getEngineStatusResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="restartEngine">
+            <soap:operation soapAction="http://integration.nexuse2e.org/NEXUSe2eInfo/restartEngine" style="document" />
+            <wsdl:input name="restartEngine">
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="restartEngineResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="sendNewStringMessage">
+            <soap:operation soapAction="http://integration.nexuse2e.org/NEXUSe2eInfo/sendNewStringMessage" style="document" />
+            <wsdl:input name="sendNewStringMessage">
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="sendNewStringMessageResponse">
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>

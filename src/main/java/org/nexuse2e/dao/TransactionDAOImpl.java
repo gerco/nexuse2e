@@ -1239,29 +1239,22 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
     
             List<?> l = getListThroughSessionFind( dc, 0, Integer.MAX_VALUE );
     
-            // put into result list and fill up 0-message entries
-            for (Object o : l) {
-                int hourOfDay = ((Number) ((Object[]) o)[0]).intValue();
-                while (hourOfDay != currentHourOfDay) {
-                    list.add( new int[] { currentHourOfDay, 0 } );
-                    currentHourOfDay++;
-                    if (currentHourOfDay > 23) {
-                        currentHourOfDay = 0;
-                    }
-                }
-                int[] kv = new int[] {
-                        hourOfDay,
-                        ((Number) ((Object[]) o)[1]).intValue()
-                };
-                list.add( kv );
+            
+            // create default 0-message entries
+            for (int i = currentHourOfDay; i < currentHourOfDay + 24; i++) {
+                list.add( new int[] { i % 24, 0 } );
             }
-            // fill up trailing 0-messages
-            while (list.size() < 24) {
-                currentHourOfDay++;
-                if (currentHourOfDay > 23) {
-                    currentHourOfDay = 0;
+            
+            // put list entries to appropriate positions
+            for (Object o : l) {
+                int hour = ((Number) ((Object[]) o)[0]).intValue();
+                int value = ((Number) ((Object[]) o)[1]).intValue();
+                
+                int index = hour - currentHourOfDay;
+                if (index < 0) {
+                    index += 24;
                 }
-                list.add( new int[] { currentHourOfDay, 0 } );
+                list.set( index, new int[] { hour, value } );
             }
         }
         

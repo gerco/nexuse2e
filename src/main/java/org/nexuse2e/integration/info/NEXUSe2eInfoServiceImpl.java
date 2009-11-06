@@ -31,9 +31,11 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.log4j.Level;
+import org.mortbay.log.Log;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.Version;
+import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.controller.TransactionService;
 import org.nexuse2e.dao.LogDAO;
 import org.nexuse2e.integration.NEXUSe2eInterfaceImpl;
@@ -44,6 +46,8 @@ import org.nexuse2e.integration.info.wsdl.LogLevel;
 import org.nexuse2e.integration.info.wsdl.NEXUSe2EInfo;
 import org.nexuse2e.integration.info.wsdl.NexusUptime;
 import org.nexuse2e.integration.info.wsdl.NexusVersion;
+import org.nexuse2e.integration.info.wsdl.RestartEngineResponse;
+import org.nexuse2e.integration.info.wsdl.RestartEngineResult;
 import org.nexuse2e.integration.info.wsdl.StatisticsItem;
 import org.nexuse2e.integration.info.wsdl.StatisticsResponse;
 import org.nexuse2e.integration.info.wsdl.Uptime;
@@ -304,6 +308,27 @@ public class NEXUSe2eInfoServiceImpl implements NEXUSe2EInfo {
         
         GetEngineStatusResponse response = new GetEngineStatusResponse();
         response.setStatus(EngineStatus.valueOf(Engine.getInstance().getStatus().toString()));
+        return response;
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.integration.info.wsdl.NEXUSe2EInfo#restartEngine(java.lang.Object)
+     */
+    public RestartEngineResponse restartEngine( Object restartEngine ) {
+        RestartEngineResponse response = new RestartEngineResponse();
+        
+        new Thread() {
+            public void run() {
+                try {
+                    Engine.getInstance().changeStatus( BeanStatus.INSTANTIATED );
+                    Engine.getInstance().changeStatus( BeanStatus.STARTED );
+                } catch (InstantiationException e) {
+                    Log.warn(e);
+                }
+            }
+        }.start();
+        response.setResult(RestartEngineResult.SUCCESS);
+
         return response;
     }
 
