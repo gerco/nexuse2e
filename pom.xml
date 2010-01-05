@@ -406,7 +406,7 @@
      <groupId>postgresql</groupId>
      <artifactId>postgresql</artifactId>
      <version>8.2-504.jdbc3</version>
-     <scope>run</scope>
+     <scope>runtime</scope>
    </dependency>
    <dependency>
      <groupId>com.jcraft</groupId>
@@ -456,13 +456,13 @@
      <groupId>xml-resolver</groupId>
      <artifactId>xml-resolver</artifactId>
      <version>1.2</version>
-     <scope>run</scope>
+     <scope>runtime</scope>
    </dependency>
    <dependency>
      <groupId>org.apache.neethi</groupId>
      <artifactId>neethi</artifactId>
      <version>2.0.4</version>
-     <scope>run</scope>
+     <scope>runtime</scope>
    </dependency>
    <dependency>
      <groupId>org.apache.geronimo.specs</groupId>
@@ -504,7 +504,7 @@
      <groupId>rhino</groupId>
      <artifactId>js</artifactId>
      <version>1.6R7</version>
-     <scope>run</scope>
+     <scope>runtime</scope>
    </dependency>
    <dependency>
    	<groupId>org.hibernate</groupId>
