@@ -97,7 +97,7 @@ public class FrontendActionSerializer implements Manageable {
 
             // Persist the message
             try {
-                queueMessage( messageContext );
+                queueMessage( messageContext, false );
             } catch ( Exception e ) {
                 throw new NexusException( "Error storing new conversation/message state: " + e );
             }
@@ -111,13 +111,14 @@ public class FrontendActionSerializer implements Manageable {
 
     /**
      * @param messageContext
+     * @param force Indicates if state transition shall be forced.
      * @throws NexusException
      */
-    private void queueMessage( MessageContext messageContext )
+    private void queueMessage( MessageContext messageContext, boolean force )
             throws NexusException {
 
         try {
-            messageContext.getStateMachine().queueMessage();
+            messageContext.getStateMachine().queueMessage( force );
         } catch (StateTransitionException e) {
             LOG.warn( e.getMessage() );
         }
@@ -150,8 +151,19 @@ public class FrontendActionSerializer implements Manageable {
     public void requeueMessage( MessageContext messageContext, String conversationId, String messageId )
             throws NexusException {
 
+        // if message is processing, cancel it
+        if (Engine.getInstance().getTransactionService().isProcessingMessage( messageId )) {
+            Engine.getInstance().getTransactionService().deregisterProcessingMessage( messageId );
+        }
+
         if ( messageContext != null ) {
-            queueMessage( messageContext );
+            // set message end date to null, otherwise it's processing may be cancelled
+            if (messageContext.getMessagePojo() != null) {
+                messageContext.getMessagePojo().setEndDate( null );
+            }
+            
+            // queue message
+            queueMessage( messageContext, true );
         } else {
             LOG.error( "Message: " + messageId + " could not be found in database, cancelled requeueing!" );
         }

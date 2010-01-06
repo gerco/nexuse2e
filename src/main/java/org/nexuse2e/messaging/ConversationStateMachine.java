@@ -71,6 +71,28 @@ public class ConversationStateMachine {
 
         return conversation;
     }
+    
+    /**
+     * Tries to find an acknowledgment for the given message and returns it, or <code>null</code> if no
+     * ack was found.
+     * @param message The message to find an acknowledgment for.
+     * @return The ack message, or <code>null</code>.
+     */
+    public MessagePojo getAckForMessage( MessagePojo message ) {
+        if (message != null || conversation != null) {
+        
+            for (MessagePojo ack : conversation.getMessages()) {
+                if (ack.getType() == Constants.INT_MESSAGE_TYPE_ACK &&
+                        ack.getReferencedMessage() != null &&
+                        (ack.getReferencedMessage().getMessageId() == message.getMessageId() ||
+                                (message.getMessageId() != null && message.getMessageId().equals( ack.getReferencedMessage().getMessageId() )))) {
+                    return ack;
+                }
+            }
+        }
+
+        return null;
+    }
 
     public void sentMessage() throws StateTransitionException, NexusException {
 
@@ -251,8 +273,10 @@ public class ConversationStateMachine {
             message.setStatus( Constants.MESSAGE_STATUS_SENT );
             message.setModifiedDate( new Date() );
             message.setEndDate( message.getModifiedDate() );
+            
             if ( ( conversation.getStatus() == Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND )
                     || ( conversation.getStatus() == Constants.CONVERSATION_STATUS_ERROR ) // requeued message
+                    || getAckForMessage( message ) != null // requeued message
                     || ( conversation.getStatus() == Constants.CONVERSATION_STATUS_IDLE ) ) {
                 if ( conversation.getCurrentAction().isEnd() ) {
                     conversation.setStatus( Constants.CONVERSATION_STATUS_COMPLETED );

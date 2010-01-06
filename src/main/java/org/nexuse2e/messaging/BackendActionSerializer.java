@@ -172,7 +172,18 @@ public class BackendActionSerializer extends AbstractPipelet {
     public void requeueMessage( MessageContext messageContext, String conversationId, String messageId )
             throws NexusException {
 
+        // if message is processing, cancel it
+        if (Engine.getInstance().getTransactionService().isProcessingMessage( messageId )) {
+            Engine.getInstance().getTransactionService().deregisterProcessingMessage( messageId );
+        }
+
         if ( messageContext != null ) {
+            // set message end date to null, otherwise it's processing may be cancelled
+            if (messageContext.getMessagePojo() != null) {
+                messageContext.getMessagePojo().setEndDate( null );
+            }
+            
+            // queue message
             queueMessage( messageContext, true );
         } else {
             LOG.error( new LogMessage( "Message: " + messageId
