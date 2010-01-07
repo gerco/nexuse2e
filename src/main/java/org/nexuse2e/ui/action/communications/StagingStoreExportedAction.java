@@ -29,7 +29,6 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
-import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -109,8 +108,9 @@ public class StagingStoreExportedAction extends NexusE2EAction {
                         CertificateUtil.DEFAULT_JCE_PROVIDER );
                 jks.load( new ByteArrayInputStream( cPojo.getBinaryData() ), EncryptionUtil.decryptString(
                         cPojo.getPassword() ).toCharArray() );
-                Enumeration e = jks.aliases();
-                if ( !e.hasMoreElements() ) {
+                
+                Certificate[] certs = CertificateUtil.getCertificateChain( jks );
+                if (certs == null) {
                     ActionMessage errorMessage = new ActionMessage( "generic.error",
                             "no valid certificate chain found!" );
                     errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
@@ -118,7 +118,7 @@ public class StagingStoreExportedAction extends NexusE2EAction {
                     request.setAttribute( "seqNo", idStr );
                     return error;
                 }
-                Certificate[] certs = jks.getCertificateChain( (String) e.nextElement() );
+
                 File destFile = new File( path );
                 // 
                 if ( content == 1 ) {
