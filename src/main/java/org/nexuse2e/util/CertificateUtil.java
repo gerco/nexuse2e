@@ -305,44 +305,6 @@ public class CertificateUtil {
      */
     public static Certificate[] getCertificateChain( KeyStore pkcs12 ) throws IllegalArgumentException {
 
-        //        boolean errorInChainReading = true;
-        //        int numberOfCerts = 0;
-        //        Certificate[] certChain = new Certificate[0];
-        //
-        //        try {
-        //            Enumeration en = pkcs12.aliases();
-        //
-        //            while ( en.hasMoreElements() ) {
-        //                try {
-        //                    String tempAlias = (String) en.nextElement();
-        //                    Certificate[] tempCertChain = (Certificate[]) pkcs12.getCertificateChain( tempAlias );
-        //                    if ( tempCertChain != null && tempCertChain.length == certChain.length ) {
-        //                        errorInChainReading = true;
-        //                    }
-        //                    if ( tempCertChain != null && tempCertChain.length > certChain.length ) {
-        //                        errorInChainReading = false;
-        //                        certChain = tempCertChain;
-        //                    }
-        //                    if ( pkcs12.isCertificateEntry( tempAlias ) )
-        //                        numberOfCerts++;
-        //                } catch ( Exception e ) {
-        //                    continue;
-        //                }
-        //            }
-        //        } catch ( Exception e ) {
-        //            throw new IllegalArgumentException( e );
-        //        }
-        //
-        //        if ( certChain == null || certChain.length == 0 || errorInChainReading || certChain.length != numberOfCerts )
-        //            return null;
-        //        else {
-        //            X509Certificate[] returnCertChain = new X509Certificate[certChain.length];
-        //            for ( int i = 0; i != certChain.length; i++ ) {
-        //                returnCertChain[i] = (X509Certificate) certChain[i];
-        //            }
-        //            return returnCertChain;
-        //        }
-
         Certificate[] certs = null;
 
         try {
