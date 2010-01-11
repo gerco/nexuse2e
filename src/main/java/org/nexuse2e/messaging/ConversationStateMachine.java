@@ -302,6 +302,12 @@ public class ConversationStateMachine {
     public void processingFailed() throws StateTransitionException, NexusException {
 
         synchronized ( sync ) {
+            if (conversation.getStatus() == Constants.CONVERSATION_STATUS_COMPLETED) {
+                throw new StateTransitionException( "Conversation " + conversation.getConversationId() + " cannot be set from status " 
+                         + ConversationPojo.getStatusName( conversation.getStatus() ) + " to status "
+                         + ConversationPojo.getStatusName( Constants.CONVERSATION_STATUS_ERROR ) );
+            }
+
             message.setStatus( Constants.MESSAGE_STATUS_FAILED );
             conversation.setStatus( Constants.CONVERSATION_STATUS_ERROR );
 
