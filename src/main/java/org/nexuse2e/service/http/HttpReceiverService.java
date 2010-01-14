@@ -210,7 +210,7 @@ public class HttpReceiverService extends AbstractControllerService implements Re
                 QName faultName = new QName( javax.xml.soap.SOAPConstants.URI_NS_SOAP_ENVELOPE, "Server" );
                 SOAPFault soapFault = soapBody.addFault();
                 soapFault.setFaultCode( faultName );
-                soapFault.setFaultString( message );
+                soapFault.setFaultString( (message == null ? "" : message) );
                 soapMessage.saveChanges();
                 soapMessage.writeTo( response.getOutputStream() );
                 response.setContentType( "text/xml" );
