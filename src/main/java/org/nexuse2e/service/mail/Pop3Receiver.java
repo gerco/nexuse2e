@@ -290,6 +290,8 @@ public class Pop3Receiver extends AbstractService implements ReceiverAware, Runn
             
             if (tls) {
                 // TODO: implement this
+                props.put( "mail" + protocol + ".starttls.enabled", Boolean.TRUE.toString() );
+                props.put( "mail" + protocol + ".starttls.required", Boolean.TRUE.toString() );
             }
             
             // Get a Session object
