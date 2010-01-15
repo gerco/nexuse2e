@@ -39,8 +39,10 @@ import org.apache.struts.upload.FormFile;
 import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.configuration.EngineConfiguration;
+import org.nexuse2e.dao.TransactionDAO;
 import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
+import org.nexuse2e.pojo.ConversationPojo;
 import org.nexuse2e.pojo.ParticipantPojo;
 import org.nexuse2e.pojo.PartnerPojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
@@ -143,8 +145,25 @@ public class MessageSubmissionAction extends NexusE2EAction {
                 return success;
             }
             try {
-                for ( int i = 0; i < form.getRepeat(); i++ ) {
+                List<ConversationPojo> conversations = null;
+                int repeat = form.getRepeat();
+                if (form.isSendFollowUp()) {
+                    ChoreographyPojo choreo = Engine.getInstance().getCurrentConfiguration().getChoreographyByChoreographyId( choreographyId );
+                    if (choreo != null) {
+                        conversations = Engine.getInstance().getTransactionService().getConversationsForReport(
+                                Integer.toString( Constants.CONVERSATION_STATUS_IDLE ),
+                                choreo.getNxChoreographyId(), partner.getNxPartnerId(), null, null, null, form.getRepeat(), 0, TransactionDAO.SORT_CREATED, true );
+                        repeat = conversations.size();
+                    }
+                }
+                
+                
+                for ( int i = 0; i < repeat; i++ ) {
+                    String convId = conversationId;
                     if ( ( payload1 != null ) && ( payload1.getFileSize() != 0 ) ) {
+                        if (conversations != null && i < conversations.size()) {
+                            convId = conversations.get( i ).getConversationId();
+                        }
                         String encoding = form.getEncoding();
                         if ( encoding == null ) {
                             encoding = "UTF-8";
@@ -152,22 +171,22 @@ public class MessageSubmissionAction extends NexusE2EAction {
                         
                         String payloadString = new String( payload1.getFileData(), encoding );
                         Engine.getInstance().getCurrentConfiguration().getBackendPipelineDispatcher().processMessage(
-                                partner.getPartnerId(), choreographyId, action, conversationId, null, null,
+                                partner.getPartnerId(), choreographyId, action, convId, null, null,
                                 payloadString.getBytes() );
                         // Set primaryKey for UI confirmation message
                         primaryKey = payload1.getFileName();
                     } else {
                         Engine.getInstance().getCurrentConfiguration().getBackendPipelineDispatcher().processMessage(
-                                partner.getPartnerId(), choreographyId, action, conversationId, null, primaryKey, null );
+                                partner.getPartnerId(), choreographyId, action, convId, null, primaryKey, null );
                     }
                     if ( form.getRepeat() > 1 ) {
-                        conversationId = null;
-                        form.setConversationId( null );
+                        convId = null;
+                        form.setConversationId( convId );
                     } else {
-                        form.setConversationId( conversationId );
+                        form.setConversationId( convId );
                     }
                 } // for
-                messages.add( ActionMessages.GLOBAL_MESSAGE, new ActionMessage( MSG_KEY_SUBMITTED, primaryKey ) );
+                messages.add( ActionMessages.GLOBAL_MESSAGE, new ActionMessage( MSG_KEY_SUBMITTED, Integer.toString( repeat ), primaryKey ) );
             } catch ( Exception ex ) {
                 errors.add( ActionMessages.GLOBAL_MESSAGE, new ActionMessage( MSG_KEY_ERROR, ex.toString() ) );
             }

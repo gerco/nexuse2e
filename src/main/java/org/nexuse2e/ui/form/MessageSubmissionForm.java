@@ -22,7 +22,10 @@ package org.nexuse2e.ui.form;
 import java.util.Collection;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.struts.action.ActionForm;
+import org.apache.struts.action.ActionMapping;
 import org.apache.struts.upload.FormFile;
 import org.nexuse2e.pojo.PartnerPojo;
 
@@ -44,6 +47,7 @@ public class MessageSubmissionForm extends ActionForm {
     private int               receiver         = 0;
     private String            primaryKey       = null;
     private String            conversationId   = null;
+    private boolean           sendFollowUp     = false;
     private String            encoding         = null;
     private int               repeat           = 1;
     private FormFile          payloadFile1     = null;
@@ -54,6 +58,7 @@ public class MessageSubmissionForm extends ActionForm {
     private Collection<String>       actions          = null;
     private Collection<PartnerPojo>  receivers        = null;
     private List<String>             encodings        = null;
+    
 
     /**
      * @return Returns the actionId.
@@ -101,6 +106,16 @@ public class MessageSubmissionForm extends ActionForm {
     public void setConversationId( String conversationId ) {
 
         this.conversationId = conversationId;
+    }
+    
+    public boolean isSendFollowUp() {
+
+        return sendFollowUp;
+    }
+
+    public void setSendFollowUp( boolean sendFollowUp ) {
+
+        this.sendFollowUp = sendFollowUp;
     }
 
     /**
@@ -268,4 +283,10 @@ public class MessageSubmissionForm extends ActionForm {
     
         this.encoding = encoding;
     }
+    
+    public void reset( ActionMapping mapping, HttpServletRequest request ) {
+        super.reset( mapping, request );
+        setSendFollowUp( false );
+    }
+    
 } // MessageSubmissionForm
