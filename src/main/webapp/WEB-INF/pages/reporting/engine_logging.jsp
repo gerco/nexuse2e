@@ -31,6 +31,9 @@
 
 <% /*<nexus:helpBar helpDoc="documentation/Engine_Reporting.htm"/> */ %>
 
+
+<%@page import="java.util.Calendar"%>
+
 <html:form action="ProcessEngineLog.do">
 
         <html:hidden property="command"/>
@@ -68,16 +71,17 @@
                 <td class="NEXUSValue">Start Date <html:checkbox onchange="javascript: disableLinks();" name="reportingPropertiesForm" property="startEnabled"/></td>
                 <td class="NEXUSValue" align="left">
                 <html:select onchange="javascript: disableLinks();" property="startYear">
-                    <html:option value="2012" />
-                    <html:option value="2011" />
-                    <html:option value="2010" />
-                    <html:option value="2009"/>
-                    <html:option value="2008"/>
-                    <html:option value="2007"/>
-                    <html:option value="2006"/>
-                    <html:option value="2005"/>
-                    <html:option value="2004"/>
-                    <html:option value="2003"/>
+				<%
+				Calendar cal = Calendar.getInstance();
+				cal.add(Calendar.YEAR, 2);
+				for (int i = 0; i < 10; i++) {
+					request.setAttribute("year", new Integer(cal.get(Calendar.YEAR)));
+					cal.add(Calendar.YEAR, -1);
+				%>
+                	<html-el:option value="${year}" />
+                <%
+				}
+                %>
                 </html:select>
                 <html:select onchange="javascript: disableLinks();" property="startMonth">
                     <html:option value="01">January</html:option>
@@ -165,16 +169,17 @@
               <td class="NEXUSValue">End Date <html:checkbox onchange="javascript: disableLinks();" name="reportingPropertiesForm" property="endEnabled"/></td>
                 <td class="NEXUSValue" align="left">
                 <html:select onchange="javascript: disableLinks();" property="endYear">
-                    <html:option value="2012" />
-                    <html:option value="2011" />
-                    <html:option value="2010" />
-                    <html:option value="2009"/>
-                    <html:option value="2008"/>
-                    <html:option value="2007"/>
-                    <html:option value="2006"/>
-                    <html:option value="2005"/>
-                    <html:option value="2004"/>
-                    <html:option value="2003"/>
+				<%
+				Calendar cal = Calendar.getInstance();
+				cal.add(Calendar.YEAR, 2);
+				for (int i = 0; i < 10; i++) {
+					request.setAttribute("year", new Integer(cal.get(Calendar.YEAR)));
+					cal.add(Calendar.YEAR, -1);
+				%>
+                	<html-el:option value="${year}" />
+                <%
+				}
+                %>
                 </html:select>
                 <html:select onchange="javascript: disableLinks();" property="endMonth">
                     <html:option value="01">January</html:option>
