@@ -34,6 +34,11 @@
 	this.clearConvId = function () {
 		document.messageSubmissionForm.conversationId.value='';
 	}
+
+	this.checkFollowUpMode = function() {
+		document.messageSubmissionForm.conversationId.disabled = document.messageSubmissionForm.sendFollowUp.checked;
+	}
+	checkFollowUpMode();
 </script>
 
 <center>
@@ -99,9 +104,16 @@
 		</tr>
 
 		<tr>
+			<td class="NEXUSName">Follow-up mode</td>
+			<td class="NEXUSValue">
+				<html:checkbox property="sendFollowUp" onclick="javascript:checkFollowUpMode()"/> Try to retrieve IDs from existing conversations
+			</td>
+		</tr>
+		<tr>
 			<td class="NEXUSName">Conversation ID</td>
-			<td class="NEXUSValue"><html:text property="conversationId" size="50" onkeypress="return checkKey(event);" /> <a href="#"
-				onClick="javascript:clearConvId()" class="button">Clear</a>
+			<td class="NEXUSValue">
+				<html:text property="conversationId" size="50" onkeypress="return checkKey(event);" /> <a href="#" onClick="javascript:clearConvId()" class="button">Clear</a>
+				
 			</td>
 		</tr>
 
