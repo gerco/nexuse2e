@@ -20,9 +20,12 @@
 package org.nexuse2e.backend;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nexuse2e.ActionSpecificKey;
 import org.nexuse2e.Constants;
@@ -36,6 +39,7 @@ import org.nexuse2e.messaging.BackendPipeline;
 import org.nexuse2e.messaging.ErrorDescriptor;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.ConversationPojo;
+import org.nexuse2e.pojo.MessageLabelPojo;
 import org.nexuse2e.pojo.MessagePayloadPojo;
 import org.nexuse2e.pojo.MessagePojo;
 import org.springframework.beans.factory.InitializingBean;
@@ -152,6 +156,8 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
     public MessageContext processMessage( String partnerId, String choreographyId, String actionId,
             String conversationId, String messageId, String label, Object primaryKey, List<byte[]> payloads,
             List<ErrorDescriptor> errors ) throws NexusException {
+        
+        String contentId = null;
 
         if ( choreographyId == null || choreographyId.trim().equals( "" ) ) {
             throw new NexusException( "No valid choreography found for ID: " + choreographyId );
@@ -178,8 +184,6 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
         MessageContext messageContext = new MessageContext();
         messageContext.setActionSpecificKey( key );
 
-        //      TODO labelhandling
-
         if ( messageId == null || messageId.equals( "" ) ) {
             IdGenerator messageIdGenerator = Engine.getInstance().getIdGenerator(
                     Constants.ID_GENERATOR_MESSAGE );
@@ -197,6 +201,26 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
                 org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_NORMAL );
         messagePojo.setOutbound( true );
 
+        //      TODO labelhandling
+        if ( !StringUtils.isEmpty( label ) && ( label.indexOf( "|" ) != -1 ) ) {
+            StringTokenizer st = new StringTokenizer( label, "|" );
+            String name = st.nextToken();
+            String value = st.nextToken();
+            contentId = value;
+            
+            if ( org.nexuse2e.Constants.NX_LABEL_FILE_NAME.equals( name ) ) {
+                MessageLabelPojo messageLabelPojo = new MessageLabelPojo( messagePojo,
+                        new Date(), new Date(), 1, name, value );
+                List<MessageLabelPojo> messageLabels = messagePojo.getMessageLabels();
+                if ( messageLabels == null ) {
+                    messageLabels = new ArrayList<MessageLabelPojo>();
+                    messageContext.getMessagePojo().setMessageLabels( messageLabels );
+                }
+                messageLabels.add( messageLabelPojo );
+            }
+        }
+
+
         messageContext.setConversation( messagePojo.getConversation() );
 
         Object syncObj = Engine.getInstance().getTransactionService().getSyncObjectForConversation( messageContext.getConversation() );
@@ -206,6 +230,7 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
                 messageContext.setData( primaryKey );
             }
             List<MessagePayloadPojo> bodyParts = new ArrayList<MessagePayloadPojo>();
+            int index =1;
             for ( byte[] payload : payloads ) {
                 if ( payload != null && payload.length > 0 ) {
                     MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo();
@@ -213,7 +238,11 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
                     messagePayloadPojo.setPayloadData( payload );
                     // TODO: MIME type must be determined!
                     messagePayloadPojo.setMimeType( "text/xml" );
-                    messagePayloadPojo.setContentId( messagePojo.getMessageId() + "-body1" );
+                    if ( StringUtils.isEmpty( contentId ) ) {
+                        messagePayloadPojo.setContentId( messagePojo.getMessageId() + "__body" + index++ );
+                    } else {
+                        messagePayloadPojo.setContentId( contentId + "__body_" + index++ );
+                    }
                     messagePayloadPojo.setSequenceNumber( new Integer( 1 ) );
                     messagePayloadPojo.setCreatedDate( messagePojo.getCreatedDate() );
                     messagePayloadPojo.setModifiedDate( messagePojo.getCreatedDate() );

@@ -161,6 +161,7 @@ public class MessageSubmissionAction extends NexusE2EAction {
                 for ( int i = 0; i < repeat; i++ ) {
                     String convId = conversationId;
                     if ( ( payload1 != null ) && ( payload1.getFileSize() != 0 ) ) {
+                        String label = org.nexuse2e.Constants.NX_LABEL_FILE_NAME + "|" + payload1.getFileName();
                         if (conversations != null && i < conversations.size()) {
                             convId = conversations.get( i ).getConversationId();
                         }
@@ -171,7 +172,7 @@ public class MessageSubmissionAction extends NexusE2EAction {
                         
                         String payloadString = new String( payload1.getFileData(), encoding );
                         Engine.getInstance().getCurrentConfiguration().getBackendPipelineDispatcher().processMessage(
-                                partner.getPartnerId(), choreographyId, action, convId, null, null,
+                                partner.getPartnerId(), choreographyId, action, convId, label, null,
                                 payloadString.getBytes() );
                         // Set primaryKey for UI confirmation message
                         primaryKey = payload1.getFileName();

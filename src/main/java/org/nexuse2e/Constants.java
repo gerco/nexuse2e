@@ -139,6 +139,9 @@ public class Constants {
     public static final String PROTOCOL_ID_EBXML                             = "ebxml";
     public static final String PROTOCOL_ID_HTTP_PLAIN                        = "httpplain";
 
+    // File name constant (for message labels, message payload content IDs)
+    public static final String NX_LABEL_FILE_NAME                        = "_nxFileName";
+    
     /**
      * The possible run levels of a bean that implements the <code>Manageable</code> interface. 
      * The concept of run levels is similar to that used in operating systems like Linux.

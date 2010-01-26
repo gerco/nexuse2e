@@ -355,6 +355,8 @@ public class DirectoryScannerService extends AbstractService implements Schedule
                 Map<String, String> variables = new HashMap<String, String>();
                 variables.put( "$filename", new File( newFile ).getName() );
                 variables.put( "$pathname", newFile );
+                
+                String label = org.nexuse2e.Constants.NX_LABEL_FILE_NAME + "|" + variables.get( "$filename" );
 
                 String tempPartnerId = partnerId;
                 if ( partnerId.startsWith( "${" ) ) {
@@ -404,7 +406,7 @@ public class DirectoryScannerService extends AbstractService implements Schedule
                     conversationId = (String)xPathResult;
                 }
 
-                backendPipelineDispatcher.processMessage( tempPartnerId, tempChoreographyId, tempActionId, conversationId, null,
+                backendPipelineDispatcher.processMessage( tempPartnerId, tempChoreographyId, tempActionId, conversationId, label,
                         null, fileBuffer );
                 // Remove file from the file system.
                 deleteFile( newFile );

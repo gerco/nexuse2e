@@ -148,9 +148,14 @@ public class FileSystemLoadPipelet extends AbstractOutboundBackendPipelet {
                 String mimeType = mimetypesFileTypeMap.getContentType( fileName );
 
                 // Prepare the Payload and set the MIME content type
+                /* Old version without file name...
                 MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo( messageContext.getMessagePojo(), i,
                         mimeType, Engine.getInstance().getIdGenerator(
                                 org.nexuse2e.Constants.ID_GENERATOR_MESSAGE_PAYLOAD ).getId(), documentBuffer,
+                        new Date(), new Date(), 1 );
+                */
+                MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo( messageContext.getMessagePojo(), i,
+                        mimeType, fileName + "__body_" + (i+1), documentBuffer,
                         new Date(), new Date(), 1 );
                 messagePayloads.add( messagePayloadPojo );
 

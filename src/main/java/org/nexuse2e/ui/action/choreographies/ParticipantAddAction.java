@@ -76,14 +76,14 @@ public class ParticipantAddAction extends NexusE2EAction {
         int localPartnerId = form.getNxLocalPartnerId();
         String description = form.getDescription();
 
-        LOG.trace( "from.issubmitted: " + form.isSubmitted() );
+        LOG.trace( "form.isSubmitted: " + form.isSubmitted() );
         if ( !form.isSubmitted() ) {
 
             form.cleanSetting();
             form.setNxChoreographyId( nxChoreographyId );
-            form.setNxPartnerId( partnerId );
+            // form.setNxPartnerId( partnerId );
+            // form.setDescription( description );
             form.setNxLocalPartnerId( localPartnerId );
-            form.setDescription( description );
 
             ConfigurationAccessService cas = engineConfiguration;
             ChoreographyPojo choreography = engineConfiguration
