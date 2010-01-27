@@ -43,11 +43,13 @@ public class FileSystemSavePipelet extends AbstractPipelet {
 
     public static final String DIRECTORY_PARAM_NAME         = "directory";
     public static final String FILE_NAME_PATTERN_PARAM_NAME = "fileNamePattern";
+    public static final String USE_CONTENT_ID               = "useContentId";
 
     public static final String SEQUENCE_PARAM               = "${nexus.message.payload.sequence}";
 
     private String             targetDirectory              = null;
     private String             fileNamePattern              = null;
+    private boolean            useContentId              = false;
 
     /**
      * Default constructor.
@@ -58,6 +60,9 @@ public class FileSystemSavePipelet extends AbstractPipelet {
                 "Path to directory where to store files", "" ) );
         parameterMap.put( FILE_NAME_PATTERN_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "File Name",
                 "File Name Pattern", "${nexus.message.message}" ) );
+        parameterMap.put( USE_CONTENT_ID, new ParameterDescriptor( ParameterType.BOOLEAN, "Use Content ID",
+                "Flag whether to use the content ID as the file name", Boolean.FALSE ) );
+
     }
 
     /* (non-Javadoc)
@@ -78,6 +83,12 @@ public class FileSystemSavePipelet extends AbstractPipelet {
         if ( StringUtils.isEmpty( fileNamePattern ) ) {
             LOG.warn( "Output file name pattern not defined, using default!" );
             fileNamePattern = "${nexus.message.message}";
+        }
+
+        Boolean tempFlag = getParameter( USE_CONTENT_ID );
+        if ( tempFlag != null && tempFlag.equals( Boolean.TRUE ) ) {
+            useContentId = true;
+            LOG.info( "Using content ID in file name." );
         }
 
         super.initialize( config );
@@ -162,15 +173,21 @@ public class FileSystemSavePipelet extends AbstractPipelet {
         } else {
             throw new FileNotFoundException( "Not a directory: " + destDirFile );
         }
+        
+        String fileName = null;
+        if ( useContentId ) {
+            fileName = destinationDirectory + File.separatorChar + payload.getContentId();
+        } else {
+            String baseFileName = ServerPropertiesUtil.replaceServerProperties( fileNamePattern, messageContext );
 
-        String baseFileName = ServerPropertiesUtil.replaceServerProperties( fileNamePattern, messageContext );
-
-        String extension = Engine.getInstance().getFileExtensionFromMime( payload.getMimeType().toLowerCase() );
-        if ( StringUtils.isEmpty( extension ) ) {
-            extension = "dat";
+            String extension = Engine.getInstance().getFileExtensionFromMime( payload.getMimeType().toLowerCase() );
+            if ( StringUtils.isEmpty( extension ) ) {
+                extension = "dat";
+            }
+            fileName = destinationDirectory + File.separatorChar + baseFileName + "_" + payload.getSequenceNumber()
+                    + "." + extension;
         }
-        String fileName = destinationDirectory + File.separatorChar + baseFileName + "_" + payload.getSequenceNumber()
-                + "." + extension;
+
 
         BufferedOutputStream fileOutputStream = new BufferedOutputStream( new FileOutputStream( fileName.toString() ) );
 

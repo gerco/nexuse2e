@@ -82,7 +82,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
     public MessageContext processMessage( MessageContext messageContext ) throws NexusException {
 
         Object syncObj = Engine.getInstance().getTransactionService().getSyncObjectForConversation(
-                messageContext.getConversation() );
+                ( messageContext.getConversation() != null ? messageContext.getConversation() : messageContext.getMessagePojo().getConversation() ) );
         synchronized ( syncObj ) {
             boolean headerAccessible = false;
             boolean headerInvalid = false;
