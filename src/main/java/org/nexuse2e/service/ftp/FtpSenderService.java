@@ -203,7 +203,7 @@ public class FtpSenderService extends AbstractService implements SenderAware {
                         LOG.trace( "Directory requested: " + directory );
                         try {
                             reply = ftpClient.cwd( directory );
-                            if ( FTPReply.isPositiveCompletion( reply ) ) {
+                            if ( !FTPReply.isPositiveCompletion( reply ) ) {
                                 throw new NexusException( new LogMessage( "FTP server did not change directory",
                                         messageContext.getMessagePojo() ) );
                             }
