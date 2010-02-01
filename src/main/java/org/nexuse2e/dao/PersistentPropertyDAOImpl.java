@@ -59,7 +59,7 @@ public class PersistentPropertyDAOImpl extends BasicDAOImpl implements Persisten
      */
     public PersistentPropertyPojo getPersistentPropertyById( int nxPersistentPropertyId ) throws NexusException {
 
-        return getPersistentPropertyById( nxPersistentPropertyId );
+        return (PersistentPropertyPojo) getRecordById( PersistentPropertyPojo.class, new Integer( nxPersistentPropertyId ) );
     }
 
     private DetachedCriteria getQuery( String namespace, String version, boolean order ) {
