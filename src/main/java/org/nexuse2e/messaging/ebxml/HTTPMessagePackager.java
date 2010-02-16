@@ -108,8 +108,10 @@ public class HTTPMessagePackager extends AbstractPipelet {
                 // add bodyparts
                 msgBuffer.append( Constants.MIMEPARTBOUNDARY + "\n" );
 
+                // String payloadContentID = "Content-ID: " + "<" + getContentId( messagePojo.getMessageId(), payloadPojo.getSequenceNumber() ) + ">";
+                // MBE: Changed 20100215 due to interop problem
                 String payloadContentID = "Content-ID: " + "<"
-                        + getContentId( messagePojo.getMessageId(), payloadPojo.getSequenceNumber() ) + ">";
+                + payloadPojo.getContentId() + ">";
 
                 msgBuffer.append( payloadContentID + "\n" );
                 msgBuffer.append( "Content-Type: " + payloadPojo.getMimeType() + "\n\n" );

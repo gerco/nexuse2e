@@ -47,22 +47,22 @@ import org.springframework.beans.factory.InitializingBean;
  */
 public class BackendOutboundDispatcher extends StateMachineExecutor implements Pipelet, InitializingBean {
 
-    private static Logger                            LOG                        = Logger
-                                                                                        .getLogger( BackendOutboundDispatcher.class );
+    private static Logger                        LOG                        = Logger
+                                                                                    .getLogger( BackendOutboundDispatcher.class );
 
-    private ProtocolAdapter[]                        protocolAdapters;
+    private ProtocolAdapter[]                    protocolAdapters;
     private Map<String, BackendActionSerializer> backendActionSerializers   = new HashMap<String, BackendActionSerializer>();
 
-    private FrontendInboundDispatcher                frontendInboundDispatcher  = null;
-    private FrontendOutboundDispatcher               frontendOutboundDispatcher = null;
-    private BeanStatus                               status                     = BeanStatus.UNDEFINED;
+    private FrontendInboundDispatcher            frontendInboundDispatcher  = null;
+    private FrontendOutboundDispatcher           frontendOutboundDispatcher = null;
+    private BeanStatus                           status                     = BeanStatus.UNDEFINED;
 
-    private boolean                                  forwardPipeline;
-    private boolean                                  frontendPipeline;
+    private boolean                              forwardPipeline;
+    private boolean                              frontendPipeline;
 
-    private Map<String, Object>                      parameters                 = new HashMap<String, Object>();
-    
-    private Pipeline                                 pipeline;
+    private Map<String, Object>                  parameters                 = new HashMap<String, Object>();
+
+    private Pipeline                             pipeline;
 
     /* (non-Javadoc)
      * @see org.nexuse2e.messaging.Pipelet#processMessage(org.nexuse2e.messaging.MessageContext)
@@ -111,7 +111,7 @@ public class BackendOutboundDispatcher extends StateMachineExecutor implements P
 
         long totalQueueingTime = 0;
         long totalGetMessageTime = 0;
-        
+
         try {
             TransactionService transactionService = Engine.getInstance().getTransactionService();
             activeMessagePojos = transactionService.getActiveMessages();
@@ -120,21 +120,30 @@ public class BackendOutboundDispatcher extends StateMachineExecutor implements P
             for ( MessagePojo messagePojo : activeMessagePojos ) {
 
                 long time = System.currentTimeMillis();
-                MessageContext messageContext = transactionService.createMessageContext( messagePojo );
-                totalGetMessageTime += (System.currentTimeMillis() - time);
+                try {
+                    MessageContext messageContext = transactionService.createMessageContext( messagePojo );
+                    totalGetMessageTime += ( System.currentTimeMillis() - time );
 
-                if ( ( messageContext != null ) && messagePojo.isOutbound() ) {
-                    LOG.debug( "Recovered message: " + messagePojo.getMessageId() );
-                    BackendActionSerializer backendActionSerializer = backendActionSerializers.get(
-                            messagePojo.getConversation().getChoreography().getName() );
+                    if ( ( messageContext != null ) && messagePojo.isOutbound() ) {
+                        LOG.debug( "Recovered message: " + messagePojo.getMessageId() );
+                        BackendActionSerializer backendActionSerializer = backendActionSerializers.get( messagePojo
+                                .getConversation().getChoreography().getName() );
 
-                    time = System.currentTimeMillis();
-                    backendActionSerializer.requeueMessage( messageContext );
-                    totalQueueingTime += (System.currentTimeMillis() - time);
+                        time = System.currentTimeMillis();
+                        backendActionSerializer.requeueMessage( messageContext );
+                        totalQueueingTime += ( System.currentTimeMillis() - time );
+                    }
+                } catch ( Exception ex ) {
+                    String messageId = "";
+                    if ( messagePojo != null ) {
+                        messageId = messagePojo.getMessageId();
+                    }
+                    LOG.error( "Error recovering message " + messageId + ": " + ex );
                 }
             }
-            LOG.trace( "took " + totalQueueingTime + " ms for message queueing and " + totalGetMessageTime +
-                    " ms for retrieving messages, total time is " + (System.currentTimeMillis() - startTime ) + " ms" );
+            LOG.trace( "took " + totalQueueingTime + " ms for message queueing and " + totalGetMessageTime
+                    + " ms for retrieving messages, total time is " + ( System.currentTimeMillis() - startTime )
+                    + " ms" );
         } catch ( NexusException e ) {
             LOG.error( e );
         }
@@ -358,6 +367,7 @@ public class BackendOutboundDispatcher extends StateMachineExecutor implements P
      * @see org.nexuse2e.messaging.Pipelet#getPipeline()
      */
     public Pipeline getPipeline() {
+
         return pipeline;
     }
 
@@ -365,6 +375,7 @@ public class BackendOutboundDispatcher extends StateMachineExecutor implements P
      * @see org.nexuse2e.messaging.Pipelet#setPipeline(org.nexuse2e.messaging.Pipeline)
      */
     public void setPipeline( Pipeline pipeline ) {
+
         this.pipeline = pipeline;
     }
 } // BackendOutboundDispatcher
