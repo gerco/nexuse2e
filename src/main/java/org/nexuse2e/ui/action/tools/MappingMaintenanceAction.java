@@ -53,13 +53,13 @@ public class MappingMaintenanceAction extends NexusE2EAction {
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
         MappingMaintenanceForm form = (MappingMaintenanceForm) actionForm;
 
-        System.out.println( "form.submitaction: " + form.getSubmitaction() );
-        System.out.println( "form.nxMappingId: " + form.getNxMappingId() );
-        System.out.println( "form.category: " + form.getCategory() );
-        System.out.println( "form.leftType: " + form.getLeftType() );
-        System.out.println( "form.leftValue: " + form.getLeftValue() );
-        System.out.println( "form.rightType: " + form.getRightType() );
-        System.out.println( "form.rightValue: " + form.getRightValue() );
+        // System.out.println( "form.submitaction: " + form.getSubmitaction() );
+        // System.out.println( "form.nxMappingId: " + form.getNxMappingId() );
+        // System.out.println( "form.category: " + form.getCategory() );
+        // System.out.println( "form.leftType: " + form.getLeftType() );
+        // System.out.println( "form.leftValue: " + form.getLeftValue() );
+        // System.out.println( "form.rightType: " + form.getRightType() );
+        // System.out.println( "form.rightValue: " + form.getRightValue() );
 
         String action = form.getSubmitaction();
         form.setSubmitaction( null );

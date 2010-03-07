@@ -22,6 +22,7 @@ package org.nexuse2e.ui.action.choreographies;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -81,8 +82,8 @@ public class ParticipantAddAction extends NexusE2EAction {
 
             form.cleanSetting();
             form.setNxChoreographyId( nxChoreographyId );
-            // form.setNxPartnerId( partnerId );
-            // form.setDescription( description );
+            form.setNxPartnerId( partnerId );
+            form.setDescription( description );
             form.setNxLocalPartnerId( localPartnerId );
 
             ConfigurationAccessService cas = engineConfiguration;
@@ -109,6 +110,19 @@ public class ParticipantAddAction extends NexusE2EAction {
             }
             form.setPartners( unboundPartners );
             form.setLocalPartners( engineConfiguration.getPartners( Constants.PARTNER_TYPE_LOCAL, comp ) );
+            
+            boolean selectedPartnerUnbound = false;
+            for ( Iterator iterator = unboundPartners.iterator(); iterator.hasNext(); ) {
+                PartnerPojo partnerPojo = (PartnerPojo) iterator.next();
+                if ( partnerPojo.getNxPartnerId() == partnerId ) {
+                    selectedPartnerUnbound = true;
+                }
+            }
+            
+            if ( !selectedPartnerUnbound ) {
+                partnerId = 0;
+                form.setNxPartnerId( 0 );
+            }
 
             LOG.trace( "Partners: " + form.getPartners().size() );
             LOG.trace( "localPartners: " + form.getLocalPartners().size() );
