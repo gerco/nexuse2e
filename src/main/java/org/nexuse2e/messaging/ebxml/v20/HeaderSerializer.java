@@ -290,10 +290,9 @@ public class HeaderSerializer extends AbstractPipelet {
                     while ( bodyParts.hasNext() ) {
                         MessagePayloadPojo bodyPart = (MessagePayloadPojo) bodyParts.next();
                         LOG.trace( "ContentID:" + bodyPart.getContentId() );
-                        // createManifestReference( soapFactory, soapManifest, bodyPart.getContentId(), "Payload-" + bodyPart.getSequenceNumber(), bodyPart.getMimeType(), null );
-                        // MBE: Changed 20100215 due to interop problem
-                        createManifestReference( soapFactory, soapManifest, "cid:" + bodyPart.getContentId(),
-                                "Payload-" + bodyPart.getSequenceNumber(), bodyPart.getMimeType(), null );
+                        createManifestReference( soapFactory, soapManifest, bodyPart.getContentId(), "Payload-" + bodyPart.getSequenceNumber(), bodyPart.getMimeType(), null );
+                        // MBE: Changed 20100215 due to interop problem - 20103007: changed back
+                        // createManifestReference( soapFactory, soapManifest, "cid:" + bodyPart.getContentId(), "Payload-" + bodyPart.getSequenceNumber(), bodyPart.getMimeType(), null );
                     }
 
                 }
