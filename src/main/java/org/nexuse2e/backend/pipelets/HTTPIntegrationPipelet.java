@@ -249,7 +249,7 @@ public class HTTPIntegrationPipelet extends AbstractPipelet {
         return messageContext;
     }
 
-    private NameValuePair[] createHTTPParameters( MessagePojo messagePojo, String documentString,
+    protected NameValuePair[] createHTTPParameters( MessagePojo messagePojo, String documentString,
             List<MessageLabelPojo> messageLabels, String labelPrefix ) {
 
         boolean includeLabels = ( messageLabels != null ) && ( messageLabels.size() != 0 );

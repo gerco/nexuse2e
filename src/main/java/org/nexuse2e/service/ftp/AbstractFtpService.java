@@ -37,6 +37,7 @@ import java.util.regex.Pattern;
 import javax.net.ssl.SSLException;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
@@ -355,7 +356,7 @@ public abstract class AbstractFtpService extends AbstractService {
                     throw new NexusException( "FTP server refused connection." );
                 }
                 ftp.enterLocalPassiveMode();
-
+                
                 String user = getParameter( USER_PARAM_NAME );
                 String password = getParameter( PASSWORD_PARAM_NAME );
                 boolean success = ftp.login( user, password );
@@ -363,6 +364,15 @@ public abstract class AbstractFtpService extends AbstractService {
                     throw new NexusException( "FTP authentication failed: " + ftp.getReplyString() );
                 }
                 LOG.debug( "Connected to " + url.getHost() + ", successfully logged in user " + user );
+                
+                ListParameter transfermode = getParameter(TRANSFER_MODE_PARAM_NAME);
+                if (transfermode != null && "binary".equals( transfermode.getSelectedValue() )) {
+                    ftp.setFileType(FTP.BINARY_FILE_TYPE);
+                    if ( LOG.isDebugEnabled() ) {
+                        LOG.debug( "Entered binary mode" );
+                    }
+                }
+                
                 if ( ssl ) {
                     reply = ftp.sendCommand( "PROT P" );
                     if ( !FTPReply.isPositiveCompletion( reply ) ) {
