@@ -258,13 +258,13 @@ public class StatusUpdateSerializer implements Manageable {
                                 LOG.error( "Error processing status update message!" );
                             }
                         } else {
-                            LOG.error( "No status pipeline found for message: "
+                            LOG.debug( "No status pipeline found for message: "
                                     + messageContext.getMessagePojo().getMessageId() + " ("
                                     + messageContext.getMessagePojo().getConversation().getChoreography().getName()
                                     + " - " + messageContext.getMessagePojo().getAction() + ")" );
                         }
                     } else {
-                        LOG.error( "No status update pipelines configured!" );
+                        LOG.debug( "No status update pipelines configured!" );
                     }
 
                 } catch ( InterruptedException ex ) {
