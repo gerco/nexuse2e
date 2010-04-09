@@ -5,10 +5,10 @@
  <groupId>org.nexuse2e</groupId>
  <artifactId>nexuse2e-server</artifactId>
  <packaging>war</packaging>
-<!-- Next Version
  <version>4.4.4</version>
+<!-- Next Version
+ <version>4.4.5-SNAPSHOT</version>
  -->
- <version>4.4.4-SNAPSHOT</version>
  <name>NEXUSe2e Server</name>
  <url>http://www.nexuse2e.org</url>
  <repositories>
