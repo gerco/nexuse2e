@@ -32,6 +32,8 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.net.ssl.SSLException;
@@ -80,6 +82,9 @@ public abstract class AbstractFtpService extends AbstractService {
     public static final String CERTIFICATE_PARAM_NAME     = "certificate";
     public static final String URL_PARAM_NAME             = "url";
     public static final String FILE_PATTERN_PARAM_NAME    = "filePattern";
+    public static final String STATUS_FILE_MODE_PARAM_NAME = "statusFileMode";
+    public static final String STATUS_FILE_PARSER_REG_EX_PARAM_NAME = "statusFileParserRegEx";
+    public static final String STATUS_FILE_PATTERN_PARAM_NAME = "statusFilePattern";
     public static final String USER_PARAM_NAME            = "username";
     public static final String PASSWORD_PARAM_NAME        = "password";
     public static final String INTERVAL_PARAM_NAME        = "interval";
@@ -122,7 +127,23 @@ public abstract class AbstractFtpService extends AbstractService {
 
         parameterMap.put( FILE_PATTERN_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "File pattern",
                 "DOS-like file pattern with wildcards * and ? (examples: *.xml, ab?.*)", "*" ) );
-
+        
+        ListParameter statusFileModeDropdown = new ListParameter();
+        statusFileModeDropdown.addElement( "No Status File", "none" );
+        statusFileModeDropdown.addElement( "File Per Directory", "filePerDir" );
+        statusFileModeDropdown.addElement( "File Per File", "filePerFile" );
+        parameterMap.put( STATUS_FILE_MODE_PARAM_NAME, new ParameterDescriptor( ParameterType.LIST,
+            "Status file mode",
+            "The presence of a status file indicates, that it is safe to read the related data file.",
+            statusFileModeDropdown ) );
+        
+        parameterMap.put( STATUS_FILE_PARSER_REG_EX_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING,
+            "File name parser regex",
+            "This regular expression (syntax: java.util.regex.Pattern) is applied to each file name that matches the File Pattern in order to get substrings (back references) for status file pattern composition.", "" ) );
+        
+        parameterMap.put( STATUS_FILE_PATTERN_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "Status file pattern",
+            "Can be a static file name like 'status.ok', or a combination of static strings and back references to a group (syntax: ${zeroBasedGroupNumber}) result of the given regular expression applied to the file name of the data file.", "" ) );
+                
         parameterMap.put( USER_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "User name",
                 "The FTP user name", "anonymous" ) );
 
@@ -305,6 +326,10 @@ public abstract class AbstractFtpService extends AbstractService {
 
     class FtpSchedulerClient implements SchedulerClient {
 
+        protected static final int STATUS_FILE_MODE_NONE = 0;
+        protected static final int STATUS_FILE_MODE_PER_DIR = 1;
+        protected static final int STATUS_FILE_MODE_PER_FILE = 2;
+        
         public void scheduleNotify() {
 
             boolean ssl = false;
@@ -400,51 +425,135 @@ public abstract class AbstractFtpService extends AbstractService {
                 String filePattern = getParameter( FILE_PATTERN_PARAM_NAME );
                 List<File> localFiles = new ArrayList<File>();
                 FTPFile[] files = ftp.listFiles();
-                LOG.trace( "Number of files in directory: " + files.length + ", checking against pattern "
-                        + filePattern );
+                if ( LOG.isDebugEnabled() ) {
+                    LOG.debug( "Number of files in directory: " + files.length + ", checking against pattern "
+                            + filePattern );
+                }
+                if ( LOG.isTraceEnabled() ) {
+                    for ( FTPFile file : files ) {
+                        LOG.trace( file.getName() );
+                    }
+                }
 
                 File errorDir = new File( (String) getParameter( ERROR_DIR_PARAM_NAME ) );
+                
+                // status file info
+                ListParameter statusFileModeSel = getParameter( STATUS_FILE_MODE_PARAM_NAME );
+                int statusFileMode = STATUS_FILE_MODE_NONE;
+                if ( statusFileModeSel != null ) {
+                    if ( "filePerDir".equals( statusFileModeSel.getSelectedValue() ) ) {
+                        statusFileMode = STATUS_FILE_MODE_PER_DIR;
+                    } else if ( "filePerFile".equals( statusFileModeSel.getSelectedValue() ) ) {
+                        statusFileMode = STATUS_FILE_MODE_PER_FILE;
+                    }
+                }
+                String statusFileName = null;
+                boolean statusFileExists = false;
+                
+                // rename prefix
+                String prefix = getParameter( RENAMING_PREFIX_PARAM_NAME );
 
                 String regEx = FileUtil.dosStyleToRegEx( filePattern );
                 for ( FTPFile file : files ) {
                     if ( ( file != null ) && ( file.getName() != null ) ) {
                         if ( Pattern.matches( regEx, file.getName() ) ) {
-                            File localFile = new File( localDir, file.getName() );
-                            FileOutputStream fout = new FileOutputStream( localFile );
-                            success = ftp.retrieveFile( file.getName(), fout );
-                            fout.flush();
-                            fout.close();
-                            if ( !success ) {
-                                LOG.error( "Could not retrieve file " + file.getName() );
+                            // create status file name, if necessary
+                            boolean loadFile = false;
+                            if ( statusFileMode > STATUS_FILE_MODE_NONE ) {
+                                statusFileName = buildStatusFileName( file.getName(),
+                                    (String) getParameter( STATUS_FILE_PARSER_REG_EX_PARAM_NAME ),
+                                    (String) getParameter( STATUS_FILE_PATTERN_PARAM_NAME ) );
+                            }
+                            // if status file check is enabled, find the file
+                            if ( statusFileName != null ) {
+                                // need current file list, because status files can be deleted each iteration
+                                FTPFile[] tmpStatusFiles = ftp.listFiles();
+                                statusFileExists = false; // reset even in dir mode, cause we will find it again
+                                for ( int i = 0; !statusFileExists && i < tmpStatusFiles.length; i++ ) {
+                                    statusFileExists = statusFileName.equals( tmpStatusFiles[i].getName() );                                    
+                                }
+                                
+                                if ( LOG.isDebugEnabled() ) {
+                                    if ( statusFileExists ) {
+                                        LOG.debug( "Found status file: " + statusFileName );
+                                    } else {
+                                        LOG.debug( "Status file not found: " + statusFileName );
+                                    }
+                                }
+                                // should i stay or should i go go go?
+                                loadFile = statusFileExists;
                             } else {
-                                try {
-
-                                    processFile( localFile, errorDir, (String) getParameter( PARTNER_PARAM_NAME ) );
-
-                                    String prefix = getParameter( RENAMING_PREFIX_PARAM_NAME );
-                                    boolean error = false;
-                                    if ( fileChangeActive ) {
-                                        if ( StringUtils.isEmpty( prefix ) ) {
-                                            if ( !ftp.deleteFile( file.getName() ) ) {
-                                                LOG.error( "Could not delete file " + file.getName() );
-                                                error = true;
-                                            }
-                                        } else {
-                                            if ( !ftp.rename( file.getName(), prefix + file.getName() ) ) {
-                                                LOG.error( "Could not rename file from " + file.getName() + " to "
-                                                        + prefix + file.getName() );
-                                                error = true;
+                                loadFile = true;
+                            }
+                            // if and only if
+                            if ( loadFile ) {
+                                File localFile = new File( localDir, file.getName() );
+                                FileOutputStream fout = new FileOutputStream( localFile );
+                                success = ftp.retrieveFile( file.getName(), fout );
+                                fout.flush();
+                                fout.close();
+                                if ( !success ) {
+                                    LOG.error( "Could not retrieve file " + file.getName() );
+                                } else {
+                                    try {
+    
+                                        processFile( localFile, errorDir, (String) getParameter( PARTNER_PARAM_NAME ) );
+    
+                                        boolean error = false;
+                                        if ( fileChangeActive ) {
+                                            if ( StringUtils.isEmpty( prefix ) ) {
+                                                if ( !ftp.deleteFile( file.getName() ) ) {
+                                                    LOG.error( "Could not delete file " + file.getName() );
+                                                    error = true;
+                                                }
+                                                // delete status file
+                                                if ( statusFileExists
+                                                        && statusFileMode == STATUS_FILE_MODE_PER_FILE
+                                                        && !ftp.deleteFile( statusFileName ) ) {
+                                                    LOG.error( "Could not delete status file " + statusFileName );
+                                                    error = true;
+                                                }
+                                            } else {
+                                                if ( !ftp.rename( file.getName(), prefix + file.getName() ) ) {
+                                                    LOG.error( "Could not rename file from " + file.getName() + " to "
+                                                            + prefix + file.getName() );
+                                                    error = true;
+                                                }
+                                                // rename status file
+                                                if ( statusFileExists
+                                                        && statusFileMode == STATUS_FILE_MODE_PER_FILE
+                                                        && !ftp.rename( statusFileName, prefix + statusFileName ) ) {
+                                                    LOG.error( "Could not rename status file from " + statusFileName + " to "
+                                                        + prefix + statusFileName );
+                                                    error = true;
+                                                }
                                             }
                                         }
+    
+                                        if ( !error ) {
+                                            localFiles.add( localFile );
+                                        }
+                                    } catch ( Exception e ) {
+                                        LOG.error( "Error processing file " + file.getName() + ": " + e );
                                     }
-
-                                    if ( !error ) {
-                                        localFiles.add( localFile );
-                                    }
-                                } catch ( Exception e ) {
-                                    LOG.error( "Error processing file " + file.getName() + ": " + e );
                                 }
                             }
+                        }
+                    }
+                }
+                
+                // delete/rename status file, if in STATUS_FILE_MODE_PER_DIR mode
+                if ( statusFileExists && statusFileMode == STATUS_FILE_MODE_PER_DIR && fileChangeActive ) {
+                    if ( StringUtils.isEmpty( prefix ) ) {
+                        // delete status file
+                        if ( !ftp.deleteFile( statusFileName ) ) {
+                            LOG.error( "Could not delete status file " + statusFileName );
+                        }
+                    } else {
+                        // rename status file
+                        if ( !ftp.rename( statusFileName, prefix + statusFileName ) ) {
+                            LOG.error( "Could not rename status file from " + statusFileName + " to "
+                                + prefix + statusFileName );
                         }
                     }
                 }
@@ -473,5 +582,55 @@ public abstract class AbstractFtpService extends AbstractService {
                 }
             }
         }
+        
+        protected final Pattern BACK_REFERENCE_PATTERN = Pattern.compile( "\\$\\{\\d+\\}" );
+        
+        protected String buildStatusFileName( String fileName,
+                                              String parserRegEx,
+                                              String statusFilePattern ) {
+           String result = statusFilePattern;
+           if ( LOG.isDebugEnabled() ) {
+               LOG.debug( "Building status file name from fileName='" + fileName + "', parserRegEx='" + parserRegEx + "', statusFilePattern='" + statusFilePattern + "'" );
+           }
+           // this only makes sense, if every parameter is set
+           if ( fileName != null && statusFilePattern != null && parserRegEx != null ) {
+               // let's see, whether the file pattern contains a back-reference to the file name
+               Matcher m1 = BACK_REFERENCE_PATTERN.matcher( statusFilePattern );
+               // and whether the file name matches the parser regex
+               Matcher m2 = Pattern.compile( parserRegEx ).matcher( fileName );
+               if ( m2.matches() ) {
+                   // for each back-reference get the group number, extract the group from the file name, and substitute it
+                   while ( m1.find() ) {
+                       MatchResult mr = m1.toMatchResult();
+                       String backRef = mr.group();
+                       if ( LOG.isTraceEnabled() ) {
+                           LOG.trace( "backRef: " + backRef );
+                       }
+                       Integer groupNo = Integer.parseInt( backRef.substring( 2, backRef.length() - 1 ) );
+                       if ( LOG.isTraceEnabled() ) {
+                           LOG.trace( "groupNo: " + groupNo );
+                       }
+                       if ( m2.groupCount() >= groupNo ) {
+                           if ( LOG.isTraceEnabled() ) {
+                               LOG.trace( "group: " + m2.group( groupNo ) );
+                           }
+                           result = result.replace( backRef, m2.group( groupNo ) );
+                       }
+                       if ( LOG.isTraceEnabled() ) {
+                           LOG.trace( "result: " + result );
+                       }
+                   }
+               } else {
+                   if ( LOG.isTraceEnabled() ) {
+                       LOG.trace( "parser regex does not match file name" );
+                   }
+               }
+           }
+           if ( LOG.isTraceEnabled() ) {
+               LOG.trace( "statusFileName: " + result );
+           }
+           // done
+           return result;
+       }
     }
 }
