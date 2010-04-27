@@ -10,11 +10,13 @@
                         <!-- The directory to scan for files -->
                         <xs:attribute name="dir" type="xs:string" use="required"/>
                         <!-- The directory to backup files to (optional) -->
-                        <xs:attribute name="backupDir" type="xs:string"/>
+                        <xs:attribute name="backupDir" type="xs:string" use="optional"/>
                         <!-- Regular expression (java.util.regex.Pattern style) file pattern (optional) -->
-                        <xs:attribute name="filePattern" type="xs:string"/>
+                        <xs:attribute name="filePattern" type="xs:string" use="optional"/>
+                        <!-- If true, assemble as single message from all files found in one scanning step, instead of one message per file (optional; default is false) -->
+                        <xs:attribute name="isMultiPayloadAssemblingEnabled" type="xs:boolean" use="optional"/>
                         <!-- Interval inbetween directory scans (millseconds, optional) -->
-                        <xs:attribute name="interval" type="xs:long"/>
+                        <xs:attribute name="interval" type="xs:long" use="optional"/>
                         <!-- The partner to send the message -->
                         <xs:attribute name="partnerId" type="xs:string" use="required"/>
                         <!-- The choreography to use -->
@@ -22,9 +24,9 @@
                         <!-- The action to trigger -->
                         <xs:attribute name="actionId" type="xs:string" use="required"/>
                         <!-- The XPATH statement to create the conversation ID to use (optional) -->
-                        <xs:attribute name="conversationXPath" type="xs:string"/>
+                        <xs:attribute name="conversationXPath" type="xs:string" use="optional"/>
                         <!-- The mapping and conversion service (optional) -->
-                        <xs:attribute name="mappingServiceName" type="xs:string"/>
+                        <xs:attribute name="mappingServiceName" type="xs:string" use="optional"/>
                     </xs:complexType>
                 </xs:element>
             </xs:sequence>

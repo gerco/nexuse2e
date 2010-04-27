@@ -49,12 +49,14 @@ import javax.xml.xpath.XPathFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
+import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.backend.BackendPipelineDispatcher;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.pojo.MessagePayloadPojo;
 import org.nexuse2e.tools.mapping.xmldata.MappingDefinition;
 import org.w3c.dom.Document;
 import org.xml.sax.Attributes;
@@ -77,6 +79,8 @@ import org.xml.sax.helpers.DefaultHandler;
  *	        backupDir="/var/exchange/order_out"
  *			<!-- Regular expression (java.util.regex.Pattern style) file pattern (optional) -->
  *	        filePattern="ORDER.+[0-9]{8}\.xml"
+ *          <!-- If true, assemble as single message from all files found in one scanning step, instead of one message per file (optional; default is false) -->
+ *          isMultiPayloadAssemblingEnabled="true"
  *			<!-- Interval inbetween directory scans (millseconds, optional, default is 10000) -->
  *	        interval="15000"
  *			<!-- The partner to send the message -->
@@ -115,6 +119,7 @@ public class MultipleDirectoryScannerService extends AbstractService {
     
     public static final String        CONFIG_FILE                 = "config_file";
     public final static String        SCHEDULING_SERVICE          = "scheduling_service";
+    public final static String        ASSEMBLE_MULTI_PAYLOAD_MSG  = "assemble_multi_payload_msg";
     
     public static final long		  DEFAULT_INTERVAL			  = 10000;
     
@@ -140,23 +145,6 @@ public class MultipleDirectoryScannerService extends AbstractService {
                 "The XML file that contains the configuration for this service.", "" ) );
         parameterMap.put( SCHEDULING_SERVICE, new ParameterDescriptor( ParameterType.SERVICE, "Scheduling Service",
                 "The name of the service that shall be used for scheduling.", SchedulingService.class ) );
-//        parameterMap.put( BACKUP_DIRECTORY, new ParameterDescriptor( ParameterType.STRING, "Backup Directory",
-//                "The directory to backup files to (optional).", "" ) );
-//        parameterMap.put( INTERVAL, new ParameterDescriptor( ParameterType.STRING, "Interval",
-//                "Interval inbetween directory scans (millseconds)", "5000" ) );
-//        parameterMap.put( CHOREOGRAPHY, new ParameterDescriptor( ParameterType.STRING, "Choreography",
-//                "The choreography to use.", "" ) );
-//        parameterMap.put( ACTION,
-//                new ParameterDescriptor( ParameterType.STRING, "Action", "The action to trigger.", "" ) );
-//        parameterMap.put( PARTNER, new ParameterDescriptor( ParameterType.STRING, "Partner",
-//                "The partner to send the message.", "" ) );
-//        parameterMap.put( FILTER, new ParameterDescriptor( ParameterType.STRING, "Extension",
-//                "File extension to limit processing to.", "" ) );
-//        parameterMap.put( CONVERSATION, new ParameterDescriptor( ParameterType.STRING, "Conversation",
-//                "The XPATH statement to create the conversation ID to use.", "" ) );
-//
-//        parameterMap.put( MAPPING_SERVICE, new ParameterDescriptor( ParameterType.SERVICE, "Mapping Service",
-//                "The Mapping and Conversion Service.", DataConversionService.class ) );
     }
     
     /* (non-Javadoc)
@@ -178,70 +166,7 @@ public class MultipleDirectoryScannerService extends AbstractService {
         	LOG.trace( "initializing" );
         }
         
-//        String directoryValue = getParameter( DIRECTORY );
-//        if ( ( directoryValue != null ) && ( directoryValue.length() != 0 ) ) {
-//            directory = directoryValue;
-//
-//            File directoryFile = new File( directory );
-//            if ( !directoryFile.exists() || !directoryFile.isDirectory() ) {
-//                status = BeanStatus.ERROR;
-//                // throw new InstantiationException( "Value for setting 'directory' does not point to a directory!" );
-//                MultipleDirectoryScannerService.LOG.error( "Value for setting 'directory' does not point to a directory!" );
-//            }
-//        } else {
-//            status = BeanStatus.ERROR;
-//            MultipleDirectoryScannerService.LOG.error( "No value for setting 'directory' provided!" );
-//        }
-//
-//        String intervalValue = getParameter( INTERVAL );
-//        if ( ( intervalValue != null ) && ( intervalValue.length() != 0 ) ) {
-//            interval = Integer.parseInt( intervalValue );
-//        } else {
-//            status = BeanStatus.ERROR;
-//            MultipleDirectoryScannerService.LOG.error( "No value for setting 'interval' provided!" );
-//        }
-//
-//        String choreographyValue = getParameter( CHOREOGRAPHY );
-//        if ( ( choreographyValue != null ) && ( choreographyValue.length() != 0 ) ) {
-//            choreographyId = choreographyValue;
-//        } else {
-//            status = BeanStatus.ERROR;
-//            MultipleDirectoryScannerService.LOG.error( "No value for setting 'choreography' provided!" );
-//        }
-//
-//        String actionValue = getParameter( ACTION );
-//        if ( ( actionValue != null ) && ( actionValue.length() != 0 ) ) {
-//            actionId = actionValue;
-//        } else {
-//            status = BeanStatus.ERROR;
-//            MultipleDirectoryScannerService.LOG.error( "No value for setting 'action' provided!" );
-//        }
-//
-//        String partnerValue = getParameter( PARTNER );
-//        if ( ( partnerValue != null ) && ( partnerValue.length() != 0 ) ) {
-//            partnerId = partnerValue;
-//        } else {
-//            status = BeanStatus.ERROR;
-//            MultipleDirectoryScannerService.LOG.error( "No value for setting 'partner' provided!" );
-//        }
-//
-//        String conversationStatementValue = getParameter( CONVERSATION );
-//        if ( ( conversationStatementValue != null ) && ( conversationStatementValue.length() != 0 ) ) {
-//            conversationStatement = conversationStatementValue;
-//        }
-//        
-//        String filterValue = getParameter( FILTER );
-//        if ( ( filterValue != null ) && ( filterValue.length() != 0 ) ) {
-//            filenameFilter = new FilenameExtensionFilter( filterValue );
-//        }
-//
-//        String backupDirectoryValue = getParameter( BACKUP_DIRECTORY );
-//        if ( ( backupDirectoryValue != null ) && ( backupDirectoryValue.length() != 0 ) ) {
-//            backupDirectory = backupDirectoryValue;
-//        }
-//
-//
-        String schedulingServiceName = getParameter( SCHEDULING_SERVICE );    
+        String schedulingServiceName = getParameter( SCHEDULING_SERVICE );
         
         if ( !StringUtils.isEmpty( schedulingServiceName ) ) {
 
@@ -288,6 +213,9 @@ public class MultipleDirectoryScannerService extends AbstractService {
 				public void startElement(String uri, String localName,
 						String name, Attributes attributes) throws SAXException {
 					if ( "Scanner".equals( name ) && attributes != null ) {
+					    if ( LOG.isTraceEnabled() ) {
+					        LOG.trace( "Scanner attributes: " + attributes );
+					    }
 						scannerCounter++;
 						String intervalString = attributes.getValue( "", "interval" );
 						long interval = DEFAULT_INTERVAL;
@@ -302,6 +230,7 @@ public class MultipleDirectoryScannerService extends AbstractService {
 											attributes.getValue( "", "dir" ),
 											attributes.getValue( "", "backupDir" ),
 											attributes.getValue( "", "filePattern" ),
+											Boolean.parseBoolean( attributes.getValue( "", "isMultiPayloadAssemblingEnabled" ) ),
 											interval,
 											attributes.getValue( "", "partnerId" ),
 											attributes.getValue( "", "choreographyId" ),
@@ -409,6 +338,8 @@ public class MultipleDirectoryScannerService extends AbstractService {
 
         private BackendPipelineDispatcher backendPipelineDispatcher;
         
+        protected boolean                 isMultiPayloadAssemblingEnabled = false;
+        
         /**
          * Initializes a new directory scanner.
          * @param dir
@@ -419,12 +350,14 @@ public class MultipleDirectoryScannerService extends AbstractService {
          * @param actionId
          * @param conversationXPath
          * @param filePattern
+         * @param isMultiPayloadAssemblingEnabled
          * @param mappingService
          * @param backendPipelineDispatcher
          */
         protected DirectoryScanner( String dir,
         							String backupDir,
         							String filePattern,
+        							boolean isMultiPayloadAssemblingEnabled,
         							long interval,
         							String partnerId,
         							String choreographyId,
@@ -437,6 +370,7 @@ public class MultipleDirectoryScannerService extends AbstractService {
         	if ( filePattern != null && filePattern.trim().length() > 0 ) {
         		this.filenameFilter = new RegexFilenameFilter( filePattern );
         	}
+        	this.isMultiPayloadAssemblingEnabled = isMultiPayloadAssemblingEnabled;
         	this.interval = interval;
         	this.partnerId = partnerId;
         	this.choreographyId = choreographyId;
@@ -497,18 +431,30 @@ public class MultipleDirectoryScannerService extends AbstractService {
                     MultipleDirectoryScannerService.LOG.error( "Waiting thread was interrupted", e );
                 }
 
+                List<String> multiPayloadFilePaths = new ArrayList<String>();
+                
                 for ( int i = 0; i < files.length; i++ ) {
                     if ( files[i].isFile() && files[i].canWrite()
                             && ( files[i].length() != 0 /* work around for files not completely ready/empty */) ) {
                         try {
-                            MultipleDirectoryScannerService.LOG.trace( "Processing file: " + files[i].getAbsoluteFile() );
-                            processFile( files[i].getAbsolutePath() );
+                            if ( isMultiPayloadAssemblingEnabled ) {
+                                MultipleDirectoryScannerService.LOG.trace( "Processing file as multi payload: " + files[i].getAbsoluteFile() );
+                                multiPayloadFilePaths.add( files[i].getAbsolutePath() );
+                            } else {
+                                MultipleDirectoryScannerService.LOG.trace( "Processing file: " + files[i].getAbsoluteFile() );
+                                processFile( files[i].getAbsolutePath() );
+                            }
                         } catch ( Exception ex ) {
                             MultipleDirectoryScannerService.LOG.error( "Exception submitting file", ex );
                         }
                     } else {
                         System.out.println( "Skipping file: " + files[i].getAbsoluteFile() );
                     }
+                }
+                
+                if ( isMultiPayloadAssemblingEnabled && multiPayloadFilePaths.size() > 0 ) {
+                    // process all files at once
+                    processFiles( multiPayloadFilePaths );
                 }
             } catch ( Exception ioEx ) {
                 MultipleDirectoryScannerService.LOG.error( "Error reading directory", ioEx );
@@ -517,29 +463,118 @@ public class MultipleDirectoryScannerService extends AbstractService {
         } // scheduleNotify
 
         /**
-         * Process any files found.
-         * @param newFile File found by the scanner.
+         * Process a list of files found and assemble a multi payload message.
+         * @param files List of files to process as message payloads.
          */
-        protected void processFile( String newFile ) throws Exception {
-
+        protected void processFiles( List<String> files ) {
+            List<MessagePayloadPojo> payloads = new ArrayList<MessagePayloadPojo>();
+            
+            try {
+                // only construct a message, if there is at least one file for payload
+                if ( files != null ) {
+                    for ( String currFile : files ) {
+                        byte[] currBuff = getBytesAndBackup( currFile );
+                        if ( currBuff != null ) {
+                            MessagePayloadPojo currPayload = new MessagePayloadPojo();
+                            currPayload.setPayloadData( currBuff );
+                            currPayload.setContentId( new File( currFile ).getName() );
+                            // TODO set MIME type?
+                            payloads.add( currPayload );
+                        }
+                    }
+                    
+                    /* mapping file names to actionId, choreographyId, partnerId,
+                     * or conversationId makes no sense with in multi payload mode */
+                    try {
+                        backendPipelineDispatcher.processMessage( partnerId,
+                                                                  choreographyId,
+                                                                  actionId,
+                                                                  null,
+                                                                  null,
+                                                                  null,
+                                                                  null,
+                                                                  payloads,
+                                                                  null );
+                        // Remove files from the file system.
+                        for ( String currFile : files ) {
+                            deleteFile( currFile );
+                        }
+                    } catch ( NexusException e ) {
+                        // build list of affected files
+                        StringBuilder sb = new StringBuilder();
+                        for ( String currFile : files ) {
+                            sb.append( currFile + File.pathSeparator );
+                        }
+                        MultipleDirectoryScannerService.LOG.error( "An exception occured while creating messages for files " + sb.toString()
+                            + ". Files will not be deleted, but have been copied to the backup directory already.", e );
+                    }
+                }
+            } catch ( IOException e ) {
+                // build list of affected files
+                StringBuilder sb = new StringBuilder();
+                for ( String currFile : files ) {
+                    sb.append( currFile + File.pathSeparator );
+                }
+                // chop last pathSeperator
+                sb.deleteCharAt( sb.length() - 1 );
+                MultipleDirectoryScannerService.LOG.error( "An exception occured, thus will not create messages for files " + sb.toString()
+                    + ". Possibly some of the files were already copied to the backup directory.", e );
+            }
+        }
+        
+        /**
+         * Reads the bytes of the give file, if it exists, and backups it, if a backup directory is specified.
+         * @param filePath The absolute path to the file
+         * @return The bytes of the file or <code>null</code>, if it does not exist.
+         * @throws IOException, if the file cannot be read.
+         */
+        private byte[] getBytesAndBackup( String filePath ) throws IOException {
             byte[] fileBuffer = null;
+            
+            if ( ( filePath != null ) && ( filePath.length() != 0 ) ) {
+                // Open the file to read one line at a time
+                BufferedInputStream bufferedInputStream = new BufferedInputStream( new FileInputStream( filePath ) );
+
+                // Determine the size of the file
+                int fileSize = bufferedInputStream.available();
+                fileBuffer = new byte[fileSize]; // Create a buffer that will hold the data from the file
+
+                bufferedInputStream.read( fileBuffer, 0, fileSize ); // Read the file content into the buffer
+                bufferedInputStream.close();
+
+                if ( ( backupDirectory != null ) && ( backupDirectory.length() != 0 ) ) {
+                    backupFile( filePath, fileBuffer );
+                }
+            }
+            
+            return fileBuffer;
+        }
+        
+        /*
+         * Helper method that creates variables for the mapping service.
+         * @param filePath The path of the file.
+         * @return A map containing <code>$filename</code>, and <code>$pathname</code>
+         *         assigned with the related values extracted from <code>filePath</code>.
+         */
+        private Map<String, String> getVariables( String filePath ) {
+            Map<String, String> variables = new HashMap<String, String>();
+            variables.put( "$filename", new File( filePath ).getName() );
+            variables.put( "$pathname", filePath );
+            return variables;
+        }
+        
+        /**
+         * Process any files found.
+         * @param filePath File found by the scanner.
+         */
+        protected void processFile( String filePath ) throws Exception {
+
+            byte[] fileBuffer = getBytesAndBackup( filePath );
             String conversationId = null;
 
-            if ( ( newFile != null ) && ( newFile.length() != 0 ) ) {
+            if ( fileBuffer != null ) {
                 try {
-                    // Open the file to read one line at a time
-                    BufferedInputStream bufferedInputStream = new BufferedInputStream( new FileInputStream( newFile ) );
-
-                    // Determine the size of the file
-                    int fileSize = bufferedInputStream.available();
-                    fileBuffer = new byte[fileSize]; // Create a buffer that will hold the data from the file
-
-                    bufferedInputStream.read( fileBuffer, 0, fileSize ); // Read the file content into the buffer
-                    bufferedInputStream.close();
-
-                    if ( ( backupDirectory != null ) && ( backupDirectory.length() != 0 ) ) {
-                        backupFile( newFile, fileBuffer );
-                    }
+                    
 
                     // Prepare the Payload and set the MIME content type
                     /*
@@ -554,9 +589,7 @@ public class MultipleDirectoryScannerService extends AbstractService {
                      }
                      */
 
-                    Map<String, String> variables = new HashMap<String, String>();
-                    variables.put( "$filename", new File( newFile ).getName() );
-                    variables.put( "$pathname", newFile );
+                    Map<String, String> variables = getVariables( filePath );
                     
                     String label = org.nexuse2e.Constants.NX_LABEL_FILE_NAME + "|" + variables.get( "$filename" );
 
@@ -611,7 +644,7 @@ public class MultipleDirectoryScannerService extends AbstractService {
                     backendPipelineDispatcher.processMessage( tempPartnerId, tempChoreographyId, tempActionId, conversationId, label,
                             null, fileBuffer );
                     // Remove file from the file system.
-                    deleteFile( newFile );
+                    deleteFile( filePath );
                 } catch ( Exception ex ) {
                     MultipleDirectoryScannerService.LOG.error( "Error while processing file", ex );
                 }
@@ -634,7 +667,7 @@ public class MultipleDirectoryScannerService extends AbstractService {
         }
 
         /**
-         * Backup a given file to the backup directory intialized at startup.
+         * Backup a given file to the backup directory initialized at startup.
          */
         protected void backupFile( String newFileName, byte[] document ) {
 

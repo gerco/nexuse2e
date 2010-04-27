@@ -44,7 +44,7 @@ import org.nexuse2e.pojo.MessagePojo;
 import org.nexuse2e.pojo.PartnerPojo;
 
 /**
- * @author mbreilmann
+ * @author mbreilmann, s_schulze
  *
  */
 public class ZipPipelet extends AbstractPipelet {
@@ -56,6 +56,8 @@ public class ZipPipelet extends AbstractPipelet {
     public final static String FILE_EXTENSION    = "fileExtension";
     public final static String COMBINE_PAYLOADS  = "combinePayloads";
     public final static String SEQUENCE_DIGITS   = "sequenceDigits";
+    public static final String USE_CONTENT_ID    = "useContentId";
+    
 
     private String             fileNamePattern   = null;
     private String             timestampPattern  = null;
@@ -63,6 +65,7 @@ public class ZipPipelet extends AbstractPipelet {
     private boolean            combinePayloads   = false;
     private int                sequenceDigits    = 2;
     private boolean            useTimestamp      = true;
+    private boolean            useContentId      = false;
 
     public ZipPipelet() {
 
@@ -76,6 +79,8 @@ public class ZipPipelet extends AbstractPipelet {
                 "Number of digits in sequence counter (prepended zeroes)", "2" ) );
         parameterMap.put( COMBINE_PAYLOADS, new ParameterDescriptor( ParameterType.BOOLEAN, "Combine Payloads",
                 "Combine Payloads", Boolean.FALSE ) );
+        parameterMap.put( USE_CONTENT_ID, new ParameterDescriptor( ParameterType.BOOLEAN, "Use Content ID",
+            "Flag whether to use the content ID as the file name. This overrides the other file name related settings.", Boolean.FALSE ) );
 
     }
 
@@ -131,6 +136,11 @@ public class ZipPipelet extends AbstractPipelet {
         if ( ( tempBoolean != null ) ) {
             combinePayloads = tempBoolean.booleanValue();
         }
+        
+        tempBoolean = getParameter( USE_CONTENT_ID );
+        if ( ( tempBoolean != null ) ) {
+            useContentId = tempBoolean.booleanValue();
+        }
     }
 
     /* (non-Javadoc)
@@ -162,23 +172,28 @@ public class ZipPipelet extends AbstractPipelet {
                         zos.setMethod( ZipOutputStream.DEFLATED );
                     }
 
-                    // Create sequence with fixed number of digits (leading zeroes)
-                    String sequenceTemp = "" + sequence;
-                    String sequenceFix = "";
-                    for ( int i = 0; i < ( sequenceDigits - sequenceTemp.length() ); i++ ) {
-                        sequenceFix += "0";
-                    }
-                    sequenceFix += sequenceTemp;
-
                     String filename = null;
-                    if ( useTimestamp ) {
-                        filename = StringUtils.replace( fileNamePattern, "${timestamp}", timestamp );
+                    // use contentId or generate file name?
+                    if ( useContentId ) {
+                        filename = messagePayloadPojo.getContentId();
+                    } else {
+                        // Create sequence with fixed number of digits (leading zeroes)
+                        String sequenceTemp = "" + sequence;
+                        String sequenceFix = "";
+                        for ( int i = 0; i < ( sequenceDigits - sequenceTemp.length() ); i++ ) {
+                            sequenceFix += "0";
+                        }
+                        sequenceFix += sequenceTemp;
+    
+                        if ( useTimestamp ) {
+                            filename = StringUtils.replace( fileNamePattern, "${timestamp}", timestamp );
+                        }
+                        filename = StringUtils.replace( filename, "${sequence}", "" + sequenceFix );
+    
+                        sequence++;
+    
+                        filename += fileExtension;
                     }
-                    filename = StringUtils.replace( filename, "${sequence}", "" + sequenceFix );
-
-                    sequence++;
-
-                    filename += fileExtension;
 
                     ZipEntry zipEntry = new ZipEntry( filename );
                     zipEntry.setSize( messagePayloadPojo.getPayloadData().length );
@@ -195,6 +210,7 @@ public class ZipPipelet extends AbstractPipelet {
                         if ( newContent != null ) {
                             messagePayloadPojo.setPayloadData( newContent );
                             messagePayloadPojo.setMimeType( mimeType );
+                            messagePayloadPojo.setContentId( messagePayloadPojo.getContentId() );
                         } else {
                             throw new NexusException( "No content found after compression of payload." );
                         }
@@ -215,6 +231,7 @@ public class ZipPipelet extends AbstractPipelet {
                         if ( newContent != null ) {
                             messagePayloadPojo.setPayloadData( newContent );
                             messagePayloadPojo.setMimeType( mimeType );
+                            messagePayloadPojo.setContentId( "COMBINED_PAYLOADS" );
                             payloads.clear();
                             payloads.add( messagePayloadPojo );
                         } else {

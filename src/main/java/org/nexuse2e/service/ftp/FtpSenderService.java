@@ -27,12 +27,14 @@ import java.util.Date;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
 import org.apache.log4j.Logger;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.EngineConfiguration;
+import org.nexuse2e.configuration.ListParameter;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.logging.LogMessage;
@@ -62,6 +64,7 @@ public class FtpSenderService extends AbstractService implements SenderAware {
     public static final String APPEND_TIMESTAMP          = "appendTimestamp";
     public static final String TIMESTAMP_PATTERN         = "timestampPattern";
     public static final String USE_CONTENT_ID            = "useContentId";
+    public static final String TRANSFER_MODE_PARAM_NAME  = "transferMode";
 
     public static final String DEFAULT_TIMESTAMP_PATTERN = "yyyyMMddHHmmssSSS";
 
@@ -102,6 +105,13 @@ public class FtpSenderService extends AbstractService implements SenderAware {
                                 "Timestamp Pattern",
                                 "The pattern of the timestamp that should be appended. Use pattern syntax of <a href=\"http://java.sun.com/j2se/1.5.0/docs/api/java/text/SimpleDateFormat.html\">SimpleDateFormat</a>.",
                                 DEFAULT_TIMESTAMP_PATTERN ) );
+        
+        ListParameter transferModeListParam = new ListParameter();
+        transferModeListParam.addElement( "Auto", "auto" );
+        transferModeListParam.addElement( "Binary", "binary" );
+        transferModeListParam.addElement( "ASCII", "ascii" );
+        parameterMap.put( TRANSFER_MODE_PARAM_NAME, new ParameterDescriptor( ParameterType.LIST, "Transfer mode",
+                "Use Automatic/Binary/ASCII transfer mode (default is Auto)", transferModeListParam ) );
 
     }
 
@@ -193,6 +203,14 @@ public class FtpSenderService extends AbstractService implements SenderAware {
                 if ( ftpClient.login( connection.getLoginName(), connection.getPassword() ) ) {
                     LOG.trace( "Connected to " + url.getHost() + "." );
 
+                    ListParameter transfermode = getParameter( TRANSFER_MODE_PARAM_NAME );
+                    if (transfermode != null && "binary".equals( transfermode.getSelectedValue() )) {
+                        ftpClient.setFileType( FTP.BINARY_FILE_TYPE );
+                        if ( LOG.isDebugEnabled() ) {
+                            LOG.debug( "Entered binary mode" );
+                        }
+                    }
+                    
                     LOG.trace( "Directory URL Path: " + url.getPath() );
                     String directory = url.getPath();
                     if ( directory.startsWith( "/" ) ) {

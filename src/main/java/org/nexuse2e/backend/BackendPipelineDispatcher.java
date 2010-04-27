@@ -149,12 +149,14 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
      * @param messageId
      * @param label
      * @param primaryKey
-     * @param payload
+     * @param payloads A list of Objects that can be either of type <code>byte[]</code> or {@link MessagePayloadPojo}.
+     *                  The elements must not necessarily be all of the same type. 
+     * @param errors
      * @return
      * @throws NexusException
      */
     public MessageContext processMessage( String partnerId, String choreographyId, String actionId,
-            String conversationId, String messageId, String label, Object primaryKey, List<byte[]> payloads,
+            String conversationId, String messageId, String label, Object primaryKey, List<? extends Object> payloads,
             List<ErrorDescriptor> errors ) throws NexusException {
         
         String contentId = null;
@@ -220,7 +222,6 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
             }
         }
 
-
         messageContext.setConversation( messagePojo.getConversation() );
 
         Object syncObj = Engine.getInstance().getTransactionService().getSyncObjectForConversation( messageContext.getConversation() );
@@ -229,29 +230,48 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
             if ( primaryKey != null ) {
                 messageContext.setData( primaryKey );
             }
-            List<MessagePayloadPojo> bodyParts = new ArrayList<MessagePayloadPojo>();
-            int index =1;
-            for ( byte[] payload : payloads ) {
-                if ( payload != null && payload.length > 0 ) {
-                    MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo();
-                    messagePayloadPojo.setMessage( messagePojo );
-                    messagePayloadPojo.setPayloadData( payload );
-                    // TODO: MIME type must be determined!
-                    messagePayloadPojo.setMimeType( "text/xml" );
-                    if ( StringUtils.isEmpty( contentId ) ) {
-                        messagePayloadPojo.setContentId( messagePojo.getMessageId() + "__body" + index++ );
+            
+            // payload handling > detect type > only set values, if empty yet
+            List<MessagePayloadPojo> payloadPojos = new ArrayList<MessagePayloadPojo>();
+            if ( payloads != null ) {
+                int payloadIndex = 1;
+                for ( Object currPayload : payloads ) {
+                    MessagePayloadPojo messagePayloadPojo = null;
+                    if ( currPayload instanceof byte[] ) {
+                        byte[] payloadData = (byte[]) currPayload;
+                        if ( payloadData != null && payloadData.length > 0 ) {
+                            messagePayloadPojo = new MessagePayloadPojo();
+                            messagePayloadPojo.setPayloadData( payloadData );
+                        }
+                    } else if ( currPayload instanceof MessagePayloadPojo ) {
+                        messagePayloadPojo = (MessagePayloadPojo) currPayload;
                     } else {
-                        messagePayloadPojo.setContentId( contentId + "__body_" + index++ );
+                        throw new NexusException( "Invalid payload type detected. Must be either of type byte[] or MessagePayloadPojo." );
                     }
-                    messagePayloadPojo.setSequenceNumber( new Integer( 1 ) );
+                    
+                    payloadPojos.add( messagePayloadPojo );
+                    
+                    // init payload pojo
+                    messagePayloadPojo.setMessage( messagePojo );
+                    if ( StringUtils.isEmpty( messagePayloadPojo.getMimeType() ) ) {
+                        // TODO: MIME type must be determined!
+                        messagePayloadPojo.setMimeType( "text/xml" );
+                    }
+                    if ( StringUtils.isEmpty( messagePayloadPojo.getContentId() ) ) {
+                        if ( StringUtils.isEmpty( contentId ) ) {
+                            messagePayloadPojo.setContentId( messagePojo.getMessageId() + "__body" + payloadIndex );
+                        } else {
+                            messagePayloadPojo.setContentId( contentId + "__body_" + payloadIndex );
+                        }
+                    }
+                    messagePayloadPojo.setSequenceNumber( new Integer( payloadIndex ) );
                     messagePayloadPojo.setCreatedDate( messagePojo.getCreatedDate() );
                     messagePayloadPojo.setModifiedDate( messagePojo.getCreatedDate() );
-    
-                    bodyParts.add( messagePayloadPojo );
-                    //messageContext.setData( payload );    
+                    payloadIndex++;
                 }
             }
-            messagePojo.setMessagePayloads( bodyParts );
+            // attach payloads to message
+            messagePojo.setMessagePayloads( payloadPojos );
     
             if ( errors != null ) {
                 messagePojo.setErrors( errors );

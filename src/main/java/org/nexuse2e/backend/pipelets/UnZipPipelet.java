@@ -24,7 +24,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -57,6 +59,11 @@ public class UnZipPipelet extends AbstractPipelet {
         int count = 0;
         byte data[] = new byte[BUFFER];
 
+        // one zipped payload can contain multiple payloads (combined mode)
+        // we need the ability to add new payloads, so we better replace all
+        // to keep the order of apearance and not mess with the iterator
+        List<MessagePayloadPojo> newPayloads = new ArrayList<MessagePayloadPojo>();
+        
         MessagePojo messagePojo = messageContext.getMessagePojo();
         for ( MessagePayloadPojo messagePayloadPojo : messagePojo.getMessagePayloads() ) {
             byte payloadData[] = messagePayloadPojo.getPayloadData();
@@ -66,36 +73,51 @@ public class UnZipPipelet extends AbstractPipelet {
                     && ( payloadData[3] == 0x04 ) ) {
                 try {
                     ZipInputStream zis = new ZipInputStream( new ByteArrayInputStream( payloadData ) );
-                    ZipEntry zipEntry = zis.getNextEntry();
-
-                    String fileName = zipEntry.getName();
-
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    BufferedOutputStream bos = new BufferedOutputStream( baos, BUFFER );
-                    while ( ( count = zis.read( data, 0, BUFFER ) ) != -1 ) {
-                        bos.write( data, 0, count );
+                    ZipEntry zipEntry = null;
+                    
+                    while ( ( zipEntry = zis.getNextEntry() ) != null ) {
+                    
+                        String fileName = zipEntry.getName();
+                        
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        BufferedOutputStream bos = new BufferedOutputStream( baos, BUFFER );
+                        while ( ( count = zis.read( data, 0, BUFFER ) ) != -1 ) {
+                            bos.write( data, 0, count );
+                        }
+                        bos.flush();
+                        bos.close();
+    
+                        zis.closeEntry();
+                        
+                        MessagePayloadPojo newPayload = (MessagePayloadPojo) messagePayloadPojo.clone();
+                        newPayload.setPayloadData( baos.toByteArray() );
+                        newPayload.setMessage( messagePojo );
+                        newPayload.setContentId( fileName );
+                        if ( ( Engine.getInstance() != null ) && ( fileName != null ) ) {
+                            mimeType = Engine.getInstance().getMimeFromFileName( fileName );
+                        }
+                        newPayload.setMimeType( mimeType );
+                        newPayloads.add( newPayload );
+                        
+                        LOG.debug( "Uncompressed size of file '" + fileName + "': "
+                                + newPayload.getPayloadData().length );
+                        
                     }
-                    bos.flush();
-                    bos.close();
-
-                    zis.closeEntry();
+                    
                     zis.close();
-
-                    messagePayloadPojo.setPayloadData( baos.toByteArray() );
-                    if ( ( Engine.getInstance() != null ) && ( fileName != null ) ) {
-                        mimeType = Engine.getInstance().getMimeFromFileName( fileName );
-                    }
-                    messagePayloadPojo.setMimeType( mimeType );
-
-                    LOG.debug( "Uncompressed size of file '" + fileName + "': "
-                            + messagePayloadPojo.getPayloadData().length );
-                } catch ( IOException ioEx ) {
-                    throw new NexusException( "Error decompressing message payload.  Exception:  " + ioEx );
+                    
+                } catch ( IOException e ) {
+                    throw new NexusException( "Error decompressing message payload.", e );
+                } catch ( CloneNotSupportedException e ) {
+                    throw new NexusException( "Error decompressing message payload.", e );
                 }
             } else {
                 LOG.info( "Message payload not a ZIP file!" );
             }
         }
+        
+        // replace payloads
+        messagePojo.setMessagePayloads( newPayloads );
 
         return messageContext;
     }
