@@ -1,22 +1,3 @@
-/**
- *  NEXUSe2e Business Messaging Open Source
- *  Copyright 2000-2009, Tamgroup and X-ioma GmbH
- *
- *  This is free software; you can redistribute it and/or modify it
- *  under the terms of the GNU Lesser General Public License as
- *  published by the Free Software Foundation version 2.1 of
- *  the License.
- *
- *  This software is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- *  Lesser General Public License for more details.
- *
- *  You should have received a copy of the GNU Lesser General Public
- *  License along with this software; if not, write to the Free
- *  Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- *  02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
 package org.nexuse2e.dao;
 
 import java.util.List;
@@ -108,5 +89,18 @@ public interface PersistentPropertyDAO {
      * <code>transaction</code>) is <code>null</code>.
      */
     public abstract PersistentPropertyPojo getPersistentProperty( String namespace, String version, String name );
+    
+    /**
+     * Updates a persistent property in a transactional manner.
+     * @param namespace The namespace. Must not be <code>null</code>.
+     * @param version The version. Must not be <code>null</code>.
+     * @param name The name. Must not be <code>null</code>.
+     * @param callback The callback to be invoked. If the requested persistent property was not found,
+     * the callback will be invoked with a newly created <code>PersistenPropertyPojo</code> object.
+     * If the callback method returns <code>true</code>, persistent property changes will be committed,
+     * otherwise rolled back. Shall not be <code>null</code>.
+     */
+    public void updatePersistentPropertyInTransaction(
+            String namespace, String version, String name, PersistentPropertyUpdateCallback callback);
 
 }

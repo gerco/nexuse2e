@@ -235,28 +235,32 @@ public class ServerPropertiesUtil {
         return value;
     }
 
+    
     /**
-     * @param value
-     * @param payload
-     * @param context
-     * @return
+     * Replace all payload-dependent variables with their values.
+     * @param value The string value to be replaced.
+     * @param sequenceNumber The payload sequence number.
+     * @param context The message context.
+     * @param anySequenceNumber If <code>true</code>, indicates that all sequence numbers shall be replaced. Otherwise,
+     * only sequence number less than or equal to the payload count will be replaced.
+     * @return The replaced string value.
      */
-    public static String replacePayloadDependedValues( String value, int payload, MessageContext context ) {
-
+    public static String replacePayloadDependentValues( String value, int sequenceNumber, MessageContext context, boolean anySequenceNumber ) {
+        
         if ( value != null && context != null && context.getMessagePojo() != null
                 && context.getMessagePojo().getMessagePayloads() != null ) {
-            if ( payload <= context.getMessagePojo().getMessagePayloads().size() ) {
+            if ( sequenceNumber <= context.getMessagePojo().getMessagePayloads().size() ) {
 
-                value = StringUtils.replace( value, ServerProperty.PAYLOAD_SEQUENCE.getValue(), "" + payload );
+                value = StringUtils.replace( value, ServerProperty.PAYLOAD_SEQUENCE.getValue(), "" + sequenceNumber );
                 if ( context.getMessagePojo().getMessagePayloads().size() > 1 ) {
                     value = StringUtils.replace( value, ServerProperty.PAYLOAD_CONDITIONAL_SEQUENCE.getValue(), ""
-                            + payload );
+                            + sequenceNumber );
                 } else {
                     value = StringUtils.replace( value, ServerProperty.PAYLOAD_CONDITIONAL_SEQUENCE.getValue(), "");
                 }
                 
                 String extension = Engine.getInstance().getFileExtensionFromMime(
-                        context.getMessagePojo().getMessagePayloads().get( payload-1 ).getMimeType().toLowerCase() );
+                        context.getMessagePojo().getMessagePayloads().get( sequenceNumber - 1 ).getMimeType().toLowerCase() );
                 if ( StringUtils.isEmpty( extension ) ) {
                     extension = "dat";
                 }
@@ -265,6 +269,12 @@ public class ServerPropertiesUtil {
         }
 
         return value;
+    }
+
+        
+        
+    public static String replacePayloadDependedValues( String value, int payload, MessageContext context ) {
+        return replacePayloadDependentValues( value, payload, context, false );
     }
 
 }

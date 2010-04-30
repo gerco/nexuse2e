@@ -1,22 +1,3 @@
-/**
- *  NEXUSe2e Business Messaging Open Source
- *  Copyright 2000-2009, Tamgroup and X-ioma GmbH
- *
- *  This is free software; you can redistribute it and/or modify it
- *  under the terms of the GNU Lesser General Public License as
- *  published by the Free Software Foundation version 2.1 of
- *  the License.
- *
- *  This software is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- *  Lesser General Public License for more details.
- *
- *  You should have received a copy of the GNU Lesser General Public
- *  License along with this software; if not, write to the Free
- *  Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- *  02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
 package org.nexuse2e.dao;
 
 import java.util.List;
@@ -144,5 +125,38 @@ public class PersistentPropertyDAOImpl extends BasicDAOImpl implements Persisten
             return null;
         }
         return (PersistentPropertyPojo) l.get( 0 );
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.dao.PersistentPropertyDAO#updatePersistentPropertyInTransaction(java.lang.String, java.lang.String, java.lang.String, org.nexuse2e.dao.PersistenPropertyUpdateCallback)
+     */
+    public void updatePersistentPropertyInTransaction(String namespace,
+            String version, String name,
+            PersistentPropertyUpdateCallback callback) {
+
+        if (callback != null) {
+            DetachedCriteria dc = getQuery( namespace, version, false );
+            dc.add( Restrictions.eq( "name", name ) );
+            Transaction t = getSession().beginTransaction();
+            try {
+                List<?> l = getListThroughSessionFind( dc,0,0 );
+                PersistentPropertyPojo property;
+                if (l != null && !l.isEmpty()) {
+                    property = (PersistentPropertyPojo) l.get(0);
+                } else {
+                    property = new PersistentPropertyPojo(0, namespace, version, name, null);
+                }
+                boolean commit = callback.update(property);
+    
+                if (commit) {
+                    saveOrUpdateRecord(property);
+                    t.commit();
+                } else {
+                    t.rollback();
+                }
+            } finally {
+                t.rollback();
+            }
+        }
     }
 }
