@@ -74,18 +74,18 @@ public class IncrementingSequenceNumberGeneratorPipelet extends AbstractPipelet 
      */
     protected int getNextSequenceNumber(MessageContext messageContext) {
         
-        boolean partnerSpecific = getParameter(PARTNER_SPECIFIC_PARAM_NAME);
-        boolean choreographySpecific = getParameter(CHOREOGRAPHY_SPECIFIC_PARAM_NAME);
-        boolean actionSpecific = getParameter(ACTION_SPECIFIC_PARAM_NAME);
+        Boolean partnerSpecific = getParameter(PARTNER_SPECIFIC_PARAM_NAME);
+        Boolean choreographySpecific = getParameter(CHOREOGRAPHY_SPECIFIC_PARAM_NAME);
+        Boolean actionSpecific = getParameter(ACTION_SPECIFIC_PARAM_NAME);
         String sequenceName = getParameter(SEQUENCE_NAME_PARAM_NAME);
         if (StringUtils.isBlank(sequenceName)) {
             sequenceName = DEFAULT_SEQUENCE_NAME;
         }
         
         String key = sequenceName
-            + (partnerSpecific && messageContext.getPartner() != null ? "_" + messageContext.getPartner().getName() : "")
-            + (choreographySpecific && messageContext.getChoreography() != null ? "_" + messageContext.getChoreography().getName() : "")
-            + (actionSpecific && messageContext.getConversation() != null && messageContext.getConversation().getCurrentAction() != null ?
+            + (partnerSpecific != null && partnerSpecific.booleanValue() && messageContext.getPartner() != null ? "_" + messageContext.getPartner().getName() : "")
+            + (choreographySpecific != null && choreographySpecific.booleanValue() && messageContext.getChoreography() != null ? "_" + messageContext.getChoreography().getName() : "")
+            + (actionSpecific != null && actionSpecific.booleanValue() && messageContext.getConversation() != null && messageContext.getConversation().getCurrentAction() != null ?
                     "_" + messageContext.getConversation().getCurrentAction().getName() : "");
         
         PersistentPropertyDAO dao = (PersistentPropertyDAO)Engine.getInstance().getBeanFactory().getBean( "persistentPropertyDao" );
