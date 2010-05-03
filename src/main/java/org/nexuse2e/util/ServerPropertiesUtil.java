@@ -249,7 +249,7 @@ public class ServerPropertiesUtil {
         
         if ( value != null && context != null && context.getMessagePojo() != null
                 && context.getMessagePojo().getMessagePayloads() != null ) {
-            if ( sequenceNumber <= context.getMessagePojo().getMessagePayloads().size() ) {
+            if ( anySequenceNumber || sequenceNumber <= context.getMessagePojo().getMessagePayloads().size() ) {
 
                 value = StringUtils.replace( value, ServerProperty.PAYLOAD_SEQUENCE.getValue(), "" + sequenceNumber );
                 if ( context.getMessagePojo().getMessagePayloads().size() > 1 ) {
@@ -259,12 +259,14 @@ public class ServerPropertiesUtil {
                     value = StringUtils.replace( value, ServerProperty.PAYLOAD_CONDITIONAL_SEQUENCE.getValue(), "");
                 }
                 
-                String extension = Engine.getInstance().getFileExtensionFromMime(
-                        context.getMessagePojo().getMessagePayloads().get( sequenceNumber - 1 ).getMimeType().toLowerCase() );
-                if ( StringUtils.isEmpty( extension ) ) {
-                    extension = "dat";
+                if ( !anySequenceNumber ) {
+                    String extension = Engine.getInstance().getFileExtensionFromMime(
+                            context.getMessagePojo().getMessagePayloads().get( sequenceNumber - 1 ).getMimeType().toLowerCase() );
+                    if ( StringUtils.isEmpty( extension ) ) {
+                        extension = "dat";
+                    }
+                    value = StringUtils.replace( value, ServerProperty.PAYLOAD_MIME_TYPE.getValue(), extension );
                 }
-                value = StringUtils.replace( value, ServerProperty.PAYLOAD_MIME_TYPE.getValue(), extension );
             }
         }
 

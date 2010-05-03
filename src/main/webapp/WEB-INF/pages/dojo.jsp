@@ -21,7 +21,7 @@
 --%>
 <script type="text/javascript">
 	var djConfig = {
-		isDebug:true, parseOnLoad:true
+		isDebug:false, parseOnLoad:true
   };
 </script>
   

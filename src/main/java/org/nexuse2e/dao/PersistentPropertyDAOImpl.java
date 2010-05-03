@@ -137,7 +137,7 @@ public class PersistentPropertyDAOImpl extends BasicDAOImpl implements Persisten
         if (callback != null) {
             DetachedCriteria dc = getQuery( namespace, version, false );
             dc.add( Restrictions.eq( "name", name ) );
-            Transaction t = getSession().beginTransaction();
+//            Transaction t = getSession().beginTransaction();
             try {
                 List<?> l = getListThroughSessionFind( dc,0,0 );
                 PersistentPropertyPojo property;
@@ -150,12 +150,12 @@ public class PersistentPropertyDAOImpl extends BasicDAOImpl implements Persisten
     
                 if (commit) {
                     saveOrUpdateRecord(property);
-                    t.commit();
+//                    t.commit();
                 } else {
-                    t.rollback();
+//                    t.rollback();
                 }
             } finally {
-                t.rollback();
+//                t.rollback();
             }
         }
     }
