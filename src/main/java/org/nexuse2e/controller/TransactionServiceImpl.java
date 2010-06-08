@@ -43,6 +43,7 @@ import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.IdGenerator;
 import org.nexuse2e.dao.LogDAO;
 import org.nexuse2e.dao.TransactionDAO;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.Constants;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.ActionPojo;
@@ -247,7 +248,7 @@ public class TransactionServiceImpl implements TransactionService {
      */
     public ConversationPojo getConversation( String conversationId ) throws NexusException {
 
-        LOG.trace( "Entering TransactionDataService.getConversation..." );
+        LOG.trace(new LogMessage(  "Entering TransactionDataService.getConversation...",conversationId,"") );
         return complete( getTransactionDao().getConversationByConversationId( conversationId ) );
 
     }
@@ -505,10 +506,10 @@ public class TransactionServiceImpl implements TransactionService {
     public void storeTransaction( ConversationPojo conversationPojo, MessagePojo messagePojo ) throws NexusException {
 
         if ( ( conversationPojo != null ) && ( messagePojo != null ) ) {
-            LOG.debug( "storeTransaction: " + conversationPojo.getConversationId() + " - "
-                            + messagePojo.getMessageId() );
+            LOG.debug(new LogMessage(  "storeTransaction: " + conversationPojo.getConversationId() + " - "
+                            + messagePojo.getMessageId(),messagePojo) );
         } else if ( conversationPojo != null ) {
-            LOG.debug( "storeTransaction: " + conversationPojo.getConversationId() );
+            LOG.debug(new LogMessage(  "storeTransaction: " + conversationPojo.getConversationId(),messagePojo) );
         }
         getTransactionDao().storeTransaction( conversationPojo, messagePojo );
     } // storeTransaction
@@ -561,18 +562,18 @@ public class TransactionServiceImpl implements TransactionService {
     /* (non-Javadoc)
      * @see org.nexuse2e.controller.TransactionService#registerProcessingMessage(java.lang.String, java.util.concurrent.ScheduledFuture)
      */
-    public void registerProcessingMessage( String id, ScheduledFuture<?> handle, ScheduledExecutorService scheduler ) {
+    public void registerProcessingMessage( MessagePojo message, ScheduledFuture<?> handle, ScheduledExecutorService scheduler ) {
 
-        LOG.debug( "registerProcessingMessage: " + id );
+        LOG.debug( new LogMessage ("registerProcessingMessage: " + message.getMessageId(),"unknown",message.getMessageId()) );
 
         synchronized ( processingMessages ) {
-            if ( !processingMessages.containsKey( id ) ) {
-                processingMessages.put( id, handle );
-                schedulers.put( id, scheduler );
+            if ( !processingMessages.containsKey( message.getMessageId() ) ) {
+                processingMessages.put( message.getMessageId(), handle );
+                schedulers.put( message.getMessageId(), scheduler );
             } else {
                 handle.cancel( false );
                 scheduler.shutdownNow();
-                LOG.warn( "Request to process message that was already being processed: " + id );
+                LOG.warn( new LogMessage( "Request to process message that was already being processed: " + message.getMessageId(),message) );
                 new Exception().printStackTrace();
             }
         }
@@ -583,17 +584,28 @@ public class TransactionServiceImpl implements TransactionService {
      */
     public void deregisterProcessingMessage( String id ) {
 
-        LOG.debug( "deregisterProcessingMessage: " + id );
+        String conversation = "unknown";
+        MessagePojo message = null;
+        try {
+            message = getMessage( id );
+        } catch ( NexusException e1 ) {
+            e1.printStackTrace();
+        }
+        if(message != null && message.getConversation() != null) {
+            conversation = message.getConversation().getConversationId();
+        }
+        LOG.debug( new LogMessage("deregisterProcessingMessage: " + id,conversation,id) );
 
         synchronized ( processingMessages ) {
             ScheduledFuture<?> handle = processingMessages.get( id );
             if ( handle != null ) {
                 handle.cancel( false );
-                LOG.debug( "deregisterProcessingMessage - processing cancelled!" );
+                LOG.debug( new LogMessage("deregisterProcessingMessage - processing cancelled!",conversation,id) );
+                LOG.debug( "Current Status: "+MessagePojo.getStatusName( message.getStatus()) );
                 try {
                     ScheduledExecutorService scheduler = schedulers.remove( id );
                     if ( scheduler != null ) {
-                        LOG.debug( "Shutting down scheduler..." );
+                        LOG.debug( new LogMessage("Shutting down scheduler...",conversation,id) );
                         scheduler.shutdownNow();
                     }
                 } catch ( Exception e ) {
@@ -601,7 +613,7 @@ public class TransactionServiceImpl implements TransactionService {
                 }
                 processingMessages.remove( id );
             } else {
-                LOG.warn( "No handle found when trying to deregister processing message: " + id );
+                LOG.warn( new LogMessage("No handle found when trying to deregister processing message: " + id,conversation,id) );
             }
         }
     } // deregisterProcessingMessage
@@ -618,7 +630,7 @@ public class TransactionServiceImpl implements TransactionService {
         try {
             updateTransaction( messagePojo, true );
         } catch (StateTransitionException stex) {
-            LOG.error( "Program error: Unexpected " + stex + " was thrown" );
+            LOG.error( new LogMessage( "Program error: Unexpected " + stex + " was thrown",messagePojo) );
             stex.printStackTrace();
         }
         deregisterProcessingMessage( id );

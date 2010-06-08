@@ -39,6 +39,7 @@ import org.nexuse2e.backend.pipelets.helper.ResponseSender;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.MessagePayloadPojo;
@@ -266,7 +267,7 @@ public class TestReplyEndpointPipelet extends AbstractPipelet {
             fileOutputStream.flush();
             fileOutputStream.close();
 
-            LOG.trace( "Wrote output file: " + fileName.toString() );
+            LOG.trace(new LogMessage(  "Wrote output file: " + fileName.toString(),messageContext.getMessagePojo()) );
         }
 
         return fileName.toString();

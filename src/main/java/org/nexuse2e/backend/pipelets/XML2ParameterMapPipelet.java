@@ -36,6 +36,7 @@ import org.nexuse2e.backend.pipelets.helper.RequestResponseData;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.xml.sax.Attributes;
@@ -98,7 +99,7 @@ public class XML2ParameterMapPipelet extends AbstractPipelet {
         RequestResponseData requestResponseData = null;
 
         if ( ( messageContext.getData() == null ) || !( messageContext.getData() instanceof RequestResponseData ) ) {
-            LOG.error( "Wrong class detected in data field, found " + messageContext.getData().getClass() );
+            LOG.error(new LogMessage(  "Wrong class detected in data field, found " + messageContext.getData().getClass() ,messageContext.getMessagePojo()));
             throw new NexusException( "Wrong class detected in data field, found "
                     + messageContext.getData().getClass() );
         }

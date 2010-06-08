@@ -34,6 +34,7 @@ import org.nexuse2e.backend.pipelets.helper.PartnerSpecificConfigurations;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.MessagePayloadPojo;
@@ -164,9 +165,9 @@ public class FlatFileParserPipelet extends AbstractPipelet {
                 result = theFlatFileParser.process( bias );
 
                 if ( LOG.isTraceEnabled() ) {
-                    LOG.trace( "...................." );
-                    LOG.trace( result );
-                    LOG.trace( "...................." );
+                    LOG.trace(new LogMessage(  "....................",messageContext.getMessagePojo()) );
+                    LOG.trace( new LogMessage( result.toString(), messageContext.getMessagePojo()) );
+                    LOG.trace( new LogMessage( "....................",messageContext.getMessagePojo()) );
                 }
 
                 messageContext.setData( result );

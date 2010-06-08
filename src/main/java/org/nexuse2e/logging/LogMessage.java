@@ -35,6 +35,7 @@ public class LogMessage implements Serializable {
     private String conversationId = "unknown";
     private String messageId      = "unknown";
 
+    
     public LogMessage( String description ) {
 
         this.description = description;

@@ -66,6 +66,7 @@ import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.configuration.ListParameter;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.pojo.MessagePayloadPojo;
@@ -206,7 +207,7 @@ public class SmtpSender extends AbstractService implements SenderAware {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     mimeMsg.writeTo( baos );
                     String dump = baos.toString();
-                    LOG.debug( "********** OUTBOUND *********\n" + dump + "\n*****************************" );
+                    LOG.debug(new LogMessage( "********** OUTBOUND *********\n" + dump + "\n*****************************",messageContext.getMessagePojo()) );
                 }
 
                 // Send the message
@@ -214,11 +215,11 @@ public class SmtpSender extends AbstractService implements SenderAware {
                 
                 transport.close();
             } else {
-                LOG.error( "Cannot connect" );
+                LOG.error( new LogMessage("Cannot connect",messageContext.getMessagePojo()) );
             }
 
         } catch ( Exception ex ) {
-            LOG.error( "Error sending SMTP message: " + ex );
+            LOG.error( new LogMessage("Error sending SMTP message: " + ex,messageContext.getMessagePojo()) );
             throw new NexusException( ex.getMessage() );
         }
         
@@ -387,7 +388,7 @@ public class SmtpSender extends AbstractService implements SenderAware {
                     mimeBodyPart = signer.generateEncapsulated( mimeBodyPart, CertificateUtil.DEFAULT_JCE_PROVIDER );
 
                     // Encrypt body part
-                    LOG.debug( "Encrypting payload using TDES..." );
+                    LOG.debug( new LogMessage("Encrypting payload using TDES...",msg) );
                     mimeBodyPart = generator.generate( mimeBodyPart, SMIMEEnvelopedGenerator.DES_EDE3_CBC, 128,
                             CertificateUtil.DEFAULT_JCE_PROVIDER );
                 }
@@ -424,7 +425,7 @@ public class SmtpSender extends AbstractService implements SenderAware {
         Transport transport = null;
 
         if ( BeanStatus.STARTED != status ) {
-            LOG.warn( "SMTP service not started!" );
+            LOG.warn(new LogMessage( "SMTP service not started!",messagePipelineParameter.getMessagePojo()) );
             return;
         }
 
@@ -459,7 +460,7 @@ public class SmtpSender extends AbstractService implements SenderAware {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 mimeMsg.writeTo( baos );
                 String dump = baos.toString();
-                LOG.debug( "********** OUTBOUND *********\n" + dump + "\n*****************************" );
+                LOG.debug( new LogMessage("********** OUTBOUND *********\n" + dump + "\n*****************************",messagePipelineParameter.getMessagePojo()) );
             }
 
             // Send the message

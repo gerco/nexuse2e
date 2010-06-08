@@ -27,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
-import org.nexuse2e.ProtocolSpecificKey;
 import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.controller.StateTransitionException;
@@ -61,7 +60,7 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
         
         int interval = Constants.DEFAULT_MESSAGE_INTERVAL;
 
-        FrontendPipeline pipeline = getProtocolSpecificPipeline( messageContext.getProtocolSpecificKey() );
+        FrontendPipeline pipeline = getProtocolSpecificPipeline( messageContext );
         if ( pipeline == null ) {
             throw new NexusException( "No valid pipeline found for " + messageContext.getProtocolSpecificKey() );
         }
@@ -102,9 +101,9 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                 LOG.debug( new LogMessage( "Waiting " + interval + " seconds until message resend...", messageContext
                         .getMessagePojo() ) );
                 Engine.getInstance().getTransactionService().registerProcessingMessage(
-                        messageContext.getMessagePojo().getMessageId(), handle, scheduler );
+                        messageContext.getMessagePojo(), handle, scheduler );
             } else {
-                LOG.warn( "Message is already being processed: " + messageContext.getMessagePojo().getMessageId() );
+                LOG.warn( new LogMessage ("Message is already being processed: " + messageContext.getMessagePojo().getMessageId(),messageContext.getMessagePojo()) );
             }
         } else {
             new Thread( messageSender, messageContext.getMessagePojo().getMessageId() ).start();
@@ -117,12 +116,11 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
      * @param protocolSpecificKey
      * @return
      */
-    private FrontendPipeline getProtocolSpecificPipeline( ProtocolSpecificKey protocolSpecificKey ) {
-
-        if (frontendOutboundPipelines != null) {
+    private FrontendPipeline getProtocolSpecificPipeline( MessageContext messageContext ) {
+       if (frontendOutboundPipelines != null) {
             for ( int i = 0; i < frontendOutboundPipelines.length; i++ ) {
-                LOG.debug( "comparing keys:" + protocolSpecificKey + " - " + frontendOutboundPipelines[i].getKey() );
-                if ( frontendOutboundPipelines[i].getKey().equals( protocolSpecificKey ) ) {
+                LOG.debug( new LogMessage ("comparing keys:" + messageContext.getProtocolSpecificKey() + " - " + frontendOutboundPipelines[i].getKey(), messageContext.getMessagePojo()) );
+                if ( frontendOutboundPipelines[i].getKey().equals( messageContext.getProtocolSpecificKey() ) ) {
                     return frontendOutboundPipelines[i];
                 }
             }
@@ -212,14 +210,14 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
             this.messageContext = messageContext;
             this.pipeline = pipeline;
             this.retries = retries;
-            LOG.debug( "Retries: " + retries );
+            LOG.debug( new LogMessage("Retries: " + retries, messageContext.getMessagePojo()) );
         }
 
         public void run() {
 
             MessagePojo messagePojo = messageContext.getMessagePojo();
 
-            LOG.trace( "Message ( " + messagePojo.getMessageId() + " ) end timestamp: " + messagePojo.getEndDate() );
+            LOG.trace( new LogMessage("Message ( " + messagePojo.getMessageId() + " ) end timestamp: " + messagePojo.getEndDate(),messagePojo) );
 
             Object syncObj = Engine.getInstance().getTransactionService().getSyncObjectForConversation( messageContext.getConversation() );
             synchronized (syncObj) {
@@ -233,7 +231,7 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                         if ( messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_NORMAL
                                 && messagePojo.getEndDate() != null ) {
                             // If message has been ack'ed while we were waiting do nothing
-                            LOG.info( "Cancelled sending message (ack was just received): " + messagePojo.getMessageId() );
+                            LOG.info( new LogMessage( "Cancelled sending message (ack was just received): " + messagePojo.getMessageId(),messagePojo) );
                             cancelRetrying( false );
                             return;
                         }
@@ -247,11 +245,16 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                     } catch ( Throwable e ) {
                         // Persist retry count changes
                         try {
+                            
+                            if ( messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ACK) {
+                                messagePojo.setStatus( org.nexuse2e.messaging.Constants.MESSAGE_STATUS_FAILED );
+                            }
+                            
                             Engine.getInstance().getTransactionService().updateTransaction( messagePojo );
                         } catch ( NexusException e1 ) {
                             LOG.error( new LogMessage( "Error saving message: " + e1, messagePojo ), e1 );
                         } catch ( StateTransitionException stex ) {
-                            LOG.warn( stex.getMessage() );
+                            LOG.warn( new LogMessage( stex.getMessage(),messagePojo) );
                         }
     
                         LOG.error( new LogMessage( "Error sending message: " + e, messagePojo ), e );
@@ -262,7 +265,7 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                             Engine.getInstance().getCurrentConfiguration().getStaticBeanContainer()
                                     .getFrontendInboundDispatcher().processMessage( returnedMessageContext );
                         } catch ( NexusException e ) {
-                            LOG.error( "Error processing synchronous reply: " + e );
+                            LOG.error( new LogMessage( "Error processing synchronous reply: " + e,messagePojo) );
                         }
                     }
     
@@ -302,7 +305,7 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                     } catch ( StateTransitionException stex ) {
                         LOG.warn( stex.getMessage() );
                     } catch ( NexusException e ) {
-                        LOG.error( "Error while setting conversation status to ERROR", e );
+                        LOG.error( new LogMessage( "Error while setting conversation status to ERROR",messagePojo), e );
                     }
                 }
                 Engine.getInstance().getTransactionService().deregisterProcessingMessage(

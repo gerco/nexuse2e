@@ -39,6 +39,7 @@ import javax.xml.soap.Text;
 import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.messaging.TimestampFormatter;
@@ -66,7 +67,7 @@ public class HeaderDeserializer extends AbstractPipelet {
     public MessageContext processMessage( MessageContext messageContext ) throws IllegalArgumentException,
             IllegalStateException, NexusException {
 
-        LOG.trace( "enter EbXMLV10HeaderDeserializer.processMessageImpl" );
+        LOG.trace( new LogMessage( "enter EbXMLV10HeaderDeserializer.processMessageImpl", messageContext.getMessagePojo()) );
 
         MessagePojo messagePojo = messageContext.getMessagePojo();
 
@@ -79,14 +80,14 @@ public class HeaderDeserializer extends AbstractPipelet {
         try {
             MessageFactory messageFactory = MessageFactory.newInstance();
 
-            LOG.trace( "Header:" + new String( messagePojo.getHeaderData() ) );
+            LOG.trace( new LogMessage( "Header:" + new String( messagePojo.getHeaderData() ),messageContext.getMessagePojo()) );
 
             SOAPMessage soapMessage;
             try {
                 soapMessage = messageFactory.createMessage( null,
                         new ByteArrayInputStream( messagePojo.getHeaderData() ) );
             } catch ( SOAPException soapException ) {
-                LOG.info( "Got SOAPException (" + soapException.getMessage() + "), trying to fix SOAP header" );
+                LOG.info( new LogMessage( "Got SOAPException (" + soapException.getMessage() + "), trying to fix SOAP header",messageContext.getMessagePojo()) );
                 // jre: fix invalid SOAP header sent by some Nexus versions (missing namespace decl.)
                 String token = ":Envelope";
                 String s = new String( messagePojo.getHeaderData() );
@@ -123,7 +124,7 @@ public class HeaderDeserializer extends AbstractPipelet {
                 if ( node instanceof SOAPElement ) {
                     SOAPElement element = (SOAPElement) node;
                     String localName = element.getElementName().getLocalName();
-                    LOG.trace( "LocalName=" + localName );
+                    LOG.trace( new LogMessage( "LocalName=" + localName,messageContext.getMessagePojo() ));
                     if ( localName.equals( "Acknowledgment" ) ) {
                         messagePojo.setType( org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ACK );
                         break;
@@ -143,7 +144,7 @@ public class HeaderDeserializer extends AbstractPipelet {
                 if ( node instanceof SOAPElement ) {
                     SOAPElement element = (SOAPElement) node;
                     String localName = element.getElementName().getLocalName();
-                    LOG.trace( "LocalName=" + localName );
+                    LOG.trace( new LogMessage( "LocalName=" + localName,messageContext.getMessagePojo()) );
                     if ( localName.equals( "MessageHeader" ) ) {
                         unmarshallMessageHeader( soapEnvelope, element, messagePojo );
                     } else if ( localName.equals( "AckRequested" ) ) {
@@ -155,7 +156,7 @@ public class HeaderDeserializer extends AbstractPipelet {
                     }
                 }
             }
-            LOG.trace( "unmarshall done" );
+            LOG.trace(new LogMessage( "unmarshall done",messageContext.getMessagePojo() ));
         } catch ( NexusException e ) {
             // e.printStackTrace();
             throw e;
@@ -175,7 +176,7 @@ public class HeaderDeserializer extends AbstractPipelet {
         //            }
         //        }
 
-        LOG.trace( "leave EbXMLV10HeaderDeserializer.processMessageImpl" );
+        LOG.trace( new LogMessage( "leave EbXMLV10HeaderDeserializer.processMessageImpl",messageContext.getMessagePojo()) );
 
         return messageContext;
     }
@@ -195,7 +196,7 @@ public class HeaderDeserializer extends AbstractPipelet {
         String actionId = null;
         String choreographyId = null;
 
-        LOG.trace( "enter EbXMLV10HeaderDeserializer.unmarshallMessageHeader" );
+        LOG.trace( new LogMessage( "enter EbXMLV10HeaderDeserializer.unmarshallMessageHeader",messagePojo) );
         try {
             SOAPElement element = null;
             SOAPElement innerElement = null;
@@ -221,7 +222,7 @@ public class HeaderDeserializer extends AbstractPipelet {
                                 innerElement = (SOAPElement) node;
                                 String fromIdType = innerElement.getAttributeValue( soapEnvelope.createName( "type",
                                         Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE ) );
-                                LOG.trace( "FromIDType:" + fromIdType );
+                                LOG.trace( new LogMessage( "FromIDType:" + fromIdType,messagePojo) );
                                 messagePojo.getCustomParameters().put( Constants.PROTOCOLSPECIFIC_FROMIDTYPE,
                                         fromIdType );
                                 fromId = innerElement.getValue();
@@ -230,7 +231,7 @@ public class HeaderDeserializer extends AbstractPipelet {
                                 if ( lastColon > -1 && lastColon < fromId.length() ) {
                                     fromId = fromId.substring( lastColon + 1 );
                                 }
-                                LOG.trace( "From:" + fromId );
+                                LOG.trace( new LogMessage( "From:" + fromId, messagePojo) );
                             }
                         } else {
                             throw new NexusException( "No from party found in ebXML 2.0 message!" );
@@ -246,7 +247,7 @@ public class HeaderDeserializer extends AbstractPipelet {
                                 innerElement = (SOAPElement) node;
                                 String toIdType = innerElement.getAttributeValue( soapEnvelope.createName( "type",
                                         Constants.EBXML_NAMESPACE_PREFIX, Constants.EBXML_NAMESPACE ) );
-                                LOG.trace( "ToIDType:" + toIdType );
+                                LOG.trace( new LogMessage( "ToIDType:" + toIdType,messagePojo) );
                                 messagePojo.getCustomParameters().put( Constants.PROTOCOLSPECIFIC_TOIDTYPE, toIdType );
 
                                 String to = innerElement.getValue();
@@ -255,7 +256,7 @@ public class HeaderDeserializer extends AbstractPipelet {
                                 if ( lastColon > -1 && lastColon < to.length() ) {
                                     to = to.substring( lastColon + 1 );
                                 }
-                                LOG.trace( "To:" + to );
+                                LOG.trace( new LogMessage( "To:" + to,messagePojo) );
                                 messagePojo.getCustomParameters().put( Constants.PROTOCOLSPECIFIC_TO, to );
                             }
                         } else {
@@ -263,18 +264,18 @@ public class HeaderDeserializer extends AbstractPipelet {
                         }
                     } else if ( localName.equals( "CPAId" ) ) {
                         choreographyId = element.getValue();
-                        LOG.trace( "Choreography:" + choreographyId );
+                        LOG.trace( new LogMessage( "Choreography:" + choreographyId,messagePojo) );
 
                     } else if ( localName.equals( "ConversationId" ) ) {
                         conversationId = element.getValue();
-                        LOG.trace( "Conversation:" + conversationId );
+                        LOG.trace( new LogMessage( "Conversation:" + conversationId,messagePojo) );
                     } else if ( localName.equals( "Service" ) ) {
                         String service = element.getValue();
-                        LOG.trace( "Service(? dummy, uri: required, but not saved in database):" + service );
+                        LOG.trace( new LogMessage( "Service(? dummy, uri: required, but not saved in database):" + service,messagePojo) );
                         messagePojo.getCustomParameters().put( "service", service );
                     } else if ( localName.equals( "Action" ) ) {
                         actionId = element.getValue();
-                        LOG.trace( "Action:" + actionId );
+                        LOG.trace( new LogMessage( "Action:" + actionId,messagePojo) );
                     } else if ( localName.equals( "MessageData" ) ) {
                         innerElements = element.getChildElements();
                         while ( innerElements.hasNext() ) {
@@ -286,22 +287,22 @@ public class HeaderDeserializer extends AbstractPipelet {
                                 innerElement = (SOAPElement) node;
                                 if ( innerElement.getElementName().getLocalName().equals( "MessageId" ) ) {
                                     messageId = innerElement.getValue();
-                                    LOG.trace( "MessageId:" + messageId );
+                                    LOG.trace( new LogMessage( "MessageId:" + messageId,messagePojo) );
                                 } else if ( innerElement.getElementName().getLocalName().equals( "Timestamp" ) ) {
                                     String timestamp = innerElement.getValue();
-                                    LOG.trace( "Timestamp:" + timestamp );
+                                    LOG.trace( new LogMessage( "Timestamp:" + timestamp,messagePojo) );
                                     TimestampFormatter formatter = Engine.getInstance().getTimestampFormatter( "ebxml" );
                                     Date createdDate = formatter.getTimestamp( timestamp );
                                     if ( createdDate == null ) {
                                         createdDate = new Date();
-                                        LOG.error( "Could not parse ebXML timestamp: '" + timestamp + "'" );
+                                        LOG.error( new LogMessage( "Could not parse ebXML timestamp: '" + timestamp + "'",messagePojo) );
                                     }
                                     messagePojo.setCreatedDate( createdDate );
                                     messagePojo.setModifiedDate( createdDate );
                                 } else if ( innerElement.getElementName().getLocalName().equals( "RefToMessageId" ) ) {
                                     String refToMessageId = innerElement.getValue();
                                     if ( ( refToMessageId != null ) && ( messagePojo.getReferencedMessage() == null ) ) {
-                                        LOG.trace( "RefToMessageId:" + refToMessageId );
+                                        LOG.trace( new LogMessage( "RefToMessageId:" + refToMessageId,messagePojo) );
                                         MessagePojo refMessage = Engine.getInstance().getTransactionService()
                                                 .getMessage( refToMessageId );
                                         messagePojo.setReferencedMessage( refMessage );
@@ -310,7 +311,7 @@ public class HeaderDeserializer extends AbstractPipelet {
                             }
                         }
                     } else if ( localName.equals( "DuplicateElimination" ) ) {
-                        LOG.trace( "duplicationElimination flag found!" );
+                        LOG.trace( new LogMessage( "duplicationElimination flag found!",messagePojo) );
                     }
                 }
             }
@@ -322,8 +323,8 @@ public class HeaderDeserializer extends AbstractPipelet {
             messagePojo = Engine.getInstance().getTransactionService().initializeMessage( messagePojo, messageId,
                     conversationId, actionId, fromId, choreographyId );
         } catch ( NexusException ex ) {
-            LOG.error( "Error creating message: " + ex );
-            LOG.error( "Header received:\n" + new String( messagePojo.getHeaderData() ) );
+            LOG.error( new LogMessage( "Error creating message: " + ex,messagePojo) );
+            LOG.error( new LogMessage( "Header received:\n" + new String( messagePojo.getHeaderData() ),messagePojo) );
             throw ex;
         }
 
@@ -338,7 +339,7 @@ public class HeaderDeserializer extends AbstractPipelet {
     private void unmarshallAckRequested( SOAPEnvelope soapEnvelope, SOAPElement ackRequested, MessagePojo messagePojo )
             throws NexusException {
 
-        LOG.trace( "enter EbXMLV10HeaderDeserializer.unmarshallAckRequested" );
+        LOG.trace( new LogMessage( "enter EbXMLV10HeaderDeserializer.unmarshallAckRequested",messagePojo) );
         //setReliableMessaging( true );
         /* NYI
          try {
@@ -348,7 +349,7 @@ public class HeaderDeserializer extends AbstractPipelet {
          throw new MessagingException( ex.getMessage() );
          }
          */
-        LOG.trace( "leave EbXMLV10HeaderDeserializer.unmarshallAckRequested" );
+        LOG.trace( new LogMessage( "leave EbXMLV10HeaderDeserializer.unmarshallAckRequested",messagePojo) );
     } // unmarshallAckRequested
 
     /**
@@ -360,7 +361,7 @@ public class HeaderDeserializer extends AbstractPipelet {
     private void unmarshallAcknowledgment( SOAPEnvelope soapEnvelope, SOAPElement acknowledgement,
             MessagePojo messagePojo ) throws NexusException {
 
-        LOG.trace( "enter EbXMLV10HeaderDeserializer.unmarshallAcknowledgment" );
+        LOG.trace( new LogMessage( "enter EbXMLV10HeaderDeserializer.unmarshallAcknowledgment" ,messagePojo));
         //setMessageType( MESSAGE_TYPE_ACK );
         messagePojo.setType( org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ACK );
         try {
@@ -381,7 +382,7 @@ public class HeaderDeserializer extends AbstractPipelet {
                     } else if ( localName.equals( "RefToMessageId" ) ) {
                         String refToMessageId = element.getValue();
                         if ( ( refToMessageId != null ) && ( messagePojo.getReferencedMessage() == null ) ) {
-                            LOG.trace( "RefToMessageId:" + refToMessageId );
+                            LOG.trace( new LogMessage( "RefToMessageId:" + refToMessageId,messagePojo) );
                             MessagePojo refMessage = Engine.getInstance().getTransactionService().getMessage(
                                     refToMessageId );
                             messagePojo.setReferencedMessage( refMessage );
@@ -405,11 +406,11 @@ public class HeaderDeserializer extends AbstractPipelet {
                 }
             }
         } catch ( Exception ex ) {
-            LOG.error( "Error processing acknowledgment: " + ex );
+            LOG.error( new LogMessage( "Error processing acknowledgment: " + ex,messagePojo) );
             ex.printStackTrace();
             throw new NexusException( ex.getMessage() );
         }
-        LOG.trace( "leave EbXMLV10HeaderDeserializer.unmarshallAcknowledgment" );
+        LOG.trace( new LogMessage( "leave EbXMLV10HeaderDeserializer.unmarshallAcknowledgment",messagePojo) );
     } // unmarshallAcknowledgment    
 
     /**
@@ -421,9 +422,9 @@ public class HeaderDeserializer extends AbstractPipelet {
     private void unmarshallErrorList( SOAPEnvelope soapEnvelope, SOAPElement errorList, MessagePojo messagePojo )
             throws NexusException {
 
-        LOG.trace( "enter EbXMLV10HeaderDeserializer.unmarshallErrorList" );
+        LOG.trace( new LogMessage( "enter EbXMLV10HeaderDeserializer.unmarshallErrorList",messagePojo) );
         messagePojo.setType( org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ERROR );
-        LOG.trace( "leave EbXMLV10HeaderDeserializer.unmarshallErrorList" );
+        LOG.trace( new LogMessage( "leave EbXMLV10HeaderDeserializer.unmarshallErrorList",messagePojo) );
     } // unmarshallErrorList
 
 }

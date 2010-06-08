@@ -94,7 +94,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
 
             MessagePojo messagePojo = messageContext.getMessagePojo();
 
-            LOG.trace( "Entering FrontendInboundDispatcher.processMessage..." );
+            LOG.trace( new LogMessage( "Entering FrontendInboundDispatcher.processMessage...",messagePojo) );
 
             // extract header data
 
@@ -112,11 +112,11 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                 LOG.error( new LogMessage( msg, messagePojo ) );
                 throw new NexusException( msg );
             }
-            LOG.trace( "ProtocolAdapter found for incoming message" );
+            LOG.trace( new LogMessage( "ProtocolAdapter found for incoming message",messagePojo) );
 
             try {
                 choreography = validateChoreography( messageContext, Constants.INBOUND );
-                LOG.trace( "matching choreography found" );
+                LOG.trace(new LogMessage(  "matching choreography found",messagePojo) );
             } catch ( NexusException e ) {
                 e.printStackTrace();
                 LOG.error( new LogMessage( "Error while validating choreography: " + e.getMessage(), messagePojo ) );
@@ -142,7 +142,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
 
                 try {
                     participant = validateParticipant( messageContext, Constants.INBOUND );
-                    LOG.trace( "matching participant found" );
+                    LOG.trace( new LogMessage( "matching participant found",messagePojo) );
                 } catch ( NexusException e ) {
                     e.printStackTrace();
                     LOG.error( new LogMessage( "No matching participant found: "
@@ -211,9 +211,19 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                 MessageContext duplicateMessageContext = Engine.getInstance().getTransactionService()
                         .getMessageContext( messagePojo.getMessageId() );
                 if ( duplicateMessageContext != null ) {
-                    LOG.info( "Received duplicate message: " + messagePojo.getMessageId() );
+                    LOG.info( new LogMessage( "Received duplicate message: " + messagePojo.getMessageId(),messagePojo) );
                     responseMessageContext = Engine.getInstance().getTransactionService().getMessageContext(
                             messagePojo.getMessageId(), true );
+                    if(responseMessageContext != null && responseMessageContext.getMessagePojo() != null ) {
+                        LOG.trace( new LogMessage( "response Message context: " +responseMessageContext.getMessagePojo().getMessageId(),messagePojo) );
+                    } else {
+                        if(responseMessageContext == null) {
+                            LOG.trace( new LogMessage( "no response context found",messagePojo) );
+                        } else {
+                            LOG.trace( new LogMessage( "no messagePojo found in response context",messagePojo) );
+                        }
+                    }
+                    
                 } else { // duplicate
 
                     // Forward the message to check the transition, persist it and pass to backend
@@ -235,7 +245,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                                     while ( responseMessageContext == null ) {
                                         synchronized ( synchronousReplies ) {
                                             try {
-                                                LOG.debug( "Waiting for reply..." );
+                                                LOG.debug( new LogMessage("Waiting for reply...", messagePojo) );
                                                 synchronousReplies.wait();
                                             } catch ( InterruptedException e ) {
                                                 // TODO Auto-generated catch block
@@ -246,7 +256,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                                         responseMessageContext = synchronousReplies.get( messageContext
                                                 .getMessagePojo().getMessageId() );
                                     }
-                                    LOG.debug( "Found reply: " + responseMessageContext );
+                                    LOG.debug( new LogMessage("Found reply: " + responseMessageContext, messagePojo) );
                                 }
                             } catch ( CloneNotSupportedException e ) {
                                 e.printStackTrace();
@@ -274,7 +284,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                     if ( !participant.getConnection().isSynchronous() || messageContext.isRequestMessage() ) {
                         if ( !headerInvalid
                                 && messageContext.getMessagePojo().getStatus() != Constants.MESSAGE_STATUS_FAILED ) {
-                            LOG.trace( "No error response message found, creating ack" );
+                            LOG.trace( new LogMessage( "No error response message found, creating ack",messagePojo) );
                             responseMessageContext = null;
                             if ( messageContext.isRequestMessage() ) {
                                 // check if we need to respond to a request message
@@ -288,9 +298,8 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                                     e.printStackTrace();
                                 }
                             } else {
-                                LOG
-                                        .debug( "Not reliable, not creating ack - message ID: "
-                                                + messagePojo.getMessageId() );
+                                LOG.debug(new LogMessage(  "Not reliable, not creating ack - message ID: "
+                                                + messagePojo.getMessageId(),messagePojo) );
                                 try {
                                     messageContext.getStateMachine().receivedNonReliableMessage();
                                 } catch ( StateTransitionException e ) {
@@ -298,7 +307,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                                 }
                             }
                         } else {
-                            LOG.trace( "error response message found" );
+                            LOG.trace( new LogMessage( "error response message found",messagePojo) );
                             responseMessageContext = protocolAdapter.createErrorAcknowledgement(
                                     Constants.ErrorMessageReasonCode.UNKNOWN, choreography, messageContext,
                                     errorMessages );
@@ -319,11 +328,11 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                 } else if ( !headerInvalid && ( responseMessageContext != null )
                         && responseMessageContext.getMessagePojo() != null ) {
                     try {
+                        LOG.trace( new LogMessage( "dispatching response message", messagePojo) );
                         backendOutboundDispatcher.processMessage( responseMessageContext );
                         return null;
                     } catch ( NexusException e ) {
-                        LOG
-                                .error( new LogMessage( "Unable to process Acknowledgement:" + e.getMessage(),
+                        LOG.error( new LogMessage( "Unable to process Acknowledgement:" + e.getMessage(),
                                         messagePojo ) );
                     }
                 } else {
@@ -333,25 +342,24 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                 // INT_MESSAGE_TYPE_ACK
                 // ********************************************************************************
             } else if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_ACK ) {
-                LOG.trace( "Ack detected" );
+                LOG.trace( new LogMessage( "Ack detected",messagePojo) );
 
                 // Try to identify duplicate
                 MessageContext duplicateMessageContext = Engine.getInstance().getTransactionService()
                         .getMessageContext( messagePojo.getMessageId() );
                 if ( duplicateMessageContext != null ) {
-                    LOG
-                            .info( "Received duplicate acknowledgment: "
+                    LOG.info( new LogMessage( "Received duplicate acknowledgment: "
                                     + messagePojo.getMessageId()
                                     + " for normal message: "
                                     + ( messagePojo.getReferencedMessage() != null ? messagePojo.getReferencedMessage()
-                                            : "n/a" ) );
+                                            : "n/a" ),messagePojo) );
                 } else {
                     MessagePojo referencedMessagePojo = messagePojo.getReferencedMessage();
                     if ( referencedMessagePojo != null ) {
                         try {
                             messageContext.getStateMachine().receivedAckMessage();
                         } catch ( StateTransitionException stex ) {
-                            LOG.warn( stex.getMessage() );
+                            LOG.warn(new LogMessage(  stex.getMessage(),messagePojo) );
                         }
 
                         // deregistering 
@@ -379,18 +387,17 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                 // INT_MESSAGE_TYPE_ERROR
                 // ********************************************************************************
             } else if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_ERROR ) {
-                LOG.trace( "Error detected" );
+                LOG.trace( new LogMessage( "Error detected",messagePojo) );
 
                 // Try to identify duplicate
                 MessageContext duplicateMessageContext = Engine.getInstance().getTransactionService()
                         .getMessageContext( messagePojo.getMessageId() );
                 if ( duplicateMessageContext != null ) {
-                    LOG
-                            .info( "Received duplicate error: "
+                    LOG.info( new LogMessage( "Received duplicate error: "
                                     + messagePojo.getMessageId()
                                     + " for normal message: "
                                     + ( messagePojo.getReferencedMessage() != null ? messagePojo.getReferencedMessage()
-                                            : "n/a" ) );
+                                            : "n/a" ),messagePojo) );
                 } else {
 
                     MessagePojo referencedMessagePojo = messagePojo.getReferencedMessage();
@@ -398,7 +405,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                         try {
                             messageContext.getStateMachine().receivedErrorMessage();
                         } catch ( StateTransitionException stex ) {
-                            LOG.warn( stex.getMessage() );
+                            LOG.warn( new LogMessage( stex.getMessage(),messagePojo) );
                         }
 
                         Engine.getInstance().getEngineController().getEngineControllerStub().broadcastAck(

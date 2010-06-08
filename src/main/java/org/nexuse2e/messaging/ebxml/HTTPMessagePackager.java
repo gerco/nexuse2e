@@ -28,6 +28,7 @@ import javax.xml.soap.SOAPException;
 
 import org.apache.log4j.Logger;
 import org.nexuse2e.configuration.ParameterDescriptor;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.MessagePayloadPojo;
@@ -59,7 +60,7 @@ public class HTTPMessagePackager extends AbstractPipelet {
 
         String serializedSOAPMessage = null;
         MessagePojo messagePojo = messageContext.getMessagePojo();
-        LOG.debug( "Entering HTTPMessagePackager.processMessage..." );
+        LOG.debug( new LogMessage("Entering HTTPMessagePackager.processMessage...",messagePojo) );
 
         try {
             if ( messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ACK ) {

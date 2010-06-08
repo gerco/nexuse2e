@@ -35,6 +35,7 @@ import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.IdGenerator;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.BackendPipeline;
 import org.nexuse2e.messaging.ErrorDescriptor;
 import org.nexuse2e.messaging.MessageContext;
@@ -89,7 +90,7 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
     public MessageContext processMessage( String partnerId, String choreographyId, String actionId,
             String conversationId, String label, Object primaryKey, byte[] payload ) throws NexusException {
 
-        LOG.debug( "Entering BackendPipelineDispatcher.processMessage..." );
+        LOG.debug( new LogMessage( "Entering BackendPipelineDispatcher.processMessage...",conversationId,"") );
 
         IdGenerator messageIdGenerator = Engine.getInstance().getIdGenerator( Constants.ID_GENERATOR_MESSAGE );
         String newMessageId = messageIdGenerator.getId();
@@ -174,9 +175,9 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
 
         if ( pipeline == null ) {
             if ( LOG.isDebugEnabled() ) {
-                LOG.debug( "pipelines.size: " + pipelines.size() );
+                LOG.debug(new LogMessage(  "pipelines.size: " + pipelines.size(),conversationId,messageId) );
                 for ( ActionSpecificKey actionSpecificKey : pipelines.keySet() ) {
-                    LOG.debug( "PipelineKey: " + actionSpecificKey + " - " + pipelines.get( actionSpecificKey ) );
+                    LOG.debug(new LogMessage(  "PipelineKey: " + actionSpecificKey + " - " + pipelines.get( actionSpecificKey ),conversationId,messageId) );
                 }
             }
             throw new NexusException( "no matching pipeline found for choreography:" + choreographyId + " and Action:"

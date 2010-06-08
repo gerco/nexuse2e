@@ -52,6 +52,7 @@ import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.messaging.MessageProcessor;
 import org.nexuse2e.messaging.ebxml.v20.Constants;
@@ -131,7 +132,7 @@ public class HttpReceiverService extends AbstractControllerService implements Re
             }
             
             processMessage( messageContext );
-            LOG.trace( "Processing Done" );
+            LOG.trace( new LogMessage( "Processing Done",messageContext.getMessagePojo()) );
 
             // PrintWriter out = new PrintWriter( response.getOutputStream() );
             response.setStatus( HttpServletResponse.SC_OK );
@@ -276,7 +277,7 @@ public class HttpReceiverService extends AbstractControllerService implements Re
 
         File dirFile = new File( dir );
         if ( !dirFile.isDirectory() ) {
-            LOG.error( "NEXUSe2eRoot not pointing to a directory!" );
+            LOG.error( new LogMessage( "NEXUSe2eRoot not pointing to a directory!",messageContext.getMessagePojo()) );
         }
         File outputDir = new File( dirFile.getAbsolutePath() + "/inbox/notproc" );
 
@@ -294,10 +295,10 @@ public class HttpReceiverService extends AbstractControllerService implements Re
                 fos.flush();
                 fos.close();
             } catch ( Exception e ) {
-                LOG.error( "Error saving raw inbound message:" + e );
+                LOG.error( new LogMessage( "Error saving raw inbound message:" + e,messageContext.getMessagePojo()),e );
             }
         } else {
-            LOG.error( "No raw inbound message data found!" );
+            LOG.error( new LogMessage( "No raw inbound message data found!",messageContext.getMessagePojo()) );
         }
 
     }

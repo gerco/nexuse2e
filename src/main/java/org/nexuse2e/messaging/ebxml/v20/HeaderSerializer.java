@@ -40,6 +40,7 @@ import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.Severity;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.ErrorDescriptor;
 import org.nexuse2e.messaging.MessageContext;
@@ -117,7 +118,7 @@ public class HeaderSerializer extends AbstractPipelet {
                             + messagePojo.getCreatedDate(), e );
                 }
 
-                LOG.debug( "Messgae Factory: " + messageFactory.getClass().getCanonicalName() );
+                LOG.debug( new LogMessage("Messgae Factory: " + messageFactory.getClass().getCanonicalName(),messagePojo) );
                 SOAPMessage soapMessage = messageFactory.createMessage();
                 soapMessage.setProperty( SOAPMessage.WRITE_XML_DECLARATION, "true" );
                 SOAPPart soapPart = soapMessage.getSOAPPart();
@@ -289,7 +290,7 @@ public class HeaderSerializer extends AbstractPipelet {
                     Iterator bodyParts = messagePojo.getMessagePayloads().iterator();
                     while ( bodyParts.hasNext() ) {
                         MessagePayloadPojo bodyPart = (MessagePayloadPojo) bodyParts.next();
-                        LOG.trace( "ContentID:" + bodyPart.getContentId() );
+                        LOG.trace( new LogMessage( "ContentID:" + bodyPart.getContentId() ,messagePojo));
                         createManifestReference( soapFactory, soapManifest, bodyPart.getContentId(), "Payload-" + bodyPart.getSequenceNumber(), bodyPart.getMimeType(), null );
                         // MBE: Changed 20100215 due to interop problem - 20103007: changed back
                         // createManifestReference( soapFactory, soapManifest, "cid:" + bodyPart.getContentId(), "Payload-" + bodyPart.getSequenceNumber(), bodyPart.getMimeType(), null );
@@ -301,7 +302,7 @@ public class HeaderSerializer extends AbstractPipelet {
                 soapMessage.writeTo( baos );
                 messagePojo.setHeaderData( baos.toByteArray() );
             } // Test for re-send of ack
-            LOG.trace( "Message:" + new String( messagePojo.getHeaderData() ) );
+            LOG.trace( new LogMessage( "Message:" + new String( messagePojo.getHeaderData() ) ,messagePojo));
         } catch ( NexusException e ) {
             throw e;
         } catch ( Exception e ) {

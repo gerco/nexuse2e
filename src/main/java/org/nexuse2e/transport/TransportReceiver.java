@@ -34,6 +34,7 @@ import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.FrontendPipeline;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.messaging.Pipelet;
@@ -106,7 +107,7 @@ public class TransportReceiver implements Pipelet, ProtocolSpecific {
 
     public MessageContext processMessage( MessageContext data ) throws NexusException {
 
-        LOG.trace( "TransportReceiver processing message.." );
+        LOG.trace( new LogMessage( "TransportReceiver processing message..",data.getMessagePojo()) );
         data.setProtocolSpecificKey( getKey() );
 
         return frontendPipeline.processMessage( data );

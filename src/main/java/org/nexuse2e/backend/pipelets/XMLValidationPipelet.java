@@ -49,6 +49,7 @@ import org.nexuse2e.backend.pipelets.helper.PartnerSpecificConfigurations;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.ErrorDescriptor;
 import org.nexuse2e.messaging.MessageContext;
@@ -175,9 +176,9 @@ public class XMLValidationPipelet extends AbstractPipelet {
                     if ( doc == null || doc.length() == 0 ) {
                         continue;
                     } else {
-                        LOG.debug( ">>> start doc <<<" );
-                        LOG.debug( "doc: " + doc );
-                        LOG.debug( ">>> end doc <<<" );
+                        LOG.debug( new LogMessage( ">>> start doc <<<" ,messageContext.getMessagePojo()));
+                        LOG.debug( new LogMessage( "doc: " + doc,messageContext.getMessagePojo()) );
+                        LOG.debug( new LogMessage( ">>> end doc <<<",messageContext.getMessagePojo()) );
                     }
                     Document document = null;
                     try {
@@ -193,12 +194,12 @@ public class XMLValidationPipelet extends AbstractPipelet {
 
                     ValidationDefinitions definitions = validationDefinitions;
                     if ( partnerSpecific ) {
-                        LOG.debug( "partnerValidationDefinitions: " + partnerValidationDefinitions );
-                        LOG.debug( "getPartnerId: "
-                                + messageContext.getMessagePojo().getParticipant().getPartner().getPartnerId() );
+                        LOG.debug(new LogMessage(  "partnerValidationDefinitions: " + partnerValidationDefinitions,messageContext.getMessagePojo()) );
+                        LOG.debug(new LogMessage(  "getPartnerId: "
+                                + messageContext.getMessagePojo().getParticipant().getPartner().getPartnerId(),messageContext.getMessagePojo()) );
                         definitions = partnerValidationDefinitions.get( messageContext.getMessagePojo()
                                 .getParticipant().getPartner().getPartnerId() );
-                        LOG.debug( "definitions: " + definitions );
+                        LOG.debug(new LogMessage(  "definitions: " + definitions,messageContext.getMessagePojo()) );
                     }
 
                     // Validate document
@@ -215,7 +216,7 @@ public class XMLValidationPipelet extends AbstractPipelet {
                         outputEncoding = definitions.getOutputEncoding();
                     }
 
-                    LOG.debug( "Using output encoding: " + outputEncoding );
+                    LOG.debug(new LogMessage( "Using output encoding: " + outputEncoding,messageContext.getMessagePojo()) );
 
                     transformer.setOutputProperty( OutputKeys.ENCODING, outputEncoding );
 
@@ -373,10 +374,10 @@ public class XMLValidationPipelet extends AbstractPipelet {
                         String resultValue = mapData( xPath, document, nodeValue, definition );
                         ( (Attr) node ).setNodeValue( resultValue );
                     } else {
-                        LOG.error( "Node type not recognized: " + node.getClass() );
+                        LOG.error(new LogMessage(  "Node type not recognized: " + node.getClass(),messageContext.getMessagePojo()) );
                     }
                 } else {
-                    LOG.warn( "Could not find matching node for " + definition.getXpath() );
+                    LOG.warn(new LogMessage(  "Could not find matching node for " + definition.getXpath(),messageContext.getMessagePojo()) );
                 }
             }
             result = document;

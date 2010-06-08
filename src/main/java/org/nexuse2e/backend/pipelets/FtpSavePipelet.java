@@ -42,6 +42,7 @@ import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.configuration.ListParameter;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.CertificatePojo;
@@ -186,7 +187,7 @@ public class FtpSavePipelet extends AbstractPipelet {
             }
 
             ftp.connect( url.getHost(), port );
-            LOG.trace( "Connected to " + url.getHost() + "." );
+            LOG.trace( new LogMessage( "Connected to " + url.getHost() + ".",messageContext.getMessagePojo()) );
 
             int reply = ftp.getReplyCode();
 
@@ -201,7 +202,7 @@ public class FtpSavePipelet extends AbstractPipelet {
             if ( !success ) {
                 throw new NexusException( "FTP authentication failed: " + ftp.getReplyString() );
             }
-            LOG.debug( "Connected to " + url.getHost() + ", successfully logged in user " + user );
+            LOG.debug(new LogMessage(  "Connected to " + url.getHost() + ", successfully logged in user " + user,messageContext.getMessagePojo()) );
             if ( ssl ) {
                 reply = ftp.sendCommand( "PROT P" );
                 if ( !FTPReply.isPositiveCompletion( reply ) ) {
@@ -209,14 +210,14 @@ public class FtpSavePipelet extends AbstractPipelet {
                 }
             }
 
-            LOG.trace( "Directory URL Path: " + url.getPath() );
+            LOG.trace(new LogMessage(  "Directory URL Path: " + url.getPath(),messageContext.getMessagePojo()) );
             String directory = url.getPath();
             if ( directory.startsWith( "/" ) ) {
                 directory = directory.substring( 1 );
             }
 
             if ( StringUtils.isNotEmpty( directory ) ) {
-                LOG.trace( "Directory requested: " + directory );
+                LOG.trace(new LogMessage(  "Directory requested: " + directory,messageContext.getMessagePojo()) );
                 success = ftp.changeWorkingDirectory( directory );
                 if ( !success ) {
                     throw new NexusException( "FTP server did not change directory!" );
@@ -231,14 +232,14 @@ public class FtpSavePipelet extends AbstractPipelet {
             for ( MessagePayloadPojo payload : messageContext.getMessagePojo().getMessagePayloads() ) {
                 try {
                     String fileName = writePayload( ftp, fileNamePattern, payload, messageContext );
-                    LOG.trace( "Wrote output file: " + fileName.toString() );
+                    LOG.trace(new LogMessage(  "Wrote output file: " + fileName.toString(),messageContext.getMessagePojo()) );
                 } catch ( FileNotFoundException e ) {
                     throw new NexusException( e );
                 } catch ( IOException e ) {
                     throw new NexusException( e );
                 }
             }
-            LOG.trace( "Working Directory: " + ftp.printWorkingDirectory() );
+            LOG.trace(new LogMessage(  "Working Directory: " + ftp.printWorkingDirectory(),messageContext.getMessagePojo()) );
             return messageContext;
             // process files
         } catch ( Exception e ) {
@@ -247,7 +248,7 @@ public class FtpSavePipelet extends AbstractPipelet {
             if ( ftp.isConnected() ) {
                 try {
                     ftp.logout();
-                    LOG.trace( "Logged out." );
+                    LOG.trace(new LogMessage( "Logged out.",messageContext.getMessagePojo()) );
                 } catch ( IOException ioe ) {
                 }
                 try {

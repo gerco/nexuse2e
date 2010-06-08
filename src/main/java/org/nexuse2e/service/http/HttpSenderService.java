@@ -107,7 +107,7 @@ public class HttpSenderService extends AbstractService implements SenderAware {
             URL receiverURL = new URL( messageContext.getParticipant().getConnection().getUri() );
             String pwd = messageContext.getParticipant().getConnection().getPassword();
             String user = messageContext.getParticipant().getConnection().getLoginName();
-            LOG.debug( "ConnectionURL:" + receiverURL );
+            LOG.debug( new LogMessage("ConnectionURL:" + receiverURL,messageContext.getMessagePojo()) );
             client = new HttpClient();
             //TODO: check for https and check isEnforced
             if ( receiverURL.toString().toLowerCase().startsWith( "https" ) ) {
@@ -116,18 +116,18 @@ public class HttpSenderService extends AbstractService implements SenderAware {
                 Protocol myhttps;
 
                 if ( LOG.isTraceEnabled() ) {
-                    LOG.trace( "participant: " + participant );
-                    LOG.trace( "participant.name: " + participant.getPartner().getName() );
-                    LOG.trace( "participant.localcerts: " + participant.getLocalCertificate() );
+                    LOG.trace( new LogMessage("participant: " + participant,messageContext.getMessagePojo()) );
+                    LOG.trace( new LogMessage("participant.name: " + participant.getPartner().getName(),messageContext.getMessagePojo()) );
+                    LOG.trace( new LogMessage("participant.localcerts: " + participant.getLocalCertificate(),messageContext.getMessagePojo()) );
                     if ( participant.getLocalCertificate() != null ) {
-                        LOG.trace( "localcert.name: " + participant.getLocalCertificate().getName() );
+                        LOG.trace( new LogMessage("localcert.name: " + participant.getLocalCertificate().getName(),messageContext.getMessagePojo()) );
                     }
                 }
 
                 CertificatePojo localCert = participant.getLocalCertificate();
                 if ( localCert == null ) {
-                    LOG.error( "No local certificate selected for using SSL with partner "
-                            + participant.getPartner().getName() );
+                    LOG.error( new LogMessage("No local certificate selected for using SSL with partner "
+                            + participant.getPartner().getName(),messageContext.getMessagePojo()) );
                     throw new NexusException( "No local certificate selected for using SSL with partner "
                             + participant.getPartner().getName() );
                 }
@@ -137,10 +137,10 @@ public class HttpSenderService extends AbstractService implements SenderAware {
                         .getFirstCertificateByType( Constants.CERTIFICATE_TYPE_CACERT_METADATA, true );
 
                 if ( localCert == null ) {
-                    LOG.error( "No local certificate selected for using SSL with partner "
-                            + participant.getPartner().getName() );
+                    LOG.error( new LogMessage("No local certificate selected for using SSL with partner "
+                            + participant.getPartner().getName(),messageContext.getMessagePojo()) );
                     throw new NexusException( "No local certificate selected for using SSL with partner "
-                            + participant.getPartner().getName() );
+                            + participant.getPartner().getName());
                 }
 
                 KeyStore privateKeyChain = CertificateUtil.getPKCS12KeyStore( localCert );
@@ -163,13 +163,13 @@ public class HttpSenderService extends AbstractService implements SenderAware {
             method = new PostMethod( receiverURL.getPath() );
             method.setFollowRedirects( false );
             method.getParams().setSoTimeout( timeout );
-            LOG.trace( "Created new NexusHttpConnection with timeout: " + timeout + ", SSL: "
-                    + participant.getConnection().isSecure() );
+            LOG.trace( new LogMessage("Created new NexusHttpConnection with timeout: " + timeout + ", SSL: "
+                    + participant.getConnection().isSecure(),messageContext.getMessagePojo()) );
 
             // Use basic auth if credentials are present
             if ( ( user != null ) && ( user.length() != 0 ) && ( pwd != null ) ) {
                 Credentials credentials = new UsernamePasswordCredentials( user, pwd );
-                LOG.debug( "HTTPBackendConnector: Using basic auth." );
+                LOG.debug( new LogMessage("HTTPBackendConnector: Using basic auth.",messageContext.getMessagePojo()) );
                 client.getParams().setAuthenticationPreemptive( (Boolean) getParameter( PREEMPTIVE_AUTH_PARAM_NAME ) );
                 client.getState().setCredentials( AuthScope.ANY, credentials );
                 method.setDoAuthentication( true );
@@ -183,7 +183,7 @@ public class HttpSenderService extends AbstractService implements SenderAware {
             String httpReply = null;
 
             if ( LOG.isTraceEnabled() ) {
-                LOG.trace( "HTTP Message Data:\n" + new String( (byte[]) messageContext.getData() ) );
+                LOG.trace( new LogMessage("HTTP Message Data:\n" + new String( (byte[]) messageContext.getData() ),messageContext.getMessagePojo()) );
             }
 
             // Support for HTTP plain
@@ -243,7 +243,7 @@ public class HttpSenderService extends AbstractService implements SenderAware {
                 URI uri = method.getURI();
                 uri.setQuery( uriParams.toString() );
                 method.setURI( uri );
-                LOG.debug( "URI: " + uri );
+                LOG.debug(new LogMessage( "URI: " + uri,messageContext.getMessagePojo()) );
                 method.setRequestEntity( new StringRequestEntity( new String( (byte[]) messageContext.getData() ) ) );
             } else {
                 RequestEntity requestEntity = new ByteArrayRequestEntity( (byte[]) messageContext.getData(), "text/xml" );
@@ -251,7 +251,7 @@ public class HttpSenderService extends AbstractService implements SenderAware {
             }
 
             client.executeMethod( method );
-            LOG.debug( "HTTP call done" );
+            LOG.debug(new LogMessage( "HTTP call done",messageContext.getMessagePojo()) );
             int statusCode = method.getStatusCode();
             if ( statusCode > 299 ) {
                 LOG.error( new LogMessage( "Message submission failed, server responded with status: " + statusCode,
@@ -263,7 +263,7 @@ public class HttpSenderService extends AbstractService implements SenderAware {
             }
 
             httpReply = getHTTPReply( method );
-            LOG.debug( "Retrieved HTTP response:" + httpReply );
+            LOG.debug(new LogMessage( "Retrieved HTTP response:" + httpReply,messageContext.getMessagePojo()) );
 
             method.releaseConnection();
 

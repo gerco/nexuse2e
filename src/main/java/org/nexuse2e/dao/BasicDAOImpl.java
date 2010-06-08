@@ -180,7 +180,6 @@ public class BasicDAOImpl extends HibernateDaoSupport implements BasicDAO {
         try {
             return getHibernateTemplate().findByCriteria( criteria,firstResult, maxResult );
         } catch ( DataAccessException e ) {
-            System.out.println("criteria: "+criteria.toString());
             e.printStackTrace();
             throw e;
         }

@@ -33,7 +33,6 @@ import javax.activation.FileTypeMap;
 import javax.activation.MimetypesFileTypeMap;
 
 import org.apache.log4j.Logger;
-import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;

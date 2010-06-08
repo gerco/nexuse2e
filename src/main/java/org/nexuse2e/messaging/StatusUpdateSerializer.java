@@ -83,7 +83,7 @@ public class StatusUpdateSerializer implements Manageable {
      */
     public MessageContext processMessage( MessageContext messageContext ) throws NexusException {
 
-        LOG.debug( "StatusUpdateSerializer.processMessage - " + choreographyId );
+        LOG.debug(new LogMessage( "StatusUpdateSerializer.processMessage - " + choreographyId,messageContext.getMessagePojo()) );
 
         if ( status == BeanStatus.STARTED ) {
 
@@ -232,7 +232,7 @@ public class StatusUpdateSerializer implements Manageable {
                 try {
                     messageContext = queue.take();
 
-                    LOG.debug( "###############  Status Update #################" );
+                    LOG.debug( new LogMessage("###############  Status Update #################",messageContext.getMessagePojo()) );
 
                     if ( statusUpdatePipelines != null ) {
                         ActionPojo action = messageContext.getMessagePojo().getAction();
@@ -249,7 +249,7 @@ public class StatusUpdateSerializer implements Manageable {
                             try {
                                 messageContext.setMessagePojo( (MessagePojo) messageContext.getMessagePojo().clone() );
                             } catch ( CloneNotSupportedException e ) {
-                                LOG.error( "Error cloning original MessagePojo!" );
+                                LOG.error(new LogMessage( "Error cloning original MessagePojo!",messageContext.getMessagePojo()) );
                             }
 
                             try {
@@ -258,13 +258,13 @@ public class StatusUpdateSerializer implements Manageable {
                                 LOG.error( "Error processing status update message!" );
                             }
                         } else {
-                            LOG.debug( "No status pipeline found for message: "
+                            LOG.debug( new LogMessage("No status pipeline found for message: "
                                     + messageContext.getMessagePojo().getMessageId() + " ("
                                     + messageContext.getMessagePojo().getConversation().getChoreography().getName()
-                                    + " - " + messageContext.getMessagePojo().getAction() + ")" );
+                                    + " - " + messageContext.getMessagePojo().getAction() + ")",messageContext.getMessagePojo()) );
                         }
                     } else {
-                        LOG.debug( "No status update pipelines configured!" );
+                        LOG.debug( new LogMessage("No status update pipelines configured!",messageContext.getMessagePojo()) );
                     }
 
                 } catch ( InterruptedException ex ) {

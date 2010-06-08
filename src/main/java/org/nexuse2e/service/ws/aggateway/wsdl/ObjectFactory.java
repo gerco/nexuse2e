@@ -35,19 +35,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link InboundData }
-     * 
-     */
-    public InboundData createInboundData() {
-        return new InboundData();
-    }
-
-    /**
      * Create an instance of {@link XmlPayload }
      * 
      */
     public XmlPayload createXmlPayload() {
         return new XmlPayload();
+    }
+
+    /**
+     * Create an instance of {@link InboundData }
+     * 
+     */
+    public InboundData createInboundData() {
+        return new InboundData();
     }
 
     /**

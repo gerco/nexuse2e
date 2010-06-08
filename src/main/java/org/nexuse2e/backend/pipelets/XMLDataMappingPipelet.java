@@ -45,6 +45,7 @@ import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.MessagePayloadPojo;
@@ -157,19 +158,19 @@ public class XMLDataMappingPipelet extends AbstractPipelet {
                     messagePayloadPojo.setPayloadData( baos.toByteArray() );
 
                     if ( LOG.isTraceEnabled() ) {
-                        LOG.trace( "...................." );
-                        LOG.trace( new String( messagePayloadPojo.getPayloadData() ) );
-                        LOG.trace( "...................." );
+                        LOG.trace( new LogMessage( "....................",messageContext.getMessagePojo()) );
+                        LOG.trace( new LogMessage( new String( messagePayloadPojo.getPayloadData() ),messageContext.getMessagePojo()) );
+                        LOG.trace( new LogMessage( "....................",messageContext.getMessagePojo()) );
                     }
                 }
             } catch ( Exception e ) {
                 e.printStackTrace();
-                LOG.error( "Error processing XML payload: " + e );
+                LOG.error(new LogMessage(  "Error processing XML payload: " + e,messageContext.getMessagePojo()) );
                 throw new NexusException( "Error processing XML payload: " + e );
             }
 
         } else {
-            LOG.error( "No configuration file specified - no mapping possible." );
+            LOG.error( new LogMessage( "No configuration file specified - no mapping possible.",messageContext.getMessagePojo()) );
             throw new NexusException( "No configuration file specified - no mapping possible." );
         }// if
 

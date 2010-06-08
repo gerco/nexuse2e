@@ -38,6 +38,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.ParameterDescriptor;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.messaging.ebxml.v20.Constants;
@@ -100,9 +101,9 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
             System.arraycopy( (byte[]) messageContext.getData(), 0, packedMessage, preBufLen, payloadLength );
 
             if ( LOG.isTraceEnabled() ) {
-                LOG.trace( "--------------" );
-                LOG.trace( new String( packedMessage ) );
-                LOG.trace( "--------------" );
+                LOG.trace(new LogMessage(  "--------------",messagePojo) );
+                LOG.trace(new LogMessage(  new String( packedMessage ),messagePojo) );
+                LOG.trace(new LogMessage(  "--------------",messagePojo) );
             }
             byte[] bodyPart = null;
             List<MessagePayloadPojo> payloads = new ArrayList<MessagePayloadPojo>();
@@ -112,12 +113,12 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
             MimeBodyPart headerMimeBodyPart = messageBodyParts[0];
 
             String msgHdr = (String) headerMimeBodyPart.getContent();
-            LOG.trace( "Message Header: '" + msgHdr + "'" );
+            LOG.trace( new LogMessage( "Message Header: '" + msgHdr + "'",messagePojo) );
             if ( msgHdr != null ) {
                 msgHdr = msgHdr.trim();
             }
 
-            LOG.trace( "Message Header Content Type: '" + headerMimeBodyPart.getContentType() + "'" );
+            LOG.trace( new LogMessage( "Message Header Content Type: '" + headerMimeBodyPart.getContentType() + "'" ,messagePojo));
             messagePojo.setHeaderData( msgHdr.getBytes() );
             messagePojo.setMessagePayloads( payloads );
 
@@ -148,7 +149,7 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
                         contentId = contentId.substring( 1, contentId.length() - 2 );
                     }
                 }
-                LOG.trace( "contentId:" + contentId );
+                LOG.trace( new LogMessage( "contentId:" + contentId,messagePojo) );
                 messagePayloadPojo.setContentId( contentId );
                 // MBR 20071213: added toLowerCase
                 messagePayloadPojo.setMimeType( mimeBodyPart.getContentType().toLowerCase() );

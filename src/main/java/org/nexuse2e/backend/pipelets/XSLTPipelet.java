@@ -44,6 +44,7 @@ import org.nexuse2e.backend.pipelets.helper.RequestResponseData;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.MessagePayloadPojo;
@@ -135,7 +136,7 @@ public class XSLTPipelet extends AbstractPipelet {
     public MessageContext processMessage( MessageContext messageContext ) throws IllegalArgumentException,
             IllegalStateException, NexusException {
 
-        LOG.debug( "processing xslt" );
+        LOG.debug( new LogMessage( "processing xslt",messageContext.getMessagePojo()) );
         Map<String, String> map = null;
 
         if ( ( messageContext.getData() != null ) && ( messageContext.getData() instanceof RequestResponseData )
@@ -169,9 +170,9 @@ public class XSLTPipelet extends AbstractPipelet {
         try {
             if(partnerSpecific) {
                 for ( String key : partnerStreamSources.keySet() ) {
-                    LOG.debug( "id:"+ key +" -  source: "+partnerStreamSources.get( key ) );
+                    LOG.debug(new LogMessage(  "id:"+ key +" -  source: "+partnerStreamSources.get( key ),messageContext.getMessagePojo()) );
                 }
-                LOG.debug( "selecting streamSource: "+messageContext.getMessagePojo().getParticipant().getPartner().getPartnerId() );
+                LOG.debug( new LogMessage( "selecting streamSource: "+messageContext.getMessagePojo().getParticipant().getPartner().getPartnerId(),messageContext.getMessagePojo()) );
                 streamSource = partnerStreamSources.get( messageContext.getMessagePojo().getParticipant().getPartner().getPartnerId()  );
             }
             
@@ -183,7 +184,7 @@ public class XSLTPipelet extends AbstractPipelet {
                 }
 
             } else {
-                LOG.error( "No XSLT stylesheet configured - no transformation possible." );
+                LOG.error( new LogMessage( "No XSLT stylesheet configured - no transformation possible.",messageContext.getMessagePojo()) );
                 throw new NexusException( "No XSLT stylesheet configured - no transformation possible." );
             }// if
         } catch ( Exception e ) {

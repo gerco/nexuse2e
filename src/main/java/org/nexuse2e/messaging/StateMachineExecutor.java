@@ -27,6 +27,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ConversationPojo;
 import org.nexuse2e.pojo.FollowUpActionPojo;
@@ -59,11 +60,11 @@ public class StateMachineExecutor {
 
         messagePojo = messageContext.getMessagePojo();
 
-        LOG.trace( "messagePojo:" + messagePojo );
+        LOG.trace( new LogMessage( "messagePojo:" + messagePojo,messagePojo) );
         if ( messagePojo.getConversation() != null ) {
-            LOG.trace( "Conversation:" + messagePojo.getConversation() );
-            LOG.trace( "Choreography:" + messagePojo.getConversation().getChoreography() );
-            LOG.debug( "ChoreographyID:" + messagePojo.getConversation().getChoreography().getName() );
+            LOG.trace( new LogMessage("Conversation:" + messagePojo.getConversation(),messagePojo) );
+            LOG.trace( new LogMessage("Choreography:" + messagePojo.getConversation().getChoreography(),messagePojo) );
+            LOG.debug( new LogMessage("ChoreographyID:" + messagePojo.getConversation().getChoreography().getName(),messagePojo) );
             choreographyId = messagePojo.getConversation().getChoreography().getName();
         }
 
@@ -207,11 +208,11 @@ public class StateMachineExecutor {
         String currentChoreographyId = messageContext.getMessagePojo().getConversation().getChoreography().getName();
         String currentPartnerId = messageContext.getMessagePojo().getConversation().getPartner().getPartnerId();
 
-        LOG.debug( "MessageId:" + currentMessageId );
-        LOG.debug( "ActionId:" + currentActionId );
-        LOG.debug( "ConversationId:" + currentConversationId );
-        LOG.debug( "ChoreographyId:" + currentChoreographyId );
-        LOG.debug( "PartnerId:" + currentPartnerId );
+        LOG.debug( new LogMessage("MessageId:" + currentMessageId,messageContext.getMessagePojo()) );
+        LOG.debug( new LogMessage("ActionId:" + currentActionId, messageContext.getMessagePojo()) );
+        LOG.debug( new LogMessage("ConversationId:" + currentConversationId,messageContext.getMessagePojo()) );
+        LOG.debug( new LogMessage("ChoreographyId:" + currentChoreographyId,messageContext.getMessagePojo()) );
+        LOG.debug( new LogMessage("PartnerId:" + currentPartnerId,messageContext.getMessagePojo()) );
 
         ConversationPojo conversation = messageContext.getMessagePojo().getConversation();
         if ( messageContext.getMessagePojo().getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
@@ -231,8 +232,8 @@ public class StateMachineExecutor {
                 if ( conversation.getStatus() != Constants.CONVERSATION_STATUS_IDLE
                         && conversation.getStatus() != Constants.CONVERSATION_STATUS_COMPLETED
                         && Engine.getInstance().isLenientBackendStateMachine() ) {
-                    LOG.debug( "*** Applied lenientBackendStateMachine: " + currentConversationId + "/"
-                            + currentMessageId );
+                    LOG.debug(new LogMessage( "*** Applied lenientBackendStateMachine: " + currentConversationId + "/"
+                            + currentMessageId,messageContext.getMessagePojo()) );
                 }
 
                 Set<FollowUpActionPojo> followUpActions = conversation.getCurrentAction().getFollowUpActions();

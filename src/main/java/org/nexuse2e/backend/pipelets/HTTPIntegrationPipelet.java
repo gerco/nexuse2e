@@ -37,6 +37,7 @@ import org.nexuse2e.NexusException;
 import org.nexuse2e.backend.pipelets.helper.RequestResponseData;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.MessageLabelPojo;
@@ -124,11 +125,11 @@ public class HTTPIntegrationPipelet extends AbstractPipelet {
 
         // System.out.println( "start *********************************************************************" );
         if ( debug ) {
-            LOG.debug( "Executing HTTP POST for choreography ID '"
+            LOG.debug( new LogMessage( "Executing HTTP POST for choreography ID '"
                     + messagePojo.getConversation().getChoreography().getName() + "', conversation ID '"
                     + messagePojo.getConversation().getConversationId() + "', sender '"
-                    + messagePojo.getConversation().getPartner().getPartnerId() + "'!" );
-            LOG.debug( "Sending content as URL-encoded parameter: " + sendAsParam );
+                    + messagePojo.getConversation().getPartner().getPartnerId() + "'!",messagePojo) );
+            LOG.debug(new LogMessage(  "Sending content as URL-encoded parameter: " + sendAsParam,messagePojo) );
         }
         PostMethod post = new PostMethod( (String) getParameter( URL ) );
         // Disable cookies
@@ -141,7 +142,7 @@ public class HTTPIntegrationPipelet extends AbstractPipelet {
         // Use basic auth if credentials are present
         if ( ( user != null ) && ( user.length() != 0 ) && ( password != null ) ) {
             Credentials credentials = new UsernamePasswordCredentials( user, password );
-            LOG.debug( "HTTPBackendConnector: Using basic auth." );
+            LOG.debug( new LogMessage( "HTTPBackendConnector: Using basic auth.",messagePojo) );
             httpclient.getState().setCredentials( AuthScope.ANY, credentials );
             post.setDoAuthentication( true );
         }
@@ -154,10 +155,10 @@ public class HTTPIntegrationPipelet extends AbstractPipelet {
             try {
                 int result = httpclient.executeMethod( post );
 
-                LOG.debug( "Response status code: " + result );
-                LOG.debug( "Response status message:\n" + post.getResponseBodyAsString() );
+                LOG.debug( new LogMessage( "Response status code: " + result,messagePojo) );
+                LOG.debug( new LogMessage( "Response status message:\n" + post.getResponseBodyAsString(),messagePojo) );
             } catch ( Exception ex ) {
-                LOG.error( "Error posting inbound message body to '" + getParameter( URL ) + "': " + ex );
+                LOG.error( new LogMessage( "Error posting inbound message body to '" + getParameter( URL ) + "': " + ex,messagePojo) );
                 ex.printStackTrace();
             } finally {
                 // Release current connection to the connection pool once you are done
@@ -219,7 +220,7 @@ public class HTTPIntegrationPipelet extends AbstractPipelet {
                 // Execute request
                 try {
                     if ( LOG.isTraceEnabled() ) {
-                        LOG.trace( "Payload:\n--- PAYLOAD START ---\n" + documentString + "\n---  PAYLOAD END  ---" );
+                        LOG.trace(new LogMessage(  "Payload:\n--- PAYLOAD START ---\n" + documentString + "\n---  PAYLOAD END  ---",messagePojo) );
                     }
 
                     int result = httpclient.executeMethod( post );
@@ -228,15 +229,15 @@ public class HTTPIntegrationPipelet extends AbstractPipelet {
                     messageContext.setData( new RequestResponseData( result, post.getResponseBodyAsString(),
                             documentString ) );
 
-                    LOG.debug( "Response status code: " + result );
-                    LOG.debug( "Response status message:\n" + post.getResponseBodyAsString() );
+                    LOG.debug( new LogMessage( "Response status code: " + result,messagePojo) );
+                    LOG.debug( new LogMessage( "Response status message:\n" + post.getResponseBodyAsString(),messagePojo) );
                     if ( LOG.isTraceEnabled() ) {
-                        LOG.trace( "Response:\n--- RESPONSE START ---\n"
+                        LOG.trace( new LogMessage( "Response:\n--- RESPONSE START ---\n"
                                 + ( (RequestResponseData) messageContext.getData() ).getResponseString()
-                                + "\n---  RESPONSE END  ---" );
+                                + "\n---  RESPONSE END  ---",messagePojo) );
                     }
                 } catch ( Exception ex ) {
-                    LOG.error( "Error posting inbound message body to '" + getParameter( URL ) + "': " + ex );
+                    LOG.error( new LogMessage( "Error posting inbound message body to '" + getParameter( URL ) + "': " + ex,messagePojo) );
                     ex.printStackTrace();
                 } finally {
                     // Release current connection to the connection pool once you are done
@@ -245,7 +246,7 @@ public class HTTPIntegrationPipelet extends AbstractPipelet {
             } // for
         } // is Ack?
 
-        LOG.debug( "Done!" );
+        LOG.debug( new LogMessage( "Done!",messagePojo) );
         return messageContext;
     }
 
@@ -291,8 +292,8 @@ public class HTTPIntegrationPipelet extends AbstractPipelet {
         if ( includeLabels ) {
             for ( Iterator<MessageLabelPojo> iter = messageLabels.iterator(); iter.hasNext(); ) {
                 MessageLabelPojo messageLabelPojo = iter.next();
-                LOG.debug( "Adding label to HTTP call: " + labelPrefix + messageLabelPojo.getLabel() + " - "
-                        + messageLabelPojo.getValue() );
+                LOG.debug( new LogMessage( "Adding label to HTTP call: " + labelPrefix + messageLabelPojo.getLabel() + " - "
+                        + messageLabelPojo.getValue(),messagePojo) );
                 data[i++] = new NameValuePair( labelPrefix + messageLabelPojo.getLabel(), messageLabelPojo.getValue() );
             }
         }

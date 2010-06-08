@@ -36,6 +36,7 @@ import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.IdGenerator;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.service.DataConversionService;
@@ -179,7 +180,7 @@ public class ParameterBasedRoutingPipelet extends AbstractPipelet {
                     actionId = result;
                 }
             } else {
-                LOG.error( "No customer parameter found with name: " + mappingDefinition.getXpath() );
+                LOG.error( new LogMessage( "No customer parameter found with name: " + mappingDefinition.getXpath(),messageContext.getMessagePojo()) );
             }
         }
 

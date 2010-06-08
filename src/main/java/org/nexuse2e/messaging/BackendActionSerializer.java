@@ -74,7 +74,7 @@ public class BackendActionSerializer extends AbstractPipelet {
      */
     public MessageContext processMessage( MessageContext messageContext ) throws NexusException {
 
-        LOG.debug( "BackendActionSerializer.processMessage - " + choreographyId );
+        LOG.debug( new LogMessage( "BackendActionSerializer.processMessage - " + choreographyId,messageContext.getMessagePojo()) );
 
         if ( status == BeanStatus.ACTIVATED ) {
 

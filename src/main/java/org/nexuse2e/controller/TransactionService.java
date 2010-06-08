@@ -275,7 +275,7 @@ public interface TransactionService extends Manageable {
      * @param id The message ID
      * @param handle The <code>ScheduledFuture</code> handle
      */
-    public abstract void registerProcessingMessage( String id, ScheduledFuture<?> handle,
+    public abstract void registerProcessingMessage( MessagePojo message, ScheduledFuture<?> handle,
             ScheduledExecutorService scheduler ); // registerProcessingMessage
 
     /**

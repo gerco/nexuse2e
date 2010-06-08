@@ -26,10 +26,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipEntry;
 
 import org.apache.log4j.Logger;
-import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;

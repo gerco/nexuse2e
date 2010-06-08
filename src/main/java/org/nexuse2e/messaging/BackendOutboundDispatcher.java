@@ -33,6 +33,7 @@ import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.controller.TransactionService;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.MessagePojo;
 import org.nexuse2e.pojo.ParticipantPojo;
@@ -70,10 +71,10 @@ public class BackendOutboundDispatcher extends StateMachineExecutor implements P
     public MessageContext processMessage( MessageContext messageContext ) throws NexusException {
 
         ChoreographyPojo choreography = validateChoreography( messageContext, Constants.INBOUND );
-        LOG.trace( "Matching choreography found: " + choreography.getName() );
+        LOG.trace( new LogMessage( "Matching choreography found: " + choreography.getName(),messageContext.getMessagePojo()) );
 
         ParticipantPojo participant = validateParticipant( messageContext, Constants.INBOUND );
-        LOG.trace( "Matching participant found: " + participant.getPartner().getPartnerId() );
+        LOG.trace( new LogMessage( "Matching participant found: " + participant.getPartner().getPartnerId(),messageContext.getMessagePojo()) );
 
         // create protocolspecific key
 
@@ -81,11 +82,11 @@ public class BackendOutboundDispatcher extends StateMachineExecutor implements P
                 .toLowerCase(), messageContext.getMessagePojo().getTRP().getVersion(), messageContext.getMessagePojo()
                 .getTRP().getTransport().toLowerCase() );
         messageContext.setProtocolSpecificKey( key );
-        LOG.debug( "ProtocolKey:" + key );
+        LOG.debug( new LogMessage( "ProtocolKey:" + key,messageContext.getMessagePojo()) );
 
         ProtocolAdapter protocolAdapter = getProtocolAdapterByKey( messageContext.getProtocolSpecificKey() );
         if ( protocolAdapter == null ) {
-            LOG.error( "No protocol implementation found for key: " + messageContext.getProtocolSpecificKey() );
+            LOG.error( new LogMessage( "No protocol implementation found for key: " + messageContext.getProtocolSpecificKey(),messageContext.getMessagePojo()) );
             throw new NexusException( "No ProtocolAdapter found for key: " + key );
         }
         protocolAdapter.addProtcolSpecificParameters( messageContext );
@@ -125,7 +126,7 @@ public class BackendOutboundDispatcher extends StateMachineExecutor implements P
                     totalGetMessageTime += ( System.currentTimeMillis() - time );
 
                     if ( ( messageContext != null ) && messagePojo.isOutbound() ) {
-                        LOG.debug( "Recovered message: " + messagePojo.getMessageId() );
+                        LOG.debug(new LogMessage(  "Recovered message: " + messagePojo.getMessageId(),messagePojo) );
                         BackendActionSerializer backendActionSerializer = backendActionSerializers.get( messagePojo
                                 .getConversation().getChoreography().getName() );
 
@@ -138,13 +139,14 @@ public class BackendOutboundDispatcher extends StateMachineExecutor implements P
                     if ( messagePojo != null ) {
                         messageId = messagePojo.getMessageId();
                     }
-                    LOG.error( "Error recovering message " + messageId + ": " + ex );
+                    LOG.error( new LogMessage( "Error recovering message " + messageId + ": " + ex,messagePojo) );
                 }
             }
             LOG.trace( "took " + totalQueueingTime + " ms for message queueing and " + totalGetMessageTime
                     + " ms for retrieving messages, total time is " + ( System.currentTimeMillis() - startTime )
                     + " ms" );
         } catch ( NexusException e ) {
+           //TODO add message context for logging
             LOG.error( e );
         }
 

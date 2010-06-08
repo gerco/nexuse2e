@@ -29,6 +29,7 @@ import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.MessagePayloadPojo;
@@ -160,9 +161,9 @@ public class FlatFileMappingPipelet extends AbstractPipelet {
                 }
 
                 if ( LOG.isTraceEnabled() ) {
-                    LOG.trace( "...................." );
-                    LOG.trace( result );
-                    LOG.trace( "...................." );
+                    LOG.trace( new LogMessage( "....................",messageContext.getMessagePojo()) );
+                    LOG.trace( new LogMessage( result, messageContext.getMessagePojo()) );
+                    LOG.trace( new LogMessage( "....................",messageContext.getMessagePojo()) );
                 }
 
                 messagePayloadPojo.setPayloadData( result.getBytes() );

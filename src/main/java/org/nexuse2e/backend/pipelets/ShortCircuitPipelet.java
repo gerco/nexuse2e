@@ -27,6 +27,7 @@ import org.nexuse2e.backend.BackendPipelineDispatcher;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 
@@ -97,7 +98,7 @@ public class ShortCircuitPipelet extends AbstractPipelet {
                                 .getConversationId(), action, null, "<?xml version=\"1.0\" encoding=\"UTF-8\"?><test />"
                                 .getBytes() );
                     } catch ( NexusException e ) {
-                        LOG.debug( "sendStringMessage - error: " + e );
+                        LOG.debug( new LogMessage( "sendStringMessage - error: " + e,messageContext.getMessagePojo()) );
                         e.printStackTrace();
                     }
                 }

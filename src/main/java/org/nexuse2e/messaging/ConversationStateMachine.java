@@ -94,25 +94,34 @@ public class ConversationStateMachine {
         return null;
     }
 
+    /**
+     * @throws StateTransitionException
+     * @throws NexusException
+     */
     public void sentMessage() throws StateTransitionException, NexusException {
 
         synchronized ( sync ) {
             if ( message.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
+                LOG.trace( new LogMessage("message sent, current conversation status: "+ConversationPojo.getStatusName( conversation.getStatus() ),message) );
                 if ( ( conversation.getStatus() == Constants.CONVERSATION_STATUS_PROCESSING )
                         || ( conversation.getStatus() == Constants.CONVERSATION_STATUS_AWAITING_ACK )
                         || ( conversation.getStatus() == Constants.CONVERSATION_STATUS_ERROR /* Included for requeuing */) ) {
                     if ( reliable ) {
+                        LOG.trace( new LogMessage( "conversation status set to awaiting ack",message )  );
                         conversation.setStatus( Constants.CONVERSATION_STATUS_AWAITING_ACK );
                     } else {
                         Engine.getInstance().getTransactionService().deregisterProcessingMessage(
                                 message.getMessageId() );
+                        LOG.trace( new LogMessage( "message status set to sent",message )  );
                         message.setStatus( Constants.MESSAGE_STATUS_SENT );
                         message.setModifiedDate( new Date() );
                         message.setEndDate( message.getModifiedDate() );
                         if ( conversation.getCurrentAction().isEnd() ) {
+                            LOG.trace( new LogMessage( "conversation status set to completed",message )  );
                             conversation.setStatus( Constants.CONVERSATION_STATUS_COMPLETED );
                             conversation.setEndDate( new Date() );
                         } else {
+                            LOG.trace( new LogMessage( "conversation status set to idle",message )  );
                             conversation.setStatus( Constants.CONVERSATION_STATUS_IDLE );
                         }
                     }
@@ -197,15 +206,19 @@ public class ConversationStateMachine {
         synchronized ( sync ) {
             MessagePojo referencedMessage = message.getReferencedMessage();
             if ( referencedMessage != null ) {
+                LOG.trace( new LogMessage( "receiving ack, current conversation status: "+ConversationPojo.getStatusName( message.getConversation().getStatus() ),message )  );
                 if ( ( referencedMessage.getConversation().getStatus() == Constants.CONVERSATION_STATUS_AWAITING_ACK )
                         || ( referencedMessage.getConversation().getStatus() == Constants.CONVERSATION_STATUS_PROCESSING )
                         || ( referencedMessage.getConversation().getStatus() == Constants.CONVERSATION_STATUS_ERROR ) ) {
                     if ( referencedMessage.getConversation().getCurrentAction().isEnd() ) {
+                        LOG.trace( new LogMessage( "conversation status set to completed",message )  );
                         referencedMessage.getConversation().setEndDate( new Date() );
                         referencedMessage.getConversation().setStatus( Constants.CONVERSATION_STATUS_COMPLETED );
                     } else {
+                        LOG.trace( new LogMessage( "conversation status set to idle",message )  );
                         referencedMessage.getConversation().setStatus( Constants.CONVERSATION_STATUS_IDLE );
                     }
+                    LOG.trace( new LogMessage( "ref message status set to sent",message )  );
                     referencedMessage.setStatus( Constants.MESSAGE_STATUS_SENT );
 
                     // Complete ack message and add to conversation
@@ -217,7 +230,7 @@ public class ConversationStateMachine {
                     referencedMessage.getConversation().getMessages().add( message );
                     referencedMessage.setModifiedDate( endDate );
                     referencedMessage.setEndDate( endDate );
-
+                    
                     Engine.getInstance().getTransactionService().updateTransaction( referencedMessage );
                 } else {
                     throw new StateTransitionException(
@@ -359,21 +372,23 @@ public class ConversationStateMachine {
 
         synchronized ( sync ) {
             List<MessagePojo> messages = conversation.getMessages();
-
-            message.setStatus( Constants.MESSAGE_STATUS_QUEUED );
-            message.setModifiedDate( new Date() );
-
-            if ( message.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_NORMAL ) {
-                conversation.setStatus( Constants.CONVERSATION_STATUS_PROCESSING );
-            }
-            if ( message.getNxMessageId() <= 0 ) {
+            LOG.trace( new LogMessage( "current message status: "+ MessagePojo.getStatusName( message.getStatus() ),message) );
+            if(message.getStatus() != Constants.MESSAGE_STATUS_SENT) {
+                message.setStatus( Constants.MESSAGE_STATUS_QUEUED );
+                message.setModifiedDate( new Date() );
+    
+                if ( message.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_NORMAL ) {
+                    conversation.setStatus( Constants.CONVERSATION_STATUS_PROCESSING );
+                }
+                if ( message.getNxMessageId() <= 0 ) {
+                    messages.add( message );
+                }
                 messages.add( message );
-            }
-            messages.add( message );
-            if ( conversation.getNxConversationId() <= 0 ) {
-                Engine.getInstance().getTransactionService().storeTransaction( conversation, message );
-            } else {
-                Engine.getInstance().getTransactionService().updateTransaction( message, force );
+                if ( conversation.getNxConversationId() <= 0 ) {
+                    Engine.getInstance().getTransactionService().storeTransaction( conversation, message );
+                } else {
+                    Engine.getInstance().getTransactionService().updateTransaction( message, force );
+                }
             }
         } // synchronized
     }

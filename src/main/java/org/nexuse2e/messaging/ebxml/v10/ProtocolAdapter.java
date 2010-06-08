@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.ProtocolSpecificKey;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.Constants.ErrorMessageReasonCode;
 import org.nexuse2e.messaging.ebxml.v20.Constants;
 import org.nexuse2e.messaging.ErrorDescriptor;
@@ -101,7 +102,7 @@ public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
                 participant.getLocalPartner().getPartnerIdType() );
         acknowledgment.getCustomParameters().put( Constants.PROTOCOLSPECIFIC_SERVICE, "uri:Acknowledgement" );
 
-        LOG.trace( "-----conversation:" + messageContext.getMessagePojo().getConversation() );
+        LOG.trace( new LogMessage( "-----conversation:" + messageContext.getMessagePojo().getConversation(),messageContext.getMessagePojo()) );
         acknowledgment.setConversation( messageContext.getMessagePojo().getConversation() );
         acknowledgment.setOutbound( true );
 

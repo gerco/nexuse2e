@@ -55,7 +55,7 @@ public class MSSQLLockInterceptor implements MethodInterceptor { //, ThrowsAdvic
                     if(cause instanceof LockAcquisitionException) { // org.hibernate.exception.LockAcquisitionException
                         lockFound = true;
                         Thread.sleep( getTimeout() );
-                        LOG.trace( "LockAcquisitionException occured, retrying" );
+                        LOG.trace( "("+i+"/"+getRetries()+")LockAcquisitionException occured, retrying in "+getTimeout()+" miliseconds" );
                     }
                     cause = cause.getCause();
                 }

@@ -42,6 +42,7 @@ import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.MessageLabelPojo;
@@ -162,7 +163,7 @@ public class LabelGeneratorPipelet extends AbstractPipelet {
                         Node node = (Node) xPath.evaluate( xPathString, document, XPathConstants.NODE );
                         if ( node != null ) {
                             String value = node.getNodeValue();
-                            LOG.debug( "Label " + label + " - found: " + value );
+                            LOG.debug( new LogMessage( "Label " + label + " - found: " + value ,messageContext.getMessagePojo()));
                             MessageLabelPojo messageLabelPojo = new MessageLabelPojo( messageContext.getMessagePojo(),
                                     new Date(), new Date(), 1, label, value );
                             List<MessageLabelPojo> messageLabels = messageContext.getMessagePojo().getMessageLabels();
@@ -172,13 +173,13 @@ public class LabelGeneratorPipelet extends AbstractPipelet {
                             }
                             messageLabels.add( messageLabelPojo );
                         } else {
-                            LOG.debug( "Label " + label + " - No match found" );
+                            LOG.debug(new LogMessage(  "Label " + label + " - No match found",messageContext.getMessagePojo()) );
                         }
                     }
                 }
             }
         } catch ( Exception e ) {
-            LOG.error( "Error parsing outbound document: " + e );
+            LOG.error( new LogMessage( "Error parsing outbound document: " + e,messageContext.getMessagePojo()) );
             e.printStackTrace();
         }
 

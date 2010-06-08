@@ -20,6 +20,7 @@
 package org.nexuse2e.messaging.ebxml;
 
 import org.apache.log4j.Logger;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 
@@ -43,7 +44,7 @@ public class MessagePojoPatcher extends AbstractPipelet {
 
         //MessagePojo messagePojo = messageContext.getMessagePojo();
 
-        LOG.trace( "MessagePojoPatcher - processMessage" );
+        LOG.trace( new LogMessage( "MessagePojoPatcher - processMessage",messageContext.getMessagePojo()) );
 
         /*
          Set<MessagePayloadPojo> messagePayloads = messagePojo.getMessagePayloads();

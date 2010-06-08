@@ -44,6 +44,7 @@ import org.hibernate.type.Type;
 import org.nexuse2e.Constants;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.controller.StateTransitionException;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ConversationPojo;
@@ -144,13 +145,13 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
                     ex.printStackTrace();
                 }
             }
-            LOG.trace( prefix + s + " conversationId: " + pojo.getConversationId() + " " +
+            LOG.trace(new LogMessage( prefix + s + " conversationId: " + pojo.getConversationId() + " " +
                     (messages == null ? 0 : messages.size()) + " messages" +
                     (lastMessage == null ? "" : ", last message type is " + getType( lastMessage.getType() ) +
                     ", messageId is " + lastMessage.getMessageId()) + (action == null ? "" : " (" + action.getName() + ")") +
-                    ", thread " + Thread.currentThread().getName() );
+                    ", thread " + Thread.currentThread().getName(),lastMessage) );
         } else if (lastMessage != null) {
-            LOG.trace( prefix + " message type is " + getType( lastMessage.getType() ) + ", messageId is " + lastMessage.getMessageId() );
+            LOG.trace( new LogMessage(prefix + " message type is " + getType( lastMessage.getType() ) + ", messageId is " + lastMessage.getMessageId(),lastMessage) );
         }
     }
     //    public static final String TYPE_ACK      = "Acknowledgment";
@@ -619,6 +620,10 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
      */
     public void storeTransaction( ConversationPojo conversationPojo, MessagePojo messagePojo ) throws NexusException {
 
+        LOG.trace( "(s)persisting state for message "+messagePojo.getConversation().getConversationId()+messagePojo.getMessageId()+
+                ":"+MessagePojo.getStatusName( messagePojo.getStatus() )+"/"+ConversationPojo.getStatusName( messagePojo.getConversation().getStatus() ) );
+        
+        
         LOG.debug( "storeTransaction: " + conversationPojo + " - " + messagePojo );
 
         saveOrUpdateRecord( conversationPojo );
@@ -975,6 +980,8 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
      */
     public void updateTransaction( MessagePojo message, boolean force ) throws NexusException, StateTransitionException {
 
+        LOG.trace( new LogMessage("persisting state for message "+message.getConversation().getConversationId()+message.getMessageId()+
+                ":"+MessagePojo.getStatusName( message.getStatus() )+"/"+ConversationPojo.getStatusName( message.getConversation().getStatus() ),message) );
         
         int messageStatus = message.getStatus();
         int conversationStatus = message.getConversation().getStatus();

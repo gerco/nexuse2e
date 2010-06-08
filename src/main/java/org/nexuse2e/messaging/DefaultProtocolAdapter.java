@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.ProtocolSpecificKey;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.Constants.ErrorMessageReasonCode;
 import org.nexuse2e.messaging.ebxml.v20.Constants;
 import org.nexuse2e.pojo.ChoreographyPojo;
@@ -100,7 +101,7 @@ public class DefaultProtocolAdapter implements org.nexuse2e.messaging.ProtocolAd
         acknowledgment.getCustomParameters().put(
                 Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_SERVICE, "uri:Acknowledgement" );
 
-        LOG.trace( "-----conversation:" + messageContext.getMessagePojo().getConversation() );
+        LOG.trace( new LogMessage( "-----conversation:" + messageContext.getMessagePojo().getConversation(),messageContext.getMessagePojo()) );
         acknowledgment.setConversation( messageContext.getMessagePojo().getConversation() );
         acknowledgment.setOutbound( true );
 
@@ -139,7 +140,7 @@ public class DefaultProtocolAdapter implements org.nexuse2e.messaging.ProtocolAd
         try {
             messageId = Engine.getInstance().getIdGenerator( "messageId" ).getId();
         } catch ( NexusException e ) {
-            LOG.fatal( "unable to create ErrorMessageId for message:" + currentMessageId );
+            LOG.fatal( new LogMessage( "unable to create ErrorMessageId for message:" + currentMessageId,messageContext.getMessagePojo()) );
             e.printStackTrace();
             messageContext.setMessagePojo( null );
             return messageContext;

@@ -30,6 +30,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.logging.LogMessage;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
@@ -115,8 +116,8 @@ public class HTTPIntegrationController implements Controller {
             }
             */
 
-            LOG.debug( "Message sent ( choreography '" + choreographyId + "', conversation ID '" + conversationId
-                    + "')!" );
+            LOG.debug( new LogMessage( "Message sent ( choreography '" + choreographyId + "', conversation ID '" + conversationId
+                    + "')!",conversationId,"unknown") );
 
             response.setStatus( HttpServletResponse.SC_OK );
         } catch ( NexusException e ) {
