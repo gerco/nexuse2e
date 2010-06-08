@@ -245,12 +245,11 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                     } catch ( Throwable e ) {
                         // Persist retry count changes
                         try {
-                            
                             if ( messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ACK) {
-                                messagePojo.setStatus( org.nexuse2e.messaging.Constants.MESSAGE_STATUS_FAILED );
+                                messageContext.getStateMachine().processingFailed();
+                            }else {
+                                Engine.getInstance().getTransactionService().updateTransaction( messagePojo );
                             }
-                            
-                            Engine.getInstance().getTransactionService().updateTransaction( messagePojo );
                         } catch ( NexusException e1 ) {
                             LOG.error( new LogMessage( "Error saving message: " + e1, messagePojo ), e1 );
                         } catch ( StateTransitionException stex ) {
