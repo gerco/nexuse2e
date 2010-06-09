@@ -287,9 +287,12 @@ public class ConversationStateMachine {
             message.setModifiedDate( new Date() );
             message.setEndDate( message.getModifiedDate() );
             
+            LOG.trace( new LogMessage("evaluating followup, current status: "+MessagePojo.getStatusName( message.getStatus() )+"/"+ConversationPojo.getStatusName( conversation.getStatus() ), message) );
+            MessagePojo ack = getAckForMessage( message );
+            
             if ( ( conversation.getStatus() == Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND )
                     || ( conversation.getStatus() == Constants.CONVERSATION_STATUS_ERROR ) // requeued message
-                    || getAckForMessage( message ) != null // requeued message
+                    || (ack != null && ack.getStatus() == Constants.MESSAGE_STATUS_SENT) // requeued message, check for completed ack added
                     || ( conversation.getStatus() == Constants.CONVERSATION_STATUS_IDLE ) ) {
                 if ( conversation.getCurrentAction().isEnd() ) {
                     conversation.setStatus( Constants.CONVERSATION_STATUS_COMPLETED );
@@ -308,6 +311,7 @@ public class ConversationStateMachine {
             }
 
             // Persist the message
+            LOG.trace( new LogMessage("Persisting status: "+MessagePojo.getStatusName( message.getStatus() )+"/"+ConversationPojo.getStatusName( conversation.getStatus() ), message) );
             Engine.getInstance().getTransactionService().updateTransaction( message );
         } // synchronized
     }
