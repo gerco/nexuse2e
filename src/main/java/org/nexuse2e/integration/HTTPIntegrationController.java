@@ -30,7 +30,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
+<<<<<<< .mine
+import org.nexuse2e.messaging.MessageContext;
+=======
 import org.nexuse2e.logging.LogMessage;
+>>>>>>> .r1070
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
@@ -47,6 +51,10 @@ public class HTTPIntegrationController implements Controller {
         String conversationId = request.getParameter( Constants.PARAM_CONVERSATION_ID );
         if ( ( conversationId == null ) || ( conversationId.length() == 0 ) ) {
             conversationId = request.getParameter( org.nexuse2e.messaging.httpplain.Constants.PARAM_CONVERSATION_ID );
+        }
+        String messageId = request.getParameter( Constants.PARAM_MESSAGE_ID );
+        if ( ( messageId == null ) || ( messageId.length() == 0 ) ) {
+            messageId = request.getParameter( org.nexuse2e.messaging.httpplain.Constants.PARAM_MESSAGE_ID );
         }
         String actionId = request.getParameter( Constants.PARAM_ACTION_ID );
         if ( ( actionId == null ) || ( actionId.length() == 0 ) ) {
@@ -94,36 +102,43 @@ public class HTTPIntegrationController implements Controller {
             response.sendError( HttpServletResponse.SC_BAD_REQUEST, "Partner ID parameter must be provided!" );
             return null;
         }
-
-        NEXUSe2eInterface theNEXUSe2eInterface = Engine.getInstance().getInProcessNEXUSe2eInterface();
-
-        try {
-            if ( StringUtils.isEmpty( primaryKey ) ) {
-                conversationId = theNEXUSe2eInterface.sendNewStringMessage( choreographyId, partnerId, actionId,
-                        conversationId, content );
-            } else {
-                conversationId = theNEXUSe2eInterface.triggerSendingNewMessage( choreographyId, partnerId, actionId,
-                        conversationId, primaryKey );
+        
+        // check for duplicate message -- only process, if message id is yet unknown
+        if ( messageId != null && Engine.getInstance().getTransactionService().getMessageContext( messageId ) != null ) {
+            LOG.info( "Received duplicate message: " + messageId );
+            response.sendError( HttpServletResponse.SC_OK,
+                "Message will be ignored, because of a duplicate message id (" + messageId + ")" );
+        } else {
+            NEXUSe2eInterface theNEXUSe2eInterface = Engine.getInstance().getInProcessNEXUSe2eInterface();
+    
+            try {
+                if ( StringUtils.isEmpty( primaryKey ) ) {
+                    conversationId = theNEXUSe2eInterface.sendNewStringMessage( choreographyId, partnerId, actionId,
+                            conversationId, messageId, content );
+                } else {
+                    conversationId = theNEXUSe2eInterface.triggerSendingNewMessage( choreographyId, partnerId, actionId,
+                            conversationId, messageId, primaryKey );
+                }
+                /*
+                if ( conversationId == null || conversationId.length() == 0 ) { // Create a new conversation if none was specified
+                    conversationId = theNEXUSe2eInterface.sendNewStringMessage( choreographyId, partnerId, actionId,
+                            content );
+                    LOG.debug( "##--> New conversation ID ( choreography '" + choreographyId + "', conversation ID '"
+                            + conversationId + "')!" );
+                } else {
+                     theNEXUSe2eInterface.sendStringMessage( conversationId, actionId, content );
+                }
+                */
+    
+                LOG.debug( new LogMessage( "Message sent ( choreography '" + choreographyId + "', conversation ID '" + conversationId
+                    + "')!",conversationId, ( messageId != null ? messageId : "unknown" ) ) );
+    
+                response.setStatus( HttpServletResponse.SC_OK );
+            } catch ( NexusException e ) {
+                e.printStackTrace();
+                response.sendError( HttpServletResponse.SC_BAD_REQUEST,
+                        "NexusE2EException was thrown during submission of message: " + e );
             }
-            /*
-            if ( conversationId == null || conversationId.length() == 0 ) { // Create a new conversation if none was specified
-                conversationId = theNEXUSe2eInterface.sendNewStringMessage( choreographyId, partnerId, actionId,
-                        content );
-                LOG.debug( "##--> New conversation ID ( choreography '" + choreographyId + "', conversation ID '"
-                        + conversationId + "')!" );
-            } else {
-                 theNEXUSe2eInterface.sendStringMessage( conversationId, actionId, content );
-            }
-            */
-
-            LOG.debug( new LogMessage( "Message sent ( choreography '" + choreographyId + "', conversation ID '" + conversationId
-                    + "')!",conversationId,"unknown") );
-
-            response.setStatus( HttpServletResponse.SC_OK );
-        } catch ( NexusException e ) {
-            e.printStackTrace();
-            response.sendError( HttpServletResponse.SC_BAD_REQUEST,
-                    "NexusE2EException was thrown during submission of message: " + e );
         }
         return null;
     }

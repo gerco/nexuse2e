@@ -19,6 +19,8 @@
  */
 package org.nexuse2e.integration;
 
+import java.rmi.RemoteException;
+
 import javax.jws.WebService;
 
 import org.apache.log4j.Logger;
@@ -129,11 +131,23 @@ public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
     public String triggerSendingNewMessage( String choreographyId, String businessPartnerId, String actionId,
             String conversationId, Object primaryKey ) throws NexusException {
 
+        return triggerSendingNewMessage( choreographyId, businessPartnerId, actionId, conversationId, null, primaryKey );
+    } // triggerSendingNewMessage
+    
+    /* (non-Javadoc)
+     * @see org.nexuse2e.integration.NEXUSe2eInterface#triggerSendingNewMessage(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.Object)
+     */
+    public String triggerSendingNewMessage( String choreographyId,
+                                            String businessPartnerId,
+                                            String actionId,
+                                            String conversationId,
+                                            String messageId,
+                                            Object primaryKey ) throws NexusException {
         checkExist( choreographyId, businessPartnerId, actionId );
         
         MessageContext messageContext = null;
 
-        LOG.debug( "Parameters - choreographyId: " + choreographyId + ", businessPartnerId: "
+        LOG.debug( "Parameters - choreographyId: " + choreographyId + ", messageId: " + messageId + ", businessPartnerId: "
                 + businessPartnerId + ", actionId: " + actionId + ", primaryKey: " + primaryKey );
 
         BackendPipelineDispatcher backendPipelineDispatcher = Engine.getInstance().getCurrentConfiguration()
@@ -142,7 +156,7 @@ public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
         if ( backendPipelineDispatcher != null ) {
             try {
                 messageContext = backendPipelineDispatcher.processMessage( businessPartnerId, choreographyId, actionId,
-                        conversationId, null, primaryKey, null );
+                        conversationId, messageId, null, primaryKey, null );
             } catch ( NexusException e ) {
                 LOG.debug( "Error submitting message: " + e );
                 throw e;
@@ -153,7 +167,7 @@ public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
             return messageContext.getMessagePojo().getConversation().getConversationId();
         }
         return null;
-    } // triggerSendingNewMessage
+    }
 
     /* (non-Javadoc)
      * @see org.nexuse2e.integration.NEXUSe2eInterface#sendNewStringMessage(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
@@ -167,11 +181,23 @@ public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
     public String sendNewStringMessage( String choreographyId, String businessPartnerId, String actionId,
             String conversationId, String payload ) throws NexusException {
 
+        return sendNewStringMessage( choreographyId, businessPartnerId, actionId, conversationId, null, payload );
+    } // sendNewStringMessage
+    
+    /* (non-Javadoc)
+     * @see org.nexuse2e.integration.NEXUSe2eInterface#sendNewStringMessage(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     */
+    public String sendNewStringMessage( String choreographyId,
+                                        String businessPartnerId,
+                                        String actionId,
+                                        String conversationId,
+                                        String messageId,
+                                        String payload ) throws NexusException {
         checkExist( choreographyId, businessPartnerId, actionId );
         
         MessageContext messageContext = null;
 
-        LOG.debug( "Parameters - choreographyId: " + choreographyId + ", businessPartnerId: "
+        LOG.debug( "Parameters - choreographyId: " + choreographyId + ", messageId: " + messageId + ", businessPartnerId: "
                 + businessPartnerId + ", actionId: " + actionId + ", primaryKey: " + payload );
 
         BackendPipelineDispatcher backendPipelineDispatcher = Engine.getInstance().getCurrentConfiguration()
@@ -180,7 +206,7 @@ public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
         if ( backendPipelineDispatcher != null ) {
             try {
                 messageContext = backendPipelineDispatcher.processMessage( businessPartnerId, choreographyId, actionId,
-                        conversationId, null, null, (payload != null ? payload.getBytes() : null) );
+                        conversationId, messageId, null, null, (payload != null ? payload.getBytes() : null) );
             } catch ( NexusException e ) {
                 LOG.debug( "Error submitting message: " + e );
                 e.printStackTrace();
@@ -191,8 +217,8 @@ public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
             return messageContext.getMessagePojo().getConversation().getConversationId();
         }
         return null;
-    } // sendNewStringMessage
-    
+    }
+
     /**
      * Checks if the given IDs exist.
      * @param choreographyId The choreography ID to check. Can be <code>null</code>.
