@@ -30,11 +30,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
-<<<<<<< .mine
-import org.nexuse2e.messaging.MessageContext;
-=======
 import org.nexuse2e.logging.LogMessage;
->>>>>>> .r1070
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
