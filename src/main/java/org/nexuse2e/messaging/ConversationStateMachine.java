@@ -20,7 +20,11 @@
 package org.nexuse2e.messaging;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 
 import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
@@ -45,6 +49,58 @@ public class ConversationStateMachine {
     private MessagePojo      message;
     private boolean          reliable;
     private Object           sync;
+    
+    private Map<StateTransition,Queue<StateTransitionJob>> stateTransitionActions = new HashMap<StateTransition,Queue<StateTransitionJob>>();
+    
+    /**
+     * Enumeration of all transitions of the {@link ConversationStateMachine} state machine. 
+     * @author Sebastian Schulze
+     * @date 16.09.2010
+     */
+    public enum StateTransition {
+        PROCESSED_BACKEND,
+        PROCESSING_FAILED,
+        QUEUE_MESSAGE,
+        RECEIVED_ACK,
+        RECEIVED_ERROR,
+        RECEIVED_NON_RELIABLE_MESSAGE,
+        RECEIVED_REQUEST,
+        SENT_MESSAGE
+    }
+    
+    /**
+     * Register a job that will be executed only once the specified {@link StateTransition} is performed next.
+     * @param transition
+     * @param action
+     */
+    public void registerStateTransitionJob( StateTransition transition, StateTransitionJob action ) {
+        synchronized ( stateTransitionActions ) {
+            Queue<StateTransitionJob> queue = stateTransitionActions.get( transition );
+            if ( queue == null ) {
+                queue = new LinkedList<StateTransitionJob>();
+                stateTransitionActions.put( transition, queue );
+            }
+            queue.add( action );
+        } 
+    }
+    
+    /**
+     * Execute all registered jobs for the given {@link StateTransition} and empty the according job queue.
+     * @param transition
+     */
+    protected void executeStateTransitionJobs( StateTransition transition ) {
+        synchronized ( stateTransitionActions ) {
+            Queue<StateTransitionJob> queue = stateTransitionActions.get( transition );
+            if ( queue != null ) {
+                while( !queue.isEmpty() ) {
+                    StateTransitionJob job = queue.poll();
+                    if ( job != null ) {
+                        job.execute();
+                    }
+                }
+            }
+        } 
+    }
 
     /**
      * Constructs a new <code>ConversationStateMachine</code>. Please do not use the constructor,
@@ -164,6 +220,9 @@ public class ConversationStateMachine {
                 stex.printStackTrace();
                 LOG.warn( stex.getMessage() );
             }
+            
+            // execute state transition jobs
+            executeStateTransitionJobs( StateTransition.SENT_MESSAGE );
         }
     }
 
@@ -184,6 +243,9 @@ public class ConversationStateMachine {
             } else {
                 Engine.getInstance().getTransactionService().updateTransaction( message );
             }
+            
+            // execute state transition jobs
+            executeStateTransitionJobs( StateTransition.RECEIVED_REQUEST );
         } // synchronized
     }
 
@@ -198,6 +260,9 @@ public class ConversationStateMachine {
             }
             // Persist status changes
             Engine.getInstance().getTransactionService().updateTransaction( message );
+            
+            // execute state transition jobs
+            executeStateTransitionJobs( StateTransition.RECEIVED_NON_RELIABLE_MESSAGE );
         }
     }
 
@@ -244,6 +309,9 @@ public class ConversationStateMachine {
                 throw new NexusException( "Error using referenced message on acknowledgment (ack message ID: "
                         + message.getMessageId() + ")" );
             }
+            
+            // execute state transition jobs
+            executeStateTransitionJobs( StateTransition.RECEIVED_ACK );
         }
     }
 
@@ -277,6 +345,8 @@ public class ConversationStateMachine {
                                 + message.getMessageId() + ")" );
             }
 
+            // execute state transition jobs
+            executeStateTransitionJobs( StateTransition.RECEIVED_ERROR );
         } // synchronized
     }
 
@@ -313,6 +383,9 @@ public class ConversationStateMachine {
             // Persist the message
             LOG.trace( new LogMessage("Persisting status: "+MessagePojo.getStatusName( message.getStatus() )+"/"+ConversationPojo.getStatusName( conversation.getStatus() ), message) );
             Engine.getInstance().getTransactionService().updateTransaction( message );
+            
+            // execute state transition jobs
+            executeStateTransitionJobs( StateTransition.PROCESSED_BACKEND );
         } // synchronized
     }
 
@@ -349,6 +422,9 @@ public class ConversationStateMachine {
                 // Forward message to StatusUpdateSerializer for further processing/queueing
                 statusUpdateSerializer.processMessage( messageContext );
             }
+            
+            // execute state transition jobs
+            executeStateTransitionJobs( StateTransition.PROCESSING_FAILED );
 
         } // synchronized
     }
@@ -394,6 +470,9 @@ public class ConversationStateMachine {
                     Engine.getInstance().getTransactionService().updateTransaction( message, force );
                 }
             }
+            
+            // execute state transition jobs
+            executeStateTransitionJobs( StateTransition.QUEUE_MESSAGE );
         } // synchronized
     }
 }

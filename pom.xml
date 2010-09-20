@@ -6,9 +6,9 @@
  <artifactId>nexuse2e-server</artifactId>
  <packaging>war</packaging>
 <!-- Next Version
- <version>4.4.11-SNAPSHOT</version>
+ <version>4.4.11</version>
 -->
- <version>4.4.10</version>
+ <version>4.4.11-SNAPSHOT</version>
  <name>NEXUSe2e Server</name>
  <url>http://www.nexuse2e.org</url>
  <repositories>

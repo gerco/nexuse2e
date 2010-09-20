@@ -21,6 +21,7 @@ package org.nexuse2e.logging;
 
 import java.io.Serializable;
 
+import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.MessagePojo;
 
 /**
@@ -57,6 +58,10 @@ public class LogMessage implements Serializable {
             }
             this.messageId = messagePojo.getMessageId();
         }
+    }
+    
+    public LogMessage( String description, MessageContext messageContext ) {
+        this( description, ( messageContext != null ? messageContext.getMessagePojo() : null ) );
     }
 
     public String getConversationId() {

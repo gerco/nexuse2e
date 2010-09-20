@@ -240,6 +240,9 @@ public class XSLTPipelet extends AbstractPipelet {
 
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer( xsltSource );
+            if ( LOG.isDebugEnabled() ) {
+                LOG.debug( "XML Transformer implementation is: " + transformer.getClass().getName() );
+            }
             if ( map != null ) {
                 LOG.debug( "Using provided XSLT parameters..." );
                 LOG.debug( "map: "+map );
@@ -257,7 +260,7 @@ public class XSLTPipelet extends AbstractPipelet {
             if ( LOG.isTraceEnabled() ) {
                 e.printStackTrace();
             }
-            throw new NexusException( "Error transforming payload using XSLT: " + e );
+            throw new NexusException( "Error transforming payload using XSLT: " + e.getMessage(), e );
         }
 
         return result;
