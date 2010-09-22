@@ -75,7 +75,7 @@ public class RequestExportCSRAction extends NexusE2EAction {
             return error;
         }
 
-        PKCS10CertificationRequest certRequest = CertificateUtil.getPKCS10Request( certificates.get( 0 ) );
+        PKCS10CertificationRequest certRequest = ( certificates.size() > 0 ? CertificateUtil.getPKCS10Request( certificates.get( 0 ) ) : null );
         System.out.println( "certRequest: " + certRequest.getCertificationRequestInfo().getSubject() );
         if ( certRequest == null ) {
             ActionMessage errorMessage = new ActionMessage( "generic.error", "no request object avilable!" );

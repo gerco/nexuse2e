@@ -27,6 +27,7 @@
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
 <%@ taglib uri="/tags/nexus" prefix="nexus"%>
 
+<nexus:fileUploadResponse>
 <% /*<nexus:helpBar helpDoc="documentation/SSL.htm" /> */ %>
 
 <logic:equal name="type" value="csr">
@@ -174,3 +175,4 @@ window.open('DataSaveAs.do?type=privatepem','Save as...')
 </table>
 
 </center>
+</nexus:fileUploadResponse>

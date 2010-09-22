@@ -209,7 +209,7 @@ public class RequestVerifyCertChainAction extends NexusE2EAction {
             request.getSession().setAttribute( "chain", chainCerts );
 
         }
-        System.out.println( "done, deleting vfs" );
+//        System.out.println( "done, deleting vfs" );
 //        content.close();
 //        System.out.println( "zip: " + zip.isContentOpen() );
 //        System.out.println( "delete: " + zip.delete() );

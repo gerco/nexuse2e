@@ -27,7 +27,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 /**
  * This tag provides the ability to render a page for either usual display as plain html,
- * and as an additionally copy wrapped by a hidden &lt;textarea&gt;-tag as required by dojo.io.iframe.
+ * or wrapped by a hidden &lt;textarea&gt;-tag as required by dojo.io.iframe.
  * 
  * Example:
  * <pre>
@@ -46,9 +46,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
  * <pre>
  * &lt;html&gt;
  *  &lt;body&gt;
- *   &lt;h1&gt;Headline&lt;/h1&gt;
- *   &lt;div&gt;Some Text&lt;/div&gt;
- *   &lt;textarea style="diplay: none;"&gt;
+ *   &lt;textarea style="display: none;"&gt;
  *    &lt;h1&gt;Headline&lt;/h1&gt;
  *    &lt;div&gt;Some Text&lt;/div&gt;
  *   &lt;/textarea&gt;
@@ -56,6 +54,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
  *  &lt;/body&gt;
  * &lt;/html&gt;
  * </pre>
+ * if and only if a request parameter <code>X-Ne2e-File-Upload</code> is found.
  * 
  * Background: If a page should be shown as the response to a file upload (form post), the Dojo-Toolkit
  * expects the page's data wrapped by a &lt;textarea&gt;-tag, in order to parse and render it correctly.
@@ -87,13 +86,16 @@ public class FileUploadResponse extends BodyTagSupport {
         try {
             // write the data as usual
             JspWriter out = pageContext.getOut();
-            bodyContent.writeOut( out );
-            // begin the text area
-            out.println( "<textarea style=\"display: none;\">" );
-            // write the data again into the textarea
-            bodyContent.writeOut( out );
-            // end the textarea
-            out.println( "</textarea>" );
+            if ( pageContext.getRequest().getParameter( "X-Ne2e-File-Upload" ) == null ) {
+                bodyContent.writeOut( out );
+            } else {
+                // begin the text area
+                out.println( "<textarea style=\"display: none;\">" );
+                // write the data again into the textarea
+                bodyContent.writeOut( out );
+                // end the textarea
+                out.println( "</textarea>" );
+            }
         } catch ( IOException e ) {
             throw new JspException( e );
         }

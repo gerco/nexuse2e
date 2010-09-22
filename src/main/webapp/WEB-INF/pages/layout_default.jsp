@@ -288,8 +288,14 @@
 	 */
 	function submitFileFormData(form) {
 		//console.log(form.name);
+		showInProgress();
+
 		dojo.io.iframe.send( {
 		    form: form,
+		    content: {
+			 		// indicate in the request that this is a file upload
+		      "X-Ne2e-File-Upload": "true"
+		    },
 		    load: function(data, ioArgs) {
 		    	//console.log(data);
 		    	//console.log(ioArgs);

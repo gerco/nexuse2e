@@ -103,7 +103,7 @@ public class RequestSaveBackupAction extends NexusE2EAction {
             }
             o = reader.readObject();
             CertificatePojo pojo2 = createPojo( o, pwd );
-            if ( pojo1 == null ) {
+            if ( pojo2 == null ) {
                 ActionMessage errormessage = new ActionMessage( "generic.error",
                         "The selected file is not a valid backup file!" );
                 errors.add( ActionMessages.GLOBAL_MESSAGE, errormessage );

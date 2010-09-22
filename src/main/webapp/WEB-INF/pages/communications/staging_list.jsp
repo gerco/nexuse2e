@@ -27,6 +27,7 @@
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
 <%@ taglib uri="/tags/nexus" prefix="nexus"%>
 
+<nexus:fileUploadResponse>
 <% /*<nexus:helpBar helpDoc="documentation/SSL.htm" /> */ %>
 
 <logic:notEmpty name="redirectUrl">
@@ -85,3 +86,4 @@ window.open('<bean:write name="redirectUrl"/>','Save as...')
 </table>
 
 </center>
+</nexus:fileUploadResponse>

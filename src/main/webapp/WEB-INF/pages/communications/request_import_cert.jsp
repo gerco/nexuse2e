@@ -61,7 +61,11 @@
 			<td class="BUTTON_RIGHT"><nexus:submit sendFileForm="true" styleClass="button">
 				<img src="images/icons/tick.png" name="SUBMIT" class="button">
 			</nexus:submit></td>
-			<td class="NexusHeaderLink">Import</td>
+			<td class="NexusHeaderLink">
+				<nexus:submit sendFileForm="true" styleClass="button">
+					Import
+				</nexus:submit>
+			</td>
 		</tr>
 	</table>
 </html:form></center>
