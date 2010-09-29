@@ -77,7 +77,8 @@
 			<td class="NEXUSValue"><nexus:link
 				href="PartnerCertificateView.do?nxPartnerId=${collaborationPartnerForm.nxPartnerId}&nxCertificateId=${cert.nxCertificateId}"
 				styleClass="NexusLink">
-				<bean:write name="cert" property="id" />
+				<logic:empty name="cert" property="id">n/a</logic:empty>
+				<logic:notEmpty name="cert" property="id"><bean:write name="cert" property="id" /></logic:notEmpty>				
 			</nexus:link></td>
 			<td class="NEXUSValue"><bean:write name="cert"
 				property="commonName" /></td>

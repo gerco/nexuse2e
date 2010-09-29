@@ -26,6 +26,7 @@
 <%@ taglib uri="/tags/struts-logic" prefix="logic" %>
 <%@ taglib uri="/tags/nexus" prefix="nexus" %>
 
+<nexus:fileUploadResponse>
 <% /*<nexus:helpBar helpDoc="documentation/SSL.htm"/> */ %>
 
     <center>
@@ -107,11 +108,12 @@
                 <tr>
                     <td>&nbsp;</td>
                     <td class="BUTTON_RIGHT">
-                    	<nexus:submit precondition="confirmDelete('Are you sure you want to replace this Certificate?');"><img src="images/icons/add.png" name="SUBMIT"></nexus:submit>
+                    	<nexus:submit precondition="confirmDelete('Are you sure you want to replace this Certificate?')"><img src="images/icons/add.png" name="SUBMIT"></nexus:submit>
                     </td>
-                    <td class="NexusHeaderLink">Replace existing</td>
+                    <td class="NexusHeaderLink"><nexus:submit precondition="confirmDelete('Are you sure you want to replace this Certificate?')">Replace existing</nexus:submit></td>
                 </tr>
             </table>
         </center>
     </html:form>
     </center>
+</nexus:fileUploadResponse>

@@ -33,6 +33,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertPathBuilder;
@@ -64,6 +65,7 @@ import javax.net.ssl.KeyManager;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
+import javax.security.auth.x500.X500Principal;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
@@ -1061,28 +1063,48 @@ public class CertificateUtil {
      */
     public static Certificate[] getCertificateChain( X509Certificate head, List<X509Certificate> certificates ) {
 
-        Certificate[] certs = null;
-
-        try {
-           
-            X509Principal subject = getPrincipalFromCertificate( head, true );
-
-            Map<X509Principal, X509Certificate>  certHashMap = getX509CertificateHashMap( certificates );
-
-            certHashMap.put( subject, head );
-            List<X509Certificate> certsList = getCertChainDN( certHashMap, subject );
-            // log.debug("getPartnerCertificateChain: count: " + certsList.size());
-            certs = new Certificate[certsList.size()];
-            int pos = 0;
-            for (X509Certificate cert : certsList) {
-                certs[pos++] = cert;
-            }
-
-        } catch ( Exception ex ) {
-            ex.printStackTrace();
+        List<X509Certificate> chain = new ArrayList<X509Certificate>();
+        if ( head != null ) {
+            chain.add( head );
+            complementCertificateChain( chain, certificates );
         }
 
-        return certs;
+        return chain.toArray( new Certificate[chain.size()] );
+    }
+    
+    /**
+     * Recursively searched the certificate pool for a valid issuer certificate of the last chain link.
+     * @param chain The chain of trust so far. This is an in/out parameter.
+     *              The method recursively adds certificates to the end of the chain,
+     *              if such can be bound in the <code>certPool</code>. Otherwise the method terminates. 
+     * @param certPool The pool of trusted certificates.
+     */
+    private static void complementCertificateChain( List<X509Certificate> chain, List<X509Certificate> certPool ) {
+        if ( chain != null && chain.size() > 0 && certPool != null && certPool.size() > 0 ) {
+            X509Certificate lastChainLink = chain.get( chain.size() - 1 );
+            if ( lastChainLink != null ) {
+                X500Principal issuer = lastChainLink.getIssuerX500Principal();
+                // only try to find issuer cert, if cert is not self-signed; otherwise we would end up with an infinite loop
+                if ( issuer != null && !issuer.equals( lastChainLink.getSubjectX500Principal() ) ) {
+                    for ( X509Certificate currCert : certPool ) {
+                        // the issuer of the last chain link must be the subject of the next chain link
+                        if ( currCert != null && issuer.equals( currCert.getSubjectX500Principal() ) ) {
+                            try {
+                                // unfortunately a verification failure is indicated by an exception
+                                lastChainLink.verify( currCert.getPublicKey() );
+                                // if no exception was thrown, the right ca was found
+                                chain.add( currCert ); // add issuer to chain and make next recursion step
+                                // recursion
+                                complementCertificateChain( chain, certPool );
+                                return; // the chain needs only one trusted link on each position
+                            } catch ( Exception e ) {
+                                // current certificate is not the issuer
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -1107,33 +1129,6 @@ public class CertificateUtil {
         return hashMap;
     }
 
-    /**
-     * @param certificateHashMap
-     * @param subject
-     * @return
-     */
-    private static ArrayList<X509Certificate> getCertChainDN(
-            Map<X509Principal, X509Certificate> certificateHashMap, X509Principal subject ) {
-
-        ArrayList<X509Certificate> certChain = new ArrayList<X509Certificate>();
-        X509Principal issuer = null;
-        try {
-            X509Certificate x509Certificate = (X509Certificate) certificateHashMap.get( subject );
-            while ( !subject.equals( issuer ) && ( x509Certificate != null ) ) {
-                issuer = getPrincipalFromCertificate( x509Certificate, false );
-                subject = getPrincipalFromCertificate( x509Certificate, true );
-                certChain.add( x509Certificate );
-
-                x509Certificate = (X509Certificate) certificateHashMap.get( issuer );
-            }
-        } catch ( Exception e ) {
-            e.printStackTrace();
-        }
-
-        return certChain;
-    } // getCertChainDN
-    
-    
     /**
      * Creates the <code>KeyManager</code>s for the given keystore and encryption password.
      * @param keystore

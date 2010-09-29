@@ -56,7 +56,8 @@ window.open('DataSaveAs.do?type=cacerts','Save as...')
 		<tr>
 			<td class="NEXUSName"><nexus:link styleClass="NexusLink"
 				href="CACertificateView.do?alias=${cert.alias}">
-				<bean:write name="cert" property="alias" />
+				<logic:empty name="cert" property="alias">n/a</logic:empty>
+				<logic:notEmpty name="cert" property="alias"><bean:write name="cert" property="alias" /></logic:notEmpty>
 			</nexus:link></td>
 			<td class="NEXUSName"><bean:write name="cert"
 				property="commonName" /></td>
