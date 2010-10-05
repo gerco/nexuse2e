@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <!-- The configuration format for the MultipleFileWriterPipelet in NEXUSe2e --> 
+    <xs:element name="FileWriterConfig">
+        <xs:complexType>
+            <xs:sequence>
+                <!-- Configure one writer -->
+                <xs:element name="Writer" maxOccurs="unbounded" minOccurs="1">
+                    <xs:complexType>
+                        <!-- The directory to put files -->
+                        <xs:attribute name="dir" type="xs:string" use="required"/>
+                        <!-- Whether to use the contend id (optional; default is false) -->
+                        <xs:attribute name="useContentId" type="xs:boolean" use="optional" default="false"/>
+                        <!-- The file prefix (optional; default is empty string) -->
+                        <xs:attribute name="filePrefix" type="xs:string" use="optional" default=""/>
+                        <!-- File extension (optional; defailt is empty string) -->
+                        <xs:attribute name="fileExtension" type="xs:string" use="optional" default=""/>
+                        <!-- Use a temporary directory while writing the file (optional; default is no temporary directory) -->
+                        <xs:attribute name="tmpDir" type="xs:string" use="optional" default=""/>
+                        <!-- Use a temporary file name extension while writing the file (optional; default is no temporary file name) -->
+                        <xs:attribute name="tmpFileNameExt" type="xs:string" use="optional" default=".part"/>
+                        <!-- Appemd a timestamp with the given pattern (optional; default is no timestamp) -->
+                        <xs:attribute name="timestampPattern" type="xs:string" use="optional" default=""/>
+                        <!-- The choreography this configuration applies to -->
+                        <xs:attribute name="choreographyId" type="xs:string" use="required"/>
+                        <!-- The action this configuration applies to -->
+                        <xs:attribute name="actionId" type="xs:string" use="required"/>
+                        <!-- The partner this configuration applies to -->
+                        <xs:attribute name="partnerId" type="xs:string" use="required"/>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
