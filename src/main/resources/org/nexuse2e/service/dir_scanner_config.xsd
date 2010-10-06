@@ -27,6 +27,17 @@
                         <xs:attribute name="conversationXPath" type="xs:string" use="optional"/>
                         <!-- The mapping and conversion service (optional) -->
                         <xs:attribute name="mappingServiceName" type="xs:string" use="optional"/>
+                        <!-- The direction of new messages (optional; default is "outbound").
+                        		 If value is "outbound", the message will be dispatched to the outbound backend dispatcher.
+                        		 If value is "inbound", the message will be dispatched to a given instance of ReceiverAware interface. -->
+												<xs:attribute name="direction" use="optional" default="outbound">
+													<xs:simpleType>
+														<xs:restriction base="xs:string">
+															<xs:enumeration value="outbound" />
+															<xs:enumeration value="inbound" />
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:attribute>
                     </xs:complexType>
                 </xs:element>
             </xs:sequence>

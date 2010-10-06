@@ -29,11 +29,15 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import javax.activation.FileTypeMap;
+import javax.activation.MimetypesFileTypeMap;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -48,6 +52,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.nexuse2e.Constants;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
@@ -56,8 +61,11 @@ import org.nexuse2e.backend.BackendPipelineDispatcher;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.MessagePayloadPojo;
+import org.nexuse2e.pojo.MessagePojo;
 import org.nexuse2e.tools.mapping.xmldata.MappingDefinition;
+import org.nexuse2e.transport.TransportReceiver;
 import org.w3c.dom.Document;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -93,6 +101,11 @@ import org.xml.sax.helpers.DefaultHandler;
  *			conversationXPath="//order/@orderId"
  *	        <!-- The mapping and conversion service (optional) -->
  *			mappingServiceName="MyMappingService"
+ *          <!-- The direction of new messages (optional; default is "outbound").
+ *           If value is "outbound", the message will be dispatched to the outbound backend dispatcher.
+ *           If value is "inbound", the message will be dispatched to a given instance of ReceiverAware interface.
+ *          -->
+ *          direction="outbound"
  *	    />
  *	    <Scanner
  *	        <!-- The directory to scan for files -->
@@ -112,7 +125,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * 
  * @author s_schulze
  */
-public class MultipleDirectoryScannerService extends AbstractService {
+public class MultipleDirectoryScannerService extends AbstractService implements ReceiverAware {
 
 
 	private static final Logger        LOG                        = Logger.getLogger( MultipleDirectoryScannerService.class );
@@ -126,6 +139,8 @@ public class MultipleDirectoryScannerService extends AbstractService {
     protected SchedulingService         schedulingService         = null;
     
     protected List<DirectoryScanner>	directoryScanners		  = null;
+    
+    protected TransportReceiver         transportReceiver         = null;
     
     /**
      * Initializes the {@link MultipleDirectoryScannerService}.
@@ -237,6 +252,7 @@ public class MultipleDirectoryScannerService extends AbstractService {
 											attributes.getValue( "", "actionId" ),
 											attributes.getValue( "", "conversationXPath" ),
 											attributes.getValue( "", "mappingServiceName" ),
+											attributes.getValue( "", "direction" ),
 											backendPipelineDispatcher ) );
 						} catch ( IllegalArgumentException e ) {
 							LOG.error( "Cannot initialize directory scanner number " + scannerCounter + " defined in the config file. Please check your configuration.");
@@ -306,6 +322,21 @@ public class MultipleDirectoryScannerService extends AbstractService {
     	}
     }
     
+    /* (non-Javadoc)
+     * @see org.nexuse2e.service.ReceiverAware#getTransportReceiver()
+     */
+    public TransportReceiver getTransportReceiver() {
+        return transportReceiver;
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.service.ReceiverAware#setTransportReceiver(org.nexuse2e.transport.TransportReceiver)
+     */
+    public void setTransportReceiver( TransportReceiver transportReceiver ) {
+        this.transportReceiver = transportReceiver;
+        
+    }
+
     protected class DirectoryScanner implements SchedulerClient {
     	// Time to wait after retrieving the list of files to send
         // This is to avoid timing problems when files are still being written
@@ -333,8 +364,10 @@ public class MultipleDirectoryScannerService extends AbstractService {
         private String                    actionId                    = null;
         private String                    conversationStatement       = null;
         private FilenameFilter			  filenameFilter			  = null;
-
+        
         private DataConversionService     mappingService              = null;
+        
+        private String                    direction                   = null;
 
         private BackendPipelineDispatcher backendPipelineDispatcher;
         
@@ -352,6 +385,7 @@ public class MultipleDirectoryScannerService extends AbstractService {
          * @param filePattern
          * @param isMultiPayloadAssemblingEnabled
          * @param mappingService
+         * @param direction
          * @param backendPipelineDispatcher
          */
         protected DirectoryScanner( String dir,
@@ -364,6 +398,7 @@ public class MultipleDirectoryScannerService extends AbstractService {
         							String actionId,
         							String conversationXPath,
         							String mappingServiceName,
+        							String direction,
         							BackendPipelineDispatcher backendPipelineDispatcher ) {
         	this.directory = dir;
         	this.backupDirectory = backupDir;
@@ -386,6 +421,7 @@ public class MultipleDirectoryScannerService extends AbstractService {
             } else {
                 MultipleDirectoryScannerService.LOG.info( "No mapping service configured" );
             }
+        	this.direction = direction;
         	this.backendPipelineDispatcher = backendPipelineDispatcher;
         	
         	// plausability check
@@ -442,13 +478,13 @@ public class MultipleDirectoryScannerService extends AbstractService {
                                 multiPayloadFilePaths.add( files[i].getAbsolutePath() );
                             } else {
                                 MultipleDirectoryScannerService.LOG.trace( "Processing file: " + files[i].getAbsoluteFile() );
-                                processFile( files[i].getAbsolutePath() );
+                                processFiles( Collections.singletonList( files[i].getAbsolutePath() ) );
                             }
                         } catch ( Exception ex ) {
                             MultipleDirectoryScannerService.LOG.error( "Exception submitting file", ex );
                         }
                     } else {
-                        System.out.println( "Skipping file: " + files[i].getAbsoluteFile() );
+                        MultipleDirectoryScannerService.LOG.trace( "Skipping file: " + files[i].getAbsoluteFile() );
                     }
                 }
                 
@@ -470,6 +506,8 @@ public class MultipleDirectoryScannerService extends AbstractService {
             List<MessagePayloadPojo> payloads = new ArrayList<MessagePayloadPojo>();
             
             try {
+                Date creationDate = new Date();
+                
                 // only construct a message, if there is at least one file for payload
                 if ( files != null ) {
                     for ( String currFile : files ) {
@@ -477,24 +515,123 @@ public class MultipleDirectoryScannerService extends AbstractService {
                         if ( currBuff != null ) {
                             MessagePayloadPojo currPayload = new MessagePayloadPojo();
                             currPayload.setPayloadData( currBuff );
-                            currPayload.setContentId( new File( currFile ).getName() );
-                            // TODO set MIME type?
+                            File currFileObj = new File( currFile );
+                            currPayload.setContentId( currFileObj.getName() );
+                            currPayload.setCreatedDate( creationDate );
+                            
+                            MimetypesFileTypeMap mimetypesFileTypeMap = (MimetypesFileTypeMap) FileTypeMap.getDefaultFileTypeMap();
+                            String mimeType = mimetypesFileTypeMap.getContentType( currFileObj );
+                            currPayload.setMimeType( mimeType != null ? mimeType : "unknown" );
+                                                        
                             payloads.add( currPayload );
                         }
                     }
                     
-                    /* mapping file names to actionId, choreographyId, partnerId,
-                     * or conversationId makes no sense with in multi payload mode */
+                    String currConversationId = null;
+                    String currPartnerId = partnerId;
+                    String currChoreographyId = choreographyId;
+                    String currActionId = actionId;
+                    String currLabel = null;
                     try {
-                        backendPipelineDispatcher.processMessage( partnerId,
-                                                                  choreographyId,
-                                                                  actionId,
-                                                                  null,
-                                                                  null,
-                                                                  null,
-                                                                  null,
-                                                                  payloads,
-                                                                  null );
+                        // the following block is legacy code, that works only in case of one file per message
+                        if ( files.size() == 1 ) {
+                            Map<String, String> variables = getVariables( files.get( 0 ) );
+                            
+                            currLabel = org.nexuse2e.Constants.NX_LABEL_FILE_NAME + "|" + variables.get( "$filename" );
+
+                            if ( partnerId.startsWith( "${" ) ) {
+                                if ( mappingService == null ) {
+                                    MultipleDirectoryScannerService.LOG
+                                            .error( "no valid Mapping service configured. Mapping and conversion features are not available!" );
+                                } else {
+                                    MappingDefinition mappingDef = new MappingDefinition();
+                                    mappingDef.setCommand( partnerId );
+                                    currPartnerId = mappingService.processConversion( null, null, null, mappingDef, variables );
+                                }
+                            }
+
+                            if ( choreographyId.startsWith( "${" ) ) {
+                                if ( mappingService == null ) {
+                                    MultipleDirectoryScannerService.LOG
+                                            .error( "no valid Mapping service configured. Mapping and conversion features are not available!" );
+                                } else {
+                                    MappingDefinition mappingDef = new MappingDefinition();
+                                    mappingDef.setCommand( choreographyId );
+                                    currChoreographyId = mappingService.processConversion( null, null, null, mappingDef, variables );
+                                }
+                            }
+
+                            if ( actionId.startsWith( "${" ) ) {
+                                if ( mappingService == null ) {
+                                    MultipleDirectoryScannerService.LOG
+                                            .error( "no valid Mapping service configured. Mapping and conversion features are not available!" );
+                                } else {
+                                    MappingDefinition mappingDef = new MappingDefinition();
+                                    mappingDef.setCommand( actionId );
+                                    currActionId = mappingService.processConversion( null, null, null, mappingDef, variables );
+                                }
+                            }
+                            
+                            if ( !StringUtils.isEmpty( conversationStatement ) ) {
+                                ByteArrayInputStream bais = new ByteArrayInputStream( payloads.get( 0 ).getPayloadData() );
+
+                                DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+                                DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
+                                Document document = builder.parse( bais );
+
+                                XPath xPathObj = XPathFactory.newInstance().newXPath();
+                                Object xPathResult = xPathObj.evaluate( conversationStatement, document, XPathConstants.STRING );
+                                currConversationId = (String)xPathResult;
+                            }
+                        } // end of legacy code
+                        /* mapping file names to actionId, choreographyId, partnerId,
+                         * or conversationId makes no sense with in multi payload mode,
+                         * because you we do not now which of the files is crucial */
+                        if ( "inbound".equalsIgnoreCase( direction ) ) {
+                            if ( MultipleDirectoryScannerService.this.transportReceiver != null ) {
+                                // init msg context
+                                MessageContext messageContext = new MessageContext();
+                                // init msg
+                                MessagePojo message = new MessagePojo();
+                                message.setCreatedDate( creationDate );
+                                message.setOutbound( false );
+                                message.setType( org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_NORMAL );
+                                for ( MessagePayloadPojo currPayload : payloads ) {
+                                    currPayload.setMessage( message );
+                                }
+                                message.setMessagePayloads( payloads );
+                                Engine.getInstance().getTransactionService().initializeMessage(
+                                    message,
+                                    Engine.getInstance().getIdGenerator( Constants.ID_GENERATOR_MESSAGE ).getId(),
+                                    currConversationId != null ? currConversationId : Engine.getInstance().getIdGenerator( Constants.ID_GENERATOR_CONVERSATION ).getId(),
+                                    currActionId,
+                                    currPartnerId,
+                                    currChoreographyId );
+                                // putting things together
+                                messageContext.setMessagePojo( message );
+                                messageContext.setOriginalMessagePojo( message );
+                                // flush
+                                MultipleDirectoryScannerService.this.transportReceiver.processMessage( messageContext );
+                            } else {
+                                throw new NexusException(
+                                    "Missing TransportReceiver for directory scanner with direction\"inbound\". Please check configuration." );
+                            }
+                        } else { // default
+                            if ( backendPipelineDispatcher != null ) {
+                                backendPipelineDispatcher.processMessage( currPartnerId,
+                                                                          currChoreographyId,
+                                                                          currActionId,
+                                                                          currConversationId, // could be null
+                                                                          null,
+                                                                          currLabel, // could be null
+                                                                          null,
+                                                                          payloads,
+                                                                          null );
+                            } else {
+                                throw new NexusException(
+                                    "Missing BackendPipelineDispatcher for directory scanner with direction\"outbound\". Please check configuration." );
+                            }
+                        }
                         // Remove files from the file system.
                         for ( String currFile : files ) {
                             deleteFile( currFile );
@@ -509,7 +646,7 @@ public class MultipleDirectoryScannerService extends AbstractService {
                             + ". Files will not be deleted, but have been copied to the backup directory already.", e );
                     }
                 }
-            } catch ( IOException e ) {
+            } catch ( Exception e ) {
                 // build list of affected files
                 StringBuilder sb = new StringBuilder();
                 for ( String currFile : files ) {
@@ -563,94 +700,6 @@ public class MultipleDirectoryScannerService extends AbstractService {
             return variables;
         }
         
-        /**
-         * Process any files found.
-         * @param filePath File found by the scanner.
-         */
-        protected void processFile( String filePath ) throws Exception {
-
-            byte[] fileBuffer = getBytesAndBackup( filePath );
-            String conversationId = null;
-
-            if ( fileBuffer != null ) {
-                try {
-                    
-
-                    // Prepare the Payload and set the MIME content type
-                    /*
-                     MimetypesFileTypeMap mimetypesFileTypeMap = (MimetypesFileTypeMap) FileTypeMap.getDefaultFileTypeMap();
-                     String mimeType = mimetypesFileTypeMap.getContentType( newFile );
-
-                     Payload newPayload = new Payload( fileBuffer );
-                     if ( mimeType != null ) {
-                     newPayload.setContentType( mimeType );
-                     } else {
-                     newPayload.setContentType( "text/xml" ); // Default to text/xml in case the time could not be determined
-                     }
-                     */
-
-                    Map<String, String> variables = getVariables( filePath );
-                    
-                    String label = org.nexuse2e.Constants.NX_LABEL_FILE_NAME + "|" + variables.get( "$filename" );
-
-                    String tempPartnerId = partnerId;
-                    if ( partnerId.startsWith( "${" ) ) {
-                        if ( mappingService == null ) {
-                            MultipleDirectoryScannerService.LOG
-                                    .error( "no valid Mapping service configured. Mapping and conversion features are not available!" );
-                        } else {
-                            MappingDefinition mappingDef = new MappingDefinition();
-                            mappingDef.setCommand( partnerId );
-                            tempPartnerId = mappingService.processConversion( null, null, null, mappingDef, variables );
-                        }
-                    }
-
-                    String tempChoreographyId = choreographyId;
-                    if ( choreographyId.startsWith( "${" ) ) {
-                        if ( mappingService == null ) {
-                            MultipleDirectoryScannerService.LOG
-                                    .error( "no valid Mapping service configured. Mapping and conversion features are not available!" );
-                        } else {
-                            MappingDefinition mappingDef = new MappingDefinition();
-                            mappingDef.setCommand( choreographyId );
-                            tempChoreographyId = mappingService.processConversion( null, null, null, mappingDef, variables );
-                        }
-                    }
-
-                    String tempActionId = actionId;
-                    if ( actionId.startsWith( "${" ) ) {
-                        if ( mappingService == null ) {
-                            MultipleDirectoryScannerService.LOG
-                                    .error( "no valid Mapping service configured. Mapping and conversion features are not available!" );
-                        } else {
-                            MappingDefinition mappingDef = new MappingDefinition();
-                            mappingDef.setCommand( actionId );
-                            tempActionId = mappingService.processConversion( null, null, null, mappingDef, variables );
-                        }
-                    }
-                    
-                    if ( !StringUtils.isEmpty( conversationStatement ) ) {
-                        ByteArrayInputStream bais = new ByteArrayInputStream( fileBuffer );
-
-                        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-                        DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
-                        Document document = builder.parse( bais );
-
-                        XPath xPathObj = XPathFactory.newInstance().newXPath();
-                        Object xPathResult = xPathObj.evaluate( conversationStatement, document, XPathConstants.STRING );
-                        conversationId = (String)xPathResult;
-                    }
-
-                    backendPipelineDispatcher.processMessage( tempPartnerId, tempChoreographyId, tempActionId, conversationId, label,
-                            null, fileBuffer );
-                    // Remove file from the file system.
-                    deleteFile( filePath );
-                } catch ( Exception ex ) {
-                    MultipleDirectoryScannerService.LOG.error( "Error while processing file", ex );
-                }
-            }
-        }
-
         /**
          * Delete a file that was found by the scanner.
          * @param killFile
