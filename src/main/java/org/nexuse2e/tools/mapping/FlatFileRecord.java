@@ -105,8 +105,18 @@ public class FlatFileRecord {
     public void setColumn( String columnId, String value ) {
 
         Integer index = columnNames.get( columnId );
-        if ( index != null && ( index.intValue() < columns.size() ) ) {
-            columns.set( index.intValue(), value );
+        if ( index != null ) {
+            if ( index.intValue() < columns.size() ) {
+                // replace existing
+                columns.set( index.intValue(), value );
+            } else {
+                // Add new column. Insert empty string columns,
+                // if the new column's index is not at the end of the list.
+                for ( int i = index - columns.size(); i > 0; i-- ) {
+                    columns.add( null );
+                }
+                columns.add( value );
+            }
         }
     }
 

@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.digester.Digester;
 import org.apache.commons.lang.StringUtils;
@@ -195,6 +197,20 @@ public class IntermediateDataMappingPipelet extends AbstractPipelet {
                 String value = flatFileRecord.getColumn( mappingDefinition.getXpath(), null );
                 if ( value != null ) {
                     flatFileRecord.setColumn( mappingDefinition.getXpath(), mapData( value, mappingDefinition ) );
+                } else {
+                    // Special handling for command "static":
+                    // A static field should be always present, even if there was no such input field.
+                    // That's why we add it here.
+                    String command = mappingDefinition.getCommand();
+                    Pattern pattern = Pattern.compile( "[a-zA-Z]+" );
+                    Matcher matcher = pattern.matcher( command );
+                    if ( matcher.find() ) {
+                        String commandName = matcher.group();
+                        if ( commandName != null
+                                && commandName.equals( DataConversionService.STATIC ) ) {
+                            flatFileRecord.setColumn( mappingDefinition.getXpath(), mapData( "", mappingDefinition ) );
+                        }
+                    }
                 }
             }
         }
