@@ -1,5 +1,5 @@
  NEXUSe2e Business Messaging Open Source  
- Copyright ${year}, Tamgroup and X-ioma GmbH   
+ Copyright ${year}, Tamgroup, X-ioma GmbH and solutions direkt GmbH   
   
  This is free software; you can redistribute it and/or modify it  
  under the terms of the GNU Lesser General Public License as  

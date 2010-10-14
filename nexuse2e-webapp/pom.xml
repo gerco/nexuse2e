@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <!-- parent POM -->
+  <parent>
+    <groupId>org.nexuse2e</groupId>
+    <artifactId>nexuse2e-parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <!-- this project -->
+  <groupId>org.nexuse2e</groupId>
+  <artifactId>nexuse2e-webapp</artifactId>
+  <packaging>war</packaging>
+  <version>4.5.0-SNAPSHOT</version>
+  <name>NEXUSe2e Server Web Application</name>
+  <url>http://www.nexuse2e.org</url>
+  <!-- license -->
+  <licenses>
+   <license>
+     <name>GNU LESSER GENERAL PUBLIC LICENSE (LGPL), Version 2.1</name>
+     <url>http://www.fsf.org/licensing/licenses/lgpl.txt</url>
+     <distribution>repo</distribution>
+     <comments>OSS license that permits inclusion in commercial products.</comments>
+   </license>
+  </licenses>
+  <!-- dependencies -->
+  <dependencies>
+    <dependency>
+      <groupId>org.nexuse2e</groupId>
+      <artifactId>nexuse2e-core</artifactId>
+      <version>4.5.0-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+ <!-- distribution -->
+ <distributionManagement>
+   <site>
+   </site>
+ </distributionManagement>
+ <!-- build -->
+ <build>
+   <plugins>
+     
+     <plugin>
+       <groupId>org.apache.maven.plugins</groupId>
+       <artifactId>maven-war-plugin</artifactId>
+       <version>2.1</version>
+       <extensions>true</extensions>
+       <configuration>
+         <archiveClasses>true</archiveClasses>
+         <archive>
+           <manifest>
+             <mainClass>org.nexuse2e.Version</mainClass>
+           </manifest>
+         </archive>
+         <warName>NEXUSe2e</warName>
+         <warSourceExcludes>
+           **/stax-api-1.0-2.jar,
+           **/wstx-asl-3.2.1.jar,
+           **/icu4j-2.6.1.jar,
+           **/axis2-kernel-1.3.jar,
+           **/XmlSchema-1.1.jar,
+           **/spring*2.0.0.jar,
+           **/spring-beans*.jar,
+           **/spring-context*.jar,
+           **/spring-core*.jar,
+           **/spring-web*.jar,
+           **/ant-1.5.jar,
+           **/antlr-2.7.2.jar,
+           **/cglib-2.1.jar,
+           **/jsp*,
+           **/servlet-api*,
+           **/javax.xml.bind-jaxb-api-2.1.jar,
+           **/xml-apis*,
+           **/geronimo-javamail_*.jar,
+           **/geronimo-servlet_*.jar,
+           **/geronimo-activation_*.jar,
+           **/geronimo-stax-api_*.jar,
+           **/jaxws-api-*.jar,
+           **/xercesImpl-2.6.2.jar,
+           WEB-INF/classes/tldCache.ser,
+           WEB-INF/classes/org/**,
+           WEB-INF/config/database/derby/**,
+           /WEB-INF/config/bean.properties,
+           /WEB-INF/config/database.properties
+         </warSourceExcludes>
+         <webResources>
+           <resource>
+             <directory>src/main/war_resources</directory>
+             <includes>
+               <include>**/*.properties</include>
+             </includes>
+           </resource>
+         </webResources>
+         <manifest>
+           <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+         </manifest>
+         <archive>
+           <manifestEntries>
+             <Application-Name>${project.name}</Application-Name>
+             <Application-Artifact-Id>${project.artifactId}</Application-Artifact-Id>
+             <Application-Group-Id>${project.groupId}</Application-Group-Id>
+             <Implementation-Svn-Revision>${env.SVN_REVISION}</Implementation-Svn-Revision>
+             <Implementation-Version>${project.version}</Implementation-Version>
+             <Implementation-Build-Date>${env.BUILD_ID}</Implementation-Build-Date>
+           </manifestEntries>
+         </archive>
+       </configuration>
+     </plugin>
+     
+     <plugin>
+       <groupId>org.apache.maven.plugins</groupId>
+       <artifactId>maven-site-plugin</artifactId>
+       <version>2.1.1</version>
+       <configuration>
+         <locales>en</locales>
+         <templateDirectory>${basedir}</templateDirectory>
+         <template>nexuse2e-site.vm</template>
+       </configuration>
+     </plugin>
+     
+     <plugin>
+       <!--
+         Usage:
+         license:check: verify if some files miss license header
+         license:format: add the license header when missing. If a header is existing, it is updated to the new one.
+         license:remove: remove existing license header      
+       -->
+       <groupId>com.google.code.maven-license-plugin</groupId>
+       <artifactId>maven-license-plugin</artifactId>
+       <version>1.4.0</version>
+       <configuration>
+         <header>LICENSE.TXT</header>
+         <properties>
+           <!-- change this property yearly -->
+           <year>2000-2010</year>
+         </properties>
+         <useDefaultExcludes>true</useDefaultExcludes>
+         <excludes>
+           <exclude>.*</exclude>
+           <exclude>**/.*</exclude>
+           <exclude>src/main/webapp/javascript/dijit/**</exclude>
+           <exclude>src/main/webapp/javascript/dojo/**</exclude>
+           <exclude>src/main/webapp/javascript/dojox/**</exclude>
+           <exclude>src/main/webapp/temp/**</exclude>
+           <exclude>src/main/webapp/WEB-INF/backup/**</exclude>
+           <exclude>src/main/webapp/WEB-INF/classes/**</exclude>
+           <exclude>src/main/webapp/WEB-INF/config/database/**</exclude>
+           <exclude>src/main/webapp/WEB-INF/struts/taglibs/c*</exclude>
+           <exclude>src/main/webapp/WEB-INF/struts/taglibs/struts*</exclude>
+           <exclude>src/main/webapp/WEB-INF/struts/taglibs/fmt*</exclude>
+           <exclude>work/**</exclude>
+           <exclude>**/*.txt</exclude>
+           <exclude>**/*.TXT</exclude>
+           <exclude>**/lgpl.*</exclude>
+         </excludes>
+         <useDefaultMapping>true</useDefaultMapping>
+         <encoding>UTF-8</encoding>
+         <mapping>
+           <!-- handle files with extension .wsdl as XML -->
+           <wsdl>XML_STYLE</wsdl>
+           <rptconfig>XML_STYLE</rptconfig>
+           <rptdesign>XML_STYLE</rptdesign>
+           <tld>XML_STYLE</tld>
+         </mapping>
+       </configuration>
+     </plugin>
+     
+     <!-- http://www.sagehill.net/docbookxsl/ -->
+     <!-- http://xmlgraphics.apache.org/fop/0.94/hyphenation.html 
+       Copy fop-hyph.jar to <user dir>/.m2/repository/org/apache/xmlgraphics/fop/0.94/
+     -->
+     <!-- http://www.agilejava.com/docbkx/docbkx-maven-plugin/generate-html-mojo.html -->
+     <!-- 
+     <plugin>
+       <groupId>com.agilejava.docbkx</groupId>
+       <artifactId>docbkx-maven-plugin</artifactId>
+       <executions>
+         <execution>
+           <goals>
+             <goal>generate-html</goal>
+             <goal>generate-pdf</goal>
+           </goals>
+           <phase>generate-sources</phase>
+         </execution>
+       </executions>
+       <dependencies>
+         <dependency>
+           <groupId>org.docbook</groupId>
+           <artifactId>docbook-xml</artifactId>
+           <version>4.4</version>
+           <scope>runtime</scope>
+         </dependency>
+       </dependencies>
+       <configuration>
+         <xincludeSupported>true</xincludeSupported>
+         <includes>NEXUSe2e_4_Manual.xml</includes>
+         <chunkedOutput>true</chunkedOutput>
+       </configuration>
+     </plugin>
+     -->
+     
+     <plugin>
+       <groupId>org.mortbay.jetty</groupId>
+       <artifactId>maven-jetty-plugin</artifactId>
+       <configuration>
+         <contextPath>/NEXUSe2e</contextPath>
+         <connectors>
+           <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+             <port>8080</port>
+             <maxIdleTime>60000</maxIdleTime>
+           </connector>
+         </connectors>
+       </configuration>
+     </plugin>
+     
+   </plugins>
+ </build>
+ <profiles>
+   <!-- dependency related -->
+   <profile>
+     <id>with-reporting-module</id>
+     <activation>
+         <activeByDefault>false</activeByDefault>
+     </activation>
+     <build>
+         <plugins>
+             <plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-dependency-plugin</artifactId>
+                 <version>2.1</version>
+                 <executions>
+                     <execution>
+                         <id>gather-reporting-module</id>
+                         <phase>generate-resources</phase>
+                         <goals>
+                             <goal>unpack</goal>
+                         </goals>
+                         <configuration>
+                             <artifactItems>
+                                 <artifactItem>
+                                     <groupId>org.nexuse2e</groupId>
+                                     <artifactId>nexuse2e-reporting</artifactId>
+                                     <version>1.0</version>
+                                     <type>jar</type>
+                                 </artifactItem>
+                             </artifactItems>
+                             <outputDirectory>${project.build.directory}/reporting</outputDirectory>
+                             <overWriteReleases>false</overWriteReleases>
+                             <overWriteSnapshots>true</overWriteSnapshots>
+                         </configuration>
+                     </execution>
+                 </executions>
+             </plugin>
+             <plugin>
+                   <groupId>org.apache.maven.plugins</groupId>
+                   <artifactId>maven-war-plugin</artifactId>
+                   <version>2.1</version>
+                   <extensions>true</extensions>
+                   <configuration>
+                     <webResources>
+                         <resource>
+                             <directory>${project.build.directory}/reporting/platform</directory>
+                             <includes>
+                                 <include>**</include>
+                             </includes>
+                             <targetPath>WEB-INF/platform</targetPath>
+                             <filtering>false</filtering>
+                         </resource>
+                     </webResources>
+                 </configuration>
+             </plugin>
+         </plugins>
+     </build>
+   </profile>
+ </profiles>
+</project>
