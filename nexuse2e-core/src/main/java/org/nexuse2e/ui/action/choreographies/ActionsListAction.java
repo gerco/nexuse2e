@@ -19,9 +19,10 @@
  */
 package org.nexuse2e.ui.action.choreographies;
 
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
@@ -83,16 +84,14 @@ public class ActionsListAction extends NexusE2EAction {
             return error;
         }
         Vector actions = new Vector();
-        TreeSet<ActionPojo> sortedActions = new TreeSet<ActionPojo>( new GenericComparator<ActionPojo>( "name", true ) );
-        sortedActions.addAll( actionPojos );
-        Iterator i = sortedActions.iterator();
-        while ( i.hasNext() ) {
-            ActionPojo action = (ActionPojo) i.next();
-            ChoreographyActionForm aform = new ChoreographyActionForm();
-            aform.setProperties( action );
-            actions.addElement( aform );
+        List<ActionPojo> sortedActions = new ArrayList(actionPojos);
+        Collections.sort( sortedActions,new GenericComparator<ActionPojo>( "name", true ) );
+        
+        for ( ActionPojo action : sortedActions ) {
+	        ChoreographyActionForm aform = new ChoreographyActionForm();
+	        aform.setProperties( action );
+	        actions.addElement( aform );
         }
-        //request.getSession().setAttribute( Crumbs.CURRENT_LOCATION, Crumbs.ACTIONS+"_"+choreographyId );
 
         request.setAttribute( ATTRIBUTE_COLLECTION, actions );
         request.setAttribute( "nxChoreographyId", nxChoreographyId );

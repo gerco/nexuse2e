@@ -20,9 +20,9 @@
 package org.nexuse2e.ui.structure.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.EngineConfiguration;
@@ -52,18 +52,16 @@ public class ActionTargetProvider implements TargetProvider {
             }
             ChoreographyPojo choreographyPojo = engineConfiguration.getChoreographyByNxChoreographyId( id );
             if ( choreographyPojo != null ) {
-                Set<ActionPojo> actions = choreographyPojo.getActions();
+            	Set<ActionPojo> actions = choreographyPojo.getActions();
 
-                TreeSet<ActionPojo> sortedActions = new TreeSet<ActionPojo>(
-                        new GenericComparator<ActionPojo>( "name", true ) );
-                sortedActions.addAll( actions );
-                for ( ActionPojo actionPojo : sortedActions ) {
-                    StructureNode sn = new PageNode( pattern.getTarget() + "?nxActionId=" + actionPojo.getNxActionId()
-                            + "&nxChoreographyId=" + choreographyPojo.getNxChoreographyId(), actionPojo.getName(),
-                            pattern.getIcon() );
-                    list.add( sn );
-                }
-
+            	List<ActionPojo> sortedActions = new ArrayList<ActionPojo>(actions);
+            	Collections.sort( sortedActions, new GenericComparator<ActionPojo>( "name", true ) );
+            	for ( ActionPojo actionPojo : sortedActions ) {
+            		StructureNode sn = new PageNode( pattern.getTarget() + "?nxActionId=" + actionPojo.getNxActionId()
+            				+ "&nxChoreographyId=" + choreographyPojo.getNxChoreographyId(), actionPojo.getName(),
+            				pattern.getIcon() );
+            		list.add( sn );
+            	}
             }
         } catch ( NexusException e ) {
             e.printStackTrace();
