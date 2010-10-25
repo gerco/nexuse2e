@@ -71,6 +71,10 @@
 		<td class="NEXUSNameNoWidth">License</td>
 		<td class="NEXUSNameNoWidth"><a href="html/lgpl.html" target="#blank">GNU Lesser General Public License</a> (LGPL), Version 2.1</td>
 	</tr>
+	<tr>
+		<td class="NEXUSNameNoWidth">Default Charset Encoding</td>
+		<td class="NEXUSNameNoWidth"><%= java.nio.charset.Charset.defaultCharset().name() %></td>
+	</tr>
 </table>
 
 <center><logic:messagesPresent>
