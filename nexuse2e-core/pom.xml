@@ -541,11 +541,6 @@
      <scope>test</scope>
    </dependency>
  </dependencies>
- <!-- distribution -->
- <distributionManagement>
-   <site>
-   </site>
- </distributionManagement>
  <!-- build -->
  <build>
    <plugins>

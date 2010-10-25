@@ -32,11 +32,6 @@
       <version>4.5.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
- <!-- distribution -->
- <distributionManagement>
-   <site>
-   </site>
- </distributionManagement>
  <!-- build -->
  <build>
    <plugins>

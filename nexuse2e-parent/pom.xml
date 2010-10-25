@@ -1,11 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <!-- parent POM -->
-  <parent>
-    <groupId>de.solutions-direkt</groupId>
-    <artifactId>parent-pom</artifactId>
-    <version>1.1-SNAPSHOT</version>
-  </parent>
   <!-- this project -->
   <groupId>org.nexuse2e</groupId>
   <artifactId>nexuse2e-parent</artifactId>
@@ -26,7 +20,28 @@
  <properties>
  	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
  </properties>
- <!-- build -->
+ <!-- where to retrieve -->
+  <repositories>
+    <repository>  
+      <id>central</id>
+      <name>Maven Repository Switchboard</name>
+      <layout>default</layout>
+      <url>http://repo1.maven.org/maven2</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+     <id>java.net</id>
+     <name>java.net Repository</name>
+     <layout>default</layout>
+     <url>http://download.java.net/maven/2</url>
+     <snapshots>
+       <enabled>false</enabled>
+     </snapshots>
+    </repository>
+  </repositories>
+  <!-- build -->
   <build>
 	  <plugins>
 	      <plugin>
@@ -40,4 +55,21 @@
 	      </plugin>
 	  </plugins>
   </build>
+  <!-- where to deploy -->
+  <distributionManagement>
+    <repository>
+      <uniqueVersion>false</uniqueVersion>
+      <id>${distribution.release.repoId}</id>
+      <url>${distribution.release.repoUrl}</url>
+      <name>${distribution.release.repoName}</name>
+      <layout>default</layout>
+    </repository>
+    <snapshotRepository>
+      <uniqueVersion>true</uniqueVersion>
+      <id>${distribution.snapshot.repoId}</id>
+      <url>${distribution.snapshot.repoUrl}</url>
+      <name>${distribution.snapshot.repoName}</name>
+      <layout>default</layout>
+    </snapshotRepository>
+  </distributionManagement>
 </project>
