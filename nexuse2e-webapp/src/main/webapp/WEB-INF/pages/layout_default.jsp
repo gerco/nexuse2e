@@ -316,7 +316,7 @@
 <div dojoType="dijit.layout.BorderContainer" id="content" design="headline" gutters="false" style="width: 100%; height: 100%;">
   <div dojoType="dijit.layout.ContentPane" id="header" region="top">
   	<tiles:insert attribute="header"/>
-  	<table id="toolbar" cellpadding="0" cellspacing="0" style="margin: 0px; padding: 0px;>
+  	<table id="toolbar" cellpadding="0" cellspacing="0" style="margin: 0px; padding: 0px;">
 			<tr style="margin: 0px; padding: 0px">
 				<td id="toolbar-left">
 					<div dojoType="dijit.ProgressBar" style="width:120px; margin-left: 95px; visibility: hidden;" jsId="progressBar" id="downloadProgress" places="0" indeterminate="true"></div>
