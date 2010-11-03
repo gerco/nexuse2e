@@ -71,6 +71,15 @@
 				</logic:equal>
 				<logic:equal name="parameter"
 					property="parameterDescriptor.parameterType"
+					value="<%= ParameterType.TEXT.toString() %>">
+					<tr>
+						<td class="NEXUSValue" style="vertical-align: top;">${parameter.label}</td>
+						<td class="NEXUSValue"><html:textarea property="${key}" cols="50" rows="100" /></td>
+						<td class="NEXUSValue" style="vertical-align: top;">${parameter.parameterDescriptor.description}</td>
+					</tr>
+				</logic:equal>
+				<logic:equal name="parameter"
+					property="parameterDescriptor.parameterType"
 					value="<%= ParameterType.PASSWORD.toString() %>">
 					<tr>
 						<td class="NEXUSValue">${parameter.label}</td>
