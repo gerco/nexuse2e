@@ -31,6 +31,7 @@ import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.controller.StateTransitionException;
 import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.pojo.ConversationPojo;
+import org.nexuse2e.pojo.MessagePojo;
 
 /**
  * Component in the NEXUSe2e backend that serializes the processing of outbound messages per Choreography. 
@@ -74,7 +75,12 @@ public class BackendActionSerializer extends AbstractPipelet {
      */
     public MessageContext processMessage( MessageContext messageContext ) throws NexusException {
 
-        LOG.debug( new LogMessage( "BackendActionSerializer.processMessage - " + choreographyId,messageContext.getMessagePojo()) );
+        if ( LOG.isDebugEnabled() ) {
+	    	LOG.debug( new LogMessage( "BackendActionSerializer.processMessage - " + choreographyId
+	    			+ "/" + messageContext.getMessagePojo().getAction().getName()
+	    			+ "/" + MessagePojo.getTypeName( messageContext.getMessagePojo().getType() ), messageContext ) );
+	        LOG.debug( new LogMessage( messageContext.getStateMachine().toString(), messageContext ) );
+        }
 
         if ( status == BeanStatus.ACTIVATED ) {
 
@@ -83,9 +89,8 @@ public class BackendActionSerializer extends AbstractPipelet {
             try {
                 conversationPojo = stateMachineExecutor.validateTransition( messageContext );
             } catch ( NexusException e ) {
-                e.printStackTrace();
                 LOG.error( new LogMessage( "Not a valid action: " + messageContext.getMessagePojo().getAction(),
-                        messageContext.getMessagePojo() ) );
+                        messageContext.getMessagePojo() ), e );
                 throw e;
             }
 
@@ -319,23 +324,24 @@ public class BackendActionSerializer extends AbstractPipelet {
         public void run() {
 
             while ( !stopRequested ) {
-                try {
-                    MessageContext messageContext = queue.take();
-                    if ( Engine.getInstance().getTransactionService().isSynchronousReply(
-                            messageContext.getMessagePojo().getMessageId() ) ) {
-                        // TODO: Needs to be routed through queue
-                        BackendActionSerializer.this.frontendInboundDispatcher
-                                .processSynchronousReplyMessage( messageContext );
-                        Engine.getInstance().getTransactionService().removeSynchronousRequest(
-                                messageContext.getMessagePojo().getMessageId() );
-                    } else {
-                        BackendActionSerializer.this.frontendOutboundDispatcher.processMessage( messageContext );
-                    }
-                } catch ( NexusException nex ) {
-                    nex.printStackTrace();
-                    LOG.error( "InboundQueueListener.run detected an exception: " + nex );
-                } catch ( InterruptedException ex ) {
-                    BackendActionSerializer.LOG.debug( "Interrupted while listening on queue " );
+            	try {
+	            	MessageContext messageContext = queue.take();
+	                try {
+	                    if ( Engine.getInstance().getTransactionService().isSynchronousReply(
+	                            messageContext.getMessagePojo().getMessageId() ) ) {
+	                        // TODO: Needs to be routed through queue
+	                        BackendActionSerializer.this.frontendInboundDispatcher
+	                                .processSynchronousReplyMessage( messageContext );
+	                        Engine.getInstance().getTransactionService().removeSynchronousRequest(
+	                                messageContext.getMessagePojo().getMessageId() );
+	                    } else {
+	                        BackendActionSerializer.this.frontendOutboundDispatcher.processMessage( messageContext );
+	                    }
+	                } catch ( NexusException e ) {
+	                    LOG.error( new LogMessage( "OutboundQueueListener.run() detected an exception: " + e.getMessage(), messageContext ), e );
+	                }
+                } catch ( InterruptedException e ) {
+                    BackendActionSerializer.LOG.debug( "Interrupted while listening on queue" );
                 }
             }
             BackendActionSerializer.LOG.info( "Stopped InboundQueueListener (BackendActionSerializer) "

@@ -171,7 +171,7 @@ public class Constants {
                 return "Stopped";
             default:
                 // setStatus( "unknown (" + messagePojo.getStatus() + ")" );
-                return "Unknown";
+                return "Unknown (" + messageStatus + ")";
         }
     }
 

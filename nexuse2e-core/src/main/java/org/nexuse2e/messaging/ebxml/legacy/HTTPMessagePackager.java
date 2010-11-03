@@ -17,7 +17,7 @@
  *  Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  *  02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.nexuse2e.messaging.ebxml;
+package org.nexuse2e.messaging.ebxml.legacy;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,14 +35,12 @@ import org.nexuse2e.pojo.MessagePayloadPojo;
 import org.nexuse2e.pojo.MessagePojo;
 
 /**
- * @author gesch, sschulze
+ * @author gesch
  *
  */
 public class HTTPMessagePackager extends AbstractPipelet {
 
     private static Logger       LOG = Logger.getLogger( HTTPMessagePackager.class );
-    
-    private static String		CRLF = "\r\n";
 
     private Map<String, Object> parameters;
 
@@ -99,32 +97,32 @@ public class HTTPMessagePackager extends AbstractPipelet {
         String ebXMLHeader = new String( messagePojo.getHeaderData() );
 
         StringBuffer msgBuffer = new StringBuffer();
-        msgBuffer.append( Constants.MIMEPARTBOUNDARY + CRLF );
+        msgBuffer.append( Constants.MIMEPARTBOUNDARY + "\n" );
         // Add ebXML Header
-        msgBuffer.append( hdrContentId + CRLF );
-        msgBuffer.append( Constants.HDRCONTENTTYPE + CRLF + CRLF );
-        msgBuffer.append( ebXMLHeader + CRLF + CRLF );
+        msgBuffer.append( hdrContentId + "\n" );
+        msgBuffer.append( Constants.HDRCONTENTTYPE + "\n\n" );
+        msgBuffer.append( ebXMLHeader + "\n\n" );
 
         if ( messagePojo.getMessagePayloads() != null && messagePojo.getMessagePayloads().size() > 0 ) {
 
             for (MessagePayloadPojo payloadPojo : messagePojo.getMessagePayloads()) {
                 // add bodyparts
-                msgBuffer.append( Constants.MIMEPARTBOUNDARY + CRLF );
+                msgBuffer.append( Constants.MIMEPARTBOUNDARY + "\n" );
 
                 // String payloadContentID = "Content-ID: " + "<" + getContentId( messagePojo.getMessageId(), payloadPojo.getSequenceNumber() ) + ">";
                 // MBE: Changed 20100215 due to interop problem
                 String payloadContentID = "Content-ID: " + "<"
                 + payloadPojo.getContentId() + ">";
 
-                msgBuffer.append( payloadContentID + CRLF );
-                msgBuffer.append( "Content-Type: " + payloadPojo.getMimeType() + CRLF + CRLF );
+                msgBuffer.append( payloadContentID + "\n" );
+                msgBuffer.append( "Content-Type: " + payloadPojo.getMimeType() + "\n\n" );
 
                 // TODO is Binary !!!
                 //               if ( bodyPartPojo.get.isBinaryType() ) {
                 //                   msgBuffer.append( Base64.encode( newPayload.getContent() ) + "\n" );
                 //               } else {
                 //                   // Get the payload as a string, from the database.
-                msgBuffer.append( new String( payloadPojo.getPayloadData() ) + CRLF );
+                msgBuffer.append( new String( payloadPojo.getPayloadData() ) + "\n" );
                 //               }
             }
         }
@@ -144,10 +142,10 @@ public class HTTPMessagePackager extends AbstractPipelet {
         String ackHeader = new String( messagePojo.getHeaderData() );
 
         StringBuffer ackBuffer = new StringBuffer();
-        ackBuffer.append( Constants.MIMEPARTBOUNDARY + CRLF );
-        ackBuffer.append( hdrContentId + CRLF );
-        ackBuffer.append( Constants.HDRCONTENTTYPE + CRLF + CRLF );
-        ackBuffer.append( ackHeader + CRLF + CRLF );
+        ackBuffer.append( Constants.MIMEPARTBOUNDARY + "\n" );
+        ackBuffer.append( hdrContentId + "\n" );
+        ackBuffer.append( Constants.HDRCONTENTTYPE + "\n\n" );
+        ackBuffer.append( ackHeader + "\n\n" );
         ackBuffer.append( Constants.MIMEPACKBOUNDARY );
 
         return ackBuffer.toString();

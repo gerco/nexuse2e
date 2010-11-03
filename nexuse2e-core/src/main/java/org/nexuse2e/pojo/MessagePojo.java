@@ -431,7 +431,6 @@ public class MessagePojo implements NEXUSe2ePojo {
             return super.equals( obj );
         }
 
-        // TODO Auto-generated method stub
         return nxMessageId == ( (MessagePojo) obj ).nxMessageId;
     }
 
@@ -488,4 +487,30 @@ public class MessagePojo implements NEXUSe2ePojo {
         }
         return "UNKNOWN";
     }
+    
+    public static String getTypeName( int type ) {
+    	switch ( type ) {
+	    	case org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ACK:
+	    		return "Acknowledgement";
+	    	case org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_NORMAL:
+	    		return "Normal";
+	    	case org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ERROR:
+	    		return "Error";
+	    	default:
+	    		return "Unknown message type (" + type + ")";
+    	}
+    }
+
+	@Override
+	public String toString() {
+		return getMessageId()
+			+ " "
+			+ getTypeName( type )
+			+ " "
+			+ ( getAction() != null ? getAction().getName() : "n/a" )
+			+ " "
+			+ getStatusName( status )
+			+ " "
+			+ getCreatedDate();
+	}
 }

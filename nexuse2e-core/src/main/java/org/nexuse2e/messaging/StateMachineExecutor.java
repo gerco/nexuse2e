@@ -36,7 +36,7 @@ import org.nexuse2e.pojo.ParticipantPojo;
 import org.nexuse2e.pojo.PartnerPojo;
 
 /**
- * Implementation of a messaging specific state machine that handles business process modelling.
+ * Implementation of a messaging specific state machine that handles business process modeling.
  * This component will verify different aspects of a message, e.g. whether a valid participant and 
  * choreography were provided and whether the business process definition is adhered to.
  *
@@ -215,6 +215,9 @@ public class StateMachineExecutor {
         LOG.debug( new LogMessage("PartnerId:" + currentPartnerId,messageContext.getMessagePojo()) );
 
         ConversationPojo conversation = messageContext.getMessagePojo().getConversation();
+        if ( LOG.isDebugEnabled() && conversation != null ) {
+        	LOG.debug( conversation.toString() );
+        }
         if ( messageContext.getMessagePojo().getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
             if ( conversation.getCurrentAction() == null ) {
 
@@ -226,7 +229,7 @@ public class StateMachineExecutor {
             } else if ( conversation.getStatus() == Constants.CONVERSATION_STATUS_IDLE
                     || conversation.getStatus() == Constants.CONVERSATION_STATUS_COMPLETED
                     || Engine.getInstance().isLenientBackendStateMachine() ) {
-                // followup message in conversation. Checking state machine status.
+                // follow-up message in conversation. Checking state machine status.
                 String actionId = conversation.getCurrentAction().getName();
 
                 if ( conversation.getStatus() != Constants.CONVERSATION_STATUS_IDLE

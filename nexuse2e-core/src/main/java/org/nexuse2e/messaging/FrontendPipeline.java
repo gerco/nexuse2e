@@ -50,10 +50,10 @@ public class FrontendPipeline extends AbstractPipeline implements ProtocolSpecif
     }
     
     /**
-     * Process a message in the NEXUSe2e frontent. Processing of inbound messages could contains steps like these:
+     * Process a message in the NEXUSe2e frontend. Processing of inbound messages could contains steps like these:
      * <ol>
-     * <li>The massage data is unpacked using an approriate MessageUnpackager</li>
-     * <li>The massage header is de-serialized using an approriate HeaderDeserializer</li>
+     * <li>The massage data is unpacked using an appropriate MessageUnpackager</li>
+     * <li>The massage header is de-serialized using an appropriate HeaderDeserializer</li>
      * </ol>
      * @param messageContext The message progressing through the <code>Pipeline</code>. 
      * The <code>MessageContext</code> contains additional meta data useful for the processing 

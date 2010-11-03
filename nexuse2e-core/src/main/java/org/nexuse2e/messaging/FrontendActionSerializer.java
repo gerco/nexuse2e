@@ -32,6 +32,7 @@ import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.controller.StateTransitionException;
 import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.pojo.ConversationPojo;
+import org.nexuse2e.pojo.MessagePojo;
 
 /**
  * Component in the NEXUSe2e frontend that serializes the processing of inbound messages per Choreography. 
@@ -75,7 +76,12 @@ public class FrontendActionSerializer implements Manageable {
      */
     public MessageContext processMessage( MessageContext messageContext ) throws NexusException {
 
-        LOG.debug( "FrontendActionSerializer.processMessage - " + choreographyId );
+        if ( LOG.isDebugEnabled() ) {
+        	LOG.debug( new LogMessage( "FrontendActionSerializer.processMessage - " + choreographyId
+        			+ "/" + messageContext.getMessagePojo().getAction().getName()
+	    			+ "/" + MessagePojo.getTypeName( messageContext.getMessagePojo().getType() ), messageContext ) );
+	        LOG.debug( new LogMessage( messageContext.getStateMachine().toString(), messageContext ) );
+        }
 
         if ( status == BeanStatus.STARTED ) {
 
@@ -99,10 +105,16 @@ public class FrontendActionSerializer implements Manageable {
             try {
                 queueMessage( messageContext, false );
             } catch ( Exception e ) {
-                throw new NexusException( "Error storing new conversation/message state: " + e );
+            	if ( !(e instanceof NexusException) ) {
+	                throw new NexusException( new LogMessage(
+	                		"Error storing new conversation/message state: " + e.getMessage(),
+	                		messageContext ), e );
+            	} else {
+            		throw (NexusException) e;
+            	}
             }
         } else {
-            LOG.error( new LogMessage( "Received message for FrontendActionSerializer (" + choreographyId
+            throw new NexusException( new LogMessage( "Received message for FrontendActionSerializer (" + choreographyId
                     + ") which hasn't been properly started!", messageContext.getMessagePojo() ) );
         }
 
@@ -120,7 +132,7 @@ public class FrontendActionSerializer implements Manageable {
         try {
             messageContext.getStateMachine().queueMessage( force );
         } catch (StateTransitionException e) {
-            LOG.warn( e.getMessage() );
+        	LOG.warn( new LogMessage( e.getMessage(), messageContext ) );
         }
         queue.add( messageContext );
     } // queueMessage
@@ -311,17 +323,16 @@ public class FrontendActionSerializer implements Manageable {
                             messageContext.getStateMachine().processedBackend();
                         } catch ( NexusException nex ) {
                             LOG.error( "InboundQueueListener.run detected an exception: ", nex );
-                            nex.printStackTrace();
                             try {
                                 messageContext.getStateMachine().processingFailed();
                             } catch (StateTransitionException e) {
-                                LOG.warn( e.getMessage() );
+                                LOG.warn( new LogMessage( e.getMessage(), messageContext ) );
                             } catch (NexusException e) {
-                                e.printStackTrace();
-                                LOG.error( "Error while setting conversation status to ERROR", e );
+                                LOG.error( new LogMessage( "Error while setting conversation status to ERROR: "
+                                		+ e.getMessage(), messageContext), e );
                             }
                         } catch (StateTransitionException stex) {
-                            LOG.warn( stex.getMessage() );
+                            LOG.warn( new LogMessage( stex.getMessage(), messageContext ) );
                         }
                     }
                 } catch ( InterruptedException ex ) {

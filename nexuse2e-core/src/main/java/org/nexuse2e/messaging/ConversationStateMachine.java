@@ -161,7 +161,7 @@ public class ConversationStateMachine {
                 LOG.trace( new LogMessage("message sent, current conversation status: "+ConversationPojo.getStatusName( conversation.getStatus() ),message) );
                 if ( ( conversation.getStatus() == Constants.CONVERSATION_STATUS_PROCESSING )
                         || ( conversation.getStatus() == Constants.CONVERSATION_STATUS_AWAITING_ACK )
-                        || ( conversation.getStatus() == Constants.CONVERSATION_STATUS_ERROR /* Included for requeuing */) ) {
+                        || ( conversation.getStatus() == Constants.CONVERSATION_STATUS_ERROR /* Included for re-queuing */) ) {
                     if ( reliable ) {
                         LOG.trace( new LogMessage( "conversation status set to awaiting ack",message )  );
                         conversation.setStatus( Constants.CONVERSATION_STATUS_AWAITING_ACK );
@@ -229,14 +229,12 @@ public class ConversationStateMachine {
     public void receivedRequestMessage() throws StateTransitionException, NexusException {
 
         synchronized ( sync ) {
-            List<MessagePojo> messages = conversation.getMessages();
-
             message.setStatus( Constants.MESSAGE_STATUS_SENT );
             message.setModifiedDate( new Date() );
             message.setEndDate( message.getModifiedDate() );
             conversation.setStatus( Constants.CONVERSATION_STATUS_PROCESSING );
             if ( message.getNxMessageId() <= 0 ) {
-                messages.add( message );
+                conversation.addMessage( message );
             }
             if ( conversation.getNxConversationId() <= 0 ) {
                 Engine.getInstance().getTransactionService().storeTransaction( conversation, message );
@@ -292,7 +290,7 @@ public class ConversationStateMachine {
                     message.setStatus( Constants.MESSAGE_STATUS_SENT );
                     message.setModifiedDate( endDate );
                     message.setEndDate( endDate );
-                    referencedMessage.getConversation().getMessages().add( message );
+                    referencedMessage.getConversation().addMessage( message );
                     referencedMessage.setModifiedDate( endDate );
                     referencedMessage.setEndDate( endDate );
                     
@@ -331,7 +329,7 @@ public class ConversationStateMachine {
                 message.setStatus( Constants.MESSAGE_STATUS_SENT );
                 message.setModifiedDate( endDate );
                 message.setEndDate( endDate );
-                referencedMessage.getConversation().getMessages().add( message );
+                referencedMessage.getConversation().addMessage( message );
                 referencedMessage.setModifiedDate( endDate );
                 referencedMessage.setEndDate( endDate );
                 try {
@@ -451,7 +449,6 @@ public class ConversationStateMachine {
     public void queueMessage( boolean force ) throws StateTransitionException, NexusException {
 
         synchronized ( sync ) {
-            List<MessagePojo> messages = conversation.getMessages();
             LOG.trace( new LogMessage( "current message status: "+ MessagePojo.getStatusName( message.getStatus() ),message) );
             if(message.getStatus() != Constants.MESSAGE_STATUS_SENT) {
                 message.setStatus( Constants.MESSAGE_STATUS_QUEUED );
@@ -460,10 +457,7 @@ public class ConversationStateMachine {
                 if ( message.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_NORMAL ) {
                     conversation.setStatus( Constants.CONVERSATION_STATUS_PROCESSING );
                 }
-                if ( message.getNxMessageId() <= 0 ) {
-                    messages.add( message );
-                }
-                messages.add( message );
+                conversation.addMessage( message );
                 if ( conversation.getNxConversationId() <= 0 ) {
                     Engine.getInstance().getTransactionService().storeTransaction( conversation, message );
                 } else {
@@ -475,4 +469,38 @@ public class ConversationStateMachine {
             executeStateTransitionJobs( StateTransition.QUEUE_MESSAGE );
         } // synchronized
     }
+
+	@Override
+	public String toString() {
+		synchronized ( sync ) {
+			StringBuilder sb = new StringBuilder();
+			sb.append( "\n" );
+			sb.append( "- - 8< - -" );
+			sb.append( "\n" );
+			sb.append( "State machine dump of conversation " + conversation.getConversationId() + " in context of message " + message.toString() );
+			sb.append( "\n" );
+			sb.append( "Status: " + ConversationPojo.getStatusName( conversation.getStatus() ) );
+			sb.append( "\n" );
+			List<MessagePojo> messages = conversation.getMessages();
+			if ( messages != null ) {
+				sb.append( "Number of messages: " + messages.size() );
+				sb.append( "\n" );
+				if ( messages.size() > 0 ) {
+					sb.append( "Messages: ");
+					sb.append( "\n" );
+					int i = 1;
+					for ( MessagePojo currMsg : messages ) {
+						sb.append( "\t#" + i++ + "\t" );
+						sb.append( currMsg.toString() );
+						sb.append( "\n" );
+					}
+				}
+			} else {
+				sb.append( "List of messages is null" );
+				sb.append( "\n" );
+			}
+			sb.append( "- - >8 - -" );
+			return sb.toString();
+		}
+	}
 }

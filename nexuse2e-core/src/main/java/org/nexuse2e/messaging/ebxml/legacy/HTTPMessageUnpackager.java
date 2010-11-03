@@ -17,7 +17,7 @@
  *  Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  *  02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.nexuse2e.messaging.ebxml;
+package org.nexuse2e.messaging.ebxml.legacy;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -46,15 +46,13 @@ import org.nexuse2e.pojo.MessagePayloadPojo;
 import org.nexuse2e.pojo.MessagePojo;
 
 /**
- * @author mbreilmann, sschulze
+ * @author mbreilmann
  *
  */
 public class HTTPMessageUnpackager extends AbstractPipelet {
 
     private static Logger       LOG = Logger.getLogger( HTTPMessageUnpackager.class );
 
-    private static String		CRLF = "\r\n";
-    
     private Map<String, Object> parameters;
 
     /**
@@ -83,11 +81,11 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
         StringBuffer sb = new StringBuffer();
         if ( messagePojo.getCustomParameters().get( Constants.PARAMETER_PREFIX_HTTP + "message-id" ) != null ) {
             sb.append( "Message-ID: "
-                    + messagePojo.getCustomParameters().get( Constants.PARAMETER_PREFIX_HTTP + "message-id" ) + CRLF );
+                    + messagePojo.getCustomParameters().get( Constants.PARAMETER_PREFIX_HTTP + "message-id" ) + '\n' );
         }
         String contentType = messagePojo.getCustomParameters().get( Constants.PARAMETER_PREFIX_HTTP + "content-type" );
-        sb.append( "Mime-Version: 1.0" + CRLF );
-        sb.append( "Content-Type: " + contentType + CRLF + CRLF );
+        sb.append( "Mime-Version: 1.0\n" );
+        sb.append( "Content-Type: " + contentType + "\n\n" );
 
         String stringData = sb.toString();
         byte[] data = stringData.getBytes();

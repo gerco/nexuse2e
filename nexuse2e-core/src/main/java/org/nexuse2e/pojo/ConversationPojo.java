@@ -295,12 +295,25 @@ public class ConversationPojo implements NEXUSe2ePojo {
         }
     }
     
+    /**
+     * @return
+     * @deprecated This returns a persistent value that is never read or set by NEXUSe2e.
+     * 			   The number does not reflect the actual number of messages in the conversation,
+     * 			   but only the number that could have been set by a call of {@link #getMessageCount()}.
+     * 			   Probably this method will be missing in future releases.
+     */
+    @Deprecated
     public int getMessageCount() {
-    
-        return messageCount;
+    	return this.messageCount;
     }
 
-    
+    /**
+     * @param messageCount
+     * @deprecated This sets a value that will become persistent.
+     * 			   The value will not be used by NEXUSe2e in any way, but returned by {@link #getMessageCount()}.
+     * 			   Probably this method will be missing in future releases.
+     */
+    @Deprecated
     public void setMessageCount( int messageCount ) {
     
         this.messageCount = messageCount;
@@ -332,6 +345,38 @@ public class ConversationPojo implements NEXUSe2ePojo {
         case Constants.CONVERSATION_STATUS_COMPLETED:
             return "COMPLETED";
         }
-        return "UNKNOWN";
+        return "UNKNOWN (" + status + ")";
     }
+
+    @Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append( "\n" );
+		sb.append( "- - 8< - -" );
+		sb.append( "\n" );
+		sb.append( "State machine dump of conversation " + getConversationId() );
+		sb.append( "\n" );
+		sb.append( "Status: " + ConversationPojo.getStatusName( getStatus() ) );
+		sb.append( "\n" );
+		List<MessagePojo> messages = getMessages();
+		if ( messages != null ) {
+			sb.append( "Number of messages: " + messages.size() );
+			sb.append( "\n" );
+			if ( messages.size() > 0 ) {
+				sb.append( "Messages: ");
+				sb.append( "\n" );
+				int i = 1;
+				for ( MessagePojo currMsg : messages ) {
+					sb.append( "\t#" + i++ + "\t" );
+					sb.append( currMsg.toString() );
+					sb.append( "\n" );
+				}
+			}
+		} else {
+			sb.append( "List of messages is null" );
+			sb.append( "\n" );
+		}
+		sb.append( "- - >8 - -" );
+		return sb.toString();
+	}
 }

@@ -22,16 +22,15 @@ package org.nexuse2e.messaging.ebxml.v20;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.ProtocolSpecificKey;
 import org.nexuse2e.logging.LogMessage;
+import org.nexuse2e.messaging.Constants.ErrorMessageReasonCode;
 import org.nexuse2e.messaging.ErrorDescriptor;
 import org.nexuse2e.messaging.MessageContext;
-import org.nexuse2e.messaging.Constants.ErrorMessageReasonCode;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ConversationPojo;
 import org.nexuse2e.pojo.MessagePojo;
@@ -39,7 +38,7 @@ import org.nexuse2e.pojo.ParticipantPojo;
 import org.nexuse2e.pojo.PartnerPojo;
 
 /**
- * @author gesch
+ * @author gesch, sschulze
  *
  */
 public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
@@ -105,7 +104,9 @@ public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
         acknowledgment.getCustomParameters().put(
                 Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_SERVICE, "uri:Acknowledgement" );
 
-        LOG.trace( new LogMessage( "-----conversation:" + messageContext.getMessagePojo().getConversation(),messageContext.getMessagePojo()) );
+        if ( LOG.isTraceEnabled() ) {
+        	LOG.trace( new LogMessage( "-----conversation:" + messageContext.getMessagePojo().getConversation(),messageContext.getMessagePojo()) );
+        }
         acknowledgment.setConversation( messageContext.getMessagePojo().getConversation() );
         acknowledgment.setOutbound( true );
 
@@ -115,12 +116,44 @@ public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
     } // createAcknowledgement
 
     /* (non-Javadoc)
-     * @see org.nexuse2e.messaging.ProtocolAdapter#createErrorAcknowledge(int, org.nexuse2e.messaging.MessageContext)
+     * @see org.nexuse2e.messaging.ProtocolAdapter#addProtcolSpecificParameters(org.nexuse2e.messaging.MessageContext)
      */
-    public MessageContext createErrorAcknowledgement( Constants.ErrorMessageReasonCode reasonCode,
-            ChoreographyPojo choreography, MessageContext messageContext, Vector<ErrorDescriptor> errorMessages ) {
+    public void addProtcolSpecificParameters( MessageContext messageContext ) {
 
-        System.out.println( "--------------- create error -----------------" );
+        String localPartnerId = messageContext.getParticipant().getLocalPartner().getPartnerId();
+        String localPartnerType = messageContext.getParticipant().getLocalPartner().getPartnerIdType();
+        HashMap<String, String> parameters = new HashMap<String, String>();
+        parameters.put( Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_FROM, localPartnerId );
+        parameters.put( Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_FROMIDTYPE, localPartnerType );
+        messageContext.getMessagePojo().setCustomParameters( parameters );
+
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.ProtocolSpecific#getKey()
+     */
+    public ProtocolSpecificKey getKey() {
+
+        return key;
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.ProtocolSpecific#setKey(org.nexuse2e.ProtocolSpecificKey)
+     */
+    public void setKey( ProtocolSpecificKey key ) {
+
+        this.key = key;
+    }
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.messaging.ProtocolAdapter#createErrorAcknowledgement(org.nexuse2e.messaging.Constants.ErrorMessageReasonCode, org.nexuse2e.pojo.ChoreographyPojo, org.nexuse2e.messaging.MessageContext, java.util.List)
+     */
+    public MessageContext createErrorAcknowledgement(
+            ErrorMessageReasonCode reasonCode, ChoreographyPojo choreography,
+            MessageContext messageContext, List<ErrorDescriptor> errorMessages) {
+    	if ( LOG.isDebugEnabled() ) {
+        	LOG.debug( new LogMessage( "Creating error acknowledgement", messageContext ) );
+        }
 
         String currentMessageId = messageContext.getMessagePojo().getMessageId();
 
@@ -175,46 +208,6 @@ public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
         
         
         return messageContext;
-    }
-
-    /* (non-Javadoc)
-     * @see org.nexuse2e.messaging.ProtocolAdapter#addProtcolSpecificParameters(org.nexuse2e.messaging.MessageContext)
-     */
-    public void addProtcolSpecificParameters( MessageContext messageContext ) {
-
-        String localPartnerId = messageContext.getParticipant().getLocalPartner().getPartnerId();
-        String localPartnerType = messageContext.getParticipant().getLocalPartner().getPartnerIdType();
-        HashMap<String, String> parameters = new HashMap<String, String>();
-        parameters.put( Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_FROM, localPartnerId );
-        parameters.put( Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_FROMIDTYPE, localPartnerType );
-        messageContext.getMessagePojo().setCustomParameters( parameters );
-
-    }
-
-    /* (non-Javadoc)
-     * @see org.nexuse2e.ProtocolSpecific#getKey()
-     */
-    public ProtocolSpecificKey getKey() {
-
-        return key;
-    }
-
-    /* (non-Javadoc)
-     * @see org.nexuse2e.ProtocolSpecific#setKey(org.nexuse2e.ProtocolSpecificKey)
-     */
-    public void setKey( ProtocolSpecificKey key ) {
-
-        this.key = key;
-    }
-
-    /* (non-Javadoc)
-     * @see org.nexuse2e.messaging.ProtocolAdapter#createErrorAcknowledgement(org.nexuse2e.messaging.Constants.ErrorMessageReasonCode, org.nexuse2e.pojo.ChoreographyPojo, org.nexuse2e.messaging.MessageContext, java.util.List)
-     */
-    public MessageContext createErrorAcknowledgement(
-            ErrorMessageReasonCode reasonCode, ChoreographyPojo choreography,
-            MessageContext messageContext, List<ErrorDescriptor> errorMessages) {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     /* (non-Javadoc)

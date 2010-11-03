@@ -46,10 +46,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.nexuse2e.ActionSpecificKey;
+import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.ProtocolSpecificKey;
-import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.backend.BackendPipelineDispatcher;
 import org.nexuse2e.configuration.Constants.ComponentType;
 import org.nexuse2e.configuration.Constants.ParameterType;
@@ -2705,6 +2705,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
         switch ( type ) {
             case UNKNOWN:
             case STRING:
+            case TEXT:
             case PASSWORD:
             case SERVICE:
                 return value;

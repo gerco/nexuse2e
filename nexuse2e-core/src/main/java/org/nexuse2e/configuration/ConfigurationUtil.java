@@ -61,6 +61,7 @@ public class ConfigurationUtil {
         switch ( pd.getParameterType() ) {
             case UNKNOWN:
             case STRING:
+            case TEXT:
             case PASSWORD:
             case SERVICE:
                 return value;

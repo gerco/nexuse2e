@@ -620,14 +620,18 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
      */
     public void storeTransaction( ConversationPojo conversationPojo, MessagePojo messagePojo ) throws NexusException {
 
-        LOG.trace( "(s)persisting state for message "+messagePojo.getConversation().getConversationId()+messagePojo.getMessageId()+
-                ":"+MessagePojo.getStatusName( messagePojo.getStatus() )+"/"+ConversationPojo.getStatusName( messagePojo.getConversation().getStatus() ) );
+        if ( LOG.isTraceEnabled() ) {
+	    	LOG.trace( new LogMessage( "(s)persisting state for message: "
+	    			+ MessagePojo.getStatusName( messagePojo.getStatus() )
+	    			+ "/" + ConversationPojo.getStatusName( messagePojo.getConversation().getStatus() ), messagePojo ) );
+        }
         
-        
-        LOG.debug( "storeTransaction: " + conversationPojo + " - " + messagePojo );
+        if ( LOG.isDebugEnabled() ) {
+        	LOG.debug( new LogMessage( "storeTransaction: " + conversationPojo + " - " + messagePojo, messagePojo ) );
+        }
 
         saveOrUpdateRecord( conversationPojo );
-        if (LOG.isTraceEnabled()) {
+        if ( LOG.isTraceEnabled() ) {
             printConversationInfo( "stored conversation:", conversationPojo, null );
         }
 

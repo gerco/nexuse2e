@@ -26,11 +26,11 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
+import org.nexuse2e.Constants.BeanStatus;
+import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.ProtocolSpecificKey;
-import org.nexuse2e.Constants.BeanStatus;
-import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.controller.StateTransitionException;
@@ -94,16 +94,17 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
 
             MessagePojo messagePojo = messageContext.getMessagePojo();
 
-            LOG.trace( new LogMessage( "Entering FrontendInboundDispatcher.processMessage...",messagePojo) );
+            LOG.debug( new LogMessage( "Entering FrontendInboundDispatcher.processMessage...", messagePojo) );
 
             // extract header data
 
             if ( messagePojo.getConversation() != null
                     && messagePojo.getConversation().getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_CREATED ) {
                 messagePojo.getConversation().setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_PROCESSING );
-                LOG.debug( new LogMessage( "MessageType:" + messagePojo.getType(), messagePojo.getConversation()
-                        .getConversationId(), messagePojo.getMessageId() ) );
-
+                if ( LOG.isDebugEnabled() ) {
+	                LOG.debug( new LogMessage( "MessageType:" + messagePojo.getType(), messagePojo.getConversation()
+	                        .getConversationId(), messagePojo.getMessageId() ) );
+                }
             }
 
             ProtocolAdapter protocolAdapter = getProtocolAdapterByKey( messageContext.getProtocolSpecificKey() );
@@ -116,7 +117,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
 
             try {
                 choreography = validateChoreography( messageContext, Constants.INBOUND );
-                LOG.trace(new LogMessage(  "matching choreography found",messagePojo) );
+                LOG.debug(new LogMessage(  "matching choreography found",messagePojo) );
             } catch ( NexusException e ) {
                 e.printStackTrace();
                 LOG.error( new LogMessage( "Error while validating choreography: " + e.getMessage(), messagePojo ) );
@@ -142,7 +143,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
 
                 try {
                     participant = validateParticipant( messageContext, Constants.INBOUND );
-                    LOG.trace( new LogMessage( "matching participant found",messagePojo) );
+                    LOG.debug( new LogMessage( "matching participant found", messagePojo ) );
                 } catch ( NexusException e ) {
                     e.printStackTrace();
                     LOG.error( new LogMessage( "No matching participant found: "
@@ -294,8 +295,11 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                                     responseMessageContext = protocolAdapter.createAcknowledgement( choreography,
                                             clonedMessageContext );
                                 } catch ( NexusException e ) {
-                                    // TODO Auto-generated catch block
-                                    e.printStackTrace();
+                                	// Substituted an e.printStackTrace() by LOG.error().
+                                	// Do we need to do something else here? How about an error ack?
+                                	// Or let the exception raise up?
+                                    LOG.error( new LogMessage( "Error creating acknowledgement: " + e.getMessage(),
+                                    		messageContext ), e );
                                 }
                             } else {
                                 LOG.debug(new LogMessage(  "Not reliable, not creating ack - message ID: "
@@ -307,7 +311,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                                 }
                             }
                         } else {
-                            LOG.trace( new LogMessage( "error response message found",messagePojo) );
+                            LOG.debug( new LogMessage( "error response message found",messagePojo) );
                             responseMessageContext = protocolAdapter.createErrorAcknowledgement(
                                     Constants.ErrorMessageReasonCode.UNKNOWN, choreography, messageContext,
                                     errorMessages );
@@ -328,7 +332,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                 } else if ( !headerInvalid && ( responseMessageContext != null )
                         && responseMessageContext.getMessagePojo() != null ) {
                     try {
-                        LOG.trace( new LogMessage( "dispatching response message", messagePojo) );
+                        LOG.debug( new LogMessage( "dispatching response message", messagePojo) );
                         backendOutboundDispatcher.processMessage( responseMessageContext );
                         return null;
                     } catch ( NexusException e ) {

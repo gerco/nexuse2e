@@ -59,7 +59,9 @@ public class BackendInboundDispatcher implements InitializingBean, Manageable {
      */
     public MessageContext processMessage( MessageContext messageContext ) throws NexusException {
 
-        LOG.debug( "BackendInboundDispatcher.processMessage..." );
+    	if ( LOG.isDebugEnabled() ) {
+    		LOG.debug( "BackendInboundDispatcher.processMessage..." );
+    	}
 
         if ( backendInboundPipelines != null ) {
             ActionPojo action = messageContext.getMessagePojo().getAction();
@@ -69,8 +71,10 @@ public class BackendInboundDispatcher implements InitializingBean, Manageable {
                     (action == null ? null : action.getName()), (choreography == null ? null : choreography.getName()) );
             BackendPipeline backendInboundPipeline = backendInboundPipelines.get( actionSpecificKey );
             if ( backendInboundPipeline != null ) {
-                LOG.debug( new LogMessage( "Found pipeline: " + backendInboundPipeline + " - " + actionSpecificKey,
-                        messageContext.getMessagePojo() ) );
+                if ( LOG.isDebugEnabled() ) {
+	            	LOG.debug( new LogMessage( "Found pipeline: " + backendInboundPipeline + " - " + actionSpecificKey,
+	                        messageContext.getMessagePojo() ) );
+                }
 
                 // Clone MessagePojo so that Pipelets in the Pipeline can modify the message/payloads
                 try {
