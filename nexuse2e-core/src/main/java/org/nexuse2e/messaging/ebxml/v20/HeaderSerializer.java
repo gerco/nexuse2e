@@ -50,7 +50,7 @@ import org.nexuse2e.pojo.MessagePojo;
 
 public class HeaderSerializer extends AbstractPipelet {
 
-    private static Logger LOG = Logger.getLogger( HeaderDeserializer.class );
+    private static Logger LOG = Logger.getLogger( HeaderSerializer.class );
 
     //    private static SOAPFactory    soapFactory    = null;
     //    private static MessageFactory messageFactory = null;
@@ -291,9 +291,11 @@ public class HeaderSerializer extends AbstractPipelet {
                     while ( bodyParts.hasNext() ) {
                         MessagePayloadPojo bodyPart = (MessagePayloadPojo) bodyParts.next();
                         LOG.trace( new LogMessage( "ContentID:" + bodyPart.getContentId() ,messagePojo));
-                        createManifestReference( soapFactory, soapManifest, bodyPart.getContentId(), "Payload-" + bodyPart.getSequenceNumber(), bodyPart.getMimeType(), null );
+                        
+                        //createManifestReference( soapFactory, soapManifest, bodyPart.getContentId(), "Payload-" + bodyPart.getSequenceNumber(), bodyPart.getMimeType(), null );
                         // MBE: Changed 20100215 due to interop problem - 20103007: changed back
-                        // createManifestReference( soapFactory, soapManifest, "cid:" + bodyPart.getContentId(), "Payload-" + bodyPart.getSequenceNumber(), bodyPart.getMimeType(), null );
+                        // GES: 20101105 switched back for spec compliance and added a legacy version for backward compliance and special implementations 
+                        createManifestReference( soapFactory, soapManifest, "cid:" + bodyPart.getContentId(), "Payload-" + bodyPart.getSequenceNumber(), bodyPart.getMimeType(), null );
                     }
 
                 }
