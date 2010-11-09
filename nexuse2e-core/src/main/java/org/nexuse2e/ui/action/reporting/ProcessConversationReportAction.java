@@ -451,11 +451,19 @@ public class ProcessConversationReportAction extends ReportingAction {
                 }
             } else if ( "last".equals( command ) ) {
 
+                int page = 0;
+                if ( items > 0 ) {
+                    if ( items % form.getPageSize() == 0 ) {
+                        page = items / form.getPageSize() - 1;
+                    } else {
+                        page = items / form.getPageSize();
+                    }
+                }
                 conversations = Engine.getInstance().getTransactionService().getConversationsForReport( status,
                         nxChoreographyId, nxPartnerId, conversationId, getStartDate( form ), getEndDate( form ),
-                        form.getPageSize(), items / form.getPageSize(), TransactionDAO.SORT_CREATED, false );
+                        form.getPageSize(), page, TransactionDAO.SORT_CREATED, false );
 
-                form.setStartCount( items / form.getPageSize() * form.getPageSize() + 1 );
+                form.setStartCount( page * form.getPageSize() + 1 );
                 form.setEndCount( items );
             }
             if ( conversations != null ) {

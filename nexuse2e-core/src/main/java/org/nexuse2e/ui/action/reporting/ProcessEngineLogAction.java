@@ -22,7 +22,6 @@ package org.nexuse2e.ui.action.reporting;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -164,10 +163,18 @@ public class ProcessEngineLogAction extends ReportingAction {
                 }
 
             } else if ( dir.equals( "last" ) ) {
+                int page = 0;
+                if ( items > 0 ) {
+                    if ( items % form.getPageSize() == 0 ) {
+                        page = items / form.getPageSize() - 1;
+                    } else {
+                        page = items / form.getPageSize();
+                    }
+                }
                 reportMessages = Engine.getInstance().getTransactionService().getLogEntriesForReport( severity,
-                        messageText, startDate, endDate, form.getPageSize(), items / form.getPageSize(),
+                        messageText, startDate, endDate, form.getPageSize(), page,
                         LogDAO.SORT_CREATED, false );
-                form.setStartCount( items / form.getPageSize() * form.getPageSize() + 1 );
+                form.setStartCount( page * form.getPageSize() + 1 );
                 form.setEndCount( items );
             }
 
