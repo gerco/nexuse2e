@@ -37,6 +37,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.hibernate.cfg.Configuration;
@@ -118,6 +119,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     private long engineStartTime = 0;
     private long serviceStartTime = 0;
     private String                           timestampPattern               = null;
+    private String							 defaultCharEncoding			= null;
 
     // TRUE to allow submission of business reply while inbound pipeline is blocking/synchronously
     private boolean                          lenientBackendStateMachine      = false;
@@ -726,7 +728,6 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
 //        return (PersistentPropertyDAO) getDao( "persistentPropertyDao" );
 //    }
     
-    @SuppressWarnings("unchecked")
     private void createEngineConfiguration() throws InstantiationException {
 
         try {
@@ -1423,5 +1424,22 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     
         this.transactionService = transactionService;
     }
+
+	/**
+	 * @return the defaultCharEncoding
+	 */
+	public String getDefaultCharEncoding() {
+		if(StringUtils.isEmpty(defaultCharEncoding)) {
+			defaultCharEncoding = java.nio.charset.Charset.defaultCharset().name();
+		}
+		return defaultCharEncoding;
+	}
+
+	/**
+	 * @param defaultCharEncoding the defaultCharEncoding to set
+	 */
+	public void setDefaultCharEncoding(String defaultCharEncoding) {
+		this.defaultCharEncoding = defaultCharEncoding;
+	}
 
 } // Engine

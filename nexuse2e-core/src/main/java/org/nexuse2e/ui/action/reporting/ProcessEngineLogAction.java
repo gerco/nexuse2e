@@ -173,14 +173,11 @@ public class ProcessEngineLogAction extends ReportingAction {
 
             if ( reportMessages != null ) {
 
-                Iterator<LogPojo> i = reportMessages.iterator();
-
-                while ( i.hasNext() ) {
-                    ReportEngineEntryForm entry = new ReportEngineEntryForm();
-                    entry.setEnginePorperties( i.next() );
-                    logItems.add( entry );
+                for (LogPojo logPojo : reportMessages) {
+                	    ReportEngineEntryForm entry = new ReportEngineEntryForm();
+                        entry.setEnginePorperties( logPojo );
+                        logItems.add( entry );
                 }
-
             }
 
             if ( form.getStartCount() > 1 ) {

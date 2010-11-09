@@ -33,9 +33,11 @@ import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.pojo.ConversationPojo;
+import org.nexuse2e.pojo.LogPojo;
 import org.nexuse2e.pojo.MessagePojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.ReportConversationEntryForm;
+import org.nexuse2e.ui.form.ReportEngineEntryForm;
 import org.nexuse2e.ui.form.ReportMessageEntryForm;
 
 /**
@@ -48,7 +50,8 @@ public class ConversationViewAction extends NexusE2EAction {
 
     private static String URL     = "reporting.error.url";
     private static String TIMEOUT = "reporting.error.timeout";
-
+    private static String ATTRIBUTE_COLLECTION_2 = "collection_2";
+    
     /* (non-Javadoc)
      * @see com.tamgroup.nexus.e2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages)
      */
@@ -75,7 +78,7 @@ public class ConversationViewAction extends NexusE2EAction {
         LOG.trace( "form: " + form );
         form.setValues( cPojo );
 
-        ArrayList<Object> reportMessages = new ArrayList<Object>();
+        List<Object> reportMessages = new ArrayList<Object>();
 
         List<MessagePojo> messagePojos = cPojo.getMessages();
 
@@ -84,6 +87,24 @@ public class ConversationViewAction extends NexusE2EAction {
             entry.setMessageProperties( pojo );
             reportMessages.add( entry );
         }
+        
+        List<LogPojo> errorMessages  = Engine.getInstance().getTransactionService().getLogEntriesForReport( null, cPojo.getConversationId(), null, false );
+        List<ReportEngineEntryForm> logItems = new ArrayList<ReportEngineEntryForm>();
+        if(errorMessages != null && errorMessages.size() > 0) {
+        	
+            
+            if ( errorMessages != null ) {
+
+                for (LogPojo logPojo : errorMessages) {
+                	    ReportEngineEntryForm entry = new ReportEngineEntryForm();
+                        entry.setEnginePorperties( logPojo );
+                        logItems.add( entry );
+                }
+            }
+            
+        }
+        
+        request.setAttribute( ATTRIBUTE_COLLECTION_2, logItems );
         request.setAttribute( ATTRIBUTE_COLLECTION, reportMessages );
         return success;
     }

@@ -454,6 +454,15 @@ public interface TransactionService extends Manageable {
     public abstract List<LogPojo> getLogEntriesForReport( String severity, String messageText, Date start, Date end,
             int itemsPerPage, int page, int field, boolean ascending ) throws NexusException;
     
+    /**
+     * @param severity
+     * @param conversationId
+     * @param messageId
+     * @param ascending
+     * @return
+     * @throws NexusException
+     */
+    public abstract List<LogPojo> getLogEntriesForReport( String severity,String conversationId, String messageId, boolean ascending ) throws NexusException;
     
    
     

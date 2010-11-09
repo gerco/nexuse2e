@@ -65,7 +65,7 @@ public class ParticipantUpdateAction extends NexusE2EAction {
         int nxPartnerId = form.getNxPartnerId();
         int localPartnerId = form.getNxLocalPartnerId();
         String description = form.getDescription();
-
+        String charEncoding = form.getCharEncoding();
         if ( nxChoreographyId == 0 ) {
             ActionMessage errorMessage = new ActionMessage( "generic.error", "ChoreographyId must not be null!" );
             errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
@@ -81,7 +81,7 @@ public class ParticipantUpdateAction extends NexusE2EAction {
             form.setNxPartnerId( nxPartnerId );
             form.setNxLocalPartnerId( localPartnerId );
             form.setDescription( description );
-
+            form.setCharEncoding(charEncoding);
             form.setPartners( engineConfiguration.getPartners(
                     Constants.PARTNER_TYPE_PARTNER, Constants.PARTNERCOMPARATOR ) );
             form.setLocalPartners( engineConfiguration.getPartners(
@@ -174,6 +174,7 @@ public class ParticipantUpdateAction extends NexusE2EAction {
 
                 participant.setDescription( form.getDescription() );
                 participant.setLocalPartner( localPartner );
+                participant.setCharEncoding(form.getCharEncoding());
 
                 LOG.debug( "updating choreography" );
                 engineConfiguration.updateChoreography( choreography );

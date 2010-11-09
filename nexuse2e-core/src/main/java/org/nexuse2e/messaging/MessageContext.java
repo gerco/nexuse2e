@@ -367,6 +367,17 @@ public class MessageContext implements Serializable {
         this.requestMessage = requestMessage;
     }
 
+    /**
+     * convenience method for character encoding
+     * @return
+     */
+    public String getEncoding() {
+    	if(getParticipant() != null ) {
+    		return getParticipant().getCharEncoding();
+    	} else {
+    		return Engine.getInstance().getDefaultCharEncoding();
+    	}
+    }
     
     
 } // MessageContext

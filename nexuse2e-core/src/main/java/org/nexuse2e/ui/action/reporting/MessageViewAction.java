@@ -34,9 +34,11 @@ import org.hibernate.LazyInitializationException;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.EngineConfiguration;
+import org.nexuse2e.pojo.LogPojo;
 import org.nexuse2e.pojo.MessagePayloadPojo;
 import org.nexuse2e.pojo.MessagePojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
+import org.nexuse2e.ui.form.ReportEngineEntryForm;
 import org.nexuse2e.ui.form.ReportMessageEntryForm;
 
 /**
@@ -49,7 +51,7 @@ public class MessageViewAction extends NexusE2EAction {
 
     private static String URL     = "reporting.error.url";
     private static String TIMEOUT = "reporting.error.timeout";
-
+    private static String ATTRIBUTE_COLLECTION_2 = "collection_2";
     /* (non-Javadoc)
      * @see com.tamgroup.nexus.e2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages)
      */
@@ -60,18 +62,10 @@ public class MessageViewAction extends NexusE2EAction {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
         ActionForward error = actionMapping.findForward( ACTION_FORWARD_FAILURE );
-        //request.getSession().setAttribute( Crumbs.CURRENT_LOCATION, Crumbs.REPORT_MESSAGE_VIEW );
-
-        //request.getSession().setAttribute( Crumbs.CURRENT_LOCATION, Crumbs.REPORT_CONVERSATION_VIEW );
-
+        
         ReportMessageEntryForm form = (ReportMessageEntryForm) actionForm;
         String messageId = request.getParameter( "mId" );
-        //        String conversationId = request.getParameter( "convId" );
-        //        String choreographyId = request.getParameter( "chorId" );
-        //        String partnerId = request.getParameter( "partnerId" );
-
-        LOG.trace( "messageId: " + messageId );
-
+        
         MessagePojo message = Engine.getInstance().getTransactionService().getMessage( messageId );
 
         if ( message == null ) {
@@ -95,6 +89,24 @@ public class MessageViewAction extends NexusE2EAction {
         } catch ( LazyInitializationException e ) {
             throw new NexusException( e );
         }
+        
+        List<LogPojo> errorMessages  = Engine.getInstance().getTransactionService().getLogEntriesForReport( null, message.getConversation().getConversationId(), message.getMessageId(), false );
+        List<ReportEngineEntryForm> logItems = new ArrayList<ReportEngineEntryForm>();
+        if(errorMessages != null && errorMessages.size() > 0) {
+        	
+            
+            if ( errorMessages != null ) {
+
+                for (LogPojo logPojo : errorMessages) {
+                	    ReportEngineEntryForm entry = new ReportEngineEntryForm();
+                        entry.setEnginePorperties( logPojo );
+                        logItems.add( entry );
+                }
+            }
+            
+        }
+        
+        request.setAttribute( ATTRIBUTE_COLLECTION_2, logItems );
 
         request.setAttribute( ATTRIBUTE_COLLECTION, parts );
         return success;

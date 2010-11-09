@@ -66,7 +66,7 @@ public class NexusException extends Exception {
      * @param logMessage The LogMessage that carries the information for this exception.
      */
     public NexusException( LogMessage logMessage ) {
-    	super( logMessage.toString() );
+    	super( logMessage.toString(false) );
     	setInfoFromLogMessage( logMessage );
     }
     
@@ -76,7 +76,7 @@ public class NexusException extends Exception {
      * @param nested The nested cause of this exception.
      */
     public NexusException( LogMessage logMessage, Exception nested ) {
-    	super( logMessage.toString(), nested );
+    	super( logMessage.toString(false), nested );
     	setInfoFromLogMessage( logMessage );
     }
     
@@ -223,4 +223,48 @@ public class NexusException extends Exception {
         this.transportId = transportId;
     }
 
+	/* (non-Javadoc)
+	 * @see java.lang.Throwable#getMessage()
+	 */
+	@Override
+	public String getMessage() {
+		return getMessage(true);
+	}
+	
+	/**
+	 * @param full
+	 * @return
+	 */
+	public String getMessage(boolean full) {
+		if(full) {
+			return conversationId + "/" + messageId + ": "+super.getMessage();
+		} else {
+			return super.getMessage();
+		}
+	}
+	
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Throwable#toString()
+	 */
+	@Override
+	public String toString() {
+		return toString(true);
+	}
+
+	/**
+	 * @param full
+	 * @return
+	 */
+	public String toString(boolean full) {
+		String s = getClass().getName();
+	    String message = super.getLocalizedMessage();
+	    message = (message != null) ? (s + ": " + message) : s;
+		if(full) {
+			return conversationId + "/" + messageId + ": " + message;
+		} else {
+			return message;
+		}
+	}
+	
 }

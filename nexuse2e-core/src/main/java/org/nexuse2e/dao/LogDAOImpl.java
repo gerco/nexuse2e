@@ -54,7 +54,7 @@ public class LogDAOImpl extends BasicDAOImpl implements LogDAO {
      * @param ascending
      * @return
      */
-    private DetachedCriteria getLogEntriesForReportCriteria( String severity, String messageText, Date start, Date end, int field,
+    private DetachedCriteria getLogEntriesForReportCriteria( String severity, String conversationId, String messageId, String messageText, Date start, Date end, int field,
             boolean ascending ) {
 
         DetachedCriteria dc = DetachedCriteria.forClass( LogPojo.class );
@@ -63,7 +63,13 @@ public class LogDAOImpl extends BasicDAOImpl implements LogDAO {
         if ( severity != null ) {
             dc.add( Restrictions.eq( "severity", Integer.parseInt( severity ) ) );
         }
-
+        if ( conversationId != null ) {
+            dc.add( Restrictions.eq( "conversationId", conversationId ) );
+        }	
+        if ( messageId != null ) {
+            dc.add( Restrictions.eq( "messageId", messageId ) );
+        }
+        
         if ( messageText != null ) {
             dc.add( Restrictions.like( "description", "%" + messageText + "%" ) );
         }
@@ -73,12 +79,6 @@ public class LogDAOImpl extends BasicDAOImpl implements LogDAO {
         if ( end != null ) {
             dc.add( Restrictions.le( "createdDate",  end ) );
         }
-//        if ( start != null ) {
-//            dc.add( Restrictions.ge( "createdDate", getTimestampString( start ) ) );
-//        }
-//        if ( end != null ) {
-//            dc.add( Restrictions.le( "createdDate", getTimestampString( end ) ) );
-//        }
         
         Order order = getSortOrder( field, ascending );
         if(order != null) {
@@ -98,17 +98,26 @@ public class LogDAOImpl extends BasicDAOImpl implements LogDAO {
 
         // LOG.trace( "page:" + page );
         // LOG.trace( "pagesize:" + itemsPerPage );
-        return (List<LogPojo>) getListThroughSessionFind( getLogEntriesForReportCriteria( severity, messageText, start, end,
+        return (List<LogPojo>) getListThroughSessionFind( getLogEntriesForReportCriteria( severity, null, null, messageText, start, end,
                 field, ascending ), itemsPerPage * page, itemsPerPage );
     }
 
+    /* (non-Javadoc)
+     * @see org.nexuse2e.dao.LogDAO#getLogEntriesForReport(java.lang.String, java.lang.String, java.lang.String, boolean)
+     */
+    @SuppressWarnings("unchecked")
+	public List<LogPojo> getLogEntriesForReport(String severity, String conversationId, String messageId, boolean ascending) throws NexusException {
+    	return (List<LogPojo>) getListThroughSessionFind( getLogEntriesForReportCriteria( severity,conversationId, messageId, null, null, null, 
+    			SORT_CREATED, ascending ), 0, 0 );
+	}
+    
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.LogDAO#getLogEntriesForReportCount(java.lang.String, java.lang.String, java.util.Date, java.util.Date, int, boolean)
      */
     public int getLogEntriesForReportCount( String severity, String messageText, Date start, Date end, int field,
             boolean ascending ) throws NexusException {
 
-        List<?> items = getListThroughSessionFind( getLogEntriesForReportCriteria( severity, messageText, start, end, field,
+        List<?> items = getListThroughSessionFind( getLogEntriesForReportCriteria( severity,null,null, messageText, start, end, field,
                 ascending ),0,0 );
         if ( items == null ) {
             return 0;
@@ -186,5 +195,7 @@ public class LogDAOImpl extends BasicDAOImpl implements LogDAO {
         return order;
 
     } // getSortString
+
+	
 
 } // LogDAO

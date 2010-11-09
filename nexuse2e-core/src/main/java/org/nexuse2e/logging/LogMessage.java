@@ -26,78 +26,134 @@ import org.nexuse2e.pojo.MessagePojo;
 
 /**
  * @author mbreilmann
- *
+ * 
  */
 public class LogMessage implements Serializable {
 
-    private static final long serialVersionUID = 7284169389821283301L;
-    
-    private String description    = null;
-    private String conversationId = "unknown";
-    private String messageId      = "unknown";
+	private static final long serialVersionUID = 7284169389821283301L;
 
-    
-    public LogMessage( String description ) {
+	private String description = null;
+	private String conversationId = "unknown";
+	private String messageId = "unknown";
 
-        this.description = description;
-    }
+	/**
+	 * @param description
+	 */
+	public LogMessage(String description) {
 
-    public LogMessage( String description, String conversationId, String messageId ) {
+		this.description = description;
+	}
 
-        this.description = description;
-        this.conversationId = conversationId;
-        this.messageId = messageId;
-    }
+	/**
+	 * @param description
+	 * @param conversationId
+	 * @param messageId
+	 */
+	public LogMessage(String description, String conversationId,
+			String messageId) {
 
-    public LogMessage( String description, MessagePojo messagePojo ) {
+		this.description = description;
+		this.conversationId = conversationId;
+		this.messageId = messageId;
+	}
 
-        this.description = description;
-        if ( messagePojo != null ) {
-            if (messagePojo.getConversation() != null) {
-                this.conversationId = messagePojo.getConversation().getConversationId();
-            }
-            this.messageId = messagePojo.getMessageId();
-        }
-    }
-    
-    public LogMessage( String description, MessageContext messageContext ) {
-        this( description, ( messageContext != null ? messageContext.getMessagePojo() : null ) );
-    }
+	/**
+	 * @param description
+	 * @param messagePojo
+	 */
+	public LogMessage(String description, MessagePojo messagePojo) {
 
-    public String getConversationId() {
+		this.description = description;
+		if (messagePojo != null) {
+			if (messagePojo.getConversation() != null) {
+				this.conversationId = messagePojo.getConversation()
+						.getConversationId();
+			}
+			this.messageId = messagePojo.getMessageId();
+		}
+	}
 
-        return conversationId;
-    }
+	/**
+	 * @param description
+	 * @param messageContext
+	 */
+	public LogMessage(String description, MessageContext messageContext) {
+		this(description, (messageContext != null ? messageContext
+				.getMessagePojo() : null));
+	}
 
-    public void setConversationId( String conversationId ) {
+	/**
+	 * @return
+	 */
+	public String getConversationId() {
 
-        this.conversationId = conversationId;
-    }
+		return conversationId;
+	}
 
-    public String getDescription() {
+	/**
+	 * @param conversationId
+	 */
+	public void setConversationId(String conversationId) {
 
-        return description;
-    }
+		this.conversationId = conversationId;
+	}
 
-    public void setDescription( String description ) {
+	/**
+	 * @return
+	 */
+	public String getDescription() {
 
-        this.description = description;
-    }
+		return description;
+	}
 
-    public String getMessageId() {
+	/**
+	 * @param description
+	 */
+	public void setDescription(String description) {
 
-        return messageId;
-    }
+		this.description = description;
+	}
 
-    public void setMessageId( String messageId ) {
+	/**
+	 * @return
+	 */
+	public String getMessageId() {
 
-        this.messageId = messageId;
-    }
+		return messageId;
+	}
 
-    @Override
-    public String toString() {
+	/**
+	 * @param messageId
+	 */
+	public void setMessageId(String messageId) {
 
-        return conversationId + "/" + messageId + ": " + description;
-    }
+		this.messageId = messageId;
+	}
 
-} // LogMessage
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+
+		return toString(true);
+	}
+
+	/**
+	 * by default toString prepends message and conversation id. Use full=false
+	 * to suppress unnecessary ids.
+	 * 
+	 * @param full
+	 * @return
+	 */
+	public String toString(boolean full) {
+
+		if (full) {
+			return conversationId + "/" + messageId + ": " + description;
+		} else {
+			return description;
+		}
+	}
+}

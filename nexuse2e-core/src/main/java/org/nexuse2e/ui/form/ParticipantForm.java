@@ -19,6 +19,7 @@
  */
 package org.nexuse2e.ui.form;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -52,7 +53,9 @@ public class ParticipantForm extends ActionForm {
     private String               description          = "";
     private String               choreographyId       = null;
     private String               url                  = null;
+    private String				 charEncoding		  = null;
     private Set<ConnectionPojo>  connections          = new HashSet<ConnectionPojo>();
+    private List<String>  		 availableCharsets    = new ArrayList<String>();
     private int                  nxConnectionId       = 0;
 
     private List<PartnerPojo>    partners             = new ArrayList<PartnerPojo>();
@@ -65,7 +68,8 @@ public class ParticipantForm extends ActionForm {
      * 
      */
     public ParticipantForm() {
-
+    	availableCharsets.add("");
+    	availableCharsets.addAll(Charset.availableCharsets().keySet());
     }
 
     public void cleanSetting() {
@@ -78,6 +82,7 @@ public class ParticipantForm extends ActionForm {
         setDescription( "" );
         setChoreographyId( null );
         setUrl( null );
+        setCharEncoding(null);
 
     }
 
@@ -301,5 +306,33 @@ public class ParticipantForm extends ActionForm {
 
         this.nxChoreographyId = nxChoreographyId;
     }
+
+	/**
+	 * @return the charEncoding
+	 */
+	public String getCharEncoding() {
+		return charEncoding;
+	}
+
+	/**
+	 * @param charEncoding the charEncoding to set
+	 */
+	public void setCharEncoding(String charEncoding) {
+		this.charEncoding = charEncoding;
+	}
+
+	/**
+	 * @return the availableCharsets
+	 */                    
+	public List<String> getAvailableCharsets() {
+		return availableCharsets;
+	}
+
+	/**
+	 * @param availableCharsets the availableCharsets to set
+	 */
+	public void setAvailableCharsets(List<String> availableCharsets) {
+		this.availableCharsets = availableCharsets;
+	}
 
 }

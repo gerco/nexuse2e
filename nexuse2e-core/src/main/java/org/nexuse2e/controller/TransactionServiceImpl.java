@@ -274,7 +274,9 @@ public class TransactionServiceImpl implements TransactionService {
                 end, itemsPerPage, page, field, ascending ), false );
 
     }
+    
 
+	
     /* (non-Javadoc)
      * @see org.nexuse2e.controller.TransactionService#getConversationsCount(java.lang.String, int, int, java.lang.String, java.util.Date, java.util.Date, int, boolean)
      */
@@ -774,6 +776,16 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     /* (non-Javadoc)
+	 * @see org.nexuse2e.controller.TransactionService#getLogEntriesForReport(java.lang.String, java.lang.String, java.lang.String, boolean)
+	 */
+	public List<LogPojo> getLogEntriesForReport(String severity, String conversationId, String messageId, boolean ascending)
+			throws NexusException {
+		
+		return getLogDao().getLogEntriesForReport(severity, conversationId, messageId, ascending );
+	}
+
+    
+    /* (non-Javadoc)
      * @see org.nexuse2e.controller.TransactionService#getLogEntriesForReport(java.lang.String, java.lang.String, java.util.Date, java.util.Date, int, int, int, boolean)
      */
     public List<LogPojo> getLogEntriesForReport( String severity, String messageText, Date start, Date end,
@@ -982,5 +994,6 @@ public class TransactionServiceImpl implements TransactionService {
 
         return getTransactionDao().removeLogEntries( start, end );
     }
+
 
 } // TransactionService
