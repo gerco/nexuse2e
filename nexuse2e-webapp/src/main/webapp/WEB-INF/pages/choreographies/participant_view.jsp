@@ -94,7 +94,15 @@
 				</logic:iterate>
 			</html:select></td>
 		</tr>
-
+		<tr>
+			<td class="NEXUSName">Content Character Encoding</td>
+			<td class="NEXUSValue"><html:select property="charEncoding">
+				<logic:iterate id="set" property="availableCharsets" name="participantForm">
+					<html-el:option value="${set}" >
+						${set}</html-el:option>
+				</logic:iterate>
+			</html:select></td>
+		</tr>
 	</table>
 </html:form>
 

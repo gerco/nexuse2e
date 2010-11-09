@@ -177,4 +177,35 @@
 			<img src="images/icons/stop.png" onclick="" border="0" alt="" class="button">Stop</nexus:link></nobr></td>
 	</tr>
 </table>
+
+<logic:notEmpty name="collection_2">
+	<table class="NEXUS_TABLE" width="100%">
+		<tr>
+			<th class="NEXUSSection">Severity</th>
+			<th class="NEXUSSection">Issued Date</th>
+			<th class="NEXUSSection">Description</th>
+			<th class="NEXUSSection">Origin</th>
+			<th class="NEXUSSection">Class Name</th>
+			<th class="NEXUSSection">Method Name</th>
+		</tr>
+
+		<logic:iterate indexId="counter" id="conv" name="collection_2">
+			<tr>
+				<td class="NEXUSValue"><bean:write name="conv"
+					property="severity" /></td>
+				<td class="NEXUSValue"><bean:write name="conv"
+					property="issuedDate" /></td>
+				<td class="NEXUSValue"><bean:write name="conv"
+					property="description" /></td>
+				<td class="NEXUSValue"></td>
+				<td class="NEXUSValue"><bean:write name="conv"
+					property="className" /></td>
+				<td class="NEXUSValue"><bean:write name="conv"
+					property="methodName" /></td>
+			</tr>
+		</logic:iterate>
+	</table>
+</logic:notEmpty>
+
+
 </center>

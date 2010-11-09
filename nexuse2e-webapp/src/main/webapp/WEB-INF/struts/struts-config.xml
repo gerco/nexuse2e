@@ -62,6 +62,7 @@
     <form-bean name="patchManagementForm" type="org.nexuse2e.ui.form.PatchManagementForm"></form-bean>
     
     <form-bean name="databasePurgeForm" type="org.nexuse2e.ui.form.DatabasePurgeForm"/>
+    <form-bean name="groovyShellForm" type="org.nexuse2e.ui.form.GroovyShellForm"/>
     <form-bean name="mappingMaintenanceForm" type="org.nexuse2e.ui.form.MappingMaintenanceForm"/>
 
     <form-bean name="persistentPropertiesForm" type="org.nexuse2e.ui.form.PersistentPropertiesForm"/>
@@ -481,6 +482,10 @@
 
     <action path="/DatabasePurge" name="databasePurgeForm" type="org.nexuse2e.ui.action.tools.DatabasePurgeAction">
       <forward name="success" path="/WEB-INF/pages/tools/database_purge.jsp"/>
+    </action>
+    
+    <action path="/GroovyShell" name="groovyShellForm" type="org.nexuse2e.ui.action.tools.GroovyShellAction">
+      <forward name="success" path="/WEB-INF/pages/tools/groovy_shell.jsp"/>
     </action>
     
     <action path="/MappingMaintenance" name="mappingMaintenanceForm" type="org.nexuse2e.ui.action.tools.MappingMaintenanceAction">

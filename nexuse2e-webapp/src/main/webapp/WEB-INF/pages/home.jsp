@@ -72,8 +72,12 @@
 		<td class="NEXUSNameNoWidth"><a href="html/lgpl.html" target="#blank">GNU Lesser General Public License</a> (LGPL), Version 2.1</td>
 	</tr>
 	<tr>
-		<td class="NEXUSNameNoWidth">Default Charset Encoding</td>
+		<td class="NEXUSNameNoWidth">JVM Charset Encoding</td>
 		<td class="NEXUSNameNoWidth"><%= java.nio.charset.Charset.defaultCharset().name() %></td>
+	</tr>
+	<tr>
+		<td class="NEXUSNameNoWidth">NEXUSe2e Charset Encoding</td>
+		<td class="NEXUSNameNoWidth"><%= org.nexuse2e.Engine.getInstance().getDefaultCharEncoding() %></td>
 	</tr>
 </table>
 
