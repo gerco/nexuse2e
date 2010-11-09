@@ -373,7 +373,7 @@ public class MessageContext implements Serializable {
      */
     public String getEncoding() {
     	if(getParticipant() != null ) {
-    		return getParticipant().getCharEncoding();
+    		return getParticipant().getDefaultEncoding();
     	} else {
     		return Engine.getInstance().getDefaultCharEncoding();
     	}
