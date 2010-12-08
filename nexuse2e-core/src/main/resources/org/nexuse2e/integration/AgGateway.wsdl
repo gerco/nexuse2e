@@ -71,7 +71,7 @@
 		<part name="parameters" element="tns:inboundData"/>
 	</message>
 	<message name="DocExchangeOutput">
-		<part name="result" type="tns:outboundData"/>
+		<part name="result" element="tns:outboundData"/>
 	</message>
 	<message name="DocExchangeFault">
 		<part name="problem" type="xsd:string"/>
