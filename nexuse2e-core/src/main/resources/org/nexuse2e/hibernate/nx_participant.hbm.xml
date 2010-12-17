@@ -64,6 +64,12 @@
             </column>
         </property>
         
+        <property name="charEncoding" type="string">
+            <column name="char_encoding" length="8" >
+                <comment></comment>
+            </column>
+        </property>
+        
         
     </class>
 </hibernate-mapping>
