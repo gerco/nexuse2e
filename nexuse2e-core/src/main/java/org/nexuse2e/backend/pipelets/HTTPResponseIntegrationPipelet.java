@@ -19,6 +19,7 @@
  */
 package org.nexuse2e.backend.pipelets;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -26,9 +27,10 @@ import org.apache.log4j.Logger;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.backend.pipelets.helper.RequestResponseData;
 import org.nexuse2e.backend.pipelets.helper.ResponseSender;
+import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
-import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.MessagePayloadPojo;
 
@@ -115,7 +117,11 @@ public class HTTPResponseIntegrationPipelet extends HTTPIntegrationPipelet {
             if ( iterator.hasNext() ) {
                 MessagePayloadPojo payload = iterator.next();
                 if ( ( payload != null ) && ( payload.getPayloadData() != null ) ) {
-                    requestResponseData.setRequestString( new String( payload.getPayloadData() ) );
+                    try {
+						requestResponseData.setRequestString( new String( payload.getPayloadData(), messageContext.getEncoding() ) );
+					} catch (UnsupportedEncodingException e) {
+						throw new NexusException(new LogMessage("configured encoding '"+messageContext.getEncoding()+"' is not supported",messageContext),e);
+					}
                 }
             }
         }
