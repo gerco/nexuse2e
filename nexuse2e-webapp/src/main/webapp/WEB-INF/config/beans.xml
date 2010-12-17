@@ -96,6 +96,7 @@
     <property name="lenientBackendStateMachine" value="${engine.lenientBackendStateMachine}" />
     <property name="transactionService" ref="transactionService" />
     <property name="configDao" ref="configDao" />
+    <property name="defaultCharEncoding" value="${default.charEncoding}" />
   </bean>
 
   <!-- RMI  -->
