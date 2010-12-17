@@ -48,7 +48,6 @@ public class MessageSubmissionForm extends ActionForm {
     private String            primaryKey       = null;
     private String            conversationId   = null;
     private boolean           sendFollowUp     = false;
-    private String            encoding         = null;
     private int               repeat           = 1;
     private FormFile          payloadFile1     = null;
     private FormFile          payloadFile2     = null;
@@ -262,28 +261,25 @@ public class MessageSubmissionForm extends ActionForm {
         this.payloadFile3 = payloadFile3;
     }
 
+    /**
+     * @return
+     */
     public List<String> getEncodings() {
 
         return encodings;
     }
 
+    /**
+     * @param encodings
+     */
     public void setEncodings( List<String> encodings ) {
 
         this.encodings = encodings;
     }
-
     
-    public String getEncoding() {
-    
-        return encoding;
-    }
-
-    
-    public void setEncoding( String encoding ) {
-    
-        this.encoding = encoding;
-    }
-    
+    /* (non-Javadoc)
+     * @see org.apache.struts.action.ActionForm#reset(org.apache.struts.action.ActionMapping, javax.servlet.http.HttpServletRequest)
+     */
     public void reset( ActionMapping mapping, HttpServletRequest request ) {
         super.reset( mapping, request );
         setSendFollowUp( false );
