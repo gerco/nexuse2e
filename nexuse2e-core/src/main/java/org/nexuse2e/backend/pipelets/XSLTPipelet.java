@@ -36,14 +36,14 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.digester.Digester;
 import org.apache.log4j.Logger;
-import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
+import org.nexuse2e.NexusException;
 import org.nexuse2e.backend.pipelets.helper.PartnerSpecificConfiguration;
 import org.nexuse2e.backend.pipelets.helper.PartnerSpecificConfigurations;
 import org.nexuse2e.backend.pipelets.helper.RequestResponseData;
+import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
-import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
@@ -180,7 +180,8 @@ public class XSLTPipelet extends AbstractPipelet {
                 List<MessagePayloadPojo> payloads = messageContext.getMessagePojo().getMessagePayloads();
                 for (MessagePayloadPojo messagePayloadPojo : payloads) {
                     ByteArrayInputStream bais = new ByteArrayInputStream( messagePayloadPojo.getPayloadData() );
-                    messagePayloadPojo.setPayloadData( transformXML( new StreamSource( bais ), streamSource, map ) );
+                    byte[] result = transformXML( new StreamSource( bais ), streamSource, map );
+                    messagePayloadPojo.setPayloadData( result );
                 }
 
             } else {
@@ -253,6 +254,9 @@ public class XSLTPipelet extends AbstractPipelet {
                     }
                 }
             }
+            
+            
+            
             transformer.transform( xmlSource, new StreamResult( baos ) );
 
             result = baos.toByteArray();
