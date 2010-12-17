@@ -110,14 +110,7 @@ public class MessageSubmissionAction extends NexusE2EAction {
         }
         form.setActions( actions );
         form.setReceivers( receiverList );
-        ArrayList<String> encodings = new ArrayList<String>();
-        encodings.add( "UTF-8" );
-        encodings.add( "ISO-8859-1" );
-        encodings.add( "UTF-16" );
-        encodings.add( "UTF-16LE" );
-        encodings.add( "UTF-16BE" );
-        encodings.add( "US-ASCII" );
-        form.setEncodings( encodings );
+        
 
         // Check whether we need to submit the message(s)
         if ( SUBMIT_BUTTON.equals( request.getParameter( SUBMIT_BUTTON ) ) ) {
@@ -165,15 +158,11 @@ public class MessageSubmissionAction extends NexusE2EAction {
                         if (conversations != null && i < conversations.size()) {
                             convId = conversations.get( i ).getConversationId();
                         }
-                        String encoding = form.getEncoding();
-                        if ( encoding == null ) {
-                            encoding = "UTF-8";
-                        }
                         
-                        String payloadString = new String( payload1.getFileData(), encoding );
+                        
                         Engine.getInstance().getCurrentConfiguration().getBackendPipelineDispatcher().processMessage(
                                 partner.getPartnerId(), choreographyId, action, convId, label, null,
-                                payloadString.getBytes() );
+                                payload1.getFileData() );
                         // Set primaryKey for UI confirmation message
                         primaryKey = payload1.getFileName();
                     } else {
