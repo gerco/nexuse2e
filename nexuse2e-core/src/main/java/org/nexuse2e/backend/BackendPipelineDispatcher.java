@@ -19,6 +19,7 @@
  */
 package org.nexuse2e.backend;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -27,12 +28,16 @@ import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.AutoDetectParser;
+import org.apache.tika.parser.Parser;
+import org.apache.tika.sax.BodyContentHandler;
 import org.nexuse2e.ActionSpecificKey;
 import org.nexuse2e.Constants;
+import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Engine;
 import org.nexuse2e.Manageable;
 import org.nexuse2e.NexusException;
-import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.IdGenerator;
 import org.nexuse2e.logging.LogMessage;
@@ -44,6 +49,9 @@ import org.nexuse2e.pojo.MessageLabelPojo;
 import org.nexuse2e.pojo.MessagePayloadPojo;
 import org.nexuse2e.pojo.MessagePojo;
 import org.springframework.beans.factory.InitializingBean;
+import org.xml.sax.ContentHandler;
+
+import com.ibm.icu.text.CharsetDetector;
 
 /**
  * @author gesch
@@ -255,8 +263,24 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
                     // init payload pojo
                     messagePayloadPojo.setMessage( messagePojo );
                     if ( StringUtils.isEmpty( messagePayloadPojo.getMimeType() ) ) {
-                        // TODO: MIME type must be determined!
-                        messagePayloadPojo.setMimeType( "text/xml" );
+						String mimetype = null;
+                    	try {
+							ContentHandler contenthandler = new BodyContentHandler();
+							Metadata metadata = new Metadata();
+							Parser parser = new AutoDetectParser();
+							ByteArrayInputStream bias = new ByteArrayInputStream( messagePayloadPojo.getPayloadData() );
+                            parser.parse( bias, contenthandler, metadata, null );
+                            
+                            mimetype = metadata.get( Metadata.CONTENT_TYPE );
+                            LOG.trace(new LogMessage("autodetermined mimetype: "+mimetype,messageContext));
+                            if(!Engine.getInstance().isBinaryType( mimetype )) {
+                                CharsetDetector detector = new CharsetDetector();
+                                detector.setText( messagePayloadPojo.getPayloadData() );
+                            }
+                        } catch ( Exception e ) {
+                            throw new NexusException( new LogMessage( "mime detection failed: "+e.getMessage(),messageContext),e);
+						} 
+                    	messagePayloadPojo.setMimeType(mimetype );
                     }
                     if ( StringUtils.isEmpty( messagePayloadPojo.getContentId() ) ) {
                         if ( StringUtils.isEmpty( contentId ) ) {
