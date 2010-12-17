@@ -20,6 +20,7 @@
 package org.nexuse2e.messaging.cidx;
 
 import java.io.ByteArrayInputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,6 +31,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.log4j.Logger;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.MessagePayloadPojo;
@@ -98,7 +100,7 @@ public class CIDXDummyHeaderBuilder extends AbstractPipelet {
 
             LOG.debug( "CIDXDummyHeaderBuilder.processMessage triggered... " );
 
-            String payload = new String( (byte[])messageContext.getData() );
+            String payload = new String( (byte[])messageContext.getData(),messageContext.getEncoding() );
 
             LOG.debug( "CIDXDummyHeaderBuilder.processMessage - payload:\n" + payload );
             MessagePayloadPojo messagePayloadPojo = new MessagePayloadPojo();
@@ -114,10 +116,10 @@ public class CIDXDummyHeaderBuilder extends AbstractPipelet {
 
             messagePojo.setMessagePayloads( payloads );
         } catch ( XMLStreamException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            throw new NexusException( "Error processing inbound CIDX message: " + e, e );
-        }
+            throw new NexusException( new LogMessage( "Error processing inbound CIDX message: " + e, messageContext), e );
+        } catch (UnsupportedEncodingException e) {
+        	throw new NexusException( new LogMessage( "the configured encoding '"+messageContext.getEncoding()+"' is not supported", messageContext), e );
+		}
 
         return messageContext;
     }
