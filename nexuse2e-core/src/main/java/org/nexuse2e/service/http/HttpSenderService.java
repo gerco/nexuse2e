@@ -19,6 +19,9 @@
  */
 package org.nexuse2e.service.http;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.security.KeyStore;
@@ -33,18 +36,18 @@ import org.apache.commons.httpclient.URI;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
+import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.log4j.Logger;
+import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
-import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.Constants;
-import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.CertificatePojo;
@@ -183,7 +186,7 @@ public class HttpSenderService extends AbstractService implements SenderAware {
             String httpReply = null;
 
             if ( LOG.isTraceEnabled() ) {
-                LOG.trace( new LogMessage("HTTP Message Data:\n" + new String( (byte[]) messageContext.getData() ),messageContext.getMessagePojo()) );
+                LOG.trace( new LogMessage("HTTP Message Data:\n" + new String( (byte[]) messageContext.getData() ),messageContext) );
             }
 
             // Support for HTTP plain
@@ -218,6 +221,11 @@ public class HttpSenderService extends AbstractService implements SenderAware {
                  */
 
                 // LOG.trace( "********* NEW Content-Type:" + contentTypeString );
+                
+                
+                
+                
+                
                 RequestEntity requestEntity = new ByteArrayRequestEntity( (byte[]) messageContext.getData(),
                         "Content-Type:" + contentTypeString );
 
@@ -244,7 +252,8 @@ public class HttpSenderService extends AbstractService implements SenderAware {
                 uri.setQuery( uriParams.toString() );
                 method.setURI( uri );
                 LOG.debug(new LogMessage( "URI: " + uri,messageContext.getMessagePojo()) );
-                method.setRequestEntity( new StringRequestEntity( new String( (byte[]) messageContext.getData() ) ) );
+                // TODO (encoding) http plain should use ByteArrayRequestEntity / InputStreamRequestEnity? Content Type ?
+                method.setRequestEntity( new ByteArrayRequestEntity( (byte[]) messageContext.getData() ) );
             } else {
                 RequestEntity requestEntity = new ByteArrayRequestEntity( (byte[]) messageContext.getData(), "text/xml" );
                 method.setRequestEntity( requestEntity );
