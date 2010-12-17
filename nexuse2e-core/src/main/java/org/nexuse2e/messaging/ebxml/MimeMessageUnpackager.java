@@ -105,8 +105,11 @@ public class MimeMessageUnpackager extends AbstractPipelet {
         return messageContext;
     }
 
-   
-
+    /**
+     * @param message
+     * @return
+     * @throws NexusException
+     */
     private List<MessagePayloadPojo> getDataFromMailMsg( Message message ) throws NexusException {
 
         RecipientId recipientId = null;
