@@ -121,14 +121,6 @@
 			<td class="NEXUSName">Repeat</td>
 			<td class="NEXUSValue"><html:text property="repeat" size="5" onkeypress="return checkKey(event);"/></td>
 		</tr>
-		<tr>
-			<td class="NEXUSName">Encoding</td>
-			<td class="NEXUSValue">
-			<html:select property="encoding">
-			<html:options property="encodings" labelProperty="encodings" />
-			</html:select>
-			</td>
-		</tr>
   </table>
 
 	<table class="NEXUS_BUTTON_TABLE" width="100%">
