@@ -161,5 +161,5 @@ abstract public class AbstractPipelet implements Pipelet {
     public void setPipeline( Pipeline pipeline ) {
         this.pipeline = pipeline;
     }
-
+    
 }
