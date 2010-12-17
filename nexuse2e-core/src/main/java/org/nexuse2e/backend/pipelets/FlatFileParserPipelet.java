@@ -144,8 +144,7 @@ public class FlatFileParserPipelet extends AbstractPipelet {
 
         try {
             for ( MessagePayloadPojo messagePayloadPojo : messageContext.getMessagePojo().getMessagePayloads() ) {
-                String contentString = new String( messagePayloadPojo.getPayloadData() );
-                ByteArrayInputStream bias = new ByteArrayInputStream( contentString.getBytes() );
+                ByteArrayInputStream bias = new ByteArrayInputStream( messagePayloadPojo.getPayloadData() );
 
                 LOG.debug( "Partner specific configuration: " + partnerSpecific + "( " + this + " )" );
                 if ( partnerSpecific ) {
@@ -165,9 +164,9 @@ public class FlatFileParserPipelet extends AbstractPipelet {
                 result = theFlatFileParser.process( bias );
 
                 if ( LOG.isTraceEnabled() ) {
-                    LOG.trace(new LogMessage(  "....................",messageContext.getMessagePojo()) );
-                    LOG.trace( new LogMessage( result.toString(), messageContext.getMessagePojo()) );
-                    LOG.trace( new LogMessage( "....................",messageContext.getMessagePojo()) );
+                    LOG.trace(new LogMessage(  "....................",messageContext ) );
+                    LOG.trace( new LogMessage( result.toString(), messageContext ) );
+                    LOG.trace( new LogMessage( "....................",messageContext) );
                 }
 
                 messageContext.setData( result );
