@@ -59,7 +59,10 @@
 		<Handler MimeType="image/gif">
 			<Class>org.nexuse2e.messaging.mime.binary_base64</Class>
 		</Handler>
-		<Handler MimeType="image/jpeg">
+		<Handler MimeType="image/gif">
+			<Class>org.nexuse2e.messaging.mime.binary_base64</Class>
+		</Handler>
+		<Handler MimeType="image/png">
 			<Class>org.nexuse2e.messaging.mime.binary_base64</Class>
 		</Handler>
 		<Handler MimeType="image/gif">
@@ -108,6 +111,10 @@
 			<FileType>zip</FileType>
 			<FileType>ZIP</FileType>
 		</MimeMapping>
+		<MimeMapping MimeType="application/zip">
+			<FileType>zip</FileType>
+			<FileType>ZIP</FileType>
+		</MimeMapping>
 		<MimeMapping MimeType="application/msword">
 			<FileType>doc</FileType>
 			<FileType>DOC</FileType>
@@ -153,6 +160,10 @@
 		<MimeMapping MimeType="image/jpeg">
 			<FileType>jpg</FileType>
 			<FileType>JPG</FileType>
+		</MimeMapping>
+		<MimeMapping MimeType="image/png">
+			<FileType>png</FileType>
+			<FileType>PNG</FileType>
 		</MimeMapping>
 		<MimeMapping MimeType="application/msword">
 			<FileType>doc</FileType>
