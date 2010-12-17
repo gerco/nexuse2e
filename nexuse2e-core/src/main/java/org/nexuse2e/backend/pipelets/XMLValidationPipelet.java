@@ -19,10 +19,10 @@
  */
 package org.nexuse2e.backend.pipelets;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -38,17 +38,18 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.digester.Digester;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.nexuse2e.Engine;
-import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Severity;
+import org.nexuse2e.Engine;
+import org.nexuse2e.NexusException;
 import org.nexuse2e.backend.pipelets.helper.PartnerSpecificConfiguration;
 import org.nexuse2e.backend.pipelets.helper.PartnerSpecificConfigurations;
+import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
-import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.ErrorDescriptor;
@@ -172,17 +173,20 @@ public class XMLValidationPipelet extends AbstractPipelet {
 
             for ( MessagePayloadPojo payload : messageContext.getMessagePojo().getMessagePayloads() ) {
                 if ( payload.getPayloadData() != null && payload.getPayloadData().length > 0 ) {
-                    String doc = new String( payload.getPayloadData() );
-                    if ( doc == null || doc.length() == 0 ) {
+                    
+                    if ( ArrayUtils.isEmpty(payload.getPayloadData()) ) {
                         continue;
-                    } else {
-                        LOG.debug( new LogMessage( ">>> start doc <<<" ,messageContext.getMessagePojo()));
-                        LOG.debug( new LogMessage( "doc: " + doc,messageContext.getMessagePojo()) );
+                    } 
+                	
+                    if(LOG.isDebugEnabled()) {
+                		String doc = new String( payload.getPayloadData(), messageContext.getEncoding() );
+                        LOG.debug( new LogMessage( ">>> start doc (prolog is not analysed for debug output) <<<" ,messageContext.getMessagePojo()));
+                        LOG.debug( new LogMessage( "doc: " + doc, messageContext.getMessagePojo()) );
                         LOG.debug( new LogMessage( ">>> end doc <<<",messageContext.getMessagePojo()) );
                     }
                     Document document = null;
                     try {
-                        document = builder.parse( new InputSource( new StringReader( doc ) ) );
+                        document = builder.parse( new InputSource( new ByteArrayInputStream( payload.getPayloadData() ) ) );
                     } catch ( Exception e ) {
                         e.printStackTrace();
 
