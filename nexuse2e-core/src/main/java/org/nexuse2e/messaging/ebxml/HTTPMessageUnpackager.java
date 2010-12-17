@@ -20,9 +20,9 @@
 package org.nexuse2e.messaging.ebxml;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,6 +35,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.ParameterDescriptor;
@@ -107,11 +108,12 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
                 LOG.trace(new LogMessage(  new String( packedMessage ),messagePojo) );
                 LOG.trace(new LogMessage(  "--------------",messagePojo) );
             }
+            
+            
             byte[] bodyPart = null;
             List<MessagePayloadPojo> payloads = new ArrayList<MessagePayloadPojo>();
 
             MimeBodyPart[] messageBodyParts = decode( packedMessage );
-
             MimeBodyPart headerMimeBodyPart = messageBodyParts[0];
 
             String msgHdr = (String) headerMimeBodyPart.getContent();
@@ -130,15 +132,23 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
                 if ( bodyPartContent instanceof ByteArrayInputStream ) {
                     ByteArrayInputStream contentIS = (ByteArrayInputStream) bodyPartContent;
                     if ( isBinaryType( mimeBodyPart.getContentType() ) ) {
+                    	LOG.trace(new LogMessage("extracting binary content",messageContext));
                         bodyPart = retrieveBinaryContent( contentIS );
                     } else {
+                    	LOG.trace(new LogMessage("extracting text content",messageContext));
                         bodyPart = retrieveContent( contentIS );
                     }
                 } else {
+                	
+                	LOG.trace("BodyPart Mimetype: "+mimeBodyPart.getContentType());
+                	
                     if ( isBinaryType( mimeBodyPart.getContentType() ) ) {
-                        bodyPart = (byte[]) ( bodyPartContent );
+                    	// TODO decode( packedMessage ) seems to encrypt the content for some reason
+                    	bodyPart = Base64.decodeBase64(Base64.decodeBase64((byte[]) ( bodyPartContent )));
                     } else {
-                        bodyPart = ( (String) bodyPartContent ).getBytes();
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        IOUtils.copy( mimeBodyPart.getInputStream(), baos );
+                        bodyPart = baos.toByteArray();
                     }
                 }
 
@@ -234,8 +244,7 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
      */
     private final byte[] retrieveBinaryContent( InputStream newInputStream ) throws Exception {
 
-        byte[] returnBuffer = Base64.decodeBase64( retrieveContent( newInputStream ) );
-        return returnBuffer;
+    	return Base64.decodeBase64( retrieveContent( newInputStream ) );
     }
 
     /**
@@ -244,31 +253,12 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
      */
     private final byte[] retrieveContent( InputStream newInputStream ) throws Exception {
 
-        char buf[] = retrieveCharArray( newInputStream );
-        return new String( buf ).getBytes();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        IOUtils.copy(newInputStream, baos);
+        return baos.toByteArray();
     }
 
-    /**
-     * Retrieve a character array from an InputStream.
-     * @param newInputStream
-     */
-    private final char[] retrieveCharArray( InputStream newInputStream ) throws Exception {
-
-        InputStreamReader is = new InputStreamReader( newInputStream );
-        int pos = 0;
-        int count;
-        char buf[] = new char[1024];
-
-        while ( ( count = is.read( buf, pos, 1024 ) ) != -1 ) {
-            pos += count;
-            char tbuf[] = new char[pos + 1024];
-            System.arraycopy( buf, 0, tbuf, 0, pos );
-            buf = tbuf;
-        }
-
-        return buf;
-    }
-
+    
     public void afterPropertiesSet() throws Exception {
 
         // TODO Auto-generated method stub
