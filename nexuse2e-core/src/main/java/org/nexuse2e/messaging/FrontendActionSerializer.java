@@ -322,7 +322,7 @@ public class FrontendActionSerializer implements Manageable {
                             
                             messageContext.getStateMachine().processedBackend();
                         } catch ( NexusException nex ) {
-                            LOG.error( "InboundQueueListener.run detected an exception: ", nex );
+                            LOG.error( new LogMessage("InboundQueueListener.run detected an exception: "+nex.getMessage(), messageContext),nex );
                             try {
                                 messageContext.getStateMachine().processingFailed();
                             } catch (StateTransitionException e) {
