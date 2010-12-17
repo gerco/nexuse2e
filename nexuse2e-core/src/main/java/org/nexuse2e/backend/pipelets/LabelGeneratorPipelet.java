@@ -20,6 +20,7 @@
 
 package org.nexuse2e.backend.pipelets;
 
+import java.io.ByteArrayInputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Date;
@@ -153,9 +154,8 @@ public class LabelGeneratorPipelet extends AbstractPipelet {
 
             for ( MessagePayloadPojo payload : messageContext.getMessagePojo().getMessagePayloads() ) {
                 if ( payload.getPayloadData() != null && payload.getPayloadData().length > 0 ) {
-                    String doc = new String( payload.getPayloadData() );
                     // find labels/label values
-                    Document document = builder.parse( new InputSource( new StringReader( doc ) ) );
+                    Document document = builder.parse( new InputSource( new ByteArrayInputStream(payload.getPayloadData() ) ) );
                     SortedSet<String> keys = new TreeSet<String>( labelDefinitions.keySet() );
                     for ( Iterator<String> iter = keys.iterator(); iter.hasNext(); ) {
                         String label = (String) iter.next();
