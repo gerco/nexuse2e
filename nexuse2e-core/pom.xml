@@ -321,6 +321,7 @@
      <version>3.2.4</version>
      <scope>compile</scope>
    </dependency>
+   <!-- 
    <dependency>
      <groupId>stax</groupId>
      <artifactId>stax-api</artifactId>
@@ -333,6 +334,7 @@
      <version>20040917</version>
      <scope>compile</scope>
    </dependency>
+    -->
    <dependency>
      <groupId>org.apache.incubator</groupId>
      <artifactId>ftpserver</artifactId>
@@ -451,6 +453,10 @@
          <groupId>org.springframework</groupId>
          <artifactId>spring</artifactId>
        </exclusion>
+       <exclusion>
+         <groupId>org.apache.geronimo.specs</groupId>
+         <artifactId>geronimo-javamail_1.4_spec</artifactId>
+       </exclusion>
      </exclusions>
    </dependency>
     <dependency>
@@ -545,6 +551,13 @@
      <version>1.7</version>
      <scope>test</scope>
    </dependency>
+  
+   <dependency>
+    <groupId>org.apache.tika</groupId>
+    <artifactId>tika-core</artifactId>
+    <version>0.8</version>
+   </dependency>
+   
  </dependencies>
  <!-- build -->
  <build>
@@ -555,7 +568,6 @@
        <artifactId>maven-jar-plugin</artifactId>
        <version>2.3.1</version>
        <configuration>
-         <finalName>nexuse2e</finalName>
          <archive>
            <index>true</index>
            <manifest>
@@ -661,7 +673,9 @@
        <groupId>org.apache.cxf</groupId>
        <artifactId>cxf-codegen-plugin</artifactId>
        <version>2.1.2</version>
+       
        <dependencies>
+       				
 					<!--
 						need to add this to get around the following error on IBM's JDK
 						org.apache.xerces.impl.dv.DVFactoryException: DTD factory class
