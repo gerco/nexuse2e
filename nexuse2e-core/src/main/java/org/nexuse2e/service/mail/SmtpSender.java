@@ -380,6 +380,7 @@ public class SmtpSender extends AbstractService implements SenderAware {
                     mimeBodyPart.setContent( new String( payload.getPayloadData() ), "text/xml" );
                     mimeBodyPart.setHeader( "Content-Type", "text/xml; charset=UTF-8" );
                 } else {
+                	// TODO (encoding) should be byte[], not string ?
                     mimeBodyPart.setContent( new String( payload.getPayloadData() ), payload.getMimeType() );
                 }
 
