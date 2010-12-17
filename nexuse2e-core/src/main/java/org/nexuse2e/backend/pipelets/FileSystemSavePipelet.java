@@ -106,13 +106,9 @@ public class FileSystemSavePipelet extends AbstractPipelet {
                 String fileName = writePayloadToUniqueFile( tempDirectory, payload, messageContext );
                 LOG.trace( new LogMessage( "Wrote output file: " + fileName.toString(),messageContext.getMessagePojo()) );
             } catch ( FileNotFoundException e ) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-                throw new NexusException( "Could not create output file in target directory: " + targetDirectory, e );
+                throw new NexusException( new LogMessage( "Could not create output file in target directory: " + targetDirectory, messageContext), e );
             } catch ( IOException e ) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-                throw new NexusException( "Could not create output file in target directory: " + targetDirectory, e );
+                throw new NexusException( new LogMessage( "Could not create output file in target directory: " + targetDirectory, messageContext), e );
             }
         }
 
