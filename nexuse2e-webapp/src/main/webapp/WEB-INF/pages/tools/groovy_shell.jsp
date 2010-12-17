@@ -46,9 +46,9 @@
 	enctype="multipart/form-data">
 	
 
-	<html:textarea rows="10" property="script" value="${groovyShellForm.script}" cols="70" />
+	<html:textarea rows="5" property="script" value="${groovyShellForm.script}" cols="70" />
 	</br></br>
-	<html:textarea rows="5" property="response" value="${groovyShellForm.response}" readonly="true" cols="70" />
+	<html:textarea rows="15" property="response" value="${groovyShellForm.response}" readonly="true" cols="70" />
 	<table class="NEXUS_BUTTON_TABLE" width="100%">
 		<tr>
 			<input name="type" value="blank" type="hidden">
