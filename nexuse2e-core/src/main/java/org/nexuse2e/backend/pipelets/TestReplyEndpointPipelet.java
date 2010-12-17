@@ -26,12 +26,14 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.backend.pipelets.helper.RequestResponseData;
@@ -43,6 +45,7 @@ import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.MessagePayloadPojo;
+
 
 public class TestReplyEndpointPipelet extends AbstractPipelet {
 
@@ -143,7 +146,7 @@ public class TestReplyEndpointPipelet extends AbstractPipelet {
 
     public MessageContext processMessage( MessageContext messageContext ) throws NexusException {
 
-        LOG.debug( "Entered TestReplyEndpointPipelet.processMessage..." );
+        LOG.debug( new LogMessage("Entered TestReplyEndpointPipelet.processMessage...",messageContext) );
         RequestResponseData requestResponseData = null;
         String requestString = null;
 
@@ -158,35 +161,39 @@ public class TestReplyEndpointPipelet extends AbstractPipelet {
                 }
             }
 
-            if ( ( messagePayloadPojo != null ) && ( messagePayloadPojo.getPayloadData() != null ) ) {
-                if ( useOriginalMessage ) {
-                    List<MessagePayloadPojo> messagePayloadPojos = messageContext.getOriginalMessagePojo()
-                            .getMessagePayloads();
-                    Iterator<MessagePayloadPojo> iterator = messagePayloadPojos.iterator();
-                    if ( iterator.hasNext() ) {
-                        MessagePayloadPojo payload = iterator.next();
-                        if ( ( payload != null ) && ( payload.getPayloadData() != null ) ) {
-                            requestString = new String( payload.getPayloadData() );
-                        }
-                    }
-                } else {
-                    requestString = new String( messagePayloadPojo.getPayloadData() );
-                }
+            try {
+				if ( ( messagePayloadPojo != null ) && ( messagePayloadPojo.getPayloadData() != null ) ) {
+				    if ( useOriginalMessage ) {
+				        List<MessagePayloadPojo> messagePayloadPojos = messageContext.getOriginalMessagePojo()
+				                .getMessagePayloads();
+				        Iterator<MessagePayloadPojo> iterator = messagePayloadPojos.iterator();
+				        if ( iterator.hasNext() ) {
+				            MessagePayloadPojo payload = iterator.next();
+				            if ( ( payload != null ) && ( payload.getPayloadData() != null ) ) {
+				                requestString = new String( payload.getPayloadData(), messageContext.getEncoding() );
+				            }
+				        }
+				    } else {
+				        requestString = new String( messagePayloadPojo.getPayloadData(), messageContext.getEncoding() );
+				    }
 
-                if ( ( fileContent != null ) && ( fileContent.length() != 0 ) ) {
-                    requestResponseData = new RequestResponseData( 0, fileContent, requestString );
-                } else {
-                    requestResponseData = new RequestResponseData( 0,
-                            new String( messagePayloadPojo.getPayloadData() ), requestString );
-                }
+				    if ( ( fileContent != null ) && ( fileContent.length() != 0 ) ) {
+				        requestResponseData = new RequestResponseData( 0, fileContent, requestString );
+				    } else {
+				        requestResponseData = new RequestResponseData( 0,
+				                new String( messagePayloadPojo.getPayloadData(), messageContext.getEncoding() ), requestString );
+				    }
 
-                // Trigger new response message
-                new Thread( new ResponseSender( messageContext.getChoreography().getName(), messageContext.getPartner()
-                        .getPartnerId(), messageContext.getConversation().getConversationId(), action,
-                        requestResponseData, delay ) ).start();
-            }
+				    // Trigger new response message
+				    new Thread( new ResponseSender( messageContext.getChoreography().getName(), messageContext.getPartner()
+				            .getPartnerId(), messageContext.getConversation().getConversationId(), action,
+				            requestResponseData, delay ) ).start();
+				}
+			} catch (UnsupportedEncodingException e) {
+				throw new NexusException(new LogMessage("configured encoding '"+ messageContext.getEncoding()+"' is not supported",messageContext),e);
+			}
         }
-        LOG.debug( "Done!" );
+        LOG.debug( new LogMessage("Done!", messageContext) );
 
         return messageContext;
     }
@@ -273,7 +280,7 @@ public class TestReplyEndpointPipelet extends AbstractPipelet {
         return fileName.toString();
     }
 
-    private String loadFile( File file ) {
+    private String loadFile( File file ) throws InstantiationException {
 
         String result = null;
 
@@ -308,12 +315,12 @@ public class TestReplyEndpointPipelet extends AbstractPipelet {
             bufferedInputStream.read( documentBuffer, 0, fileSize ); // Read the file content into the buffer
             bufferedInputStream.close();
 
-            result = new String( documentBuffer );
+            // TODO (encoding) while initializing pipelets only the engine encoding is available
+            result = new String( documentBuffer, Engine.getInstance().getDefaultCharEncoding() );
 
         } catch ( IOException ioEx ) { // Handle exceptions related to the file I/O
-            ioEx.printStackTrace();
-            LOG.error( "IOException: " + ioEx );
-        } // try/catch
+            throw new InstantiationException("filesystem access failed. "+ioEx.getMessage());
+        } 
 
         return result;
     }
