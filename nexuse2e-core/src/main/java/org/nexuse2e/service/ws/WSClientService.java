@@ -133,6 +133,7 @@ public class WSClientService extends AbstractService implements SenderAware {
 
             for ( MessagePayloadPojo payload : messageContext.getMessagePojo().getMessagePayloads() ) {
                 LOG.trace( "Calling web service at: " + receiverURL );
+                // TODO (encoding) WS service doesnt support binary ?
                 theXmlDocumentService.processXmlDocument( messagePojo.getConversation().getChoreography().getName(),
                         messageContext.getActionSpecificKey().getActionId(), messagePojo.getParticipant()
                                 .getLocalPartner().getPartnerId(), messagePojo.getConversation().getConversationId(),
