@@ -106,6 +106,7 @@ public class BackendDeliveryWSClientPipelet extends AbstractPipelet {
         List<MessagePayloadPojo> payloadPojos = messageContext.getMessagePojo().getMessagePayloads();
         String payload = null;
         if ( !payloadPojos.isEmpty() ) {
+        	// TODO (encoding) encoding for webservice content ?
             payload = new String( payloadPojos.get( 0 ).getPayloadData() );
         }
         String actionId = null;
