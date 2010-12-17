@@ -19,6 +19,9 @@
  */
 package org.nexuse2e.messaging.ebxml;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +29,9 @@ import java.util.Map;
 import javax.mail.internet.ParseException;
 import javax.xml.soap.SOAPException;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
+import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.AbstractPipelet;
@@ -96,6 +101,7 @@ public class HTTPMessagePackager extends AbstractPipelet {
 
         String soapId = getSOAPId( messagePojo );
         String hdrContentId = "Content-ID: " + soapId;
+        // TODO (encoding) which encoding is used for headers ?
         String ebXMLHeader = new String( messagePojo.getHeaderData() );
 
         StringBuffer msgBuffer = new StringBuffer();
@@ -119,18 +125,19 @@ public class HTTPMessagePackager extends AbstractPipelet {
                 msgBuffer.append( payloadContentID + CRLF );
                 msgBuffer.append( "Content-Type: " + payloadPojo.getMimeType() + CRLF + CRLF );
 
-                // TODO is Binary !!!
-                //               if ( bodyPartPojo.get.isBinaryType() ) {
-                //                   msgBuffer.append( Base64.encode( newPayload.getContent() ) + "\n" );
-                //               } else {
-                //                   // Get the payload as a string, from the database.
-                msgBuffer.append( new String( payloadPojo.getPayloadData() ) + CRLF );
-                //               }
+                
+                if(Engine.getInstance().isBinaryType(payloadPojo.getMimeType())) {
+                	LOG.trace(new LogMessage("using binary for mime type: "+payloadPojo.getMimeType()));
+                	msgBuffer.append( new String(Base64.encodeBase64( payloadPojo.getPayloadData() )) + "\n" );
+                } else {
+                	msgBuffer.append( new String( payloadPojo.getPayloadData() ) + "\n" );
+                }
+                
             }
         }
 
         msgBuffer.append( Constants.MIMEPACKBOUNDARY );
-
+        
         return msgBuffer.toString();
     }
 
@@ -141,6 +148,7 @@ public class HTTPMessagePackager extends AbstractPipelet {
 
         String soapId = getSOAPId( messagePojo );
         String hdrContentId = "Content-ID: " + soapId;
+        // TODO (encoding) which encoding is used for headers ?
         String ackHeader = new String( messagePojo.getHeaderData() );
 
         StringBuffer ackBuffer = new StringBuffer();
