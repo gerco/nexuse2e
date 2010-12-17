@@ -28,6 +28,8 @@
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
 <%@ taglib uri="/tags/struts-html-el" prefix="html-el"%>
 
+<%@page import="java.util.Calendar"%>
+
 <% /* <nexus:helpBar /> */ %>
 
 <center><script language="JavaScript" type="text/javascript">
@@ -57,13 +59,17 @@
                 <td class="NEXUSValue">Start Date <html:checkbox property="startEnabled"/></td>
                 <td class="NEXUSValue" align="left">
                 <html:select property="startYear">
-                    <html:option value="2009"/>
-                    <html:option value="2008"/>
-                    <html:option value="2007"/>
-                    <html:option value="2006"/>
-                    <html:option value="2005"/>
-                    <html:option value="2004"/>
-                    <html:option value="2003"/>
+                    <%
+					Calendar cal = Calendar.getInstance();
+					cal.add(Calendar.YEAR, 2);
+					for (int i = 0; i < 10; i++) {
+						request.setAttribute("year", new Integer(cal.get(Calendar.YEAR)));
+						cal.add(Calendar.YEAR, -1);
+					%>
+	                	<html-el:option value="${year}" />
+	                <%
+					}
+	                %>
                 </html:select>
                 <html:select property="startMonth">
                     <html:option value="01">January</html:option>
@@ -151,13 +157,17 @@
               <td class="NEXUSValue">End Date <html:checkbox property="endEnabled"/></td>
                 <td class="NEXUSValue" align="left">
                 <html:select property="endYear">
-                    <html:option value="2009"/>
-                    <html:option value="2008"/>
-                    <html:option value="2007"/>
-                    <html:option value="2006"/>
-                    <html:option value="2005"/>
-                    <html:option value="2004"/>
-                    <html:option value="2003"/>
+                    <%
+					Calendar cal = Calendar.getInstance();
+					cal.add(Calendar.YEAR, 2);
+					for (int i = 0; i < 10; i++) {
+						request.setAttribute("year", new Integer(cal.get(Calendar.YEAR)));
+						cal.add(Calendar.YEAR, -1);
+					%>
+	                	<html-el:option value="${year}" />
+	                <%
+					}
+	                %>
                 </html:select>
                 <html:select property="endMonth">
                     <html:option value="01">January</html:option>
