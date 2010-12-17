@@ -19,6 +19,7 @@
  */
 package org.nexuse2e.service.http;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -44,6 +45,7 @@ import javax.xml.soap.SOAPFault;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.soap.SOAPPart;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.nexuse2e.ClusterException;
 import org.nexuse2e.Engine;
@@ -103,6 +105,7 @@ public class HttpReceiverService extends AbstractControllerService implements Re
             if ( LOG.isTraceEnabled() ) {
                 LOG.trace( "Inbound message:\n" + new String( (byte[]) messageContext.getData() ) );
             }
+            
             messageContext.setMessagePojo( new MessagePojo() );
             messageContext.setOriginalMessagePojo( messageContext.getMessagePojo() );
             messageContext.getMessagePojo().setCustomParameters( new HashMap<String, String>() );
@@ -166,31 +169,26 @@ public class HttpReceiverService extends AbstractControllerService implements Re
 
     /**
      * @param request
-     * @param preBuffer
-     * @param preBufferLen
      * @return
      * @throws IOException
      */
     public byte[] getContentFromRequest( ServletRequest request ) throws IOException {
 
         int contentLength = request.getContentLength();
-        if ( contentLength < 0 ) {
+        if ( contentLength < 1 ) {
             throw new IOException( "No payload in HTTP request!" );
         }
-        byte bufferArray[] = new byte[contentLength];
-        ServletInputStream inputStream = request.getInputStream();
-        int offset = 0;
-        int restBytes = contentLength;
-
-        for ( int bytesRead = inputStream.readLine( bufferArray, offset, contentLength ); bytesRead != -1
-                && restBytes != 0; bytesRead = inputStream.readLine( bufferArray, offset, restBytes ) ) {
-            offset += bytesRead;
-            restBytes -= bytesRead;
-        }
-
-        return bufferArray;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        IOUtils.copy(request.getInputStream(), baos);
+        return baos.toByteArray();
     }
 
+    /**
+     * @param request
+     * @param response
+     * @param message
+     * @throws IOException
+     */
     private void createErrorResponse( HttpServletRequest request, HttpServletResponse response, String message )
             throws IOException {
 
