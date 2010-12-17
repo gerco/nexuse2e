@@ -149,8 +149,7 @@ public class FlatFileMappingPipelet extends AbstractPipelet {
         try {
             List<MessagePayloadPojo> payloads = messageContext.getMessagePojo().getMessagePayloads();
             for (MessagePayloadPojo messagePayloadPojo : payloads) {
-                String contentString = new String( messagePayloadPojo.getPayloadData() );
-                ByteArrayInputStream bias = new ByteArrayInputStream( contentString.getBytes() );
+                ByteArrayInputStream bias = new ByteArrayInputStream( messagePayloadPojo.getPayloadData() );
 
                 if ( isXMLInput ) {
                     ProcessXML processXML = new ProcessXML();
@@ -161,9 +160,9 @@ public class FlatFileMappingPipelet extends AbstractPipelet {
                 }
 
                 if ( LOG.isTraceEnabled() ) {
-                    LOG.trace( new LogMessage( "....................",messageContext.getMessagePojo()) );
-                    LOG.trace( new LogMessage( result, messageContext.getMessagePojo()) );
-                    LOG.trace( new LogMessage( "....................",messageContext.getMessagePojo()) );
+                    LOG.trace( new LogMessage( "....................",messageContext ) );
+                    LOG.trace( new LogMessage( result, messageContext ) );
+                    LOG.trace( new LogMessage( "....................",messageContext ) );
                 }
 
                 messagePayloadPojo.setPayloadData( result.getBytes() );
