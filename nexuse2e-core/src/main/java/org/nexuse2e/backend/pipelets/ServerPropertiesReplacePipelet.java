@@ -19,7 +19,10 @@
  */
 package org.nexuse2e.backend.pipelets;
 
+import java.io.UnsupportedEncodingException;
+
 import org.nexuse2e.NexusException;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.MessagePayloadPojo;
@@ -39,9 +42,13 @@ public class ServerPropertiesReplacePipelet extends AbstractPipelet {
             throws IllegalArgumentException, IllegalStateException, NexusException {
 
         for (MessagePayloadPojo payload : messageContext.getMessagePojo().getMessagePayloads()) {
-            String s = new String( payload.getPayloadData() );
-            s = ServerPropertiesUtil.replaceServerProperties( s, messageContext );
-            payload.setPayloadData( s.getBytes() );
+            try {
+				String s = new String( payload.getPayloadData(), messageContext.getEncoding() );
+				s = ServerPropertiesUtil.replaceServerProperties( s, messageContext );
+				payload.setPayloadData( s.getBytes( messageContext.getEncoding() ) );
+			} catch (UnsupportedEncodingException e) {
+				throw new NexusException(new LogMessage("configured encoding '"+messageContext.getEncoding()+"' is not supported",messageContext),e);
+			}
         }
         
         return messageContext;
