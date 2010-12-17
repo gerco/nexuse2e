@@ -592,12 +592,12 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
         MimeMapping tempMimeMapping = (MimeMapping) mimeMappings.get( contentType );
 
         if ( tempMimeMapping != null ) {
-            if ( tempMimeMapping.dataHandler.equalsIgnoreCase( binary_base64.class.getName() ) ) {
-                return true;
+            if (!tempMimeMapping.dataHandler.equalsIgnoreCase( binary_base64.class.getName() ) ) {
+                return false;
             }
         }
 
-        return false;
+        return true;
     }
 
     /**
