@@ -83,6 +83,7 @@ public class DBIntegrationPipelet extends AbstractPipelet {
 
         for ( MessagePayloadPojo pojo : payloads ) {
             byte contentBytes[] = pojo.getPayloadData();
+            // TODO: (encoding) Database Definition? maybe BLOB not String. Configurable Encoding?
             String payloadString = new String( contentBytes );
             Connection connection = null;
             try {
