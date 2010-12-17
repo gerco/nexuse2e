@@ -196,6 +196,9 @@
         <nxs:page target="DatabasePurge.do?type=select" label="Database Purge" icon="images/icons/database_lightning.png">
           <nxs:command target="DatabasePurge.do?type=select" label="Execute" icon="images/icons/bullet_orange.png"/>
         </nxs:page>
+        <nxs:page target="GroovyShell.do?type=select" label="Groovy Shell" icon="images/icons/wrench.png">
+          <nxs:command target="GroovyShell.do?type=select" label="Execute" icon="images/icons/bullet_orange.png"/>
+        </nxs:page>
         <nxs:page target="MappingMaintenance.do" label="Mapping Maintenance" icon="images/icons/database_table.png">
           <nxs:command target="MappingMaintenance.do" label="Execute" icon="images/icons/bullet_orange.png"/>
         </nxs:page>
