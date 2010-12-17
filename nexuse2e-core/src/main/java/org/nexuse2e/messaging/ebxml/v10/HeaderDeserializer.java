@@ -80,7 +80,7 @@ public class HeaderDeserializer extends AbstractPipelet {
         try {
             MessageFactory messageFactory = MessageFactory.newInstance();
 
-            LOG.trace( new LogMessage( "Header:" + new String( messagePojo.getHeaderData() ),messageContext.getMessagePojo()) );
+            LOG.trace( new LogMessage( "Header:" + new String( messagePojo.getHeaderData(),messageContext.getEncoding() ),messageContext.getMessagePojo() ) );
 
             SOAPMessage soapMessage;
             try {
