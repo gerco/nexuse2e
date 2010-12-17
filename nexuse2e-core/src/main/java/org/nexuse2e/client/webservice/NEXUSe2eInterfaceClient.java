@@ -102,7 +102,7 @@ public class NEXUSe2eInterfaceClient {
             byte[] buffer = new byte[fis.available()];
             fis.read( buffer );
             fis.close();
-
+            // TODO (encoding) configurable encoding for WS client ?
             String result = nexuse2eInterface.sendNewStringMessage( choreographyId, partnerId, actionId, new String( buffer ) );
 
             System.out.println( "NEXUSe2EInterfaceService done: " + result );
