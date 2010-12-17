@@ -158,19 +158,19 @@ public class XMLDataMappingPipelet extends AbstractPipelet {
                     messagePayloadPojo.setPayloadData( baos.toByteArray() );
 
                     if ( LOG.isTraceEnabled() ) {
-                        LOG.trace( new LogMessage( "....................",messageContext.getMessagePojo()) );
-                        LOG.trace( new LogMessage( new String( messagePayloadPojo.getPayloadData() ),messageContext.getMessagePojo()) );
-                        LOG.trace( new LogMessage( "....................",messageContext.getMessagePojo()) );
+                        LOG.trace( new LogMessage( "....................",messageContext ) );
+                        LOG.trace( new LogMessage( new String( messagePayloadPojo.getPayloadData(), messageContext.getEncoding() ),messageContext ) );
+                        LOG.trace( new LogMessage( "....................",messageContext ) );
                     }
                 }
             } catch ( Exception e ) {
                 e.printStackTrace();
-                LOG.error(new LogMessage(  "Error processing XML payload: " + e,messageContext.getMessagePojo()) );
+                LOG.error(new LogMessage(  "Error processing XML payload: " + e,messageContext ) );
                 throw new NexusException( "Error processing XML payload: " + e );
             }
 
         } else {
-            LOG.error( new LogMessage( "No configuration file specified - no mapping possible.",messageContext.getMessagePojo()) );
+            LOG.error( new LogMessage( "No configuration file specified - no mapping possible.",messageContext ) );
             throw new NexusException( "No configuration file specified - no mapping possible." );
         }// if
 
