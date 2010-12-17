@@ -19,12 +19,14 @@
  */
 package org.nexuse2e.backend.pipelets;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.nexuse2e.NexusException;
-import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.configuration.ParameterDescriptor;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.MessagePayloadPojo;
@@ -72,7 +74,13 @@ public class DebugBackendPipelet extends AbstractPipelet {
                     byte[] data = payload.getPayloadData();
                     LOG.info( "Payload " + payload.getContentId() + ", mime-type " + payload.getMimeType() );
                     if (data != null) {
-                        LOG.info( new String( data ) );
+                    	String encoding = messageContext.getEncoding();
+                    	try {
+							LOG.info(new LogMessage( new String( data, encoding ),messageContext) );
+						} catch (UnsupportedEncodingException e) {
+							LOG.warn(new LogMessage("configured payload encoding '"+encoding+"' is not supported", messageContext));
+							LOG.info(new LogMessage( new String( data ), messageContext) ); // use jvm encoding
+						}
                     } else {
                         LOG.info( null );
                     }
