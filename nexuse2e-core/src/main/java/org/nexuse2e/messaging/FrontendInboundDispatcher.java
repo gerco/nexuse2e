@@ -19,11 +19,12 @@
  */
 package org.nexuse2e.messaging;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.nexuse2e.Constants.BeanStatus;
@@ -35,7 +36,6 @@ import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.controller.StateTransitionException;
 import org.nexuse2e.logging.LogMessage;
-import org.nexuse2e.messaging.ebxml.v20.HeaderDeserializer;
 import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.MessagePojo;
@@ -47,16 +47,13 @@ import org.springframework.beans.factory.InitializingBean;
  * Additionally the message is checked for consistency with the messaging protocol it belongs to and acknowledgements
  * or error messages are created accordingly if the underlying messaging protocol requires it.
  *
- * @author gesch
+ * @author gesch, sschulze
  */
 public class FrontendInboundDispatcher extends StateMachineExecutor implements Dispatcher, Pipelet, InitializingBean {
 
-    private static Logger                         LOG                       = Logger
-                                                                                    .getLogger( HeaderDeserializer.class );
+    private static Logger                         LOG                       = Logger.getLogger( FrontendInboundDispatcher.class );
 
     private ProtocolAdapter[]                     protocolAdapters;
-
-    private Map<String, FrontendActionSerializer> frontendActionSerializers = new HashMap<String, FrontendActionSerializer>();
 
     private Map<String, StatusUpdateSerializer>   statusUpdateSerializers   = new HashMap<String, StatusUpdateSerializer>();
 
@@ -71,11 +68,6 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
 
     private Pipeline                              pipeline;
 
-    /**
-     * temporary !!
-     */
-    private BackendOutboundDispatcher             backendOutboundDispatcher = null;
-
     /* (non-Javadoc)
      * @see org.nexuse2e.messaging.FrontendDispatcher#processMessage(org.nexuse2e.messaging.MessageContext)
      */
@@ -84,63 +76,65 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
         Object syncObj = Engine.getInstance().getTransactionService().getSyncObjectForConversation(
                 ( messageContext.getConversation() != null ? messageContext.getConversation() : messageContext.getMessagePojo().getConversation() ) );
         synchronized ( syncObj ) {
-            boolean headerAccessible = false;
-            boolean headerInvalid = false;
+            boolean failureInHeaderProcessing = false;
             ChoreographyPojo choreography = null;
             ParticipantPojo participant = null;
-            MessageContext clonedMessageContext = null;
             MessageContext responseMessageContext = null;
-            Vector<ErrorDescriptor> errorMessages = new Vector<ErrorDescriptor>();
+            List<ErrorDescriptor> errorMessages = new ArrayList<ErrorDescriptor>();
 
             MessagePojo messagePojo = messageContext.getMessagePojo();
 
             LOG.debug( new LogMessage( "Entering FrontendInboundDispatcher.processMessage...", messagePojo) );
 
             // extract header data
+// Shouldn't only the state machine set the status?
+//            if ( messagePojo.getConversation() != null
+//                    && messagePojo.getConversation().getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_CREATED ) {
+//                messagePojo.getConversation().setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_PROCESSING );
+//                if ( LOG.isDebugEnabled() ) {
+//	                LOG.debug( new LogMessage( "MessageType:" + messagePojo.getType(), messagePojo.getConversation()
+//	                        .getConversationId(), messagePojo.getMessageId() ) );
+//                }
+//            }
 
-            if ( messagePojo.getConversation() != null
-                    && messagePojo.getConversation().getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_CREATED ) {
-                messagePojo.getConversation().setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_PROCESSING );
-                if ( LOG.isDebugEnabled() ) {
-	                LOG.debug( new LogMessage( "MessageType:" + messagePojo.getType(), messagePojo.getConversation()
-	                        .getConversationId(), messagePojo.getMessageId() ) );
-                }
-            }
-
+            // get protocol adapter
             ProtocolAdapter protocolAdapter = getProtocolAdapterByKey( messageContext.getProtocolSpecificKey() );
             if ( protocolAdapter == null ) {
                 String msg = "No protocol implementation found for key: " + messageContext.getProtocolSpecificKey();
-                LOG.error( new LogMessage( msg, messagePojo ) );
-                throw new NexusException( msg );
+//                LOG.error( new LogMessage( msg, messagePojo ) );
+                throw new NexusException( new LogMessage( msg, messageContext ) );
             }
-            LOG.trace( new LogMessage( "ProtocolAdapter found for incoming message",messagePojo) );
+            if ( LOG.isTraceEnabled() ) {
+                LOG.trace( new LogMessage( "ProtocolAdapter found for incoming message",messagePojo) );
+            }
 
+            // get choreography
             try {
                 choreography = validateChoreography( messageContext, Constants.INBOUND );
                 LOG.debug(new LogMessage(  "matching choreography found",messagePojo) );
             } catch ( NexusException e ) {
-                e.printStackTrace();
-                LOG.error( new LogMessage( "Error while validating choreography: " + e.getMessage(), messagePojo ) );
+                LOG.error( new LogMessage( "Error while validating choreography: " + e.getMessage(), messagePojo ), e );
                 responseMessageContext = protocolAdapter.createErrorAcknowledgement(
                         Constants.ErrorMessageReasonCode.CHOREOGRAPHY_NOT_FOUND, null, messageContext, null );
-                headerAccessible = true;
+                failureInHeaderProcessing = true;
                 errorMessages.add( new ErrorDescriptor( "No matching choreography found in configuration: "
                         + messagePojo.getConversation().getChoreography().getName() ) );
             }
 
+            // get action
             String actionId = messagePojo.getAction().getName();
             ActionPojo action = Engine.getInstance().getActiveConfigurationAccessService()
                     .getActionFromChoreographyByActionId( choreography, actionId );
             if ( ( action == null ) && ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) ) {
-                headerAccessible = true;
+                failureInHeaderProcessing = true;
                 errorMessages.add( new ErrorDescriptor( "No matching action found in configuration: "
                         + messagePojo.getAction().getName() ) );
                 responseMessageContext = protocolAdapter.createErrorAcknowledgement(
                         Constants.ErrorMessageReasonCode.ACTION_NOT_PERMITTED, null, messageContext, null );
             }
 
-            if ( !headerAccessible ) {
-
+            if ( !failureInHeaderProcessing ) {
+                // get participant
                 try {
                     participant = validateParticipant( messageContext, Constants.INBOUND );
                     LOG.debug( new LogMessage( "matching participant found", messagePojo ) );
@@ -150,13 +144,14 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                             + messagePojo.getConversation().getPartner().getPartnerId(), messagePojo ) );
                     responseMessageContext = protocolAdapter.createErrorAcknowledgement(
                             Constants.ErrorMessageReasonCode.PARTICIPANT_NOT_FOUND, choreography, messageContext, null );
-                    headerAccessible = true;
+                    failureInHeaderProcessing = true;
                     errorMessages.add( new ErrorDescriptor( "No matching participant found in configuration: "
                             + messagePojo.getConversation().getPartner().getPartnerId() ) );
                 }
             }
 
-            if ( headerAccessible ) {
+            // if there was a failure, write to log an return
+            if ( failureInHeaderProcessing ) {
                 LOG.error( new LogMessage( "Error processing inbound message.", messagePojo ) );
                 for ( ErrorDescriptor errorDescriptor : errorMessages ) {
                     LOG.error( new LogMessage( "Error - " + errorDescriptor.getDescription(), messagePojo ) );
@@ -165,270 +160,321 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
             }
 
             // header data are accessible, but may not be valid for the current conversation
-
             if ( messageContext.getErrors() != null && messageContext.getErrors().size() > 0 ) {
                 //headerInvalid = true;
-
-                messageContext.getMessagePojo().setStatus( Constants.MESSAGE_STATUS_FAILED );
-                messageContext.getConversation().setStatus( Constants.CONVERSATION_STATUS_ERROR );
+// Shouldn't only the state machine set the status? Why does processing proceed after message/conv was marked as failed/error?
+//                messageContext.getMessagePojo().setStatus( Constants.MESSAGE_STATUS_FAILED );
+//                messageContext.getConversation().setStatus( Constants.CONVERSATION_STATUS_ERROR );
             }
 
-            String msgType = null;
-            switch ( messagePojo.getType() ) {
-                case Constants.INT_MESSAGE_TYPE_ACK:
-                    msgType = "ack";
-                    break;
-                case Constants.INT_MESSAGE_TYPE_ERROR:
-                    msgType = "error";
-                    break;
-                default:
-                    msgType = "normal";
+            // determine message type for log messages
+            String msgType = MessagePojo.getTypeName( messagePojo.getType() ).toLowerCase();
+            
+            if ( LOG.isInfoEnabled() ) {
+                LOG.info( new LogMessage( "Received  " + msgType + " (" + messagePojo.getMessageId()
+                        + ") from " + participant.getPartner().getPartnerId() + " for " + choreography.getName()
+                        + ( action != null ? "/" + action.getName() : "" ), messagePojo ) );
             }
 
+            // handle different message types
             if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
-                LOG.info( new LogMessage( "Received  " + msgType + " message (" + messagePojo.getMessageId()
-                        + ") from " + participant.getPartner().getPartnerId() + " for " + choreography.getName() + "/"
-                        + action.getName(), messagePojo ) );
-            } else {
-                LOG.info( new LogMessage( "Received  "
-                        + msgType
-                        + " message ("
-                        + messagePojo.getMessageId()
-                        + ") from "
-                        + messagePojo.getParticipant().getPartner().getPartnerId()
-                        + " for "
-                        + choreography.getName()
-                        + ( messagePojo.getConversation() != null
-                                && messagePojo.getConversation().getCurrentAction() != null ? "/"
-                                + messagePojo.getConversation().getCurrentAction().getName() : "" ), messagePojo ) );
-            }
-
-            // ********************************************************************************
-            // INT_MESSAGE_TYPE_NORMAL
-            // ********************************************************************************
-            if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
-
-                // Try to identify duplicate
-                MessageContext duplicateMessageContext = Engine.getInstance().getTransactionService()
-                        .getMessageContext( messagePojo.getMessageId() );
-                if ( duplicateMessageContext != null ) {
-                    LOG.info( new LogMessage( "Received duplicate message: " + messagePojo.getMessageId(),messagePojo) );
-                    responseMessageContext = Engine.getInstance().getTransactionService().getMessageContext(
-                            messagePojo.getMessageId(), true );
-                    if(responseMessageContext != null && responseMessageContext.getMessagePojo() != null ) {
-                        LOG.trace( new LogMessage( "response Message context: " +responseMessageContext.getMessagePojo().getMessageId(),messagePojo) );
-                    } else {
-                        if(responseMessageContext == null) {
-                            LOG.trace( new LogMessage( "no response context found",messagePojo) );
-                        } else {
-                            LOG.trace( new LogMessage( "no messagePojo found in response context",messagePojo) );
-                        }
-                    }
-                    
-                } else { // duplicate
-
-                    // Forward the message to check the transition, persist it and pass to backend
-                    if ( !messageContext.isRequestMessage() ) { // request messages are not passed to backend
-                        FrontendActionSerializer frontendActionSerializer = frontendActionSerializers.get( messagePojo
-                                .getConversation().getChoreography().getName() );
-                        if ( frontendActionSerializer != null ) {
-                            try {
-                                clonedMessageContext = (MessageContext) messageContext.clone();
-
-                                // Forward message to FrontendActionSerializer for further processing/queueing
-                                frontendActionSerializer.processMessage( messageContext );
-
-                                // Block for synchronous processing
-                                if ( participant.getConnection().isSynchronous() && !messageContext.isRequestMessage() ) {
-                                    LOG.debug( new LogMessage( "Found synchronous connection setting.", messagePojo ) );
-                                    Engine.getInstance().getTransactionService().addSynchronousRequest(
-                                            messagePojo.getMessageId() );
-                                    while ( responseMessageContext == null ) {
-                                        synchronized ( synchronousReplies ) {
-                                            try {
-                                                LOG.debug( new LogMessage("Waiting for reply...", messagePojo) );
-                                                synchronousReplies.wait();
-                                            } catch ( InterruptedException e ) {
-                                                // TODO Auto-generated catch block
-                                                e.printStackTrace();
-                                            }
-                                        }
-
-                                        responseMessageContext = synchronousReplies.get( messageContext
-                                                .getMessagePojo().getMessageId() );
-                                    }
-                                    LOG.debug( new LogMessage("Found reply: " + responseMessageContext, messagePojo) );
-                                }
-                            } catch ( CloneNotSupportedException e ) {
-                                e.printStackTrace();
-                            } catch ( NexusException e ) {
-                                LOG.error( new LogMessage( "Error processing message: " + messagePojo.getMessageId()
-                                        + " (" + messagePojo.getConversation().getChoreography().getName() + "/"
-                                        + messagePojo.getConversation().getPartner().getPartnerId() + ") - " + e,
-                                        messagePojo ), e );
-                                headerInvalid = true;
-                            }
-                        } else {
-                            LOG.error( new LogMessage( "No FrontendActionSerializer found: "
-                                    + messagePojo.getConversation().getChoreography().getName(), messagePojo ) );
-                            headerInvalid = true;
-                        }
-                    } else { // mark request message as received
-                        try {
-                            messageContext.getStateMachine().receivedRequestMessage();
-                        } catch ( StateTransitionException e ) {
-                            throw new NexusException( e );
-                        }
-                    }
-
-                    // Asynchronous processing
-                    if ( !participant.getConnection().isSynchronous() || messageContext.isRequestMessage() ) {
-                        if ( !headerInvalid
-                                && messageContext.getMessagePojo().getStatus() != Constants.MESSAGE_STATUS_FAILED ) {
-                            LOG.trace( new LogMessage( "No error response message found, creating ack",messagePojo) );
-                            responseMessageContext = null;
-                            if ( messageContext.isRequestMessage() ) {
-                                // check if we need to respond to a request message
-                                responseMessageContext = protocolAdapter.createResponse( messageContext );
-                            } else if ( messageContext.getParticipant().getConnection().isReliable() ) {
-                                try {
-                                    responseMessageContext = protocolAdapter.createAcknowledgement( choreography,
-                                            clonedMessageContext );
-                                } catch ( NexusException e ) {
-                                	// Substituted an e.printStackTrace() by LOG.error().
-                                	// Do we need to do something else here? How about an error ack?
-                                	// Or let the exception raise up?
-                                    LOG.error( new LogMessage( "Error creating acknowledgement: " + e.getMessage(),
-                                    		messageContext ), e );
-                                }
-                            } else {
-                                LOG.debug(new LogMessage(  "Not reliable, not creating ack - message ID: "
-                                                + messagePojo.getMessageId(),messagePojo) );
-                                try {
-                                    messageContext.getStateMachine().receivedNonReliableMessage();
-                                } catch ( StateTransitionException e ) {
-                                    LOG.warn( e.getMessage() );
-                                }
-                            }
-                        } else {
-                            LOG.debug( new LogMessage( "error response message found",messagePojo) );
-                            responseMessageContext = protocolAdapter.createErrorAcknowledgement(
-                                    Constants.ErrorMessageReasonCode.UNKNOWN, choreography, messageContext,
-                                    errorMessages );
-                        }
-                    }
-                } // no duplicate
-
-                if ( responseMessageContext == null ) {
-                    if ( messageContext.getParticipant().getConnection().isReliable() ) {
-                        LOG.error( new LogMessage( "No dispatchable return message created", messagePojo ) );
-                    }
-                    return null;
-                }
-
-                // Send acknowledgment/error message back asynchronously
-                if ( participant.getConnection().isSynchronous() || messageContext.isRequestMessage() ) {
-                    return responseMessageContext;
-                } else if ( !headerInvalid && ( responseMessageContext != null )
-                        && responseMessageContext.getMessagePojo() != null ) {
-                    try {
-                        LOG.debug( new LogMessage( "dispatching response message", messagePojo) );
-                        backendOutboundDispatcher.processMessage( responseMessageContext );
-                        return null;
-                    } catch ( NexusException e ) {
-                        LOG.error( new LogMessage( "Unable to process Acknowledgement:" + e.getMessage(),
-                                        messagePojo ) );
-                    }
-                } else {
-                    LOG.warn( "No message to send as reply." );
-                }
-                // ********************************************************************************
-                // INT_MESSAGE_TYPE_ACK
-                // ********************************************************************************
+                responseMessageContext = handleNormalMessage( messageContext,
+                                                              participant,
+                                                              protocolAdapter,
+                                                              choreography,
+                                                              errorMessages );
             } else if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_ACK ) {
-                LOG.trace( new LogMessage( "Ack detected",messagePojo) );
-
-                // Try to identify duplicate
-                MessageContext duplicateMessageContext = Engine.getInstance().getTransactionService()
-                        .getMessageContext( messagePojo.getMessageId() );
-                if ( duplicateMessageContext != null ) {
-                    LOG.info( new LogMessage( "Received duplicate acknowledgment: "
-                                    + messagePojo.getMessageId()
-                                    + " for normal message: "
-                                    + ( messagePojo.getReferencedMessage() != null ? messagePojo.getReferencedMessage()
-                                            : "n/a" ),messagePojo) );
-                } else {
-                    MessagePojo referencedMessagePojo = messagePojo.getReferencedMessage();
-                    if ( referencedMessagePojo != null ) {
-                        try {
-                            messageContext.getStateMachine().receivedAckMessage();
-                        } catch ( StateTransitionException stex ) {
-                            LOG.warn(new LogMessage(  stex.getMessage(),messagePojo) );
-                        }
-
-                        // deregistering 
-                        Engine.getInstance().getEngineController().getEngineControllerStub().broadcastAck(
-                                messageContext );
-                        Engine.getInstance().getTransactionService().deregisterProcessingMessage(
-                                referencedMessagePojo.getMessageId() );
-
-                        // ****************************************
-                        // Trigger status update
-                        // ****************************************
-                        StatusUpdateSerializer statusUpdateSerializer = statusUpdateSerializers.get( messagePojo
-                                .getConversation().getChoreography().getName() );
-                        if ( statusUpdateSerializer != null ) {
-                            // Forward message to StatusUpdateSerializer for further processing/queueing
-                            statusUpdateSerializer.processMessage( messageContext );
-                        }
-
-                    } else {
-                        LOG.error( new LogMessage( "Error using referenced message on acknowledgment (ack message ID: "
-                                + messagePojo.getMessageId() + ")", messagePojo ) );
-                    }
-                }
-                // ********************************************************************************
-                // INT_MESSAGE_TYPE_ERROR
-                // ********************************************************************************
+                handleAcknowledgment( messageContext );
             } else if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_ERROR ) {
-                LOG.trace( new LogMessage( "Error detected",messagePojo) );
-
-                // Try to identify duplicate
-                MessageContext duplicateMessageContext = Engine.getInstance().getTransactionService()
-                        .getMessageContext( messagePojo.getMessageId() );
-                if ( duplicateMessageContext != null ) {
-                    LOG.info( new LogMessage( "Received duplicate error: "
-                                    + messagePojo.getMessageId()
-                                    + " for normal message: "
-                                    + ( messagePojo.getReferencedMessage() != null ? messagePojo.getReferencedMessage()
-                                            : "n/a" ),messagePojo) );
-                } else {
-
-                    MessagePojo referencedMessagePojo = messagePojo.getReferencedMessage();
-                    if ( referencedMessagePojo != null ) {
-                        try {
-                            messageContext.getStateMachine().receivedErrorMessage();
-                        } catch ( StateTransitionException stex ) {
-                            LOG.warn( new LogMessage( stex.getMessage(),messagePojo) );
-                        }
-
-                        Engine.getInstance().getEngineController().getEngineControllerStub().broadcastAck(
-                                messageContext );
-                        Engine.getInstance().getTransactionService().deregisterProcessingMessage(
-                                referencedMessagePojo.getMessageId() );
-                    } else {
-                        LOG.error( new LogMessage( "Error using referenced message on acknowledgment (ack message ID: "
-                                + messagePojo.getMessageId() + ")", messagePojo ) );
-                    }
-                }
-
+                handleError( messageContext );
             } else {
-                LOG.error( new LogMessage( "Message of unknown type received: " + messagePojo.getType(), messagePojo ) );
+                LOG.error( new LogMessage( "Message of unknown type (" + messagePojo.getType() + ") received", messagePojo ) );
             }
 
             return responseMessageContext;
         }
     } // processMessage
+    
+    /**
+     * Handles dispatching of received message of type NORMAL.
+     * @param messageContext
+     * @throws NexusException
+     */
+    private MessageContext handleNormalMessage( MessageContext messageContext,
+                                                ParticipantPojo participant,
+                                                ProtocolAdapter protocolAdapter,
+                                                ChoreographyPojo choreography,
+                                                List<ErrorDescriptor> errorMessages ) throws NexusException {
+        MessageContext responseMessageContext = null;
+        
+        boolean headerInvalid = false;
+        
+        MessagePojo message = messageContext.getMessagePojo();
+        // duplicate
+        if ( isDuplicate( message ) ) {
+            // duplicate found
+            LOG.info( new LogMessage( "Received duplicate message: " + message.getMessageId(), message ) );
+            // get according acknowledgment
+            responseMessageContext = Engine.getInstance().getTransactionService().getMessageContext(
+                    message.getMessageId(), true );
+            // only logging stuff
+            if ( LOG.isTraceEnabled() ) {
+                if(responseMessageContext != null && responseMessageContext.getMessagePojo() != null ) {
+                    LOG.trace( new LogMessage( "Response message context: " + responseMessageContext.getMessagePojo().getMessageId() , message ) );
+                } else {
+                    if(responseMessageContext == null) {
+                        LOG.trace( new LogMessage( "No response context found", message ) );
+                    } else {
+                        LOG.trace( new LogMessage( "Mo MessagePojo found in response context" , message ) );
+                    }
+                }
+            }
+        } else {
+//            MessageContext clonedMessageContext = null;
+            
+            // this message is not a duplicate
+            // now we check the different processing models
+            if ( messageContext.isRequestMessage() ) {
+                responseMessageContext = handleRequest( messageContext, headerInvalid, protocolAdapter, choreography, errorMessages );
+            } else {
+                // Forward the message to check the transition, persist it and pass to backend
+                MessageHandlingCenter.getInstance().announceQueuing( messageContext );
+//                dispatchSignal( messageContext );
+                // Asynchronous processing
+                if ( !participant.getConnection().isSynchronous() ) {
+                    // check if we need to respond to a request message
+                    if ( messageContext.getParticipant().getConnection().isReliable() ) {
+                        if ( !headerInvalid
+                                && messageContext.getMessagePojo().getStatus() != Constants.MESSAGE_STATUS_FAILED ) {
+                            LOG.trace( new LogMessage( "No error response message found, creating ack",message) );
+                            responseMessageContext = null;
+                            // generate ack for reliable connections
+                            try {
+                                responseMessageContext = protocolAdapter.createAcknowledgement( choreography,
+//                                        clonedMessageContext );
+                                        messageContext );
+                            } catch ( NexusException e ) {
+                                // Substituted an e.printStackTrace() by LOG.error().
+                                // Do we need to do something else here? How about an error ack?
+                                // Or let the exception raise up?
+                                LOG.error( new LogMessage( "Error creating acknowledgement: " + e.getMessage(),
+                                        messageContext ), e );
+                            }
+                        } else {
+                            LOG.debug( new LogMessage( "error response message found",message) );
+                            responseMessageContext = protocolAdapter.createErrorAcknowledgement(
+                                    Constants.ErrorMessageReasonCode.UNKNOWN, choreography, messageContext,
+                                    errorMessages );
+                        }
+                        try {
+                            LOG.debug( new LogMessage( "dispatching response message", message) );
+                            MessageHandlingCenter.getInstance().processMessage( responseMessageContext );
+                        } catch ( NexusException e ) {
+                            LOG.error( new LogMessage( "Unable to process Acknowledgement:" + e.getMessage(),
+                                            message ) );
+                        } finally {
+                            // in asynchronous mode we have nothing to return in client thread
+                            responseMessageContext = null;
+                        }
+                    } else if ( !headerInvalid
+                            && messageContext.getMessagePojo().getStatus() != Constants.MESSAGE_STATUS_FAILED ) {
+                        LOG.debug(new LogMessage(  "Not reliable, not creating ack - message ID: "
+                            + message.getMessageId(),message) );
+                        try {
+                            messageContext.getStateMachine().receivedNonReliableMessage();
+                        } catch ( StateTransitionException e ) {
+                            LOG.warn( e.getMessage() );
+                        }
+                    }
+                }
+                
+//                dispatchMessage( messageContext );
+                //
+                try {
+//                  clonedMessageContext = (MessageContext) messageContext.clone();
+                    
+                    // Forward message to FrontendActionSerializer for further processing/queueing
+                    MessageHandlingCenter.getInstance().processMessage( messageContext );
+                    
+                    // Block for synchronous processing
+                    if ( participant.getConnection().isSynchronous() ) {
+                        responseMessageContext = waitForSynchronousResponse( messageContext );
+                    }
+//                    } catch ( CloneNotSupportedException e ) {
+//                        e.printStackTrace();
+                } catch ( NexusException e ) {
+                    LOG.error( new LogMessage( "Error processing message: " + message.getMessageId()
+                        + " (" + message.getConversation().getChoreography().getName() + "/"
+                        + message.getConversation().getPartner().getPartnerId() + ") - " + e,
+                        message ), e );
+                    headerInvalid = true;
+                }
+            }
+        } // no duplicate
+
+        // return response (can be null in asynchronous mode)
+        return responseMessageContext;
+    }
+    
+    /**
+     * Handles messages that are marked as requests.
+     * @param messageContext
+     * @throws NexusException
+     */
+    private MessageContext handleRequest( MessageContext messageContext,
+                                          boolean headerInvalid,
+                                          ProtocolAdapter protocolAdapter,
+                                          ChoreographyPojo choreography,
+                                          List<ErrorDescriptor> errorMessages ) throws NexusException {
+        // request messages are not passed to backend
+        try {
+            messageContext.getStateMachine().receivedRequestMessage();
+        } catch ( StateTransitionException e ) {
+            throw new NexusException( new LogMessage( e.getMessage(), messageContext ), e );
+        }
+        
+        MessagePojo message = messageContext.getMessagePojo();
+        MessageContext responseMessageContext = null;
+        
+        if ( !headerInvalid
+                && messageContext.getMessagePojo().getStatus() != Constants.MESSAGE_STATUS_FAILED ) {
+            LOG.trace( new LogMessage( "No error response message found, creating ack" , message ) );
+            // check if we need to respond to a request message
+            responseMessageContext = protocolAdapter.createResponse( messageContext );
+        } else {
+            LOG.debug( new LogMessage( "error response message found",message) );
+            responseMessageContext = protocolAdapter.createErrorAcknowledgement(
+                    Constants.ErrorMessageReasonCode.UNKNOWN, choreography, messageContext,
+                    errorMessages );
+        }
+        
+        return responseMessageContext;
+    }
+    
+    private MessageContext waitForSynchronousResponse( MessageContext messageContext ) {
+        MessageContext responseMessageContext = null;
+        MessagePojo message = messageContext.getMessagePojo();
+        
+        Engine.getInstance().getTransactionService().addSynchronousRequest(
+            message.getMessageId() );
+        while ( responseMessageContext == null ) {
+            synchronized ( synchronousReplies ) {
+                try {
+                    if ( LOG.isDebugEnabled() ) {
+                        LOG.debug( new LogMessage("Waiting for synchronous reply...", message) );
+                    }
+                    synchronousReplies.wait(); // wait on notification about available response
+                } catch ( InterruptedException e ) {
+                    LOG.warn( new LogMessage( "Waiting for synchronous reply was interrupted", messageContext ), e );
+                }
+            }
+            // Since the processing process uses notifyAll(),
+            // we check whether there is a response for this thread.
+            // If response is not present, the loop continues.
+            responseMessageContext = synchronousReplies.get( messageContext
+                .getMessagePojo().getMessageId() );
+        }
+        if ( LOG.isDebugEnabled() ) {
+            LOG.debug( new LogMessage("Found reply for synchronous connection: " + responseMessageContext, message) );
+        }
+        
+        return responseMessageContext;
+    }
+    
+    /**
+     * Handles dispatching of received signal message of type ACKNOWLEDGMENT.
+     * @param messageContext
+     * @throws NexusException
+     */
+    private void handleAcknowledgment( MessageContext messageContext ) throws NexusException {
+        MessagePojo message = messageContext.getMessagePojo();
+
+        // duplicate?
+        if ( isDuplicate( message ) ) {
+            LOG.info( new LogMessage( "Received duplicate " + MessagePojo.getTypeName( message.getType() ) + ": "
+                            + message.getMessageId()
+                            + " for normal message: "
+                            + ( message.getReferencedMessage() != null ? message.getReferencedMessage()
+                                    : "n/a" ),message) );
+        } else {
+            MessagePojo referencedMessagePojo = message.getReferencedMessage();
+            if ( referencedMessagePojo != null ) {
+                try {
+                    messageContext.getStateMachine().receivedAckMessage();
+                } catch ( StateTransitionException stex ) {
+                    LOG.warn(new LogMessage(  stex.getMessage(),message) );
+                }
+
+                propagateSignalMessageReceived( messageContext );
+
+                // Trigger status update
+                StatusUpdateSerializer statusUpdateSerializer = statusUpdateSerializers.get( message
+                        .getConversation().getChoreography().getName() );
+                if ( statusUpdateSerializer != null ) {
+                    // Forward message to StatusUpdateSerializer for further processing/queueing
+                    statusUpdateSerializer.processMessage( messageContext );
+                }
+
+            } else {
+                LOG.error( new LogMessage( "Received " + MessagePojo.getTypeName( message.getType() )
+                    + " signal (" + message.getMessageId() + ") for unknown message", message ) );
+            }
+        }
+    }
+    
+    /**
+     * Handles dispatching of received signal message of type ERROR.
+     * @param messageContext
+     * @throws NexusException
+     */
+    private void handleError( MessageContext messageContext ) throws NexusException {
+        MessagePojo message = messageContext.getMessagePojo();
+        
+        // duplicate?
+        if ( isDuplicate( message ) ) {
+            LOG.info( new LogMessage( "Received duplicate " + MessagePojo.getTypeName( message.getType() ) + ": "
+                + message.getMessageId()
+                + " for normal message: "
+                + ( message.getReferencedMessage() != null ? message.getReferencedMessage() : "n/a" ),message) );
+        } else {
+            MessagePojo referencedMessagePojo = message.getReferencedMessage();
+            if ( referencedMessagePojo != null ) {
+                try {
+                    messageContext.getStateMachine().receivedErrorMessage();
+                } catch ( StateTransitionException stex ) {
+                    LOG.warn( new LogMessage( stex.getMessage(),message) );
+                }
+                
+                propagateSignalMessageReceived( messageContext );
+            } else {
+                LOG.error( new LogMessage( "Received " + MessagePojo.getTypeName( message.getType() )
+                    + " signal (" + message.getMessageId() + ") for unknown message", message ) );
+            }
+        }
+    }
+    
+    /**
+     * Check whether message was already received earlier.
+     * @param message
+     * @return
+     * @throws NexusException
+     */
+    private boolean isDuplicate( MessagePojo message ) throws NexusException {
+        MessageContext duplicateMessageContext = Engine.getInstance().getTransactionService().getMessageContext( message.getMessageId() );
+        return duplicateMessageContext != null;
+    }
+    
+    /**
+     * Notifies other nodes in cluster, and re-send schedulers about received signal message.
+     * @param messageContext
+     */
+    private void propagateSignalMessageReceived( MessageContext messageContext ) {
+        Engine.getInstance().getEngineController().getEngineControllerStub().broadcastAck(
+            messageContext );
+        Engine.getInstance().getTransactionService().deregisterProcessingMessage(
+            messageContext.getMessagePojo().getReferencedMessage().getMessageId() );
+    }
+
 
     /**
      * @param messageContext
@@ -500,10 +546,6 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
     public void initialize( EngineConfiguration config ) {
 
         LOG.trace( "Initializing..." );
-
-        backendOutboundDispatcher = config.getStaticBeanContainer().getBackendOutboundDispatcher();
-
-        frontendActionSerializers = config.getFrontendActionSerializers();
 
         statusUpdateSerializers = config.getStatusUpdateSerializers();
 

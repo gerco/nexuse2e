@@ -30,6 +30,7 @@ import org.apache.log4j.Level;
 import org.nexuse2e.Manageable;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.messaging.MessageContext;
+import org.nexuse2e.messaging.sync.ConversationLockManager;
 import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ConversationPojo;
@@ -41,7 +42,7 @@ import org.nexuse2e.pojo.PartnerPojo;
 /**
  * Controller to handle all transaction related operations.
  *
- * @author mbreilmann
+ * @author mbreilmann, sschulze
  */
 public interface TransactionService extends Manageable {
 
@@ -472,6 +473,15 @@ public interface TransactionService extends Manageable {
      * @return A non-<code>null</code> <code>Object</code>.
      */
     public abstract Object getSyncObjectForConversation( ConversationPojo conversation );
+    
+    /**
+     * Returns the implementation of the {@link ConversationLockManager} interface that enables
+     * synchronization of parallel activities on conversation objects.
+     * Depending on the environment the {@link ConversationLockManager} implementation
+     * can synchronize only single-node activities, or several nodes in a cluster.  
+     * @return The {@link ConversationLockManager}.
+     */
+    ConversationLockManager getConversationLockManager();
     
     public abstract int getCreatedMessagesSinceCount( Timestamp timestamp ) throws NexusException;
     

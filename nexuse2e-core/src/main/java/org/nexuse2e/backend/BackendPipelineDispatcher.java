@@ -54,7 +54,7 @@ import org.xml.sax.ContentHandler;
 import com.ibm.icu.text.CharsetDetector;
 
 /**
- * @author gesch
+ * @author gesch, sschulze
  *
  */
 public class BackendPipelineDispatcher implements Manageable, InitializingBean {

@@ -21,7 +21,6 @@ package org.nexuse2e.controller;
 
 import java.lang.ref.WeakReference;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -34,11 +33,11 @@ import java.util.concurrent.ScheduledFuture;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.nexuse2e.ActionSpecificKey;
+import org.nexuse2e.Constants.BeanStatus;
+import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.ProtocolSpecificKey;
-import org.nexuse2e.Constants.BeanStatus;
-import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.IdGenerator;
 import org.nexuse2e.dao.LogDAO;
@@ -46,6 +45,7 @@ import org.nexuse2e.dao.TransactionDAO;
 import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.Constants;
 import org.nexuse2e.messaging.MessageContext;
+import org.nexuse2e.messaging.sync.ConversationLockManager;
 import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ConversationPojo;
@@ -73,7 +73,9 @@ public class TransactionServiceImpl implements TransactionService {
     private Constants.BeanStatus                      status             = Constants.BeanStatus.UNDEFINED;
 
     private TransactionDAO                            transactionDao     = null;
-    private LogDAO                                    logDao             = null;    
+    private LogDAO                                    logDao             = null;
+
+	private ConversationLockManager conversationLockManager;
     
     
     /*
@@ -437,7 +439,14 @@ public class TransactionServiceImpl implements TransactionService {
             action = new ActionPojo( choreography, new Date(), new Date(), 0, false, false, null, null, actionId );
         }
 
-        ConversationPojo conversation = complete( transactionDao.getConversationByConversationId( conversationId ), false );
+        ConversationPojo conversation = null;
+        // request an conversation lock in order to not overtake parallel i/o activity in this conversation
+        try {
+	        conversationLockManager.lock( conversationId );
+	        conversation = complete( transactionDao.getConversationByConversationId( conversationId ), false );
+        } finally {
+        	conversationLockManager.unlock( conversationId );
+        }
 
         if ( conversation == null ) {
             conversation = new ConversationPojo();
@@ -864,37 +873,52 @@ public class TransactionServiceImpl implements TransactionService {
 
     public Object getSyncObjectForConversation( ConversationPojo conversation ) {
 
-        synchronized (syncObjects) {
-            WeakReference<Object> ref = syncObjects.get( conversation.getConversationId() );
-            Object obj = null;
-            if (ref != null) {
-                obj = ref.get();
-            }
-            
-            // clear out removed weak references
-            List<String> keys = new ArrayList<String>();
-            for (String key : syncObjects.keySet()) {
-                WeakReference<Object> weakRef = syncObjects.get( key );
-                if (weakRef.get() == null) {
-                    keys.add( key );
-                }
-            }
-            
-            for (String key : keys) {
-                syncObjects.remove( key );
-            }
-            
-            if (obj != null) {
-                return obj;
-            }
-            obj = new Object();
-            syncObjects.put( conversation.getConversationId(), new WeakReference<Object>( obj ) );
-            return obj;
-        }
+    	return new Object();
+//        synchronized (syncObjects) {
+//            WeakReference<Object> ref = syncObjects.get( conversation.getConversationId() );
+//            Object obj = null;
+//            if (ref != null) {
+//                obj = ref.get();
+//            }
+//            
+//            // clear out removed weak references
+//            List<String> keys = new ArrayList<String>();
+//            for (String key : syncObjects.keySet()) {
+//                WeakReference<Object> weakRef = syncObjects.get( key );
+//                if (weakRef.get() == null) {
+//                    keys.add( key );
+//                }
+//            }
+//            
+//            for (String key : keys) {
+//                syncObjects.remove( key );
+//            }
+//            
+//            if (obj != null) {
+//                return obj;
+//            }
+//            obj = new Object();
+//            syncObjects.put( conversation.getConversationId(), new WeakReference<Object>( obj ) );
+//            return obj;
+//        }
     }
 
+    /* (non-Javadoc)
+     * @see org.nexuse2e.controller.TransactionService#getConversationLockManager()
+     */
+    public ConversationLockManager getConversationLockManager() {
+		return conversationLockManager;
+	}
     
     /**
+     * Set the {@link ConversationLockManager} to use.
+     * @param conversationLockManager
+     */
+    public void setConversationLockManager( ConversationLockManager conversationLockManager ) {
+		this.conversationLockManager = conversationLockManager;
+	}
+
+	/**
      * @return the dao
      */
     public TransactionDAO getTransactionDao() {

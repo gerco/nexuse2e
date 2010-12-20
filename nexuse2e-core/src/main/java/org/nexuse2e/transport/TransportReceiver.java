@@ -107,7 +107,9 @@ public class TransportReceiver implements Pipelet, ProtocolSpecific {
 
     public MessageContext processMessage( MessageContext data ) throws NexusException {
 
-        LOG.trace( new LogMessage( "TransportReceiver processing message..",data.getMessagePojo()) );
+        if ( LOG.isTraceEnabled() ) {
+            LOG.trace( new LogMessage( "TransportReceiver processing message..",data.getMessagePojo()) );
+        }
         data.setProtocolSpecificKey( getKey() );
 
         return frontendPipeline.processMessage( data );

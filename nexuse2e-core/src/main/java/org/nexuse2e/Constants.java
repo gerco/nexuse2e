@@ -56,8 +56,6 @@ public class Constants {
     // naming postfixes
     public static final String POSTFIX_INBOUND_QUEUE               = "-Inbound-Queue";
     public static final String POSTFIX_OUTBOUND_QUEUE              = "-Outbound-Queue";
-    public static final String POSTFIX_FRONTEND_ACTION_SERIALIZER  = "-Frontend-Action-Serializer";
-    public static final String POSTFIX_BACKEND_ACTION_SERIALIZER   = "-Backend-Action-Serializer";
     public static final String POSTFIX_STATUS_UPDATE_SERIALIZER    = "-Status-Update-Serializer";
 
     public static final String POSTFIX_BACKEND_PIPELINE            = "-Backend-Pipeline";

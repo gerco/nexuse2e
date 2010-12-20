@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,9 +38,8 @@ import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.dao.TransactionDAO;
 import org.nexuse2e.logging.LogMessage;
-import org.nexuse2e.messaging.BackendActionSerializer;
-import org.nexuse2e.messaging.FrontendActionSerializer;
 import org.nexuse2e.messaging.MessageContext;
+import org.nexuse2e.messaging.MessageHandlingCenter;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ConversationPojo;
 import org.nexuse2e.pojo.MessagePojo;
@@ -126,12 +124,8 @@ public class ProcessConversationReportAction extends ReportingAction {
                     if ( messageContext.getMessagePojo().isOutbound() ) {
                         LOG.debug( "Re-queueing outbound message " + messageId + " for choreography " + choreographyId
                                 + " and participant " + participantId );
-                        Map<String, BackendActionSerializer> backendActionSerializers = Engine.getInstance()
-                                .getCurrentConfiguration().getBackendActionSerializers();
-                        BackendActionSerializer backendActionSerializer = backendActionSerializers.get( choreographyId );
-
                         try {
-                            backendActionSerializer.requeueMessage( messageContext, conversationId, messageId );
+                            MessageHandlingCenter.getInstance().requeueMessage( messageContext );
                         } catch ( Exception e ) {
                             ActionMessage errorMessage = new ActionMessage( "generic.error", e.getMessage() );
                             errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
@@ -140,13 +134,8 @@ public class ProcessConversationReportAction extends ReportingAction {
                         LOG.debug( "Re-queueing inbound message " + messageId + " for choreography " + choreographyId
                                 + " and participant " + participantId );
 
-                        Map<String, FrontendActionSerializer> frontendActionSerializers = Engine.getInstance()
-                                .getCurrentConfiguration().getFrontendActionSerializers();
-                        FrontendActionSerializer frontendActionSerializer = frontendActionSerializers
-                                .get( choreographyId );
-
                         try {
-                            frontendActionSerializer.requeueMessage( messageContext, conversationId, messageId );
+                            MessageHandlingCenter.getInstance().requeueMessage( messageContext );
                         } catch ( Exception e ) {
                             ActionMessage errorMessage = new ActionMessage( "generic.error", e.getMessage() );
                             errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );

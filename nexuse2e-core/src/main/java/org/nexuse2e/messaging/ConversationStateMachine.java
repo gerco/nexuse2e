@@ -355,7 +355,9 @@ public class ConversationStateMachine {
             message.setModifiedDate( new Date() );
             message.setEndDate( message.getModifiedDate() );
             
-            LOG.trace( new LogMessage("evaluating followup, current status: "+MessagePojo.getStatusName( message.getStatus() )+"/"+ConversationPojo.getStatusName( conversation.getStatus() ), message) );
+            if ( LOG.isTraceEnabled() ) {
+                LOG.trace( new LogMessage("evaluating followup, current status: "+MessagePojo.getStatusName( message.getStatus() )+"/"+ConversationPojo.getStatusName( conversation.getStatus() ), message) );
+            }
             MessagePojo ack = getAckForMessage( message );
             
             if ( ( conversation.getStatus() == Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND )
@@ -488,12 +490,17 @@ public class ConversationStateMachine {
 				if ( messages.size() > 0 ) {
 					sb.append( "Messages: ");
 					sb.append( "\n" );
-					int i = 1;
-					for ( MessagePojo currMsg : messages ) {
-						sb.append( "\t#" + i++ + "\t" );
-						sb.append( currMsg.toString() );
-						sb.append( "\n" );
-					}
+					try {
+	                    for ( int i = 0; i < messages.size(); i++ ) {
+	                        MessagePojo currMsg = messages.get( i );
+	                        sb.append( "\t#" + ( i + 1 ) + "\t" );
+	                        sb.append( currMsg.toString() );
+	                        sb.append( "\n" );
+	                    }
+	                } catch ( IndexOutOfBoundsException e ) {
+	                    sb.append( "List of messages possibly not complete, because of concurrent modification" );
+	                    sb.append( "\n" );
+	                }
 				}
 			} else {
 				sb.append( "List of messages is null" );

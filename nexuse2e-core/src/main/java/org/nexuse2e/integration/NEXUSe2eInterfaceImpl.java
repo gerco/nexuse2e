@@ -19,8 +19,6 @@
  */
 package org.nexuse2e.integration;
 
-import java.rmi.RemoteException;
-
 import javax.jws.WebService;
 
 import org.apache.log4j.Logger;
@@ -235,11 +233,7 @@ public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
             choreography = cas.getChoreographyByChoreographyId( choreographyId );
             if (choreography == null) {
                 String msg = "No choreography with ID " + choreographyId + " found";
-                if (error == null) {
-                    error = msg;
-                } else {
-                    error += "; " + msg;
-                }
+                error = msg;
             }
         }
         if (businessPartnerId != null) {

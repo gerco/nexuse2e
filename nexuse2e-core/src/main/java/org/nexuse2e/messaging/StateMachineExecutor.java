@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.logging.LogMessage;
+import org.nexuse2e.messaging.sync.ConversationLockManager;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ConversationPojo;
 import org.nexuse2e.pojo.FollowUpActionPojo;
@@ -40,12 +41,12 @@ import org.nexuse2e.pojo.PartnerPojo;
  * This component will verify different aspects of a message, e.g. whether a valid participant and 
  * choreography were provided and whether the business process definition is adhered to.
  *
- * @author gesch
+ * @author gesch, sschulze
  */
 public class StateMachineExecutor {
 
     private static Logger LOG = Logger.getLogger( StateMachineExecutor.class );
-
+    
     /**
      * @param messageContext
      * @param direction
@@ -60,11 +61,14 @@ public class StateMachineExecutor {
 
         messagePojo = messageContext.getMessagePojo();
 
-        LOG.trace( new LogMessage( "messagePojo:" + messagePojo,messagePojo) );
         if ( messagePojo.getConversation() != null ) {
-            LOG.trace( new LogMessage("Conversation:" + messagePojo.getConversation(),messagePojo) );
-            LOG.trace( new LogMessage("Choreography:" + messagePojo.getConversation().getChoreography(),messagePojo) );
-            LOG.debug( new LogMessage("ChoreographyID:" + messagePojo.getConversation().getChoreography().getName(),messagePojo) );
+            if ( LOG.isTraceEnabled() ) {
+                LOG.trace( new LogMessage("Conversation:" + messagePojo.getConversation(),messagePojo) );
+                LOG.trace( new LogMessage("Choreography:" + messagePojo.getConversation().getChoreography(),messagePojo) );
+            }
+            if ( LOG.isDebugEnabled() ) {
+                LOG.debug( new LogMessage("ChoreographyID:" + messagePojo.getConversation().getChoreography().getName(),messagePojo) );
+            }
             choreographyId = messagePojo.getConversation().getChoreography().getName();
         }
 
@@ -208,57 +212,96 @@ public class StateMachineExecutor {
         String currentChoreographyId = messageContext.getMessagePojo().getConversation().getChoreography().getName();
         String currentPartnerId = messageContext.getMessagePojo().getConversation().getPartner().getPartnerId();
 
-        LOG.debug( new LogMessage("MessageId:" + currentMessageId,messageContext.getMessagePojo()) );
-        LOG.debug( new LogMessage("ActionId:" + currentActionId, messageContext.getMessagePojo()) );
-        LOG.debug( new LogMessage("ConversationId:" + currentConversationId,messageContext.getMessagePojo()) );
-        LOG.debug( new LogMessage("ChoreographyId:" + currentChoreographyId,messageContext.getMessagePojo()) );
-        LOG.debug( new LogMessage("PartnerId:" + currentPartnerId,messageContext.getMessagePojo()) );
+        if ( LOG.isDebugEnabled() ) {
+            LOG.debug( new LogMessage("MessageId:" + currentMessageId,messageContext.getMessagePojo()) );
+            LOG.debug( new LogMessage("ActionId:" + currentActionId, messageContext.getMessagePojo()) );
+            LOG.debug( new LogMessage("ConversationId:" + currentConversationId,messageContext.getMessagePojo()) );
+            LOG.debug( new LogMessage("ChoreographyId:" + currentChoreographyId,messageContext.getMessagePojo()) );
+            LOG.debug( new LogMessage("PartnerId:" + currentPartnerId,messageContext.getMessagePojo()) );
+        }
 
         ConversationPojo conversation = messageContext.getMessagePojo().getConversation();
-        if ( LOG.isDebugEnabled() && conversation != null ) {
-        	LOG.debug( conversation.toString() );
-        }
-        if ( messageContext.getMessagePojo().getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
-            if ( conversation.getCurrentAction() == null ) {
-
-                if ( messageContext.getMessagePojo().getAction().isStart() ) {
-                    conversation.setCurrentAction( messageContext.getMessagePojo().getAction() );
-                    return conversation;
-                }
-                // Only process normal message if previous ones have been ack'd
-            } else if ( conversation.getStatus() == Constants.CONVERSATION_STATUS_IDLE
-                    || conversation.getStatus() == Constants.CONVERSATION_STATUS_COMPLETED
-                    || Engine.getInstance().isLenientBackendStateMachine() ) {
-                // follow-up message in conversation. Checking state machine status.
-                String actionId = conversation.getCurrentAction().getName();
-
-                if ( conversation.getStatus() != Constants.CONVERSATION_STATUS_IDLE
-                        && conversation.getStatus() != Constants.CONVERSATION_STATUS_COMPLETED
-                        && Engine.getInstance().isLenientBackendStateMachine() ) {
-                    LOG.debug(new LogMessage( "*** Applied lenientBackendStateMachine: " + currentConversationId + "/"
-                            + currentMessageId,messageContext.getMessagePojo()) );
-                }
-
-                Set<FollowUpActionPojo> followUpActions = conversation.getCurrentAction().getFollowUpActions();
-
-                if ( followUpActions != null ) {
-                    Iterator<FollowUpActionPojo> i = followUpActions.iterator();
-                    while ( i.hasNext() ) {
-                        FollowUpActionPojo followUpAction = i.next();
-                        if ( followUpAction.getAction().getName().equals( actionId )
-                                && followUpAction.getFollowUpAction().getName().equals( currentActionId ) ) {
-                            conversation.setCurrentAction( messageContext.getMessagePojo().getAction() );
-                            // message is valid
-                            return conversation;
-                        }
-                    }
-                }
-
-            }
-        } else {
-            return conversation;
+        if ( conversation != null ) {
+        	// Check for conversation lock in order to synchronize parallel processes on the same conversation
+        	ConversationLockManager conversationLockManager = Engine.getInstance().getTransactionService().getConversationLockManager();
+        	try {
+	        	// lock
+        		conversationLockManager.lock( conversation );
+        		// do it
+		        if ( LOG.isDebugEnabled() ) {
+		        	LOG.debug( conversation.toString() );
+		        }
+		        // check business transition
+		        if ( messageContext.getMessagePojo().getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
+		            // for new conversations allow all start actions
+		            if ( conversation.getCurrentAction() == null ) {
+		                if ( messageContext.getMessagePojo().getAction().isStart() ) {
+		                    conversation.setCurrentAction( messageContext.getMessagePojo().getAction() );
+		                    return conversation;
+		                }
+		            } else if ( isGeneralTransitionRuleMet( conversation.getStatus() )
+		                        || ( messageContext.getMessagePojo().isOutbound()
+		                                && isSpecialOutboundTransitionRuleMet( conversation.getStatus() ) )
+		                        || ( !messageContext.getMessagePojo().isOutbound()
+		                                && isSpecialInboundTransitionRuleMet( conversation.getStatus() ) ) ) {
+		                // follow-up message in conversation. Checking state machine status.
+		                String actionId = conversation.getCurrentAction().getName();
+		
+		                Set<FollowUpActionPojo> followUpActions = conversation.getCurrentAction().getFollowUpActions();
+		
+		                if ( followUpActions != null ) {
+		                    Iterator<FollowUpActionPojo> i = followUpActions.iterator();
+		                    while ( i.hasNext() ) {
+		                        FollowUpActionPojo followUpAction = i.next();
+		                        if ( followUpAction.getAction().getName().equals( actionId )
+		                                && followUpAction.getFollowUpAction().getName().equals( currentActionId ) ) {
+		                            conversation.setCurrentAction( messageContext.getMessagePojo().getAction() );
+		                            // message is valid
+		                            return conversation;
+		                        }
+		                    }
+		                }
+		
+		            }
+		        } else {
+		            return conversation;
+		        }
+        	} finally {
+        		// release conversation lock
+        		conversationLockManager.unlock( conversation );
+        	}
         }
 
         return null;
     } // validateTransition
+    
+    /**
+     * Tests for the general conversation (business) state transition rule.
+     * @param conversationStatus
+     * @return <code>true</code>, if transition is allowed; <code>false</code> otherwise.
+     */
+    protected boolean isGeneralTransitionRuleMet( int conversationStatus ) {
+        return conversationStatus == Constants.CONVERSATION_STATUS_IDLE
+                || conversationStatus == Constants.CONVERSATION_STATUS_COMPLETED;
+    }
+    
+    /**
+     * Tests for the special conversation (business) state transition rule for outbound messages.
+     * @param conversationStatus
+     * @return <code>true</code>, if transition is allowed; <code>false</code> otherwise.
+     */
+    protected boolean isSpecialOutboundTransitionRuleMet( int conversationStatus ) {
+        return conversationStatus == Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND
+                || conversationStatus == Constants.CONVERSATION_STATUS_AWAITING_BACKEND
+                || conversationStatus == Constants.CONVERSATION_STATUS_BACKEND_SENT_SENDING_ACK;
+    }
+    
+    /**
+     * Tests for the special conversation (business) state transition rule for inbound messages.
+     * @param conversationStatus
+     * @return <code>true</code>, if transition is allowed; <code>false</code> otherwise.
+     */
+    protected boolean isSpecialInboundTransitionRuleMet( int conversationStatus ) {
+        return conversationStatus == Constants.CONVERSATION_STATUS_PROCESSING;
+    }
 } // StateMachineExecutor

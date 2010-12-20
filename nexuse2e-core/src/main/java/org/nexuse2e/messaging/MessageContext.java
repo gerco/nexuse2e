@@ -204,7 +204,7 @@ public class MessageContext implements Serializable {
      * @see java.lang.Object#clone()
      */
     @Override
-    protected Object clone() throws CloneNotSupportedException {
+    public Object clone() throws CloneNotSupportedException {
 
         MessageContext clone = new MessageContext();
         clone.setActionSpecificKey( this.getActionSpecificKey() );
@@ -278,7 +278,7 @@ public class MessageContext implements Serializable {
      * or a message that does not have any meaning at all).
      * @param processThroughReturnPipeline If <code>true</code>, indicates that this message context
      * shall be processed through a return pipeline if present. Otherwise, it will not be passed
-     * to any return pielets.
+     * to any return pipelets.
      */
     public void setProcessThroughReturnPipeline( boolean processThroughReturnPipeline ) {
         this.processThroughReturnPipeline = processThroughReturnPipeline;

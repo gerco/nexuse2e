@@ -50,7 +50,6 @@
         <prop key="configuration.share5.path"></prop>
         <prop key="configuration.share5.name"></prop>
         <prop key="database.timestamp.pattern"></prop>
-        <prop key="engine.lenientBackendStateMachine">false</prop>
       </props>
     </property>
     <property name="locations">
@@ -79,8 +78,6 @@
   	<property name="autoStart" value="true" />
   </bean>
 
-
-
   <bean id="baseConfigurationProvider" class="org.nexuse2e.configuration.XmlBaseConfigurationProvider">
     <constructor-arg value="${configuration.base.xmlFile}"/>
   </bean>
@@ -93,7 +90,6 @@
     <property name="certificatePath" value="${certificate.keystorePath.server}" />
     <property name="timestampPattern" value="${database.timestamp.pattern}" />
     <property name="databaseDialect" value="${database.dialect}" />
-    <property name="lenientBackendStateMachine" value="${engine.lenientBackendStateMachine}" />
     <property name="transactionService" ref="transactionService" />
     <property name="configDao" ref="configDao" />
     <property name="defaultCharEncoding" value="${default.charEncoding}" />
@@ -246,12 +242,15 @@
 	  </bean>
  -->
 
+  <bean id="conversationLockManager" class="${conversationLockManager.class}"/>
+
   <bean id="transactionService" class="org.springframework.aop.framework.ProxyFactoryBean">
 	<property name="proxyInterfaces"><value>org.nexuse2e.controller.TransactionService</value></property>
 	<property name="target">
 	  <bean class="org.nexuse2e.controller.TransactionServiceImpl">
 	  	<property name="transactionDao" ref="transactionDao"/>
 	  	<property name="logDao" ref="logDao"/>
+	  	<property name="conversationLockManager" ref="conversationLockManager"/>
 	  </bean>
 	</property>
 	<property name="interceptorNames">
@@ -260,11 +259,6 @@
 	  </list>
 	</property>
   </bean>
-
- 
-
-
-
 
 
   <!-- ui structure -->

@@ -53,11 +53,9 @@ import org.nexuse2e.ProtocolSpecificKey;
 import org.nexuse2e.backend.BackendPipelineDispatcher;
 import org.nexuse2e.configuration.Constants.ComponentType;
 import org.nexuse2e.configuration.Constants.ParameterType;
-import org.nexuse2e.messaging.BackendActionSerializer;
 import org.nexuse2e.messaging.BackendInboundDispatcher;
 import org.nexuse2e.messaging.BackendOutboundDispatcher;
 import org.nexuse2e.messaging.BackendPipeline;
-import org.nexuse2e.messaging.FrontendActionSerializer;
 import org.nexuse2e.messaging.FrontendInboundDispatcher;
 import org.nexuse2e.messaging.FrontendInboundResponseEndpoint;
 import org.nexuse2e.messaging.FrontendOutboundDispatcher;
@@ -92,7 +90,7 @@ import org.nexuse2e.util.EncryptionUtil;
 import org.springframework.context.support.ApplicationObjectSupport;
 
 /**
- * @author gesch
+ * @author gesch, sschulze
  *
  */
 @XmlRootElement(name = "NEXUSe2eConfiguration")
@@ -107,10 +105,8 @@ public class EngineConfiguration implements ConfigurationAccessService {
     private Map<ActionSpecificKey, BackendPipeline> backendOutboundPipelines  = new HashMap<ActionSpecificKey, BackendPipeline>();
     private Map<TRPPojo, FrontendPipeline>          frontendInboundPipelines  = new HashMap<TRPPojo, FrontendPipeline>();
     private Map<TRPPojo, FrontendPipeline>          frontendOutboundPipelines = new HashMap<TRPPojo, FrontendPipeline>();
-    private Map<String, FrontendActionSerializer>   frontendActionSerializers = new HashMap<String, FrontendActionSerializer>();
     private Map<String, StatusUpdateSerializer>     statusUpdateSerializers   = new HashMap<String, StatusUpdateSerializer>();
     private Map<ActionSpecificKey, BackendPipeline> statusUpdatePipelines     = new HashMap<ActionSpecificKey, BackendPipeline>();
-    private Map<String, BackendActionSerializer>    backendActionSerializers  = new HashMap<String, BackendActionSerializer>();
     private StaticBeanContainer                     staticBeanContainer       = null;
 
     private long                                    timestamp;
@@ -491,21 +487,12 @@ public class EngineConfiguration implements ConfigurationAccessService {
         backendOutboundPipelines = new HashMap<ActionSpecificKey, BackendPipeline>();
         frontendInboundPipelines = new HashMap<TRPPojo, FrontendPipeline>();
         frontendOutboundPipelines = new HashMap<TRPPojo, FrontendPipeline>();
-        frontendActionSerializers = new HashMap<String, FrontendActionSerializer>();
         statusUpdateSerializers = new HashMap<String, StatusUpdateSerializer>();
         statusUpdatePipelines = new HashMap<ActionSpecificKey, BackendPipeline>();
-        backendActionSerializers = new HashMap<String, BackendActionSerializer>();
 
         Iterator<ChoreographyPojo> choreographiesI = getChoreographies().iterator();
         while ( choreographiesI.hasNext() ) {
             ChoreographyPojo choreography = (ChoreographyPojo) choreographiesI.next();
-
-            // FrontendActionSerializer
-            FrontendActionSerializer frontendActionSerializer = new FrontendActionSerializer( choreography.getName() );
-            staticBeanContainer.getManagableBeans().put(
-                    frontendActionSerializer.getChoreographyId()
-                            + org.nexuse2e.Constants.POSTFIX_FRONTEND_ACTION_SERIALIZER, frontendActionSerializer );
-            getFrontendActionSerializers().put( frontendActionSerializer.getChoreographyId(), frontendActionSerializer );
 
             // StatusUpdateSerializer
             StatusUpdateSerializer statusUpdateSerializer = new StatusUpdateSerializer( choreography.getName() );
@@ -513,13 +500,6 @@ public class EngineConfiguration implements ConfigurationAccessService {
                     statusUpdateSerializer.getChoreographyId()
                             + org.nexuse2e.Constants.POSTFIX_STATUS_UPDATE_SERIALIZER, statusUpdateSerializer );
             getStatusUpdateSerializers().put( statusUpdateSerializer.getChoreographyId(), statusUpdateSerializer );
-
-            // BackendActionSerializer
-            BackendActionSerializer backendActionSerializer = new BackendActionSerializer( choreography.getName() );
-            staticBeanContainer.getManagableBeans().put(
-                    backendActionSerializer.getChoreographyId()
-                            + org.nexuse2e.Constants.POSTFIX_BACKEND_ACTION_SERIALIZER, backendActionSerializer );
-            getBackendActionSerializers().put( backendActionSerializer.getChoreographyId(), backendActionSerializer );
 
             // Backend & Status Update pipelines
             Set<ActionPojo> actions = choreography.getActions();
@@ -701,9 +681,6 @@ public class EngineConfiguration implements ConfigurationAccessService {
                             forwardPipelets[i] = pipelet;
                         } else {
                             String urlAppendix = "" + pipeletPojo.getNxPipeletId();
-                            if ( urlAppendix == null ) {
-                                urlAppendix = pipeletPojo.getName();
-                            }
 
                             TransportReceiver transportReceiver = (TransportReceiver) Engine.getInstance()
                                     .getEngineController().getTransportReceiver( urlAppendix,
@@ -935,22 +912,6 @@ public class EngineConfiguration implements ConfigurationAccessService {
     }
 
     /**
-     * @return the frontendActionSerializers
-     */
-    public Map<String, FrontendActionSerializer> getFrontendActionSerializers() {
-
-        return frontendActionSerializers;
-    }
-
-    /**
-     * @param frontendActionSerializers the frontendActionSerializers to set
-     */
-    public void setFrontendActionSerializers( HashMap<String, FrontendActionSerializer> frontendActionSerializers ) {
-
-        this.frontendActionSerializers = frontendActionSerializers;
-    }
-
-    /**
      * @return the backendPipelines
      */
     public Map<ActionSpecificKey, BackendPipeline> getBackendInboundPipelines() {
@@ -1000,22 +961,6 @@ public class EngineConfiguration implements ConfigurationAccessService {
     public void setStatusUpdateSerializers( Map<String, StatusUpdateSerializer> statusUpdateSerializers ) {
 
         this.statusUpdateSerializers = statusUpdateSerializers;
-    }
-
-    /**
-     * @return the backendActionSerializers
-     */
-    public Map<String, BackendActionSerializer> getBackendActionSerializers() {
-
-        return backendActionSerializers;
-    }
-
-    /**
-     * @param backendActionSerializers the backendActionSerializers to set
-     */
-    public void setBackendActionSerializers( HashMap<String, BackendActionSerializer> backendActionSerializers ) {
-
-        this.backendActionSerializers = backendActionSerializers;
     }
 
     /**
@@ -1506,8 +1451,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
     /* (non-Javadoc)
      * @see org.nexuse2e.configuration.ConfigurationAccessService#getComponents(org.nexuse2e.configuration.Constants.ComponentType, java.util.Comparator)
      */
-    @SuppressWarnings("unchecked")
-    public List<ComponentPojo> getComponents( ComponentType type, Comparator comparator ) throws NexusException {
+    public List<ComponentPojo> getComponents( ComponentType type, Comparator<ComponentPojo> comparator ) throws NexusException {
 
         List<ComponentPojo> filteredList = null;
         if ( type != ComponentType.ALL ) {
@@ -1529,13 +1473,12 @@ public class EngineConfiguration implements ConfigurationAccessService {
     /* (non-Javadoc)
      * @see org.nexuse2e.configuration.ConfigurationAccessService#getPipelets(boolean)
      */
-    @SuppressWarnings("unchecked")
     public List<ComponentPojo> getPipelets( boolean frontend ) throws NexusException {
 
         Pipelet pipelet = null;
         List<ComponentPojo> components = getComponents( ComponentType.PIPELET, Constants.COMPONENTCOMPARATOR );
         List<ComponentPojo> filteredList = new ArrayList<ComponentPojo>();
-        for ( Iterator iter = components.iterator(); iter.hasNext(); ) {
+        for ( Iterator<ComponentPojo> iter = components.iterator(); iter.hasNext(); ) {
             ComponentPojo componentPojo = (ComponentPojo) iter.next();
             try {
                 Object tempObject = Class.forName( componentPojo.getClassName() ).newInstance();
@@ -1562,8 +1505,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
     /* (non-Javadoc)
      * @see org.nexuse2e.configuration.ConfigurationAccessService#getPartners(int, java.util.Comparator)
      */
-    @SuppressWarnings("unchecked")
-    public List<PartnerPojo> getPartners( int type, Comparator comparator ) throws NexusException {
+    public List<PartnerPojo> getPartners( int type, Comparator<PartnerPojo> comparator ) throws NexusException {
 
         List<PartnerPojo> filteredList = null;
         if ( type != Constants.PARTNER_TYPE_ALL ) {
@@ -1588,8 +1530,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
     /* (non-Javadoc)
      * @see org.nexuse2e.configuration.ConfigurationAccessService#getCertificates(int, java.util.Comparator)
      */
-    @SuppressWarnings("unchecked")
-    public List<CertificatePojo> getCertificates( int type, Comparator comparator ) throws NexusException {
+    public List<CertificatePojo> getCertificates( int type, Comparator<CertificatePojo> comparator ) throws NexusException {
 
         List<CertificatePojo> filteredList = null;
         if ( type != 0 ) {

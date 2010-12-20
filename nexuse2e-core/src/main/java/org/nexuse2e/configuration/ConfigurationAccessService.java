@@ -46,7 +46,7 @@ import org.nexuse2e.pojo.UserPojo;
 import org.nexuse2e.service.Service;
 
 /**
- * @author gesch
+ * @author gesch, sschulze
  *
  */
 public interface ConfigurationAccessService {
@@ -166,9 +166,8 @@ public interface ConfigurationAccessService {
      * @return
      * @throws NexusException
      */
-    @SuppressWarnings("unchecked")
     public abstract List<ComponentPojo> getComponents(ComponentType type,
-            Comparator comparator) throws NexusException;
+            Comparator<ComponentPojo> comparator) throws NexusException;
 
     public abstract List<ComponentPojo> getPipelets(boolean frontend)
             throws NexusException;
@@ -179,9 +178,8 @@ public interface ConfigurationAccessService {
      * @return
      * @throws NexusException
      */
-    @SuppressWarnings("unchecked")
     public abstract List<PartnerPojo> getPartners(int type,
-            Comparator comparator) throws NexusException;
+            Comparator<PartnerPojo> comparator) throws NexusException;
 
     /**
      * @param type 0=all, 1=local, 2=partner
@@ -189,9 +187,8 @@ public interface ConfigurationAccessService {
      * @return
      * @throws NexusException
      */
-    @SuppressWarnings("unchecked")
     public abstract List<CertificatePojo> getCertificates(int type,
-            Comparator comparator) throws NexusException;
+            Comparator<CertificatePojo> comparator) throws NexusException;
 
     /**
      * @param type

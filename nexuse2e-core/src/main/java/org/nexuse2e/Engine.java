@@ -121,9 +121,6 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     private String                           timestampPattern               = null;
     private String							 defaultCharEncoding			= null;
 
-    // TRUE to allow submission of business reply while inbound pipeline is blocking/synchronously
-    private boolean                          lenientBackendStateMachine      = false;
-
     private MimetypesFileTypeMap             mimetypesFileTypeMap           = null;
 
     static {
@@ -164,7 +161,6 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
             throw new InstantiationException( "No beanFactory found!" );
         }
         LOG.debug( "EngineId: " + getBeanId() );
-        LOG.debug( "lenientBackendStateMachine: " + lenientBackendStateMachine );
     }
 
     /**
@@ -1348,18 +1344,6 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     public void setDatabaseDialect( String databaseDialect ) {
 
         this.databaseDialect = databaseDialect;
-    }
-
-    
-    public boolean isLenientBackendStateMachine() {
-    
-        return lenientBackendStateMachine;
-    }
-
-    
-    public void setLenientBackendStateMachine( boolean lenientBackendStateMachine ) {
-    
-        this.lenientBackendStateMachine = lenientBackendStateMachine;
     }
 
     

@@ -44,7 +44,7 @@ import org.springframework.beans.factory.InitializingBean;
  * Additionally the message is checked for consistency with the messaging protocol it belongs to and processing
  * fails if any inconsistencies are detected.
  *
- * @author gesch
+ * @author gesch, sschulze
  */
 public class BackendOutboundDispatcher extends StateMachineExecutor implements Pipelet, InitializingBean {
 
@@ -52,7 +52,6 @@ public class BackendOutboundDispatcher extends StateMachineExecutor implements P
                                                                                     .getLogger( BackendOutboundDispatcher.class );
 
     private ProtocolAdapter[]                    protocolAdapters;
-    private Map<String, BackendActionSerializer> backendActionSerializers   = new HashMap<String, BackendActionSerializer>();
 
     private FrontendInboundDispatcher            frontendInboundDispatcher  = null;
     private FrontendOutboundDispatcher           frontendOutboundDispatcher = null;
@@ -92,10 +91,7 @@ public class BackendOutboundDispatcher extends StateMachineExecutor implements P
         protocolAdapter.addProtcolSpecificParameters( messageContext );
 
         // Forward the message to check the transistion, persist it and pass to backend
-        BackendActionSerializer backendActionSerializer = backendActionSerializers.get( messageContext.getMessagePojo()
-                .getConversation().getChoreography().getName() );
-
-        backendActionSerializer.processMessage( messageContext );
+        MessageHandlingCenter.getInstance().processMessage( messageContext );
 
         return messageContext;
     } // processMessage
@@ -127,11 +123,9 @@ public class BackendOutboundDispatcher extends StateMachineExecutor implements P
 
                     if ( ( messageContext != null ) && messagePojo.isOutbound() ) {
                         LOG.debug(new LogMessage(  "Recovered message: " + messagePojo.getMessageId(),messagePojo) );
-                        BackendActionSerializer backendActionSerializer = backendActionSerializers.get( messagePojo
-                                .getConversation().getChoreography().getName() );
 
                         time = System.currentTimeMillis();
-                        backendActionSerializer.requeueMessage( messageContext );
+                        MessageHandlingCenter.getInstance().requeueMessage( messageContext );
                         totalQueueingTime += ( System.currentTimeMillis() - time );
                     }
                 } catch ( Exception ex ) {
@@ -227,10 +221,6 @@ public class BackendOutboundDispatcher extends StateMachineExecutor implements P
         if ( frontendInboundDispatcher == null ) {
             status = BeanStatus.ERROR;
         }
-        backendActionSerializers = config.getBackendActionSerializers();
-        if ( backendActionSerializers == null ) {
-            status = BeanStatus.ERROR;
-        }
         status = BeanStatus.INITIALIZED;
     }
 
@@ -279,22 +269,6 @@ public class BackendOutboundDispatcher extends StateMachineExecutor implements P
 
         // TODO Auto-generated method stub
         return false;
-    }
-
-    /**
-     * @return the backendActionSerializers
-     */
-    public Map<String, BackendActionSerializer> getBackendActionSerializers() {
-
-        return backendActionSerializers;
-    }
-
-    /**
-     * @param backendActionSerializers The <code>HashMap</code> of <code>BackendActionSerializer</code> instances to set.
-     */
-    public void setBackendActionSerializers( HashMap<String, BackendActionSerializer> backendActionSerializers ) {
-
-        this.backendActionSerializers = backendActionSerializers;
     }
 
     /* (non-Javadoc)

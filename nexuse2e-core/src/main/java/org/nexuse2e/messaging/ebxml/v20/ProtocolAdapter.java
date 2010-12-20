@@ -52,7 +52,14 @@ public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
      */
     public MessageContext createAcknowledgement( ChoreographyPojo choreography, MessageContext messageContext )
             throws NexusException {
-
+        
+        MessageContext ackMessageContext = null;
+        try {
+            ackMessageContext = (MessageContext) messageContext.clone();
+        } catch ( CloneNotSupportedException e ) {
+            throw new NexusException( new LogMessage( "Cannot clone message context to create an acknowledgment: " + e.getMessage(), messageContext ), e );
+        }
+        
         String currentMessageId = messageContext.getMessagePojo().getMessageId();
         String currentPartnerId = messageContext.getMessagePojo().getConversation().getPartner().getPartnerId();
 
@@ -74,9 +81,9 @@ public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
         } catch ( NexusException e ) {
             LOG.fatal( "Unable to create AcknowldegeMessageId for message: " + currentMessageId );
             e.printStackTrace();
-            messageContext.setMessagePojo( null );
-            messageContext.setOriginalMessagePojo( null );
-            return messageContext;
+            ackMessageContext.setMessagePojo( null );
+            ackMessageContext.setOriginalMessagePojo( null );
+            return ackMessageContext;
         }
         acknowledgment.setMessageId( messageId );
 
@@ -86,9 +93,9 @@ public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
                 currentPartnerId );
 
         if ( partner == null ) {
-            messageContext.setMessagePojo( null );
+            ackMessageContext.setMessagePojo( null );
             LOG.error( "No partner entry found for partnerId: " + currentPartnerId );
-            return messageContext;
+            return ackMessageContext;
         }
         ParticipantPojo participant = Engine.getInstance().getActiveConfigurationAccessService()
                 .getParticipantFromChoreographyByPartner(
@@ -110,9 +117,9 @@ public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
         acknowledgment.setConversation( messageContext.getMessagePojo().getConversation() );
         acknowledgment.setOutbound( true );
 
-        messageContext.setMessagePojo( acknowledgment );
+        ackMessageContext.setMessagePojo( acknowledgment );
 
-        return messageContext;
+        return ackMessageContext;
     } // createAcknowledgement
 
     /* (non-Javadoc)
