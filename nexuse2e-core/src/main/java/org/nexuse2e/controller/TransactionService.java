@@ -135,9 +135,10 @@ public interface TransactionService extends Manageable {
     public abstract MessagePojo getMessage( String messageId, boolean isReferencedMessageId ) throws NexusException;
 
     /**
-     * @param messageId
-     * @return
-     * @throws NexusException
+     * Creates a message context for the message with the given message ID if the message exists.
+     * @param messageId The message ID. Must not be <code>null</code>.
+     * @return The message context, or <code>null</code> if no such message ID was found.
+     * @throws NexusException If something went wrong.
      */
     public abstract MessageContext getMessageContext( String messageId ) throws NexusException;
     
@@ -454,16 +455,43 @@ public interface TransactionService extends Manageable {
      */
     public abstract List<LogPojo> getLogEntriesForReport( String severity, String messageText, Date start, Date end,
             int itemsPerPage, int page, int field, boolean ascending ) throws NexusException;
+
+    /**
+     * Gets the log entries for the given severity level, conversation and message ID.
+     * @param severity The severity. <code>null</code> for all levels.
+     * @param conversationId The conversation ID. May be <code>null</code> if <code>messageId</code> is non-<code>null</code>.
+     * @param messageId The message ID. May be <code>null</code> if <code>conversationId</code> is non-<code>null</code>.
+     * @param ascending <code>true</code> if returned list order shall be log entry creation date ascending. Otherwise,
+     * returned list order will be log entry creation date descending.
+     * @return A list of <code>LogPojo</code> objects, not <code>null</code>.
+     * @throws NexusException If something went wrong.
+     */
+    public abstract List<LogPojo> getLogEntriesForReport( String severity, String conversationId, String messageId, boolean ascending ) throws NexusException;
     
     /**
-     * @param severity
-     * @param conversationId
-     * @param messageId
-     * @param ascending
-     * @return
-     * @throws NexusException
+     * Gets the log entries for the given severity level, conversation and message ID, page number and page size.
+     * @param severity The severity. <code>null</code> for all levels.
+     * @param conversationId The conversation ID. May be <code>null</code> if <code>messageId</code> is non-<code>null</code>.
+     * @param messageId The message ID. May be <code>null</code> if <code>conversationId</code> is non-<code>null</code>.
+     * @param itemsPerPage The maximum number of items to be returned.
+     * @param page The page number, index 0 will be first page.
+     * @param ascending <code>true</code> if returned list order shall be log entry creation date ascending. Otherwise,
+     * returned list order will be log entry creation date descending.
+     * @return A list of <code>LogPojo</code> objects, not <code>null</code>.
+     * @throws NexusException If something went wrong.
      */
-    public abstract List<LogPojo> getLogEntriesForReport( String severity,String conversationId, String messageId, boolean ascending ) throws NexusException;
+    public abstract List<LogPojo> getLogEntriesForReport(
+            String severity, String conversationId, String messageId, int itemsPerPage, int page, boolean ascending ) throws NexusException;
+    
+    /**
+     * Gets the log entry count for the given severity level, conversation and message ID.
+     * @param severity The severity. <code>null</code> for all levels.
+     * @param conversationId The conversation ID. May be <code>null</code> if <code>messageId</code> is non-<code>null</code>.
+     * @param messageId The message ID. May be <code>null</code> if <code>conversationId</code> is non-<code>null</code>.
+     * @return The entry count.
+     * @throws NexusException If something went wrong.
+     */
+    public abstract int getLogEntriesForReportCount( String severity, String conversationId, String messageId ) throws NexusException;
     
    
     

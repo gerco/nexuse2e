@@ -95,7 +95,7 @@ public class WSDispatcherService extends AbstractService {
             CallbackHandler callback = new CallbackHandler() {
                 public void handle( Callback[] callbacks ) throws IOException, UnsupportedCallbackException {
                     WSPasswordCallback pc = (WSPasswordCallback) callbacks[0];
-                    String user = pc.getIdentifer();
+                    String user = pc.getIdentifier();
                     String pass = null;
                     try {
                         pass = PasswordUtil.hashPassword( pc.getPassword() );
@@ -109,7 +109,7 @@ public class WSDispatcherService extends AbstractService {
 
                         // check password
                         if  (userInstance == null || !userInstance.getPassword().equals( pass )) {
-                            String m = "User " + pc.getIdentifer() + " tried to access NEXUSe2eInfo web service with an incorrect password";
+                            String m = "User " + pc.getIdentifier() + " tried to access NEXUSe2eInfo web service with an incorrect password";
                             LOG.error( m );
                             throw new SecurityException( m );
                         }

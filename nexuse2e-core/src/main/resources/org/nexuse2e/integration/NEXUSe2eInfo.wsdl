@@ -225,6 +225,262 @@
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
+            <xsd:element name="requeueMessage">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element maxOccurs="1" minOccurs="1" name="messageId" nillable="true" type="xsd:string" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="requeueMessageResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="requeueResult" maxOccurs="1" minOccurs="1">
+                            <xsd:simpleType>
+                                <xsd:restriction base="xsd:string">
+                                    <xsd:enumeration value="SUCCESS"/>
+                                    <xsd:enumeration value="ERROR"/>
+                                    <xsd:enumeration value="NOT_FOUND"/>
+                                </xsd:restriction>
+                            </xsd:simpleType>
+                        </xsd:element>
+                        <xsd:element name="requeueResultMessage" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="stopMessage">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element maxOccurs="1" minOccurs="1" name="messageId" nillable="true" type="xsd:string" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="stopMessageResponse">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="stopResult" maxOccurs="1" minOccurs="1">
+                            <xsd:simpleType>
+                                <xsd:restriction base="xsd:string">
+                                    <xsd:enumeration value="SUCCESS"/>
+                                    <xsd:enumeration value="ERROR"/>
+                                    <xsd:enumeration value="NOT_FOUND"/>
+                                </xsd:restriction>
+                            </xsd:simpleType>
+                        </xsd:element>
+                        <xsd:element name="stopResultMessage" maxOccurs="1" minOccurs="0" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:simpleType name="conversationStatus">
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="ERROR"/>
+                    <xsd:enumeration value="UNKNOWN"/>
+                    <xsd:enumeration value="CREATED"/>
+                    <xsd:enumeration value="PROCESSING"/>
+                    <xsd:enumeration value="AWAITING_ACK"/>
+                    <xsd:enumeration value="SENDING_ACK"/>
+                    <xsd:enumeration value="ACK_SENT_AWAITING_BACKEND"/>
+                    <xsd:enumeration value="AWAITING_BACKEND"/>
+                    <xsd:enumeration value="BACKEND_SENT_SENDING_ACK"/>
+                    <xsd:enumeration value="COMPLETED"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+            <xsd:simpleType name="messageType">
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="UNKNOWN"/>
+                    <xsd:enumeration value="NORMAL"/>
+                    <xsd:enumeration value="ACK"/>
+                    <xsd:enumeration value="ERROR"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+            <xsd:simpleType name="messageStatus">
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="FAILED"/>
+                    <xsd:enumeration value="UNKNOWN"/>
+                    <xsd:enumeration value="RETRYING"/>
+                    <xsd:enumeration value="QUEUED"/>
+                    <xsd:enumeration value="SENT"/>
+                    <xsd:enumeration value="STOPPED"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+            <xsd:complexType name="conversationFilter">
+                <xsd:sequence>
+                  <xsd:element maxOccurs="1" minOccurs="0" name="status" nillable="true" type="ws:conversationStatus" />
+                    <xsd:element maxOccurs="1" minOccurs="0" name="choreographyId" nillable="true" type="xsd:string" />
+                    <xsd:element maxOccurs="1" minOccurs="0" name="businessPartnerId" nillable="true" type="xsd:string" />
+                    <xsd:element maxOccurs="1" minOccurs="0" name="conversationId" nillable="true" type="xsd:string" />
+                    <xsd:element maxOccurs="1" minOccurs="0" name="afterDate" nillable="true" type="xsd:dateTime" />
+                    <xsd:element maxOccurs="1" minOccurs="0" name="beforeDate" nillable="true" type="xsd:dateTime" />
+                    <xsd:element maxOccurs="1" minOccurs="0" name="itemsPerPage" nillable="true" type="xsd:int" />
+                    <xsd:element maxOccurs="1" minOccurs="0" name="pageNumber" nillable="true" type="xsd:int" />
+                    <xsd:element maxOccurs="1" minOccurs="0" name="ascending" nillable="true" type="xsd:boolean" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="messageFilter">
+                <xsd:sequence>
+                    <xsd:element maxOccurs="1" minOccurs="0" name="status" nillable="true" type="ws:messageStatus" />
+                    <xsd:element maxOccurs="1" minOccurs="0" name="choreographyId" nillable="true" type="xsd:string" />
+                    <xsd:element maxOccurs="1" minOccurs="0" name="businessPartnerId" nillable="true" type="xsd:string" />
+                    <xsd:element maxOccurs="1" minOccurs="0" name="conversationId" nillable="true" type="xsd:string" />
+                    <xsd:element maxOccurs="1" minOccurs="0" name="messageId" nillable="true" type="xsd:string" />
+                    <xsd:element maxOccurs="1" minOccurs="0" name="type" nillable="true" type="ws:messageType" />
+                    <xsd:element maxOccurs="1" minOccurs="0" name="afterDate" nillable="true" type="xsd:dateTime" />
+                    <xsd:element maxOccurs="1" minOccurs="0" name="beforeDate" nillable="true" type="xsd:dateTime" />
+                    <xsd:element maxOccurs="1" minOccurs="0" name="itemsPerPage" nillable="true" type="xsd:int" />
+                    <xsd:element maxOccurs="1" minOccurs="0" name="pageNumber" nillable="true" type="xsd:int" />
+                    <xsd:element maxOccurs="1" minOccurs="0" name="ascending" nillable="true" type="xsd:boolean" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="trp">
+                <xsd:sequence minOccurs="1" maxOccurs="1">
+                    <xsd:element minOccurs="1" maxOccurs="1" name="protocol" type="xsd:string" />
+                    <xsd:element minOccurs="1" maxOccurs="1" name="version" type="xsd:string" />
+                    <xsd:element minOccurs="1" maxOccurs="1" name="transport" type="xsd:string" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="messagePayload">
+                <xsd:simpleContent>
+                    <xsd:extension base="xsd:base64Binary">
+                        <xsd:attribute name="id" use="required" type="xsd:string"/>
+                        <xsd:attribute name="sequenceNumber" use="required" type="xsd:int"/>
+                        <xsd:attribute name="size" use="optional" type="xsd:int"/>
+                        <xsd:attribute name="charset" use="optional" type="xsd:string"/>
+                        <xsd:attribute name="payloadIncluded" use="required" type="xsd:boolean"/>
+                    </xsd:extension>
+                </xsd:simpleContent>
+            </xsd:complexType>
+            <xsd:complexType name="messagePayloads">
+                <xsd:sequence>
+                    <xsd:element minOccurs="0" maxOccurs="unbounded" name="payload" type="ws:messagePayload"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="messageDetails">
+                <xsd:sequence minOccurs="1" maxOccurs="1">
+                    <xsd:element name="trp" type="ws:trp" />
+                    <xsd:element name="payloads" type="ws:messagePayloads"/>
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="message">
+                <xsd:complexContent>
+                    <xsd:extension base="ws:messageDetails">
+                        <xsd:attribute name="id" use="required" type="xsd:string"/>
+                        <xsd:attribute name="outbound" use="required" type="xsd:boolean"/>
+                        <xsd:attribute name="type" use="required" type="ws:messageType"/>
+                        <xsd:attribute name="status" use="required" type="ws:messageStatus"/>
+                        <xsd:attribute name="retries" use="required" type="xsd:int"/>
+                        <xsd:attribute name="actionId" use="required" type="xsd:string"/>
+                        <xsd:attribute name="choreographyId" use="optional" type="xsd:string"/>
+                        <xsd:attribute name="createdDate" use="required" type="xsd:dateTime" />
+                        <xsd:attribute name="modifiedDate" use="required" type="xsd:dateTime" />
+                    </xsd:extension>
+                </xsd:complexContent>
+            </xsd:complexType>
+            <xsd:complexType name="messages">
+                <xsd:sequence>
+                    <xsd:element minOccurs="0" maxOccurs="unbounded" name="message" type="ws:message" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="conversationMessages">
+                <xsd:sequence>
+                    <xsd:element name="messages" type="ws:messages" />
+                </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="conversation">
+                <xsd:complexContent>
+                    <xsd:extension base="ws:conversationMessages">
+                        <xsd:attribute name="id" use="required" type="xsd:string"/>
+                        <xsd:attribute name="choreographyId" use="required" type="xsd:string" />
+                        <xsd:attribute name="businessPartnerId" use="required" type="xsd:string" />
+                        <xsd:attribute name="status" use="required" type="ws:conversationStatus" />
+                        <xsd:attribute name="currentActionId" use="required" type="xsd:string" />
+                        <xsd:attribute name="createdDate" use="required" type="xsd:dateTime" />
+                        <xsd:attribute name="modifiedDate" use="required" type="xsd:dateTime" />
+                    </xsd:extension>
+                </xsd:complexContent>
+            </xsd:complexType>
+            <xsd:element name="getConversations">
+                <xsd:complexType>
+                    <xsd:sequence minOccurs="1" maxOccurs="1">
+                        <xsd:element name="conversationFilter" type="ws:conversationFilter" minOccurs="1" maxOccurs="1" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="getConversationsResponse">
+                <xsd:complexType>
+                    <xsd:sequence maxOccurs="unbounded">
+                        <xsd:element name="conversation" minOccurs="0" maxOccurs="unbounded" type="ws:conversation"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="getConversationCount">
+                <xsd:complexType>
+                    <xsd:sequence minOccurs="1" maxOccurs="1">
+                        <xsd:element name="conversationFilter" type="ws:conversationFilter" minOccurs="1" maxOccurs="1" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="getConversationCountResponse">
+                <xsd:complexType>
+                    <xsd:sequence minOccurs="1" maxOccurs="1">
+                        <xsd:element name="count" type="xsd:int" minOccurs="1" maxOccurs="1" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="getMessages">
+                <xsd:complexType>
+                    <xsd:sequence minOccurs="1" maxOccurs="1">
+                        <xsd:element name="messageFilter" type="ws:messageFilter" minOccurs="1" maxOccurs="1" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="getMessagesResponse">
+                <xsd:complexType>
+                    <xsd:sequence minOccurs="1" maxOccurs="1">
+                        <xsd:element name="messages" type="ws:messages"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="getMessageCount">
+                <xsd:complexType>
+                    <xsd:sequence minOccurs="1" maxOccurs="1">
+                        <xsd:element name="messageFilter" type="ws:messageFilter" minOccurs="1" maxOccurs="1" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="getMessageCountResponse">
+                <xsd:complexType>
+                    <xsd:sequence minOccurs="1" maxOccurs="1">
+                        <xsd:element name="count" type="xsd:int" minOccurs="1" maxOccurs="1" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="getConversationLogMessages">
+                <xsd:complexType>
+                    <xs:sequence>
+                        <xsd:element name="itemsPerPage" maxOccurs="1" minOccurs="0" nillable="true" type="xsd:int" />
+                        <xsd:element name="pageNumber" maxOccurs="1" minOccurs="0" nillable="true" type="xsd:int" />
+                        <xs:choice>
+                            <xsd:element name="conversationId" type="xsd:string" minOccurs="1" maxOccurs="1" />
+                            <xsd:element name="messageId" type="xsd:string" minOccurs="1" maxOccurs="1" />
+                        </xs:choice>
+                    </xs:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="getConversationLogMessageCount">
+                <xsd:complexType>
+                    <xs:choice>
+                        <xsd:element name="conversationId" type="xsd:string" minOccurs="1" maxOccurs="1" />
+                        <xsd:element name="messageId" type="xsd:string" minOccurs="1" maxOccurs="1" />
+                    </xs:choice>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="getConversationLogMessageCountResponse">
+                <xsd:complexType>
+                    <xsd:sequence minOccurs="1" maxOccurs="1">
+                        <xsd:element name="count" type="xsd:int" minOccurs="1" maxOccurs="1" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
         </xsd:schema>
     </wsdl:types>
     <wsdl:message name="getNexusVersion">
@@ -311,6 +567,54 @@
     <wsdl:message name="sendNewStringMessageResponse">
         <wsdl:part element="ws:sendNewStringMessageResponse" name="sendNewStringMessageResponse" />
     </wsdl:message>
+    <wsdl:message name="requeueMessage">
+        <wsdl:part element="ws:requeueMessage" name="requeueMessage" />
+    </wsdl:message>
+    <wsdl:message name="requeueMessageResponse">
+        <wsdl:part element="ws:requeueMessageResponse" name="requeueMessageResponse" />
+    </wsdl:message>
+    <wsdl:message name="stopMessage">
+        <wsdl:part element="ws:stopMessage" name="stopMessage" />
+    </wsdl:message>
+    <wsdl:message name="stopMessageResponse">
+        <wsdl:part element="ws:stopMessageResponse" name="stopMessageResponse" />
+    </wsdl:message>
+    <wsdl:message name="getConversations">
+        <wsdl:part element="ws:getConversations" name="getConversations" />
+    </wsdl:message>
+    <wsdl:message name="getConversationsResponse">
+        <wsdl:part element="ws:getConversationsResponse" name="getConversationsResponse" />
+    </wsdl:message>
+    <wsdl:message name="getConversationCount">
+        <wsdl:part element="ws:getConversationCount" name="getConversationCount" />
+    </wsdl:message>
+    <wsdl:message name="getConversationCountResponse">
+        <wsdl:part element="ws:getConversationCountResponse" name="getConversationCountResponse" />
+    </wsdl:message>
+    <wsdl:message name="getMessages">
+        <wsdl:part element="ws:getMessages" name="getMessages" />
+    </wsdl:message>
+    <wsdl:message name="getMessagesResponse">
+        <wsdl:part element="ws:getMessagesResponse" name="getMessagesResponse" />
+    </wsdl:message>
+    <wsdl:message name="getMessageCount">
+        <wsdl:part element="ws:getMessageCount" name="getMessageCount" />
+    </wsdl:message>
+    <wsdl:message name="getMessageCountResponse">
+        <wsdl:part element="ws:getMessageCountResponse" name="getMessageCountResponse" />
+    </wsdl:message>
+    <wsdl:message name="getConversationLogMessages">
+        <wsdl:part element="ws:getConversationLogMessages" name="getConversationLogMessages" />
+    </wsdl:message>
+    <wsdl:message name="getConversationLogMessagesResponse">
+        <wsdl:part element="ws:logMessages" name="logMessages" />
+    </wsdl:message>
+    <wsdl:message name="getConversationLogMessageCount">
+        <wsdl:part element="ws:getConversationLogMessageCount" name="getConversationLogMessageCount" />
+    </wsdl:message>
+    <wsdl:message name="getConversationLogMessageCountResponse">
+        <wsdl:part element="ws:getConversationLogMessageCountResponse" name="getConversationLogMessageCountResponse" />
+    </wsdl:message>
     
     <wsdl:portType name="NEXUSe2eInfo">
         <wsdl:operation name="getNexusVersion">
@@ -368,6 +672,38 @@
         <wsdl:operation name="sendNewStringMessage">
             <wsdl:input message="ws:sendNewStringMessage" name="sendNewStringMessage" />
             <wsdl:output message="ws:sendNewStringMessageResponse" name="sendNewStringMessageResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="requeueMessage">
+            <wsdl:input message="ws:requeueMessage" name="requeueMessage" />
+            <wsdl:output message="ws:requeueMessageResponse" name="requeueMessageResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="stopMessage">
+            <wsdl:input message="ws:stopMessage" name="stopMessage" />
+            <wsdl:output message="ws:stopMessageResponse" name="stopMessageResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="getConversations">
+            <wsdl:input message="ws:getConversations" name="getConversations" />
+            <wsdl:output message="ws:getConversationsResponse" name="getConversationsResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="getConversationCount">
+            <wsdl:input message="ws:getConversationCount" name="getConversationCount" />
+            <wsdl:output message="ws:getConversationCountResponse" name="getConversationCountResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="getMessages">
+            <wsdl:input message="ws:getMessages" name="getMessages" />
+            <wsdl:output message="ws:getMessagesResponse" name="getMessagesResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="getMessageCount">
+            <wsdl:input message="ws:getMessageCount" name="getMessageCount" />
+            <wsdl:output message="ws:getMessageCountResponse" name="getMessageCountResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="getConversationLogMessages">
+            <wsdl:input message="ws:getConversationLogMessages" name="getConversationLogMessages" />
+            <wsdl:output message="ws:getConversationLogMessagesResponse" name="getConversationLogMessagesResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="getConversationLogMessageCount">
+            <wsdl:input message="ws:getConversationLogMessageCount" name="getConversationLogMessageCount" />
+            <wsdl:output message="ws:getConversationLogMessageCountResponse" name="getConversationLogMessageCountResponse" />
         </wsdl:operation>
     </wsdl:portType>
     
@@ -510,6 +846,86 @@
                 <soap:body use="literal" />
             </wsdl:input>
             <wsdl:output name="sendNewStringMessageResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="requeueMessage">
+            <soap:operation soapAction="http://integration.nexuse2e.org/NEXUSe2eInfo/requeueMessage" style="document" />
+            <wsdl:input name="requeueMessage">
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="requeueMessageResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="stopMessage">
+            <soap:operation soapAction="http://integration.nexuse2e.org/NEXUSe2eInfo/stopMessage" style="document" />
+            <wsdl:input name="stopMessage">
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="stopMessageResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="getConversations">
+            <soap:operation soapAction="http://integration.nexuse2e.org/NEXUSe2eInfo/getConversations" style="document" />
+            <wsdl:input name="getConversations">
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="getConversationsResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="getConversationCount">
+            <soap:operation soapAction="http://integration.nexuse2e.org/NEXUSe2eInfo/getConversationCount" style="document" />
+            <wsdl:input name="getConversationCount">
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="getConversationCountResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="getMessages">
+            <soap:operation soapAction="http://integration.nexuse2e.org/NEXUSe2eInfo/getMessages" style="document" />
+            <wsdl:input name="getMessages">
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="getMessagesResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="getMessageCount">
+            <soap:operation soapAction="http://integration.nexuse2e.org/NEXUSe2eInfo/getMessageCount" style="document" />
+            <wsdl:input name="getMessageCount">
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="getMessageCountResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="getConversationLogMessages">
+            <soap:operation soapAction="http://integration.nexuse2e.org/NEXUSe2eInfo/getConversationLogMessages" style="document" />
+            <wsdl:input name="getConversationLogMessages">
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="getConversationLogMessagesResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="getConversationLogMessageCount">
+            <soap:operation soapAction="http://integration.nexuse2e.org/NEXUSe2eInfo/getConversationLogMessageCount" style="document" />
+            <wsdl:input name="getConversationLogMessageCount">
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="getConversationLogMessageCountResponse">
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>

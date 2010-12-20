@@ -793,7 +793,18 @@ public class TransactionServiceImpl implements TransactionService {
 		return getLogDao().getLogEntriesForReport(severity, conversationId, messageId, ascending );
 	}
 
-    
+
+    public List<LogPojo> getLogEntriesForReport(String severity, String conversationId, String messageId, int itemsPerPage, int page, boolean ascending)
+            throws NexusException {
+        return getLogDao().getLogEntriesForReport(severity, conversationId, messageId, itemsPerPage, page, ascending);
+    }
+
+    public int getLogEntriesForReportCount(String severity, String conversationId, String messageId) throws NexusException {
+        return getLogDao().getLogEntriesForReportCount(severity, conversationId, messageId);
+    }
+
+	
+	
     /* (non-Javadoc)
      * @see org.nexuse2e.controller.TransactionService#getLogEntriesForReport(java.lang.String, java.lang.String, java.util.Date, java.util.Date, int, int, int, boolean)
      */

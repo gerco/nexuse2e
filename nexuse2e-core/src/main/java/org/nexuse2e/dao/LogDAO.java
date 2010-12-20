@@ -75,6 +75,10 @@ public interface LogDAO {
     
     public abstract List<LogPojo> getLogEntriesForReport( String severity, String conversationId, String messageId, boolean ascending ) throws NexusException;
 
+    public abstract List<LogPojo> getLogEntriesForReport( String severity, String conversationId, String messageId, int itemsPerPage, int page, boolean ascending ) throws NexusException;
+
+    public abstract int getLogEntriesForReportCount( String severity, String conversationId, String messageId ) throws NexusException;
+
     public abstract List<LogPojo> getLog() throws NexusException; // getLog
 
 }

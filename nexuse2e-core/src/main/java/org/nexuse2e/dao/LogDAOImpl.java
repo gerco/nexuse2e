@@ -111,6 +111,19 @@ public class LogDAOImpl extends BasicDAOImpl implements LogDAO {
     			SORT_CREATED, ascending ), 0, 0 );
 	}
     
+    @SuppressWarnings("unchecked")
+    public List<LogPojo> getLogEntriesForReport(
+            String severity, String conversationId, String messageId, int itemsPerPage, int page, boolean ascending) throws NexusException {
+
+        return (List<LogPojo>) getListThroughSessionFind( getLogEntriesForReportCriteria(
+                severity,conversationId, messageId, null, null, null, SORT_CREATED, ascending), itemsPerPage * page, itemsPerPage);
+    }
+
+    public int getLogEntriesForReportCount(String severity, String conversationId, String messageId) throws NexusException {
+        return getCountThroughSessionFind(
+                getLogEntriesForReportCriteria( severity,conversationId, messageId, null, null, null, SORT_CREATED, true));
+    }
+
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.LogDAO#getLogEntriesForReportCount(java.lang.String, java.lang.String, java.util.Date, java.util.Date, int, boolean)
      */
@@ -196,6 +209,5 @@ public class LogDAOImpl extends BasicDAOImpl implements LogDAO {
 
     } // getSortString
 
-	
 
 } // LogDAO
