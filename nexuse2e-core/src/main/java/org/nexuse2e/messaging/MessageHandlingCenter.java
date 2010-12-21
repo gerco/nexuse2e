@@ -52,11 +52,13 @@ public class MessageHandlingCenter implements MessageProcessor {
      * @throws IllegalStateException
      * @throws NexusException
      */
+    // TODO: rename (something like 'persist')
     public MessageContext announceQueuing( MessageContext messageContext ) throws IllegalArgumentException,
                                                                           IllegalStateException, NexusException {
         // validate business transition
         ConversationPojo conversationPojo = null;
         try {
+            // TODO: review
             conversationPojo = new StateMachineExecutor().validateTransition( messageContext );
         } catch ( NexusException e ) {
             LOG.error( new LogMessage( "Not a valid action: " + messageContext.getMessagePojo().getAction(),
@@ -94,6 +96,7 @@ public class MessageHandlingCenter implements MessageProcessor {
                                                                          IllegalStateException, NexusException {
 
         if ( messageContext.getMessagePojo().getStatus() != Constants.MESSAGE_STATUS_QUEUED ) {
+            // TODO: replace this code with announceQueueing() call?
             // validate business transition
             ConversationPojo conversationPojo = null;
             try {

@@ -230,6 +230,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                 }
             }
         } else {
+         // TODO: review
 //            MessageContext clonedMessageContext = null;
             
             // this message is not a duplicate
@@ -250,6 +251,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                             responseMessageContext = null;
                             // generate ack for reliable connections
                             try {
+                             // TODO: review
                                 responseMessageContext = protocolAdapter.createAcknowledgement( choreography,
 //                                        clonedMessageContext );
                                         messageContext );
@@ -291,6 +293,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
 //                dispatchMessage( messageContext );
                 //
                 try {
+                 // TODO: review
 //                  clonedMessageContext = (MessageContext) messageContext.clone();
                     
                     // Forward message to FrontendActionSerializer for further processing/queueing

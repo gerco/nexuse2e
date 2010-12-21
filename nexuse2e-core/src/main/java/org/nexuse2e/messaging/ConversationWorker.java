@@ -49,6 +49,7 @@ public class ConversationWorker implements Runnable {
                 if ( LOG.isDebugEnabled() ) {
                     LOG.debug( new LogMessage( "Created new conversation worker", messageContext ) );
                 }
+                // TODO: review
                 synchronized ( worker.queue ) {
                     // queue msg
                     if ( LOG.isDebugEnabled() ) {
@@ -133,6 +134,7 @@ public class ConversationWorker implements Runnable {
             // Initiate the backend process
             // We Synchronize the conversation so that -- with fast back-end systems -- response
             // messages don't get processed earlier than the state machine transition.
+            // TODO: remove ConversationLockManager globally?
             ConversationLockManager conversationLockManager = Engine.getInstance().getTransactionService().getConversationLockManager();
             try {
                 // lock conversation

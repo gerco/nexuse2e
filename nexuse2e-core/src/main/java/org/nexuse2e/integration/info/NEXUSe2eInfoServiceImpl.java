@@ -23,6 +23,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -41,6 +42,7 @@ import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.Version;
 import org.nexuse2e.Constants.BeanStatus;
+import org.nexuse2e.configuration.GenericComparator;
 import org.nexuse2e.controller.TransactionService;
 import org.nexuse2e.dao.LogDAO;
 import org.nexuse2e.integration.NEXUSe2eInterfaceImpl;
@@ -65,6 +67,7 @@ import org.nexuse2e.integration.info.wsdl.Messages;
 import org.nexuse2e.integration.info.wsdl.NEXUSe2EInfo;
 import org.nexuse2e.integration.info.wsdl.NexusUptime;
 import org.nexuse2e.integration.info.wsdl.NexusVersion;
+import org.nexuse2e.integration.info.wsdl.Partners;
 import org.nexuse2e.integration.info.wsdl.RestartEngineResponse;
 import org.nexuse2e.integration.info.wsdl.RestartEngineResult;
 import org.nexuse2e.integration.info.wsdl.StatisticsItem;
@@ -92,6 +95,13 @@ import org.nexuse2e.pojo.PartnerPojo;
  */
 public class NEXUSe2eInfoServiceImpl implements NEXUSe2EInfo {
 
+    private static final Comparator<String> STRING_COMPARATOR = new Comparator<String>(){
+        public int compare(String s1, String s2) {
+            return s1.compareTo(s2);
+        }
+    };
+    
+    
     private StatisticsResponse convertToStatisticsResponse( List<int[]> l, boolean conv ) {
         // convert to WS structure
         StatisticsResponse r = new StatisticsResponse();
@@ -153,20 +163,21 @@ public class NEXUSe2eInfoServiceImpl implements NEXUSe2EInfo {
     }
 
     private Uptime createUptime( long millis ) {
-        int dayLength = 1000*60*60*24;
-        int hourlength = 1000*60*60;
-        int minutelength = 1000*60;
-        int secondlength = 1000;
+        long dayLength = 1000*60*60*24;
+        long hourlength = 1000*60*60;
+        long minutelength = 1000*60;
+        long secondlength = 1000;
         
         
-        int days = (int)millis / dayLength;
-        int hours = (int)(millis - (days*dayLength)) / hourlength;
-        int minutes = (int)(millis - (days*dayLength) - (hours*hourlength)) / minutelength;
-        int seconds = (int)(millis - (days*dayLength) - (hours*hourlength) - (minutes*minutelength)) / secondlength;
+        long days = millis / dayLength;
+        long hours = (millis - (days*dayLength)) / hourlength;
+        long minutes = (millis - (days*dayLength) - (hours*hourlength)) / minutelength;
+        long seconds = (millis - (days*dayLength) - (hours*hourlength) - (minutes*minutelength)) / secondlength;
         Uptime uptime = new Uptime();
-        uptime.setHours( hours );
-        uptime.setMinutes( minutes );
-        uptime.setSeconds( seconds );
+        uptime.setHours( (int) hours );
+        uptime.setMinutes( (int) minutes );
+        uptime.setSeconds( (int) seconds );
+        uptime.setDays( (int) days );
         return uptime;
     }
     
@@ -214,7 +225,11 @@ public class NEXUSe2eInfoServiceImpl implements NEXUSe2EInfo {
         if (c != null) {
             for (Level level : c.keySet()) {
                 LogMessageCount count = new LogMessageCount();
-                count.setLogLevel( LogLevel.fromValue( level.toString() ) );
+                try {
+                    count.setLogLevel( LogLevel.fromValue( level.toString() ) );
+                } catch (IllegalArgumentException ignored) {
+                    count.setLogLevel( LogLevel.INFO );
+                }
                 count.setValue( c.get( level ).intValue() );
                 l.add( count );
             }
@@ -240,7 +255,11 @@ public class NEXUSe2eInfoServiceImpl implements NEXUSe2EInfo {
             if (l != null) {
                 for (LogPojo logPojo : l) {
                     LogMessage m = new LogMessage();
-                    m.setLogLevel( LogLevel.fromValue( Level.toLevel( logPojo.getSeverity() ).toString() ) );
+                    try {
+                        m.setLogLevel( LogLevel.fromValue( Level.toLevel( logPojo.getSeverity() ).toString() ) );
+                    } catch (IllegalArgumentException ignored) {
+                        m.setLogLevel( LogLevel.INFO );
+                    }
                     GregorianCalendar gc = new GregorianCalendar();
                     gc.setTime( logPojo.getCreatedDate() );
                     XMLGregorianCalendar xc = DatatypeFactory.newInstance().newXMLGregorianCalendar( gc );
@@ -255,9 +274,6 @@ public class NEXUSe2eInfoServiceImpl implements NEXUSe2EInfo {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see org.nexuse2e.integration.info.wsdl.NEXUSe2EInfo#getChoreographies(java.lang.Object)
-     */
     public Choreographies getChoreographies( Object getChoreographies ) {
         Choreographies c = new Choreographies();
         List<ChoreographyPojo> choreos = Engine.getInstance().getCurrentConfiguration().getChoreographies();
@@ -267,12 +283,10 @@ public class NEXUSe2eInfoServiceImpl implements NEXUSe2EInfo {
                 result.add( cp.getName() );
             }
         }
+        Collections.sort(result, STRING_COMPARATOR);
         return c;
     }
 
-    /* (non-Javadoc)
-     * @see org.nexuse2e.integration.info.wsdl.NEXUSe2EInfo#getActions(java.lang.String)
-     */
     public List<String> getActions( String choreography ) {
         List<String> result = new ArrayList<String>();
         try {
@@ -290,9 +304,44 @@ public class NEXUSe2eInfoServiceImpl implements NEXUSe2EInfo {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see org.nexuse2e.integration.info.wsdl.NEXUSe2EInfo#getParticipants(java.lang.String)
-     */
+    public Partners getPartners(Object getPartners) {
+        Partners p = new Partners();
+        try {
+            Comparator<PartnerPojo> comp = new GenericComparator<PartnerPojo>("name", true);
+            List<PartnerPojo> partners = Engine.getInstance().getCurrentConfiguration().getPartners(
+                    org.nexuse2e.configuration.Constants.PARTNER_TYPE_PARTNER, comp);
+            List<String> result = p.getPartner();
+            if (partners != null) {
+                for (PartnerPojo pp : partners) {
+                    result.add(pp.getName());
+                }
+            }
+        } catch (NexusException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return p;
+    }
+
+    public Partners getLocalPartners(Object getPartners) {
+        Partners p = new Partners();
+        try {
+            Comparator<PartnerPojo> comp = new GenericComparator<PartnerPojo>("name", true);
+            List<PartnerPojo> partners = Engine.getInstance().getCurrentConfiguration().getPartners(
+                    org.nexuse2e.configuration.Constants.PARTNER_TYPE_LOCAL, comp);
+            List<String> result = p.getPartner();
+            if (partners != null) {
+                for (PartnerPojo pp : partners) {
+                    result.add(pp.getName());
+                }
+            }
+        } catch (NexusException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return p;
+    }
+
     public List<String> getParticipants( String choreography ) {
         List<String> result = new ArrayList<String>();
         try {
@@ -303,6 +352,7 @@ public class NEXUSe2eInfoServiceImpl implements NEXUSe2EInfo {
                         result.add( participant.getPartner().getPartnerId() );
                     }
                 }
+                Collections.sort(result, STRING_COMPARATOR);
             }
         } catch (NexusException nex) {
             nex.printStackTrace();
@@ -310,9 +360,6 @@ public class NEXUSe2eInfoServiceImpl implements NEXUSe2EInfo {
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see org.nexuse2e.integration.info.wsdl.NEXUSe2EInfo#sendNewStringMessage(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
-     */
     public String sendNewStringMessage( String choreographyId,
             String businessPartnerId, String actionId, String payload ) {
 
@@ -325,9 +372,6 @@ public class NEXUSe2eInfoServiceImpl implements NEXUSe2EInfo {
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see org.nexuse2e.integration.info.wsdl.NEXUSe2EInfo#getEngineStatus(java.lang.Object)
-     */
     public GetEngineStatusResponse getEngineStatus( Object getEngineStatus ) {
         
         GetEngineStatusResponse response = new GetEngineStatusResponse();
@@ -335,9 +379,6 @@ public class NEXUSe2eInfoServiceImpl implements NEXUSe2EInfo {
         return response;
     }
 
-    /* (non-Javadoc)
-     * @see org.nexuse2e.integration.info.wsdl.NEXUSe2EInfo#restartEngine(java.lang.Object)
-     */
     public RestartEngineResponse restartEngine( Object restartEngine ) {
         RestartEngineResponse response = new RestartEngineResponse();
         
@@ -378,7 +419,11 @@ public class NEXUSe2eInfoServiceImpl implements NEXUSe2EInfo {
             message.setModifiedDate(date(mp.getModifiedDate()));
             message.setOutbound(mp.isOutbound());
             message.setRetries(mp.getRetries());
-            MessageStatus status = MessageStatus.fromValue(MessagePojo.getStatusName(mp.getStatus()));
+            MessageStatus status = MessageStatus.UNKNOWN;
+            try {
+                status = MessageStatus.fromValue(MessagePojo.getStatusName(mp.getStatus()));
+            } catch (IllegalArgumentException ignored) {
+            }
             message.setStatus(status == null ? MessageStatus.UNKNOWN : status);
             Trp trp = new Trp();
             trp.setProtocol(mp.getTRP().getProtocol());
@@ -438,7 +483,11 @@ public class NEXUSe2eInfoServiceImpl implements NEXUSe2EInfo {
             Messages messages = convert(Engine.getInstance().getTransactionService().getMessagesFromConversation(cp), false);
             c.setMessages(messages);
             c.setModifiedDate(date(cp.getModifiedDate()));
-            ConversationStatus status = ConversationStatus.fromValue(ConversationPojo.getStatusName(cp.getStatus()));
+            ConversationStatus status = ConversationStatus.UNKNOWN;
+            try {
+                status = ConversationStatus.fromValue(ConversationPojo.getStatusName(cp.getStatus()));
+            } catch (IllegalArgumentException ignored) {
+            }
             c.setStatus(status == null ? ConversationStatus.UNKNOWN : status);
             l.add(c);
         }
@@ -534,7 +583,11 @@ public class NEXUSe2eInfoServiceImpl implements NEXUSe2EInfo {
             lm = new LogMessages();
             for (LogPojo logPojo : entries) {
                 LogMessage m = new LogMessage();
-                m.setLogLevel(LogLevel.fromValue(Level.toLevel(logPojo.getSeverity()).toString()));
+                try {
+                    m.setLogLevel(LogLevel.fromValue(Level.toLevel(logPojo.getSeverity()).toString()));
+                } catch (IllegalArgumentException ignored) {
+                    m.setLogLevel(LogLevel.INFO);
+                }
                 GregorianCalendar gc = new GregorianCalendar();
                 gc.setTime(logPojo.getCreatedDate());
                 XMLGregorianCalendar xc = DatatypeFactory.newInstance().newXMLGregorianCalendar(gc);
