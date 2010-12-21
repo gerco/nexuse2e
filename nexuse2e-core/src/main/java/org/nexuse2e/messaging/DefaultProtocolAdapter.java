@@ -50,6 +50,13 @@ public class DefaultProtocolAdapter implements org.nexuse2e.messaging.ProtocolAd
     public MessageContext createAcknowledgement( ChoreographyPojo choreography, MessageContext messageContext )
             throws NexusException {
 
+        MessageContext ackMessageContext = null;
+        try {
+            ackMessageContext = (MessageContext) messageContext.clone();
+        } catch ( CloneNotSupportedException e ) {
+            throw new NexusException( new LogMessage( "Cannot clone message context to create an acknowledgment: " + e.getMessage(), messageContext ), e );
+        }
+        
         String currentMessageId = messageContext.getMessagePojo().getMessageId();
         String currentPartnerId = messageContext.getMessagePojo().getConversation().getPartner().getPartnerId();
 
@@ -71,8 +78,8 @@ public class DefaultProtocolAdapter implements org.nexuse2e.messaging.ProtocolAd
         } catch ( NexusException e ) {
             LOG.fatal( "Unable to create AcknowldegeMessageId for message: " + currentMessageId );
             e.printStackTrace();
-            messageContext.setMessagePojo( null );
-            messageContext.setOriginalMessagePojo( null );
+            ackMessageContext.setMessagePojo( null );
+            ackMessageContext.setOriginalMessagePojo( null );
             return messageContext;
         }
         acknowledgment.setMessageId( messageId );
@@ -83,9 +90,9 @@ public class DefaultProtocolAdapter implements org.nexuse2e.messaging.ProtocolAd
                 currentPartnerId );
 
         if ( partner == null ) {
-            messageContext.setMessagePojo( null );
+            ackMessageContext.setMessagePojo( null );
             LOG.error( "No partner entry found for partnerId: " + currentPartnerId );
-            return messageContext;
+            return ackMessageContext;
         }
         ParticipantPojo participant = Engine.getInstance().getActiveConfigurationAccessService()
                 .getParticipantFromChoreographyByPartner(
@@ -105,9 +112,9 @@ public class DefaultProtocolAdapter implements org.nexuse2e.messaging.ProtocolAd
         acknowledgment.setConversation( messageContext.getMessagePojo().getConversation() );
         acknowledgment.setOutbound( true );
 
-        messageContext.setMessagePojo( acknowledgment );
+        ackMessageContext.setMessagePojo( acknowledgment );
 
-        return messageContext;
+        return ackMessageContext;
     } // createAcknowledgement
 
     /* (non-Javadoc)
