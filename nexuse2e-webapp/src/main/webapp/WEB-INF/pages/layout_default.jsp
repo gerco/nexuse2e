@@ -328,7 +328,7 @@
 	    	var anim8 = dojo.animateProperty({node: "machine_div", properties: { height: { end: 0 },right:{end: 100 },top:{end: 0 } } })
 	    	var anim9 = dojo.animateProperty({node: "machine_div2", properties: { height: { end: 0 },right:{end: 100 }, top:{end: 0 } } })
 	    	var anim10 = dojo.animateProperty({node: "machine_div3", properties: { height: { end: 0 },right:{end: 100 }, top:{end: 0 } } })
-        	
+        	dojo.byId("hide_banner").setAttribute("src", "images/icons/bullet_arrow_down.png")
     	}
     	else {
     		var contentheight = dojo.style("navigator", "height") - 164
@@ -343,6 +343,7 @@
       		var anim8 = dojo.animateProperty({node: "machine_div", properties: { height: { end: 0 },right:{end: 20 },top:{end: 20 } } })
 	    	var anim9 = dojo.animateProperty({node: "machine_div2", properties: { height: { end: 28 },right:{end: 20 }, top:{end: 0 } } })
 	    	var anim10 = dojo.animateProperty({node: "machine_div3", properties: { height: { end: 13 },right:{end: 20 }, top:{end: 0 } } })
+	    	dojo.byId("hide_banner").setAttribute("src", "images/icons/bullet_arrow_up.png")
       	}
     	dojo.fx.combine([anim1, anim2, anim3, anim4, anim5, anim6, anim7, anim8, anim9, anim10]).play();
       }
@@ -355,7 +356,7 @@
   	<table id="toolbar" cellpadding="0" cellspacing="0" style="margin: 0px; padding: 0px;">
 			<tr style="margin: 0px; padding: 0px">
 				<td id="toolbar-left">
-					<span style="width:20px;" onclick="hide();">+</span>
+					<span style="width:20px;" onclick="hide();"><img id="hide_banner" alt="hide Banner" src="images/icons/bullet_arrow_up.png"></span>
 					<div dojoType="dijit.ProgressBar" style="width:120px; margin-right: 19px; visibility: hidden;float: right;" jsId="progressBar" id="downloadProgress" places="0" indeterminate="true"></div>
 				</td>
 				<td style="text-align: left;">
