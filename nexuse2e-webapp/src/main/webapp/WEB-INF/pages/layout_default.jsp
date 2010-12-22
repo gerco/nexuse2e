@@ -312,14 +312,51 @@
 		} );
 	}
  </script>
- 
+  <script>
+    dojo.require("dojox.fx._base");
+      function hide() {
+    	if(dojo.style("logo_div", "height") != 0) {
+	    	var contentheight = dojo.style("navigator", "height") + 164
+	    	var anim1 = dojo.animateProperty({node: "logo_div", properties: { height: { end: 0 } } })
+	    	var anim2 = dojo.animateProperty({node: "navigator", properties: { top: { end: 32 } } })
+	    	var anim3 = dojo.animateProperty({node: "docpane", properties: { top: { end: 32 } } })
+	    	var anim4 = dojo.animateProperty({node: "machine_div", properties: { opacity: { end: 0 } } })
+	    	var anim5 = dojo.animateProperty({node: "toolbar", properties: { top: { end: 0 } } })
+	    	var anim6 = dojo.animateProperty({node: "header", properties: { height: { end: 32 } } })
+	    	var anim7 = dojo.animateProperty({node: "navigator", properties: { height: { end: contentheight } } })
+	    
+	    	var anim8 = dojo.animateProperty({node: "machine_div", properties: { height: { end: 0 },right:{end: 100 },top:{end: 0 } } })
+	    	var anim9 = dojo.animateProperty({node: "machine_div2", properties: { height: { end: 0 },right:{end: 100 }, top:{end: 0 } } })
+	    	var anim10 = dojo.animateProperty({node: "machine_div3", properties: { height: { end: 0 },right:{end: 100 }, top:{end: 0 } } })
+        	
+    	}
+    	else {
+    		var contentheight = dojo.style("navigator", "height") - 164
+    		var anim1 = dojo.animateProperty({node: "logo_div", properties: { height: { end: 164 } } })
+        	var anim2 = dojo.animateProperty({node: "navigator", properties: { top: { end: 196 } } })
+        	var anim3 = dojo.animateProperty({node: "docpane", properties: { top: { end: 196 } } })
+        	var anim4 = dojo.animateProperty({node: "machine_div", properties: { opacity: { end: 100 } } })
+        	var anim5 = dojo.animateProperty({node: "toolbar", properties: { top: { end: 164 } } })
+       		var anim6 = dojo.animateProperty({node: "header", properties: { height: { end: 196 } } })
+      		var anim7 = dojo.animateProperty({node: "navigator", properties: { height: { end: contentheight } } })
+      		
+      		var anim8 = dojo.animateProperty({node: "machine_div", properties: { height: { end: 0 },right:{end: 20 },top:{end: 20 } } })
+	    	var anim9 = dojo.animateProperty({node: "machine_div2", properties: { height: { end: 28 },right:{end: 20 }, top:{end: 0 } } })
+	    	var anim10 = dojo.animateProperty({node: "machine_div3", properties: { height: { end: 13 },right:{end: 20 }, top:{end: 0 } } })
+      	}
+    	dojo.fx.combine([anim1, anim2, anim3, anim4, anim5, anim6, anim7, anim8, anim9, anim10]).play();
+      }
+    </script>
+    
+    
 <div dojoType="dijit.layout.BorderContainer" id="content" design="headline" gutters="false" style="width: 100%; height: 100%;">
   <div dojoType="dijit.layout.ContentPane" id="header" region="top">
   	<tiles:insert attribute="header"/>
   	<table id="toolbar" cellpadding="0" cellspacing="0" style="margin: 0px; padding: 0px;">
 			<tr style="margin: 0px; padding: 0px">
 				<td id="toolbar-left">
-					<div dojoType="dijit.ProgressBar" style="width:120px; margin-left: 95px; visibility: hidden;" jsId="progressBar" id="downloadProgress" places="0" indeterminate="true"></div>
+					<span style="width:20px;" onclick="hide();">+</span>
+					<div dojoType="dijit.ProgressBar" style="width:120px; margin-right: 19px; visibility: hidden;float: right;" jsId="progressBar" id="downloadProgress" places="0" indeterminate="true"></div>
 				</td>
 				<td style="text-align: left;">
 					<span style="margin: 6px 0 0 22px;">
@@ -330,9 +367,11 @@
 					</span>
 				</td>
 				<td style="text-align: right;padding-right: 10px">
+					<!-- 
 					<span style="margin: 6px 0 0 22px;">
 						<a href="documentation/nexuse2e_help.html" target="_blank" class="navigationactive"><img src="images/icons/help.png" class="navigationactive">&nbsp;help</a>
 					</span>
+					-->
 					<span style="margin: 6px 0 0 22px;">	
 						<a href="Logout.do" class="navigationactive">logout</a>
 					</span>
