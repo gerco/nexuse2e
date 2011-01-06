@@ -127,11 +127,20 @@
 </table>
 <table width="100%">
 	<tr>
-		<td class="BUTTON_RIGHT"><nobr><nexus:link
-			href="ProcessConversationReport.do?noReset=true"
-			styleClass="NexusHeaderLink">
-			<img src="images/icons/resultset_previous.png" name="resultsButton"
-				class="button" />Back</nexus:link></nobr></td>
+		<td class="BUTTON_LEFT">
+			<nobr><nexus:link
+				href="ProcessConversationReport.do?noReset=true"
+				styleClass="NexusHeaderLink">
+				<img src="images/icons/resultset_previous.png" name="resultsButton"
+				class="button" />Back</nexus:link>
+			</nobr>
+			<nobr><nexus:link
+				href="ConversationView.do?convId=${message.nxConversationId}"
+				styleClass="NexusHeaderLink">
+				<img src="images/icons/arrow_refresh.png" name="resultsButton"
+				class="button" />Refresh</nexus:link>
+			</nobr>
+		</td>
 	</tr>
 </table>
 

@@ -156,10 +156,17 @@
 	<tr>
 
 	<logic:equal name="reportingPropertiesForm" property="searchFor" value="conversation">
-		<td class="BUTTON_RIGHT"><nobr><nexus:link
+		<td class="BUTTON_LEFT"><nobr><nexus:link
 			href="ConversationView.do?noReset&choreographyId=${reportMessageEntryForm.choreographyId}&convId=${reportMessageEntryForm.nxConversationId}"
 			styleClass="NexusHeaderLink">
-			<img src="images/icons/resultset_previous.png" border="0" alt="" class="button">Back</nexus:link></nobr></td>
+			<img src="images/icons/resultset_previous.png" border="0" alt="" class="button">Back</nexus:link>
+			<nexus:link
+				href="MessageView.do?mId=${reportMessageEntryForm.messageId}&convId=${reportMessageEntryForm.conversationId}&chorId=${reportMessageEntryForm.choreographyId}&partnerId=${reportMessageEntryForm.participantId}"
+				styleClass="NexusHeaderLink">
+				<img src="images/icons/arrow_refresh.png" name="resultsButton"
+				class="button" />Refresh</nexus:link>
+			</nobr>
+		</td>
 	</logic:equal>
 	<logic:equal name="reportingPropertiesForm" property="searchFor" value="message">
 		<td class="BUTTON_RIGHT"><nobr><nexus:link
