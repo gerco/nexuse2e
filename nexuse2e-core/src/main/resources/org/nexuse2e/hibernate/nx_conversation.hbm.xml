@@ -71,7 +71,7 @@
         
         <many-to-one foreign-key="fk__conv__current_action_id" name="currentAction" column="current_nx_action_id" class="org.nexuse2e.pojo.ActionPojo" not-null="true" cascade="none" index="ix_conversation_3" lazy="proxy"/>
                 
-        <bag name="messages" inverse="true" cascade="save-update" lazy="false">
+        <bag name="messages" inverse="true" cascade="none" lazy="false">
         	<key column="nx_conversation_id"/> 
         	<one-to-many class="org.nexuse2e.pojo.MessagePojo"/>
 		</bag>
