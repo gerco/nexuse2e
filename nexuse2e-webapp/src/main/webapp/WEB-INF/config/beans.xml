@@ -201,11 +201,11 @@
   </bean>
 
   <aop:config>
-    <aop:pointcut id="transactionServices" expression="execution(* org.nexuse2e.dao.*Impl.*(..))"/>
-    <aop:advisor advice-ref="txAdvice" pointcut-ref="transactionServices"/>
+    <aop:pointcut id="transactionServicesPointcut" expression="execution(* org.nexuse2e.dao.*Impl.*(..))"/>
+    <aop:advisor advice-ref="transactionServicesAdvice" pointcut-ref="transactionServicesPointcut"/>
   </aop:config>
 
-  <tx:advice id="txAdvice" transaction-manager="txManager">
+  <tx:advice id="transactionServicesAdvice" transaction-manager="txManager">
     <tx:attributes>
       <!-- 
       <tx:method name="get*" read-only="true"/> 
@@ -214,7 +214,6 @@
       <tx:method name="*" propagation="REQUIRED" isolation="READ_COMMITTED"/> <!-- isolation="SERIALIZABLE" READ_COMMITTED-->
     </tx:attributes>
   </tx:advice>
-
 
 
   <bean id="logDao" class="org.nexuse2e.dao.LogDAOImpl">
@@ -235,13 +234,6 @@
   	<property name="retries" value="20" />
   </bean>
 
-<!-- 
-<bean id="transactionService" class="org.nexuse2e.controller.TransactionServiceImpl">
-	  	<property name="transactionDao" ref="transactionDao"/>
-	  	<property name="logDao" ref="logDao"/>
-	  </bean>
- -->
-
   <bean id="conversationLockManager" class="${conversationLockManager.class}"/>
 
   <bean id="transactionService" class="org.springframework.aop.framework.ProxyFactoryBean">
@@ -259,7 +251,7 @@
 	  </list>
 	</property>
   </bean>
-
+  
 
   <!-- ui structure -->
 
