@@ -44,6 +44,7 @@ import org.hibernate.type.Type;
 import org.nexuse2e.Constants;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.controller.StateTransitionException;
+import org.nexuse2e.dao.UpdateTransactionOperation.UpdateScope;
 import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
@@ -51,6 +52,7 @@ import org.nexuse2e.pojo.ConversationPojo;
 import org.nexuse2e.pojo.LogPojo;
 import org.nexuse2e.pojo.MessagePayloadPojo;
 import org.nexuse2e.pojo.MessagePojo;
+import org.nexuse2e.pojo.NEXUSe2ePojo;
 import org.nexuse2e.pojo.PartnerPojo;
 
 /**
@@ -81,11 +83,11 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
             Constants.CONVERSATION_STATUS_COMPLETED, Constants.CONVERSATION_STATUS_ERROR,
             Constants.CONVERSATION_STATUS_IDLE} );
         followUpConversationStates.put( Constants.CONVERSATION_STATUS_IDLE,
-                new int[] { Constants.CONVERSATION_STATUS_PROCESSING} );
+                new int[] { Constants.CONVERSATION_STATUS_PROCESSING , Constants.CONVERSATION_STATUS_AWAITING_ACK } );
         followUpConversationStates.put( Constants.CONVERSATION_STATUS_SENDING_ACK,
                 new int[] { Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND} );
         followUpConversationStates.put( Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND, new int[] {
-            Constants.CONVERSATION_STATUS_COMPLETED, Constants.CONVERSATION_STATUS_ERROR,
+            Constants.CONVERSATION_STATUS_COMPLETED, Constants.CONVERSATION_STATUS_ERROR, Constants.CONVERSATION_STATUS_PROCESSING,
             Constants.CONVERSATION_STATUS_IDLE} );
         followUpConversationStates.put( Constants.CONVERSATION_STATUS_AWAITING_BACKEND,
                 new int[] { Constants.CONVERSATION_STATUS_BACKEND_SENT_SENDING_ACK} );
@@ -445,9 +447,9 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         }
         
         map = null;
-        query = new StringBuilder( "delete from nx_message" );
+        query = new StringBuilder( "delete from nx_message where referenced_nx_message_id is not null" );
         if (start != null || end != null) {
-            query.append( " where (select conv.nx_conversation_id from nx_conversation conv where nx_message.nx_conversation_id = conv.nx_conversation_id" );
+            query.append( " and (select conv.nx_conversation_id from nx_conversation conv where nx_message.nx_conversation_id = conv.nx_conversation_id" );
             map = appendQueryDate( query, "conv", start, end );
             query.append( ") is not null" );
         }
@@ -460,19 +462,35 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
             }
         }
 
+        query = new StringBuilder( "delete from nx_message" );
+        if (start != null || end != null) {
+            query.append( " where (select conv.nx_conversation_id from nx_conversation conv where nx_message.nx_conversation_id = conv.nx_conversation_id" );
+            map = appendQueryDate( query, "conv", start, end );
+            query.append( ") is not null" );
+        }
+
+        LOG.debug( "sql4: " + query );
+        Query sqlquery4 = session.createSQLQuery( query.toString() );
+        if (map != null) {
+            for (String name : map.keySet()) {
+                sqlquery3.setTimestamp( name, map.get( name ) );
+            }
+        }
+
         query = new StringBuilder( "delete from nx_conversation" );
 
         map = appendQueryDate( query, "nx_conversation", start, end );
-        LOG.debug( "sql4: " + query );
-        Query sqlquery4 = session.createSQLQuery( query.toString() );
+        LOG.debug( "sql5: " + query );
+        Query sqlquery5 = session.createSQLQuery( query.toString() );
         for (String name : map.keySet()) {
-            sqlquery4.setTimestamp( name, map.get( name ) );
+            sqlquery5.setTimestamp( name, map.get( name ) );
         }
 
         sqlquery1.executeUpdate();
         int result = sqlquery2.executeUpdate();
         sqlquery3.executeUpdate();
         sqlquery4.executeUpdate();
+        sqlquery5.executeUpdate();
 
         return result;
     }
@@ -896,100 +914,14 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.TransactionDAO#updateTransaction(org.nexuse2e.pojo.MessagePojo, boolean)
      */
-//    public void updateTransaction( MessagePojo message, boolean force ) throws NexusException, StateTransitionException {
-//
-//        
-//        int messageStatus = message.getStatus();
-//        int conversationStatus = message.getConversation().getStatus();
-//        
-//        if (messageStatus < Constants.MESSAGE_STATUS_FAILED
-//                || messageStatus > Constants.MESSAGE_STATUS_STOPPED) {
-//            throw new IllegalArgumentException( "Illegal message status: " + messageStatus
-//                    + ", only values >= " + Constants.MESSAGE_STATUS_FAILED
-//                    + " and <= " + Constants.MESSAGE_STATUS_STOPPED + " allowed" );
-//        }
-//        
-//        if (conversationStatus < Constants.CONVERSATION_STATUS_ERROR
-//                || conversationStatus > Constants.CONVERSATION_STATUS_COMPLETED) {
-//            throw new IllegalArgumentException( "Illegal conversation status: " + conversationStatus
-//                    + ", only values >= " + Constants.CONVERSATION_STATUS_ERROR
-//                    + " and <= " + Constants.CONVERSATION_STATUS_COMPLETED + " allowed" );
-//        }
-//        
-//        int allowedMessageStatus = messageStatus;
-//        int allowedConversationStatus = conversationStatus;
-//        
-//        MessagePojo persistentMessage;
-//        if ( message.getNxMessageId() > 0 ) {
-//            persistentMessage = (MessagePojo) getRecordById( MessagePojo.class, message.getNxMessageId() );
-//        } else {
-//            persistentMessage = message;
-//        }
-//        if (persistentMessage != null) {
-//            if (!force) {
-//                allowedMessageStatus = getAllowedTransitionStatus( persistentMessage, messageStatus );
-//                allowedConversationStatus = getAllowedTransitionStatus(
-//                        persistentMessage.getConversation(), conversationStatus );
-//            }
-//            message.setStatus( allowedMessageStatus );
-//            message.getConversation().setStatus( allowedConversationStatus );
-//            
-//            if (messageStatus == allowedMessageStatus && conversationStatus == allowedConversationStatus) {
-//                boolean updateMessage = message.getNxMessageId() > 0;
-//                
-//                // persist unsaved messages first
-//                List<MessagePojo> messages = message.getConversation().getMessages();
-//                for (MessagePojo m : messages) {
-//                    if (m.getNxMessageId() <= 0) {
-//                        getHibernateTemplate().save( m );
-//                    }
-//                }
-//
-//                // we need to merge the message into the persistent message a persistent version exists
-//                if (updateMessage) {
-//                    getHibernateTemplate().merge( message );
-//                }
-//
-//                // now, update the conversation status
-//                getHibernateTemplate().merge( message.getConversation() );
-//            }
-//        }
-//            
-//          
-//        
-//        String errMsg = null;
-//        
-//        if (allowedMessageStatus != messageStatus) {
-//            errMsg = "Illegal transition: Cannot set message status from " +
-//            MessagePojo.getStatusName( allowedMessageStatus ) + " to " + MessagePojo.getStatusName( messageStatus );
-//        }
-//        if (allowedConversationStatus != conversationStatus) {
-//            if (errMsg != null) {
-//                errMsg += ", cannot set conversation status from " + ConversationPojo.getStatusName( allowedConversationStatus ) +
-//                    " to " + ConversationPojo.getStatusName( conversationStatus );
-//            } else {
-//                errMsg = "Illegal transition: Cannot set conversation status from "
-//                    + ConversationPojo.getStatusName( allowedConversationStatus ) + " to " + ConversationPojo.getStatusName( conversationStatus );
-//            }
-//        }
-//        if (errMsg != null) {
-//            throw new StateTransitionException( errMsg );
-//        }
-//        
-//
-//    } // updateTransaction
-
-    /* (non-Javadoc)
-     * @see org.nexuse2e.dao.TransactionDAO#updateTransaction(org.nexuse2e.pojo.MessagePojo, boolean)
-     */
     public void updateTransaction( MessagePojo message, boolean force ) throws NexusException, StateTransitionException {
 
-        LOG.trace( new LogMessage("persisting state for message "+message.getConversation().getConversationId()+message.getMessageId()+
-                ":"+MessagePojo.getStatusName( message.getStatus() )+"/"+ConversationPojo.getStatusName( message.getConversation().getStatus() ),message) );
-        
+        LOG.trace( new LogMessage(
+                "persisting state for message: " + message.getConversation().getStatusName(), message) );
+
         int messageStatus = message.getStatus();
         int conversationStatus = message.getConversation().getStatus();
-        
+
         if (messageStatus < Constants.MESSAGE_STATUS_FAILED
                 || messageStatus > Constants.MESSAGE_STATUS_STOPPED) {
             throw new IllegalArgumentException( "Illegal message status: " + messageStatus
@@ -1023,9 +955,8 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         }
         if (persistentMessage != null) {
             if (!force) {
-                allowedMessageStatus = getAllowedTransitionStatus( persistentMessage, messageStatus );
-                allowedConversationStatus = getAllowedTransitionStatus(
-                        persistentMessage.getConversation(), conversationStatus );
+                allowedMessageStatus = getAllowedMessageTransitionStatus(persistentMessage.getStatus(), messageStatus);
+                allowedConversationStatus = getAllowedConversationTransitionStatus(persistentMessage.getConversation().getStatus(), conversationStatus);
             }
             message.setStatus( allowedMessageStatus );
             message.getConversation().setStatus( allowedConversationStatus );
@@ -1044,6 +975,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
                     }
                     persistentConversation.setModifiedDate( new Date() );
                     getHibernateTemplate().saveOrUpdate( persistentConversation );
+                    getHibernateTemplate().saveOrUpdateAll( persistentConversation.getMessages() );
                 }
             }
         }
@@ -1053,15 +985,15 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         String errMsg = null;
         
         if (allowedMessageStatus != messageStatus) {
-            errMsg = "Illegal transition: Cannot set message status from " +
+            errMsg = "Illegal transition: Cannot set message status for " + message.getMessageId() + " from " +
             MessagePojo.getStatusName( allowedMessageStatus ) + " to " + MessagePojo.getStatusName( messageStatus );
         }
         if (allowedConversationStatus != conversationStatus) {
             if (errMsg != null) {
-                errMsg += ", cannot set conversation status from " + ConversationPojo.getStatusName( allowedConversationStatus ) +
-                    " to " + ConversationPojo.getStatusName( conversationStatus );
+                errMsg += ", cannot set conversation status for " + message.getConversation().getConversationId() +
+                    " from " + ConversationPojo.getStatusName( allowedConversationStatus ) + " to " + ConversationPojo.getStatusName( conversationStatus );
             } else {
-                errMsg = "Illegal transition: Cannot set conversation status from "
+                errMsg = "Illegal transition: Cannot set conversation status for " + message.getConversation().getConversationId() + " from "
                     + ConversationPojo.getStatusName( allowedConversationStatus ) + " to " + ConversationPojo.getStatusName( conversationStatus );
             }
         }
@@ -1072,17 +1004,137 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
 
     } // updateTransaction
 
+    public void updateTransaction(MessagePojo message, UpdateTransactionOperation operation, boolean force) throws NexusException, StateTransitionException {
+
+        LOG.trace(new LogMessage("persisting state for message: " + message.getConversation().getStatusName(), message));
+
+        // get persistent message and conversation
+        MessagePojo persistentMessage;
+        ConversationPojo persistentConversation;
+        if (message.getConversation() != null && message.getConversation().getNxConversationId() > 0) {
+            persistentConversation = (ConversationPojo) getHibernateTemplate().get(
+                    ConversationPojo.class, message.getConversation().getNxConversationId());
+        } else {
+            persistentConversation = message.getConversation();
+        }
+        if ( message.getNxMessageId() > 0 ) {
+            persistentMessage = (MessagePojo) getHibernateTemplate().get(MessagePojo.class, message.getNxMessageId());
+        } else {
+            persistentMessage = message;
+        }
+        
+        if (persistentConversation != null && persistentMessage != null) {
+            String oldActionName = (persistentConversation.getCurrentAction() == null ? null : persistentConversation.getCurrentAction().getName());
+            
+            // remember persistent status for state transition check
+            int persistentMessageStatus = persistentMessage.getStatus();
+            int persistentConversationStatus = persistentConversation.getStatus();
+            
+            // perform update operation
+            UpdateScope updateScope = UpdateScope.NOTHING;
+            MessagePojo persistentReferencedMessage = null;
+            if (persistentMessage.getReferencedMessage() != null) {
+                persistentReferencedMessage = (MessagePojo) getHibernateTemplate().get(MessagePojo.class, persistentMessage.getReferencedMessage().getNxId());
+            }
+            if (operation != null) {
+                updateScope = operation.update(persistentConversation, persistentMessage, persistentReferencedMessage);
+                if (updateScope == null) {
+                    updateScope = UpdateScope.NOTHING;
+                }
+            }
+            
+            int allowedMessageStatus = persistentMessage.getStatus();
+            int allowedConversationStatus = persistentConversation.getStatus();
+            if (!force) {
+                if (persistentMessage.getNxId() > 0) {
+                    allowedMessageStatus = getAllowedMessageTransitionStatus(persistentMessageStatus, persistentMessage.getStatus());
+                }
+                if (persistentConversation.getNxId() > 0) {
+                    allowedConversationStatus = getAllowedConversationTransitionStatus(persistentConversationStatus, persistentConversation.getStatus());
+                }
+            }
+            int messageStatus = persistentMessage.getStatus();
+            int conversationStatus = persistentConversation.getStatus();
+            persistentMessage.setStatus(allowedMessageStatus);
+            persistentConversation.setStatus(allowedConversationStatus);
+
+            // persist result
+            List<NEXUSe2ePojo> entities = new ArrayList<NEXUSe2ePojo>(); 
+            if (updateScope.updateConversation()) {
+                if (LOG.isTraceEnabled()) {
+                    LOG.trace("persisting conv " + persistentConversation.getConversationId() + " with action " +
+                            persistentConversation.getCurrentAction().getName() + " (was " + oldActionName + ")");
+                }
+                entities.add(persistentConversation);
+            }
+            if (updateScope.updateMessage()) {
+                entities.add(persistentMessage);
+            }
+            if (updateScope.updateReferencedMessage() && persistentReferencedMessage != null) {
+                entities.add(persistentReferencedMessage);
+            }
+            getHibernateTemplate().saveOrUpdateAll(entities);
+            
+            // write possible changes back so that we can go on working with original message
+            if (updateScope.updateConversation()) {
+                message.getConversation().setStatus(allowedConversationStatus);
+                message.getConversation().setNxId(persistentConversation.getNxId());
+                message.getConversation().setCurrentAction(persistentConversation.getCurrentAction());
+                if (persistentConversation.getCurrentAction() != null) { // force current action to be loaded
+                    persistentConversation.getCurrentAction().getChoreography();
+                    persistentConversation.getCurrentAction().getName();
+                }
+                message.getConversation().setEndDate(persistentConversation.getEndDate());
+                message.getConversation().setModifiedDate(persistentConversation.getModifiedDate());
+                message.getConversation().setMessages(persistentConversation.getMessages());
+            }
+            if (updateScope.updateMessage() || updateScope.updateReferencedMessage()) {
+                message.setReferencedMessage(persistentMessage.getReferencedMessage());
+                message.setStatus(allowedMessageStatus);
+                message.setEndDate(persistentMessage.getEndDate());
+                message.setNxId(message.getNxId());
+                message.setRetries(message.getRetries());
+                message.setModifiedDate(persistentMessage.getModifiedDate());
+            }
+            
+            
+            String errMsg = null;
+            
+            if (allowedMessageStatus != messageStatus && updateScope != UpdateScope.NOTHING) {
+                errMsg = "Illegal transition: Cannot set message status for " + message.getMessageId() + " from " +
+                MessagePojo.getStatusName( allowedMessageStatus ) + " to " + MessagePojo.getStatusName( messageStatus );
+            }
+            if (allowedConversationStatus != conversationStatus && updateScope.updateConversation()) {
+                if (errMsg != null) {
+                    errMsg += ", cannot set conversation status for " + message.getConversation().getConversationId() + " from " + ConversationPojo.getStatusName( allowedConversationStatus ) +
+                        " to " + ConversationPojo.getStatusName( conversationStatus );
+                } else {
+                    errMsg = "Illegal transition: Cannot set conversation status for " + message.getConversation().getConversationId() + " from "
+                        + ConversationPojo.getStatusName( allowedConversationStatus ) + " to " + ConversationPojo.getStatusName( conversationStatus );
+                }
+            }
+            if (errMsg != null) {
+                throw new StateTransitionException( errMsg );
+            }
+        }
+
+    } // updateTransaction
 
     
-    /* (non-Javadoc)
-     * @see org.nexuse2e.dao.TransactionDAO#getAllowedTransitionStatus(org.nexuse2e.pojo.ConversationPojo, int)
-     */
-    public int getAllowedTransitionStatus( ConversationPojo conversation, int conversationStatus ) {
+    public void updateRetryCount( MessagePojo message ) throws NexusException {
+        MessagePojo persistentMessage = (MessagePojo) getHibernateTemplate().get( MessagePojo.class, message.getNxMessageId() );
+        if (persistentMessage != null) {
+            persistentMessage.setRetries( message.getRetries() );
+            getHibernateTemplate().saveOrUpdate(persistentMessage);
+        }
+    }
 
-        if ( conversation.getStatus() == conversationStatus ) {
+    protected int getAllowedConversationTransitionStatus( int persistentConversationStatus, int conversationStatus ) {
+
+        if ( persistentConversationStatus == conversationStatus ) {
             return conversationStatus;
         }
-        int[] validStates = followUpConversationStates.get( conversation.getStatus() );
+        int[] validStates = followUpConversationStates.get( persistentConversationStatus );
         if ( validStates != null ) {
             for ( int status : validStates ) {
                 if ( status == conversationStatus ) {
@@ -1091,18 +1143,15 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
             }
         }
 
-        return conversation.getStatus();
+        return persistentConversationStatus;
     }
 
-    /* (non-Javadoc)
-     * @see org.nexuse2e.dao.TransactionDAO#getAllowedTransitionStatus(org.nexuse2e.pojo.MessagePojo, int)
-     */
-    public int getAllowedTransitionStatus( MessagePojo message, int messageStatus ) {
+    protected int getAllowedMessageTransitionStatus( int persistentMessageStatus, int messageStatus ) {
 
-        if ( message.getStatus() == messageStatus ) {
+        if ( persistentMessageStatus == messageStatus ) {
             return messageStatus;
         }
-        int[] validStates = followUpMessageStates.get( message.getStatus() );
+        int[] validStates = followUpMessageStates.get( persistentMessageStatus );
         if ( validStates != null ) {
             for ( int status : validStates ) {
                 if ( status == messageStatus ) {
@@ -1110,9 +1159,10 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
                 }
             }
         }
-        return message.getStatus();
+        return persistentMessageStatus;
     }
-
+    
+    
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.TransactionDAO#getCreatedMessagesSinceCount(java.util.Date)
      */

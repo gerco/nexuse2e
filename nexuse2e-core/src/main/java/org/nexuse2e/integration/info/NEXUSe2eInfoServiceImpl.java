@@ -45,6 +45,7 @@ import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.configuration.GenericComparator;
 import org.nexuse2e.controller.TransactionService;
 import org.nexuse2e.dao.LogDAO;
+import org.nexuse2e.dao.TransactionDAO;
 import org.nexuse2e.integration.NEXUSe2eInterfaceImpl;
 import org.nexuse2e.integration.info.wsdl.Choreographies;
 import org.nexuse2e.integration.info.wsdl.Conversation;
@@ -67,6 +68,7 @@ import org.nexuse2e.integration.info.wsdl.Messages;
 import org.nexuse2e.integration.info.wsdl.NEXUSe2EInfo;
 import org.nexuse2e.integration.info.wsdl.NexusUptime;
 import org.nexuse2e.integration.info.wsdl.NexusVersion;
+import org.nexuse2e.integration.info.wsdl.Partner;
 import org.nexuse2e.integration.info.wsdl.Partners;
 import org.nexuse2e.integration.info.wsdl.RestartEngineResponse;
 import org.nexuse2e.integration.info.wsdl.RestartEngineResult;
@@ -310,10 +312,13 @@ public class NEXUSe2eInfoServiceImpl implements NEXUSe2EInfo {
             Comparator<PartnerPojo> comp = new GenericComparator<PartnerPojo>("name", true);
             List<PartnerPojo> partners = Engine.getInstance().getCurrentConfiguration().getPartners(
                     org.nexuse2e.configuration.Constants.PARTNER_TYPE_PARTNER, comp);
-            List<String> result = p.getPartner();
+            List<Partner> result = p.getPartner();
             if (partners != null) {
                 for (PartnerPojo pp : partners) {
-                    result.add(pp.getName());
+                    Partner partner = new Partner();
+                    partner.setId(pp.getPartnerId());
+                    partner.setValue(pp.getName());
+                    result.add(partner);
                 }
             }
         } catch (NexusException e) {
@@ -329,10 +334,13 @@ public class NEXUSe2eInfoServiceImpl implements NEXUSe2EInfo {
             Comparator<PartnerPojo> comp = new GenericComparator<PartnerPojo>("name", true);
             List<PartnerPojo> partners = Engine.getInstance().getCurrentConfiguration().getPartners(
                     org.nexuse2e.configuration.Constants.PARTNER_TYPE_LOCAL, comp);
-            List<String> result = p.getPartner();
+            List<Partner> result = p.getPartner();
             if (partners != null) {
                 for (PartnerPojo pp : partners) {
-                    result.add(pp.getName());
+                    Partner partner = new Partner();
+                    partner.setId(pp.getPartnerId());
+                    partner.setValue(pp.getName());
+                    result.add(partner);
                 }
             }
         } catch (NexusException e) {
@@ -342,17 +350,20 @@ public class NEXUSe2eInfoServiceImpl implements NEXUSe2EInfo {
         return p;
     }
 
-    public List<String> getParticipants( String choreography ) {
-        List<String> result = new ArrayList<String>();
+    public List<Partner> getParticipants( String choreography ) {
+        List<Partner> result = new ArrayList<Partner>();
         try {
             ChoreographyPojo cp = Engine.getInstance().getCurrentConfiguration().getChoreographyByChoreographyId( choreography );
             if (cp != null) {
                 for (ParticipantPojo participant : cp.getParticipants()) {
                     if (participant != null && participant.getPartner() != null && participant.getPartner().getPartnerId() != null) {
-                        result.add( participant.getPartner().getPartnerId() );
+                        Partner partner = new Partner();
+                        partner.setId(participant.getPartner().getPartnerId());
+                        partner.setValue(participant.getPartner().getName());
+                        result.add(partner);
                     }
                 }
-                Collections.sort(result, STRING_COMPARATOR);
+                Collections.sort(result, new GenericComparator<Partner>("value", true));
             }
         } catch (NexusException nex) {
             nex.printStackTrace();
@@ -406,19 +417,30 @@ public class NEXUSe2eInfoServiceImpl implements NEXUSe2EInfo {
         return DatatypeFactory.newInstance().newXMLGregorianCalendar(gc);
     }
     
-    private static Messages convert(List<MessagePojo> msgs, boolean includePayload) throws DatatypeConfigurationException {
+    private static Messages convert(List<MessagePojo> msgs, boolean includePayload, boolean includeOptionalAttributes)
+    throws DatatypeConfigurationException {
         Messages messages = new Messages();
         
         for (MessagePojo mp : msgs) {
             Message message = new Message();
             messages.getMessage().add(message);
             message.setActionId(mp.getAction().getName());
+            ParticipantPojo localPartner = Engine.getInstance().getCurrentConfiguration().getParticipantFromChoreographyByPartner(
+                    mp.getConversation().getChoreography(), mp.getConversation().getPartner());
+            if (localPartner != null && localPartner.getLocalPartner() != null && localPartner.getLocalPartner().getPartnerId() != null) {
+                message.setLocalPartnerId(localPartner.getLocalPartner().getPartnerId());
+            }
             message.setChoreographyId(mp.getAction().getChoreography().getName());
             message.setCreatedDate(date(mp.getCreatedDate()));
             message.setId(mp.getMessageId());
             message.setModifiedDate(date(mp.getModifiedDate()));
             message.setOutbound(mp.isOutbound());
             message.setRetries(mp.getRetries());
+            if (includeOptionalAttributes) {
+                message.setConversationId(mp.getConversation().getConversationId());
+                message.setBusinessPartnerId(mp.getParticipant().getPartner().getPartnerId());
+                message.setChoreographyId(mp.getAction().getChoreography().getName());
+            }
             MessageStatus status = MessageStatus.UNKNOWN;
             try {
                 status = MessageStatus.fromValue(MessagePojo.getStatusName(mp.getStatus()));
@@ -480,9 +502,13 @@ public class NEXUSe2eInfoServiceImpl implements NEXUSe2EInfo {
             c.setCreatedDate(date(cp.getCreatedDate()));
             c.setCurrentActionId((cp.getCurrentAction() == null ? null : cp.getCurrentAction().getName()));
             c.setId(cp.getConversationId());
-            Messages messages = convert(Engine.getInstance().getTransactionService().getMessagesFromConversation(cp), false);
+            Messages messages = convert(Engine.getInstance().getTransactionService().getMessagesFromConversation(cp), false, false);
             c.setMessages(messages);
             c.setModifiedDate(date(cp.getModifiedDate()));
+            ParticipantPojo localPartner = Engine.getInstance().getCurrentConfiguration().getParticipantFromChoreographyByPartner(cp.getChoreography(), cp.getPartner());
+            if (localPartner != null && localPartner.getLocalPartner() != null && localPartner.getLocalPartner().getPartnerId() != null) {
+                c.setLocalPartnerId(localPartner.getLocalPartner().getPartnerId());
+            }
             ConversationStatus status = ConversationStatus.UNKNOWN;
             try {
                 status = ConversationStatus.fromValue(ConversationPojo.getStatusName(cp.getStatus()));
@@ -516,7 +542,7 @@ public class NEXUSe2eInfoServiceImpl implements NEXUSe2EInfo {
         try {
             ConversationFilterParams cfp = new ConversationFilterParams(conversationFilter);
             List<ConversationPojo> cp = Engine.getInstance().getTransactionService().getConversationsForReport(
-                    cfp.status, cfp.nxChoreographyId, cfp.nxPartnerId, cfp.conversationId, cfp.afterDate, cfp.beforeDate, cfp.itemsPerPage, cfp.page, 0, cfp.asc);
+                    cfp.status, cfp.nxChoreographyId, cfp.nxPartnerId, cfp.conversationId, cfp.afterDate, cfp.beforeDate, cfp.itemsPerPage, cfp.page, TransactionDAO.SORT_CREATED, cfp.asc);
             return convert(cp);
         } catch (NexusException nex) {
             nex.printStackTrace();
@@ -545,9 +571,9 @@ public class NEXUSe2eInfoServiceImpl implements NEXUSe2EInfo {
         try {
             MessageFilterParams cfp = new MessageFilterParams(messageFilter);
             List<MessagePojo> mp = Engine.getInstance().getTransactionService().getMessagesForReport(
-                    cfp.status, cfp.nxChoreographyId, cfp.nxPartnerId, cfp.conversationId, cfp.messageId, null, cfp.afterDate, cfp.beforeDate, cfp.itemsPerPage, cfp.page, 0, cfp.asc);
+                    cfp.status, cfp.nxChoreographyId, cfp.nxPartnerId, cfp.conversationId, cfp.messageId, null, cfp.afterDate, cfp.beforeDate, cfp.itemsPerPage, cfp.page, TransactionDAO.SORT_CREATED, cfp.asc);
             
-            return convert(mp, false);
+            return convert(mp, false, true);
         } catch (NexusException nex) {
             nex.printStackTrace();
         } catch (DatatypeConfigurationException dcex) {
@@ -712,7 +738,7 @@ public class NEXUSe2eInfoServiceImpl implements NEXUSe2EInfo {
             
             page = 0;
             if (messageFilter.getPageNumber() != null && messageFilter.getPageNumber().getValue() != null) {
-                itemsPerPage = messageFilter.getPageNumber().getValue();
+                page = messageFilter.getPageNumber().getValue();
             }
             messageId = null;
             if (messageFilter.getMessageId() != null) {

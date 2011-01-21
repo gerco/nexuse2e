@@ -26,6 +26,7 @@ import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.backend.BackendPipelineDispatcher;
 import org.nexuse2e.configuration.ConfigurationAccessService;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ConversationPojo;
@@ -193,8 +194,6 @@ public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
                                         String payload ) throws NexusException {
         checkExist( choreographyId, businessPartnerId, actionId );
         
-        MessageContext messageContext = null;
-
         LOG.debug( "Parameters - choreographyId: " + choreographyId + ", messageId: " + messageId + ", businessPartnerId: "
                 + businessPartnerId + ", actionId: " + actionId + ", primaryKey: " + payload );
 
@@ -203,17 +202,17 @@ public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
         LOG.debug( "BackendPipelineDispatcher: " + backendPipelineDispatcher );
         if ( backendPipelineDispatcher != null ) {
             try {
-                messageContext = backendPipelineDispatcher.processMessage( businessPartnerId, choreographyId, actionId,
+                MessageContext messageContext = backendPipelineDispatcher.processMessage( businessPartnerId, choreographyId, actionId,
                         conversationId, messageId, null, null, (payload != null ? payload.getBytes() : null) );
+
+                if (messageContext.getMessagePojo() != null && messageContext.getMessagePojo().getConversation() != null) {
+                    return messageContext.getMessagePojo().getConversation().getConversationId();
+                }
             } catch ( NexusException e ) {
-                LOG.debug( "Error submitting message: " + e );
-                e.printStackTrace();
+                LOG.error(new LogMessage("Error submitting message: ", conversationId, messageId), e);
             }
         }
 
-        if (messageContext.getMessagePojo() != null && messageContext.getMessagePojo().getConversation() != null) {
-            return messageContext.getMessagePojo().getConversation().getConversationId();
-        }
         return null;
     }
 

@@ -46,7 +46,7 @@ import org.springframework.beans.factory.InitializingBean;
  *
  * @author gesch, sschulze
  */
-public class BackendOutboundDispatcher extends StateMachineExecutor implements Pipelet, InitializingBean {
+public class BackendOutboundDispatcher extends ChoreographyValidator implements Pipelet, InitializingBean {
 
     private static Logger                        LOG                        = Logger
                                                                                     .getLogger( BackendOutboundDispatcher.class );
@@ -69,10 +69,10 @@ public class BackendOutboundDispatcher extends StateMachineExecutor implements P
      */
     public MessageContext processMessage( MessageContext messageContext ) throws NexusException {
 
-        ChoreographyPojo choreography = validateChoreography( messageContext, Constants.INBOUND );
+        ChoreographyPojo choreography = validateChoreography( messageContext );
         LOG.trace( new LogMessage( "Matching choreography found: " + choreography.getName(),messageContext.getMessagePojo()) );
 
-        ParticipantPojo participant = validateParticipant( messageContext, Constants.INBOUND );
+        ParticipantPojo participant = validateParticipant( messageContext );
         LOG.trace( new LogMessage( "Matching participant found: " + participant.getPartner().getPartnerId(),messageContext.getMessagePojo()) );
 
         // create protocolspecific key

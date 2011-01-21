@@ -62,6 +62,11 @@ public class MessageContext implements Serializable {
     private transient boolean                  processThroughReturnPipeline = true;
     private transient MessageContext           requestMessage = null;
     private transient RequestInfo              requestInfo = null;
+    private transient boolean                  firstTimeInQueue = true;
+    
+    public MessageContext() {
+        
+    }
     
     /**
      * @return the data
@@ -216,6 +221,10 @@ public class MessageContext implements Serializable {
         clone.setOriginalMessagePojo( this.getOriginalMessagePojo() );
         clone.setParticipant( this.getParticipant() );
         clone.setProtocolSpecificKey( this.getProtocolSpecificKey() );
+        clone.setRequestInfo(this.getRequestInfo());
+        clone.setRoutingData(this.getRoutingData());
+        clone.setErrors(this.getErrors() == null ? null : new ArrayList<ErrorDescriptor>(this.getErrors()));
+        clone.setRequestMessage(this.getRequestMessage());
         return clone;
     }
 
@@ -299,11 +308,8 @@ public class MessageContext implements Serializable {
      */
     public ConversationStateMachine getStateMachine() {
         if (conversationStateMachine == null) {
-            conversationStateMachine = new ConversationStateMachine(
-                    conversation,
-                    messagePojo,
-                    participant.getConnection().isReliable(),
-                    Engine.getInstance().getTransactionService().getSyncObjectForConversation( conversation ) );
+            conversationStateMachine =  new org.nexuse2e.messaging.impl.ConversationStateMachineImpl();
+            conversationStateMachine.initialize(conversation, messagePojo, participant.getConnection().isReliable());
         }
         return conversationStateMachine;
     }
@@ -378,6 +384,25 @@ public class MessageContext implements Serializable {
     		return Engine.getInstance().getDefaultCharEncoding();
     	}
     }
-    
+
+    /**
+     * Determines if the message associated with this <code>MessageContext</code> has been
+     * queued for the first time. This parameter causes outbound messages to be marked with
+     * retry count 0 after the first sending attempt. 
+     * @return <code>true</code> if the message has been queued for the first time. 
+     */
+    public boolean isFirstTimeInQueue() {
+        return firstTimeInQueue;
+    }
+
+    /**
+     * Sets the indicator for the first-time message queueing. 
+     * @param firstTimeInQueue If <code>true</code>, this message will be marked with retry
+     * count 0 after the first sending attempt. Otherwise, the message retry count will be
+     * incremented.
+     */
+    public void setFirstTimeInQueue(boolean firstTimeInQueue) {
+        this.firstTimeInQueue = firstTimeInQueue;
+    }
     
 } // MessageContext

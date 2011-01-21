@@ -61,11 +61,10 @@ import org.nexuse2e.messaging.mime.binary_base64;
 import org.nexuse2e.service.Service;
 import org.nexuse2e.util.CertificateUtil;
 import org.nexuse2e.util.XMLUtil;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
 import org.springframework.web.context.support.WebApplicationObjectSupport;
 import org.w3c.dom.Document;
@@ -79,7 +78,7 @@ import org.w3c.dom.NodeList;
  *
  * @author gesch
  */
-public class Engine extends WebApplicationObjectSupport implements BeanNameAware, BeanFactoryAware, InitializingBean {
+public class Engine extends WebApplicationObjectSupport implements BeanNameAware, ApplicationContextAware, InitializingBean {
 
     private static Logger                    LOG                            = Logger.getLogger( Engine.class );
 
@@ -87,7 +86,6 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     private EngineController                 engineController               = null;
 
     private EngineConfiguration              currentConfiguration;
-    private BeanFactory                      beanFactory                    = null;
     private LocalSessionFactoryBean          localSessionFactoryBean        = null;
     private String                           beanId;
     private BeanStatus                       status                         = BeanStatus.UNDEFINED;
@@ -738,7 +736,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                 if ( ( baseConfigurationProvider == null || !baseConfigurationProvider.isConfigurationAvailable() )
                         && ( baseConfigurationProviderClass != null ) ) {
                     try {
-                        Class theClass = Class.forName( baseConfigurationProviderClass );
+                        Class<?> theClass = Class.forName( baseConfigurationProviderClass );
                         baseConfigurationProvider = (BaseConfigurationProvider) theClass.newInstance();
                     } catch ( InstantiationException iEx ) {
                         LOG.error( "Base configuration class '" + baseConfigurationProviderClass
@@ -884,21 +882,12 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
         // LOG.debug( "3partners: " + this.currentConfiguration.getPartners().size() );
     }
 
-    /* (non-Javadoc)
-     * @see org.springframework.beans.factory.BeanFactoryAware#setBeanFactory(org.springframework.beans.factory.BeanFactory)
-     */
-    public void setBeanFactory( BeanFactory factory ) throws BeansException {
-
-        this.beanFactory = factory;
-
-    }
-
     /**
      * @return
      */
     public BeanFactory getBeanFactory() {
 
-        return beanFactory;
+        return getWebApplicationContext();
     }
 
     /* (non-Javadoc)

@@ -162,6 +162,22 @@
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
+            <xsd:element name="getPartners" />
+            <xsd:element name="getLocalPartners" />
+            <xsd:complexType name="partner">
+                <xsd:simpleContent>
+                    <xsd:extension base="xsd:string">
+                        <xsd:attribute name="id" use="optional" type="xsd:string"/>
+                    </xsd:extension>
+                </xsd:simpleContent>
+            </xsd:complexType>
+            <xsd:element name="partners">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="partner" minOccurs="0" maxOccurs="unbounded" type="ws:partner" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
             <xsd:element name="getParticipants">
                 <xsd:complexType>
                     <xsd:sequence>
@@ -172,7 +188,7 @@
             <xsd:element name="participants">
                 <xsd:complexType>
                     <xsd:sequence>
-                        <xsd:element name="participant" minOccurs="0" maxOccurs="unbounded" type="xsd:string" />
+                        <xsd:element name="participant" minOccurs="0" maxOccurs="unbounded" type="ws:partner" />
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
@@ -277,6 +293,7 @@
                     <xsd:enumeration value="UNKNOWN"/>
                     <xsd:enumeration value="CREATED"/>
                     <xsd:enumeration value="PROCESSING"/>
+                    <xsd:enumeration value="IDLE"/>
                     <xsd:enumeration value="AWAITING_ACK"/>
                     <xsd:enumeration value="SENDING_ACK"/>
                     <xsd:enumeration value="ACK_SENT_AWAITING_BACKEND"/>
@@ -370,6 +387,9 @@
                         <xsd:attribute name="retries" use="required" type="xsd:int"/>
                         <xsd:attribute name="actionId" use="required" type="xsd:string"/>
                         <xsd:attribute name="choreographyId" use="optional" type="xsd:string"/>
+                        <xsd:attribute name="conversationId" use="optional" type="xsd:string"/>
+                        <xsd:attribute name="businessPartnerId" use="optional" type="xsd:string"/>
+                        <xsd:attribute name="localPartnerId" use="optional" type="xsd:string"/>
                         <xsd:attribute name="createdDate" use="required" type="xsd:dateTime" />
                         <xsd:attribute name="modifiedDate" use="required" type="xsd:dateTime" />
                     </xsd:extension>
@@ -391,6 +411,7 @@
                         <xsd:attribute name="id" use="required" type="xsd:string"/>
                         <xsd:attribute name="choreographyId" use="required" type="xsd:string" />
                         <xsd:attribute name="businessPartnerId" use="required" type="xsd:string" />
+                        <xsd:attribute name="localPartnerId" use="optional" type="xsd:string" />
                         <xsd:attribute name="status" use="required" type="ws:conversationStatus" />
                         <xsd:attribute name="currentActionId" use="required" type="xsd:string" />
                         <xsd:attribute name="createdDate" use="required" type="xsd:dateTime" />
@@ -543,6 +564,18 @@
     <wsdl:message name="getActionsResponse">
         <wsdl:part element="ws:actions" name="actions" />
     </wsdl:message>
+    <wsdl:message name="getPartners">
+        <wsdl:part element="ws:getPartners" name="getPartners" />
+    </wsdl:message>
+    <wsdl:message name="getPartnersResponse">
+        <wsdl:part element="ws:partners" name="partners" />
+    </wsdl:message>
+    <wsdl:message name="getLocalPartners">
+        <wsdl:part element="ws:getLocalPartners" name="getLocalPartners" />
+    </wsdl:message>
+    <wsdl:message name="getLocalPartnersResponse">
+        <wsdl:part element="ws:partners" name="partners" />
+    </wsdl:message>
     <wsdl:message name="getParticipants">
         <wsdl:part element="ws:getParticipants" name="getParticipants" />
     </wsdl:message>
@@ -656,6 +689,14 @@
         <wsdl:operation name="getActions">
             <wsdl:input message="ws:getActions" name="getActions" />
             <wsdl:output message="ws:getActionsResponse" name="getActionsResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="getPartners">
+            <wsdl:input message="ws:getPartners" name="getPartners" />
+            <wsdl:output message="ws:getPartnersResponse" name="getPartnersResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="getLocalPartners">
+            <wsdl:input message="ws:getLocalPartners" name="getLocalPartners" />
+            <wsdl:output message="ws:getLocalPartnersResponse" name="getLocalPartnersResponse" />
         </wsdl:operation>
         <wsdl:operation name="getParticipants">
             <wsdl:input message="ws:getParticipants" name="getParticipants" />
@@ -806,6 +847,26 @@
                 <soap:body use="literal" />
             </wsdl:input>
             <wsdl:output name="getActionsResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="getPartners">
+            <soap:operation soapAction="http://integration.nexuse2e.org/NEXUSe2eInfo/getPartners" style="document" />
+            <wsdl:input name="getPartners">
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="getPartnersResponse">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="getLocalPartners">
+            <soap:operation soapAction="http://integration.nexuse2e.org/NEXUSe2eInfo/getLocalPartners" style="document" />
+            <wsdl:input name="getLocalPartners">
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="getLocalPartnersResponse">
                 <soap:body use="literal" />
             </wsdl:output>
         </wsdl:operation>

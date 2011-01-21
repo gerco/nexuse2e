@@ -19,7 +19,6 @@
  */
 package org.nexuse2e.controller;
 
-import java.lang.ref.WeakReference;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
@@ -27,21 +26,21 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.nexuse2e.ActionSpecificKey;
-import org.nexuse2e.Constants.BeanStatus;
-import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.ProtocolSpecificKey;
+import org.nexuse2e.Constants.BeanStatus;
+import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.IdGenerator;
 import org.nexuse2e.dao.LogDAO;
 import org.nexuse2e.dao.TransactionDAO;
+import org.nexuse2e.dao.UpdateTransactionOperation;
 import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.Constants;
 import org.nexuse2e.messaging.MessageContext;
@@ -65,10 +64,9 @@ public class TransactionServiceImpl implements TransactionService {
                                                                                  .getLogger( TransactionServiceImpl.class );
 
     private HashMap<String, ScheduledFuture<?>>       processingMessages = new HashMap<String, ScheduledFuture<?>>();
-    private HashMap<String, ScheduledExecutorService> schedulers         = new HashMap<String, ScheduledExecutorService>();
     private Hashtable<String, String>                 synchronousReplies = new Hashtable<String, String>();
 
-    private Map<String, WeakReference<Object>>        syncObjects        = new HashMap<String, WeakReference<Object>>();
+    //private Map<String, WeakReference<Object>>        syncObjects        = new HashMap<String, WeakReference<Object>>();
 
     private Constants.BeanStatus                      status             = Constants.BeanStatus.UNDEFINED;
 
@@ -133,8 +131,8 @@ public class TransactionServiceImpl implements TransactionService {
             conversation.setPartner( c.getPartnerByNxPartnerId( conversation.getPartner().getNxPartnerId() ) );
         }
         if (conversation.getCurrentAction() != null && conversation.getChoreography() != null) {
-            conversation.setCurrentAction(
-                    c.getActionFromChoreographyByNxActionId( conversation.getChoreography(), conversation.getCurrentAction().getNxActionId() ) );
+            ActionPojo currentAction = c.getActionFromChoreographyByNxActionId(conversation.getChoreography(), conversation.getCurrentAction().getNxActionId());
+            conversation.setCurrentAction(currentAction);
         }
         
         if (completeMessages) {
@@ -425,7 +423,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         message.setTRP( participant.getConnection().getTrp() );
         ActionPojo action = null;
-        if ( message.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
+        if ( message.isNormal() ) {
             action = Engine.getInstance().getActiveConfigurationAccessService().getActionFromChoreographyByActionId(
                     choreography, actionId );
             if ( action == null ) {
@@ -433,7 +431,7 @@ public class TransactionServiceImpl implements TransactionService {
                         + choreography.getName() );
             }
 
-        } else if ( message.getType() == Constants.INT_MESSAGE_TYPE_ACK ) {
+        } else if ( message.isAck() ) {
             action = new ActionPojo( choreography, new Date(), new Date(), 0, false, false, null, null, actionId );
         } else { // error message
             action = new ActionPojo( choreography, new Date(), new Date(), 0, false, false, null, null, actionId );
@@ -452,7 +450,7 @@ public class TransactionServiceImpl implements TransactionService {
             conversation = new ConversationPojo();
             conversation.setPartner( partner );
             conversation.setChoreography( choreography );
-            if ( action != null && !action.isStart() && ( message.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) ) {
+            if ( action != null && !action.isStart() && ( message.isNormal() ) ) {
                 throw new NexusException( "action:" + action.getName() + " is not a valid starting action!" );
             }
             //conversation.setCurrentAction( action );
@@ -530,32 +528,27 @@ public class TransactionServiceImpl implements TransactionService {
         
     
 
-    public void updateTransaction( MessagePojo message )
-    throws NexusException, StateTransitionException {
+    public void updateTransaction( MessagePojo message ) throws NexusException, StateTransitionException {
         updateTransaction( message, false );
     }
-
-    public void updateTransaction( MessagePojo message, boolean force )
-    throws NexusException, StateTransitionException {
-//        Exception ex = null;
-//        for(int i = 0; i < 20; i++ ) {
-//            
-//            try {
-                getTransactionDao().updateTransaction( message, force );
-//                return;
-//            } catch ( Exception e ) {
-//                try {
-//                    Thread.sleep( 2000 );
-//                } catch ( InterruptedException e1 ) {
-//                }
-//                LOG.warn("retrying update");
-//                ex = e;
-//            }
-//        }
-//        throw new NexusException("retry failed: ",ex);
-        
+    
+    public void updateTransaction( MessagePojo message, boolean force ) throws NexusException, StateTransitionException {
+        getTransactionDao().updateTransaction( message, force );
     } // updateTransaction
 
+    public void updateTransaction( MessagePojo message, UpdateTransactionOperation operation ) throws NexusException, StateTransitionException {
+        updateTransaction(message, operation, false);
+    } // updateTransaction
+
+    public void updateTransaction( MessagePojo message, UpdateTransactionOperation operation, boolean force ) throws NexusException, StateTransitionException {
+        getTransactionDao().updateTransaction( message, operation, force );
+    } // updateTransaction
+
+
+    public void updateRetryCount( MessagePojo message ) throws NexusException {
+        getTransactionDao().updateRetryCount( message );
+    }
+    
     /* (non-Javadoc)
      * @see org.nexuse2e.controller.TransactionService#isProcessingMessage(java.lang.String)
      */
@@ -573,17 +566,15 @@ public class TransactionServiceImpl implements TransactionService {
     /* (non-Javadoc)
      * @see org.nexuse2e.controller.TransactionService#registerProcessingMessage(java.lang.String, java.util.concurrent.ScheduledFuture)
      */
-    public void registerProcessingMessage( MessagePojo message, ScheduledFuture<?> handle, ScheduledExecutorService scheduler ) {
+    public void registerProcessingMessage( MessagePojo message, ScheduledFuture<?> handle ) {
 
         LOG.debug( new LogMessage ("registerProcessingMessage: " + message.getMessageId(),"unknown",message.getMessageId()) );
 
         synchronized ( processingMessages ) {
             if ( !processingMessages.containsKey( message.getMessageId() ) ) {
                 processingMessages.put( message.getMessageId(), handle );
-                schedulers.put( message.getMessageId(), scheduler );
             } else {
                 handle.cancel( false );
-                scheduler.shutdownNow();
                 LOG.warn( new LogMessage( "Request to process message that was already being processed: " + message.getMessageId(),message) );
                 new Exception().printStackTrace();
             }
@@ -611,17 +602,7 @@ public class TransactionServiceImpl implements TransactionService {
             ScheduledFuture<?> handle = processingMessages.get( id );
             if ( handle != null ) {
                 handle.cancel( false );
-                LOG.debug( new LogMessage("deregisterProcessingMessage - processing cancelled!",conversation,id) );
-                LOG.debug( "Current Status: "+MessagePojo.getStatusName( message.getStatus()) );
-                try {
-                    ScheduledExecutorService scheduler = schedulers.remove( id );
-                    if ( scheduler != null ) {
-                        LOG.debug( new LogMessage("Shutting down scheduler...",conversation,id) );
-                        scheduler.shutdownNow();
-                    }
-                } catch ( Exception e ) {
-                    e.printStackTrace();
-                }
+                LOG.debug( new LogMessage("deregisterProcessingMessage - processing cancelled with message status " + MessagePojo.getStatusName(message.getStatus()) + "!",conversation,id) );
                 processingMessages.remove( id );
             } else {
                 LOG.warn( new LogMessage("No handle found when trying to deregister processing message: " + id,conversation,id) );
@@ -884,7 +865,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     public Object getSyncObjectForConversation( ConversationPojo conversation ) {
 
-    	return new Object();
+        return new Object();
 //        synchronized (syncObjects) {
 //            WeakReference<Object> ref = syncObjects.get( conversation.getConversationId() );
 //            Object obj = null;

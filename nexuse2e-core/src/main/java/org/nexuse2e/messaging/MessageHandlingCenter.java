@@ -8,7 +8,6 @@ import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.controller.StateTransitionException;
 import org.nexuse2e.logging.LogMessage;
-import org.nexuse2e.pojo.ConversationPojo;
 
 /**
  * Central entity that organizes serialized processing of inbound, and outbound
@@ -48,31 +47,17 @@ public class MessageHandlingCenter implements MessageProcessor {
      * @param messageContext
      * @return The given reference from the input parameter. It's state will
      *         most likely be modified during state machine transition.
-     * @throws IllegalArgumentException
      * @throws IllegalStateException
      * @throws NexusException
      */
     // TODO: rename (something like 'persist')
-    public MessageContext announceQueuing( MessageContext messageContext ) throws IllegalArgumentException,
-                                                                          IllegalStateException, NexusException {
-        // validate business transition
-        ConversationPojo conversationPojo = null;
-        try {
-            // TODO: review
-            conversationPojo = new StateMachineExecutor().validateTransition( messageContext );
-        } catch ( NexusException e ) {
-            LOG.error( new LogMessage( "Not a valid action: " + messageContext.getMessagePojo().getAction(),
-                    messageContext.getMessagePojo() ), e );
-            throw e;
-        }
-
-        if ( conversationPojo == null ) {
-            throw new NexusException( "Choreography (business) transition not allowed at this time - message ID: "
-                    + messageContext.getStateMachine() );
-        }
-
+    public MessageContext announceQueuing( MessageContext messageContext ) throws  IllegalStateException, NexusException {
         // persist and indicate processing state (technical transition)
-        performQueuedTransition( messageContext, false );
+        try {
+            messageContext.getStateMachine().queueMessage();
+        } catch ( StateTransitionException e ) {
+            LOG.warn( new LogMessage( e.getMessage(), messageContext ) );
+        }
 
         return messageContext;
     }
@@ -92,49 +77,17 @@ public class MessageHandlingCenter implements MessageProcessor {
      * @throws IllegalStateException
      * @throws NexusException
      */
-    public MessageContext processMessage( MessageContext messageContext ) throws IllegalArgumentException,
-                                                                         IllegalStateException, NexusException {
+    public MessageContext processMessage( MessageContext messageContext )throws IllegalStateException, NexusException {
 
         if ( messageContext.getMessagePojo().getStatus() != Constants.MESSAGE_STATUS_QUEUED ) {
-            // TODO: replace this code with announceQueueing() call?
-            // validate business transition
-            ConversationPojo conversationPojo = null;
-            try {
-                conversationPojo = new StateMachineExecutor().validateTransition( messageContext );
-            } catch ( NexusException e ) {
-                LOG.error( new LogMessage( "Not a valid action: " + messageContext.getMessagePojo().getAction(),
-                        messageContext.getMessagePojo() ), e );
-                throw e;
-            }
-
-            if ( conversationPojo == null ) {
-                throw new NexusException( "Choreography (business) transition not allowed at this time - message ID: "
-                        + messageContext.getStateMachine() );
-            }
-
-            // persist and indicate processing state (technical transition)
-            performQueuedTransition( messageContext, false );
+            messageContext = announceQueuing(messageContext);
         }
 
-        queue( messageContext );
+        if (messageContext != null) {
+            queue( messageContext );
+        }
 
         return messageContext;
-    }
-
-    /**
-     * Performs the transition of the (technical) conversation state machine to
-     * queued state.
-     * 
-     * @param messageContext
-     * @param force
-     * @throws NexusException
-     */
-    protected void performQueuedTransition( MessageContext messageContext, boolean force ) throws NexusException {
-        try {
-            messageContext.getStateMachine().queueMessage( false );
-        } catch ( StateTransitionException e ) {
-            LOG.warn( new LogMessage( e.getMessage(), messageContext ) );
-        }
     }
 
     /**
@@ -160,8 +113,8 @@ public class MessageHandlingCenter implements MessageProcessor {
      * @param messageId
      * @throws NexusException
      */
-    public void requeueMessage( String choreographyId, String participantId, String conversationId, String messageId )
-                                                                                                                      throws NexusException {
+    public void requeueMessage(
+            String choreographyId, String participantId, String conversationId, String messageId ) throws NexusException {
 
         MessageContext messageContext = Engine.getInstance().getTransactionService().getMessageContext( messageId );
         requeueMessage( messageContext );
@@ -192,7 +145,12 @@ public class MessageHandlingCenter implements MessageProcessor {
             }
 
             // queue message
-            performQueuedTransition( messageContext, true );
+            try {
+                messageContext.getStateMachine().queueMessage(true);
+            } catch ( StateTransitionException e ) {
+                LOG.warn( new LogMessage( e.getMessage(), messageContext ) );
+            }
+            messageContext.setFirstTimeInQueue(true); // mark re-queued
             queue( messageContext );
         } else {
             LOG.error( "Cannot requeue message with messageContext = null" );

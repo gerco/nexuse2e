@@ -53,7 +53,7 @@ public class StatusUpdateSerializer implements Manageable {
 
     private BackendInboundDispatcher                backendInboundDispatcher  = null;
 
-    private StateMachineExecutor                    stateMachineExecutor      = null;
+    private ChoreographyValidator                    stateMachineExecutor      = null;
 
     private BlockingQueue<MessageContext>           queue                     = new LinkedBlockingQueue<MessageContext>();
 

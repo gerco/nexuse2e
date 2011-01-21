@@ -49,7 +49,7 @@ import org.springframework.beans.factory.InitializingBean;
  *
  * @author gesch, sschulze
  */
-public class FrontendInboundDispatcher extends StateMachineExecutor implements Dispatcher, Pipelet, InitializingBean {
+public class FrontendInboundDispatcher extends ChoreographyValidator implements Dispatcher, Pipelet, InitializingBean {
 
     private static Logger                         LOG                       = Logger.getLogger( FrontendInboundDispatcher.class );
 
@@ -110,7 +110,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
 
             // get choreography
             try {
-                choreography = validateChoreography( messageContext, Constants.INBOUND );
+                choreography = validateChoreography( messageContext );
                 LOG.debug(new LogMessage(  "matching choreography found",messagePojo) );
             } catch ( NexusException e ) {
                 LOG.error( new LogMessage( "Error while validating choreography: " + e.getMessage(), messagePojo ), e );
@@ -136,7 +136,8 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
             if ( !failureInHeaderProcessing ) {
                 // get participant
                 try {
-                    participant = validateParticipant( messageContext, Constants.INBOUND );
+                    participant = validateParticipant( messageContext );
+                    messageContext.setParticipant(participant);
                     LOG.debug( new LogMessage( "matching participant found", messagePojo ) );
                 } catch ( NexusException e ) {
                     e.printStackTrace();
@@ -168,7 +169,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
             }
 
             // determine message type for log messages
-            String msgType = MessagePojo.getTypeName( messagePojo.getType() ).toLowerCase();
+            String msgType = messagePojo.getTypeName().toLowerCase();
             
             if ( LOG.isInfoEnabled() ) {
                 LOG.info( new LogMessage( "Received  " + msgType + " (" + messagePojo.getMessageId()
@@ -177,15 +178,15 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
             }
 
             // handle different message types
-            if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
+            if ( messagePojo.isNormal() ) {
                 responseMessageContext = handleNormalMessage( messageContext,
                                                               participant,
                                                               protocolAdapter,
                                                               choreography,
                                                               errorMessages );
-            } else if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_ACK ) {
+            } else if ( messagePojo.isAck() ) {
                 handleAcknowledgment( messageContext );
-            } else if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_ERROR ) {
+            } else if ( messagePojo.isError() ) {
                 handleError( messageContext );
             } else {
                 LOG.error( new LogMessage( "Message of unknown type (" + messagePojo.getType() + ") received", messagePojo ) );
@@ -252,15 +253,12 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                             // generate ack for reliable connections
                             try {
                              // TODO: review
-                                responseMessageContext = protocolAdapter.createAcknowledgement( choreography,
-//                                        clonedMessageContext );
-                                        messageContext );
+                                responseMessageContext = protocolAdapter.createAcknowledgement( choreography, messageContext );
                             } catch ( NexusException e ) {
                                 // Substituted an e.printStackTrace() by LOG.error().
                                 // Do we need to do something else here? How about an error ack?
                                 // Or let the exception raise up?
-                                LOG.error( new LogMessage( "Error creating acknowledgement: " + e.getMessage(),
-                                        messageContext ), e );
+                                LOG.error( new LogMessage( "Error creating acknowledgement: " + e.getMessage(), messageContext ), e );
                             }
                         } else {
                             LOG.debug( new LogMessage( "error response message found",message) );
@@ -394,7 +392,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
 
         // duplicate?
         if ( isDuplicate( message ) ) {
-            LOG.info( new LogMessage( "Received duplicate " + MessagePojo.getTypeName( message.getType() ) + ": "
+            LOG.info( new LogMessage( "Received duplicate " + message.getTypeName() + ": "
                             + message.getMessageId()
                             + " for normal message: "
                             + ( message.getReferencedMessage() != null ? message.getReferencedMessage()
@@ -405,7 +403,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                 try {
                     messageContext.getStateMachine().receivedAckMessage();
                 } catch ( StateTransitionException stex ) {
-                    LOG.warn(new LogMessage(  stex.getMessage(),message) );
+                    LOG.warn(new LogMessage(stex.getMessage(),message));
                 }
 
                 propagateSignalMessageReceived( messageContext );
@@ -435,7 +433,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
         
         // duplicate?
         if ( isDuplicate( message ) ) {
-            LOG.info( new LogMessage( "Received duplicate " + MessagePojo.getTypeName( message.getType() ) + ": "
+            LOG.info( new LogMessage( "Received duplicate " + message.getTypeName() + ": "
                 + message.getMessageId()
                 + " for normal message: "
                 + ( message.getReferencedMessage() != null ? message.getReferencedMessage() : "n/a" ),message) );
@@ -450,7 +448,7 @@ public class FrontendInboundDispatcher extends StateMachineExecutor implements D
                 
                 propagateSignalMessageReceived( messageContext );
             } else {
-                LOG.error( new LogMessage( "Received " + MessagePojo.getTypeName( message.getType() )
+                LOG.error( new LogMessage( "Received " + message.getTypeName()
                     + " signal (" + message.getMessageId() + ") for unknown message", message ) );
             }
         }

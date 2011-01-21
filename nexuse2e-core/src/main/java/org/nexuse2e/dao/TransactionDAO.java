@@ -299,27 +299,18 @@ public interface TransactionDAO {
 
     public abstract List<MessagePojo> fetchLazyMessages( ConversationPojo conversation );
 
-    public abstract void updateTransaction( MessagePojo message, boolean force ) throws NexusException,
-            StateTransitionException; // updateTransaction
+    public abstract void updateTransaction( MessagePojo message, boolean force ) throws NexusException, StateTransitionException;
 
-    /**
-     * Checks if the transition to the given status is allowed and returns it if so.
-     * @param message The original message.
-     * @param conversationStatus The target conversation status.
-     * @return <code>conversationStatus</code> if transition is allowed, or the original
-     * conversation status if not.
+    public abstract void updateTransaction(MessagePojo message, UpdateTransactionOperation operation, boolean force) throws NexusException, StateTransitionException;
+
+        /**
+     * Updates the retry count for the given persistent message.
+     * @param message The message. Must not be <code>null</code>. Shall be persistent, otherwise
+     * this method does nothing.
+     * @throws NexusException
      */
-    public abstract int getAllowedTransitionStatus( ConversationPojo conversation, int conversationStatus );
-
-    /**
-     * Checks if the transition to the given status is allowed and returns it if so.
-     * @param message The original message.
-     * @param messageStatus The target message status.
-     * @return <code>messageStatus</code> if transition is allowed, or the original
-     * message status if not.
-     */
-    public abstract int getAllowedTransitionStatus( MessagePojo message, int messageStatus );
-
+    public abstract void updateRetryCount( MessagePojo message ) throws NexusException;
+    
     /**
      * Gets a count of messages that have been created since the given time. 
      * @param since The earliest creation date of messages that shall be counted.

@@ -259,12 +259,14 @@ public class HttpSenderService extends AbstractService implements SenderAware {
             LOG.debug(new LogMessage( "HTTP call done",messageContext.getMessagePojo()) );
             int statusCode = method.getStatusCode();
             if ( statusCode > 299 ) {
-                LOG.error( new LogMessage( "Message submission failed, server responded with status: " + statusCode,
-                        messageContext.getMessagePojo() ) );
-                throw new NexusException( "Message submission failed, server responded with status: " + statusCode );
+                LogMessage lm = new LogMessage(
+                        "Message submission failed, server " + messageContext.getParticipant().getConnection().getUri() +
+                        " responded with status: " + statusCode, messageContext.getMessagePojo() ); 
+                LOG.error( lm );
+                throw new NexusException( lm );
             } else if ( statusCode < 200 ) {
-                LOG.warn( new LogMessage( "Partner server responded with status: " + statusCode, messageContext
-                        .getMessagePojo() ) );
+                LOG.warn( new LogMessage( "Partner server " + messageContext.getParticipant().getConnection().getUri() +
+                        " responded with status: " + statusCode, messageContext.getMessagePojo() ) );
             }
 
             httpReply = getHTTPReply( method );
@@ -273,13 +275,15 @@ public class HttpSenderService extends AbstractService implements SenderAware {
             method.releaseConnection();
 
         } catch ( ConnectTimeoutException e ) {
-            LOG.warn( new LogMessage( "Message submission failed, connection timeout for URL: "
+            LogMessage lm =  new LogMessage( "Message submission failed, connection timeout for URL: "
                     + messageContext.getParticipant().getConnection().getUri() + " - " + e, messageContext
-                    .getMessagePojo() ) );
-            throw new NexusException( "Message submission failed, connection timeout for URL: " + e );
+                    .getMessagePojo() );
+            LOG.warn( lm, e );
+            throw new NexusException( lm, e );
         } catch ( Exception ex ) {
-            LOG.warn( new LogMessage( "Message submission failed: " + ex, messageContext.getMessagePojo() ) );
-            throw new NexusException( "Message submission failed: " + ex );
+            LogMessage lm = new LogMessage( "Message submission failed: " + ex, messageContext.getMessagePojo() );
+            LOG.warn( lm, ex );
+            throw new NexusException( lm, ex );
         }
         
         return null;

@@ -64,6 +64,7 @@ public class MessagePojo implements NEXUSe2ePojo {
     private List<ErrorDescriptor>    errors           = new ArrayList<ErrorDescriptor>();
     private Map<String, String>      customParameters = new HashMap<String, String>();
 
+
     // Constructors
 
     /** default constructor */
@@ -488,6 +489,14 @@ public class MessagePojo implements NEXUSe2ePojo {
         return "UNKNOWN";
     }
     
+    /**
+     * Gets the human-readable name of this message's type.
+     * @return The type name, not <code>null</code>.
+     */
+    public String getStatusName() {
+        return getStatusName(getStatus());
+    }
+    
     public static String getTypeName( int type ) {
     	switch ( type ) {
 	    	case org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ACK:
@@ -500,17 +509,52 @@ public class MessagePojo implements NEXUSe2ePojo {
 	    		return "Unknown message type (" + type + ")";
     	}
     }
+    
+    /**
+     * Gets the human-readable name of this message's type.
+     * @return The type name, not <code>null</code>.
+     */
+    public String getTypeName() {
+        return getTypeName(getType());
+    }
 
+    /**
+     * Returns <code>true</code> if and only if this message is of type
+     * {@link Constants.INT_MESSAGE_TYPE_ACK}.
+     * @return <code>true</code> if and only if this is an ack message.
+     */
+    public boolean isAck() {
+        return (getType() == Constants.INT_MESSAGE_TYPE_ACK);
+    }
+    
+    /**
+     * Returns <code>true</code> if and only if this message is of type
+     * {@link Constants.INT_MESSAGE_TYPE_NORMAL}.
+     * @return <code>true</code> if and only if this is a normal message.
+     */
+    public boolean isNormal() {
+        return (getType() == Constants.INT_MESSAGE_TYPE_NORMAL);
+    }
+    
+    /**
+     * Returns <code>true</code> if and only if this message is of type
+     * {@link Constants.INT_MESSAGE_TYPE_ERROR}.
+     * @return <code>true</code> if and only if this is an error message.
+     */
+    public boolean isError() {
+        return (getType() == Constants.INT_MESSAGE_TYPE_ERROR);
+    }
+    
 	@Override
 	public String toString() {
-		return getMessageId()
-			+ " "
-			+ getTypeName( type )
-			+ " "
-			+ ( getAction() != null ? getAction().getName() : "n/a" )
-			+ " "
-			+ getStatusName( status )
-			+ " "
-			+ getCreatedDate();
+	    String actionName = "<not loaded>";
+	    if (action != null) {
+	        try {
+	            actionName = action.getName();
+	        } catch (Exception notLoadedException) {
+	            // avoid LazyInitializationException being thrown here
+	        }
+	    }
+		return messageId + " " + getTypeName() + " " + actionName + " " + getStatusName( status ) + " " + createdDate;
 	}
 }

@@ -68,6 +68,7 @@ import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ListParameter;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.controller.StateTransitionException;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.CertificatePojo;
@@ -293,8 +294,11 @@ public class WSClientService extends AbstractService implements SenderAware {
                         messageContext.getConversation().getConversationId(),
                         messageContext.getChoreography().getName() );
             } catch ( Exception e ) {
-                messageContext.getMessagePojo().setStatus( Constants.MESSAGE_STATUS_FAILED );
-                messageContext.getMessagePojo().getConversation().setStatus( Constants.CONVERSATION_STATUS_ERROR );
+                try {
+                    messageContext.getStateMachine().processingFailed();
+                } catch (StateTransitionException stex) {
+                    LOG.warn(stex);
+                }
                 LOG.error( "Error calling web service: ", e );
                 throw new NexusException( e );
             }

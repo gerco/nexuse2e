@@ -19,8 +19,12 @@
  */
 package org.nexuse2e.util;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -105,5 +109,37 @@ public class FileUtil {
             return path.substring( index + 1 );
         }
         return path;
+    }
+    
+    /**
+     * Filters an input file by line and "contains" check and writes the resulting lines into the given output file.
+     * @param input The input file. Must not be <code>null</code>.
+     * @param pattern The pattern (non-regex). Shall not be <code>null</code>.
+     * @param output The output file.
+     * @param ignoreCase If this is <code>true</code>, a case-insensitive compare will be made.
+     * @throws IOException If something went wrong.
+     */
+    public static void lineFilterContains(File input, String pattern, File output, boolean ignoreCase) throws IOException {
+        if (pattern == null) {
+            return;
+        }
+        BufferedReader reader = new BufferedReader(new FileReader(input));
+        PrintWriter writer = new PrintWriter(output);
+        String line;
+        if (ignoreCase) {
+            pattern = pattern.toLowerCase();
+            while ((line = reader.readLine()) != null) {
+                if (line.toLowerCase().contains(pattern)) {
+                    writer.println(line);
+                }
+            }
+        } else {
+            while ((line = reader.readLine()) != null) {
+                if (line.contains(pattern)) {
+                    writer.println(line);
+                }
+            }
+        }
+        
     }
 }

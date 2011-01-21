@@ -369,6 +369,24 @@ public class ActionPojo implements NEXUSe2ePojo {
     }
 
     /**
+     * Checks if this <code>ActionPojo</code> has a follow-up action with the given action ID.
+     * @param actionId The action ID. Shall not be <code>null</code>.
+     * @return <code>true</code> if <code>actionId</code> is a valid follow-up action,
+     * <code>false</code> otherwise.
+     */
+    public boolean hasFollowUpAction(String actionId) {
+        Set<FollowUpActionPojo> followUpActions = getFollowUpActions();
+        if (followUpActions != null) {
+            for ( FollowUpActionPojo followUpAction : followUpActions ) {
+                if ( followUpAction.getFollowUpAction().getName().equals( actionId ) ) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    /**
      * Required for JAXB
      * @param statusUpdatePipelineId
      */
