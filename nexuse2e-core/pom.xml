@@ -24,6 +24,11 @@
      <comments>OSS license that permits inclusion in commercial products.</comments>
    </license>
   </licenses>
+  
+  <properties>
+    <org.springframework.version>3.0.4.RELEASE</org.springframework.version>
+  </properties>
+  
   <!-- dependencies -->
  <dependencies>
    <dependency>
@@ -296,18 +301,36 @@
     <groupId>org.aspectj</groupId>
     <artifactId>aspectjweaver</artifactId>
     <version>1.5.4</version>
-   </dependency> 
+   </dependency>
    <dependency>
      <groupId>org.springframework</groupId>
-     <artifactId>spring</artifactId>
-     <version>2.0.8</version>
-     <exclusions>
-       <exclusion>
-         <groupId>javax.portlet</groupId>
-         <artifactId>portlet-api</artifactId>
-       </exclusion>
-     </exclusions>
-     <scope>compile</scope>
+     <artifactId>spring-core</artifactId>
+     <version>${org.springframework.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.springframework</groupId>
+     <artifactId>spring-beans</artifactId>
+     <version>${org.springframework.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.springframework</groupId>
+     <artifactId>spring-aop</artifactId>
+     <version>${org.springframework.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.springframework</groupId>
+     <artifactId>spring-context</artifactId>
+     <version>${org.springframework.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.springframework</groupId>
+     <artifactId>spring-orm</artifactId>
+     <version>${org.springframework.version}</version>
+   </dependency>
+   <dependency>
+     <groupId>org.springframework</groupId>
+     <artifactId>spring-webmvc</artifactId>
+     <version>${org.springframework.version}</version>
    </dependency>
    <dependency>
      <groupId>taglibs</groupId>
@@ -456,6 +479,10 @@
        <exclusion>
          <groupId>org.apache.geronimo.specs</groupId>
          <artifactId>geronimo-javamail_1.4_spec</artifactId>
+       </exclusion>
+       <exclusion>
+       	<artifactId>geronimo-servlet_3.0_spec</artifactId>
+       	<groupId>org.apache.geronimo.specs</groupId>
        </exclusion>
      </exclusions>
    </dependency>
