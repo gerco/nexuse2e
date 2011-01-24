@@ -40,20 +40,15 @@
     <display-name>Log4jConfigListener</display-name>
     <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
   </listener>
-  <!--<listener>
+  <listener>
     <display-name>ContextLoaderListener</display-name>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-    </listener>-->
+  </listener>
 
   <servlet>
     <servlet-name>NexusDynamicWebServiceDispatcher</servlet-name>
     <servlet-class>org.nexuse2e.DynamicWSDispatcherServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
-  </servlet>
-  <servlet>
-    <servlet-name>ContextLoaderServlet</servlet-name>
-    <servlet-class>org.springframework.web.context.ContextLoaderServlet</servlet-class>
-    <load-on-startup>2</load-on-startup>
   </servlet>
   <servlet>
     <servlet-name>NexusTransportDispatcher</servlet-name>
