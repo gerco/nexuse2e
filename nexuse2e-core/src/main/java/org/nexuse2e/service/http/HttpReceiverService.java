@@ -256,16 +256,16 @@ public class HttpReceiverService extends AbstractControllerService implements Re
         if ( transportReceiver != null ) {
             transportReceiver.processMessage( messageContext );
             if ( transportReceiver.getStatus() != BeanStatus.ACTIVATED ) {
-                savePaylod( messageContext );
+                savePayload( messageContext );
             }
         } else {
             LOG.fatal( "No TransportReceiver available for inbound message!" );
-            savePaylod( messageContext );
+            savePayload( messageContext );
         }
         return null;
     }
 
-    private void savePaylod( MessageContext messageContext ) {
+    private void savePayload( MessageContext messageContext ) {
 
         String dir = Engine.getInstance().getNexusE2ERoot();
         if ( dir == null ) {
