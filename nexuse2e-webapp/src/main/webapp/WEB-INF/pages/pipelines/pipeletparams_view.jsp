@@ -180,13 +180,14 @@
 	<table class="NEXUS_BUTTON_TABLE">
 		<tr>
 			<td>&nbsp;</td>
-			<td class="NexusHeaderLink" style="text-align: right;"><nexus:submit
-				onClick="javascript:document.forms['pipelineForm'].submitaction.value='update';"
-				styleClass="button">
-				<img src="images/icons/tick.png" class="button">Save</nexus:submit></td>
-			<td class="NexusHeaderLink" style="text-align: right;"><nexus:submit
-				onClick="javascript:document.forms['pipelineForm'].submitaction.value='back';">
-				<img src="images/icons/delete.png" class="button">Cancel</nexus:submit></td>
+			<td class="BUTTON_RIGHT" style="text-align: right;">
+				<nexus:submit onClick="javascript:document.forms['pipelineForm'].submitaction.value='update';" styleClass="button">
+					<nobr><img src="images/icons/tick.png" class="button">Save</nobr>
+				</nexus:submit>
+				<nexus:link href="PipelineView.do?nxPipelineId=${pipelineForm.nxPipelineId}" styleClass="button">
+					<nobr><img src="images/icons/delete.png" class="button">Cancel</nobr>
+				</nexus:link>
+			</td>
 		</tr>
 	</table>
 </html:form>
