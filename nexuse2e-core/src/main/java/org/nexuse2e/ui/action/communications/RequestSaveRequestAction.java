@@ -80,68 +80,13 @@ public class RequestSaveRequestAction extends NexusE2EAction {
         }
 
         try {
-            KeyPair keyPair = CertificateUtil.generateKeyPair();
+            KeyPair keyPair = CertificateUtil.generateKeyPair(form.getKeyLength());
 
-            PKCS10CertificationRequest pkcs10Request = CertificateUtil.generatePKCS10CertificateRequest( keyPair, cn,
-                    o, ou, l, c, s, e );
+            PKCS10CertificationRequest pkcs10Request = CertificateUtil.generatePKCS10CertificateRequest( keyPair, cn, o, ou, l, c, s, e );
 
-            
             // Request
             CertificatePojo certificate = CertificateUtil.createPojoFromPKCS10( pkcs10Request );
-//            certificate.setBinaryData( pkcs10Request.getEncoded() );
-//            certificate.setType( Constants.CERTIFICATE_TYPE_REQUEST );
-//            certificate.setName( pkcs10Request.getCertificationRequestInfo().getSubject().toString() );
-//            certificate.setPassword( EncryptionUtil.encryptString( pwd ) );
-
-//            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-            // read public key DER file
-
-            //            File cakey = new File( "/Users/gesch/Desktop/testcertdata/ca.key" );
-
-            // read private key DER file
-            //            DataInputStream dis = new DataInputStream( new FileInputStream( cakey ) );
-            //            byte[] privKeyBytes = new byte[(int) cakey.length()];
-            //            dis.read( privKeyBytes );
-            //            dis.close();
-
-            //            PasswordFinder pw = new PasswordFinder() {
-            //
-            //                public char[] getPassword() {
-            //
-            //                    return "nexus".toCharArray();
-            //                };
-            //            };
-            //            PEMReader reader = new PEMReader( new StringReader( new String( privKeyBytes ) ), pw );
-            //            Object ob = reader.readObject();
-            //            System.out.println("ob: "+ob.getClass().getName());
-            //            KeyPair kp = (KeyPair)ob;
-            //            System.out.println("priv:" +kp.getPrivate());
-            //            System.out.println("pub: "+ kp.getPublic());
-
-//            StringWriter sw = new StringWriter();
-//            PEMWriter writer = new PEMWriter( sw, Constants.DEFAULT_JCE_PROVIDER );
-//
-//            SecureRandom sr = new SecureRandom();
-//            writer.writeObject( keyPair.getPrivate(), "DES-EDE3-CBC", pwd.toCharArray(), sr );
-//            writer.flush();
-//            sw.flush();
-//            sw.close();
-//            System.out.println( "PEM: " + sw.getBuffer().toString() );
-
-            //            KeyStore keyStore = KeyStore.getInstance( CertificateUtil.DEFAULT_KEY_STORE,
-            //                    CertificateUtil.DEFAULT_JCE_PROVIDER );
-            //            keyStore.load( null, null );
-            //            keyStore.setKeyEntry( CertificateUtil.DEFAULT_CERT_ALIAS, ( (KeyPair) csr[CertificateUtil.POS_KEYS] )
-            //                    .getPrivate(), pwd.toCharArray(), certs );
-            //            keyStore.store( baos, pwd.toCharArray() );
-            //            baos.close();
             CertificatePojo privateKeyPojo = CertificateUtil.createPojoFromKeyPair( keyPair, certificate.getName(), pwd );
-//            privateKeyPojo.setType( Constants.CERTIFICATE_TYPE_PRIVATE_KEY );
-//
-//            privateKeyPojo.setBinaryData( sw.getBuffer().toString().getBytes() );
-//            privateKeyPojo.setName( certificate.getName() );
-//            privateKeyPojo.setPassword( EncryptionUtil.encryptString( pwd ) );
             
             List<CertificatePojo> certs = new ArrayList<CertificatePojo>();
             certs.add( certificate );

@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMapping;
+import org.nexuse2e.util.CertificateUtil;
 
 /**
  * @author guido.esch
@@ -50,6 +51,8 @@ public class CertificateRequestForm extends ActionForm {
 
     private String            subject          = null;
     private String            pemCSR           = null;
+    
+    private int               keyLength        = CertificateUtil.DEFAULT_RSA_KEY_LENGTH;
 
     @Override
     public void reset( ActionMapping arg0, HttpServletRequest arg1 ) {
@@ -65,6 +68,7 @@ public class CertificateRequestForm extends ActionForm {
         setVerifyPWD( null );
         setSubject( null );
         setPemCSR( null );
+        setKeyLength( CertificateUtil.DEFAULT_RSA_KEY_LENGTH );
     }
 
     public void setRequestProperties( String subject ) {
@@ -199,5 +203,13 @@ public class CertificateRequestForm extends ActionForm {
     public void setSubject( String subject ) {
 
         this.subject = subject;
+    }
+
+    public int getKeyLength() {
+        return keyLength;
+    }
+
+    public void setKeyLength(int keyLength) {
+        this.keyLength = keyLength;
     }
 }

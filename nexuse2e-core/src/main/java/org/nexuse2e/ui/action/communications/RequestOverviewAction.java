@@ -51,8 +51,7 @@ public class RequestOverviewAction extends NexusE2EAction {
 
         RequestButtonStateForm form = (RequestButtonStateForm) actionForm;
 
-        CertificatePojo certificateRequest = engineConfiguration
-                .getFirstCertificateByType( Constants.CERTIFICATE_TYPE_REQUEST, true );
+        CertificatePojo certificateRequest = engineConfiguration.getFirstCertificateByType( Constants.CERTIFICATE_TYPE_REQUEST, false );
         CertificatePojo certificateKey = null;
         if ( certificateRequest == null ) {
             LOG.error( "no certificate request found in database" );

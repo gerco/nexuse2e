@@ -744,25 +744,43 @@ public class CertificateUtil {
     }
 
     /**
-     * @return
-     * @throws NoSuchAlgorithmException
-     * @throws NoSuchProviderException
+     * Generate a <code>KeyPair</code> with default settings (<code>DEFAULT_KEY_ALGORITHM</code>, <code>DEFAULT_RSA_KEY_LENGTH</code>).
+     * 
+     * @return The generated key pair.
+     * @throws NoSuchAlgorithmException If the JCE provider is not set up correctly
+     * @throws NoSuchProviderException  If the JCE provider is not set up correctly
      */
     public static KeyPair generateKeyPair() throws NoSuchAlgorithmException, NoSuchProviderException {
 
-        return generateKeyPair( DEFAULT_JCE_PROVIDER );
+        return generateKeyPair( DEFAULT_RSA_KEY_LENGTH );
     }
 
     /**
-     * @param provider
-     * @return
-     * @throws NoSuchAlgorithmException
-     * @throws NoSuchProviderException
+     * Generate a <code>KeyPair</code> with given key length and <code>DEFAULT_KEY_ALGORITHM</code>.
+     * 
+     * @param keyLength The key length.
+     * @return The generated key pair.
+     * @throws NoSuchAlgorithmException If the JCE provider is not set up correctly
+     * @throws NoSuchProviderException  If the JCE provider is not set up correctly
      */
-    public static KeyPair generateKeyPair( String provider ) throws NoSuchAlgorithmException, NoSuchProviderException {
+    public static KeyPair generateKeyPair( int keyLength ) throws NoSuchAlgorithmException, NoSuchProviderException {
+        
+        return generateKeyPair( keyLength, DEFAULT_KEY_ALGORITHM );
+    }
 
-        KeyPairGenerator kpg = KeyPairGenerator.getInstance( DEFAULT_KEY_ALGORITHM, provider );
-        kpg.initialize( DEFAULT_RSA_KEY_LENGTH );
+        
+    /**
+     * Generate a <code>KeyPair</code> with given key length and algorithm.
+     * 
+     * @param keyLength The key length.
+     * @return The generated key pair.
+     * @throws NoSuchAlgorithmException If the JCE provider is not set up correctly
+     * @throws NoSuchProviderException  If the JCE provider is not set up correctly
+     */
+    public static KeyPair generateKeyPair( int keyLength, String algorithm ) throws NoSuchAlgorithmException, NoSuchProviderException {
+        
+        KeyPairGenerator kpg = KeyPairGenerator.getInstance( algorithm, DEFAULT_JCE_PROVIDER );
+        kpg.initialize( keyLength );
         return kpg.generateKeyPair();
     }
 
