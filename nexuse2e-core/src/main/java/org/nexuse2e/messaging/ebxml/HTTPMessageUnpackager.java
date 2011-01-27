@@ -171,15 +171,15 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
         } catch ( IOException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            throw new IllegalArgumentException( e.getMessage() );
+            throw new IllegalArgumentException( e );
         } catch ( MessagingException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            throw new IllegalArgumentException( e.getMessage() );
+            throw new IllegalArgumentException( e );
         } catch ( Exception e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            throw new IllegalArgumentException( e.getMessage() );
+            throw new IllegalArgumentException( e );
         }
 
         return messageContext;

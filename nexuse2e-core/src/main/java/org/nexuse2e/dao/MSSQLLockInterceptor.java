@@ -43,7 +43,7 @@ public class MSSQLLockInterceptor implements MethodInterceptor { //, ThrowsAdvic
         Object rval = null;
         Exception ex = null;
         
-        for(int i = 0; i <= getRetries(); i++) {
+        for(int i = 0; i <= retries; i++) {
             boolean lockFound = false;
             try {
                 rval = invocation.proceed();
@@ -55,7 +55,7 @@ public class MSSQLLockInterceptor implements MethodInterceptor { //, ThrowsAdvic
                     if(cause instanceof LockAcquisitionException) { // org.hibernate.exception.LockAcquisitionException
                         lockFound = true;
                         Thread.sleep( getTimeout() );
-                        LOG.trace( "("+i+"/"+getRetries()+")LockAcquisitionException occured, retrying in "+getTimeout()+" miliseconds" );
+                        LOG.trace( "(" + i + "/" + retries + ") LockAcquisitionException occured, retrying in " + getTimeout()+" miliseconds" );
                     }
                     cause = cause.getCause();
                 }

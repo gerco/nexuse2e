@@ -26,7 +26,6 @@ import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.controller.StateTransitionException;
 import org.nexuse2e.logging.LogMessage;
-import org.nexuse2e.messaging.sync.ConversationLockManager;
 import org.nexuse2e.pojo.MessagePojo;
 import org.nexuse2e.pojo.ParticipantPojo;
 import org.springframework.beans.factory.InitializingBean;
@@ -73,24 +72,9 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
         // Request an conversation lock in order to not disallow parallel i/o, and processing activity in this conversation.
         // If everything goes alright, the lock will be released in the message sender thread after the message was sent,
         // or the sending failed. In case of error while the current thread is processing, the lock will be released as well.
-        ConversationLockManager conversationLockManager = Engine.getInstance().getTransactionService().getConversationLockManager();
-        boolean finishedWithoutError = false;
-        try {
-        	// lock
-	        conversationLockManager.lock( messageContext.getConversation() );
-	        // do it
-	        sendMessage(pipeline, messageContext, retries);
-	        finishedWithoutError = true;
-        } finally {
-        	// In case of no error the lock will be released in the thread that will send the message (MessageSender.run()).
-        	// But in case of an error within this thread, we assume that the scheduling did not take place,
-        	// thus the lock will never be released, so we release the lock here.
-        	// The funky finishedWithoutError stuff is used in order to avoid multiple catch statements for all types of
-        	// Throwables (RuntimeExceptions, Errors, and NexusExceptions) that must be thrown up afterwards.
-        	if ( !finishedWithoutError ) {
-        		conversationLockManager.unlock( messageContext.getConversation() );
-        	}
-        }
+
+        // do it
+        sendMessage(pipeline, messageContext, retries);
 
         return messageContext;
     } // processMessage
@@ -174,78 +158,72 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
 
     public void sendMessage(FrontendPipeline pipeline, MessageContext messageContext, int retries) {
 
-        try { // this ensures that the conversation log will be released finally (see below)
-        	MessagePojo messagePojo = messageContext.getMessagePojo();
+    	MessagePojo messagePojo = messageContext.getMessagePojo();
 
-            LOG.trace( new LogMessage("Message ( " + messagePojo.getMessageId() + " ) end timestamp: " + messagePojo.getEndDate(),messagePojo) );
+        LOG.trace( new LogMessage("Message ( " + messagePojo.getMessageId() + " ) end timestamp: " + messagePojo.getEndDate(),messagePojo) );
 
-            Object syncObj = Engine.getInstance().getTransactionService().getSyncObjectForConversation( messageContext.getConversation() );
-            synchronized (syncObj) {
-                if ( messageContext.isFirstTimeInQueue() || messageContext.getMessagePojo().getRetries() < retries ) {
-                    LOG.debug( new LogMessage( "Sending message...", messagePojo ) );
-    
-                    MessageContext returnedMessageContext = null;
-    
+        Object syncObj = Engine.getInstance().getTransactionService().getSyncObjectForConversation( messageContext.getConversation() );
+        synchronized (syncObj) {
+            if ( messageContext.isFirstTimeInQueue() || messageContext.getMessagePojo().getRetries() < retries ) {
+                LOG.debug( new LogMessage( "Sending message...", messagePojo ) );
+
+                MessageContext returnedMessageContext = null;
+
+                try {
+                    if ( messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_NORMAL
+                            && messagePojo.getEndDate() != null ) {
+                        // If message has been ack'ed while we were waiting do nothing
+                        LOG.info( new LogMessage( "Cancelled sending message (ack was just received): " + messagePojo.getMessageId(),messagePojo) );
+                        cancelRetrying(messageContext, false);
+                        return;
+                    }
+                    // Send message
+                    // increment retry count AFTER message update because the retry hasn't yet been performed
+                    messagePojo.setRetries(messageContext.isFirstTimeInQueue() ? 0 : messagePojo.getRetries() + 1);
+                    messageContext.setFirstTimeInQueue(false);
+
+                    returnedMessageContext = pipeline.processMessage( messageContext );
+                    messageContext.getStateMachine().sentMessage();
+
+                    if (!messagePojo.isAck()) {
+                        Engine.getInstance().getTransactionService().updateRetryCount( messagePojo );
+                    }
+
+                    LOG.debug( new LogMessage( "Message sent.", messagePojo ) );
+                } catch ( Throwable e ) {
+                    // Persist retry count changes
                     try {
-                        if ( messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_NORMAL
-                                && messagePojo.getEndDate() != null ) {
-                            // If message has been ack'ed while we were waiting do nothing
-                            LOG.info( new LogMessage( "Cancelled sending message (ack was just received): " + messagePojo.getMessageId(),messagePojo) );
-                            cancelRetrying(messageContext, false);
-                            return;
-                        }
-                        // Send message
-                        // increment retry count AFTER message update because the retry hasn't yet been performed
-                        messagePojo.setRetries(messageContext.isFirstTimeInQueue() ? 0 : messagePojo.getRetries() + 1);
-                        messageContext.setFirstTimeInQueue(false);
-    
-                        returnedMessageContext = pipeline.processMessage( messageContext );
-                        messageContext.getStateMachine().sentMessage();
-
-                        if (!messagePojo.isAck()) {
+                        if ( messagePojo.isAck()) {
+                            //messageContext.getStateMachine().processingFailed();
+                        } else {
                             Engine.getInstance().getTransactionService().updateRetryCount( messagePojo );
                         }
+                    } catch ( NexusException e1 ) {
+                        LOG.error( new LogMessage( "Error saving message: " + e1, messagePojo ), e1 );
+                    }
 
-                        LOG.debug( new LogMessage( "Message sent.", messagePojo ) );
-                    } catch ( Throwable e ) {
-                        // Persist retry count changes
-                        try {
-                            if ( messagePojo.isAck()) {
-                                //messageContext.getStateMachine().processingFailed();
-                            } else {
-                                Engine.getInstance().getTransactionService().updateRetryCount( messagePojo );
-                            }
-                        } catch ( NexusException e1 ) {
-                            LOG.error( new LogMessage( "Error saving message: " + e1, messagePojo ), e1 );
-                        }
-    
-                        LOG.error( new LogMessage( "Error sending message: " + e, messagePojo ), e );
-                    }
-    
-                    if ( ( returnedMessageContext != null ) && !returnedMessageContext.equals( messageContext ) ) {
-                        try {
-                            Engine.getInstance().getCurrentConfiguration().getStaticBeanContainer()
-                                    .getFrontendInboundDispatcher().processMessage( returnedMessageContext );
-                        } catch ( NexusException e ) {
-                            LOG.error( new LogMessage( "Error processing synchronous reply: " + e,messagePojo) );
-                        }
-                    }
-    
-                } else {
-                    if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
-                        LOG.error( new LogMessage(
-                                "Maximum number of retries reached without receiving acknowledgment - choreography: "
-                                        + messagePojo.getConversation().getChoreography().getName() + ", partner: " + messagePojo.getConversation().getPartner().getPartnerId(), messagePojo ) );
-                    } else {
-                        LOG.debug( new LogMessage( "Max number of retries reached!", messagePojo ) );
-                    }
-                    cancelRetrying(messageContext);
+                    LOG.error( new LogMessage( "Error sending message: " + e, messagePojo ), e );
                 }
+
+                if ( ( returnedMessageContext != null ) && !returnedMessageContext.equals( messageContext ) ) {
+                    try {
+                        Engine.getInstance().getCurrentConfiguration().getStaticBeanContainer()
+                                .getFrontendInboundDispatcher().processMessage( returnedMessageContext );
+                    } catch ( NexusException e ) {
+                        LOG.error( new LogMessage( "Error processing synchronous reply: " + e,messagePojo) );
+                    }
+                }
+
+            } else {
+                if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
+                    LOG.error( new LogMessage(
+                            "Maximum number of retries reached without receiving acknowledgment - choreography: "
+                                    + messagePojo.getConversation().getChoreography().getName() + ", partner: " + messagePojo.getConversation().getPartner().getPartnerId(), messagePojo ) );
+                } else {
+                    LOG.debug( new LogMessage( "Max number of retries reached!", messagePojo ) );
+                }
+                cancelRetrying(messageContext);
             }
-        } finally {
-        	// The lock was acquired in FrontendOutboundDispatcher.processMessage(MessageContext)
-        	// where the scheduling of this thread took place. 
-        	Engine.getInstance().getTransactionService().getConversationLockManager().unlock( messageContext.getConversation() );
         }
     } // run
 

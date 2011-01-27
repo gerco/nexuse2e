@@ -127,6 +127,7 @@ public class ConversationStateMachineImpl implements ConversationStateMachine {
                             || conversation.getStatus() == Constants.CONVERSATION_STATUS_BACKEND_SENT_SENDING_ACK /* If ack from previous choreo step was late */
                             || conversation.getStatus() == Constants.CONVERSATION_STATUS_ERROR /* Included for re-queuing */) {
                         if (reliable) {
+                            // it can happen that an outbound acknowledgement was processed faster than the inbound message
                             LOG.trace(new LogMessage("conversation status set to awaiting ack",message));
                             conversation.setStatus(Constants.CONVERSATION_STATUS_AWAITING_ACK);
                             return UpdateScope.CONVERSATION_ONLY;
@@ -518,8 +519,10 @@ public class ConversationStateMachineImpl implements ConversationStateMachine {
         }
 
         if (!force) {
+            String prevActionId = conversation.getCurrentAction() != null ? conversation.getCurrentAction().getName() : null;
             throw new NexusException(
-                    new LogMessage("Choreography (business) transition not allowed at this time - message ID: ", message));
+                    new LogMessage("Choreography (business) transition from " + prevActionId + " to " +
+                            currentActionId + " not allowed for " + conversation.getStatusName() + " conversation", message));
         }
         
         return false;

@@ -19,9 +19,6 @@
  */
 package org.nexuse2e.messaging.ebxml;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;

@@ -44,7 +44,6 @@ import org.nexuse2e.dao.UpdateTransactionOperation;
 import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.Constants;
 import org.nexuse2e.messaging.MessageContext;
-import org.nexuse2e.messaging.sync.ConversationLockManager;
 import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ConversationPojo;
@@ -73,8 +72,6 @@ public class TransactionServiceImpl implements TransactionService {
     private TransactionDAO                            transactionDao     = null;
     private LogDAO                                    logDao             = null;
 
-	private ConversationLockManager conversationLockManager;
-    
     
     /*
      * Completes the given <code>ConversationPojo</code> list by using the current engine configuration.
@@ -438,13 +435,7 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         ConversationPojo conversation = null;
-        // request an conversation lock in order to not overtake parallel i/o activity in this conversation
-        try {
-	        conversationLockManager.lock( conversationId );
-	        conversation = complete( transactionDao.getConversationByConversationId( conversationId ), false );
-        } finally {
-        	conversationLockManager.unlock( conversationId );
-        }
+        conversation = complete( transactionDao.getConversationByConversationId( conversationId ), false );
 
         if ( conversation == null ) {
             conversation = new ConversationPojo();
@@ -894,21 +885,6 @@ public class TransactionServiceImpl implements TransactionService {
 //            return obj;
 //        }
     }
-
-    /* (non-Javadoc)
-     * @see org.nexuse2e.controller.TransactionService#getConversationLockManager()
-     */
-    public ConversationLockManager getConversationLockManager() {
-		return conversationLockManager;
-	}
-    
-    /**
-     * Set the {@link ConversationLockManager} to use.
-     * @param conversationLockManager
-     */
-    public void setConversationLockManager( ConversationLockManager conversationLockManager ) {
-		this.conversationLockManager = conversationLockManager;
-	}
 
 	/**
      * @return the dao

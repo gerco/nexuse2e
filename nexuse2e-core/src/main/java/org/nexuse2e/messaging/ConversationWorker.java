@@ -48,12 +48,13 @@ public class ConversationWorker implements Runnable {
     private static final Logger LOG = Logger.getLogger(ConversationWorker.class);
 
 //    private static Map<String, ConversationWorker> workers = new HashMap<String, ConversationWorker>();
-    private static ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(100); // TODO: Make this configurable
+    private static ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(10); // TODO: Make this configurable
 
     //private DelayQueue<DelayedMessageContext> queue;
     private ScheduledFuture<?> handle;
     private int retries;
     private int interval;
+    private boolean reliable;
     private boolean updateMessageContext;
     private int initialDelay;
     private MessageContext messageContext;
@@ -86,8 +87,8 @@ public class ConversationWorker implements Runnable {
         worker.updateMessageContext = updateMessageContext;
         worker.retries = 0;
         worker.interval = Constants.DEFAULT_MESSAGE_INTERVAL;
-        if (!messageContext.getMessagePojo().isAck() &&
-                messageContext.getParticipant().getConnection().isReliable()) {
+        worker.reliable = messageContext.getParticipant().getConnection().isReliable();
+        if (!messageContext.getMessagePojo().isAck() && worker.reliable) {
             ParticipantPojo participantPojo = messageContext.getMessagePojo().getParticipant();
             if (participantPojo != null) {
                 worker.retries = participantPojo.getConnection().getRetries();
@@ -131,13 +132,13 @@ public class ConversationWorker implements Runnable {
     }
 
     protected void processInbound(MessageContext messageContext) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug(new LogMessage("Processing inbound message: "
-                    + messageContext.getStateMachine().toString(),
-                    messageContext));
-        }
         
         TransactionService transactionService = Engine.getInstance().getTransactionService();
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug(new LogMessage("Processing inbound message..." + messageContext.getStateMachine().toString(), messageContext));
+        }
+        
         Object syncObj = transactionService.getSyncObjectForConversation(messageContext.getConversation());
         synchronized (syncObj) {
             // Initiate the backend process
@@ -169,30 +170,39 @@ public class ConversationWorker implements Runnable {
     }
 
     protected void processOutbound(MessageContext messageContext) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug(new LogMessage("Processing outbound message...", messageContext));
-        }
         
         TransactionService transactionService = Engine.getInstance().getTransactionService();
         
-        if (!messageContext.getMessagePojo().isAck()) {
-            // check if ack message for previous step is pending, so this message needs to be sent later
+        // check if ack message for previous step is pending, so this message needs to be sent later
+        if (reliable && !messageContext.getMessagePojo().isAck()) {
             ConversationPojo conv = messageContext.getConversation();
             if (conv != null && conv.getMessages() != null) {
                 for (MessagePojo m : conv.getMessages()) {
                     if (m.isAck() && m.isOutbound() && m.getStatus() == Constants.MESSAGE_STATUS_QUEUED) {
-                        LOG.debug(new LogMessage(
-                                "Not sending " + messageContext.getMessagePojo().getTypeName() +
-                                " message now, outbound ack for previous choreography action still in QUEUED. " +
-                                "Requeueing this message in " + (initialDelay + 1) + " s.", messageContext));
-                        transactionService.deregisterProcessingMessage(messageContext.getMessagePojo().getMessageId());
-                        queue(messageContext, initialDelay + 1, true);
-                        return;
+                        if (initialDelay < 25) {
+                            if (LOG.isDebugEnabled()) {
+                                LOG.info(new LogMessage(
+                                        "Not sending " + messageContext.getMessagePojo().getTypeName() +
+                                        " message now, outbound ack for previous choreography action still in QUEUED. " +
+                                        "Requeueing this message in " + (initialDelay + 1) + " s.", messageContext));
+                            }
+                            transactionService.deregisterProcessingMessage(messageContext.getMessagePojo().getMessageId());
+                            queue(messageContext, initialDelay + 1, true);
+                            return;
+                        } else {
+                            LOG.error(new LogMessage("Message from previous choroegraphy step still in QUEUED, but re-queueing attempts exhausted", messageContext));
+                            transactionService.deregisterProcessingMessage(messageContext.getMessagePojo().getMessageId());
+                            return;
+                        }
                     }
                 }
             }
         }
         
+        if (LOG.isDebugEnabled()) {
+            LOG.debug(new LogMessage("Processing outbound message...", messageContext));
+        }
+
         try {
             if (transactionService.isSynchronousReply(messageContext.getMessagePojo().getMessageId())) {
                 Engine.getInstance().getCurrentConfiguration().getStaticBeanContainer().getFrontendInboundDispatcher().processSynchronousReplyMessage(messageContext);

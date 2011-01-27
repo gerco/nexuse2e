@@ -172,7 +172,7 @@ public class FrontendInboundDispatcher extends ChoreographyValidator implements 
             String msgType = messagePojo.getTypeName().toLowerCase();
             
             if ( LOG.isInfoEnabled() ) {
-                LOG.info( new LogMessage( "Received  " + msgType + " (" + messagePojo.getMessageId()
+                LOG.info( new LogMessage( "Received " + msgType + " (" + messagePojo.getMessageId()
                         + ") from " + participant.getPartner().getPartnerId() + " for " + choreography.getName()
                         + ( action != null ? "/" + action.getName() : "" ), messagePojo ) );
             }
@@ -231,17 +231,17 @@ public class FrontendInboundDispatcher extends ChoreographyValidator implements 
                 }
             }
         } else {
-         // TODO: review
-//            MessageContext clonedMessageContext = null;
-            
             // this message is not a duplicate
             // now we check the different processing models
             if ( messageContext.isRequestMessage() ) {
                 responseMessageContext = handleRequest( messageContext, headerInvalid, protocolAdapter, choreography, errorMessages );
             } else {
                 // Forward the message to check the transition, persist it and pass to backend
-                MessageHandlingCenter.getInstance().announceQueuing( messageContext );
-//                dispatchSignal( messageContext );
+                try {
+                    messageContext.getStateMachine().queueMessage();
+                } catch ( StateTransitionException e ) {
+                    LOG.warn( new LogMessage( e.getMessage(), messageContext ) );
+                }
                 // Asynchronous processing
                 if ( !participant.getConnection().isSynchronous() ) {
                     // check if we need to respond to a request message
@@ -288,12 +288,7 @@ public class FrontendInboundDispatcher extends ChoreographyValidator implements 
                     }
                 }
                 
-//                dispatchMessage( messageContext );
-                //
                 try {
-                 // TODO: review
-//                  clonedMessageContext = (MessageContext) messageContext.clone();
-                    
                     // Forward message to FrontendActionSerializer for further processing/queueing
                     MessageHandlingCenter.getInstance().processMessage( messageContext );
                     
@@ -301,8 +296,6 @@ public class FrontendInboundDispatcher extends ChoreographyValidator implements 
                     if ( participant.getConnection().isSynchronous() ) {
                         responseMessageContext = waitForSynchronousResponse( messageContext );
                     }
-//                    } catch ( CloneNotSupportedException e ) {
-//                        e.printStackTrace();
                 } catch ( NexusException e ) {
                     LOG.error( new LogMessage( "Error processing message: " + message.getMessageId()
                         + " (" + message.getConversation().getChoreography().getName() + "/"
@@ -372,8 +365,7 @@ public class FrontendInboundDispatcher extends ChoreographyValidator implements 
             // Since the processing process uses notifyAll(),
             // we check whether there is a response for this thread.
             // If response is not present, the loop continues.
-            responseMessageContext = synchronousReplies.get( messageContext
-                .getMessagePojo().getMessageId() );
+            responseMessageContext = synchronousReplies.get( messageContext.getMessagePojo().getMessageId() );
         }
         if ( LOG.isDebugEnabled() ) {
             LOG.debug( new LogMessage("Found reply for synchronous connection: " + responseMessageContext, message) );

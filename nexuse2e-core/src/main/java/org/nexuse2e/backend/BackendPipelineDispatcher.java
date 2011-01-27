@@ -34,10 +34,10 @@ import org.apache.tika.parser.Parser;
 import org.apache.tika.sax.BodyContentHandler;
 import org.nexuse2e.ActionSpecificKey;
 import org.nexuse2e.Constants;
-import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Engine;
 import org.nexuse2e.Manageable;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.IdGenerator;
 import org.nexuse2e.logging.LogMessage;
@@ -270,8 +270,11 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
 							Parser parser = new AutoDetectParser();
 							ByteArrayInputStream bias = new ByteArrayInputStream( messagePayloadPojo.getPayloadData() );
                             parser.parse( bias, contenthandler, metadata, null );
-                            
+                            // TODO: Fix this (text/xml is detected as text/html)
                             mimetype = metadata.get( Metadata.CONTENT_TYPE );
+                            if ("text/html".equals(mimetype)) {
+                                mimetype = "text/xml";
+                            }
                             LOG.trace(new LogMessage("autodetermined mimetype: "+mimetype,messageContext));
                             if(!Engine.getInstance().isBinaryType( mimetype )) {
                                 CharsetDetector detector = new CharsetDetector();

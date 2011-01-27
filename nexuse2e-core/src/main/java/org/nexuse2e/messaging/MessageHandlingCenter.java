@@ -39,30 +39,6 @@ public class MessageHandlingCenter implements MessageProcessor {
     }
 
     /**
-     * Announces the queuing of a message without appending it to the queue.
-     * I.e. only the state machine transition is performed, and the
-     * {@link MessageContext} gets persisted. See also
-     * {@link MessageHandlingCenter#processMessage(MessageContext)}.
-     * 
-     * @param messageContext
-     * @return The given reference from the input parameter. It's state will
-     *         most likely be modified during state machine transition.
-     * @throws IllegalStateException
-     * @throws NexusException
-     */
-    // TODO: rename (something like 'persist')
-    public MessageContext announceQueuing( MessageContext messageContext ) throws  IllegalStateException, NexusException {
-        // persist and indicate processing state (technical transition)
-        try {
-            messageContext.getStateMachine().queueMessage();
-        } catch ( StateTransitionException e ) {
-            LOG.warn( new LogMessage( e.getMessage(), messageContext ) );
-        }
-
-        return messageContext;
-    }
-
-    /**
      * Queues the given message for inbound, or outbound processing. I.e. the
      * state machine transition is performed, the {@link MessageContext} gets
      * persisted, and the message gets appended to the queue. If a message is
@@ -77,10 +53,14 @@ public class MessageHandlingCenter implements MessageProcessor {
      * @throws IllegalStateException
      * @throws NexusException
      */
-    public MessageContext processMessage( MessageContext messageContext )throws IllegalStateException, NexusException {
+    public MessageContext processMessage( MessageContext messageContext ) throws IllegalStateException, NexusException {
 
         if ( messageContext.getMessagePojo().getStatus() != Constants.MESSAGE_STATUS_QUEUED ) {
-            messageContext = announceQueuing(messageContext);
+            try {
+                messageContext.getStateMachine().queueMessage();
+            } catch ( StateTransitionException e ) {
+                LOG.warn( new LogMessage( e.getMessage(), messageContext ) );
+            }
         }
 
         if (messageContext != null) {
