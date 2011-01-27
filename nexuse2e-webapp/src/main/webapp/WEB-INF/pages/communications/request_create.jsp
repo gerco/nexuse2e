@@ -44,7 +44,16 @@
         
     <table class="NEXUS_TABLE" width="100%">
             <tr>            
-            <td colspan="2" class="NEXUSSection">CA Certificate</td>            
+            <td colspan="2" class="NEXUSSection">Certificate Properties</td>            
+            </tr>
+            <tr>
+                <td class="NEXUSName">RSA Key Length</td>
+                <td class="NEXUSValue">
+                	<html:select property="keyLength">
+                		<html:option value="1024">1024 Bit (default)</html:option>
+                		<html:option value="2048">2048 Bit</html:option>
+               		</html:select>
+             	</td>
             </tr>
             <tr>
                 <td class="NEXUSName">Common Name</td>
@@ -95,8 +104,8 @@
             <table class="NEXUS_BUTTON_TABLE" width="100%">
                 <tr>
                     <td>&nbsp;</td>
-                    <td class="NexusHeaderLink" style="text-align: right;">
-                    	<nexus:submit><img src="images/icons/tick.png" class="button">Create Request</nexus:submit>
+                    <td class="BUTTON_RIGHT" style="text-align: right;">
+                    	<nobr><nexus:submit styleClass="button"><img src="images/icons/tick.png" class="button">Create Request</nexus:submit></nobr>
                     </td>
                 </tr>
             </table>
