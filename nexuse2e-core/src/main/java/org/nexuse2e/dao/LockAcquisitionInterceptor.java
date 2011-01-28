@@ -32,9 +32,9 @@ import org.hibernate.exception.LockAcquisitionException;
  * @author Guido Esch, Sebastian Schulze
  * @date 25.02.2009
  */
-public class MSSQLLockInterceptor implements MethodInterceptor { //, ThrowsAdvice
+public class LockAcquisitionInterceptor implements MethodInterceptor { //, ThrowsAdvice
 
-    Logger LOG = Logger.getLogger( MSSQLLockInterceptor.class );
+    Logger LOG = Logger.getLogger( LockAcquisitionInterceptor.class );
     private int timeout = 3000;
     private int retries = 3; 
     

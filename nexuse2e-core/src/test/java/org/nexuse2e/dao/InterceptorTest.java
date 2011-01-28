@@ -41,7 +41,7 @@ public class InterceptorTest {
 		when(invocationMock.proceed()).thenThrow(
 				new RuntimeException("Message", new LockAcquisitionException(
 						"bla", new SQLException())));
-		MSSQLLockInterceptor interceptor = new MSSQLLockInterceptor();
+		LockAcquisitionInterceptor interceptor = new LockAcquisitionInterceptor();
 		interceptor.setTimeout(0);
 		interceptor.setRetries(3);
 		try {
@@ -59,7 +59,7 @@ public class InterceptorTest {
 
 		MethodInvocation invocationMock = mock(MethodInvocation.class);
 		when(invocationMock.proceed()).thenReturn(new Object());
-		MSSQLLockInterceptor interceptor = new MSSQLLockInterceptor();
+		LockAcquisitionInterceptor interceptor = new LockAcquisitionInterceptor();
 		interceptor.setTimeout(0);
 		interceptor.setRetries(3);
 		try {
@@ -75,7 +75,7 @@ public class InterceptorTest {
 		MethodInvocation invocationMock = mock(MethodInvocation.class);
 		when(invocationMock.proceed()).thenThrow(
 				new RuntimeException("Message", new SQLException() ) );
-		MSSQLLockInterceptor interceptor = new MSSQLLockInterceptor();
+		LockAcquisitionInterceptor interceptor = new LockAcquisitionInterceptor();
 		interceptor.setTimeout(0);
 		interceptor.setRetries(3);
 		try {
@@ -97,7 +97,7 @@ public class InterceptorTest {
 		when(invocationMock.proceed()).thenThrow(
 				new RuntimeException("Message", new LockAcquisitionException(
 						"bla", new SQLException())));
-		MSSQLLockInterceptor interceptor = new MSSQLLockInterceptor();
+		LockAcquisitionInterceptor interceptor = new LockAcquisitionInterceptor();
 		interceptor.setTimeout(0);
 		interceptor.setRetries(0);
 		try {

@@ -153,7 +153,7 @@ public class ConversationWorker implements Runnable {
                 messageContext.getStateMachine().processedBackend();
 
             } catch (NexusException nex) {
-                LOG.error("InboundQueueListener.run detected an exception: ", nex);
+                LOG.error(new LogMessage("Error processing backend: " + nex.getMessage(), messageContext), nex);
                 try {
                     messageContext.getStateMachine().processingFailed();
                 } catch (StateTransitionException e) {
