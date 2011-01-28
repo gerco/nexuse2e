@@ -1533,11 +1533,11 @@ public class EngineConfiguration implements ConfigurationAccessService {
     public List<CertificatePojo> getCertificates( int type, Comparator<CertificatePojo> comparator ) throws NexusException {
 
         List<CertificatePojo> filteredList = null;
-        if ( type != 0 ) {
+        if ( type != Constants.CERTIFICATE_TYPE_ALL ) {
             filteredList = new ArrayList<CertificatePojo>();
             for ( CertificatePojo certificate : getCertificates() ) {
 
-                if ( type == Constants.CERTIFICATE_TYPE_ALL || type == certificate.getType() ) {
+                if (type == certificate.getType()) {
                     filteredList.add( certificate );
                 }
             }
@@ -1756,7 +1756,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
             // Sets have problems if the object was added with another hash value
             // avoid this by removing and re-adding after nxId has been set
             Collection<T> collection = list;
-            if ( list instanceof Set ) {
+            if ( list instanceof Set<?> ) {
                 collection = new ArrayList<T>( list );
                 list.clear();
             }

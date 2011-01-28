@@ -90,58 +90,7 @@ public class DataSaveAsAction extends NexusE2EAction {
         
         try {
             if ( request.getParameter( "type" ).equals( "temppkcs12" ) ) {
-                //                CertificateDAO cDao = new CertificateDAO();
-                //                Object[] csr = cDao.getLocalCertificateRequest();
-                //                byte[] data = new byte[0];
-                //                response.setHeader( "Content-Disposition", "attachment; filename=\"Request-Backup.p12\"" );
-                //
-                //                KeyStore keyStore = KeyStore.getInstance( "PKCS12", "BC" );
-                //                CertificatePojo cPojo = cDao.getCertificateByPartnerIdAndSequenceNumber( CertificateDAO.PRIVATE_KEY_ID,
-                //                        1 );
-                //                if ( cPojo != null ) {
-                //
-                //                    ByteArrayInputStream bais = new ByteArrayInputStream( cPojo.getCertificateImage() );
-                //                    String pwd = cDao.decryptString( cPojo.getCertificatePassword() );
-                //                    keyStore.load( bais, pwd.toCharArray() );
-                //                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                //                    keyStore.store( baos, pwd.toCharArray() );
-                //                    data = baos.toByteArray();
-                //                }
-                //
-                //                response.setContentType( contentType );
-                //                response.setContentLength( data.length );
-                //                OutputStream os = response.getOutputStream();
-                //                os.write( data );
-                //                os.flush();
             } else if ( request.getParameter( "type" ).equals( "serverCert" ) ) {
-
-                //                KeyStore jks = KeyStore.getInstance( CertificateDAO.DEFAULT_KEY_STORE,
-                //                        CertificateDAO.DEFAULT_JCE_PROVIDER );
-                //
-                //                CertificateDAO cDao = new CertificateDAO();
-                //                CertificatePojo cPojo = cDao.getCertificateByPartnerIdAndSequenceNumber( CertificateDAO.ENGINE_ID, 1 );
-                //                byte[] data = new byte[0];
-                //                if ( cPojo != null ) {
-                //                    String pwd = cPojo.getCertificatePassword();
-                //                    pwd = cDao.decryptString( pwd );
-                //
-                //                    ByteArrayInputStream bais = new ByteArrayInputStream( cPojo.getCertificateImage() );
-                //                    jks.load( bais, pwd.toCharArray() );
-                //
-                //                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                //                    try {
-                //                        jks.store( baos, pwd.toCharArray() );
-                //                    } catch ( Exception e ) {
-                //                        e.printStackTrace();
-                //                    }
-                //                    response.setHeader( "Content-Disposition", "attachment; filename=\"Nexus.p12\"" );
-                //                    data = baos.toByteArray();
-                //                }
-                //                response.setContentType( contentType );
-                //                response.setContentLength( data.length );
-                //                OutputStream os = response.getOutputStream();
-                //                os.write( data );
-                //                os.flush();
             } else if ( request.getParameter( "type" ).equals( "cacerts" ) ) {
 
                 List<CertificatePojo> certificates = engineConfiguration
@@ -195,8 +144,7 @@ public class DataSaveAsAction extends NexusE2EAction {
 
                 try {
 
-                    CertificatePojo cPojo = engineConfiguration
-                            .getCertificateByNxCertificateId( Constants.CERTIFICATE_TYPE_STAGING, nxCertificateId );
+                    CertificatePojo cPojo = engineConfiguration.getCertificateByNxCertificateId( Constants.CERTIFICATE_TYPE_STAGING, nxCertificateId );
                     if ( cPojo == null ) {
                         return null;
                     }
@@ -287,7 +235,13 @@ public class DataSaveAsAction extends NexusE2EAction {
                         data = baos.toByteArray();
 
                     } else if ( content == 3 ) {
-                        data = cPojo.getBinaryData();
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        String password = "nexus";
+                        if (form.getPassword() != null && form.getPassword().equals(form.getVerifyPwd())) {
+                            password = form.getPassword();
+                        }
+                        jks.store(baos, password.toCharArray());
+                        data = baos.toByteArray();
 
                     }
                 } catch ( Exception e ) {
@@ -302,14 +256,12 @@ public class DataSaveAsAction extends NexusE2EAction {
             } else if ( request.getParameter( "type" ).equals( "privatepem" ) ) {
                 LOG.debug( "exporting private pem structure " );
 
-                CertificatePojo requestPojo = engineConfiguration
-                        .getFirstCertificateByType( Constants.CERTIFICATE_TYPE_REQUEST, true );
+                CertificatePojo requestPojo = engineConfiguration.getFirstCertificateByType( Constants.CERTIFICATE_TYPE_REQUEST, true );
                 if ( requestPojo == null ) {
                     LOG.error( "no request found in database" );
                     return null;
                 }
-                CertificatePojo privKeyPojo = engineConfiguration
-                        .getFirstCertificateByType( Constants.CERTIFICATE_TYPE_PRIVATE_KEY, true );
+                CertificatePojo privKeyPojo = engineConfiguration.getFirstCertificateByType( Constants.CERTIFICATE_TYPE_PRIVATE_KEY, true );
                 if ( privKeyPojo == null ) {
                     LOG.error( "no request found in database" );
                     return null;
@@ -335,18 +287,14 @@ public class DataSaveAsAction extends NexusE2EAction {
             } else if ( request.getParameter( "type" ).equals( "request" ) ) {
                 String format = request.getParameter( "format" );
                 String nxCertIdString = request.getParameter( "nxCertificateId" );
-                // System.out.println( "NXParam: " + request.getParameter( "nxCertificateId" ) );
-                // System.out.println( "NXAttrib: " + request.getAttribute( "nxCertificateId" ) );
 
                 int nxCertificateId = Integer.parseInt( nxCertIdString );
-                // System.out.println( "format:" + format );
-                // System.out.println( "nxCertificateId" + nxCertificateId );
+
                 if ( nxCertificateId == 0 ) {
                     LOG.error( "no certificateId found!" );
                     return null;
                 }
-                CertificatePojo certificate = engineConfiguration
-                        .getCertificateByNxCertificateId( Constants.CERTIFICATE_TYPE_ALL, nxCertificateId );
+                CertificatePojo certificate = engineConfiguration.getCertificateByNxCertificateId( Constants.CERTIFICATE_TYPE_ALL, nxCertificateId );
 
                 PKCS10CertificationRequest pkcs10request = CertificateUtil.getPKCS10Request( certificate );
                 byte[] data = new byte[0];
@@ -388,8 +336,6 @@ public class DataSaveAsAction extends NexusE2EAction {
                         }
                     }
                 }
-
-                //                response.setHeader( "Content-Disposition", "attachment; filename=\"CertficateRequest.pem\"" );
 
                 response.setContentType( contenType );
                 if ( data != null ) {

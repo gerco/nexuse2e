@@ -19,12 +19,13 @@
  */
 package org.nexuse2e.ui.action.communications;
 
-import java.io.ByteArrayInputStream;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,7 +35,6 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
-import org.nexuse2e.configuration.ConfigurationAccessService;
 import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.pojo.CertificatePojo;
@@ -70,11 +70,9 @@ public class StagingSaveCertificateAction extends NexusE2EAction {
             addRedirect( request, URL, TIMEOUT );
             return error;
         }
-        byte[] data = form.getCertficate().getFileData();
-
         KeyStore jks = KeyStore.getInstance( CertificateUtil.DEFAULT_KEY_STORE, CertificateUtil.DEFAULT_JCE_PROVIDER );
         try {
-            jks.load( new ByteArrayInputStream( data ), form.getPassword().toCharArray() );
+            jks.load( form.getCertficate().getInputStream(), form.getPassword().toCharArray() );
         } catch ( Exception e ) {
             ActionMessage errorMessage = new ActionMessage( "generic.error", e.getMessage() );
             errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
@@ -84,10 +82,24 @@ public class StagingSaveCertificateAction extends NexusE2EAction {
 
         try {
             List<CertificatePojo> certificates = new ArrayList<CertificatePojo>();
-            CertificatePojo certificate = CertificateUtil.createPojoFromPKCS12( Constants.CERTIFICATE_TYPE_STAGING,
-                    jks, form.getPassword() );
+            CertificatePojo certificate = CertificateUtil.createPojoFromPKCS12( Constants.CERTIFICATE_TYPE_STAGING, jks, form.getPassword() );
             certificates.add( certificate );
 
+            // get installed CA cert's fingerprints
+            Set<String> installedCaFingerPrints = new HashSet<String>();
+            for (CertificatePojo cert : engineConfiguration.getCertificates( Constants.CERTIFICATE_TYPE_CA, null )) {
+                byte[] data = cert.getBinaryData();
+                if (data != null) {
+                    X509Certificate x509Certificate = CertificateUtil.getX509Certificate( data );
+                    if (x509Certificate != null) {
+                        String fp = CertificateUtil.getMD5Fingerprint( x509Certificate );
+                        if (fp != null) {
+                            installedCaFingerPrints.add( fp );
+                        }
+                    }
+                }
+            }
+            
             // check if root certificate is in the CA cert list
             // if not, add it to the CA list
             Certificate[] chain = CertificateUtil.getCertificateChain( jks );
@@ -97,24 +109,8 @@ public class StagingSaveCertificateAction extends NexusE2EAction {
 
                     if (i > 0 || CertificateUtil.isSelfSigned( signer )) {
                         String fingerprint = CertificateUtil.getMD5Fingerprint( signer );
-                        ConfigurationAccessService cas = engineConfiguration;
-                        boolean caInCaStore = false;
-                        for (CertificatePojo cert : cas.getCertificates( Constants.CERTIFICATE_TYPE_CA, null )) {
-                            data = cert.getBinaryData();
-                            if (data != null) {
-                                X509Certificate x509Certificate = CertificateUtil.getX509Certificate( data );
-                                if (x509Certificate != null) {
-                                    String fp = CertificateUtil.getMD5Fingerprint( x509Certificate );
-                                    if (fp != null && fp.equals( fingerprint )) {
-                                        caInCaStore = true;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                        if (!caInCaStore) {
+                        if (!installedCaFingerPrints.contains(fingerprint)) {
                             certificates.add( CertificateUtil.createPojoFromX509( signer, Constants.CERTIFICATE_TYPE_CA ) );
-    
                         }
                     }
                 }

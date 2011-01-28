@@ -211,6 +211,21 @@ public class StagingStoreExportedAction extends NexusE2EAction {
                 return error;
             }
         } else {
+            if (content == 3) {
+                if (org.apache.commons.lang.StringUtils.isBlank(form.getPassword())) {
+                    ActionMessage errorMessage = new ActionMessage("nexususer.error.password.required");
+                    errors.add(ActionMessages.GLOBAL_MESSAGE, errorMessage);
+                    return error;
+                } else if (org.apache.commons.lang.StringUtils.isBlank(form.getVerifyPwd())) {
+                    ActionMessage errorMessage = new ActionMessage("nexususer.error.password.confirmRequired");
+                    errors.add(ActionMessages.GLOBAL_MESSAGE, errorMessage);
+                    return error;
+                } else if (!form.getPassword().equals(form.getVerifyPwd())) {
+                    ActionMessage errorMessage = new ActionMessage("nexususer.error.password.nomatch");
+                    errors.add(ActionMessages.GLOBAL_MESSAGE, errorMessage);
+                    return error;
+                }
+            }
             // Save as...
             addRedirect( request, "certificates.staging.export.url", "certificates.staging.export.timeout" );
         }

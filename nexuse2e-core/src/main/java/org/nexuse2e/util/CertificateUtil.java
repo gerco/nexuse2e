@@ -801,7 +801,7 @@ public class CertificateUtil {
             // Fix MS IIS exported PKCS12 structures (.pfx)  (remove all aliases, create new keyStore with friendly named alias)
             Key pk = getPrivateKey( keyStore );
             Certificate[] tempCerts = getCertificateChain( keyStore );
-            KeyStore newKs = KeyStore.getInstance( "PKCS12", "BC" );
+            KeyStore newKs = KeyStore.getInstance( DEFAULT_KEY_STORE, DEFAULT_JCE_PROVIDER );
             newKs.load( null, null );
 
             if ( ( tempCerts != null ) && ( tempCerts.length != 0 ) ) {
