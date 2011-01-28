@@ -428,6 +428,7 @@ public class ConversationStateMachineImpl implements ConversationStateMachine {
                     message.setModifiedDate( new Date() );
 
                     if ( message.isNormal() ) {
+                        message.setEndDate(null);
                         conversation.setStatus( Constants.CONVERSATION_STATUS_PROCESSING );
                     }
                     conversation.addMessage( message );
