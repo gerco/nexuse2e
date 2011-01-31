@@ -50,6 +50,7 @@
         <prop key="configuration.share5.path"></prop>
         <prop key="configuration.share5.name"></prop>
         <prop key="database.timestamp.pattern"></prop>
+        <prop key="default.charEncoding"></prop>
       </props>
     </property>
     <property name="locations">
@@ -198,43 +199,47 @@
 
   <bean id="txManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
     <property name="sessionFactory" ref="hibernateSessionFactory" />
+    <property name="dataSource" ref="${datasource.type}" />
   </bean>
 
   <aop:config>
-    <aop:pointcut id="transactionServicesPointcut" expression="execution(* org.nexuse2e.dao.*Impl.*(..))"/>
-    <aop:advisor advice-ref="transactionServicesAdvice" pointcut-ref="transactionServicesPointcut"/>
+    <aop:pointcut id="transactionPointcut" expression="execution(* org.nexuse2e.dao.*Impl.*(..))"/>
+    <aop:advisor advice-ref="transactionAdvice" pointcut-ref="transactionPointcut"/>
   </aop:config>
 
-  <tx:advice id="transactionServicesAdvice" transaction-manager="txManager">
+  <tx:advice id="transactionAdvice" transaction-manager="txManager">
     <tx:attributes>
       <!-- 
       <tx:method name="get*" read-only="true"/> 
       -->
       <tx:method name="*ForReport" propagation="SUPPORTS" isolation="READ_UNCOMMITTED"/>
+      <tx:method name="updateTransaction" propagation="REQUIRED" isolation="SERIALIZABLE"/> <!-- isolation="SERIALIZABLE" READ_COMMITTED-->
       <tx:method name="*" propagation="REQUIRED" isolation="READ_COMMITTED"/> <!-- isolation="SERIALIZABLE" READ_COMMITTED-->
     </tx:attributes>
   </tx:advice>
 
 
-  <bean id="logDao" class="org.nexuse2e.dao.LogDAOImpl">
-    <property name="sessionFactory" ref="hibernateSessionFactory" />
-  </bean>
-  <bean id="configDao" class="org.nexuse2e.dao.ConfigDAOImpl">
-    <property name="sessionFactory" ref="hibernateSessionFactory" />
-  </bean>
-  <bean id="transactionDao" class="org.nexuse2e.dao.TransactionDAOImpl">
-    <property name="sessionFactory" ref="hibernateSessionFactory" />
-  </bean>
-  <bean id="persistentPropertyDao" class="org.nexuse2e.dao.PersistentPropertyDAOImpl">
-    <property name="sessionFactory" ref="hibernateSessionFactory" />
+  <bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
+    <property name="sessionFactory" ref="hibernateSessionFactory"/>
   </bean>
 
-  <bean id="mssqlInterceptor" class="org.nexuse2e.dao.MSSQLLockInterceptor">
+  <bean id="logDao" class="org.nexuse2e.dao.LogDAOImpl">
+    <property name="hibernateTemplate" ref="hibernateTemplate" />
+  </bean>
+  <bean id="configDao" class="org.nexuse2e.dao.ConfigDAOImpl">
+    <property name="hibernateTemplate" ref="hibernateTemplate" />
+  </bean>
+  <bean id="transactionDao" class="org.nexuse2e.dao.TransactionDAOImpl">
+    <property name="hibernateTemplate" ref="hibernateTemplate" />
+  </bean>
+  <bean id="persistentPropertyDao" class="org.nexuse2e.dao.PersistentPropertyDAOImpl">
+    <property name="hibernateTemplate" ref="hibernateTemplate" />
+  </bean>
+
+  <bean id="lockInterceptor" class="org.nexuse2e.dao.LockAcquisitionInterceptor">
   	<property name="timeout" value="500" />
   	<property name="retries" value="20" />
   </bean>
-
-  <bean id="conversationLockManager" class="${conversationLockManager.class}"/>
 
   <bean id="transactionService" class="org.springframework.aop.framework.ProxyFactoryBean">
 	<property name="proxyInterfaces"><value>org.nexuse2e.controller.TransactionService</value></property>
@@ -242,12 +247,11 @@
 	  <bean class="org.nexuse2e.controller.TransactionServiceImpl">
 	  	<property name="transactionDao" ref="transactionDao"/>
 	  	<property name="logDao" ref="logDao"/>
-	  	<property name="conversationLockManager" ref="conversationLockManager"/>
 	  </bean>
 	</property>
 	<property name="interceptorNames">
 	  <list>
-	    <value>mssqlInterceptor</value>
+	    <value>lockInterceptor</value>
 	  </list>
 	</property>
   </bean>
