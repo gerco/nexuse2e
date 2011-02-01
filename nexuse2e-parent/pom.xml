@@ -32,13 +32,22 @@
       </snapshots>
     </repository>
     <repository>
-     <id>java.net</id>
-     <name>java.net Repository</name>
-     <layout>default</layout>
-     <url>http://download.java.net/maven/2</url>
-     <snapshots>
-       <enabled>false</enabled>
-     </snapshots>
+      <id>java.net</id>
+      <name>java.net Repository</name>
+      <layout>default</layout>
+      <url>http://download.java.net/maven/2</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>jboss.org</id>
+      <name>jboss.org Repository</name>
+      <layout>default</layout>
+      <url>http://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
     </repository>
   </repositories>
   <!-- build -->

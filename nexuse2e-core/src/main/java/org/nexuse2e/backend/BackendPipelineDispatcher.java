@@ -233,89 +233,86 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
 
         messageContext.setConversation( messagePojo.getConversation() );
 
-        Object syncObj = Engine.getInstance().getTransactionService().getSyncObjectForConversation( messageContext.getConversation() );
-        synchronized (syncObj) {
-            // Set conversation on MessageContext
-            if ( primaryKey != null ) {
-                messageContext.setData( primaryKey );
-            }
-            
-            // payload handling > detect type > only set values, if empty yet
-            List<MessagePayloadPojo> payloadPojos = new ArrayList<MessagePayloadPojo>();
-            if ( payloads != null ) {
-                int payloadIndex = 1;
-                for ( Object currPayload : payloads ) {
-                    MessagePayloadPojo messagePayloadPojo = null;
-                    if ( currPayload instanceof byte[] ) {
-                        byte[] payloadData = (byte[]) currPayload;
-                        if ( payloadData != null && payloadData.length > 0 ) {
-                            messagePayloadPojo = new MessagePayloadPojo();
-                            messagePayloadPojo.setPayloadData( payloadData );
-                        }
-                    } else if ( currPayload instanceof MessagePayloadPojo ) {
-                        messagePayloadPojo = (MessagePayloadPojo) currPayload;
-                    } else {
-                        throw new NexusException( "Invalid payload type detected. Must be either of type byte[] or MessagePayloadPojo." );
-                    }
-                    
-                    payloadPojos.add( messagePayloadPojo );
-                    
-                    // init payload pojo
-                    messagePayloadPojo.setMessage( messagePojo );
-                    if ( StringUtils.isEmpty( messagePayloadPojo.getMimeType() ) ) {
-						String mimetype = null;
-                    	try {
-							ContentHandler contenthandler = new BodyContentHandler();
-							Metadata metadata = new Metadata();
-							Parser parser = new AutoDetectParser();
-							ByteArrayInputStream bias = new ByteArrayInputStream( messagePayloadPojo.getPayloadData() );
-                            parser.parse( bias, contenthandler, metadata, null );
-                            // TODO: Fix this (text/xml is detected as text/html)
-                            mimetype = metadata.get( Metadata.CONTENT_TYPE );
-                            if ("text/html".equals(mimetype)) {
-                                mimetype = "text/xml";
-                            }
-                            LOG.trace(new LogMessage("autodetermined mimetype: "+mimetype,messageContext));
-                            if(!Engine.getInstance().isBinaryType( mimetype )) {
-                                CharsetDetector detector = new CharsetDetector();
-                                detector.setText( messagePayloadPojo.getPayloadData() );
-                            }
-                        } catch ( Exception e ) {
-                            throw new NexusException( new LogMessage( "mime detection failed: "+e.getMessage(),messageContext),e);
-						} 
-                    	messagePayloadPojo.setMimeType(mimetype );
-                    }
-                    if ( StringUtils.isEmpty( messagePayloadPojo.getContentId() ) ) {
-                        if ( StringUtils.isEmpty( contentId ) ) {
-                            messagePayloadPojo.setContentId( messagePojo.getMessageId() + "__body" + payloadIndex );
-                        } else {
-                            messagePayloadPojo.setContentId( contentId + "__body_" + payloadIndex );
-                        }
-                    }
-                    messagePayloadPojo.setSequenceNumber( new Integer( payloadIndex ) );
-                    messagePayloadPojo.setCreatedDate( messagePojo.getCreatedDate() );
-                    messagePayloadPojo.setModifiedDate( messagePojo.getCreatedDate() );
-                    payloadIndex++;
-                }
-            }
-            // attach payloads to message
-            messagePojo.setMessagePayloads( payloadPojos );
-    
-            if ( errors != null ) {
-                messagePojo.setErrors( errors );
-            }
-    
-            messageContext.setMessagePojo( messagePojo );
-            try {
-                pipeline.processMessage( messageContext );
-            } catch ( NexusException e ) {
-                throw e;
-            } catch ( Error e ) {
-                throw new NexusException( e.toString() );
-            }
-    
-            return messageContext;
+        // Set conversation on MessageContext
+        if ( primaryKey != null ) {
+            messageContext.setData( primaryKey );
         }
+        
+        // payload handling > detect type > only set values, if empty yet
+        List<MessagePayloadPojo> payloadPojos = new ArrayList<MessagePayloadPojo>();
+        if ( payloads != null ) {
+            int payloadIndex = 1;
+            for ( Object currPayload : payloads ) {
+                MessagePayloadPojo messagePayloadPojo = null;
+                if ( currPayload instanceof byte[] ) {
+                    byte[] payloadData = (byte[]) currPayload;
+                    if ( payloadData != null && payloadData.length > 0 ) {
+                        messagePayloadPojo = new MessagePayloadPojo();
+                        messagePayloadPojo.setPayloadData( payloadData );
+                    }
+                } else if ( currPayload instanceof MessagePayloadPojo ) {
+                    messagePayloadPojo = (MessagePayloadPojo) currPayload;
+                } else {
+                    throw new NexusException( "Invalid payload type detected. Must be either of type byte[] or MessagePayloadPojo." );
+                }
+                
+                payloadPojos.add( messagePayloadPojo );
+                
+                // init payload pojo
+                messagePayloadPojo.setMessage( messagePojo );
+                if ( StringUtils.isEmpty( messagePayloadPojo.getMimeType() ) ) {
+					String mimetype = null;
+                	try {
+						ContentHandler contenthandler = new BodyContentHandler();
+						Metadata metadata = new Metadata();
+						Parser parser = new AutoDetectParser();
+						ByteArrayInputStream bias = new ByteArrayInputStream( messagePayloadPojo.getPayloadData() );
+                        parser.parse( bias, contenthandler, metadata, null );
+                        // TODO: Fix this (text/xml is detected as text/html)
+                        mimetype = metadata.get( Metadata.CONTENT_TYPE );
+                        if ("text/html".equals(mimetype)) {
+                            mimetype = "text/xml";
+                        }
+                        LOG.trace(new LogMessage("autodetermined mimetype: "+mimetype,messageContext));
+                        if(!Engine.getInstance().isBinaryType( mimetype )) {
+                            CharsetDetector detector = new CharsetDetector();
+                            detector.setText( messagePayloadPojo.getPayloadData() );
+                        }
+                    } catch ( Exception e ) {
+                        throw new NexusException( new LogMessage( "mime detection failed: "+e.getMessage(),messageContext),e);
+					} 
+                	messagePayloadPojo.setMimeType(mimetype );
+                }
+                if ( StringUtils.isEmpty( messagePayloadPojo.getContentId() ) ) {
+                    if ( StringUtils.isEmpty( contentId ) ) {
+                        messagePayloadPojo.setContentId( messagePojo.getMessageId() + "__body" + payloadIndex );
+                    } else {
+                        messagePayloadPojo.setContentId( contentId + "__body_" + payloadIndex );
+                    }
+                }
+                messagePayloadPojo.setSequenceNumber( new Integer( payloadIndex ) );
+                messagePayloadPojo.setCreatedDate( messagePojo.getCreatedDate() );
+                messagePayloadPojo.setModifiedDate( messagePojo.getCreatedDate() );
+                payloadIndex++;
+            }
+        }
+        // attach payloads to message
+        messagePojo.setMessagePayloads( payloadPojos );
+
+        if ( errors != null ) {
+            messagePojo.setErrors( errors );
+        }
+
+        messageContext.setMessagePojo( messagePojo );
+        try {
+            pipeline.processMessage( messageContext );
+        } catch ( NexusException e ) {
+            throw e;
+        } catch ( Error e ) {
+            throw new NexusException( e.toString() );
+        }
+
+        return messageContext;
     } // processMessage
 
     /* (non-Javadoc)

@@ -99,7 +99,7 @@ public class ConversationStateMachineImpl implements ConversationStateMachine {
         return conversation;
     }
     
-    public MessagePojo getAckForMessage( MessagePojo message ) {
+    public MessagePojo getAckForMessage( ConversationPojo conversation, MessagePojo message ) {
         if (message != null || conversation != null) {
         
             for (MessagePojo ack : conversation.getMessages()) {
@@ -116,77 +116,105 @@ public class ConversationStateMachineImpl implements ConversationStateMachine {
 
     public void sentMessage() throws StateTransitionException, NexusException {
 
-        UpdateTransactionOperation operation = new UpdateTransactionOperation() {
-            public UpdateScope update(ConversationPojo conversation, MessagePojo message, MessagePojo referencedMessage) throws NexusException, StateTransitionException {
-                if (message.isNormal()) {
-                    LOG.trace(new LogMessage("message sent, current conversation status: " + conversation.getStatusName(), message));
-                    if (conversation.getStatus() == Constants.CONVERSATION_STATUS_PROCESSING
-                            || conversation.getStatus() == Constants.CONVERSATION_STATUS_AWAITING_ACK
-                            || conversation.getStatus() == Constants.CONVERSATION_STATUS_IDLE /* If ack from previous choreo step was late */
-                            || conversation.getStatus() == Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND /* If ack from previous choreo step was late */
-                            || conversation.getStatus() == Constants.CONVERSATION_STATUS_BACKEND_SENT_SENDING_ACK /* If ack from previous choreo step was late */
-                            || conversation.getStatus() == Constants.CONVERSATION_STATUS_ERROR /* Included for re-queuing */) {
-                        if (reliable) {
-                            // it can happen that an outbound acknowledgement was processed faster than the inbound message
-                            LOG.trace(new LogMessage("conversation status set to awaiting ack",message));
-                            conversation.setStatus(Constants.CONVERSATION_STATUS_AWAITING_ACK);
-                            return UpdateScope.CONVERSATION_ONLY;
-                        } else {
-                            Engine.getInstance().getTransactionService().deregisterProcessingMessage(message.getMessageId());
-                            LOG.trace(new LogMessage("message status set to sent",message));
-                            message.setStatus(Constants.MESSAGE_STATUS_SENT);
-                            message.setModifiedDate(new Date());
-                            message.setEndDate(message.getModifiedDate());
-                            if (message.getAction().isEnd()) {
-                                LOG.trace(new LogMessage("conversation status set to completed",message));
-                                conversation.setStatus(Constants.CONVERSATION_STATUS_COMPLETED);
-                                conversation.setEndDate(new Date());
+        Object syncObj;
+        // We need the synchronized block here in order to serialize the transitions from
+        // PROCESSING to { BACKEND_SENT_SENDING_ACK, ACK_SENT_AWAITING_BACKEND }.
+        // We are pretty certain that sending a message's outbound acknowledgement and the backend processing of the
+        // message are always performed on the same node. Thus, we can use in-process synchronization here instead
+        // of using a pessimistic transaction isolation level (SERIALIZABLE), which may cause deadlocks.
+        if (message.isAck() && message.isOutbound()) {
+            syncObj = Engine.getInstance().getTransactionService().getSyncObjectForConversation(conversation);
+        } else {
+            syncObj = new Object();
+        }
+        synchronized (syncObj) {
+            UpdateTransactionOperation operation = new UpdateTransactionOperation() {
+                public UpdateScope update(ConversationPojo conversation, MessagePojo message, MessagePojo referencedMessage) throws NexusException, StateTransitionException {
+                    if (message.isNormal()) {
+                        LOG.trace(new LogMessage("message sent, current conversation status: " + conversation.getStatusName(), message));
+                        if (conversation.getStatus() == Constants.CONVERSATION_STATUS_PROCESSING
+                                || conversation.getStatus() == Constants.CONVERSATION_STATUS_AWAITING_ACK
+                                || conversation.getStatus() == Constants.CONVERSATION_STATUS_IDLE /* If ack from previous choreo step was late */
+                                || conversation.getStatus() == Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND /* If ack from previous choreo step was late */
+                                || conversation.getStatus() == Constants.CONVERSATION_STATUS_BACKEND_SENT_SENDING_ACK /* If ack from previous choreo step was late */
+                                || conversation.getStatus() == Constants.CONVERSATION_STATUS_ERROR /* Included for re-queuing */) {
+                            if (reliable) {
+                                // check if there is an ack for this message
+                                if (getAckForMessage(conversation, message) != null) {
+                                    if (LOG.isTraceEnabled()) {
+                                        LOG.trace(new LogMessage("conversation status changed, message has already been acknowledged", message));
+                                    }
+                                    return UpdateScope.NOTHING;
+                                }
+                                
+                                // it can happen that an outbound acknowledgement was processed faster than the inbound message
+                                if (LOG.isTraceEnabled()) {
+                                    LOG.trace(new LogMessage("conversation status set to awaiting ack", message));
+                                }
+                                conversation.setStatus(Constants.CONVERSATION_STATUS_AWAITING_ACK);
+                                return UpdateScope.CONVERSATION_ONLY;
                             } else {
-                                LOG.trace(new LogMessage("conversation status set to idle",message));
-                                conversation.setStatus(Constants.CONVERSATION_STATUS_IDLE);
+                                Engine.getInstance().getTransactionService().deregisterProcessingMessage(message.getMessageId());
+                                if (LOG.isTraceEnabled()) {
+                                    LOG.trace(new LogMessage("message status set to sent", message));
+                                }
+                                message.setStatus(Constants.MESSAGE_STATUS_SENT);
+                                message.setModifiedDate(new Date());
+                                message.setEndDate(message.getModifiedDate());
+                                if (message.getAction().isEnd()) {
+                                    if (LOG.isTraceEnabled()) {
+                                        LOG.trace(new LogMessage("conversation status set to completed", message));
+                                    }
+                                    conversation.setStatus(Constants.CONVERSATION_STATUS_COMPLETED);
+                                    conversation.setEndDate(new Date());
+                                } else {
+                                    if (LOG.isTraceEnabled()) {
+                                        LOG.trace(new LogMessage("conversation status set to idle", message));
+                                    }
+                                    conversation.setStatus(Constants.CONVERSATION_STATUS_IDLE);
+                                }
+                                return UpdateScope.CONVERSATION_AND_MESSAGE;
                             }
-                            return UpdateScope.CONVERSATION_AND_MESSAGE;
+                        } else {
+                            throw new StateTransitionException( "Unexpected conversation state after sending normal message: "
+                                    + ConversationPojo.getStatusName( conversation.getStatus() ) );
                         }
                     } else {
-                        throw new StateTransitionException( "Unexpected conversation state after sending normal message: "
-                                + ConversationPojo.getStatusName( conversation.getStatus() ) );
-                    }
-                } else {
-                    // Engine.getInstance().getTransactionService().deregisterProcessingMessage( message.getMessageId() );
-                    message.setStatus( Constants.MESSAGE_STATUS_SENT );
-                    message.setModifiedDate( new Date() );
-                    message.setEndDate( message.getModifiedDate() );
-                    referencedMessage.setEndDate( message.getModifiedDate() );
-                    if (conversation.getStatus() == Constants.CONVERSATION_STATUS_SENDING_ACK
-                            || conversation.getStatus() == Constants.CONVERSATION_STATUS_PROCESSING) {
-                        conversation.setStatus( Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND );
-                    } else if (conversation.getStatus() == Constants.CONVERSATION_STATUS_BACKEND_SENT_SENDING_ACK
-                            || conversation.getStatus() == Constants.CONVERSATION_STATUS_IDLE
-                            || conversation.getStatus() == Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND) {
-                        if (message.getAction().isEnd()) {
-                            conversation.setStatus( Constants.CONVERSATION_STATUS_COMPLETED );
-                            conversation.setEndDate( new Date() );
-                        } else {
-                            conversation.setStatus( Constants.CONVERSATION_STATUS_IDLE );
+                        // Engine.getInstance().getTransactionService().deregisterProcessingMessage( message.getMessageId() );
+                        message.setStatus( Constants.MESSAGE_STATUS_SENT );
+                        message.setModifiedDate( new Date() );
+                        message.setEndDate( message.getModifiedDate() );
+                        referencedMessage.setEndDate( message.getModifiedDate() );
+                        if (conversation.getStatus() == Constants.CONVERSATION_STATUS_SENDING_ACK
+                                || conversation.getStatus() == Constants.CONVERSATION_STATUS_PROCESSING) {
+                            conversation.setStatus( Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND );
+                        } else if (conversation.getStatus() == Constants.CONVERSATION_STATUS_BACKEND_SENT_SENDING_ACK
+                                || conversation.getStatus() == Constants.CONVERSATION_STATUS_IDLE
+                                || conversation.getStatus() == Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND) {
+                            if (message.getAction().isEnd()) {
+                                conversation.setStatus( Constants.CONVERSATION_STATUS_COMPLETED );
+                                conversation.setEndDate( new Date() );
+                            } else {
+                                conversation.setStatus( Constants.CONVERSATION_STATUS_IDLE );
+                            }
+                        } else if (conversation.getStatus() == Constants.CONVERSATION_STATUS_AWAITING_BACKEND) {
+                            LOG.debug(new LogMessage( "Received ack message, backend still processing - conversation ID: " + conversation.getConversationId(), message));
+                        } else if (conversation.getStatus() != Constants.CONVERSATION_STATUS_COMPLETED && conversation.getStatus() != Constants.CONVERSATION_STATUS_ERROR) {
+                            LOG.error(new LogMessage( "Unexpected conversation state after sending ack message: " + conversation.getStatusName(), message));
                         }
-                    } else if (conversation.getStatus() == Constants.CONVERSATION_STATUS_AWAITING_BACKEND) {
-                        LOG.debug(new LogMessage( "Received ack message, backend still processing - conversation ID: " + conversation.getConversationId(), message));
-                    } else if (conversation.getStatus() != Constants.CONVERSATION_STATUS_COMPLETED && conversation.getStatus() != Constants.CONVERSATION_STATUS_ERROR) {
-                        LOG.error(new LogMessage( "Unexpected conversation state after sending ack message: " + conversation.getStatusName(), message));
+                        return UpdateScope.ALL;
                     }
-                    return UpdateScope.ALL;
                 }
-            }
+                
+            };
             
-        };
-        
-        // Persist status changes
-        try {
-            Engine.getInstance().getTransactionService().updateTransaction(message, operation);
-        } catch (StateTransitionException stex) {
-            LOG.warn(new LogMessage(stex.getMessage(), message), stex);
+            // Persist status changes
+            try {
+                Engine.getInstance().getTransactionService().updateTransaction(message, operation);
+            } catch (StateTransitionException stex) {
+                LOG.warn(new LogMessage(stex.getMessage(), message), stex);
+            }
         }
-        
         // execute state transition jobs
         executeStateTransitionJobs( StateTransition.SENT_MESSAGE );
     }
@@ -320,47 +348,56 @@ public class ConversationStateMachineImpl implements ConversationStateMachine {
 
     public void processedBackend() throws StateTransitionException, NexusException {
 
-        UpdateTransactionOperation operation = new UpdateTransactionOperation() {
-            public UpdateScope update(ConversationPojo conversation, MessagePojo message, MessagePojo referencedMessage) throws NexusException, StateTransitionException {
-                message.setStatus( Constants.MESSAGE_STATUS_SENT );
-                message.setModifiedDate( new Date() );
-                message.setEndDate( message.getModifiedDate() );
-                
-                if ( LOG.isTraceEnabled() ) {
-                    LOG.trace( new LogMessage("evaluating followup, current status: " + message.getStatusName() + "/" + conversation.getStatusName(), message) );
-                }
-                MessagePojo ack = getAckForMessage( message );
-                
-                if (conversation.getStatus() == Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND
-                        || conversation.getStatus() == Constants.CONVERSATION_STATUS_ERROR // requeued message
-                        || (ack != null && ack.getStatus() == Constants.MESSAGE_STATUS_SENT) // requeued message, check for completed ack added
-                        || conversation.getStatus() == Constants.CONVERSATION_STATUS_IDLE) {
-                    if ( message.getAction().isEnd() ) {
-                        conversation.setStatus( Constants.CONVERSATION_STATUS_COMPLETED );
-                        conversation.setEndDate( new Date() );
-                    } else {
-                        conversation.setStatus( Constants.CONVERSATION_STATUS_IDLE );
+        // We need the synchronized block here in order to serialize the transitions from
+        // PROCESSING to { BACKEND_SENT_SENDING_ACK, ACK_SENT_AWAITING_BACKEND }.
+        // We are pretty certain that sending a message's outbound acknowledgement and the backend processing of the
+        // message are always performed on the same node. Thus, we can use in-process synchronization here instead
+        // of using a pessimistic transaction isolation level (SERIALIZABLE), which may cause deadlocks.
+        Object syncObj = Engine.getInstance().getTransactionService().getSyncObjectForConversation(conversation);
+        synchronized (syncObj) {
+            UpdateTransactionOperation operation = new UpdateTransactionOperation() {
+                public UpdateScope update(ConversationPojo conversation, MessagePojo message, MessagePojo referencedMessage) throws NexusException, StateTransitionException {
+                    message.setStatus( Constants.MESSAGE_STATUS_SENT );
+                    message.setModifiedDate( new Date() );
+                    message.setEndDate( message.getModifiedDate() );
+                    
+                    if ( LOG.isTraceEnabled() ) {
+                        LOG.trace( new LogMessage("evaluating followup, current status: " + message.getStatusName() + "/" + conversation.getStatusName(), message) );
                     }
-                } else if ( conversation.getStatus() == Constants.CONVERSATION_STATUS_AWAITING_BACKEND
-                        || conversation.getStatus() == Constants.CONVERSATION_STATUS_PROCESSING ) {
-                    conversation.setStatus( Constants.CONVERSATION_STATUS_BACKEND_SENT_SENDING_ACK );
-                } else if ( conversation.getStatus() == Constants.CONVERSATION_STATUS_COMPLETED ) {
-                    LOG.debug( new LogMessage( "Processing message for completed conversation.", message ) );
-                    return UpdateScope.MESSAGE_ONLY;
-                } else {
-                    LOG.error( new LogMessage( "Unexpected conversation state detected: " + conversation.getStatusName(), message ) );
-                    return UpdateScope.MESSAGE_ONLY;
+                    MessagePojo ack = getAckForMessage( conversation, message );
+                    
+                    if (conversation.getStatus() == Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND
+                            || conversation.getStatus() == Constants.CONVERSATION_STATUS_ERROR // requeued message
+                            || (ack != null && ack.getStatus() == Constants.MESSAGE_STATUS_SENT) // requeued message, check for completed ack added
+                            || conversation.getStatus() == Constants.CONVERSATION_STATUS_IDLE) {
+                        if ( message.getAction().isEnd() ) {
+                            conversation.setStatus( Constants.CONVERSATION_STATUS_COMPLETED );
+                            conversation.setEndDate( new Date() );
+                        } else {
+                            conversation.setStatus( Constants.CONVERSATION_STATUS_IDLE );
+                        }
+                    } else if ( conversation.getStatus() == Constants.CONVERSATION_STATUS_AWAITING_BACKEND
+                            || conversation.getStatus() == Constants.CONVERSATION_STATUS_PROCESSING ) {
+                        conversation.setStatus( Constants.CONVERSATION_STATUS_BACKEND_SENT_SENDING_ACK );
+                    } else if ( conversation.getStatus() == Constants.CONVERSATION_STATUS_COMPLETED ) {
+                        LOG.debug( new LogMessage( "Processing message for completed conversation.", message ) );
+                        return UpdateScope.MESSAGE_ONLY;
+                    } else {
+                        LOG.error( new LogMessage( "Unexpected conversation state detected: " + conversation.getStatusName(), message ) );
+                        return UpdateScope.MESSAGE_ONLY;
+                    }
+                    return UpdateScope.CONVERSATION_AND_MESSAGE;
                 }
-                return UpdateScope.CONVERSATION_AND_MESSAGE;
-            }
-        };
+            };
+    
+            // Persist the message
+            LOG.trace(new LogMessage("Persisting status: " + message.getStatusName() + "/" + conversation.getStatusName(), message));
+            Engine.getInstance().getTransactionService().updateTransaction(message, operation);
+            
+            // execute state transition jobs
+            executeStateTransitionJobs( StateTransition.PROCESSED_BACKEND );
+        }
 
-        // Persist the message
-        LOG.trace(new LogMessage("Persisting status: " + message.getStatusName() + "/" + conversation.getStatusName(), message));
-        Engine.getInstance().getTransactionService().updateTransaction(message, operation);
-        
-        // execute state transition jobs
-        executeStateTransitionJobs( StateTransition.PROCESSED_BACKEND );
     }
 
     public void processingFailed() throws StateTransitionException, NexusException {

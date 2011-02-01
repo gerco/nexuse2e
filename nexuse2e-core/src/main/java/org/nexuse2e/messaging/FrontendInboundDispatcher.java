@@ -73,20 +73,17 @@ public class FrontendInboundDispatcher extends ChoreographyValidator implements 
      */
     public MessageContext processMessage( MessageContext messageContext ) throws NexusException {
 
-        Object syncObj = Engine.getInstance().getTransactionService().getSyncObjectForConversation(
-                ( messageContext.getConversation() != null ? messageContext.getConversation() : messageContext.getMessagePojo().getConversation() ) );
-        synchronized ( syncObj ) {
-            boolean failureInHeaderProcessing = false;
-            ChoreographyPojo choreography = null;
-            ParticipantPojo participant = null;
-            MessageContext responseMessageContext = null;
-            List<ErrorDescriptor> errorMessages = new ArrayList<ErrorDescriptor>();
+        boolean failureInHeaderProcessing = false;
+        ChoreographyPojo choreography = null;
+        ParticipantPojo participant = null;
+        MessageContext responseMessageContext = null;
+        List<ErrorDescriptor> errorMessages = new ArrayList<ErrorDescriptor>();
 
-            MessagePojo messagePojo = messageContext.getMessagePojo();
+        MessagePojo messagePojo = messageContext.getMessagePojo();
 
-            LOG.debug( new LogMessage( "Entering FrontendInboundDispatcher.processMessage...", messagePojo) );
+        LOG.debug( new LogMessage( "Entering FrontendInboundDispatcher.processMessage...", messagePojo) );
 
-            // extract header data
+        // extract header data
 // Shouldn't only the state machine set the status?
 //            if ( messagePojo.getConversation() != null
 //                    && messagePojo.getConversation().getStatus() == org.nexuse2e.Constants.CONVERSATION_STATUS_CREATED ) {
@@ -97,104 +94,103 @@ public class FrontendInboundDispatcher extends ChoreographyValidator implements 
 //                }
 //            }
 
-            // get protocol adapter
-            ProtocolAdapter protocolAdapter = getProtocolAdapterByKey( messageContext.getProtocolSpecificKey() );
-            if ( protocolAdapter == null ) {
-                String msg = "No protocol implementation found for key: " + messageContext.getProtocolSpecificKey();
+        // get protocol adapter
+        ProtocolAdapter protocolAdapter = getProtocolAdapterByKey( messageContext.getProtocolSpecificKey() );
+        if ( protocolAdapter == null ) {
+            String msg = "No protocol implementation found for key: " + messageContext.getProtocolSpecificKey();
 //                LOG.error( new LogMessage( msg, messagePojo ) );
-                throw new NexusException( new LogMessage( msg, messageContext ) );
-            }
-            if ( LOG.isTraceEnabled() ) {
-                LOG.trace( new LogMessage( "ProtocolAdapter found for incoming message",messagePojo) );
-            }
+            throw new NexusException( new LogMessage( msg, messageContext ) );
+        }
+        if ( LOG.isTraceEnabled() ) {
+            LOG.trace( new LogMessage( "ProtocolAdapter found for incoming message",messagePojo) );
+        }
 
-            // get choreography
+        // get choreography
+        try {
+            choreography = validateChoreography( messageContext );
+            LOG.debug(new LogMessage(  "matching choreography found",messagePojo) );
+        } catch ( NexusException e ) {
+            LOG.error( new LogMessage( "Error while validating choreography: " + e.getMessage(), messagePojo ), e );
+            responseMessageContext = protocolAdapter.createErrorAcknowledgement(
+                    Constants.ErrorMessageReasonCode.CHOREOGRAPHY_NOT_FOUND, null, messageContext, null );
+            failureInHeaderProcessing = true;
+            errorMessages.add( new ErrorDescriptor( "No matching choreography found in configuration: "
+                    + messagePojo.getConversation().getChoreography().getName() ) );
+        }
+
+        // get action
+        String actionId = messagePojo.getAction().getName();
+        ActionPojo action = Engine.getInstance().getActiveConfigurationAccessService()
+                .getActionFromChoreographyByActionId( choreography, actionId );
+        if ( ( action == null ) && ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) ) {
+            failureInHeaderProcessing = true;
+            errorMessages.add( new ErrorDescriptor( "No matching action found in configuration: "
+                    + messagePojo.getAction().getName() ) );
+            responseMessageContext = protocolAdapter.createErrorAcknowledgement(
+                    Constants.ErrorMessageReasonCode.ACTION_NOT_PERMITTED, null, messageContext, null );
+        }
+
+        if ( !failureInHeaderProcessing ) {
+            // get participant
             try {
-                choreography = validateChoreography( messageContext );
-                LOG.debug(new LogMessage(  "matching choreography found",messagePojo) );
+                participant = validateParticipant( messageContext );
+                messageContext.setParticipant(participant);
+                LOG.debug( new LogMessage( "matching participant found", messagePojo ) );
             } catch ( NexusException e ) {
-                LOG.error( new LogMessage( "Error while validating choreography: " + e.getMessage(), messagePojo ), e );
+                e.printStackTrace();
+                LOG.error( new LogMessage( "No matching participant found: "
+                        + messagePojo.getConversation().getPartner().getPartnerId(), messagePojo ) );
                 responseMessageContext = protocolAdapter.createErrorAcknowledgement(
-                        Constants.ErrorMessageReasonCode.CHOREOGRAPHY_NOT_FOUND, null, messageContext, null );
+                        Constants.ErrorMessageReasonCode.PARTICIPANT_NOT_FOUND, choreography, messageContext, null );
                 failureInHeaderProcessing = true;
-                errorMessages.add( new ErrorDescriptor( "No matching choreography found in configuration: "
-                        + messagePojo.getConversation().getChoreography().getName() ) );
+                errorMessages.add( new ErrorDescriptor( "No matching participant found in configuration: "
+                        + messagePojo.getConversation().getPartner().getPartnerId() ) );
             }
+        }
 
-            // get action
-            String actionId = messagePojo.getAction().getName();
-            ActionPojo action = Engine.getInstance().getActiveConfigurationAccessService()
-                    .getActionFromChoreographyByActionId( choreography, actionId );
-            if ( ( action == null ) && ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) ) {
-                failureInHeaderProcessing = true;
-                errorMessages.add( new ErrorDescriptor( "No matching action found in configuration: "
-                        + messagePojo.getAction().getName() ) );
-                responseMessageContext = protocolAdapter.createErrorAcknowledgement(
-                        Constants.ErrorMessageReasonCode.ACTION_NOT_PERMITTED, null, messageContext, null );
+        // if there was a failure, write to log an return
+        if ( failureInHeaderProcessing ) {
+            LOG.error( new LogMessage( "Error processing inbound message.", messagePojo ) );
+            for ( ErrorDescriptor errorDescriptor : errorMessages ) {
+                LOG.error( new LogMessage( "Error - " + errorDescriptor.getDescription(), messagePojo ) );
             }
+            return null;
+        }
 
-            if ( !failureInHeaderProcessing ) {
-                // get participant
-                try {
-                    participant = validateParticipant( messageContext );
-                    messageContext.setParticipant(participant);
-                    LOG.debug( new LogMessage( "matching participant found", messagePojo ) );
-                } catch ( NexusException e ) {
-                    e.printStackTrace();
-                    LOG.error( new LogMessage( "No matching participant found: "
-                            + messagePojo.getConversation().getPartner().getPartnerId(), messagePojo ) );
-                    responseMessageContext = protocolAdapter.createErrorAcknowledgement(
-                            Constants.ErrorMessageReasonCode.PARTICIPANT_NOT_FOUND, choreography, messageContext, null );
-                    failureInHeaderProcessing = true;
-                    errorMessages.add( new ErrorDescriptor( "No matching participant found in configuration: "
-                            + messagePojo.getConversation().getPartner().getPartnerId() ) );
-                }
-            }
-
-            // if there was a failure, write to log an return
-            if ( failureInHeaderProcessing ) {
-                LOG.error( new LogMessage( "Error processing inbound message.", messagePojo ) );
-                for ( ErrorDescriptor errorDescriptor : errorMessages ) {
-                    LOG.error( new LogMessage( "Error - " + errorDescriptor.getDescription(), messagePojo ) );
-                }
-                return null;
-            }
-
-            // header data are accessible, but may not be valid for the current conversation
-            if ( messageContext.getErrors() != null && messageContext.getErrors().size() > 0 ) {
-                //headerInvalid = true;
+        // header data are accessible, but may not be valid for the current conversation
+        if ( messageContext.getErrors() != null && messageContext.getErrors().size() > 0 ) {
+            //headerInvalid = true;
 // Shouldn't only the state machine set the status? Why does processing proceed after message/conv was marked as failed/error?
 //                messageContext.getMessagePojo().setStatus( Constants.MESSAGE_STATUS_FAILED );
 //                messageContext.getConversation().setStatus( Constants.CONVERSATION_STATUS_ERROR );
-            }
-
-            // determine message type for log messages
-            String msgType = messagePojo.getTypeName().toLowerCase();
-            
-            if ( LOG.isInfoEnabled() ) {
-                LOG.info( new LogMessage( "Received " + msgType + " (" + messagePojo.getMessageId()
-                        + ") from " + participant.getPartner().getPartnerId() + " for " + choreography.getName()
-                        + ( action != null ? "/" + action.getName() : "" ), messagePojo ) );
-            }
-
-            // handle different message types
-            if ( messagePojo.isNormal() ) {
-                responseMessageContext = handleNormalMessage( messageContext,
-                                                              participant,
-                                                              protocolAdapter,
-                                                              choreography,
-                                                              errorMessages );
-            } else if ( messagePojo.isAck() ) {
-                handleAcknowledgment( messageContext );
-            } else if ( messagePojo.isError() ) {
-                handleError( messageContext );
-            } else {
-                LOG.error( new LogMessage( "Message of unknown type (" + messagePojo.getType() + ") received", messagePojo ) );
-            }
-
-            return responseMessageContext;
         }
-    } // processMessage
+
+        // determine message type for log messages
+        String msgType = messagePojo.getTypeName().toLowerCase();
+        
+        if ( LOG.isInfoEnabled() ) {
+            LOG.info( new LogMessage( "Received " + msgType + " (" + messagePojo.getMessageId()
+                    + ") from " + participant.getPartner().getPartnerId() + " for " + choreography.getName()
+                    + ( action != null ? "/" + action.getName() : "" ), messagePojo ) );
+        }
+
+        // handle different message types
+        if ( messagePojo.isNormal() ) {
+            responseMessageContext = handleNormalMessage( messageContext,
+                                                          participant,
+                                                          protocolAdapter,
+                                                          choreography,
+                                                          errorMessages );
+        } else if ( messagePojo.isAck() ) {
+            handleAcknowledgment( messageContext );
+        } else if ( messagePojo.isError() ) {
+            handleError( messageContext );
+        } else {
+            LOG.error( new LogMessage( "Message of unknown type (" + messagePojo.getType() + ") received", messagePojo ) );
+        }
+
+        return responseMessageContext;
+    }
     
     /**
      * Handles dispatching of received message of type NORMAL.

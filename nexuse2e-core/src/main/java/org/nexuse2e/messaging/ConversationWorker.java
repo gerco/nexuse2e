@@ -132,40 +132,36 @@ public class ConversationWorker implements Runnable {
     }
 
     protected void processInbound(MessageContext messageContext) {
-        
-        TransactionService transactionService = Engine.getInstance().getTransactionService();
 
         if (LOG.isDebugEnabled()) {
             LOG.debug(new LogMessage("Processing inbound message..." + messageContext.getStateMachine().toString(), messageContext));
         }
         
-        Object syncObj = transactionService.getSyncObjectForConversation(messageContext.getConversation());
-        synchronized (syncObj) {
-            // Initiate the backend process
-            // We Synchronize the conversation so that -- with fast back-end
-            // systems -- response
-            // messages don't get processed earlier than the state machine
-            // transition.
-            try {
-                Engine.getInstance().getCurrentConfiguration()
-                        .getStaticBeanContainer().getBackendInboundDispatcher()
-                        .processMessage(messageContext);
-                messageContext.getStateMachine().processedBackend();
 
-            } catch (NexusException nex) {
-                LOG.error(new LogMessage("Error processing backend: " + nex.getMessage(), messageContext), nex);
-                try {
-                    messageContext.getStateMachine().processingFailed();
-                } catch (StateTransitionException e) {
-                    LOG.warn(new LogMessage(e.getMessage(), messageContext));
-                } catch (NexusException e) {
-                    LOG.error(new LogMessage(
-                            "Error while setting conversation status to ERROR: "
-                                    + e.getMessage(), messageContext), e);
-                }
-            } catch (StateTransitionException stex) {
-                LOG.warn(new LogMessage(stex.getMessage(), messageContext));
+        // Initiate the backend process
+        // We Synchronize the conversation so that -- with fast back-end
+        // systems -- response
+        // messages don't get processed earlier than the state machine
+        // transition.
+        try {
+            Engine.getInstance().getCurrentConfiguration()
+                    .getStaticBeanContainer().getBackendInboundDispatcher()
+                    .processMessage(messageContext);
+            messageContext.getStateMachine().processedBackend();
+
+        } catch (NexusException nex) {
+            LOG.error(new LogMessage("Error processing backend: " + nex.getMessage(), messageContext), nex);
+            try {
+                messageContext.getStateMachine().processingFailed();
+            } catch (StateTransitionException e) {
+                LOG.warn(new LogMessage(e.getMessage(), messageContext));
+            } catch (NexusException e) {
+                LOG.error(new LogMessage(
+                        "Error while setting conversation status to ERROR: "
+                                + e.getMessage(), messageContext), e);
             }
+        } catch (StateTransitionException stex) {
+            LOG.warn(new LogMessage(stex.getMessage(), messageContext));
         }
     }
 

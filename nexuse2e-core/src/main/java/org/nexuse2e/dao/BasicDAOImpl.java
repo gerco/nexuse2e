@@ -27,7 +27,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.HibernateException;
 import org.hibernate.LockMode;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Projections;
@@ -159,18 +158,6 @@ public class BasicDAOImpl extends HibernateDaoSupport implements BasicDAO {
                
     } // saveOrUpdateRecord
 
-    /**
-     * Convenience method for running a Hibernate find query.
-     * @param queryString The query String
-     * @return List with the retrieved entries.
-     * @throws HibernateException
-     */
-//    public List<?> getListThroughSessionFind( String queryString ) {
-//
-//        return getHibernateTemplate().find( queryString );
-//        
-//    } // getListThroughSessionFind
-
     
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.BasicDAO#getListThroughSessionFind(org.hibernate.criterion.DetachedCriteria, int, int)
@@ -192,29 +179,9 @@ public class BasicDAOImpl extends HibernateDaoSupport implements BasicDAO {
     public int getCountThroughSessionFind( DetachedCriteria criteria ) {
 
         criteria.setProjection( Projections.rowCount() );
-        return (Integer)getHibernateTemplate().findByCriteria( criteria ).get( 0 );
-        
+        Number n = (Number)getHibernateTemplate().findByCriteria( criteria ).get( 0 );
+        return (n == null ? 0 : n.intValue());
     }
-
-//    public static String getTimestampString( Date timestamp ) {
-//
-//        String result = null;
-//        SimpleDateFormat sdf = null;
-//        if ( iSeriesServer ) {
-//            sdf = new SimpleDateFormat( "yyyy-MM-dd-HH.mm.ss.SSS" );
-//        } else {
-//            sdf = new SimpleDateFormat( timestampPattern );
-//        }
-//        result = "'" + sdf.format( timestamp ) + "'";
-//        // Microsoft SQL server: use timestamp escape sequence to work with all region settings
-//        /*
-//         if ( msSqlServer ) {
-//         result = "{ts " + result + "}";
-//         }
-//         */
-//        // LOG.trace( "Timestamp: " + result );
-//        return result;
-//    } // getTimestampString
 
     /**
      * Create a timestamp string for created_date and lastmodified_date
