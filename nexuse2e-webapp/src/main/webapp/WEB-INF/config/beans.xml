@@ -21,10 +21,6 @@
   
 -->
 
-<!-- <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
- <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">-->
-<!--  <beans> -->
-
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:aop="http://www.springframework.org/schema/aop"
@@ -56,7 +52,7 @@
     <property name="locations">
       <list>
         <value>/WEB-INF/config/database.properties</value>
-        <value>/WEB-INF/config/bean.properties</value>
+        <value>/WEB-INF/config/bean_cluster.properties</value>
       </list>
     </property>
   </bean>
@@ -213,7 +209,7 @@
       <tx:method name="get*" read-only="true"/> 
       -->
       <tx:method name="*ForReport" propagation="SUPPORTS" isolation="READ_UNCOMMITTED"/>
-      <tx:method name="updateTransaction" propagation="REQUIRED" isolation="SERIALIZABLE"/> <!-- isolation="SERIALIZABLE" READ_COMMITTED-->
+      <tx:method name="updateTransaction" propagation="REQUIRED" isolation="READ_COMMITTED"/> <!-- isolation="SERIALIZABLE" READ_COMMITTED-->
       <tx:method name="*" propagation="REQUIRED" isolation="READ_COMMITTED"/> <!-- isolation="SERIALIZABLE" READ_COMMITTED-->
     </tx:attributes>
   </tx:advice>
