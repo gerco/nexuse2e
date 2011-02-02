@@ -280,8 +280,6 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
             // initialized - engineconfig loaded
             // started - transports and connectors are running.
 
-            //TODO checking cluster settings and status
-
             try {
                 initializeMime();
             } catch ( NexusException nEx ) {

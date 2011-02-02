@@ -248,7 +248,6 @@ public class GenericParamPojo implements NEXUSe2ePojo {
             return super.equals( obj );
         }
 
-        // TODO Auto-generated method stub
         return nxGenericParamId == ( (GenericParamPojo) obj ).nxGenericParamId;
     }
 

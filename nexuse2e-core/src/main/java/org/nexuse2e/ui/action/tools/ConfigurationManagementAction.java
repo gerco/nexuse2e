@@ -31,7 +31,6 @@ import org.nexuse2e.ui.action.NexusE2EAction;
 
 /**
  * Created: 07.01.2008
- * TODO Class documentation
  *
  * @author Jonas Reese
  * @version $LastChangedRevision:  $ - $LastChangedDate:  $ by $LastChangedBy:  $

@@ -70,7 +70,6 @@ public class RequestOverviewAction extends NexusE2EAction {
                 form.setImportCert( true );
                 form.setShowRequest( true );
             } catch ( IllegalArgumentException e ) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }

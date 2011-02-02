@@ -93,7 +93,6 @@ public class DatabaseServiceImpl extends AbstractService implements DatabaseServ
                 }
 
             } catch ( Exception e ) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -141,7 +140,6 @@ public class DatabaseServiceImpl extends AbstractService implements DatabaseServ
     @Override
     public void initialize( EngineConfiguration config ) throws InstantiationException {
 
-        // TODO Auto-generated method stub
         super.initialize( config );
     }
 

@@ -248,7 +248,6 @@ public class FrontendInboundDispatcher extends ChoreographyValidator implements 
                             responseMessageContext = null;
                             // generate ack for reliable connections
                             try {
-                             // TODO: review
                                 responseMessageContext = protocolAdapter.createAcknowledgement( choreography, messageContext );
                             } catch ( NexusException e ) {
                                 // Substituted an e.printStackTrace() by LOG.error().
@@ -565,7 +564,6 @@ public class FrontendInboundDispatcher extends ChoreographyValidator implements 
      */
     public void activate() {
 
-        // TODO Auto-generated method stub
         LOG.trace( "activate" );
 
     }
@@ -575,7 +573,6 @@ public class FrontendInboundDispatcher extends ChoreographyValidator implements 
      */
     public void deactivate() {
 
-        // TODO Auto-generated method stub
         LOG.trace( "deactivate" );
 
     }
@@ -585,7 +582,6 @@ public class FrontendInboundDispatcher extends ChoreographyValidator implements 
      */
     public boolean validate() {
 
-        // TODO Auto-generated method stub
         return false;
     }
 
@@ -594,7 +590,6 @@ public class FrontendInboundDispatcher extends ChoreographyValidator implements 
      */
     public BeanStatus getStatus() {
 
-        // TODO Auto-generated method stub
         return status;
     }
 

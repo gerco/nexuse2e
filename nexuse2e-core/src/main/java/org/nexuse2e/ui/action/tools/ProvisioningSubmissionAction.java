@@ -58,8 +58,6 @@ public class ProvisioningSubmissionAction extends NexusE2EAction {
         form.setChoreographies( list );
         form.setReceivers( receiverList );
 
-        // TODO Auto-generated method stub
-
         return success;
     } // executeNexusE2EAction
 

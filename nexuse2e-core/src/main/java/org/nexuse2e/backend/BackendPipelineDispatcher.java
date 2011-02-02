@@ -212,7 +212,6 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
                 org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_NORMAL );
         messagePojo.setOutbound( true );
 
-        //      TODO labelhandling
         if ( !StringUtils.isEmpty( label ) && ( label.indexOf( "|" ) != -1 ) ) {
             StringTokenizer st = new StringTokenizer( label, "|" );
             String name = st.nextToken();
@@ -358,7 +357,6 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
      */
     public void activate() {
 
-        // TODO Auto-generated method stub
         LOG.trace( "start" );
 
         status = Constants.BeanStatus.ACTIVATED;
@@ -369,7 +367,6 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
      */
     public void deactivate() {
 
-        // TODO Auto-generated method stub
         LOG.trace( "stop" );
 
         status = Constants.BeanStatus.INITIALIZED;
@@ -380,7 +377,6 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
      */
     public boolean validate() {
 
-        // TODO Auto-generated method stub
         return false;
     }
 
@@ -389,7 +385,6 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
      */
     public Constants.BeanStatus getStatus() {
 
-        // TODO Auto-generated method stub
         return status;
     }
 

@@ -96,7 +96,6 @@ public class DBCleanupService extends AbstractService implements SchedulerClient
             ( (SchedulingService) schedulingService ).registerClient( this, timepattern );
             super.start();
         } catch ( Throwable e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

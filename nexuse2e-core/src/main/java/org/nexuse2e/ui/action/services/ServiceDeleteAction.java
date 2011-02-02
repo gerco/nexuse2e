@@ -33,7 +33,6 @@ import org.nexuse2e.ui.form.ServiceForm;
 
 /**
  * Created: 12.01.2007
- * TODO Class documentation
  *
  * @author jonas.reese
  * @version $LastChangedRevision: 1891 $ - $LastChangedDate: 2007-01-28 00:46:00 +0100 (Sun, 28 Jan 2007) $ by $LastChangedBy: markus.breilmann $

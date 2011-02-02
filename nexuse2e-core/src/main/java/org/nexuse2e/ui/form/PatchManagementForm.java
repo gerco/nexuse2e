@@ -27,9 +27,6 @@ import org.apache.struts.upload.FormFile;
 import org.nexuse2e.patch.PatchBundles;
 
 /**
- * Created: 07.01.2008
- * TODO Class documentation
- *
  * @author Jonas Reese
  * @version $LastChangedRevision:  $ - $LastChangedDate:  $ by $LastChangedBy:  $
  */

@@ -69,7 +69,6 @@ public class DefaultProtocolAdapter implements org.nexuse2e.messaging.ProtocolAd
 
         acknowledgment.setType( org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ACK );
 
-        // TODO: verify that using this instance does not create problems
         acknowledgment.setAction( messageContext.getMessagePojo().getAction() );
 
         String messageId;

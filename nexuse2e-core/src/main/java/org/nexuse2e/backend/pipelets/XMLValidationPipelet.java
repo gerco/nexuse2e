@@ -230,7 +230,6 @@ public class XMLValidationPipelet extends AbstractPipelet {
             }
 
         } catch ( Exception e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return messageContext;
@@ -257,10 +256,8 @@ public class XMLValidationPipelet extends AbstractPipelet {
         try {
             partnerSpecificConfigurations = (PartnerSpecificConfigurations) digester.parse( configFileName );
         } catch ( IOException e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch ( SAXException e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return partnerSpecificConfigurations;
@@ -332,7 +329,6 @@ public class XMLValidationPipelet extends AbstractPipelet {
 
             System.out.println( "Result: " + baos.toString() );
         } catch ( Exception e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -386,13 +382,10 @@ public class XMLValidationPipelet extends AbstractPipelet {
             }
             result = document;
         } catch ( XPathExpressionException e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch ( DOMException e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch ( Exception e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return result;

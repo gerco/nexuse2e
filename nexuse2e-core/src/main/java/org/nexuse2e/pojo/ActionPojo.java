@@ -303,7 +303,6 @@ public class ActionPojo implements NEXUSe2ePojo {
             return super.equals( obj );
         }
 
-        // TODO Auto-generated method stub
         return nxActionId == ( (ActionPojo) obj ).nxActionId;
     }
 

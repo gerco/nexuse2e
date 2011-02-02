@@ -175,9 +175,6 @@ public class HTTPMessagePackager extends AbstractPipelet {
     }
 
     public void afterPropertiesSet() throws Exception {
-
-        // TODO Auto-generated method stub
-
     }
 
     @SuppressWarnings("unchecked")

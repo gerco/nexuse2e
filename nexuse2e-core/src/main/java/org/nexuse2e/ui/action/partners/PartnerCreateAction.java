@@ -34,9 +34,6 @@ import org.nexuse2e.ui.form.CollaborationPartnerForm;
 
 /**
  * @author guido.esch
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public class PartnerCreateAction extends NexusE2EAction {
 

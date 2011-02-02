@@ -230,7 +230,6 @@ abstract public class AbstractPipeline implements Pipeline {
 
             return minimumStatus;
         } catch ( Exception e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return BeanStatus.UNDEFINED;

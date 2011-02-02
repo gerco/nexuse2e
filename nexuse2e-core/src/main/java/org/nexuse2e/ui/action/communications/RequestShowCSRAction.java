@@ -37,9 +37,6 @@ import org.nexuse2e.util.CertificateUtil;
 
 /**
  * @author guido.esch
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public class RequestShowCSRAction extends NexusE2EAction {
 
@@ -74,7 +71,6 @@ public class RequestShowCSRAction extends NexusE2EAction {
             form.setRequestProperties( subject );
 
         } catch ( Exception e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         //request.getSession().setAttribute( Crumbs.CURRENT_LOCATION, Crumbs.REQUEST_SHOWCSR );

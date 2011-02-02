@@ -42,9 +42,6 @@ import org.nexuse2e.util.EncryptionUtil;
 
 /**
  * @author guido.esch
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public class RequestSavePKCS12FileAction extends NexusE2EAction {
 

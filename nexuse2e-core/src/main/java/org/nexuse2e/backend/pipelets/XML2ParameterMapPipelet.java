@@ -126,16 +126,13 @@ public class XML2ParameterMapPipelet extends AbstractPipelet {
 
             saxParser.parse( xmlSource, genericHandler );
         } catch ( ParserConfigurationException e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
 
             throw new NexusException( e );
         } catch ( SAXException e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             throw new NexusException( e );
         } catch ( IOException e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             throw new NexusException( e );
         }
@@ -222,7 +219,6 @@ public class XML2ParameterMapPipelet extends AbstractPipelet {
                 System.out.println( key + " - " + map.get( key ) );
             }
         } catch ( Exception e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

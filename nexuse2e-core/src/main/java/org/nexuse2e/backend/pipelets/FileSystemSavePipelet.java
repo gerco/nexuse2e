@@ -112,7 +112,6 @@ public class FileSystemSavePipelet extends AbstractPipelet {
             }
         }
 
-        // TODO Auto-generated method stub
         return messageContext;
     }
 

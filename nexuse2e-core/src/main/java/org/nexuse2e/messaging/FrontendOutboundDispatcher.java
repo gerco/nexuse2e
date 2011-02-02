@@ -152,7 +152,6 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
      */
     public boolean validate() {
 
-        // TODO Auto-generated method stub
         return false;
     }
 

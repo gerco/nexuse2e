@@ -38,9 +38,6 @@ import org.nexuse2e.pojo.MessagePojo;
  * If the passed message/context has already a message id, or conversation id assigned,
  * those ids will be kept, that is no newly generated ids will be assigned.
  * 
- * Created: 19.07.2007
- * TODO Class documentation
- *
  * @author jonas.reese
  * @version $LastChangedRevision$ - $LastChangedDate$ by $LastChangedBy$
  */

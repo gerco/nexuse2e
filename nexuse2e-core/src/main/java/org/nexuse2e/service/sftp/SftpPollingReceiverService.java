@@ -156,7 +156,6 @@ public class SftpPollingReceiverService extends AbstractService implements Recei
         user = getParameter( USER_PARAM_NAME );
         password = getParameter( PASSWORD_PARAM_NAME );
 
-        // TODO Auto-generated method stub
         super.initialize( config );
     }
 

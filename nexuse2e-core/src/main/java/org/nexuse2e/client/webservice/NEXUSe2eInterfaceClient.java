@@ -107,7 +107,6 @@ public class NEXUSe2eInterfaceClient {
 
             System.out.println( "NEXUSe2EInterfaceService done: " + result );
         } catch ( Throwable t ) {
-            // TODO Auto-generated catch block
             t.printStackTrace();
         }
 

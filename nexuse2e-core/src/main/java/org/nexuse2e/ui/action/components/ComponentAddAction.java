@@ -32,9 +32,6 @@ import org.nexuse2e.ui.form.ComponentForm;
 
 /**
  * @author guido.esch
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public class ComponentAddAction extends NexusE2EAction {
 

@@ -39,9 +39,6 @@ import org.nexuse2e.ui.action.NexusE2EAction;
 import org.nexuse2e.ui.form.LoggerForm;
 
 /**
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
- *
  * @author markus.breilmann
  */
 public class NotifierUpdateAction extends NexusE2EAction {

@@ -115,7 +115,6 @@ public class DatabaseLogger extends AbstractLogger {
                 logDao.saveLog( pojo );
             }
         } catch ( Exception ex ) {
-            //TODO call errorhandler ?
             ex.printStackTrace();
         }
     }

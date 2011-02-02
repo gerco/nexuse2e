@@ -110,7 +110,6 @@ public class PipelineUpdateAction extends NexusE2EAction {
                         return error;
                     }
                 } catch ( Exception e ) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
 

@@ -185,7 +185,6 @@ public class HTTPIntegrationPipelet extends AbstractPipelet {
                     try {
                         post.setRequestEntity( new StringRequestEntity( documentString, "text/xml", "UTF-8" ) );
                     } catch ( UnsupportedEncodingException e ) {
-                        // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
                 }

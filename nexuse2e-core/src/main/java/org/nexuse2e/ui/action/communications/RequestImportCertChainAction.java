@@ -164,10 +164,8 @@ public class RequestImportCertChainAction extends NexusE2EAction {
                 engineConfiguration.updateCertificates( updateableCertPojos );
 
             } catch ( Exception e ) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch ( Error e ) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
 

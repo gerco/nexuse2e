@@ -214,7 +214,6 @@ public abstract class AbstractFtpService extends AbstractService {
             LOG.debug( "fileChangeActive: " + fileChangeActive );
         }
 
-        // TODO Auto-generated method stub
         super.initialize( config );
     }
 

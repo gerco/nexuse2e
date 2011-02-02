@@ -322,7 +322,6 @@ public class NEXUSe2eInfoServiceImpl implements NEXUSe2EInfo {
                 }
             }
         } catch (NexusException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return p;
@@ -344,7 +343,6 @@ public class NEXUSe2eInfoServiceImpl implements NEXUSe2EInfo {
                 }
             }
         } catch (NexusException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return p;

@@ -141,7 +141,6 @@ public class BackendInboundDispatcher implements InitializingBean, Manageable {
      */
     public void activate() {
 
-        // TODO Auto-generated method stub
         LOG.trace( "activate" );
         status = BeanStatus.ACTIVATED;
     }
@@ -151,7 +150,6 @@ public class BackendInboundDispatcher implements InitializingBean, Manageable {
      */
     public void deactivate() {
 
-        // TODO Auto-generated method stub
         LOG.trace( "deactivate" );
         status = BeanStatus.INITIALIZED;
     }
@@ -161,7 +159,6 @@ public class BackendInboundDispatcher implements InitializingBean, Manageable {
      */
     public boolean validate() {
 
-        // TODO Auto-generated method stub
         return false;
     }
 
@@ -169,9 +166,6 @@ public class BackendInboundDispatcher implements InitializingBean, Manageable {
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
      */
     public void afterPropertiesSet() throws Exception {
-
-        // TODO Auto-generated method stub
-
     }
 
     /* (non-Javadoc)

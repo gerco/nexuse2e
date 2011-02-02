@@ -263,10 +263,8 @@ public class XMLDataMappingPipelet extends AbstractPipelet {
         try {
             mappingDefinitions = (MappingDefinitions) digester.parse( configFileName );
         } catch ( IOException e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch ( SAXException e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return mappingDefinitions;

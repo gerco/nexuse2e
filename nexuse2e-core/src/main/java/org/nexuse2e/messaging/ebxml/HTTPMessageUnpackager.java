@@ -169,15 +169,12 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
                 payloads.add( messagePayloadPojo );
             }
         } catch ( IOException e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             throw new IllegalArgumentException( e );
         } catch ( MessagingException e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             throw new IllegalArgumentException( e );
         } catch ( Exception e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             throw new IllegalArgumentException( e );
         }
@@ -260,9 +257,6 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
 
     
     public void afterPropertiesSet() throws Exception {
-
-        // TODO Auto-generated method stub
-
     }
 
     /* (non-Javadoc)

@@ -209,10 +209,8 @@ public class ProcessEngineLogAction extends ReportingAction {
             request.setAttribute( ATTRIBUTE_COLLECTION, logItems );
 
         } catch ( Exception e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch ( Error e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -231,7 +229,6 @@ public class ProcessEngineLogAction extends ReportingAction {
         try {
             startDate = sdf.parse( time );
         } catch ( ParseException e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -251,7 +248,6 @@ public class ProcessEngineLogAction extends ReportingAction {
         try {
             endDate = sdf.parse( time );
         } catch ( ParseException e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 

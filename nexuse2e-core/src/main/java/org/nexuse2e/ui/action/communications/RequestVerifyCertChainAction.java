@@ -29,7 +29,6 @@ import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import javax.servlet.http.HttpServletRequest;
@@ -54,10 +53,10 @@ import org.nexuse2e.util.CertificateUtil;
  */
 public class RequestVerifyCertChainAction extends NexusE2EAction {
 
-    private final static int MAX_CERTFILE_SIZE = 50000;
-    private static String    URL               = "request.error.url";
-    private static String    TIMEOUT           = "request.error.timeout";
-    private final static int BUFFERSIZE        = 4096;
+    protected final static int MAX_CERTFILE_SIZE = 50000;
+    protected static String    URL               = "request.error.url";
+    protected static String    TIMEOUT           = "request.error.timeout";
+    protected final static int BUFFERSIZE        = 4096;
 
     /* (non-Javadoc)
      * @see com.tamgroup.nexus.e2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping, org.apache.struts.action.ActionForm, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.apache.struts.action.ActionMessages)
@@ -102,8 +101,7 @@ public class RequestVerifyCertChainAction extends NexusE2EAction {
 
             certs = new ArrayList<X509Certificate>();
 //        System.out.println( "FileCount: " + zip.getChildren().length );
-            ZipEntry entry = null;
-            while((entry = zip.getNextEntry()) != null) {
+            while(zip.getNextEntry() != null) {
                 
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 
@@ -124,7 +122,6 @@ public class RequestVerifyCertChainAction extends NexusE2EAction {
                 }
             }
         } catch ( Exception e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             return incomplete;
         }
@@ -276,8 +273,6 @@ public class RequestVerifyCertChainAction extends NexusE2EAction {
 //    }
 
 //    /**
-//     * TODO: file size testing
-//     * 
 //     * @param is
 //     * @return
 //     */

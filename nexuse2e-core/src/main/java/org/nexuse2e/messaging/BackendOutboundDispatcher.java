@@ -140,7 +140,6 @@ public class BackendOutboundDispatcher extends ChoreographyValidator implements 
                     + " ms for retrieving messages, total time is " + ( System.currentTimeMillis() - startTime )
                     + " ms" );
         } catch ( NexusException e ) {
-           //TODO add message context for logging
             LOG.error( e );
         }
 
@@ -247,7 +246,6 @@ public class BackendOutboundDispatcher extends ChoreographyValidator implements 
      */
     public void activate() {
 
-        // TODO Auto-generated method stub
         LOG.trace( "activate" );
 
     }
@@ -257,7 +255,6 @@ public class BackendOutboundDispatcher extends ChoreographyValidator implements 
      */
     public void deactivate() {
 
-        // TODO Auto-generated method stub
         LOG.trace( "deactivate" );
 
     }
@@ -267,7 +264,6 @@ public class BackendOutboundDispatcher extends ChoreographyValidator implements 
      */
     public boolean validate() {
 
-        // TODO Auto-generated method stub
         return false;
     }
 

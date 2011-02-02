@@ -30,6 +30,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.mortbay.log.Log;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -37,9 +38,6 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
- *
  * @author markus.breilmann
  */
 public class MapBuilder extends DefaultHandler {
@@ -114,8 +112,7 @@ public class MapBuilder extends DefaultHandler {
             flatfileFileWriter.flush();
             flatfileFileWriter.close();
         } catch ( IOException e ) {
-            // TODO log stack trace
-            e.printStackTrace();
+            Log.warn( e );
         }
     }
 

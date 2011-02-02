@@ -403,7 +403,6 @@ public class ConnectionPojo implements NEXUSe2ePojo {
             return super.equals( obj );
         }
 
-        // TODO Auto-generated method stub
         return nxConnectionId == ( (ConnectionPojo) obj ).nxConnectionId;
     }
 
@@ -417,7 +416,6 @@ public class ConnectionPojo implements NEXUSe2ePojo {
             return super.hashCode();
         }
 
-        // TODO Auto-generated method stub
         return nxConnectionId;
     }
 

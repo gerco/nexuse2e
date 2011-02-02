@@ -51,8 +51,7 @@ public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
     /* (non-Javadoc)
      * @see org.nexuse2e.messaging.ProtocolAdapter#createAcknowledge(org.nexuse2e.messaging.MessageContext)
      */
-    public MessageContext createAcknowledgement( ChoreographyPojo choreography, MessageContext messageContext )
-            throws NexusException {
+    public MessageContext createAcknowledgement( ChoreographyPojo choreography, MessageContext messageContext ) throws NexusException {
 
         MessageContext ackMessageContext = null;
         try {
@@ -73,7 +72,6 @@ public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
 
         acknowledgment.setType( org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ACK );
 
-        // TODO: verify that using this instance does not create problems
         acknowledgment.setAction( messageContext.getMessagePojo().getAction() );
 
         String messageId;
@@ -90,8 +88,7 @@ public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
 
         acknowledgment.setReferencedMessage( messageContext.getMessagePojo() );
 
-        PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByPartnerId(
-                currentPartnerId );
+        PartnerPojo partner = Engine.getInstance().getActiveConfigurationAccessService().getPartnerByPartnerId( currentPartnerId );
 
         if ( partner == null ) {
             ackMessageContext.setMessagePojo( null );

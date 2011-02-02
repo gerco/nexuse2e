@@ -36,8 +36,6 @@ import org.nexuse2e.configuration.ConfigurationAccessService;
 import org.nexuse2e.pojo.PartnerPojo;
 
 /**
- * Created: 16.07.2007
- * TODO Class documentation
  *
  * @author jonas.reese
  * @version $LastChangedRevision$ - $LastChangedDate$ by $LastChangedBy$

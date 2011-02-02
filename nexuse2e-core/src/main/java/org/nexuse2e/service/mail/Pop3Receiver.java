@@ -209,7 +209,6 @@ public class Pop3Receiver extends AbstractService implements ReceiverAware, Runn
                     }
                 }
 
-                // TODO: handle exceptions
                 try {
                     MessageContext messageContext = new MessageContext();
                     messageContext.setData( msgs[msgNum] );
@@ -220,8 +219,7 @@ public class Pop3Receiver extends AbstractService implements ReceiverAware, Runn
                         LOG.error( "no synchronous message transmission available for email connections!" );
                     }
                 } catch ( Exception e ) {
-                    LOG.warn( "Error processing email message: " + e );
-                    e.printStackTrace();
+                    LOG.warn( "Error processing email message: ", e );
                 }
                 msgs[msgNum].setFlag( Flags.Flag.DELETED, true );
             }

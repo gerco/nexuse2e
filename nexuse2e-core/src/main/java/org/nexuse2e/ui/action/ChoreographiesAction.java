@@ -39,9 +39,6 @@ import org.nexuse2e.ui.form.ChoreographyForm;
 
 /**
  * @author guido.esch
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public class ChoreographiesAction extends NexusE2EAction {
 

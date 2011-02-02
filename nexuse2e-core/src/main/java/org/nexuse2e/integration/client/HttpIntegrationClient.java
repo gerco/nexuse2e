@@ -60,10 +60,10 @@ public class HttpIntegrationClient {
         String participantId = null;
         String actionId = null;
         String primaryKey = null;
-        String conversationId = null;
+        //String conversationId = null;
         String fileName = null;
         String content = null;
-        boolean newConversation = false;
+        //boolean newConversation = false;
         URL url = null;
 
         /*
@@ -123,10 +123,10 @@ public class HttpIntegrationClient {
                 } else if ( args[i].equalsIgnoreCase( "-key" ) ) {
                     primaryKey = args[i + 1];
                 } else if ( args[i].equalsIgnoreCase( "-conversation" ) ) {
-                    conversationId = args[i + 1];
+                    //conversationId = args[i + 1];
                 } else if ( args[i].equalsIgnoreCase( "-newConversation" ) ) {
-                    conversationId = args[i + 1];
-                    newConversation = true;
+                    //conversationId = args[i + 1];
+                    //newConversation = true;
                 }
             }
         } catch ( Exception e ) {
@@ -161,7 +161,6 @@ public class HttpIntegrationClient {
             int result = client.executeMethod( method );
             System.out.println( "HTTP result is " + result + "(\n" + method.getResponseBodyAsString() + "\n)" );
         } catch ( IOException e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 

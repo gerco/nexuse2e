@@ -240,7 +240,6 @@ public class ConversationPojo implements NEXUSe2ePojo {
             return super.hashCode();
         }
 
-        // TODO Auto-generated method stub
         return nxConversationId;
     }
 

@@ -308,7 +308,6 @@ public class HeaderSerializer extends AbstractPipelet {
         } catch ( NexusException e ) {
             throw e;
         } catch ( Exception e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -501,9 +500,6 @@ public class HeaderSerializer extends AbstractPipelet {
     } // createPartyElement
 
     public void afterPropertiesSet() throws Exception {
-
-        // TODO Auto-generated method stub
-
     }
 
 }

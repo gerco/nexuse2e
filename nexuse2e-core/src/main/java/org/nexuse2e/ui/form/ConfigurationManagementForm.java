@@ -24,7 +24,6 @@ import org.apache.struts.upload.FormFile;
 
 /**
  * Created: 07.01.2008
- * TODO Class documentation
  *
  * @author Jonas Reese
  * @version $LastChangedRevision:  $ - $LastChangedDate:  $ by $LastChangedBy:  $

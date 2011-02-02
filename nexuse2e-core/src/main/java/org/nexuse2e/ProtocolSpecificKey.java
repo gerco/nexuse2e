@@ -68,7 +68,6 @@ public class ProtocolSpecificKey implements Serializable {
     @Override
     public String toString() {
 
-        // TODO Auto-generated method stub
         return new StringBuilder().append( "ProtocolKey: " ).append( communicationProtocolId ).append( " " ).append(
                 communicationProtocolVersion ).append( " (" ).append( transportProtocolId ).append( ")" ).toString();
     }

@@ -38,7 +38,6 @@ import org.nexuse2e.ui.form.ConfigurationManagementForm;
 
 /**
  * Created: 07.01.2008
- * TODO Class documentation
  *
  * @author Jonas Reese
  * @version $LastChangedRevision:  $ - $LastChangedDate:  $ by $LastChangedBy:  $

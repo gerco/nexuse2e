@@ -172,7 +172,6 @@ public class UnZipPipelet extends AbstractPipelet {
             }
 
         } catch ( Exception e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         System.out.println( "Done!" );

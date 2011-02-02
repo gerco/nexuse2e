@@ -183,7 +183,6 @@ public class LabelGeneratorPipelet extends AbstractPipelet {
             e.printStackTrace();
         }
 
-        // TODO Auto-generated method stub
         return messageContext;
     }
 }

@@ -133,8 +133,6 @@ public class PipelineForm extends ActionForm {
             }
         }
         setPipelets( pipeletList );
-
-        // TODO: timer settings
     }
 
     /**
@@ -175,8 +173,6 @@ public class PipelineForm extends ActionForm {
         } else if ( pipeline.isFrontend() ) {
             LOG.error( "No valid TRP found!" );
         }
-        
-        //TODO: timer settings
 
         return pipeline;
     }

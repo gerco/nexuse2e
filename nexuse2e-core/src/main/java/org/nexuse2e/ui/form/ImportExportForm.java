@@ -30,9 +30,6 @@ import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.PartnerPojo;
 
 /**
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
- *
  * @author markus.breilmann
  */
 public class ImportExportForm extends ActionForm {

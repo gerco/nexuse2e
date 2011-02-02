@@ -198,10 +198,8 @@ public class FlatFileParserPipelet extends AbstractPipelet {
         try {
             partnerSpecificConfigurations = (PartnerSpecificConfigurations) digester.parse( configFileName );
         } catch ( IOException e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch ( SAXException e ) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return partnerSpecificConfigurations;

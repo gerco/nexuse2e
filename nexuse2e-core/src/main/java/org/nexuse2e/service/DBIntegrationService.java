@@ -290,7 +290,6 @@ public class DBIntegrationService extends AbstractService implements SchedulerCl
             try {
                 dbService.releaseDatabaseConnection( connection );
             } catch ( SQLException e ) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }

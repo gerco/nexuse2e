@@ -41,9 +41,6 @@ import org.nexuse2e.ui.form.CollaborationPartnerForm.Certificate;
 
 /**
  * @author guido.esch
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public class PartnerCertificateListAction extends NexusE2EAction {
 

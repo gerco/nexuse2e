@@ -157,17 +157,11 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
                 payloads.add( messagePayloadPojo );
             }
         } catch ( IOException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            throw new IllegalArgumentException( e.getMessage() );
+            throw new IllegalArgumentException( e );
         } catch ( MessagingException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            throw new IllegalArgumentException( e.getMessage() );
+            throw new IllegalArgumentException( e );
         } catch ( Exception e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            throw new IllegalArgumentException( e.getMessage() );
+            throw new IllegalArgumentException( e );
         }
 
         return messageContext;
@@ -208,10 +202,10 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
             } // if
         } catch ( javax.mail.MessagingException mEx ) {
             LOG.error( "Error reading message: " + mEx + ( ( data != null ) ? "\n" + new String( data ) : "" ), mEx );
-            throw new IllegalArgumentException( mEx.toString() );
+            throw new IllegalArgumentException( mEx );
         } catch ( IOException ioEx ) {
             LOG.error( "Error reading message: " + ioEx + ( ( data != null ) ? "\n" + new String( data ) : "" ), ioEx );
-            throw new IllegalArgumentException( ioEx.toString() );
+            throw new IllegalArgumentException( ioEx );
         }
 
         return messageBodyParts;
@@ -268,9 +262,6 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
     }
 
     public void afterPropertiesSet() throws Exception {
-
-        // TODO Auto-generated method stub
-
     }
 
     /* (non-Javadoc)

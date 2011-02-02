@@ -38,9 +38,6 @@ import org.nexuse2e.ui.form.CertificatePromotionForm;
 
 /**
  * @author guido.esch
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public class StagingPromoteCertificateAction extends NexusE2EAction {
 

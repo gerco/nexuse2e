@@ -37,7 +37,6 @@ import org.nexuse2e.pojo.MessagePojo;
 
 /**
  * Created: 19.07.2007
- * TODO Class documentation
  *
  * @author jonas.reese
  * @version $LastChangedRevision$ - $LastChangedDate$ by $LastChangedBy$

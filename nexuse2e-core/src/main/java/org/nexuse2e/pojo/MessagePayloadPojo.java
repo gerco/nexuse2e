@@ -238,7 +238,6 @@ public class MessagePayloadPojo implements NEXUSe2ePojo {
         if ( nxMessagePayloadId == 0 ) {
             return super.equals( obj );
         }
-        // TODO Auto-generated method stub
         return nxMessagePayloadId == ( (MessagePayloadPojo) obj ).nxMessagePayloadId;
     }
 
@@ -252,7 +251,6 @@ public class MessagePayloadPojo implements NEXUSe2ePojo {
             return super.hashCode();
         }
 
-        // TODO Auto-generated method stub
         return nxMessagePayloadId;
     }
 

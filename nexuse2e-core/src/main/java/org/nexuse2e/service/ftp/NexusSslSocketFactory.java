@@ -30,7 +30,6 @@ import org.apache.ftpserver.socketfactory.FtpSocketFactory;
 
 /**
  * Created: 16.07.2007
- * TODO Class documentation
  *
  * @author jonas.reese
  * @version $LastChangedRevision$ - $LastChangedDate$ by $LastChangedBy$
