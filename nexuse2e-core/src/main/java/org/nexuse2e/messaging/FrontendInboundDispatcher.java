@@ -466,9 +466,10 @@ public class FrontendInboundDispatcher extends ChoreographyValidator implements 
 
 
     /**
-     * @param messageContext
+     * Process a synchronous reply message.
+     * @param messageContext The synchronous reply message (not <code>null</code>).
      */
-    protected void processSynchronousReplyMessage( MessageContext messageContext ) {
+    public void processSynchronousReplyMessage( MessageContext messageContext ) {
 
         synchronousReplies.put( messageContext.getMessagePojo().getMessageId(), messageContext );
         synchronized ( synchronousReplies ) {

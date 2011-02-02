@@ -55,6 +55,7 @@ import org.nexuse2e.dao.ConfigDAO;
 import org.nexuse2e.integration.NEXUSe2eInterface;
 import org.nexuse2e.integration.NEXUSe2eInterfaceImpl;
 import org.nexuse2e.messaging.BackendOutboundDispatcher;
+import org.nexuse2e.messaging.MessageWorker;
 import org.nexuse2e.messaging.TimestampFormatter;
 import org.nexuse2e.messaging.ebxml.EBXMLTimestampFormatter;
 import org.nexuse2e.messaging.mime.binary_base64;
@@ -93,6 +94,8 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
 
     private TransactionService               transactionService;
     private ConfigDAO                        configDao;
+    
+    private MessageWorker                    messageWorker;
     
     private Map<String, IdGenerator>         idGenrators                    = null;
 
@@ -1396,6 +1399,25 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     public void setTransactionService( TransactionService transactionService ) {
     
         this.transactionService = transactionService;
+    }
+    
+    /**
+     * Gets the <code>MessageWorker</code> implementation that is used
+     * by this engine.
+     * @return The <code>MessageWorker</code> implementation. Caller can assume that
+     * a non-<code>null</code> value is returned if engine is configured properly..
+     */
+    public MessageWorker getMessageWorker() {
+        return messageWorker;
+    }
+    
+    /**
+     * Sets the <code>MessageWorker</code> used by this engine.
+     * @param messageWorker The message worker implementation to be used.
+     * Shall not be <code>null</code>.
+     */
+    public void setMessageWorker(MessageWorker messageWorker) {
+        this.messageWorker = messageWorker;
     }
 
 	/**

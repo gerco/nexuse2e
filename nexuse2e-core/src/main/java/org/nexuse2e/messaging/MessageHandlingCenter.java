@@ -77,9 +77,8 @@ public class MessageHandlingCenter implements MessageProcessor {
      * @param messageContext
      */
     protected void queue( MessageContext messageContext ) {
-        if ( !( messageContext.getMessagePojo().isOutbound() && messageContext.getParticipant().getConnection()
-                .isHold() ) ) {
-            ConversationWorker.queue( messageContext );
+        if (!(messageContext.getMessagePojo().isOutbound() && messageContext.getParticipant().getConnection().isHold())) {
+            Engine.getInstance().getMessageWorker().queue( messageContext );
         }
     }
 

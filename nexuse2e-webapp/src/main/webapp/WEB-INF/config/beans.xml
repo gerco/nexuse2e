@@ -78,6 +78,11 @@
   <bean id="baseConfigurationProvider" class="org.nexuse2e.configuration.XmlBaseConfigurationProvider">
     <constructor-arg value="${configuration.base.xmlFile}"/>
   </bean>
+  
+  <bean id="messageWorker" class="org.nexuse2e.messaging.impl.MessageWorkerImpl">
+    <!-- Comment out following line to set message threadpool size. Default is 10 -->
+    <!-- <constructor-arg value="10" /> -->
+  </bean>
 
   <!-- Engine  -->
   <bean id="engine" class="org.nexuse2e.Engine">
@@ -89,6 +94,7 @@
     <property name="databaseDialect" value="${database.dialect}" />
     <property name="transactionService" ref="transactionService" />
     <property name="configDao" ref="configDao" />
+    <property name="messageWorker" ref="messageWorker" />
     <property name="defaultCharEncoding" value="${default.charEncoding}" />
   </bean>
 

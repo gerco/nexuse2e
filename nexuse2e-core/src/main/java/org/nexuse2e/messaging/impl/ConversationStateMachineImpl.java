@@ -292,6 +292,10 @@ public class ConversationStateMachineImpl implements ConversationStateMachine {
                     message.setModifiedDate( endDate );
                     message.setEndDate( endDate );
                     conversation.addMessage( message );
+                    // make sure outbound normal message is set to SENT
+                    if (referencedMessage.isOutbound()) { // safety first: should always be true
+                        referencedMessage.setStatus( Constants.MESSAGE_STATUS_SENT );
+                    }
                     referencedMessage.setModifiedDate( endDate );
                     referencedMessage.setEndDate( endDate );
                 } else {
