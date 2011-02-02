@@ -52,7 +52,7 @@
     <property name="locations">
       <list>
         <value>/WEB-INF/config/database.properties</value>
-        <value>/WEB-INF/config/bean_cluster.properties</value>
+        <value>/WEB-INF/config/bean.properties</value>
       </list>
     </property>
   </bean>
