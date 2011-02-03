@@ -186,7 +186,7 @@ public class PipelineUpdateAction extends NexusE2EAction {
             return actionMapping.findForward( "configReturn" );
         }
 
-        form.getProperties( pipeline );
+        form.getProperties( pipeline, engineConfiguration );
         engineConfiguration.updatePipeline( pipeline );
 
         form.setSubmitaction( "" );

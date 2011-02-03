@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMapping;
 import org.nexuse2e.Engine;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.PipelinePojo;
 
@@ -114,17 +115,15 @@ public class ChoreographyActionForm extends ActionForm {
         }
     }
 
-    public ActionPojo getProperties( ActionPojo action ) {
+    public ActionPojo getProperties( ActionPojo action, EngineConfiguration config ) {
 
         action.setDocumentType( getDocumentType() );
         action.setName( getActionId() );
         action.setStart( isStartAction() );
         action.setEnd( isTerminationAction() );
         action.setPollingRequired( isPollingRequired() );
-        action.setInboundPipeline( Engine.getInstance().getActiveConfigurationAccessService()
-                .getPipelinePojoByNxPipelineId( getBackendInboundPipelineId() ) );
-        action.setOutboundPipeline( Engine.getInstance().getActiveConfigurationAccessService()
-                .getPipelinePojoByNxPipelineId( getBackendOutboundPipelineId() ) );
+        action.setInboundPipeline( config.getPipelinePojoByNxPipelineId( getBackendInboundPipelineId() ) );
+        action.setOutboundPipeline( config.getPipelinePojoByNxPipelineId( getBackendOutboundPipelineId() ) );
         if ( getStatusUpdatePipelineId() != 0 ) {
             action.setStatusUpdatePipeline( Engine.getInstance().getActiveConfigurationAccessService()
                     .getPipelinePojoByNxPipelineId( getStatusUpdatePipelineId() ) );

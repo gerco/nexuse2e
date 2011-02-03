@@ -120,7 +120,7 @@ public class NexusRemote {
                 }
                 nexusE2EServer.triggerSendingMessage( rmiConversationID, actionId, primaryKey );
             } else {
-                nexusE2EServer.triggerSendingNewMessage( choreographyId, participantId, actionId, primaryKey );
+                nexusE2EServer.triggerSendingNewMessage( choreographyId, participantId, actionId, null, primaryKey );
             }
 
 

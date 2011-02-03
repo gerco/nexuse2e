@@ -33,6 +33,7 @@ import org.nexuse2e.Configurable;
 import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.ConfigurationUtil;
 import org.nexuse2e.configuration.Constants;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.pojo.ComponentPojo;
@@ -135,11 +136,7 @@ public class PipelineForm extends ActionForm {
         setPipelets( pipeletList );
     }
 
-    /**
-     * @param component
-     * @return
-     */
-    public PipelinePojo getProperties( PipelinePojo pipeline ) {
+    public PipelinePojo getProperties( PipelinePojo pipeline, EngineConfiguration config ) {
 
         pipeline.setNxPipelineId( getNxPipelineId() );
         pipeline.setName( getName() );
@@ -167,7 +164,7 @@ public class PipelineForm extends ActionForm {
             }
         }
 
-        TRPPojo trpPojo = Engine.getInstance().getActiveConfigurationAccessService().getTrpByNxTrpId( nxTrpId );
+        TRPPojo trpPojo = config.getTrpByNxTrpId( nxTrpId );
         if ( trpPojo != null ) {
             pipeline.setTrp( trpPojo );
         } else if ( pipeline.isFrontend() ) {

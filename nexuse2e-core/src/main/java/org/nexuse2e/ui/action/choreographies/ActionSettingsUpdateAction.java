@@ -79,7 +79,7 @@ public class ActionSettingsUpdateAction extends NexusE2EAction {
                         nxChoreographyId );
                 actionPojo = engineConfiguration.getActionFromChoreographyByNxActionId(
                         choreography, nxActionId );
-                form.getProperties( actionPojo );
+                form.getProperties( actionPojo, engineConfiguration );
                 for ( int i = 0; i < selectedFollowUps.length; i++ ) {
                     LOG.trace( "selected: " + selectedFollowUps[i] );
                     Iterator<FollowUpActionPojo> followI = actionPojo.getFollowUpActions().iterator();

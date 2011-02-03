@@ -184,11 +184,11 @@ public class WSClientService extends AbstractService implements SenderAware {
                 };
                 outProps.put( WSHandlerConstants.PW_CALLBACK_REF, callback );
                 WSS4JOutInterceptor wssOut = new WSS4JOutInterceptor( outProps );
-                cxfEndpoint.getOutInterceptors().add( wssOut );
                 if (LOG.isTraceEnabled()) {
                     cxfEndpoint.getOutInterceptors().add( new LoggingOutInterceptor() );
                     cxfEndpoint.getInInterceptors().add( new LoggingInInterceptor() );
                 }
+                cxfEndpoint.getOutInterceptors().add( wssOut );
             } else {
                 // basic auth
                 LOG.debug( "Using basic auth" );

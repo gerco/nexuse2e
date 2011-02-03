@@ -19,6 +19,7 @@
  */
 package org.nexuse2e.configuration;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Comparator;
 import java.util.Date;
@@ -30,7 +31,9 @@ import org.apache.commons.beanutils.PropertyUtils;
  * @author gesch
  *
  */
-public class GenericComparator<T> implements Comparator<T> {
+public class GenericComparator<T> implements Comparator<T>, Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private boolean  ascending;
     private String[] fieldname;

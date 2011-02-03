@@ -78,7 +78,7 @@ public class ActionCreateAction extends NexusE2EAction {
 
             if (errors.isEmpty()) {
                 action.setChoreography( choreography );
-                form.getProperties( action );
+                form.getProperties( action, engineConfiguration );
                 Date date = new Date();
                 action.setCreatedDate( date );
                 action.setModifiedDate( date );

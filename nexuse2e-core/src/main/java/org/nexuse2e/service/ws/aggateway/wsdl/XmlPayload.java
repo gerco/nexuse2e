@@ -18,7 +18,7 @@ import org.w3c.dom.Element;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;any/>
+ *         &lt;any processContents='lax'/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -41,8 +41,8 @@ public class XmlPayload {
      * 
      * @return
      *     possible object is
-     *     {@link Object }
      *     {@link Element }
+     *     {@link Object }
      *     
      */
     public Object getAny() {
@@ -54,8 +54,8 @@ public class XmlPayload {
      * 
      * @param value
      *     allowed object is
-     *     {@link Object }
      *     {@link Element }
+     *     {@link Object }
      *     
      */
     public void setAny(Object value) {

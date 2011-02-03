@@ -149,11 +149,11 @@ public class WSDispatcherService extends AbstractService implements ReceiverAwar
                 };
                 inProps.put( WSHandlerConstants.PW_CALLBACK_REF, callback );
                 WSS4JInInterceptor wssIn = new WSS4JInInterceptor( inProps );
-                cxfEndpoint.getInInterceptors().add( wssIn );
                 if (LOG.isTraceEnabled()) {
                     cxfEndpoint.getOutInterceptors().add( new LoggingOutInterceptor() );
                     cxfEndpoint.getInInterceptors().add( new LoggingInInterceptor() );
                 }
+                cxfEndpoint.getInInterceptors().add( wssIn );
             }
             
             super.start();

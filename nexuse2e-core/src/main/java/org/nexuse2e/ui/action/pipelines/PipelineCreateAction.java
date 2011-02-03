@@ -55,7 +55,7 @@ public class PipelineCreateAction extends NexusE2EAction {
         }
 
         PipelinePojo pipeline = new PipelinePojo();
-        form.getProperties( pipeline );
+        form.getProperties( pipeline, engineConfiguration );
         pipeline.setFrontend( form.isFrontend() );
         engineConfiguration.getBackendPipelinePojos(
                 Constants.PIPELINE_TYPE_ALL, null ).add( pipeline );

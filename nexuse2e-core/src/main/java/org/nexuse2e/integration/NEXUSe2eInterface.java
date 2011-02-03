@@ -46,9 +46,8 @@ public interface NEXUSe2eInterface extends Remote {
      * @return The ID of the newly created conversation.
      * 
      * @deprecated Method is not required any more. Use sendNewStringMessage when sending the first message in conversation.
-     */
-    @WebMethod(operationName="createConversation1", exclude=true)
     public String createConversation( String choreographyId, String businessPartnerId ) throws RemoteException, NexusException;
+     */
 
     /**
      * Create a new conversation (instance of a choreography) in order to submit messages to a specific partner.
@@ -119,10 +118,10 @@ public interface NEXUSe2eInterface extends Remote {
      * @param actionId The ID of the action to trigger in the choreography.
      * @param primaryKey The primary key used to retrieve/create the payload.
      * @return The ID of the conversation that was created for this message.
-     */
     @WebMethod(operationName="triggerSendingNewMessage1", exclude = true)
     public String triggerSendingNewMessage( String choreographyId, String businessPartnerId, String actionId,
             Object primaryKey ) throws RemoteException, NexusException;
+     */
 
     /**
      * Trigger sending a message by providing some sort of primary key that allows the <code>Pipelet</code>
