@@ -85,7 +85,6 @@ public class ForwardPipelinesPatch implements Patch {
     }
 
     public boolean isExecutedSuccessfully() {
-        // TODO Auto-generated method stub
         return false;
     }
 
