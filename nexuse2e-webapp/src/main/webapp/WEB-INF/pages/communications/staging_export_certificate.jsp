@@ -46,12 +46,12 @@
             <td colspan="2" class="NEXUSSection">Certificate Format</td>            
             </tr>
             <tr>
-                <td class="NEXUSValue"><html:radio name="protectedFileAccessForm" property="format" value="1"/></td>
-                <td class="NEXUSName">PEM</td>
+                <td class="NEXUSName"><html:radio name="protectedFileAccessForm" property="format" value="1"/> PEM</td>
+                <td class="NEXUSValue"></td>
             </tr>
             <tr>
-                <td class="NEXUSValue"><html:radio name="protectedFileAccessForm" property="format" value="2"/></td>
-                <td class="NEXUSName">DER</td>
+                <td class="NEXUSName"><html:radio name="protectedFileAccessForm" property="format" value="2"/> DER</td>
+                <td class="NEXUSValue"></td>
             </tr>
         </table>
         <table class="NEXUS_TABLE" width="100%">
@@ -59,16 +59,31 @@
             <td colspan="2" class="NEXUSSection">Elements</td>            
             </tr>
             <tr>
-                <td class="NEXUSValue"><html:radio name="protectedFileAccessForm" property="content" value="1"/></td>
-                <td class="NEXUSName">Certificate</td>
+                <td class="NEXUSName"><html:radio name="protectedFileAccessForm" property="content" value="1"/> Certificate</td>
+                <td class="NEXUSValue"></td>
             </tr>
             <tr>
-                <td class="NEXUSValue"><html:radio name="protectedFileAccessForm" property="content" value="2"/></td>
-                <td class="NEXUSName">Certificate and required CA Certificates including Fingerprints for older Nexus Installs (Zip-File)</td>
+                <td class="NEXUSName"><html:radio name="protectedFileAccessForm" property="content" value="2"/> ZIP File</td>
+                <td class="NEXUSValue">Certificate and required CA Certificates including Fingerprints (required for older NEXUSe2e versions)</td>
             </tr>
             <tr>
-                <td class="NEXUSValue"><html:radio name="protectedFileAccessForm" property="content" value="3"/></td>
-                <td class="NEXUSName">Complete Keystore with PrivateKey as PKCS12</td>
+                <td class="NEXUSName" valign="top"><html:radio name="protectedFileAccessForm" property="content" value="3"/> PKCS12 Keystore</td>
+                <td class="NEXUSValue">
+                	<div>
+                		Complete certificate chain with private key
+                	</div>
+                	<br/>
+                	<table class="NEXUS_TABLE">
+                		<tr>
+                			<td><nobr>Password (default is 'nexus'): </nobr></td>
+                			<td width="100%"><html:password property="password" value="nexus"/></td>
+               			</tr>
+                		<tr>
+                			<td><nobr>Confirm password:</nobr></td>
+                			<td width="100%"><html:password property="verifyPwd" value="nexus"/></td>
+               			</tr>
+                	</table>
+                </td>
             </tr>
         </table>
         <table class="NEXUS_TABLE" width="100%">
@@ -76,11 +91,11 @@
             <td colspan="2" class="NEXUSSection">Destination</td>            
             </tr>
             <tr>
-                <td class="NEXUSName"><html:radio name="protectedFileAccessForm" property="status" value="1"/>Target File (on the Server)</td>
+                <td class="NEXUSName"><html:radio name="protectedFileAccessForm" property="status" value="1"/> Target File (on the Server)</td>
                 <td class="NEXUSValue"><html:text name="protectedFileAccessForm" property="certficatePath" size="60"/></td>
             </tr>
             <tr>
-                <td class="NEXUSName"><html:radio name="protectedFileAccessForm" property="status" value="2"/>Save as...</td>
+                <td class="NEXUSName"><html:radio name="protectedFileAccessForm" property="status" value="2"/> Save as...</td>
                 <td class="NEXUSValue">&nbsp;</td>
             </tr>                        
         </table>

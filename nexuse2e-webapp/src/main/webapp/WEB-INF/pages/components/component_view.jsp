@@ -49,7 +49,7 @@
         <table class="NEXUS_TABLE" width="100%">
             <tr>
                 <td class="NEXUSName">Name</td>
-                <td class="NEXUSValue"><html:text property="name" size="50"/></td>
+                <td class="NEXUSValue"><html:text property="name" size="50" maxlength="64"/></td>
             </tr>
           <logic:notEqual name="componentForm" property="nxComponentId" value="0">
             <tr>
@@ -59,11 +59,11 @@
           </logic:notEqual>
             <tr>
                 <td class="NEXUSName">Class Name</td>
-                <td class="NEXUSValue"><html:text property="className" size="50"/></td>
+                <td class="NEXUSValue"><html:text property="className" size="50" maxlength="1024"/></td>
             </tr>
             <tr>
                 <td class="NEXUSName">Description</td>
-                <td class="NEXUSValue"><html:text property="description" size="50"/></td>
+                <td class="NEXUSValue"><html:text property="description" size="50" maxlength="64"/></td>
             </tr>
            
             <logic:equal name="componentForm" property="type" value="1">
