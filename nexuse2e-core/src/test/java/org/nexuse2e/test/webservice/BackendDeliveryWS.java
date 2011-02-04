@@ -25,9 +25,6 @@ import org.apache.log4j.Logger;
 import org.nexuse2e.integration.BackendDeliveryInterface;
 
 /**
- * Created: 22.08.2007
- * TODO Class documentation
- *
  * @author jonas.reese
  * @version $LastChangedRevision$ - $LastChangedDate$ by $LastChangedBy$
  */

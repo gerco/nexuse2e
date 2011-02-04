@@ -34,7 +34,6 @@ import org.springframework.web.servlet.mvc.Controller;
 
 /**
  * Created: 25.09.2007
- * TODO Class documentation
  *
  * @author jonas.reese
  * @version $LastChangedRevision$ - $LastChangedDate$ by $LastChangedBy$
@@ -48,7 +47,6 @@ public class TrafficLogger implements Controller, ApplicationContextAware {
                 System.out.println( s );
             }
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return null;
