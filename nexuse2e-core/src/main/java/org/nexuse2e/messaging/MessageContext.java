@@ -225,6 +225,7 @@ public class MessageContext implements Serializable {
         clone.setRoutingData(this.getRoutingData());
         clone.setErrors(this.getErrors() == null ? null : new ArrayList<ErrorDescriptor>(this.getErrors()));
         clone.setRequestMessage(this.getRequestMessage());
+        clone.setFirstTimeInQueue(this.isFirstTimeInQueue());
         return clone;
     }
 

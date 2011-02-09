@@ -178,8 +178,8 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                 messagePojo.setRetries(messageContext.isFirstTimeInQueue() ? 0 : messagePojo.getRetries() + 1);
                 messageContext.setFirstTimeInQueue(false);
 
+                messageContext.getStateMachine().sendingMessage();
                 returnedMessageContext = pipeline.processMessage( messageContext );
-                
                 messageContext.getStateMachine().sentMessage();
                 
                 if (!messagePojo.isAck()) {

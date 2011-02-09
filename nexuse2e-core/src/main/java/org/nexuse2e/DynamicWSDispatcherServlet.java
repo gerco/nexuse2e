@@ -22,10 +22,7 @@ package org.nexuse2e;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 
-import org.apache.cxf.Bus;
-import org.apache.cxf.BusFactory;
-import org.apache.cxf.transport.servlet.CXFNonSpringServlet;
-import org.apache.log4j.Logger;
+import org.apache.cxf.transport.servlet.CXFServlet;
 
 /**
  * This subclass of <code>CXFNonSpringServlet</code> keeps a reference on the instance
@@ -35,8 +32,8 @@ import org.apache.log4j.Logger;
  * @author Jonas Reese
  * @version $LastChangedRevision:  $ - $LastChangedDate:  $ by $LastChangedBy:  $
  */
-public class DynamicWSDispatcherServlet extends CXFNonSpringServlet {
-    private static Logger      LOG                         = Logger.getLogger( DynamicWSDispatcherServlet.class );
+public class DynamicWSDispatcherServlet extends CXFServlet {
+    //private static Logger      LOG                         = Logger.getLogger( DynamicWSDispatcherServlet.class );
     
     
     private static final long serialVersionUID = 1L;
@@ -52,12 +49,14 @@ public class DynamicWSDispatcherServlet extends CXFNonSpringServlet {
     public void init( ServletConfig servletConfig ) throws ServletException {
         super.init( servletConfig );
         this.servletConfig = servletConfig;
-        Bus bus = getBus();
-        if (bus != null) {
-            BusFactory.setDefaultBus( bus );
-        } else {
-            LOG.error( "CXF bus is null" );
-        }
+        /*Bus bus = getBus();
+        
+        bus = BusFactory.getDefaultBus();
+        if (bus == null) {
+            LOG.warn("BusFactory.getDefaultBus() returns null - default bus should be set by spring application context");
+            bus = (Bus) Engine.getInstance().getApplicationContext().getBean("cxf");
+            BusFactory.setDefaultBus(bus);
+        }*/
     }
     
     public void reinitialize() {

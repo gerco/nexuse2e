@@ -305,7 +305,6 @@ public class WSDispatcherService extends AbstractService implements ReceiverAwar
                         List<MessagePayloadPojo> messagePayloads = new ArrayList<MessagePayloadPojo>( 1 );
                         messagePayloads.add( messagePayloadPojo );
                         messagePojo.setMessagePayloads( messagePayloads );
-                        messagePojo.getConversation().setCurrentAction( messagePojo.getAction() );
                         messagePojo.getConversation().getMessages().add( messagePojo );
                     }
                     messageContext = transportReceiver.processMessage( messageContext );

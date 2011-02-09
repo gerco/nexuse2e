@@ -71,7 +71,17 @@ public interface ConversationStateMachine {
     public abstract ConversationPojo getConversation();
 
     /**
-     * Puts a message to SENT state. Updates the conversation state if necessary.
+     * Puts the conversation to AWAITING_ACK state if necessary. This will be done for oubound normal
+     * messages on reliable conversations. This method shall be called for all messages before processing
+     * them through the frontend pipeline.
+     * @throws StateTransitionException
+     * @throws NexusException
+     */
+    public abstract void sendingMessage() throws StateTransitionException, NexusException;
+    
+    /**
+     * Puts a message to SENT state (except for normal outbound messages on reliable conversations which are put
+     * to SENT by the {@link #receivedAckMessage()} transition). Updates the conversation state if necessary.
      * @throws StateTransitionException If the state transition is illegal.
      * @throws NexusException If the transition could not be performed due to a system-specific error.
      */
