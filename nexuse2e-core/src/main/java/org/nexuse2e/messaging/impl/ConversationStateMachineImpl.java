@@ -254,19 +254,23 @@ public class ConversationStateMachineImpl implements ConversationStateMachine {
     }
 
     public void receivedRequestMessage() throws StateTransitionException, NexusException {
+        
+        UpdateTransactionOperation operation = new UpdateTransactionOperation() {
+            public UpdateScope update(ConversationPojo conversation, MessagePojo message, MessagePojo referencedMessage) throws NexusException, StateTransitionException {
+                performChoreograhpyTransition(message, conversation, false);
+                
+                message.setStatus( Constants.MESSAGE_STATUS_SENT );
+                message.setModifiedDate( new Date() );
+                message.setEndDate( message.getModifiedDate() );
+                conversation.setStatus( Constants.CONVERSATION_STATUS_PROCESSING );
 
-        message.setStatus( Constants.MESSAGE_STATUS_SENT );
-        message.setModifiedDate( new Date() );
-        message.setEndDate( message.getModifiedDate() );
-        conversation.setStatus( Constants.CONVERSATION_STATUS_PROCESSING );
-        if ( message.getNxMessageId() <= 0 ) {
-            conversation.addMessage( message );
-        }
-        if ( conversation.getNxConversationId() <= 0 ) {
-            Engine.getInstance().getTransactionService().storeTransaction( conversation, message );
-        } else {
-            Engine.getInstance().getTransactionService().updateTransaction( message );
-        }
+                if ( message.getNxMessageId() <= 0 ) {
+                    conversation.addMessage( message );
+                }
+                return UpdateScope.CONVERSATION_AND_MESSAGE;
+            }
+        };
+        Engine.getInstance().getTransactionService().updateTransaction(message, operation);
         
         // execute state transition jobs
         executeStateTransitionJobs( StateTransition.RECEIVED_REQUEST );
@@ -416,7 +420,11 @@ public class ConversationStateMachineImpl implements ConversationStateMachine {
                         }
                     } else if ( conversation.getStatus() == Constants.CONVERSATION_STATUS_AWAITING_BACKEND
                             || conversation.getStatus() == Constants.CONVERSATION_STATUS_PROCESSING ) {
-                        conversation.setStatus( Constants.CONVERSATION_STATUS_BACKEND_SENT_SENDING_ACK );
+                        if (reliable) {
+                            conversation.setStatus( Constants.CONVERSATION_STATUS_BACKEND_SENT_SENDING_ACK );
+                        } else {
+                            return UpdateScope.MESSAGE_ONLY;
+                        }
                     } else if ( conversation.getStatus() == Constants.CONVERSATION_STATUS_COMPLETED ) {
                         LOG.debug( new LogMessage( "Processing message for completed conversation.", message ) );
                         return UpdateScope.MESSAGE_ONLY;

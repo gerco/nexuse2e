@@ -45,7 +45,8 @@ public class FrontendInboundResponseEndpoint implements MessageProcessor, Manage
 
         if (messageContext != null && messageContext.isResponseMessage()) {
             try {
-                messageContext.getStateMachine().sentMessage(); // response sent
+                messageContext.getStateMachine().queueMessage(); // persist message and perform choreo step transition
+                messageContext.getStateMachine().sentMessage();  // mark response as 'sent'
             } catch (StateTransitionException e) {
                 throw new NexusException( e );
             }

@@ -191,12 +191,12 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                 // Persist retry count changes
                 try {
                     if ( messagePojo.isAck()) {
-                        //messageContext.getStateMachine().processingFailed();
+                        messageContext.getStateMachine().sentMessage(); // mark ack message as "sent" - normal message will be re-sent by partner
                     } else {
                         Engine.getInstance().getTransactionService().updateRetryCount( messagePojo );
                     }
-                } catch ( NexusException e1 ) {
-                    LOG.error( new LogMessage( "Error saving message: " + e1, messagePojo ), e1 );
+                } catch ( Exception e1 ) {
+                    LOG.error( new LogMessage( "Error saving message", messagePojo ), e1 );
                 }
 
                 LOG.error( new LogMessage( "Error sending message: " + e, messagePojo ), e );

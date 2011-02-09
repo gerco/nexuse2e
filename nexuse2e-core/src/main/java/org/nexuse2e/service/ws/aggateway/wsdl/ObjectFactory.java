@@ -35,11 +35,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link OutboundData }
+     * Create an instance of {@link InboundData }
      * 
      */
-    public OutboundData createOutboundData() {
-        return new OutboundData();
+    public InboundData createInboundData() {
+        return new InboundData();
     }
 
     /**
@@ -51,11 +51,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link InboundData }
+     * Create an instance of {@link OutboundData }
      * 
      */
-    public InboundData createInboundData() {
-        return new InboundData();
+    public OutboundData createOutboundData() {
+        return new OutboundData();
     }
 
     /**

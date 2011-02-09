@@ -140,7 +140,7 @@ public class WSDispatcherService extends AbstractService implements ReceiverAwar
                         WSPasswordCallback pc = (WSPasswordCallback) callbacks[0];
                         // check password
                         if  (password == null || !password.equals( pc.getPassword() )) {
-                            String m = "User " + pc.getIdentifer() + " tried to access AgGateway web service with an incorrect password";
+                            String m = "User " + pc.getIdentifier() + " tried to access AgGateway web service with an incorrect password";
                             LOG.error( m );
                             throw new SecurityException( m );
                         }
@@ -240,12 +240,13 @@ public class WSDispatcherService extends AbstractService implements ReceiverAwar
             
             try {
                 OutboundData od = new OutboundData();
-                od.setMessageId( new NexusUUIDGenerator().getId() );
     
                 // send acknowledgment only
                 if (messageContext == null) {
+                    od.setMessageId( new NexusUUIDGenerator().getId() );
                     od.setProcessStep( "TechnicalAck" );
                 } else { // send 
+                    od.setMessageId( messageContext.getMessagePojo().getMessageId() );
                     od.setProcessStep( messageContext.getConversation().getCurrentAction().getName() );
                     
                     DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
@@ -259,7 +260,7 @@ public class WSDispatcherService extends AbstractService implements ReceiverAwar
                         od.getXmlPayload().add( xmlPayload );
                     }
                 }
-            
+                
                 return od;
             } catch (Exception e) {
                 throw new DocExchangeFault( "Error while trying to set xmlPayload", e );

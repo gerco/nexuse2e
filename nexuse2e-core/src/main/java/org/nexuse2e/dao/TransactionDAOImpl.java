@@ -95,7 +95,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
             Constants.CONVERSATION_STATUS_COMPLETED, Constants.CONVERSATION_STATUS_ERROR,
             Constants.CONVERSATION_STATUS_IDLE} );
         followUpConversationStates.put( Constants.CONVERSATION_STATUS_COMPLETED,
-                new int[] { Constants.CONVERSATION_STATUS_ERROR} );
+                new int[] { Constants.CONVERSATION_STATUS_ERROR, Constants.CONVERSATION_STATUS_PROCESSING } );
 
         followUpMessageStates = new HashMap<Integer, int[]>();
         followUpMessageStates.put( Constants.MESSAGE_STATUS_FAILED, new int[] { Constants.MESSAGE_STATUS_QUEUED,
@@ -808,19 +808,18 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
      * @see org.nexuse2e.dao.TransactionDAO#getMessagesByActionPartnerDirectionAndStatus(org.nexuse2e.pojo.ActionPojo, org.nexuse2e.pojo.PartnerPojo, boolean, int, int, boolean)
      */
     @SuppressWarnings("unchecked")
-    public List<MessagePojo> getMessagesByActionPartnerDirectionAndStatus( ActionPojo action, PartnerPojo partner,
-            boolean outbound, int status, int field, boolean ascending ) {
+    public List<MessagePojo> getMessagesByActionPartnerDirectionAndStatus(
+            ActionPojo action, PartnerPojo partner, boolean outbound, int status, int field, boolean ascending ) {
 
         DetachedCriteria dc = DetachedCriteria.forClass( MessagePojo.class );
 
         dc.createCriteria( "conversation" ).createCriteria( "partner" ).add(
                 Restrictions.eq( "nxPartnerId", partner.getNxPartnerId() ) );
-        dc.createCriteria( "action" ).add( Restrictions.eq( "name", action.getName() ) );
-        dc.createCriteria( "action" ).createCriteria( "choreography" ).add(
+        DetachedCriteria actionCriteria = dc.createCriteria( "action" );
+        actionCriteria.add( Restrictions.eq( "name", action.getName() ) );
+        actionCriteria.createCriteria( "choreography" ).add(
                 Restrictions.eq( "name", action.getChoreography().getName() ) );
-        dc.add( Restrictions.eq( "outbound", ( outbound ? 1 : 0 ) ) );
-        dc.createCriteria( "conversation" ).createCriteria( "partner" ).add(
-                Restrictions.eq( "partnerId", partner.getPartnerId() ) );
+        dc.add( Restrictions.eq( "outbound", outbound ) );
         dc.add( Restrictions.eq( "status", status ) );
 
         Order order = getSortOrder( field, ascending );
