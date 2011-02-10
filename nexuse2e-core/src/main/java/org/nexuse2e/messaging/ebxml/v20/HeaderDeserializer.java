@@ -104,14 +104,8 @@ public class HeaderDeserializer extends AbstractPipelet {
             SOAPEnvelope soapEnvelope = null;
             try {
                 soapEnvelope = part.getEnvelope();
-            } catch ( Exception e ) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-                throw new IllegalArgumentException( "Error processing ebXML Header: " + e );
-            } catch ( Error e ) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-                throw new IllegalArgumentException( "Error processing ebXML Header: " + e );
+            } catch ( Throwable t ) {
+                throw new IllegalArgumentException( "Error processing ebXML Header: ", t );
             }
 
             SOAPHeader soapHeader = soapEnvelope.getHeader();

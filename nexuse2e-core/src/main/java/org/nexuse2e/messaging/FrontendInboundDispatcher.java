@@ -210,21 +210,18 @@ public class FrontendInboundDispatcher extends ChoreographyValidator implements 
         // duplicate
         if ( isDuplicate( message ) ) {
             // duplicate found
-            LOG.info( new LogMessage( "Received duplicate message: " + message.getMessageId(), message ) );
             // get according acknowledgment
-            responseMessageContext = Engine.getInstance().getTransactionService().getMessageContext(
-                    message.getMessageId(), true );
-            // only logging stuff
-            if ( LOG.isTraceEnabled() ) {
-                if(responseMessageContext != null && responseMessageContext.getMessagePojo() != null ) {
-                    LOG.trace( new LogMessage( "Response message context: " + responseMessageContext.getMessagePojo().getMessageId() , message ) );
-                } else {
-                    if(responseMessageContext == null) {
-                        LOG.trace( new LogMessage( "No response context found", message ) );
-                    } else {
-                        LOG.trace( new LogMessage( "Mo MessagePojo found in response context" , message ) );
-                    }
+            if (!messageContext.isRequestMessage() && !participant.getConnection().isSynchronous()) {
+                MessageContext ackErr = Engine.getInstance().getTransactionService().getMessageContext( message.getMessageId(), true );
+                boolean foundResponse = (ackErr != null && ackErr.getMessagePojo() != null && (ackErr.getMessagePojo().isAck() || ackErr.getMessagePojo().isError()));
+                LOG.info( new LogMessage( "Received duplicate message: " + message.getMessageId() +
+                        (foundResponse ? ", re-sending ACK/ERROR " + ackErr.getMessagePojo().getMessageId() : ""), message ) );
+                
+                if (foundResponse) {
+                    MessageHandlingCenter.getInstance().processMessage( ackErr );
                 }
+            } else {
+                LOG.info( new LogMessage( "Ignoring duplicate request or synchronous message", message ) );
             }
         } else {
             // this message is not a duplicate
