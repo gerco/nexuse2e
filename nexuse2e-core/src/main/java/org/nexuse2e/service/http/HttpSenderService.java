@@ -19,9 +19,9 @@
  */
 package org.nexuse2e.service.http;
 
-import java.io.IOException;
 import java.net.URL;
 import java.security.KeyStore;
+import java.util.ArrayList;
 import java.util.Map;
 
 import javax.mail.internet.ContentType;
@@ -38,16 +38,19 @@ import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.log4j.Logger;
-import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.Constants;
-import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.configuration.ParameterDescriptor;
+import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.logging.LogMessage;
+import org.nexuse2e.messaging.FrontendPipeline;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
+import org.nexuse2e.pojo.MessagePayloadPojo;
+import org.nexuse2e.pojo.MessagePojo;
 import org.nexuse2e.pojo.ParticipantPojo;
 import org.nexuse2e.pojo.TRPPojo;
 import org.nexuse2e.service.AbstractService;
@@ -101,6 +104,8 @@ public class HttpSenderService extends AbstractService implements SenderAware {
         int timeout = participant.getConnection().getTimeout() * 1000;
         PostMethod method = null;
         HttpClient client = null;
+        
+        MessageContext returnMessageContext = null;
         try {
 
             URL receiverURL = new URL( messageContext.getParticipant().getConnection().getUri() );
@@ -182,7 +187,7 @@ public class HttpSenderService extends AbstractService implements SenderAware {
             String httpReply = null;
 
             if ( LOG.isTraceEnabled() ) {
-                LOG.trace( new LogMessage("HTTP Message Data:\n" + new String( (byte[]) messageContext.getData() ),messageContext) );
+                LOG.trace(new LogMessage("HTTP Message Data:\n" + (messageContext.getData() == null ? null : new String((byte[]) messageContext.getData())), messageContext));
             }
 
             // Support for HTTP plain
@@ -269,8 +274,35 @@ public class HttpSenderService extends AbstractService implements SenderAware {
                         " responded with status: " + statusCode, messageContext.getMessagePojo() ) );
             }
 
-            httpReply = getHTTPReply( method );
-            LOG.debug(new LogMessage( "Retrieved HTTP response:" + httpReply,messageContext.getMessagePojo()) );
+            
+            boolean processReturn = (transportSender != null &&
+                    transportSender.getPipeline() instanceof FrontendPipeline &&
+                    messageContext.isProcessThroughReturnPipeline() &&
+                    ((FrontendPipeline) transportSender.getPipeline()).getReturnPipelets() != null &&
+                    ((FrontendPipeline) transportSender.getPipeline()).getReturnPipelets().length > 0);
+            
+            if (processReturn || LOG.isTraceEnabled()) {
+                byte[] body = method.getResponseBody();
+                
+                if (LOG.isTraceEnabled()) {
+                    httpReply = getHTTPReply( body, statusCode );
+                    LOG.trace(new LogMessage( "Retrieved HTTP response:" + httpReply, messageContext.getMessagePojo()) );
+                }
+                
+                if (processReturn) {
+                    MessagePojo message = (MessagePojo) messageContext.getMessagePojo().clone();
+                    message.setOutbound(false);
+                    message.setStatus(Constants.MESSAGE_STATUS_UNKNOWN);
+                    message.setEndDate(null);
+                    message.setRetries(0);
+                    message.setMessageId(null);
+                    // important: Payload needs to be reset, shall be set from data field by pipeline processing
+                    message.setMessagePayloads(new ArrayList<MessagePayloadPojo>());
+                    returnMessageContext = Engine.getInstance().getTransactionService().createMessageContext(message);
+                    returnMessageContext.setData(body);
+                    returnMessageContext.setOriginalMessagePojo(messageContext.getMessagePojo());
+                }
+            }
 
             method.releaseConnection();
 
@@ -286,26 +318,20 @@ public class HttpSenderService extends AbstractService implements SenderAware {
             throw new NexusException( lm, ex );
         }
         
-        return null;
+        return returnMessageContext;
     }
 
     /**
      *  Retrieve a reply from an HTTP message post.
      *  @returns String
      */
-    public String getHTTPReply( PostMethod method ) throws NexusException {
+    public String getHTTPReply( byte[] responseBody, int responseCode ) throws NexusException {
 
         StringBuffer reply = new StringBuffer();
 
-        try {
-            reply.append( method.getResponseBodyAsString() );
-            int responseCode = method.getStatusCode();
-            reply.append( "\nHTTP Response Code:  " + responseCode );
+        reply.append( new String( responseBody ) );
+        reply.append( "\nHTTP Response Code:  " + responseCode );
 
-        } catch ( IOException ioEx ) {
-            ioEx.printStackTrace();
-            throw new NexusException( ioEx );
-        }
         return reply.toString();
     }
 

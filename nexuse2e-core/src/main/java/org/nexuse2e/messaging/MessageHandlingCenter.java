@@ -55,7 +55,8 @@ public class MessageHandlingCenter implements MessageProcessor {
      */
     public MessageContext processMessage( MessageContext messageContext ) throws IllegalStateException, NexusException {
 
-        if ( messageContext.getMessagePojo().getStatus() != Constants.MESSAGE_STATUS_QUEUED ) {
+        if (messageContext.getMessagePojo().getStatus() != Constants.MESSAGE_STATUS_QUEUED &&
+                messageContext.getMessagePojo().getStatus() != Constants.MESSAGE_STATUS_SENT) {
             try {
                 messageContext.getStateMachine().queueMessage();
             } catch ( StateTransitionException e ) {
@@ -74,7 +75,9 @@ public class MessageHandlingCenter implements MessageProcessor {
      * Append the message to the queue, if the participant's connection is not marked as hold.
      * "Hold" connections indicate that the participant polls outbound messages.
      * So we do not queue them for sending. They just remain in the database as QUEUED until the participant issues a request.
-     * @param messageContext
+     * <p>
+     * This method does not perform any state machine transitions.
+     * @param messageContext The message context to be added to the queue.
      */
     protected void queue( MessageContext messageContext ) {
         if (!(messageContext.getMessagePojo().isOutbound() && messageContext.getParticipant().getConnection().isHold())) {

@@ -72,6 +72,12 @@ public class HTTPPlainHeaderDeserializer extends AbstractPipelet {
             LOG.error( "Received post without required parameters." );
             throw new NexusException( "Received post without required parameters." ); //invalid post, Action, choreography, and participantid parameters are required.
         }
+        
+        // recycle conversation ID from message context if present
+        if (conversationId == null && messageContext.getConversation() != null && messageContext.getConversation().getConversationId() != null) {
+            conversationId = messageContext.getConversation().getConversationId();
+        }
+        
         if ( conversationId == null ) {
             conversationId = Engine.getInstance().getIdGenerator( org.nexuse2e.Constants.ID_GENERATOR_CONVERSATION )
                     .getId();

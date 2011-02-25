@@ -207,7 +207,7 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                     Engine.getInstance().getCurrentConfiguration().getStaticBeanContainer()
                             .getFrontendInboundDispatcher().processMessage( returnedMessageContext );
                 } catch ( NexusException e ) {
-                    LOG.error( new LogMessage( "Error processing synchronous reply: " + e,messagePojo) );
+                    LOG.error( new LogMessage( "Error processing synchronous reply: " + e, messagePojo) );
                 }
             }
 

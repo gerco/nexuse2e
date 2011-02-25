@@ -19,7 +19,6 @@
  */
 package org.nexuse2e.messaging;
 
-import org.nexuse2e.Engine;
 import org.nexuse2e.Manageable;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.BeanStatus;
@@ -36,6 +35,8 @@ import org.nexuse2e.configuration.EngineConfiguration;
  */
 public class FrontendOutboundResponseEndpoint implements MessageProcessor, Manageable {
 
+    //private static final Logger LOG = Logger.getLogger(FrontendOutboundResponseEndpoint.class);
+    
     private BeanStatus status = BeanStatus.INSTANTIATED;
 
     
@@ -44,11 +45,16 @@ public class FrontendOutboundResponseEndpoint implements MessageProcessor, Manag
             NexusException {
 
         if (messageContext != null && messageContext.isResponseMessage()) {
-            BackendInboundDispatcher dispatcher =
-                Engine.getInstance().getCurrentConfiguration().getStaticBeanContainer().getBackendInboundDispatcher();
-            return dispatcher.processMessage( messageContext );
+//            BackendInboundDispatcher dispatcher =
+//                Engine.getInstance().getCurrentConfiguration().getStaticBeanContainer().getBackendInboundDispatcher();
+//            try {
+//                messageContext.getStateMachine().queueMessage();
+//            } catch (StateTransitionException e) {
+//                LOG.error(new LogMessage("Error queueing response message", messageContext), e);
+//            }
+//            return messageContext;
         }
-        return null;
+        return messageContext;
     }
     
     public void activate() {

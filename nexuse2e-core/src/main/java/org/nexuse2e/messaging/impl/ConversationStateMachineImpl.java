@@ -287,6 +287,11 @@ public class ConversationStateMachineImpl implements ConversationStateMachine {
                     conversation.setStatus( Constants.CONVERSATION_STATUS_IDLE );
                 }
                 
+                if (message.getStatus() != Constants.MESSAGE_STATUS_SENT) {
+                    message.setStatus(Constants.MESSAGE_STATUS_SENT);
+                    return UpdateScope.CONVERSATION_AND_MESSAGE;
+                }
+                
                 return UpdateScope.CONVERSATION_ONLY;
             }
             
