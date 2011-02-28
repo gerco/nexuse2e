@@ -589,16 +589,24 @@ public class TransactionServiceImpl implements TransactionService {
         if(message != null && message.getConversation() != null) {
             conversation = message.getConversation().getConversationId();
         }
-        LOG.debug( new LogMessage("deregisterProcessingMessage: " + id,conversation,id) );
+        if (LOG.isDebugEnabled()) {
+            LOG.debug( new LogMessage("deregisterProcessingMessage: " + id,conversation,id) );
+        }
 
         synchronized ( processingMessages ) {
             ScheduledFuture<?> handle = processingMessages.get( id );
             if ( handle != null ) {
                 handle.cancel( false );
-                LOG.debug( new LogMessage("deregisterProcessingMessage - processing cancelled with message status " + MessagePojo.getStatusName(message.getStatus()) + "!",conversation,id) );
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug( new LogMessage(
+                            "deregisterProcessingMessage - processing cancelled with message status " +
+                            MessagePojo.getStatusName(message.getStatus()) + "!", conversation, id) );
+                }
                 processingMessages.remove( id );
             } else {
-                LOG.warn( new LogMessage("No handle found when trying to deregister processing message: " + id,conversation,id) );
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug( new LogMessage("No handle found when trying to deregister processing message: " + id, conversation, id) );
+                }
             }
         }
     } // deregisterProcessingMessage
