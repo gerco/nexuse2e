@@ -329,8 +329,11 @@ public class HttpSenderService extends AbstractService implements SenderAware {
 
         StringBuffer reply = new StringBuffer();
 
-        reply.append( new String( responseBody ) );
-        reply.append( "\nHTTP Response Code:  " + responseCode );
+        if (responseBody != null) {
+            reply.append( new String( responseBody ) );
+            reply.append( "\n" );
+        }
+        reply.append( "HTTP Response Code:  " + responseCode );
 
         return reply.toString();
     }
