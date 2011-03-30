@@ -30,13 +30,13 @@
 <nexus:fileUploadResponse>
 <% /*<nexus:helpBar helpDoc="documentation/SSL.htm" /> */ %>
 
-<logic:notEmpty name="redirectUrl">
+<%-- <logic:notEmpty name="redirectUrl">
 	<logic:notEmpty name="redirectTimeout">
 		<script type="text/javascript">
-window.open('<bean:write name="redirectUrl"/>','Save as...')
-</script>
+			window.open('<bean:write name="redirectUrl"/>','Save as...')
+		</script>
 	</logic:notEmpty>
-</logic:notEmpty>
+</logic:notEmpty> --%>
 
 <center>
 

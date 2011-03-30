@@ -444,6 +444,7 @@
     </action>
     <action path="/StagingStoreExported" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.StagingStoreExportedAction">
       <forward name="success" path="/StagingList.do"/>
+      <forward name="renderDownloadLink" path="/WEB-INF/pages/communications/staging_export_certificate.jsp"/>
       <forward name="error" path="/StagingExportCertificate.do"/>
     </action>
 
