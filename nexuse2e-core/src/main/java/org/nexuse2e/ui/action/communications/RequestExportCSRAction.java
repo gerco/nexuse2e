@@ -76,13 +76,13 @@ public class RequestExportCSRAction extends NexusE2EAction {
         }
 
         PKCS10CertificationRequest certRequest = ( certificates.size() > 0 ? CertificateUtil.getPKCS10Request( certificates.get( 0 ) ) : null );
-        System.out.println( "certRequest: " + certRequest.getCertificationRequestInfo().getSubject() );
         if ( certRequest == null ) {
             ActionMessage errorMessage = new ActionMessage( "generic.error", "no request object avilable!" );
             errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
             addRedirect( request, URL, TIMEOUT );
             return error;
         }
+        System.out.println( "certRequest: " + certRequest.getCertificationRequestInfo().getSubject() );
         String subject = certRequest.getCertificationRequestInfo().getSubject().toString();
         certRequestForm.setRequestProperties( subject );
         request.setAttribute( "request", certRequestForm );

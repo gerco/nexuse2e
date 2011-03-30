@@ -227,7 +227,9 @@ public class StagingStoreExportedAction extends NexusE2EAction {
                 }
             }
             // Save as...
-            addRedirect( request, "certificates.staging.export.url", "certificates.staging.export.timeout" );
+            String url = getResources(request).getMessage("certificates.staging.export.url");
+            request.setAttribute("downloadLinkUrl", url);
+            return actionMapping.findForward("renderDownloadLink");
         }
 
         return success;
