@@ -86,6 +86,10 @@ public class RequestExportCSRAction extends NexusE2EAction {
         String subject = certRequest.getCertificationRequestInfo().getSubject().toString();
         certRequestForm.setRequestProperties( subject );
         request.setAttribute( "request", certRequestForm );
+        ProtectedFileAccessForm protectedFileAccessForm = (ProtectedFileAccessForm) actionForm;
+        protectedFileAccessForm.setFormat(2);
+        protectedFileAccessForm.setStatus(2);
+        
         return success;
     }
 

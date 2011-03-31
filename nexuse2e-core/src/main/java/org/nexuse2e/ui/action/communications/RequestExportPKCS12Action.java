@@ -28,6 +28,7 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.ui.action.NexusE2EAction;
+import org.nexuse2e.ui.form.ProtectedFileAccessForm;
 
 /**
  * @author guido.esch
@@ -43,6 +44,8 @@ public class RequestExportPKCS12Action extends NexusE2EAction {
             throws Exception {
 
         ActionForward success = actionMapping.findForward( ACTION_FORWARD_SUCCESS );
+        ProtectedFileAccessForm protectedFileAccessForm = (ProtectedFileAccessForm) actionForm;
+        protectedFileAccessForm.setStatus(2);
 
         return success;
     }

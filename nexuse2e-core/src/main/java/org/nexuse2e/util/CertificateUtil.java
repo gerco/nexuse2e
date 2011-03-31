@@ -98,7 +98,7 @@ public class CertificateUtil {
 
     private static Logger      LOG                                 = Logger.getLogger( CertificateUtil.class );
 
-    public static final int    DEFAULT_RSA_KEY_LENGTH              = 1024;
+    public static final int    DEFAULT_RSA_KEY_LENGTH              = 2048;
     public static final String DEFAULT_DIGITAL_SIGNATURE_ALGORITHM = "SHA1withRSA";
     public static final String DEFAULT_KEY_ALGORITHM               = "RSA";
     public static final String DEFAULT_CERT_TYPE                   = "X.509";
