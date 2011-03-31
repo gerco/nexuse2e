@@ -24,25 +24,66 @@
 <%@ taglib uri="/tags/struts-nested" prefix="nested"%>
 <%@ taglib uri="/tags/struts-tiles" prefix="tiles"%>
 <%@ taglib uri="/tags/struts-logic" prefix="logic"%>
-<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="/tags/nexus" prefix="nexus"%>
 
 <nexus:fileUploadResponse>
 <% /*<nexus:helpBar helpDoc="documentation/SSL.htm" /> */ %>
 
-<logic:equal name="type" value="csr">
-	<script type="text/javascript">
-window.open('DataSaveAs.do?type=request&format=<bean:write name="format"/>&nxCertificateId=<bean:write name="nxCertificateId"/>','Save as...')
-</script>
-</logic:equal>
-<logic:equal name="type" value="privatepem">
-	<script type="text/javascript">
-window.open('DataSaveAs.do?type=privatepem','Save as...')
-</script>
-</logic:equal>
 
 <center>
 
+<logic:equal name="type" value="csr">
+	<bean:define id="downloadMode" value="true" />
+	<c:set var="downloadUrl" value="DataSaveAs.do?type=request&format=${format}&nxCertificateId=${nxCertificateId}" />
+	<c:set var="title" value="Certificate Signing Request"/>
+</logic:equal>
+<logic:equal name="type" value="privatepem">
+	<bean:define id="downloadMode" value="true" />
+	<c:set var="format" value="pem" />
+	<c:set var="downloadUrl" value="DataSaveAs.do?type=privatepem"/>
+	<c:set var="title" value="CSR Backup"/>
+</logic:equal>
+<logic:notEmpty name="downloadMode">
+	<table class="NEXUS_TABLE" width="100%">
+		<tr>
+			<td><nexus:crumbs /></td>
+		</tr>
+	</table>
+  	<table class="NEXUS_TABLE" width="100%">
+        <tr>            
+        <td colspan="2" class="NEXUSSection">CSR Export</td>            
+        </tr>
+        <tr>
+            <td class="NEXUSName">
+              ${title}
+            </td>
+            <td class="NEXUSValue">
+              	<c:if test="${format == 'pem'}">
+              		PEM format
+              	</c:if>
+              	<c:if test="${format == 'der'}">
+              		DER format
+              	</c:if>
+            </td>
+        </tr>
+        <tr>
+        	<td class="NEXUSName"></td>
+        	<td class="NEXUSValue" align="right"><i>Klick 'Download' to open download dialog</i></td>
+        </tr>
+    </table>
+    <table class="NEXUS_BUTTON_TABLE" width="100%">
+    	<tr>
+        	<td class="BUTTON_LEFT">
+            	<nobr><nexus:link href="RequestOverview.do" styleClass="button"><img src="images/icons/resultset_previous.png" name="resultsButton" class="button" />Back to Certificate Request</nexus:link></nobr>
+            </td>
+            <td class="BUTTON_RIGHT"><a href="${downloadUrl}" target="_blank" id="save_button" class="button"><img src="images/icons/tick.png" class="button">Download</a></td>
+    	</tr>
+    </table>
+</logic:notEmpty>
+
+
+<logic:empty name="downloadMode">
 <table class="NEXUS_TABLE" width="100%">
 	<tr>
 		<td><nexus:crumbs /></td>
@@ -173,6 +214,7 @@ window.open('DataSaveAs.do?type=privatepem','Save as...')
 		<td class="NEXUSValue">&nbsp;</td>
 	</tr>
 </table>
+</logic:empty>
 
 </center>
 </nexus:fileUploadResponse>

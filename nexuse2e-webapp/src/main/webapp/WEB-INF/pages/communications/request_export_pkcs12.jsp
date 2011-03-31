@@ -51,7 +51,7 @@
             <tr>
                 <td class="NEXUSName"><html:radio property="status" value="1"></html:radio>
                 </td>
-                <td class="NEXUSName">TargetFile:
+                <td class="NEXUSName">Target file:
                 </td>
         <td class="NEXUSName"><html:text property="certficatePath" size="80"/>
                 </td>                
@@ -59,15 +59,13 @@
             <tr>
                 <td class="NEXUSName"><html:radio property="status" value="2"></html:radio>
                 </td>
-                <td colspan="2" class="NEXUSName">save as...
+                <td colspan="2" class="NEXUSName">Save as...
                 </td>                        
             </tr>                      
         </table>          
         <table class="NEXUS_BUTTON_TABLE" width="100%">
                 <tr>
-                    <td>&nbsp;</td>
-                    <td class="BUTTON_RIGHT"><nexus:submit><img src="images/icons/tick.png" name="SUBMIT"></nexus:submit></td>
-                    <td class="NexusHeaderLink">Export</td>
+                    <td class="BUTTON_RIGHT"><nexus:submit styleClass="button"><img src="images/icons/tick.png" name="SUBMIT" class="button">Export</nexus:submit></td>
                 </tr>
             </table>
         </html:form>

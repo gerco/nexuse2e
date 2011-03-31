@@ -50,8 +50,9 @@
                 <td class="NEXUSName">RSA Key Length</td>
                 <td class="NEXUSValue">
                 	<html:select property="keyLength">
-                		<html:option value="1024">1024 Bit (default)</html:option>
-                		<html:option value="2048">2048 Bit</html:option>
+                		<html:option value="1024">1024 Bit</html:option>
+                		<html:option value="2048">2048 Bit (default)</html:option>
+                		<html:option value="4096">4096 Bit</html:option>
                		</html:select>
              	</td>
             </tr>
