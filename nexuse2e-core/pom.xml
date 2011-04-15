@@ -473,11 +473,23 @@
       <groupId>org.apache.ws.commons.axiom</groupId>
       <artifactId>axiom-api</artifactId>
       <version>1.2.7</version>
+      <exclusions>
+      	<exclusion>
+      		<artifactId>geronimo-javamail_1.4_spec</artifactId>
+      		<groupId>org.apache.geronimo.specs</groupId>
+      	</exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.ws.commons.axiom</groupId>
       <artifactId>axiom-impl</artifactId>
       <version>1.2.7</version>
+      <exclusions>
+      	<exclusion>
+      		<artifactId>geronimo-javamail_1.4_spec</artifactId>
+      		<groupId>org.apache.geronimo.specs</groupId>
+      	</exclusion>
+      </exclusions>
     </dependency>
     <dependency>
      <groupId>javax.xml.ws</groupId>
