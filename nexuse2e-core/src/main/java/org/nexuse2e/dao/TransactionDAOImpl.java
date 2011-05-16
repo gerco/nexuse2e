@@ -469,7 +469,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         Query sqlquery4 = session.createSQLQuery( query.toString() );
         if (map != null) {
             for (String name : map.keySet()) {
-                sqlquery3.setTimestamp( name, map.get( name ) );
+                sqlquery4.setTimestamp( name, map.get( name ) );
             }
         }
 
