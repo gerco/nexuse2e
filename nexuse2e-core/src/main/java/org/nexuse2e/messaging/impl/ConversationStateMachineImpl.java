@@ -168,9 +168,6 @@ public class ConversationStateMachineImpl implements ConversationStateMachine {
             } else {
                 syncObj = new Object();
             }
-            if (message.isNormal() && message.isOutbound()) {
-                LOG.trace(""); // for breakpoint only
-            }
             synchronized (syncObj) {
                 UpdateTransactionOperation operation = new UpdateTransactionOperation() {
                     public UpdateScope update(ConversationPojo conversation, MessagePojo message, MessagePojo referencedMessage) throws NexusException, StateTransitionException {
@@ -248,6 +245,14 @@ public class ConversationStateMachineImpl implements ConversationStateMachine {
                     LOG.warn(new LogMessage(stex.getMessage(), message), stex);
                 }
             }
+        } else {
+            // Persist the message without status change. We need to save it because some fileds may have been changed by the frontend pipeline (e.g., the header data)
+            UpdateTransactionOperation operation = new UpdateTransactionOperation() {
+                public UpdateScope update(ConversationPojo conversation, MessagePojo message, MessagePojo referencedMessage) throws NexusException, StateTransitionException {
+                    return UpdateScope.MESSAGE_ONLY;
+                }
+            };
+            Engine.getInstance().getTransactionService().updateTransaction(message, operation);
         }
         // execute state transition jobs
         executeStateTransitionJobs( StateTransition.SENT_MESSAGE );
