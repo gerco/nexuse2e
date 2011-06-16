@@ -1051,6 +1051,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
             int messageStatus = persistentMessage.getStatus();
             int conversationStatus = persistentConversation.getStatus();
             persistentMessage.setStatus(allowedMessageStatus);
+            persistentMessage.setHeaderData(message.getHeaderData());
             persistentConversation.setStatus(allowedConversationStatus);
 
             // persist result
