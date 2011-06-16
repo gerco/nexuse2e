@@ -322,14 +322,20 @@ public class DataSaveAsAction extends NexusE2EAction {
                 MessagePojo message = Engine.getInstance().getTransactionService().getMessage( messageId );
                 if ( message != null ) {
                     if ( contentNo == null || contentNo.equals( "" ) ) {
-                        data = message.getHeaderData();
+                        byte[] b = message.getHeaderData();
+                        if (b != null) {
+                            data = b;
+                        }
                     } else {
                         List<MessagePayloadPojo> payloads = Engine.getInstance().getTransactionService()
                                 .getMessagePayloadsFromMessage( message );
                         int no = Integer.parseInt( contentNo );
                         if ( no < payloads.size() ) {
                             MessagePayloadPojo payload = payloads.get( no );
-                            data = payload.getPayloadData();
+                            byte[] b = payload.getPayloadData();
+                            if (b != null) {
+                                data = b;
+                            }
                             if ( !StringUtils.isEmpty( payload.getMimeType() ) ) {
                                 contenType = payload.getMimeType();
                             }
