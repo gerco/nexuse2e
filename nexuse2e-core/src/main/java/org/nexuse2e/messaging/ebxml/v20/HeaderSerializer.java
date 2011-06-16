@@ -93,7 +93,6 @@ public class HeaderSerializer extends AbstractPipelet {
     /**
      * 
      */
-    @SuppressWarnings("unchecked")
     public MessageContext processMessage( MessageContext messageContext ) throws NexusException {
 
         try {
