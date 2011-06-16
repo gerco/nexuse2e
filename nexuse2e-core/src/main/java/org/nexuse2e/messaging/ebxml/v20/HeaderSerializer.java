@@ -287,9 +287,7 @@ public class HeaderSerializer extends AbstractPipelet {
 
                     // newMsg.addManifestEntry( newMsg.getMessageID() + "-body" + ( i + 1 ) );
 
-                    Iterator bodyParts = messagePojo.getMessagePayloads().iterator();
-                    while ( bodyParts.hasNext() ) {
-                        MessagePayloadPojo bodyPart = (MessagePayloadPojo) bodyParts.next();
+                    for (MessagePayloadPojo bodyPart : messagePojo.getMessagePayloads()) {
                         LOG.trace( new LogMessage( "ContentID:" + bodyPart.getContentId() ,messagePojo));
                         
                         //createManifestReference( soapFactory, soapManifest, bodyPart.getContentId(), "Payload-" + bodyPart.getSequenceNumber(), bodyPart.getMimeType(), null );
