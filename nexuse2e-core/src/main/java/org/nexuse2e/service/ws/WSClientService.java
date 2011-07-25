@@ -162,6 +162,7 @@ public class WSClientService extends AbstractService implements SenderAware {
                 TrustManager[] trustManagers = CertificateUtil.createTrustManagers( caCerts, partnerCert  );
 
                 FiltersType filters = new FiltersType();
+                filters.getInclude().add( ".*_WITH_3DES_.*" );
                 filters.getInclude().add( ".*_EXPORT_.*" );
                 filters.getInclude().add( ".*_EXPORT1024_.*" );
                 filters.getInclude().add( ".*_WITH_DES_.*" );

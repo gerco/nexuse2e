@@ -128,10 +128,10 @@ public class HTTPContentSensitiveIntegrationPipelet extends HTTPIntegrationPipel
             try {
                 int result = httpclient.executeMethod( post );
 
-                LOG.debug(new LogMessage(  "Response status code: " + result,messagePojo) );
-                LOG.debug( new LogMessage( "Response status message:\n" + post.getResponseBodyAsString(),messagePojo) );
-            } catch ( Exception ex ) {
-                LOG.error(new LogMessage(  "Error posting inbound message body to '" + getParameter( URL ) + "': " + ex,messagePojo) );
+                LOG.debug(new LogMessage("Response status code: " + result,messagePojo));
+                LOG.debug( new LogMessage("Response status message:\n" + post.getResponseBodyAsString(),messagePojo));
+            } catch (Exception ex) {
+                LOG.error(new LogMessage("Error posting inbound message body to '" + getParameter(URL), messagePojo, ex));
                 ex.printStackTrace();
             } finally {
                 // Release current connection to the connection pool once you
@@ -157,7 +157,7 @@ public class HTTPContentSensitiveIntegrationPipelet extends HTTPIntegrationPipel
                             labelPrefix );
                         post.setRequestBody( data );
                     } catch ( UnsupportedEncodingException e ) {
-                        LOG.error(new LogMessage(  "Cannot encode payload with charset encoding '" + charset + "'",messagePojo), e );
+                        LOG.error(new LogMessage("Cannot encode payload with charset encoding '" + charset + "'", messagePojo, e), e);
                     }
                 } else {
                     try {
@@ -169,7 +169,7 @@ public class HTTPContentSensitiveIntegrationPipelet extends HTTPIntegrationPipel
                             post.setRequestEntity( new ByteArrayRequestEntity( messagePayloadPojo.getPayloadData() ) );
                         }
                     } catch ( UnsupportedEncodingException e ) {
-                        LOG.error( new LogMessage( "Cannot encode payload with charset encoding '" + charset + "'",messagePojo), e );
+                        LOG.error( new LogMessage( "Cannot encode payload with charset encoding '" + charset + "'", messagePojo, e), e );
                     }
                 }
 
@@ -195,7 +195,7 @@ public class HTTPContentSensitiveIntegrationPipelet extends HTTPIntegrationPipel
                                 + "\n---  RESPONSE END  ---" ,messagePojo));
                     }
                 } catch ( Exception ex ) {
-                    LOG.error(new LogMessage(  "Error posting inbound message body to '" + getParameter( URL ) + "': " + ex,messagePojo) );
+                    LOG.error(new LogMessage("Error posting inbound message body to '" + getParameter(URL), messagePojo, ex));
                     ex.printStackTrace();
                 } finally {
                     // Release current connection to the connection pool once

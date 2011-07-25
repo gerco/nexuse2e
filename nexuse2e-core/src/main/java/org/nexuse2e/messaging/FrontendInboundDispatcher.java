@@ -110,7 +110,7 @@ public class FrontendInboundDispatcher extends ChoreographyValidator implements 
             choreography = validateChoreography( messageContext );
             LOG.debug(new LogMessage(  "matching choreography found",messagePojo) );
         } catch ( NexusException e ) {
-            LOG.error( new LogMessage( "Error while validating choreography: " + e.getMessage(), messagePojo ), e );
+            LOG.error( new LogMessage( "Error while validating choreography", messagePojo, e ), e );
             responseMessageContext = protocolAdapter.createErrorAcknowledgement(
                     Constants.ErrorMessageReasonCode.CHOREOGRAPHY_NOT_FOUND, null, messageContext, null );
             failureInHeaderProcessing = true;
@@ -250,7 +250,7 @@ public class FrontendInboundDispatcher extends ChoreographyValidator implements 
                                 // Substituted an e.printStackTrace() by LOG.error().
                                 // Do we need to do something else here? How about an error ack?
                                 // Or let the exception raise up?
-                                LOG.error( new LogMessage( "Error creating acknowledgement: " + e.getMessage(), messageContext ), e );
+                                LOG.error(new LogMessage("Error creating acknowledgement", messageContext, e), e);
                             }
                         } else {
                             LOG.debug( new LogMessage( "error response message found",message) );
@@ -262,8 +262,7 @@ public class FrontendInboundDispatcher extends ChoreographyValidator implements 
                             LOG.debug( new LogMessage( "dispatching response message", message) );
                             MessageHandlingCenter.getInstance().processMessage( responseMessageContext );
                         } catch ( NexusException e ) {
-                            LOG.error( new LogMessage( "Unable to process Acknowledgement:" + e.getMessage(),
-                                            message ) );
+                            LOG.error(new LogMessage("Unable to process Acknowledgement", message, e), e);
                         } finally {
                             // in asynchronous mode we have nothing to return in client thread
                             responseMessageContext = null;
@@ -291,8 +290,7 @@ public class FrontendInboundDispatcher extends ChoreographyValidator implements 
                 } catch ( NexusException e ) {
                     LOG.error( new LogMessage( "Error processing message: " + message.getMessageId()
                         + " (" + message.getConversation().getChoreography().getName() + "/"
-                        + message.getConversation().getPartner().getPartnerId() + ") - " + e,
-                        message ), e );
+                        + message.getConversation().getPartner().getPartnerId() + ")", message, e ), e );
                     headerInvalid = true;
                 }
             }

@@ -215,11 +215,11 @@ public class SmtpSender extends AbstractService implements SenderAware {
                 
                 transport.close();
             } else {
-                LOG.error( new LogMessage("Cannot connect",messageContext.getMessagePojo()) );
+                LOG.error(new LogMessage("Cannot connect", messageContext.getMessagePojo()));
             }
 
         } catch ( Exception ex ) {
-            LOG.error( new LogMessage("Error sending SMTP message: " + ex,messageContext.getMessagePojo()) );
+            LOG.error(new LogMessage("Error sending SMTP message", messageContext, ex), ex);
             throw new NexusException( ex.getMessage() );
         }
         

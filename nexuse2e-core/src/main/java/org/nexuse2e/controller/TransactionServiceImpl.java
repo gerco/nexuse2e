@@ -623,7 +623,7 @@ public class TransactionServiceImpl implements TransactionService {
         try {
             updateTransaction( messagePojo, true );
         } catch (StateTransitionException stex) {
-            LOG.error( new LogMessage( "Program error: Unexpected " + stex + " was thrown",messagePojo) );
+            LOG.error( new LogMessage( "Program error: Unexpected " + stex + " was thrown", messagePojo) );
             stex.printStackTrace();
         }
         deregisterProcessingMessage( id );

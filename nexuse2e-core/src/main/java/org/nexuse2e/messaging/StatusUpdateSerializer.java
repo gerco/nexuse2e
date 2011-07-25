@@ -249,7 +249,7 @@ public class StatusUpdateSerializer implements Manageable {
                             try {
                                 messageContext.setMessagePojo( (MessagePojo) messageContext.getMessagePojo().clone() );
                             } catch ( CloneNotSupportedException e ) {
-                                LOG.error(new LogMessage( "Error cloning original MessagePojo!",messageContext.getMessagePojo()) );
+                                LOG.error(new LogMessage( "Error cloning original MessagePojo!", messageContext.getMessagePojo()) );
                             }
 
                             try {

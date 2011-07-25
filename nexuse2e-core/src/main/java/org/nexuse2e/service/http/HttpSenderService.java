@@ -140,13 +140,6 @@ public class HttpSenderService extends AbstractService implements SenderAware {
                 CertificatePojo metaPojo = Engine.getInstance().getActiveConfigurationAccessService()
                         .getFirstCertificateByType( Constants.CERTIFICATE_TYPE_CACERT_METADATA, true );
 
-                if ( localCert == null ) {
-                    LOG.error( new LogMessage("No local certificate selected for using SSL with partner "
-                            + participant.getPartner().getName(),messageContext.getMessagePojo()) );
-                    throw new NexusException( "No local certificate selected for using SSL with partner "
-                            + participant.getPartner().getName());
-                }
-
                 KeyStore privateKeyChain = CertificateUtil.getPKCS12KeyStore( localCert );
 
                 myhttps = new Protocol( "https",

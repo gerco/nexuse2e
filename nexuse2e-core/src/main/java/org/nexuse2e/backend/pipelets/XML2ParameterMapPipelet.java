@@ -99,9 +99,8 @@ public class XML2ParameterMapPipelet extends AbstractPipelet {
         RequestResponseData requestResponseData = null;
 
         if ( ( messageContext.getData() == null ) || !( messageContext.getData() instanceof RequestResponseData ) ) {
-            LOG.error(new LogMessage(  "Wrong class detected in data field, found " + messageContext.getData().getClass() ,messageContext.getMessagePojo()));
-            throw new NexusException( "Wrong class detected in data field, found "
-                    + messageContext.getData().getClass() );
+            LOG.error(new LogMessage("Wrong class detected in data field, found " + messageContext.getData().getClass() ,messageContext.getMessagePojo()));
+            throw new NexusException("Wrong class detected in data field, found " + messageContext.getData().getClass() );
         }
         requestResponseData = (RequestResponseData) messageContext.getData();
 

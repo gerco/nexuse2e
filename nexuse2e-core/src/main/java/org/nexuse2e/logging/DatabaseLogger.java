@@ -65,7 +65,7 @@ public class DatabaseLogger extends AbstractLogger {
 
         String description = "";
         if ( loggingevent.getMessage() instanceof LogMessage ) {
-            description = ( (LogMessage) loggingevent.getMessage() ).getDescription();
+            description = ( (LogMessage) loggingevent.getMessage() ).toString(false);
         } else {
             description = loggingevent.getMessage().toString();
         }

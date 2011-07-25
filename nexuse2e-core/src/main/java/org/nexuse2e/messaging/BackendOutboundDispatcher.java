@@ -133,7 +133,7 @@ public class BackendOutboundDispatcher extends ChoreographyValidator implements 
                     if ( messagePojo != null ) {
                         messageId = messagePojo.getMessageId();
                     }
-                    LOG.error( new LogMessage( "Error recovering message " + messageId + ": " + ex,messagePojo) );
+                    LOG.error(new LogMessage( "Error recovering message " + messageId, messagePojo, ex), ex);
                 }
             }
             LOG.trace( "took " + totalQueueingTime + " ms for message queueing and " + totalGetMessageTime

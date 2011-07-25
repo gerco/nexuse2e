@@ -374,10 +374,10 @@ public class XMLValidationPipelet extends AbstractPipelet {
                         String resultValue = mapData( xPath, document, nodeValue, definition );
                         ( (Attr) node ).setNodeValue( resultValue );
                     } else {
-                        LOG.error(new LogMessage(  "Node type not recognized: " + node.getClass(),messageContext.getMessagePojo()) );
+                        LOG.error(new LogMessage("Node type not recognized: " + node.getClass(),messageContext.getMessagePojo()) );
                     }
                 } else {
-                    LOG.warn(new LogMessage(  "Could not find matching node for " + definition.getXpath(),messageContext.getMessagePojo()) );
+                    LOG.warn(new LogMessage("Could not find matching node for " + definition.getXpath(),messageContext.getMessagePojo()) );
                 }
             }
             result = document;

@@ -165,15 +165,13 @@ public class MessageWorkerImpl implements MessageWorker {
                 messageContext.getStateMachine().processedBackend();
     
             } catch (NexusException nex) {
-                LOG.error(new LogMessage("Error processing backend: " + nex.getMessage(), messageContext), nex);
+                LOG.error(new LogMessage("Error processing backend", messageContext, nex), nex);
                 try {
                     messageContext.getStateMachine().processingFailed();
                 } catch (StateTransitionException e) {
                     LOG.warn(new LogMessage(e.getMessage(), messageContext));
                 } catch (NexusException e) {
-                    LOG.error(new LogMessage(
-                            "Error while setting conversation status to ERROR: "
-                                    + e.getMessage(), messageContext), e);
+                    LOG.error(new LogMessage("Error while setting conversation status to ERROR", messageContext, e), e);
                 }
             } catch (StateTransitionException stex) {
                 LOG.warn(new LogMessage(stex.getMessage(), messageContext));
@@ -222,7 +220,7 @@ public class MessageWorkerImpl implements MessageWorker {
                     Engine.getInstance().getCurrentConfiguration().getStaticBeanContainer().getFrontendOutboundDispatcher().processMessage(messageContext);
                 }
             } catch (NexusException e) {
-                LOG.error(new LogMessage("OutboundQueueListener.run() detected an exception: " + e.getMessage(), messageContext), e);
+                LOG.error(new LogMessage("OutboundQueueListener.run() detected an exception", messageContext, e), e);
             }
         }
     }

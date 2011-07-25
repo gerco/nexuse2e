@@ -69,6 +69,7 @@ import org.nexuse2e.configuration.ListParameter;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.controller.StateTransitionException;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.CertificatePojo;
@@ -213,18 +214,22 @@ public class WSClientService extends AbstractService implements SenderAware {
             try {
 
                 ParticipantPojo participant = messagePojo.getParticipant();
-                if (participant == null || participant.getLocalCertificate() == null) {
-                    throw new NexusException( "Connection to participant " + participant.getDescription() + " configured 'secure', but no certificate was selected" );
-                }
+//                if (participant == null || participant.getLocalCertificate() == null) {
+//                    throw new NexusException( "Connection to participant " + participant.getDescription() + " configured 'secure', but no certificate was selected" );
+//                }
                 CertificatePojo localCert = participant.getLocalCertificate();
                 CertificatePojo partnerCert = messagePojo.getParticipant().getConnection().getCertificate();
                 KeyStore caCerts = Engine.getInstance().getActiveConfigurationAccessService().getCacertsKeyStore();
-                KeyStore privateKeyChain = CertificateUtil.getPKCS12KeyStore( localCert );
-                KeyManager[] keyManagers = CertificateUtil.createKeyManagers(
-                        privateKeyChain, EncryptionUtil.decryptString( localCert.getPassword() ) );
+                KeyManager[] keyManagers = null;
+                if (localCert != null) {
+                    KeyStore privateKeyChain = CertificateUtil.getPKCS12KeyStore( localCert );
+                    keyManagers = CertificateUtil.createKeyManagers(
+                            privateKeyChain, EncryptionUtil.decryptString( localCert.getPassword() ) );
+                }
                 TrustManager[] trustManagers = CertificateUtil.createTrustManagers( caCerts, partnerCert );
 
                 FiltersType filters = new FiltersType();
+                filters.getInclude().add( ".*_WITH_3DES_.*" );
                 filters.getInclude().add( ".*_EXPORT_.*" );
                 filters.getInclude().add( ".*_EXPORT1024_.*" );
                 filters.getInclude().add( ".*_WITH_DES_.*" );
@@ -232,7 +237,9 @@ public class WSClientService extends AbstractService implements SenderAware {
                 TLSClientParameters tlsClientParameters = new TLSClientParameters();
                 tlsClientParameters.setCipherSuitesFilter( filters );
                 tlsClientParameters.setTrustManagers( trustManagers );
-                tlsClientParameters.setKeyManagers( keyManagers );
+                if (keyManagers != null) {
+                    tlsClientParameters.setKeyManagers( keyManagers );
+                }
 
                 httpConduit.setTlsClientParameters( tlsClientParameters );
 
@@ -299,7 +306,7 @@ public class WSClientService extends AbstractService implements SenderAware {
                 } catch (StateTransitionException stex) {
                     LOG.warn(stex);
                 }
-                LOG.error( "Error calling web service: ", e );
+                LOG.error( new LogMessage("Error calling web service", messageContext, e) );
                 throw new NexusException( e );
             }
         }

@@ -292,10 +292,10 @@ public class HttpReceiverService extends AbstractControllerService implements Re
                 fos.flush();
                 fos.close();
             } catch ( Exception e ) {
-                LOG.error( new LogMessage( "Error saving raw inbound message:" + e,messageContext.getMessagePojo()),e );
+                LOG.error( new LogMessage( "Error saving raw inbound message", messageContext, e), e );
             }
         } else {
-            LOG.error( new LogMessage( "No raw inbound message data found!",messageContext.getMessagePojo()) );
+            LOG.error( new LogMessage( "No raw inbound message data found!", messageContext ) );
         }
 
     }

@@ -179,8 +179,7 @@ public class LabelGeneratorPipelet extends AbstractPipelet {
                 }
             }
         } catch ( Exception e ) {
-            LOG.error( new LogMessage( "Error parsing outbound document: " + e,messageContext.getMessagePojo()) );
-            e.printStackTrace();
+            LOG.error( new LogMessage( "Error parsing outbound document", messageContext, e), e );
         }
 
         return messageContext;

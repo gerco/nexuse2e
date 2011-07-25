@@ -35,52 +35,96 @@ public class LogMessage implements Serializable {
 	private String description = null;
 	private String conversationId = "unknown";
 	private String messageId = "unknown";
+	private Throwable throwable;
 
-	/**
-	 * @param description
-	 */
-	public LogMessage(String description) {
+    /**
+     * @param description
+     */
+    public LogMessage(String description, Throwable t) {
 
-		this.description = description;
-	}
+        this.description = description;
+    }
 
-	/**
-	 * @param description
-	 * @param conversationId
-	 * @param messageId
-	 */
-	public LogMessage(String description, String conversationId,
-			String messageId) {
+    /**
+     * @param description
+     * @param conversationId
+     * @param messageId
+     */
+    public LogMessage(String description, String conversationId,
+            String messageId, Throwable t) {
 
-		this.description = description;
-		this.conversationId = conversationId;
-		this.messageId = messageId;
-	}
+        this.description = description;
+        this.conversationId = conversationId;
+        this.messageId = messageId;
+        this.throwable = t;
+    }
 
-	/**
-	 * @param description
-	 * @param messagePojo
-	 */
-	public LogMessage(String description, MessagePojo messagePojo) {
+    public LogMessage(String description, MessagePojo messagePojo, Throwable t) {
 
-		this.description = description;
-		if (messagePojo != null) {
-			if (messagePojo.getConversation() != null) {
-				this.conversationId = messagePojo.getConversation()
-						.getConversationId();
-			}
-			this.messageId = messagePojo.getMessageId();
-		}
-	}
+        this.description = description;
+        if (messagePojo != null) {
+            if (messagePojo.getConversation() != null) {
+                this.conversationId = messagePojo.getConversation()
+                        .getConversationId();
+            }
+            this.messageId = messagePojo.getMessageId();
+        }
+        this.throwable = t;
+    }
 
-	/**
-	 * @param description
-	 * @param messageContext
-	 */
-	public LogMessage(String description, MessageContext messageContext) {
-		this(description, (messageContext != null ? messageContext
-				.getMessagePojo() : null));
-	}
+    /**
+     * @param description
+     * @param messageContext
+     */
+    public LogMessage(String description, MessageContext messageContext, Throwable t) {
+        this(description, (messageContext != null ? messageContext.getMessagePojo() : null), t);
+    }
+
+    /**
+     * @param description
+     */
+    public LogMessage(String description) {
+
+        this.description = description;
+    }
+
+    /**
+     * @param description
+     * @param conversationId
+     * @param messageId
+     */
+    public LogMessage(String description, String conversationId,
+            String messageId) {
+
+        this.description = description;
+        this.conversationId = conversationId;
+        this.messageId = messageId;
+    }
+
+    /**
+     * @param description
+     * @param messagePojo
+     */
+    public LogMessage(String description, MessagePojo messagePojo) {
+
+        this.description = description;
+        if (messagePojo != null) {
+            if (messagePojo.getConversation() != null) {
+                this.conversationId = messagePojo.getConversation()
+                        .getConversationId();
+            }
+            this.messageId = messagePojo.getMessageId();
+        }
+    }
+
+    /**
+     * @param description
+     * @param messageContext
+     */
+    public LogMessage(String description, MessageContext messageContext) {
+        this(description, (messageContext != null ? messageContext
+                .getMessagePojo() : null));
+    }
 
 	/**
 	 * @return
@@ -142,6 +186,40 @@ public class LogMessage implements Serializable {
 	}
 
 	/**
+	 * Gets the <code>Throwable</code> associated with this <code>LogMessage</code>.
+	 * @return The <code>Throwable</code>, or <code>null</code> if no <code>Throwable</code> is associated with this
+	 * <code>LogMessage</code>.
+	 */
+	public Throwable getThrowable() {
+	    return throwable;
+	}
+	
+	/**
+	 * Extracts an error message from this <code>LogMessage</code>'s <code>Throwable</code>.
+	 * @return An error message, or <code>null</code> if no <code>Throwable</code> is associated with this
+	 * <code>LogMessage</code>.
+	 */
+	protected String getErrorMessage() {
+	    
+	    Throwable t = throwable;
+	    while (t != null) {
+	        if (t.getCause() != null) {
+	            t = t.getCause();
+	        } else {
+	            break;
+	        }
+	    }
+	    if (t != null) {
+	        if (t.getMessage() != null && t.getMessage().length() > 0) {
+	            return t.getMessage();
+	        } else {
+	            return t.getClass().getSimpleName();
+	        }
+	    }
+	    return null;
+	}
+	
+	/**
 	 * by default toString prepends message and conversation id. Use full=false
 	 * to suppress unnecessary ids.
 	 * 
@@ -150,10 +228,11 @@ public class LogMessage implements Serializable {
 	 */
 	public String toString(boolean full) {
 
+	    String errorMessage = getErrorMessage();
 		if (full) {
-			return conversationId + "/" + messageId + ": " + description;
+			return conversationId + "/" + messageId + ": " + description + (errorMessage != null ? ": " + errorMessage : "");
 		} else {
-			return description;
+			return description + (errorMessage != null ? ": " + errorMessage : "");
 		}
 	}
 }

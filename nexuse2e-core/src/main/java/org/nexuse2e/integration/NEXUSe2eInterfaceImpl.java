@@ -209,7 +209,7 @@ public class NEXUSe2eInterfaceImpl implements NEXUSe2eInterface {
                     return messageContext.getMessagePojo().getConversation().getConversationId();
                 }
             } catch ( NexusException e ) {
-                LOG.error(new LogMessage("Error submitting message: ", conversationId, messageId), e);
+                LOG.error(new LogMessage("Error submitting message: ", conversationId, messageId, e), e);
             }
         }
 

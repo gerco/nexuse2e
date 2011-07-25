@@ -196,10 +196,10 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                         Engine.getInstance().getTransactionService().updateRetryCount( messagePojo );
                     }
                 } catch ( Exception e1 ) {
-                    LOG.error( new LogMessage( "Error saving message", messagePojo ), e1 );
+                    LOG.error(new LogMessage("Error saving message", messagePojo, e1), e1);
                 }
 
-                LOG.error( new LogMessage( "Error sending message: " + e, messagePojo ), e );
+                LOG.error(new LogMessage("Error sending message", messagePojo, e), e);
             }
 
             if ( ( returnedMessageContext != null ) && !returnedMessageContext.equals( messageContext ) ) {
@@ -207,7 +207,7 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                     Engine.getInstance().getCurrentConfiguration().getStaticBeanContainer()
                             .getFrontendInboundDispatcher().processMessage( returnedMessageContext );
                 } catch ( NexusException e ) {
-                    LOG.error( new LogMessage( "Error processing synchronous reply: " + e, messagePojo) );
+                    LOG.error(new LogMessage("Error processing synchronous reply", messagePojo, e), e );
                 }
             }
 

@@ -235,12 +235,12 @@ public class SftpSenderService extends AbstractService implements SenderAware {
 
         } catch ( Exception e ) {
             e.printStackTrace();
-            LOG.error( new LogMessage( "Error uploading to SFTP account (" + messageContext.getMessagePojo().getParticipant().getConnection().getUri() + "): " + e, messageContext.getMessagePojo() ), e );
+            LOG.error(new LogMessage("Error uploading to SFTP account (" + messageContext.getMessagePojo().getParticipant().getConnection().getUri() + ")", messageContext, e), e);
             // bugfix: #10
             if ( e instanceof NexusException ) {
                 throw (NexusException) e;
             } else {
-                throw new NexusException( new LogMessage( "Error uploading to SFTP account (" + messageContext.getMessagePojo().getParticipant().getConnection().getUri() + ")", messageContext.getMessagePojo() ), e );
+                throw new NexusException(new LogMessage("Error uploading to SFTP account (" + messageContext.getMessagePojo().getParticipant().getConnection().getUri() + ")", messageContext, e), e);
             }
         } finally {
             if ( ( channelSftp != null ) && channelSftp.isConnected() ) {

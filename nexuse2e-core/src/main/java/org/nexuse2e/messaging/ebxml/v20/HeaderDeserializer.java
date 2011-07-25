@@ -327,8 +327,8 @@ public class HeaderDeserializer extends AbstractPipelet {
             messagePojo = Engine.getInstance().getTransactionService().initializeMessage( messagePojo, messageId,
                     conversationId, actionId, fromId, choreographyId );
         } catch ( NexusException ex ) {
-            LOG.error(new LogMessage(  "Error creating message: " + ex ,messagePojo));
-            LOG.info( new LogMessage( "Header received:\n" + new String( messagePojo.getHeaderData() ),messagePojo) );
+            LOG.error(new LogMessage("Error creating message", messagePojo, ex), ex);
+            LOG.info( new LogMessage("Header received:\n" + new String( messagePojo.getHeaderData() ),messagePojo) );
             throw ex;
         }
 
@@ -408,8 +408,7 @@ public class HeaderDeserializer extends AbstractPipelet {
                 }
             }
         } catch ( Exception ex ) {
-            LOG.error( new LogMessage( "Error processing acknowledgment: " + ex,messagePojo) );
-            ex.printStackTrace();
+            LOG.error( new LogMessage( "Error processing acknowledgment", messagePojo, ex), ex );
             throw new NexusException( ex.getMessage() );
         }
         LOG.trace( new LogMessage( "leave EbXMLV20HeaderDeserializer.unmarshallAcknowledgment",messagePojo) );
