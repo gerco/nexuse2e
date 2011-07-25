@@ -65,6 +65,7 @@
 					<xsd:any namespace="##any" processContents="lax"/>
 				</xsd:sequence>
 			</xsd:complexType>
+            <xsd:element name="problem" type="xsd:string"></xsd:element>
 		</xsd:schema>
 	</wsdl:types>
 	<message name="DocExchangeInput">
@@ -74,7 +75,7 @@
 		<part name="result" element="tns:outboundData"/>
 	</message>
 	<message name="DocExchangeFault">
-		<part name="problem" type="xsd:string"/>
+		<part name="problem" element="tns:problem"/>
 	</message>
 	<portType name="DocExchangePortType">
 		<operation name="execute">
@@ -86,7 +87,7 @@
 	</portType>
 	<binding name="DocExchangeBinding" type="tns:DocExchangePortType">
 		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
-		<operation name="execute">
+    	<operation name="execute">
 			<soap:operation soapAction="execute"/>
 			<input>
 				<soap:body use="literal"/>
