@@ -104,6 +104,7 @@ public class WSClientService extends AbstractService implements SenderAware {
     private static final String AUTH_TYPE_PARAM_NAME = "authType";
     private static final String SEND_RESPONSE_TO_FRONTEND_PARAM_NAME = "sendResponseToFrontend";
     private static final String EXCEPTIONS_PARAM_NAME = "exceptions";
+    private static final String CONTENT_TYPE_PARAM_NAME = "contentType";
     
     private TransportSender transportSender;
 
@@ -119,6 +120,8 @@ public class WSClientService extends AbstractService implements SenderAware {
                 "Activate in order to process the WS response through a frontend inbound pipeline", Boolean.TRUE ) );
         parameterMap.put( EXCEPTIONS_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "Exceptions",
                 "Comma-separated list of action names (process steps) that shall/shall not be processed through a frontend inbound pipeline", "" ) );
+        parameterMap.put( CONTENT_TYPE_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "Content-Type",
+                "Some Web Services require a specific content type (e.g., 'application/soap+xml; charset=utf-8'). Leave blank for default content type", "" ) );
     }
 
     @Override
@@ -158,6 +161,12 @@ public class WSClientService extends AbstractService implements SenderAware {
 
         HTTPClientPolicy httpClientPolicy = new HTTPClientPolicy();
         httpClientPolicy.setConnectionTimeout( messagePojo.getParticipant().getConnection().getTimeout() * 1000 );
+
+        // check if differing content-type is configured
+        String contentType = getParameter(CONTENT_TYPE_PARAM_NAME);
+        if (!StringUtils.isBlank(contentType)) {
+            httpClientPolicy.setContentType(contentType.trim());
+        }
         httpConduit.setClient( httpClientPolicy );
 
         // HTTP basic auth
@@ -249,7 +258,7 @@ public class WSClientService extends AbstractService implements SenderAware {
                 throw new NexusException( e );
             }
         }
-
+        
         replyMessageContext = new MessageContext();
         replyMessageContext.setRequestMessage( messageContext );
         try {
