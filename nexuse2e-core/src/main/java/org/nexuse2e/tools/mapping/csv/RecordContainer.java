@@ -59,6 +59,9 @@ public class RecordContainer {
         if ( records == null ) {
             records = new HashMap<String, Record>();
         }
+        if(records.size() == 0) {
+            records.put( "", newRecord );
+        }
         if ( newRecord != null && newRecord.getRecordID() != null ) {
             records.put( newRecord.getRecordID(), newRecord );
         } else {
@@ -89,6 +92,7 @@ public class RecordContainer {
             records = new HashMap<String, Record>();
             return null;
         }
+        
         for ( Record r : records.values() ) {
             System.out.println( "value:" + r.getRecordValue() ); //$NON-NLS-1$
             System.out.println( "id:" + r.getRecordID() ); //$NON-NLS-1$
@@ -96,7 +100,7 @@ public class RecordContainer {
                 return r;
             }
         }
-        return null;
+        return records.get( "" ); // use the first one
     }
 
     /**
