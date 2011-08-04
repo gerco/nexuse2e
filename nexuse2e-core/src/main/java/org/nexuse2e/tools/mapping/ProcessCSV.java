@@ -139,10 +139,10 @@ public class ProcessCSV {
             System.exit( 1 );
         }
 
-        LOG.error( "xmlBlock: " + xmlBlock );
-        LOG.error( "csvMapping: " + csvMapping );
-        LOG.error( "magic: " + magic );
-        LOG.error( "contentPath: " + contentPath );
+        System.out.println( "xmlBlock: " + xmlBlock );
+        System.out.println( "csvMapping: " + csvMapping );
+        System.out.println( "magic: " + magic );
+        System.out.println( "contentPath: " + contentPath );
 
         mfe.setCsvmappings( csvMapping );
         mfe.setXmlblocks( xmlBlock );
@@ -155,9 +155,9 @@ public class ProcessCSV {
             FileInputStream fis = new FileInputStream( new File( contentPath ) );
             String out = process.process( mfe, fis );
             fis.close();
-            LOG.error( "...................." );
-            LOG.error( out );
-            LOG.error( "...................." );
+            System.out.println( "...................." );
+            System.out.println( out );
+            System.out.println( "...................." );
         } catch ( Exception e ) {
             e.printStackTrace();
         }
