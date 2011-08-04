@@ -94,8 +94,6 @@ public class RecordContainer {
         }
         
         for ( Record r : records.values() ) {
-            System.out.println( "value:" + r.getRecordValue() ); //$NON-NLS-1$
-            System.out.println( "id:" + r.getRecordID() ); //$NON-NLS-1$
             if ( r.getRecordValue().equals( value ) ) {
                 return r;
             }
