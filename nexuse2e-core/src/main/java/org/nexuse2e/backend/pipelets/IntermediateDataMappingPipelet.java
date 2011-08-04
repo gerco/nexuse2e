@@ -37,6 +37,7 @@ import org.nexuse2e.backend.pipelets.helper.PartnerSpecificConfigurations;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.service.DataConversionException;
@@ -157,14 +158,13 @@ public class IntermediateDataMappingPipelet extends AbstractPipelet {
 
                     LOG.debug( "Modified records: " + records );
                 } catch ( Exception e ) {
-                    throw new NexusException( "Error converting records: " + e );
+                    throw new NexusException( new LogMessage( "Error converting records: " + e, messageContext) );
                 }
             } else {
-                throw new IllegalArgumentException( "No data found to store to database!" );
+                LOG.warn( new LogMessage( "no records found", messageContext) );
             }
         } else {
-            LOG.error( "No configuration file specified - no mapping possible." );
-            throw new NexusException( "No configuration file specified - no mapping possible." );
+            LOG.warn( new LogMessage("No configuration file specified - no mapping possible.",messageContext) );
         }// if
 
         return messageContext;
