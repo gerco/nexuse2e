@@ -162,7 +162,7 @@ public class FileSystemSavePipelet extends AbstractPipelet {
         File destDirFile = new File( destinationDirectory );
         // StringBuffer fileName = new StringBuffer();
 
-        if ( destDirFile.exists() || !destDirFile.isDirectory() ) {
+        if ( destDirFile.exists() && !destDirFile.isDirectory() ) {
             throw new FileNotFoundException( "Not a directory: " + destDirFile );
         }
         destDirFile.mkdirs();
