@@ -41,7 +41,7 @@ import org.nexuse2e.service.mail.SmtpSender;
  *
  * @author Jonas Reese
  */
-public class SMTPSenderBackendPipelet extends AbstractPipelet {
+public class XMLSmtpSenderBackendPipelet extends AbstractPipelet {
 
     private static Logger LOG = Logger.getLogger( AbstractPipelet.class );
     
@@ -65,7 +65,7 @@ public class SMTPSenderBackendPipelet extends AbstractPipelet {
     	add("application/xml");
     }};
     
-    public SMTPSenderBackendPipelet() {
+    public XMLSmtpSenderBackendPipelet() {
         parameterMap.put( SENDER_SERVICE, new ParameterDescriptor( ParameterType.SERVICE, "SMTP Sender Service",
             "The SMTP Service", SmtpSender.class ) );
         parameterMap.put( RECEIVER_PARAM_NAME, new ParameterDescriptor( ParameterType.STRING, "Email Receiver",
