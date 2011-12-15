@@ -22,8 +22,9 @@ package org.nexuse2e.backend.pipelets;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.Constants.ParameterType;
@@ -108,7 +109,7 @@ public class SMTPSenderBackendPipelet extends AbstractPipelet {
                 for (MessagePayloadPojo payload : list) {
                 	// Filter by MIME-type
                 	String payloadMimeType = payload.getMimeType();
-                	if (payloadMimeType == null 
+                	if (null == payloadMimeType 
                 			|| "".equals(payloadMimeType)
                 			|| !ACCEPTED_MIME_TYPES.contains(payloadMimeType)) {
                 		continue;
@@ -119,9 +120,9 @@ public class SMTPSenderBackendPipelet extends AbstractPipelet {
                     if (data != null) {
                     	String encoding = messageContext.getEncoding();
                     	try {
-							LOG.info(new LogMessage( new String( data, encoding ),messageContext) );
-							// Send the mail
 							smtpSenderSerivce.sendMessage(receiver, subject, new String(data, encoding));
+							
+							LOG.info(new LogMessage( new String( data, encoding ),messageContext) );
 						} catch (UnsupportedEncodingException e) {
 							LOG.warn(new LogMessage("configured payload encoding '"+encoding+"' is not supported", messageContext));
 							LOG.info(new LogMessage( new String( data ), messageContext) ); // use jvm encoding
@@ -131,10 +132,6 @@ public class SMTPSenderBackendPipelet extends AbstractPipelet {
                     }
                 }
             }
-        }
-        
-        if (((Boolean) getParameter(THROW_EXCEPTION_PARAM_NAME)).booleanValue()) {
-            throw new NexusException((String) getParameter(EXCEPTION_MESSAGE_PARAM_NAME));
         }
         
         return messageContext;
