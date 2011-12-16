@@ -37,11 +37,25 @@ import org.nexuse2e.service.Service;
 import org.nexuse2e.service.mail.SmtpSender;
 
 /**
+ * A backend pipelet that takes XML-payloads from messages and sends them to a configurable Mail address.
+ * Uses the <code>SmtpSender</code> service. This pipelet was necessary because the DebugPipelet doesn't allow
+ * filtering to a degree where it can be set to a single mimetype.
  * 
+ * Note that the CC and BCC address fields have been commented due to the SmtpSender not supporting these.
+ * If at a later time support becomes available, please re-enable the fields.
+ * 
+ * TODO: Refactor the payload-filtering so it is available to all Pipelets and can be configured by the user.
  *
  * @author Jascha Jerke
  */
 public class XMLSmtpSenderBackendPipelet extends AbstractPipelet {
+
+	
+	/**
+	 * ------------------
+	 * CONSTANTS & FIELDS
+	 * ------------------
+	 */
 
     private static Logger LOG = Logger.getLogger( XMLSmtpSenderBackendPipelet.class );
     
@@ -57,7 +71,6 @@ public class XMLSmtpSenderBackendPipelet extends AbstractPipelet {
 //    private String bcc = null;
     private String subject = null;
     
-    // TODO: It might be an idea to add support for selecting MIME-Types to the AbstractPipelet, and facilitate support for user-chosen filtering in the GUI
     @SuppressWarnings("serial")
 	private static final List<String> ACCEPTED_MIME_TYPES = new ArrayList<String>() {{
     	add("text/xml");
@@ -65,6 +78,17 @@ public class XMLSmtpSenderBackendPipelet extends AbstractPipelet {
     	add("application/xml");
     }};
     
+    
+    /**
+     * ------------
+     * CONSTRUCTORS
+     * ------------
+     */
+    
+    /**
+     * Creates a new XMLSmtpSenderBackendPipelet.
+     * It uses a ParameterMap to define the options the user can set.
+     */
     public XMLSmtpSenderBackendPipelet() {
         parameterMap.put( SENDER_SERVICE, new ParameterDescriptor( ParameterType.SERVICE, "SMTP Sender Service",
             "The SMTP Service", SmtpSender.class ) );
@@ -78,6 +102,13 @@ public class XMLSmtpSenderBackendPipelet extends AbstractPipelet {
                 "The email subject", "" ) );
         setFrontendPipelet( false );
     }
+    
+    
+    /**
+     * -------
+     * METHODS
+     * -------
+     */
     
     @Override
     public MessageContext processMessage( MessageContext messageContext )
@@ -114,14 +145,14 @@ public class XMLSmtpSenderBackendPipelet extends AbstractPipelet {
                 			|| !ACCEPTED_MIME_TYPES.contains(payloadMimeType)) {
                 		continue;
                 	}
-                	// Hoch damit und raus mit ihnen
+                	
                     byte[] data = payload.getPayloadData();
                     LOG.info( "Payload " + payload.getContentId() + ", mime-type " + payload.getMimeType() );
                     if (data != null) {
                     	String encoding = messageContext.getEncoding();
                     	try {
+                    		// Hand the data to the SMTP Sender Service
 							smtpSenderSerivce.sendMessage(receiver, subject, new String(data, encoding));
-							
 							LOG.info(new LogMessage( new String( data, encoding ),messageContext) );
 						} catch (UnsupportedEncodingException e) {
 							LOG.warn(new LogMessage("configured payload encoding '"+encoding+"' is not supported", messageContext));
