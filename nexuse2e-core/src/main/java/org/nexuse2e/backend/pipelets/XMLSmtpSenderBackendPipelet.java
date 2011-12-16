@@ -51,7 +51,7 @@ import org.nexuse2e.service.mail.SmtpSender;
 public class XMLSmtpSenderBackendPipelet extends AbstractPipelet {
 
 	
-	/**
+	/*
 	 * ------------------
 	 * CONSTANTS & FIELDS
 	 * ------------------
@@ -79,7 +79,7 @@ public class XMLSmtpSenderBackendPipelet extends AbstractPipelet {
     }};
     
     
-    /**
+    /*
      * ------------
      * CONSTRUCTORS
      * ------------
@@ -104,7 +104,7 @@ public class XMLSmtpSenderBackendPipelet extends AbstractPipelet {
     }
     
     
-    /**
+    /*
      * -------
      * METHODS
      * -------
