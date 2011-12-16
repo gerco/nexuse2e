@@ -57,9 +57,9 @@ public class XMLSmtpSenderBackendPipelet extends AbstractPipelet {
 //    private String bcc = null;
     private String subject = null;
     
+    // TODO: It might be an idea to add support for selecting MIME-Types to the AbstractPipelet, and facilitate support for user-chosen filtering in the GUI
     @SuppressWarnings("serial")
 	private static final List<String> ACCEPTED_MIME_TYPES = new ArrayList<String>() {{
-    	add("text/html");
     	add("text/xml");
     	add("application/xhtml+xml");
     	add("application/xml");
