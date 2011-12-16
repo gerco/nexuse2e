@@ -38,7 +38,7 @@ import org.nexuse2e.pojo.MessagePayloadPojo;
  */
 public class DebugBackendPipelet extends AbstractPipelet {
 
-    private static Logger LOG = Logger.getLogger( AbstractPipelet.class );
+    private static Logger LOG = Logger.getLogger( DebugBackendPipelet.class );
     
     public static final String TEXT_PARAM_NAME = "text";
     public static final String PRINT_PAYLOAD_PARAM_NAME = "printPayload";

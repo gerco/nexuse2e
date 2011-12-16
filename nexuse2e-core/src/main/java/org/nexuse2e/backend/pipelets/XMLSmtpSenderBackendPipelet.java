@@ -37,13 +37,13 @@ import org.nexuse2e.service.Service;
 import org.nexuse2e.service.mail.SmtpSender;
 
 /**
- * Pipelet for debugging purposes.
+ * 
  *
- * @author Jonas Reese
+ * @author Jascha Jerke
  */
 public class XMLSmtpSenderBackendPipelet extends AbstractPipelet {
 
-    private static Logger LOG = Logger.getLogger( AbstractPipelet.class );
+    private static Logger LOG = Logger.getLogger( XMLSmtpSenderBackendPipelet.class );
     
     public static final String SENDER_SERVICE = "sender_service";
     public static final String RECEIVER_PARAM_NAME = "receiver";
