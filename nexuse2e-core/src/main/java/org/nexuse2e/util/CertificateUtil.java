@@ -108,9 +108,10 @@ public class CertificateUtil {
 
 
     /**
-     * @param keyStore
-     * @return
-     * @throws IllegalArgumentException
+     * Gets a private key from the given <code>KeyStore</code>.
+     * 
+     * @param keyStore The key store, not <code>null</code>.
+     * @return The private key.
      */
     public static Key getPrivateKey( KeyStore keyStore ) throws IllegalArgumentException {
 

@@ -587,6 +587,13 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
                 "TRPPojo", "UserPojo", "GrantPojo", "RolePojo", "GenericParamPojo", "MappingPojo",};
 
         for ( String typeName : typeNames ) {
+            if ("MessagePojo".equals(typeName)) {
+                try {
+                    getHibernateTemplate().bulkUpdate( "delete from MessagePojo where referencedMessage is not null" );
+                } catch (Exception ex) {
+                    LOG.warn(ex);
+                }
+            }
             getHibernateTemplate().bulkUpdate( "delete from " + typeName );
         }
 

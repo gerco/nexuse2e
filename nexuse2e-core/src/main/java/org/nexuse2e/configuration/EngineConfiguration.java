@@ -1839,6 +1839,9 @@ public class EngineConfiguration implements ConfigurationAccessService {
 
             getCertificates( Constants.CERTIFICATE_TYPE_ALL, null ).removeAll( partner.getCertificates() );
 
+            for (ConnectionPojo conn : oldPartner.getConnections()) {
+                addToDeleteList( conn );
+            }
             addToDeleteList( oldPartner );
         }
     }
