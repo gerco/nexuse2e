@@ -188,7 +188,7 @@ public class FtpSenderService extends AbstractService implements SenderAware {
             }
             URL url = new URL( connection.getUri() );
 
-            LOG.trace( "Trying to connect to " + url.getHost() + " with user " + connection.getLoginName() + "..." );
+            LOG.trace( "Trying to connect to " + url.getHost() + " with user " + connection.getLoginName() + " ..." );
             ftpClient = new FTPClient();
             ftpClient.connect( url.getHost() );
             int reply = ftpClient.getReplyCode();
@@ -201,7 +201,7 @@ public class FtpSenderService extends AbstractService implements SenderAware {
                 }
 
                 if ( ftpClient.login( connection.getLoginName(), connection.getPassword() ) ) {
-                    LOG.trace( "Connected to " + url.getHost() + "." );
+                    LOG.trace( "Connected to " + url.getHost() + " successfully." );
 
                     ListParameter transfermode = getParameter( TRANSFER_MODE_PARAM_NAME );
                     if (transfermode != null && "binary".equals( transfermode.getSelectedValue() )) {
@@ -247,12 +247,21 @@ public class FtpSenderService extends AbstractService implements SenderAware {
                             tempFileName = newFileName + ".part";
                         }
 
-                        ftpClient.storeFile( tempFileName, bais );
-                        LOG.trace( "Uploaded file: " + tempFileName );
+                        boolean success = ftpClient.storeFile( tempFileName, bais );
+                        if (!success) {
+                            throw new NexusException("FTP upload of file " + tempFileName +
+                                    " failed. Last server reply was " + ftpClient.getReply() + ", " + ftpClient.getReplyString());
+                        }
+
+                        LOG.trace( "Uploaded file successfully: " + tempFileName );
 
                         if ( useTempFileName ) {
-                            ftpClient.rename( tempFileName, newFileName );
-                            LOG.trace( "Renamed file " + tempFileName + " to " + newFileName );
+                            success = ftpClient.rename( tempFileName, newFileName );
+                            if (!success) {
+                                throw new NexusException("FTP rename of file " + tempFileName + " to " + newFileName +
+                                        " failed. Last server reply was " + ftpClient.getReply() + ", " + ftpClient.getReplyString());
+                            }
+                            LOG.trace( "Successfully renamed file " + tempFileName + " to " + newFileName );
                         }
                     }
 
@@ -261,6 +270,8 @@ public class FtpSenderService extends AbstractService implements SenderAware {
 
             } else {
                 ftpClient.disconnect();
+                
+                throw new NexusException("FTP connect: Server responded with unexpected status " + reply);
             }
 
         } catch ( Exception e ) {
