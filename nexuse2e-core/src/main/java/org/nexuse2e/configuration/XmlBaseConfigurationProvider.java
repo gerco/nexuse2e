@@ -172,23 +172,12 @@ public class XmlBaseConfigurationProvider implements BaseConfigurationProvider {
                 }
             }
 
-            // patch connections and certificates, patch and map partners and connections
+            // patch connections, patch and map partners and connections
             Map<Integer, PartnerPojo> partnerMap = new HashMap<Integer, PartnerPojo>();
             Map<Integer, ConnectionPojo> connectionMap = new HashMap<Integer, ConnectionPojo>();
             if ( configuration.getPartners() != null ) {
                 for ( PartnerPojo partner : configuration.getPartners() ) {
                     partnerMap.put( partner.getNxPartnerId(), partner );
-                    Set<Integer> certIds = partner.getNxCertificateIds();
-                    partner.setNxCertificateIds( null );
-                    if ( certIds != null ) {
-                        for ( Integer nxCertId : certIds ) {
-                            CertificatePojo cert = certificateMap.get( nxCertId );
-                            if ( cert != null ) {
-                                partner.getCertificates().add( cert );
-                                cert.setPartner( partner );
-                            }
-                        }
-                    }
                     if ( partner.getConnections() != null ) {
                         for ( ConnectionPojo connection : partner.getConnections() ) {
                             connectionMap.put( connection.getNxConnectionId(), connection );
@@ -285,6 +274,24 @@ public class XmlBaseConfigurationProvider implements BaseConfigurationProvider {
                         choreography.setParticipants( new ArrayList<ParticipantPojo>() );
                     }
                     choreography.setNxChoreographyId( 0 );
+                }
+            }
+            
+            // patch certificates from connections for older configurations
+            for (ConnectionPojo conn : connectionMap.values()) {
+                if (conn.getCertificate() != null) {
+                    conn.getCertificate().setPartner(conn.getPartner());
+                }
+            }
+            
+            // patch certificates from nxPartnerId for newer configurations
+            for (CertificatePojo cert : certificateMap.values()) {
+                if (cert.getNxPartnerId() != 0) {
+                    PartnerPojo partner = partnerMap.get(cert.getNxPartnerId());
+                    if (partner != null) {
+                        cert.setPartner(partner);
+                        partner.getCertificates().add(cert);
+                    }
                 }
             }
 

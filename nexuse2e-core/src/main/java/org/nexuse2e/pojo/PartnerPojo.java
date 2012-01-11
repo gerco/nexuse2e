@@ -318,7 +318,9 @@ public class PartnerPojo implements NEXUSe2ePojo {
     /**
      * Required for JAXB
      * @return
+     * @deprecated Use {@link CertificatePojo#getNxPartnerId()} for certificate association.
      */
+    @Deprecated
     public Set<Integer> getNxCertificateIds() {
 
 
@@ -337,7 +339,9 @@ public class PartnerPojo implements NEXUSe2ePojo {
     /**
      * Required for JAXB
      * @param certificateIds
+     * @deprecated Use {@link CertificatePojo#setNxPartnerId(int))} for certificate association.
      */
+    @Deprecated
     public void setNxCertificateIds( Set<Integer> certificateIds ) {
         this.nxCertificateIds = certificateIds;
     }

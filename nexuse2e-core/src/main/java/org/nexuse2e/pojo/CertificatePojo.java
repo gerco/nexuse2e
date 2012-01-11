@@ -285,10 +285,10 @@ public class CertificatePojo implements NEXUSe2ePojo {
     /**
      * Required for JAXB
      */
+    @XmlAttribute
     public int getNxPartnerId() {
         if ( this.partner != null ) {
             return this.partner.getNxPartnerId();
-
         }
         return nxPartnerId;
     }
