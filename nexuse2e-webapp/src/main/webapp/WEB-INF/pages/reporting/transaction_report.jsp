@@ -558,6 +558,7 @@
 						<th class="NEXUSSection"></th>
 					</logic:equal>
 					<th class="NEXUSSection">Message ID</th>
+					<th class="NEXUSSection">Conversation ID</th>
 					<logic:equal name="reportingSettingsForm"
 						property="messColParticipantId" value="true">
 						<th class="NEXUSSection">Participant ID</th>
@@ -596,6 +597,10 @@
 						<td class="NEXUSValue"><nexus:link styleClass="NexusLink"
 							href="MessageView.do?mId=${message.messageId}&convId=${message.conversationId}&chorId=${message.choreographyId}&partnerId=${message.participantId}">
 							<bean:write name="message" property="messageId" />
+						</nexus:link></td>
+						<td class="NEXUSValue"><nexus:link styleClass="NexusLink"
+							href="ConversationView.do?convId=${message.nxConversationId}">
+							<bean:write name="message" property="conversationId" />
 						</nexus:link></td>
 						<logic:equal name="reportingSettingsForm"
 							property="messColParticipantId" value="true">
