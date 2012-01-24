@@ -36,6 +36,8 @@ public class MappingDefinition {
     boolean alignTarget  = false;
     boolean trimTarget   = false;
     int     lengthTarget = 0;
+    
+    int		mappingServiceId = 0;
 
     public String getXpath() {
 
@@ -154,5 +156,13 @@ public class MappingDefinition {
     
         this.category = category;
     }
+
+	public int getMappingServiceId() {
+		return mappingServiceId;
+	}
+
+	public void setMappingServiceId(int mappingServiceId) {
+		this.mappingServiceId = mappingServiceId;
+	}
 
 }
