@@ -114,7 +114,6 @@ public class DummyMappingService extends AbstractService implements DataMapper {
 				target = localPartnerId;
 			}
 		}
-		
 		// Replace the "GLOBAL" field
 		if ("GLOBAL".equals(source)) {
 			if (null != backendGlobalName && !"".equals(backendGlobalName)) {
@@ -178,6 +177,7 @@ public class DummyMappingService extends AbstractService implements DataMapper {
             
             int statusCode = method.getStatusCode();
             if (statusCode == 400) {
+            	// 400 is sent by the server if the given input, source or type did not make sense
             	LOG.warn(new LogMessage("Mapping access failed, input not understood by the server. HTTP status code follows in the next line:"));
             }
             if (statusCode > 299) {
@@ -195,6 +195,7 @@ public class DummyMappingService extends AbstractService implements DataMapper {
             byte[] body = method.getResponseBody();
             LOG.debug("MappingService response was: " + body.toString());
             
+            // Disect the return value to get the targetId-elements
             JSONObject resultJson = new JSONObject(new JSONTokener(body.toString()));
             if (null != resultJson.getJSONObject("result") && input.equals(resultJson.getJSONObject("result").get("sourceId").toString())) {
             	output = resultJson.getJSONObject("result").get("targetId").toString();
@@ -212,8 +213,7 @@ public class DummyMappingService extends AbstractService implements DataMapper {
             throw new NexusException(lm, ex);
         }
 		
-		
-		System.out.println("##MAPPINGSERVICE##: " + output);
+		LOG.debug("MappingService return value is: " + output);
 		return output;
 	}
 
@@ -222,7 +222,6 @@ public class DummyMappingService extends AbstractService implements DataMapper {
 	 */
 	public Set<String> getPossibleTypes() {
 		// For purposes of the dummy, a static list is used - ofc an actual implementation should query this from the backend.
-		
 		return supportedTypes;
 	}
 
