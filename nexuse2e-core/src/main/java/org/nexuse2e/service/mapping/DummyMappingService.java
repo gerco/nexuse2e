@@ -140,7 +140,7 @@ public class DummyMappingService extends AbstractService implements DataMapper {
         HttpClient client = null;
         URL receiverURL;
 		try {
-			System.out.println("##MAPPINGSERVICE##: Source is " + source + ", target is " + target + ", input is " + input + ", URL is " + getParameter(BACKEND_ACCESS_URL));
+			LOG.debug("MappingService changed input to 'cdwe1' for testing purposes, please remove this and the following line later!");
 			input = "cdwe1";
 			receiverURL = new URL(getParameter(BACKEND_ACCESS_URL) + source + "/" + target + "/" + input);
 			String pwd = getParameter(BACKEND_ACCESS_PASSWORD);
@@ -154,7 +154,7 @@ public class DummyMappingService extends AbstractService implements DataMapper {
 			client.getHttpConnectionManager().getParams().setConnectionTimeout(timeout);
 			client.getHttpConnectionManager().getParams().setSoTimeout(timeout);
 			method = new GetMethod(receiverURL.getPath());
-			method.setFollowRedirects(false);
+			method.setFollowRedirects(true);
 			method.getParams().setSoTimeout(timeout);
 			LOG.trace(new LogMessage("Created new NexusHttpConnection with timeout: " + timeout));
 
@@ -193,6 +193,7 @@ public class DummyMappingService extends AbstractService implements DataMapper {
 
             // Read the return value
             byte[] body = method.getResponseBody();
+            LOG.debug("MappingService response was: " + body.toString());
             
             JSONObject resultJson = new JSONObject(new JSONTokener(body.toString()));
             if (null != resultJson.getJSONObject("result") && input.equals(resultJson.getJSONObject("result").get("sourceId").toString())) {
@@ -206,12 +207,13 @@ public class DummyMappingService extends AbstractService implements DataMapper {
             LOG.warn(lm, cte);
             throw new NexusException(lm, cte);
         } catch (Exception ex) {
-            LogMessage lm = new LogMessage("Mapping access failed failed: " + ex);
+            LogMessage lm = new LogMessage("Mapping access failed: " + ex);
             LOG.warn(lm, ex);
             throw new NexusException(lm, ex);
         }
 		
 		
+		System.out.println("##MAPPINGSERVICE##: " + output);
 		return output;
 	}
 
