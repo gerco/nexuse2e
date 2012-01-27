@@ -33,7 +33,7 @@
         <many-to-one foreign-key="fk__msg__conversation_id" name="conversation" column="nx_conversation_id" class="org.nexuse2e.pojo.ConversationPojo" not-null="true" index="ix_message_1" lazy="false"/>
         
         <property name="messageId" type="string">
-            <column name="message_id" length="96" not-null="true">
+            <column name="message_id" length="256" not-null="true">
                 <comment>Protocol specific Message Id</comment>
             </column>
         </property>
