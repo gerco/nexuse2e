@@ -212,7 +212,7 @@ public class DataMappingPipelet extends AbstractPipelet {
             LOG.error(new LogMessage("Error processing XML payload", messageContext, e), e);
             throw new NexusException("Error processing XML payload", e);
         }
-		return null;
+		return messageContext;
 	}
 	
 	/**
