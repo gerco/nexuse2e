@@ -139,8 +139,8 @@ public class DummyMappingService extends AbstractService implements DataMapper {
         HttpClient client = null;
         URL receiverURL;
 		try {
-			LOG.debug("MappingService changed input to 'cdwe1' for testing purposes, please remove this and the following line later!");
-			input = "cdwe1";
+//			LOG.debug("MappingService changed input to 'cdwe1' for testing purposes, please remove this and the following line later!");
+//			input = "cdwe1";
 			receiverURL = new URL(getParameter(BACKEND_ACCESS_URL) + source + "/" + target + "/" + input);
 			String pwd = getParameter(BACKEND_ACCESS_PASSWORD);
 			String user = getParameter(BACKEND_ACCESS_USERNAME);
