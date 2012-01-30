@@ -193,10 +193,10 @@ public class DummyMappingService extends AbstractService implements DataMapper {
 
             // Read the return value
             byte[] body = method.getResponseBody();
-            LOG.debug("MappingService response was: " + body.toString());
+            LOG.debug("MappingService response was: " + new String(body));
             
             // Disect the return value to get the targetId-elements
-            JSONObject resultJson = new JSONObject(new JSONTokener(body.toString()));
+            JSONObject resultJson = new JSONObject(new JSONTokener(new String(body)));
             if (null != resultJson.getJSONObject("result") && input.equals(resultJson.getJSONObject("result").get("sourceId").toString())) {
             	output = resultJson.getJSONObject("result").get("targetId").toString();
             }
