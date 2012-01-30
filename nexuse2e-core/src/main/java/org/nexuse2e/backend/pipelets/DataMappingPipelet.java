@@ -185,8 +185,13 @@ public class DataMappingPipelet extends AbstractPipelet {
                 DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
                 Document document = builder.parse(bais);
-
-                localPartnerId = messageContext.getPartner().getPartnerId();
+                
+                LOG.debug(new LogMessage("Message: "+ messageContext.getMessagePojo()));
+                if(messageContext.getMessagePojo() != null && messageContext.getMessagePojo().getParticipant() != null &&
+                        messageContext.getMessagePojo().getParticipant().getLocalPartner() != null)
+                {
+                    localPartnerId = messageContext.getMessagePojo().getParticipant().getLocalPartner().getPartnerId();
+                }
                 document = processMappings(document);
 
                 // Serialize result
