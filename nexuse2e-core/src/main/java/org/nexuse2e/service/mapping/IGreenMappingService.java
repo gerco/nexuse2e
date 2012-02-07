@@ -21,19 +21,18 @@ import org.json.JSONTokener;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.Constants.ParameterType;
-import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.service.AbstractService;
 
 /**
- * This class serves as a dummy implementation of a data mapping service.
- * While it takes a full configuration and accepts input like a normal service, it will always
- * reply with the String "42".
+ * This class serves as a reference implementation of the DataMapper-interface.
+ * It's configuration is handled via the GUI, while some of the information it requires (for example, the source and target types)
+ * are supplied by the pipelet calling it.
  * 
  * @author JJerke
  */
-public class DummyMappingService extends AbstractService implements DataMapper {
+public class IGreenMappingService extends AbstractService implements DataMapper {
 	
 	/*
 	 * ---------------------
@@ -41,7 +40,7 @@ public class DummyMappingService extends AbstractService implements DataMapper {
 	 * ---------------------
 	 */
 	
-	private static Logger	LOG                     = Logger.getLogger( DummyMappingService.class );
+	private static Logger	LOG                     = Logger.getLogger( IGreenMappingService.class );
 	
 	private static final String BACKEND_ACCESS_URL  = "backend access url";
 	private static final String BACKEND_ACCESS_USERNAME = "backend username";
