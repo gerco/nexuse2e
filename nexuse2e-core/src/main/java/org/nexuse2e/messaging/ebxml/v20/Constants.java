@@ -50,5 +50,7 @@ public class Constants extends org.nexuse2e.messaging.ebxml.Constants {
     public static final String PROTOCOLSPECIFIC_FROMIDTYPE         = "fromIDType";
     public static final String PROTOCOLSPECIFIC_TOIDTYPE           = "toIDType";
     public static final String PROTOCOLSPECIFIC_SERVICE            = "service";
-
+    
+    public static final String CPAID_SCHEME_PARAM_NAME   = "cpaIdScheme";
+    public static final CPAIdScheme DEFAULT_CPAID_SCHEME = CPAIdScheme.CHOREOGRAPHYID;
 }

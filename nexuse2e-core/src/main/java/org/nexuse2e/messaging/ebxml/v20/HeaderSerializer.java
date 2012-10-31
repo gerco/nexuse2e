@@ -37,9 +37,13 @@ import javax.xml.soap.SOAPMessage;
 import javax.xml.soap.SOAPPart;
 
 import org.apache.log4j.Logger;
+import org.nexuse2e.Constants.Severity;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
-import org.nexuse2e.Constants.Severity;
+import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.configuration.EngineConfiguration;
+import org.nexuse2e.configuration.ListParameter;
+import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.ErrorDescriptor;
@@ -51,6 +55,8 @@ import org.nexuse2e.pojo.MessagePojo;
 public class HeaderSerializer extends AbstractPipelet {
 
     private static Logger LOG = Logger.getLogger( HeaderSerializer.class );
+    
+    protected CPAIdScheme cpaIdScheme = Constants.DEFAULT_CPAID_SCHEME;
 
     //    private static SOAPFactory    soapFactory    = null;
     //    private static MessageFactory messageFactory = null;
@@ -88,9 +94,33 @@ public class HeaderSerializer extends AbstractPipelet {
     public HeaderSerializer() {
 
         frontendPipelet = true;
+        
+        ListParameter cpaIdAlgorithms = new ListParameter();
+        for ( CPAIdScheme currScheme : CPAIdScheme.values() ) {
+        	cpaIdAlgorithms.addElement( currScheme.getDescription(), currScheme.name() );
+        }
+        parameterMap.put( Constants.CPAID_SCHEME_PARAM_NAME, new ParameterDescriptor( ParameterType.LIST, "CPAId scheme",
+                "The way NEXUSe2e sets the CPAId in message headers (default is '" + Constants.DEFAULT_CPAID_SCHEME.getDescription() + "')", cpaIdAlgorithms ) );
     }
 
-    /**
+    @Override
+	public void initialize(EngineConfiguration config)
+			throws InstantiationException {
+    	ListParameter lp = getParameter( Constants.CPAID_SCHEME_PARAM_NAME );
+    	if ( lp != null ) {
+			String cpaIdSchemeId = lp.getSelectedValue();
+			if ( cpaIdSchemeId != null && !"".equals( cpaIdSchemeId.trim() ) ) {
+				try {
+					cpaIdScheme = CPAIdScheme.valueOf( cpaIdSchemeId );
+				} catch ( IllegalArgumentException e ) {
+					cpaIdScheme = Constants.DEFAULT_CPAID_SCHEME;
+				}
+			}
+    	}
+		super.initialize(config);
+	}
+
+	/**
      * 
      */
     public MessageContext processMessage( MessageContext messageContext ) throws NexusException {
@@ -189,8 +219,7 @@ public class HeaderSerializer extends AbstractPipelet {
                 msgHeader.addChildElement( createPartyElement( soapFactory, "To", to, toIDType, null ) );
 
                 // CPA & ConversationId ------------------------------------------------
-                createSOAPElement( soapFactory, msgHeader, "CPAId", messagePojo.getConversation().getChoreography()
-                        .getName() );
+                createSOAPElement( soapFactory, msgHeader, "CPAId", cpaIdScheme.makeCPAId( messagePojo ) );
                 createSOAPElement( soapFactory, msgHeader, "ConversationId", messagePojo.getConversation()
                         .getConversationId() );
 
@@ -310,7 +339,7 @@ public class HeaderSerializer extends AbstractPipelet {
 
         return messageContext;
     }
-
+    
     /**
      * Creates acknowledgement elements.
      * 

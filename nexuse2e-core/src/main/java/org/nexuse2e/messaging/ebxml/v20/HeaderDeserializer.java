@@ -40,6 +40,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.configuration.EngineConfiguration;
+import org.nexuse2e.configuration.ListParameter;
+import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
@@ -55,13 +59,39 @@ public class HeaderDeserializer extends AbstractPipelet {
 
     private static Logger LOG = Logger.getLogger( HeaderDeserializer.class );
 
+    protected CPAIdScheme cpaIdScheme = Constants.DEFAULT_CPAID_SCHEME;
+    
     /**
      * Default constructor.
      */
     public HeaderDeserializer() {
 
         frontendPipelet = true;
+        
+        ListParameter cpaIdAlgorithms = new ListParameter();
+        for ( CPAIdScheme currScheme : CPAIdScheme.values() ) {
+        	cpaIdAlgorithms.addElement( currScheme.getDescription(), currScheme.name() );
+        }
+        parameterMap.put( Constants.CPAID_SCHEME_PARAM_NAME, new ParameterDescriptor( ParameterType.LIST, "CPAId scheme",
+                "The way NEXUSe2e processes the CPAId in message headers (default is '" + Constants.DEFAULT_CPAID_SCHEME.getDescription() + "')", cpaIdAlgorithms ) );
     }
+
+    @Override
+	public void initialize(EngineConfiguration config)
+			throws InstantiationException {
+    	ListParameter lp = getParameter( Constants.CPAID_SCHEME_PARAM_NAME );
+    	if ( lp != null ) {
+			String cpaIdSchemeId = lp.getSelectedValue();
+			if ( cpaIdSchemeId != null && !"".equals( cpaIdSchemeId.trim() ) ) {
+				try {
+					cpaIdScheme = CPAIdScheme.valueOf( cpaIdSchemeId );
+				} catch ( IllegalArgumentException e ) {
+					cpaIdScheme = Constants.DEFAULT_CPAID_SCHEME;
+				}
+			}
+    	}
+		super.initialize(config);
+	}
 
     /* (non-Javadoc)
      * @see org.nexuse2e.messaging.HeaderDeserializer#processMessage(com.tamgroup.nexus.e2e.persistence.pojo.MessagePojo)
@@ -268,7 +298,7 @@ public class HeaderDeserializer extends AbstractPipelet {
                             throw new NexusException( "No from party found in ebXML 2.0 message!" );
                         }
                     } else if ( localName.equals( "CPAId" ) ) {
-                        choreographyId = element.getValue();
+                        choreographyId = cpaIdScheme.getChoreographyIdFromCPAId( element.getValue() );
                         LOG.trace( new LogMessage( "Choreography:" + choreographyId,messagePojo) );
 
                     } else if ( localName.equals( "ConversationId" ) ) {
