@@ -133,7 +133,7 @@ public class PartnerCertificateUpdateAction extends NexusE2EAction {
         form.setCertificateId( cert.getName() );
         CertificatePromotionForm certs = new CertificatePromotionForm();
         
-        for (CertificatePojo certificate : engineConfiguration.getCertificates()) {
+        for (CertificatePojo certificate : engineConfiguration.getCertificates(Constants.CERTIFICATE_TYPE_CA, null)) {
             byte[] b = certificate.getBinaryData();
             if (b != null && b.length > 0) {
                 try {
