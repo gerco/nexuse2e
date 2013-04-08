@@ -953,7 +953,9 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
                 allowedMessageStatus = getAllowedMessageTransitionStatus(persistentMessage.getStatus(), messageStatus);
                 allowedConversationStatus = getAllowedConversationTransitionStatus(persistentMessage.getConversation().getStatus(), conversationStatus);
             }
-            message.setStatus( allowedMessageStatus );
+            if (message.getStatus() != allowedMessageStatus) {
+                message.setStatus( allowedMessageStatus );
+            }
             message.getConversation().setStatus( allowedConversationStatus );
             
             if (messageStatus == allowedMessageStatus && conversationStatus == allowedConversationStatus) {
@@ -1050,9 +1052,13 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
             }
             int messageStatus = persistentMessage.getStatus();
             int conversationStatus = persistentConversation.getStatus();
-            persistentMessage.setStatus(allowedMessageStatus);
+            if (persistentMessage.getStatus() != allowedMessageStatus) {
+                persistentMessage.setStatus(allowedMessageStatus);
+            }
             persistentMessage.setHeaderData(message.getHeaderData());
-            persistentConversation.setStatus(allowedConversationStatus);
+            if (persistentConversation.getStatus() != allowedConversationStatus) {
+                persistentConversation.setStatus(allowedConversationStatus);
+            }
 
             // persist result
             List<NEXUSe2ePojo> entities = new ArrayList<NEXUSe2ePojo>(); 
@@ -1088,7 +1094,9 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
             }
             if (updateScope.updateMessage() || updateScope.updateReferencedMessage()) {
                 message.setReferencedMessage(persistentMessage.getReferencedMessage());
-                message.setStatus(allowedMessageStatus);
+                if (message.getStatus() != allowedMessageStatus) {
+                    message.setStatus(allowedMessageStatus);
+                }
                 message.setEndDate(persistentMessage.getEndDate());
                 message.setNxId(message.getNxId());
                 message.setRetries(message.getRetries());

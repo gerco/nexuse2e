@@ -46,7 +46,7 @@ public interface UpdateTransactionOperation {
         REFERENCED_MESSAGE_ONLY(false, false, true),
         /** Update message and referenced message */
         MESSAGES(false, true, true),
-        /** Update message and referenced message */
+        /** Update conv, message, and referenced message */
         ALL(true, true, true),
         /** Update nothing */
         NOTHING(false, false, false);

@@ -23,7 +23,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-    <class name="org.nexuse2e.pojo.MessagePojo" table="nx_message" lazy="true">
+    <class name="org.nexuse2e.pojo.MessagePojo" table="nx_message" lazy="true" dynamic-update="true">
         <comment></comment>
         <id name="nxMessageId" type="int">
             <column name="nx_message_id" sql-type="integer"/>
