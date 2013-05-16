@@ -565,8 +565,7 @@ public abstract class AbstractFtpService extends AbstractService {
 
                 // process files
             } catch ( Exception e ) {
-                e.printStackTrace();
-                LOG.error( "Error polling FTP account (" + getParameter( URL_PARAM_NAME ) + "): " + e );
+                LOG.error( "Error polling FTP account (" + getParameter( URL_PARAM_NAME ) + "): ", e );
             } finally {
                 if ( ftp.isConnected() ) {
                     try {
