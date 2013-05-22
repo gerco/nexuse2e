@@ -49,11 +49,11 @@ public class BackendPipeline extends AbstractPipeline implements ActionSpecific 
     public MessageContext processMessage( MessageContext messageContext ) throws IllegalArgumentException,
             IllegalStateException, NexusException {
 
-        LOG.debug( new LogMessage( "BackendPipeline.processMessage...",messageContext.getMessagePojo()) );
-
         if ( messageContext == null ) {
             throw new IllegalArgumentException( "No content found" );
         }
+
+        LOG.debug( new LogMessage( "BackendPipeline.processMessage...",messageContext.getMessagePojo()) );
 
         if ( pipelineEndpoint == null ) {
             throw new NexusException( "PipelineEndpoint must not be null!" );

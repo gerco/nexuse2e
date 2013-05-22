@@ -533,7 +533,7 @@ public abstract class AbstractFtpService extends AbstractService {
                                             localFiles.add( localFile );
                                         }
                                     } catch ( Exception e ) {
-                                        LOG.error( "Error processing file " + file.getName() + ": " + e );
+                                        LOG.error( "Error processing file " + file.getName() + ": " + e, e );
                                     }
                                 }
                             }

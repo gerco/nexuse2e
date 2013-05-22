@@ -133,7 +133,7 @@ public class HTTPMessagePackager extends AbstractPipelet {
             }
         }
 
-        msgBuffer.append( Constants.MIMEPACKBOUNDARY );
+        msgBuffer.append( Constants.MIMEPACKBOUNDARY + CRLF );
         
         return msgBuffer.toString();
     }

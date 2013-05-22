@@ -158,7 +158,7 @@ public class IntermediateDataMappingPipelet extends AbstractPipelet {
 
                     LOG.debug( "Modified records: " + records );
                 } catch ( Exception e ) {
-                    throw new NexusException( new LogMessage( "Error converting records: " + e, messageContext) );
+                    throw new NexusException( new LogMessage( "Error converting records: " + e, messageContext), e );
                 }
             } else {
                 LOG.warn( new LogMessage( "no records found", messageContext) );

@@ -78,8 +78,8 @@ public class HTTPPlainMessageUnpacker extends AbstractPipelet {
 
             messageContext.getMessagePojo().getMessagePayloads().add( messagePayloadPojo );
         } catch ( Exception e ) {
-            LOG.error( "Error retrieving payload from HTTP POST: " + e );
-            throw new NexusException( "Error retrieving payload from HTTP POST: " + e );
+            LOG.error( "Error retrieving payload from HTTP POST: " + e, e );
+            throw new NexusException( "Error retrieving payload from HTTP POST: " + e, e );
         }
 
         return messageContext;

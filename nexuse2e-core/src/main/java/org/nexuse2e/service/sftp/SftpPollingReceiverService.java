@@ -393,8 +393,7 @@ public class SftpPollingReceiverService extends AbstractService implements Recei
             }
 
         } catch ( Exception e ) {
-            e.printStackTrace();
-            LOG.error( "Error polling FTP account: " + e );
+            LOG.error( "Error polling FTP account: " + e, e );
         } finally {
             if ( ( channelSftp != null ) && channelSftp.isConnected() ) {
                 LOG.trace( "Closing channel..." );
@@ -513,7 +512,7 @@ public class SftpPollingReceiverService extends AbstractService implements Recei
                                         localFiles.add( localFile );
                                     }
                                 } catch ( Exception e ) {
-                                    LOG.error( "Error processing file " + file.getFilename() + ": " + e );
+                                    LOG.error( "Error processing file " + file.getFilename() + ": " + e, e );
                                 }
                             } catch ( SftpException sftpEx ) {
                                 LOG.error( "Could not retrieve file " + file.getFilename() );
@@ -533,7 +532,7 @@ public class SftpPollingReceiverService extends AbstractService implements Recei
                 // process files
             } catch ( Exception e ) {
                 e.printStackTrace();
-                LOG.error( "Error polling FTP account (" + getParameter( URL_PARAM_NAME ) + "): " + e );
+                LOG.error( "Error polling FTP account (" + getParameter( URL_PARAM_NAME ) + "): " + e, e );
             } finally {
                 if ( ( channelSftp != null ) && channelSftp.isConnected() ) {
                     LOG.trace( "Closing channel..." );

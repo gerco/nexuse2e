@@ -106,7 +106,7 @@ public class DBIntegrationPipelet extends AbstractPipelet {
                 preparedstatement.executeUpdate();
             } catch ( Exception exception ) {
                 LOG.error( "Error processing inbound message, Conversation ID  "
-                        + messageContext.getMessagePojo().getConversation().getConversationId() + exception.toString() );
+                        + messageContext.getMessagePojo().getConversation().getConversationId(), exception );
             } finally {
                 try {
                     preparedstatement.close();
@@ -116,7 +116,7 @@ public class DBIntegrationPipelet extends AbstractPipelet {
                 try {
                     dbService.releaseDatabaseConnection( connection );
                 } catch ( SQLException e ) {
-                    LOG.error( "Error while releasing database connection: " + e );
+                    LOG.error( "Error while releasing database connection", e );
                 }
             }
         }

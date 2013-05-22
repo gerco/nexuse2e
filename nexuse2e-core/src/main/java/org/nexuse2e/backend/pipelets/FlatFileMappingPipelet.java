@@ -169,7 +169,7 @@ public class FlatFileMappingPipelet extends AbstractPipelet {
             }
         } catch ( Exception e ) {
             e.printStackTrace();
-            throw new NexusException( "Error mapping payload: " + e );
+            throw new NexusException( "Error mapping payload", e );
         }
         return messageContext;
     }

@@ -94,6 +94,7 @@ public class HTTPIntegrationPipelet extends AbstractPipelet {
         boolean sendAsParam = sendAsParamBoolean.booleanValue();
 
         MessagePojo messagePojo = messageContext.getMessagePojo();
+        //MessageLabelPojo messageLabelPojo = null;
         List<MessageLabelPojo> messageLabels = null;
 
         Boolean includeLabelsBoolean = getParameter( SEND_AS_PARAM );
@@ -105,6 +106,9 @@ public class HTTPIntegrationPipelet extends AbstractPipelet {
                 messageLabels = messagePojo.getMessageLabels();
             }
         }
+
+        //boolean includeLabels = includeLabelsBoolean.booleanValue() && ( messageLabels != null )
+        //        && ( messageLabels.size() != 0 );
 
         // Set label prefix
         String tempLabelPrefix = getParameter( LABEL_PREFIX );
@@ -155,8 +159,7 @@ public class HTTPIntegrationPipelet extends AbstractPipelet {
                 LOG.debug( new LogMessage( "Response status code: " + result,messagePojo) );
                 LOG.debug( new LogMessage( "Response status message:\n" + post.getResponseBodyAsString(),messagePojo) );
             } catch ( Exception ex ) {
-                LOG.error( new LogMessage( "Error posting inbound message body to '" + getParameter( URL ), messagePojo, ex) );
-                ex.printStackTrace();
+                LOG.error( new LogMessage( "Error posting inbound message body to '" + getParameter( URL ) + "': " + ex,messagePojo), ex );
             } finally {
                 // Release current connection to the connection pool once you are done
                 post.releaseConnection();

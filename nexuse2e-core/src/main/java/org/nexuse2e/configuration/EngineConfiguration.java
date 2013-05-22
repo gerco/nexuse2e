@@ -313,7 +313,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
                 protocolAdapter.setKey( protocolSpecificKey );
                 protocolAdapters[index++] = protocolAdapter;
             } catch ( Exception e ) {
-                LOG.error( "Could not instantiate protocol adapter class: " + protocolAdapterClass + " - " + e );
+                LOG.error( "Could not instantiate protocol adapter class: " + protocolAdapterClass, e );
                 throw new NexusException( "Could not instantiate protocol adapter class: " + protocolAdapterClass
                         + " - " + e, e );
             }
@@ -542,7 +542,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
                         try {
                             pipelet = getPipeletInstanceFromPojo( pipeletPojo );
                         } catch ( NexusException e ) {
-                            LOG.error( "Error while creating pipelet instance: " + e.getMessage() );
+                            LOG.error( "Error while creating pipelet instance: " + e.getMessage(), e );
                             break;
                         }
                         if ( pos == 0 ) {
@@ -590,7 +590,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
                             try {
                                 pipelet = getPipeletInstanceFromPojo( pipeletPojo );
                             } catch ( NexusException e ) {
-                                LOG.error( "Error while creating pipelet instance: " + e.getMessage() );
+                                LOG.error( "Error while creating pipelet instance: " + e.getMessage(), e );
                                 break;
                             }
                             if ( pos == 0 ) {
@@ -2245,14 +2245,14 @@ public class EngineConfiguration implements ConfigurationAccessService {
                         // log.debug( "cert: " + x509Certificate.getSubjectDN() + " - " + tempCert.getCertificateId() );
                         keyStore.setCertificateEntry( tempCert.getName(), x509Certificate );
                     } catch ( Exception e ) {
-                        LOG.error( "Error importing certificate " + tempCert.getName() + ": " + e.getMessage() );
+                        LOG.error( "Error importing certificate " + tempCert.getName() + ": " + e.getMessage(), e );
                     }
                 }
 
             }
             return keyStore;
         } catch ( Exception e ) {
-            LOG.error( "Error initializing Certificate store.  Exception:  " + e.getMessage() );
+            LOG.error( "Error initializing Certificate store.  Exception:  " + e.getMessage(), e );
             e.printStackTrace();
         }
         return null;

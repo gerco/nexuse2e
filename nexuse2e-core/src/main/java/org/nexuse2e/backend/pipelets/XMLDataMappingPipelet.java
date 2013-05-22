@@ -164,12 +164,12 @@ public class XMLDataMappingPipelet extends AbstractPipelet {
                     }
                 }
             } catch ( Exception e ) {
-                LOG.error(new LogMessage("Error processing XML payload", messageContext, e), e);
-                throw new NexusException("Error processing XML payload", e);
+                LOG.error(new LogMessage(  "Error processing XML payload: " + e,messageContext ), e );
+                throw new NexusException( "Error processing XML payload: " + e, e );
             }
 
         } else {
-            LOG.error( new LogMessage( "No configuration file specified - no mapping possible.", messageContext ) );
+            LOG.error( new LogMessage( "No configuration file specified - no mapping possible.",messageContext ) );
             throw new NexusException( "No configuration file specified - no mapping possible." );
         }// if
 

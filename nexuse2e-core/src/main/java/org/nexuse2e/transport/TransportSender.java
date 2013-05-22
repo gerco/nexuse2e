@@ -126,7 +126,7 @@ public class TransportSender extends AbstractPipelet {
                 try {
                     initialize( Engine.getInstance().getCurrentConfiguration() );
                 } catch ( InstantiationException e ) {
-                    LOG.error( "Error initializing component: " + e );
+                    LOG.error( "Error initializing component: " + e, e );
                 }
             }
         }

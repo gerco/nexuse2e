@@ -173,7 +173,7 @@ public class HttpSenderService extends AbstractService implements SenderAware {
             }
         } catch ( Exception e ) {
             e.printStackTrace();
-            throw new NexusException( "Error creating HTTP POST call: " + e );
+            throw new NexusException( "Error creating HTTP POST call: " + e, e );
         }
 
         try {

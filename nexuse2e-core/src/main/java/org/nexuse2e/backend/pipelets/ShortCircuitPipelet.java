@@ -98,8 +98,7 @@ public class ShortCircuitPipelet extends AbstractPipelet {
                                 .getConversationId(), action, null, "<?xml version=\"1.0\" encoding=\"UTF-8\"?><test />"
                                 .getBytes() );
                     } catch ( NexusException e ) {
-                        LOG.debug( new LogMessage( "sendStringMessage - error: " + e,messageContext.getMessagePojo()) );
-                        e.printStackTrace();
+                        LOG.debug( new LogMessage( "sendStringMessage - error: " + e,messageContext.getMessagePojo()), e );
                     }
                 }
             }

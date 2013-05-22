@@ -292,7 +292,7 @@ public class DirectoryScannerService extends AbstractService implements Schedule
                 // System.out.println("Waiting " + DIRECTORY_LISTING_WAIT_TIME + " ms for files to be completely written!");
                 Thread.sleep( DIRECTORY_LISTING_WAIT_TIME );
             } catch ( InterruptedException e ) {
-                LOG.error( "Waiting thread was interrupted:  " + e );
+                LOG.error( "Waiting thread was interrupted", e );
             }
 
             for ( int i = 0; i < files.length; i++ ) {
@@ -302,14 +302,14 @@ public class DirectoryScannerService extends AbstractService implements Schedule
                         LOG.trace( "Processing file: " + files[i].getAbsoluteFile() );
                         processFile( files[i].getAbsolutePath() );
                     } catch ( Exception ex ) {
-                        LOG.error( "Exception submitting file: " + ex );
+                        LOG.error( "Exception submitting file", ex );
                     }
                 } else {
                     System.out.println( "Skipping file: " + files[i].getAbsoluteFile() );
                 }
             }
         } catch ( Exception ioEx ) {
-            LOG.error( "Error reading directory:  " + ioEx );
+            LOG.error( "Error reading directory", ioEx );
         }
 
     } // scheduleNotify
@@ -411,7 +411,7 @@ public class DirectoryScannerService extends AbstractService implements Schedule
                 // Remove file from the file system.
                 deleteFile( newFile );
             } catch ( Exception ex ) {
-                LOG.error( "Exception: " + ex );
+                LOG.error( ex );
             }
         }
     }

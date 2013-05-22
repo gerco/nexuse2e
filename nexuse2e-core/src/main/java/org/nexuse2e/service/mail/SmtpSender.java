@@ -220,7 +220,7 @@ public class SmtpSender extends AbstractService implements SenderAware {
 
         } catch ( Exception ex ) {
             LOG.error(new LogMessage("Error sending SMTP message", messageContext, ex), ex);
-            throw new NexusException( ex.getMessage() );
+            throw new NexusException( ex );
         }
         
         return null;

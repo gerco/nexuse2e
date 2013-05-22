@@ -97,13 +97,13 @@ public class CACertFinishExportAction extends NexusE2EAction {
                 fos.close();
             } catch ( Exception e ) {
                 e.printStackTrace();
-                LOG.error( "Exception saving keystore: " + e );
+                LOG.error( "Exception saving keystore", e );
 
                 ActionMessage errorMessage = new ActionMessage( "generic.error", e );
                 errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
             } catch ( Error e ) {
                 e.printStackTrace();
-                LOG.error( "Error saving keystore: " + e );
+                LOG.error( "Error saving keystore", e );
 
                 ActionMessage errorMessage = new ActionMessage( "generic.error", e );
                 errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );

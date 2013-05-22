@@ -25,6 +25,7 @@ import javax.xml.namespace.QName;
 public class ObjectFactory {
 
     private final static QName _OutboundData_QNAME = new QName("urn:aggateway:names:ws:docexchange", "outboundData");
+    private final static QName _Problem_QNAME = new QName("urn:aggateway:names:ws:docexchange", "problem");
     private final static QName _InboundData_QNAME = new QName("urn:aggateway:names:ws:docexchange", "inboundData");
 
     /**
@@ -35,19 +36,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link OutboundData }
-     * 
-     */
-    public OutboundData createOutboundData() {
-        return new OutboundData();
-    }
-
-    /**
      * Create an instance of {@link InboundData }
      * 
      */
     public InboundData createInboundData() {
         return new InboundData();
+    }
+
+    /**
+     * Create an instance of {@link OutboundData }
+     * 
+     */
+    public OutboundData createOutboundData() {
+        return new OutboundData();
     }
 
     /**
@@ -65,6 +66,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "urn:aggateway:names:ws:docexchange", name = "outboundData")
     public JAXBElement<OutboundData> createOutboundData(OutboundData value) {
         return new JAXBElement<OutboundData>(_OutboundData_QNAME, OutboundData.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "urn:aggateway:names:ws:docexchange", name = "problem")
+    public JAXBElement<String> createProblem(String value) {
+        return new JAXBElement<String>(_Problem_QNAME, String.class, null, value);
     }
 
     /**

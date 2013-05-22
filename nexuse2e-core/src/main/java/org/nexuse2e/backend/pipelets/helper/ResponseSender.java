@@ -61,7 +61,7 @@ public class ResponseSender implements Runnable {
                     this.wait( delay );
                 }
             } catch ( InterruptedException e ) {
-                LOG.warn( "Interrupted while waiting for response message submission: " + e );
+                LOG.warn( "Interrupted while waiting for response message submission", e );
             }
             if ( LOG.isTraceEnabled() ) {
                 LOG.trace( "Result code: " + requestResponseData.getResponseCode() );
@@ -74,7 +74,7 @@ public class ResponseSender implements Runnable {
             backendPipelineDispatcher.processMessage( partner, choreography, action, conversation, null,
                     requestResponseData, requestResponseData.getResponseString().getBytes() );
         } catch ( NexusException e ) {
-            LOG.error( "Error submitting response message for HTTP integration: " + e );
+            LOG.error( "Error submitting response message for HTTP integration", e );
         }
 
     }

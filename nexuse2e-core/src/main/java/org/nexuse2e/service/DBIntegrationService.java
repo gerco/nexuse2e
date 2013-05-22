@@ -274,10 +274,9 @@ public class DBIntegrationService extends AbstractService implements SchedulerCl
             }
         } catch ( SQLException sqlException ) {
             sqlException.printStackTrace();
-            LOG.error( "Error accessing result set retrieved for new payloads. Exception:  " + sqlException.toString() );
+            LOG.error( "Error accessing result set retrieved for new payloads. Exception:  " + sqlException, sqlException );
         } catch ( Exception exception ) {
-            LOG.error( "Error sending new payloads. Exception:  " + exception.toString() );
-            exception.printStackTrace();
+            LOG.error( "Error sending new payloads. Exception:  " + exception, exception );
         } finally {
             try {
                 resultSet.close();
