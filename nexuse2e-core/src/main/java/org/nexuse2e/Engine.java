@@ -362,27 +362,20 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                     try {
                         bean.initialize( currentConfiguration );
                     } catch ( Exception e ) {
-                        LOG.error( "Error initializing managable bean - " + bean.getClass().getCanonicalName() + ": "
-                                + e );
-                        if ( LOG.isTraceEnabled() ) {
-                            e.printStackTrace();
-                        }
+                        LOG.error( "Error initializing managable bean - " + bean.getClass().getCanonicalName(), e );
                     }
                 } else if ( !( bean instanceof org.nexuse2e.logging.LogAppender ) ) {
                     LOG.error( "Bean already initialized: " + bean.getClass().getName() );
                 }
             }
         } catch ( RuntimeException rex ) {
-            rex.printStackTrace();
-            LOG.error( "Error initializing Engine: " + rex );
+            LOG.error( "Error initializing Engine", rex );
             throw new InstantiationException( rex.getMessage() );
         } catch ( Exception e ) {
-            e.printStackTrace();
-            LOG.error( "Error initializing Engine: " + e );
+            LOG.error( "Error initializing Engine", e );
             throw new InstantiationException( e.getMessage() );
         } catch ( Error e ) {
-            e.printStackTrace();
-            LOG.error( "Error initializing Engine: " + e );
+            LOG.error( "Error initializing Engine", e );
             throw new InstantiationException( e.getMessage() );
         }
 
