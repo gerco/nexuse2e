@@ -61,7 +61,7 @@
                 <comment></comment>
             </column>
         </property>
-        <property name="value" type="string">
+        <property name="value" type="text">
             <column name="param_value" length="8192" not-null="false">
                 <comment></comment>
             </column>
