@@ -136,6 +136,7 @@ public class HTTPIntegrationPipelet extends AbstractPipelet {
         // Disable cookies
         HttpMethodParams httpMethodParams = new HttpMethodParams();
         httpMethodParams.setCookiePolicy( CookiePolicy.IGNORE_COOKIES );
+        httpMethodParams.setContentCharset("UTF-8");
         post.setParams( httpMethodParams );
 
         HttpClient httpclient = new HttpClient();
