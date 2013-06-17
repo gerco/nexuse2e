@@ -102,64 +102,14 @@ public abstract class DatabasePatch {
             sessionRequested = true;
             
         }
-        boolean indexNameFound = false;
-        boolean indexColumnsFound = false;
         
-//        IndexWorker indexWork = new IndexWorker();
+        IndexWorker indexWork = new IndexWorker();
         try {
-//            indexWork.indexName = indexName;
-//            indexWork.tableName = tableName;
-//            indexWork.columnName = columns;
+            indexWork.indexName = indexName;
+            indexWork.tableName = tableName;
+            indexWork.columnName = columnName;
             
-            
-            
-            Connection connection = session.connection();
-            
-            
-            try {
-                DatabaseMetaData metaData = null;
-                metaData = connection.getMetaData();
-                ResultSet result = metaData.getIndexInfo( null, null, tableName, false, false );
-                String tempIndexName = "";
-                Map<String, List<String>> indexMap = new HashMap<String, List<String>>();
-                List<String> colList = new ArrayList<String>();
-                while(result.next()) {
-                    String name = result.getString( 6 );
-                    if(name == null) {
-                        continue;
-                    }
-                    String column = result.getString( 9 );
-                    if(!name.equals( tempIndexName )) {
-                        colList = new ArrayList<String>();
-                        indexMap.put( name, colList );
-                        tempIndexName = name;
-                    }
-                    colList.add( column );
-                }
-                if(indexMap.get( indexName )!= null) {
-                    indexNameFound = true;
-                }
-                Collection<List<String>> cols = indexMap.values();
-                Iterator<List<String>> i = cols.iterator();
-                
-                while(i.hasNext()){
-                    String tempColumns = "";
-                    List<String> index = i.next();
-                    for ( String col : index ) {
-                        tempColumns += (tempColumns.length() == 0 ? col:","+col );
-                    }
-                    System.out.println("index: "+columnName+"/"+tempColumns);
-                    if(columnName.equals( tempColumns )){
-                        indexColumnsFound = true;
-                    }
-                }
-                
-            } catch ( RuntimeException e ) {
-                e.printStackTrace();
-            }
-            
-            
-            //session.doWork(indexWork);
+        	session.doWork(indexWork);
             
         } catch ( Exception e ) {
             throw new NexusException("error while receiving connection: "+e.getMessage(),e);
@@ -167,10 +117,10 @@ public abstract class DatabasePatch {
         if(sessionRequested) {
             releaseDBSession( session );
         }
-        if(!indexNameFound && indexColumnsFound) {
+        if(!indexWork.indexNameFound && indexWork.indexColumnsFound) {
             throw new NexusException("index for specified columns found but different index name");
         }
-        return indexNameFound;
+        return indexWork.indexNameFound;
     }
     
     protected void alterTable(String sql,String tablename,Session session) throws NexusException {
