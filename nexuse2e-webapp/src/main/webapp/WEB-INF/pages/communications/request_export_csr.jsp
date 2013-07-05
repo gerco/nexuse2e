@@ -93,7 +93,7 @@
             <td colspan="2" class="NEXUSSection">Destination</td>            
             </tr>
             <tr>
-                <td class="NEXUSName"><html:radio name="protectedFileAccessForm" property="status" value="1"/>Traget File (on the Server)</td>
+                <td class="NEXUSName"><html:radio name="protectedFileAccessForm" property="status" value="1"/>Target File (on the Server)</td>
                 <td class="NEXUSValue"><html:text name="protectedFileAccessForm" property="certficatePath" size="60"/></td>
             </tr>
             <tr>
