@@ -37,7 +37,6 @@ import java.util.Map;
 
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
-import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.usertype.UserType;
 
 public class BinaryBlobType implements UserType {
@@ -99,7 +98,7 @@ public class BinaryBlobType implements UserType {
         return result;
     } // nullSafeGet
 
-    public void nullSafeSet(PreparedStatement st, Object value, int index, SessionImplementor session) throws HibernateException, SQLException {
+    public void nullSafeSet( PreparedStatement st, Object value, int index ) throws HibernateException, SQLException {
 
         DatabaseMetaData dbMetaData = st.getConnection().getMetaData();
 
@@ -217,7 +216,7 @@ public class BinaryBlobType implements UserType {
                 // LOG.trace( "MySQL..." );
                 st.setBytes( index, (byte[]) value );
             } else {
-                st.setBlob(index, Hibernate.getLobCreator(session).createBlob((byte[]) value));
+                st.setBlob( index, Hibernate.createBlob( (byte[]) value ) );
             }
 
             /*
@@ -317,10 +316,4 @@ public class BinaryBlobType implements UserType {
 
         return original;
     }
-
-	@Override
-	public Object nullSafeGet(ResultSet rs, String[] names,	SessionImplementor session, Object owner) throws HibernateException, SQLException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 } // BinaryBlobType
