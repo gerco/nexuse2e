@@ -106,7 +106,7 @@ public class FreemarkerBackendPipelet extends AbstractPipelet {
             // create freemarker template
             String templateLocation;
             Reader templateReader = null;
-            if (getParameter(USE_EXTERNAL_TEMPLATE_PARAM_NAME)) {
+            if ((Boolean) getParameter(USE_EXTERNAL_TEMPLATE_PARAM_NAME)) {
                 templateLocation = getParameter(TEMPLATE_LOCATION_PARAM_NAME);
                 LOG.debug("Processing freemarker template " + templateLocation);
             } else {
@@ -170,7 +170,6 @@ public class FreemarkerBackendPipelet extends AbstractPipelet {
             this.locale = locale;
         }
         
-        @Override
         public int compareTo(LocaleAndDisplayName o) {
             if (locale == null) {
                 return -1;
