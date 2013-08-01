@@ -125,9 +125,9 @@ public class HTTPMessagePackager extends AbstractPipelet {
                 
                 if(Engine.getInstance().isBinaryType(payloadPojo.getMimeType())) {
                 	LOG.trace(new LogMessage("using binary for mime type: "+payloadPojo.getMimeType()));
-                	msgBuffer.append( new String(Base64.encodeBase64( payloadPojo.getPayloadData() )) + "\n" );
+                	msgBuffer.append( new String(Base64.encodeBase64( payloadPojo.getPayloadData() )) + CRLF );
                 } else {
-                	msgBuffer.append( new String( payloadPojo.getPayloadData() ) + "\n" );
+                	msgBuffer.append( new String( payloadPojo.getPayloadData() ) + CRLF );
                 }
                 
             }
