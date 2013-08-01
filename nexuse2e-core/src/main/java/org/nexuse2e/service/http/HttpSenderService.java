@@ -140,13 +140,17 @@ public class HttpSenderService extends AbstractService implements SenderAware {
                 CertificatePojo metaPojo = Engine.getInstance().getActiveConfigurationAccessService()
                         .getFirstCertificateByType( Constants.CERTIFICATE_TYPE_CACERT_METADATA, true );
 
+                String cacertspwd = "changeit";
+                if(metaPojo != null) {
+                	cacertspwd = EncryptionUtil.decryptString( metaPojo.getPassword() );
+                }
                 KeyStore privateKeyChain = CertificateUtil.getPKCS12KeyStore( localCert );
 
                 myhttps = new Protocol( "https",
                         (ProtocolSocketFactory) new CertSSLProtocolSocketFactory(
                                 privateKeyChain, EncryptionUtil.decryptString( localCert.getPassword() ),
                                 Engine.getInstance().getActiveConfigurationAccessService().getCacertsKeyStore(),
-                                EncryptionUtil.decryptString( metaPojo.getPassword() ), partnerCert ), 443 );
+                                cacertspwd, partnerCert ), 443 );
 
                 client.getHostConfiguration().setHost( receiverURL.getHost(), receiverURL.getPort(), myhttps );
 
