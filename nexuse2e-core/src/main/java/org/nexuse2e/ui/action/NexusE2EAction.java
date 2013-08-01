@@ -114,8 +114,7 @@ public abstract class NexusE2EAction extends Action {
         try {
             long serviceUptime = System.currentTimeMillis() - Engine.getInstance().getServiceStartTime();
             long engineUptime = System.currentTimeMillis() - Engine.getInstance().getEngineStartTime();
-            
-            
+        
             request.setAttribute( SERVICE_UPTIME, formatUptime(serviceUptime) );
             request.setAttribute( ENGINE_UPTIME, formatUptime(engineUptime) );
         } catch ( Exception e ) {
@@ -162,16 +161,18 @@ public abstract class NexusE2EAction extends Action {
 
     private String formatUptime( long serviceUptime ) {
 
-        int dayLength = 1000*60*60*24;
-        int hourlength = 1000*60*60;
-        int minutelength = 1000*60;
-        int secondlength = 1000;
-        
-        
-        int days = (int)serviceUptime/dayLength;
-        int hours = (int)(serviceUptime-(days*dayLength))/hourlength;
-        int minutes = (int)(serviceUptime-(days*dayLength) - (hours*hourlength))/minutelength;
-        int seconds = (int)(serviceUptime-(days*dayLength) - (hours*hourlength) - (minutes*minutelength))/secondlength;
+    	
+		long dayLength = 1000*60*60*24;
+		long hourlength = 1000*60*60;
+		long minutelength = 1000*60;
+		long secondlength = 1000;
+		 
+		 
+		long days = serviceUptime/dayLength;
+		long hours = (serviceUptime-(days*dayLength))/hourlength;
+		long minutes = (serviceUptime-(days*dayLength) - (hours*hourlength))/minutelength;
+		long seconds = (serviceUptime-(days*dayLength) - (hours*hourlength) - (minutes*minutelength))/secondlength;
+
         
         return days+ " days " +hours+" hours "+minutes+" minutes "+seconds+" seconds";
     }
