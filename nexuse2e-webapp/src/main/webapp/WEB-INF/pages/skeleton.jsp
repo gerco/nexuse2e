@@ -33,6 +33,7 @@
 <meta http-equiv="expires" content="0">
 <meta http-equiv="pragma" content="no-cache">
 <meta http-equiv="Content-Style-Type" content="text/css">
+<meta http-equiv="x-ua-compatible" content="IE=8">
 
 <LINK REL="SHORTCUT ICON" HREF="./favicon.ico">
 
