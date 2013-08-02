@@ -36,6 +36,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link OutboundData }
+     * 
+     */
+    public OutboundData createOutboundData() {
+        return new OutboundData();
+    }
+
+    /**
      * Create an instance of {@link InboundData }
      * 
      */
@@ -49,14 +57,6 @@ public class ObjectFactory {
      */
     public XmlPayload createXmlPayload() {
         return new XmlPayload();
-    }
-
-    /**
-     * Create an instance of {@link OutboundData }
-     * 
-     */
-    public OutboundData createOutboundData() {
-        return new OutboundData();
     }
 
     /**
