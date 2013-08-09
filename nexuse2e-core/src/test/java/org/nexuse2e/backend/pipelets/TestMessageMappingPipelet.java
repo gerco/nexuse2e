@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.nexuse2e.ActionSpecificKey;
 import org.nexuse2e.Engine;
 import org.nexuse2e.Constants.MappingType;
+import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.ActionPojo;
@@ -182,6 +183,12 @@ public class TestMessageMappingPipelet {
         actionMapping.setNxId( id++ );
         choreographyMapping.setNxId( id++ );
         partnerMapping.setNxId( id++ );
+    }
+    
+    @Test
+    public void testNullMessageContext() throws IllegalArgumentException, IllegalStateException, NexusException {
+        messageContext.setMessagePojo(null);
+        pipelet.processMessage(messageContext);
     }
 
     @Test 
