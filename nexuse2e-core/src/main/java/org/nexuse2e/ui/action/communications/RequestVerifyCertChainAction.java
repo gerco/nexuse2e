@@ -68,6 +68,7 @@ public class RequestVerifyCertChainAction extends NexusE2EAction {
 
         ActionForward complete = actionMapping.findForward( "complete" );
         ActionForward incomplete = actionMapping.findForward( "incomplete" );
+        ActionForward moreCerts = actionMapping.findForward("moreCerts");
 
         ProtectedFileAccessForm form = (ProtectedFileAccessForm) actionForm;
         ByteArrayInputStream bais = new ByteArrayInputStream(form.getCertficate().getFileData());
@@ -169,6 +170,11 @@ public class RequestVerifyCertChainAction extends NexusE2EAction {
 
             Vector<CertificatePropertiesForm> caImports = new Vector<CertificatePropertiesForm>();
             PKIXCertPathBuilderResult result = CertificateUtil.getCertificateChain( headcert, certs, cacerts );
+            
+            if (null == result) {
+                // null indicates that the chain could not be constructed in it's entirety, user has to supply CA certificates.
+                return moreCerts;
+            }
             
             
             X509Certificate root = result.getTrustAnchor().getTrustedCert();
