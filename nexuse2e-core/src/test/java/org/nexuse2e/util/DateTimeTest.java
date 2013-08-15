@@ -101,7 +101,7 @@ public class DateTimeTest {
         
         assertTrue(3000L == dt.toLong());
         
-        assertTrue("1970-01-01T01:00:03.000+01:00".equalsIgnoreCase(dt.toString()));
+        assertTrue("1970-01-01T01:00:03".equalsIgnoreCase(dt.toString()));
     }
     
     @Test

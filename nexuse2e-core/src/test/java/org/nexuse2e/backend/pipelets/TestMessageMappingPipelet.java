@@ -239,7 +239,13 @@ public class TestMessageMappingPipelet {
     
     @Test
     public void testNullMessageContext() throws IllegalArgumentException, IllegalStateException, NexusException {
-        messageContext.setMessagePojo(null);
-        pipelet.processMessage(messageContext);
+        MessageContext messageContextNull = new MessageContext();
+        messageContextNull.setPartner( partner );
+        messageContextNull.setParticipant( participant );
+        messageContextNull.setChoreography( choreography );
+        messageContextNull.setConversation( conversation );
+        messageContextNull.setMessagePojo( message );
+        messageContextNull.setActionSpecificKey( new ActionSpecificKey( "action", "choreography" ) );
+        pipelet.processMessage(messageContextNull);
     }
 }
