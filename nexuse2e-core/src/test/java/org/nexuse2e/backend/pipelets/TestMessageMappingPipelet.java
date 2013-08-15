@@ -184,12 +184,6 @@ public class TestMessageMappingPipelet {
         choreographyMapping.setNxId( id++ );
         partnerMapping.setNxId( id++ );
     }
-    
-    @Test
-    public void testNullMessageContext() throws IllegalArgumentException, IllegalStateException, NexusException {
-        messageContext.setMessagePojo(null);
-        pipelet.processMessage(messageContext);
-    }
 
     @Test 
     public void choreographyMap() throws Exception {
@@ -241,5 +235,11 @@ public class TestMessageMappingPipelet {
         Assert.assertEquals( "mappedPartner", messageContext.getPartner().getPartnerId() );
         Assert.assertEquals( "mappedPartner", messageContext.getParticipant().getPartner().getPartnerId() );
         Assert.assertEquals( "mappedPartner", messageContext.getConversation().getPartner().getPartnerId() );
+    }
+    
+    @Test
+    public void testNullMessageContext() throws IllegalArgumentException, IllegalStateException, NexusException {
+        messageContext.setMessagePojo(null);
+        pipelet.processMessage(messageContext);
     }
 }
