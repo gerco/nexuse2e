@@ -358,10 +358,6 @@
       <forward name="success" path="/CACertificatesList.do"/>
       <forward name="error" path="/WEB-INF/pages/communications/ca_certificate_import.jsp"/>
     </action>
-    <action path="/CACertificateMissing" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.CACertMissingAction">
-      <forward name="success" path="/CACertificateAddSingleCert.do"/>
-      <forward name="error" path="/RequestOverview.do"/>
-    </action>
     
     <action path="/DataSaveAs" type="org.nexuse2e.ui.DataSaveAsAction"/>
     
@@ -397,7 +393,7 @@
     <action path="/RequestVerifyCertChainCert" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.RequestVerifyCertChainAction">
       <forward name="incomplete" path="/RequestImportCert.do"/>
       <forward name="complete" path="/RequestImportCertChain.do"/>
-      <forward name="moreCerts" path="/CACertificateMissing.do"/>
+      <forward name="moreCerts" path="/WEB-INF/pages/communications/ca_certificate_missing.jsp"/>
     </action>
     <action path="/RequestImportCertChain" name="certificateChainImportForm" type="org.nexuse2e.ui.action.communications.RequestImportCertChainAction">
       <forward name="accept" path="/WEB-INF/pages/communications/request_import_certificate_chain.jsp"/>
