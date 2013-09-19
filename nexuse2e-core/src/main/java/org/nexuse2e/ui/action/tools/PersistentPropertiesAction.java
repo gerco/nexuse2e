@@ -111,18 +111,16 @@ public class PersistentPropertiesAction extends NexusE2EAction {
                 }
             }
         } else if ( !StringUtils.isEmpty( action ) && action.equals( "delete" ) ) {
-            if ( !StringUtils.isEmpty( form.getValue() ) ) {
-                int nxId = 0;
-                try {
-                    nxId = Integer.parseInt( form.getNxPersistentPropertyId() );
-                } catch ( Exception e ) {
-                    e.printStackTrace();
-                }
-                if ( nxId != 0 ) {
-                    PersistentPropertyPojo property = dao.getPersistentPropertyById( nxId );
-                    if ( property != null ) { 
-                        dao.deletePersistentProperty( property );
-                    }
+            int nxId = 0;
+            try {
+                nxId = Integer.parseInt( form.getNxPersistentPropertyId() );
+            } catch ( Exception e ) {
+                e.printStackTrace();
+            }
+            if ( nxId != 0 ) {
+                PersistentPropertyPojo property = dao.getPersistentPropertyById( nxId );
+                if ( property != null ) { 
+                    dao.deletePersistentProperty( property );
                 }
             }
         }
