@@ -65,7 +65,7 @@
         </property>
         
         <property name="charEncoding" type="string">
-            <column name="char_encoding" length="8" >
+            <column name="char_encoding" length="24" >
                 <comment></comment>
             </column>
         </property>
