@@ -37,13 +37,13 @@ import org.apache.log4j.Logger;
 import org.apache.ws.security.WSConstants;
 import org.apache.ws.security.WSPasswordCallback;
 import org.apache.ws.security.handler.WSHandlerConstants;
-import org.nexuse2e.DynamicWSDispatcherServlet;
-import org.nexuse2e.Engine;
 import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.Constants.Layer;
+import org.nexuse2e.DynamicWSDispatcherServlet;
+import org.nexuse2e.Engine;
+import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
-import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.pojo.UserPojo;
 import org.nexuse2e.service.AbstractService;
 import org.nexuse2e.util.PasswordUtil;
@@ -136,8 +136,8 @@ public class WSDispatcherService extends AbstractService {
         if ( endpoint != null ) {
             endpoint.stop();
             endpoint = null;
-            DynamicWSDispatcherServlet.getInstance().reinitialize();
-        }
+           	DynamicWSDispatcherServlet.getInstance().reinitialize();
+		}
         super.stop();
     }
 }

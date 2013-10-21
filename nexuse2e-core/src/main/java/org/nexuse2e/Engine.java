@@ -66,7 +66,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
+import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
 import org.springframework.web.context.support.WebApplicationObjectSupport;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -300,7 +300,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                         "&hibernateSessionFactory" );
                 if ( localSessionFactoryBean != null ) {
                     // localSessionFactoryBean.createDatabaseSchema();
-                    localSessionFactoryBean.updateDatabaseSchema();
+//                    localSessionFactoryBean.updateDatabaseSchema();
 
                     Configuration configuration = localSessionFactoryBean.getConfiguration();
                     String dialect = configuration.getProperty( "hibernate.dialect" );

@@ -23,6 +23,8 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 
 import org.apache.cxf.transport.servlet.CXFServlet;
+import org.apache.log4j.Logger;
+import org.nexuse2e.logging.LogMessage;
 
 /**
  * This subclass of <code>CXFNonSpringServlet</code> keeps a reference on the instance
@@ -33,7 +35,7 @@ import org.apache.cxf.transport.servlet.CXFServlet;
  * @version $LastChangedRevision:  $ - $LastChangedDate:  $ by $LastChangedBy:  $
  */
 public class DynamicWSDispatcherServlet extends CXFServlet {
-    //private static Logger      LOG                         = Logger.getLogger( DynamicWSDispatcherServlet.class );
+    private static Logger      LOG                         = Logger.getLogger( DynamicWSDispatcherServlet.class );
     
     
     private static final long serialVersionUID = 1L;
@@ -49,18 +51,14 @@ public class DynamicWSDispatcherServlet extends CXFServlet {
     public void init( ServletConfig servletConfig ) throws ServletException {
         super.init( servletConfig );
         this.servletConfig = servletConfig;
-        /*Bus bus = getBus();
-        
-        bus = BusFactory.getDefaultBus();
-        if (bus == null) {
-            LOG.warn("BusFactory.getDefaultBus() returns null - default bus should be set by spring application context");
-            bus = (Bus) Engine.getInstance().getApplicationContext().getBean("cxf");
-            BusFactory.setDefaultBus(bus);
-        }*/
     }
     
     public void reinitialize() {
-        controller = createServletController( servletConfig );
+        try {
+			super.init( servletConfig );
+		} catch (ServletException e) {
+			LOG.error(new LogMessage("failed to reinitialize WS Dispatcher service.",e));
+		}
     }
 
     /**

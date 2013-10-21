@@ -28,14 +28,14 @@ import javax.jws.WebService;
 import javax.xml.ws.Endpoint;
 
 import org.apache.log4j.Logger;
+import org.nexuse2e.Constants.BeanStatus;
+import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.DynamicWSDispatcherServlet;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
-import org.nexuse2e.Constants.BeanStatus;
-import org.nexuse2e.Constants.Layer;
+import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.configuration.ListParameter;
 import org.nexuse2e.configuration.ParameterDescriptor;
-import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.messaging.Constants;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.MessagePayloadPojo;
@@ -145,8 +145,8 @@ public class WSDispatcherService extends AbstractService implements ReceiverAwar
         if ( endpoint != null ) {
             endpoint.stop();
             endpoint = null;
-            DynamicWSDispatcherServlet.getInstance().reinitialize();
-        }
+           	DynamicWSDispatcherServlet.getInstance().reinitialize();
+		}
         super.stop();
     }
 

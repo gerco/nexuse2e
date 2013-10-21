@@ -37,6 +37,8 @@ import java.util.Map;
 
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
+import org.hibernate.engine.jdbc.LobCreator;
+import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.usertype.UserType;
 
 public class BinaryBlobType implements UserType {
@@ -73,8 +75,11 @@ public class BinaryBlobType implements UserType {
 
         return ( x == y ) || ( x != null && y != null && java.util.Arrays.equals( (byte[]) x, (byte[]) y ) );
     } // equals
-
-    public Object nullSafeGet( ResultSet rs, String[] names, Object owner ) throws HibernateException, SQLException {
+    
+    
+	
+    @Override
+    public Object nullSafeGet( ResultSet rs, String[] names,SessionImplementor implementor, Object owner ) throws HibernateException, SQLException {
 
         byte[] result = null;
 
@@ -98,7 +103,8 @@ public class BinaryBlobType implements UserType {
         return result;
     } // nullSafeGet
 
-    public void nullSafeSet( PreparedStatement st, Object value, int index ) throws HibernateException, SQLException {
+    @Override
+    public void nullSafeSet( PreparedStatement st, Object value, int index, SessionImplementor implementor) throws HibernateException, SQLException {
 
         DatabaseMetaData dbMetaData = st.getConnection().getMetaData();
 
@@ -216,7 +222,8 @@ public class BinaryBlobType implements UserType {
                 // LOG.trace( "MySQL..." );
                 st.setBytes( index, (byte[]) value );
             } else {
-                st.setBlob( index, Hibernate.createBlob( (byte[]) value ) );
+            	LobCreator lobCreater = Hibernate.getLobCreator(implementor);
+            	st.setBlob( index, lobCreater.createBlob( (byte[]) value ) );
             }
 
             /*
@@ -316,4 +323,6 @@ public class BinaryBlobType implements UserType {
 
         return original;
     }
+
+	
 } // BinaryBlobType

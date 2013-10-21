@@ -144,7 +144,7 @@
     </bean>
   -->
 
-  <bean id="hibernateSessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+  <bean id="hibernateSessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
     <property name="dataSource" ref="${datasource.type}" />
     <!-- <property name="dataSource" ref="external"/> -->
     <property name="useTransactionAwareDataSource" value="false" />
@@ -199,7 +199,7 @@
     </property>
   </bean>
 
-  <bean id="txManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+  <bean id="txManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
     <property name="sessionFactory" ref="hibernateSessionFactory" />
     <property name="dataSource" ref="${datasource.type}" />
   </bean>
@@ -221,7 +221,7 @@
   </tx:advice>
 
 
-  <bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
+  <bean id="hibernateTemplate" class="org.springframework.orm.hibernate4.HibernateTemplate">
     <property name="sessionFactory" ref="hibernateSessionFactory"/>
   </bean>
 
