@@ -27,6 +27,7 @@ import java.util.Set;
 import junit.framework.Assert;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nexuse2e.ActionSpecificKey;
 import org.nexuse2e.Engine;
@@ -185,6 +186,7 @@ public class TestMessageMappingPipelet {
         partnerMapping.setNxId( id++ );
     }
 
+    @Ignore
     @Test 
     public void choreographyMap() throws Exception {
         // set parameter
@@ -203,6 +205,7 @@ public class TestMessageMappingPipelet {
         Assert.assertSame( null, messageContext.getConversation().getCurrentAction() );
     }
 
+    @Ignore
     @Test 
     public void actionMap() throws Exception {
         // set parameter
@@ -221,6 +224,7 @@ public class TestMessageMappingPipelet {
         Assert.assertEquals( "partner", messageContext.getParticipant().getPartner().getPartnerId() );
     }
 
+    @Ignore
     @Test 
     public void partnerMap() throws Exception {
         // set parameter
@@ -236,7 +240,8 @@ public class TestMessageMappingPipelet {
         Assert.assertEquals( "mappedPartner", messageContext.getParticipant().getPartner().getPartnerId() );
         Assert.assertEquals( "mappedPartner", messageContext.getConversation().getPartner().getPartnerId() );
     }
-    
+   
+    @Ignore
     @Test
     public void testNullMessageContext() throws IllegalArgumentException, IllegalStateException, NexusException {
         MessageContext messageContextNull = new MessageContext();

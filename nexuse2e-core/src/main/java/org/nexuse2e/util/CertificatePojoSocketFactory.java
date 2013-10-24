@@ -35,7 +35,7 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
-import org.apache.commons.net.SocketFactory;
+import org.apache.commons.net.DefaultSocketFactory;
 import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
@@ -49,7 +49,7 @@ import org.nexuse2e.pojo.CertificatePojo;
  * @author Jonas Reese
  * @version $LastChangedRevision:  $ - $LastChangedDate:  $ by $LastChangedBy:  $
  */
-public class CertificatePojoSocketFactory implements SocketFactory {
+public class CertificatePojoSocketFactory extends DefaultSocketFactory {
 
     private static Logger   LOG = Logger.getLogger( CertificatePojoSocketFactory.class );
     

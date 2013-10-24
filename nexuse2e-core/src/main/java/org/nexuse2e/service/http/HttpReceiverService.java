@@ -130,7 +130,7 @@ public class HttpReceiverService extends AbstractControllerService implements Re
                 messageContext.getMessagePojo().addCustomParameter("remoteHost",request.getRemoteHost() );
                 messageContext.getMessagePojo().addCustomParameter("remotePort",""+request.getRemotePort() );
             } catch ( RuntimeException e ) {
-                e.printStackTrace();
+                LOG.error(e);
             }
             
             processMessage( messageContext );

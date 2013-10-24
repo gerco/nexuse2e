@@ -145,7 +145,7 @@ public class Report extends BodyTagSupport {
             
             // Open report design
             File reportFile = new File( sc.getRealPath( REPORT_BASE_DIR ), reportName + ".rptdesign" );
-            String report = FileUtils.readFileToString( reportFile, null );
+            String report = FileUtils.readFileToString( reportFile );
             for (Object property : properties.keySet()) {
                 String name = (String) property;
                 report = StringUtils.replace( report, "${" + name + "}", properties.getProperty( name ) );

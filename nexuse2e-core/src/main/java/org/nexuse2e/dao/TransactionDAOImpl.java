@@ -28,12 +28,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.ProjectionList;
@@ -54,19 +57,23 @@ import org.nexuse2e.pojo.MessagePayloadPojo;
 import org.nexuse2e.pojo.MessagePojo;
 import org.nexuse2e.pojo.NEXUSe2ePojo;
 import org.nexuse2e.pojo.PartnerPojo;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Data access object (DAO) to provide persistence services for transaction related entities.
  *
  * @author gesch
  */
+@Repository
 public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
 
     private static Logger              LOG           = Logger.getLogger( TransactionDAOImpl.class );
 
     private static Map<Integer, int[]> followUpConversationStates;
     private static Map<Integer, int[]> followUpMessageStates;
-
+    
     static {
         followUpConversationStates = new HashMap<Integer, int[]>();
         followUpConversationStates.put( Constants.CONVERSATION_STATUS_ERROR, new int[] {
@@ -182,7 +189,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
 
     public ConversationPojo getConversationByConversationId( int nxConversationId ) {
 
-        return (ConversationPojo) getHibernateTemplate().get( ConversationPojo.class, nxConversationId );
+        return (ConversationPojo) sessionFactory.getCurrentSession().get( ConversationPojo.class, nxConversationId );
     } // getConversationByConversationId
 
     /* (non-Javadoc)
@@ -275,7 +282,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
      */
     public long getConversationsCount( Date start, Date end ) throws NexusException {
 
-        Session session = getSession();
+        Session session = sessionFactory.getCurrentSession();
         StringBuilder query = new StringBuilder( "select count(*) from nx_conversation conv " );
         Map<String, Timestamp> map = appendQueryDate( query, "conv", start, end );
         Query sqlquery = session.createSQLQuery( query.toString() );
@@ -287,7 +294,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
 
     public long getMessagesCount( Date start, Date end ) throws NexusException {
 
-        Session session = getSession();
+        Session session = sessionFactory.getCurrentSession();
         StringBuilder query = new StringBuilder( "select count(*) from nx_message msg inner join nx_conversation conv on (msg.nx_conversation_id = conv.nx_conversation_id) " );
         Map<String, Timestamp> map = appendQueryDate( query, "conv", start, end );
         Query sqlquery = session.createSQLQuery( query.toString() );
@@ -302,7 +309,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
      */
     public long getLogCount( Date start, Date end ) throws NexusException {
 
-        Session session = getSession();
+        Session session = sessionFactory.getCurrentSession();
         StringBuilder query = new StringBuilder( "select count(nx_log_id) from nx_log log " );
         Map<String, Timestamp> map = appendQueryDate( query, "log", start, end );
         Query sqlquery = session.createSQLQuery( query.toString() );
@@ -320,7 +327,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         int min = (minLevel == null ? 0 : minLevel.toInt());
         int max = (maxLevel == null ? 1000000 : maxLevel.toInt());
         
-        Session session = getSession();
+        Session session = sessionFactory.getCurrentSession();
         StringBuilder query = new StringBuilder( "select count(nx_log_id) as msg_count, severity from nx_log log " );
         if (minLevel != null || maxLevel != null) {
             query.append( "where severity >= " );
@@ -351,7 +358,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
      */
     public long removeLogEntries( Date start, Date end ) throws NexusException {
 
-        Session session = getSession();
+        Session session = sessionFactory.getCurrentSession();
 
         StringBuilder query = new StringBuilder( "delete from nx_log " );
         Map<String, Timestamp> map = appendQueryDate( query, "", start, end );
@@ -408,7 +415,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
      */
     public long removeConversations( Date start, Date end ) throws NexusException {
 
-        Session session = getSession();
+        Session session = sessionFactory.getCurrentSession();
         StringBuilder query = new StringBuilder( "delete from nx_message_label" );
         Map<String, Timestamp> map = null;
         if (start != null || end != null) {
@@ -937,12 +944,12 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         MessagePojo persistentMessage;
         ConversationPojo persistentConversation;
         if ( message.getNxMessageId() > 0 ) {
-            persistentMessage = (MessagePojo) getHibernateTemplate().get( MessagePojo.class, message.getNxMessageId() );
+            persistentMessage = (MessagePojo) sessionFactory.getCurrentSession().get( MessagePojo.class, message.getNxMessageId() );
             persistentConversation = (persistentMessage != null ? persistentMessage.getConversation() : null);
         } else {
             persistentMessage = message;
             if (message.getConversation() != null && message.getConversation().getNxConversationId() > 0) {
-                persistentConversation = (ConversationPojo) getHibernateTemplate().get(
+                persistentConversation = (ConversationPojo) sessionFactory.getCurrentSession().get(
                         ConversationPojo.class, message.getConversation().getNxConversationId() );
             } else {
                 persistentConversation = message.getConversation();
@@ -971,8 +978,10 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
                         }
                     }
                     persistentConversation.setModifiedDate( new Date() );
-                    getHibernateTemplate().saveOrUpdate( persistentConversation );
-                    getHibernateTemplate().saveOrUpdateAll( persistentConversation.getMessages() );
+                    sessionFactory.getCurrentSession().saveOrUpdate( persistentConversation );
+                    for (MessagePojo mesg : persistentConversation.getMessages()) {
+                    	sessionFactory.getCurrentSession().saveOrUpdate( mesg );
+					}
                 }
             }
         }
@@ -1008,7 +1017,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         // get persistent message and conversation
         MessagePojo persistentMessage;
         ConversationPojo persistentConversation;
-        Session session = getSession();
+        Session session = sessionFactory.getCurrentSession();
         if (message.getConversation() != null && message.getConversation().getNxConversationId() > 0) {
             persistentConversation = (ConversationPojo) session.get(ConversationPojo.class, message.getConversation().getNxConversationId());
         } else {
@@ -1128,10 +1137,10 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
 
     
     public void updateRetryCount( MessagePojo message ) throws NexusException {
-        MessagePojo persistentMessage = (MessagePojo) getHibernateTemplate().get( MessagePojo.class, message.getNxMessageId() );
+        MessagePojo persistentMessage = (MessagePojo) sessionFactory.getCurrentSession().get( MessagePojo.class, message.getNxMessageId() );
         if (persistentMessage != null) {
             persistentMessage.setRetries( message.getRetries() );
-            getHibernateTemplate().saveOrUpdate(persistentMessage);
+            sessionFactory.getCurrentSession().saveOrUpdate(persistentMessage);
         }
     }
 
@@ -1329,7 +1338,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
     }
 
     public Session getDBSession() {
-        return getHibernateTemplate().getSessionFactory().openSession();
+        return sessionFactory.getCurrentSession().getSessionFactory().openSession();
     }
     
     public void releaseDBSession( Session session ) {

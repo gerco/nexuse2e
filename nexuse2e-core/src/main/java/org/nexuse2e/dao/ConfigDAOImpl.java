@@ -26,8 +26,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
+import org.hibernate.SessionFactory;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -47,15 +51,22 @@ import org.nexuse2e.pojo.RolePojo;
 import org.nexuse2e.pojo.ServicePojo;
 import org.nexuse2e.pojo.TRPPojo;
 import org.nexuse2e.pojo.UserPojo;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author gesch
  *
  */
+
+@Repository
 public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
 
+	
     private static Logger LOG = Logger.getLogger( ConfigDAOImpl.class );
 
+   
+    
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#saveTRP(org.nexuse2e.pojo.TRPPojo)
      */
@@ -310,8 +321,8 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     @SuppressWarnings("unchecked")
     public List<LoggerPojo> getLoggers() {
 
-        //DetachedCriteria dc = DetachedCriteria.forClass( LoggerPojo.class );
-        return (List<LoggerPojo>) getHibernateTemplate().find( "from LoggerPojo" ); //getListThroughSessionFind( dc,0,0 );
+        Criteria c = sessionFactory.getCurrentSession().createCriteria(LoggerPojo.class);
+    	return (List<LoggerPojo>) c.list(); 
     }
 
     /* (non-Javadoc)
@@ -589,12 +600,12 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
         for ( String typeName : typeNames ) {
             if ("MessagePojo".equals(typeName)) {
                 try {
-                    getHibernateTemplate().bulkUpdate( "delete from MessagePojo where referencedMessage is not null" );
+                	sessionFactory.getCurrentSession().createQuery("delete from MessagePojo where referencedMessage is not null").executeUpdate();
                 } catch (Exception ex) {
                     LOG.warn(ex);
                 }
             }
-            getHibernateTemplate().bulkUpdate( "delete from " + typeName );
+            sessionFactory.getCurrentSession().createQuery( "delete from " + typeName ).executeUpdate();
         }
 
     }
@@ -602,6 +613,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#isDatabasePopulated()
      */
+    @Transactional
     public boolean isDatabasePopulated() throws NexusException {
 
         List<TRPPojo> tempTRPs = getTrps();

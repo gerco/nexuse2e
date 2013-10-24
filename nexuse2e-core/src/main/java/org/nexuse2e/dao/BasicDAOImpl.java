@@ -26,20 +26,32 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.Criteria;
 import org.hibernate.LockMode;
+import org.hibernate.SessionFactory;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Projections;
 import org.nexuse2e.Engine;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.orm.hibernate4.support.HibernateDaoSupport;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author gesch
  *
  */
-public class BasicDAOImpl extends HibernateDaoSupport implements BasicDAO {
+
+@Repository
+public class BasicDAOImpl implements BasicDAO {
     
+	
+	@Autowired
+    protected SessionFactory sessionFactory;
+	
     /**
      * This enumeration type is a coarse categorization of the
      * used DB management system, including only the most common DBMSs.
@@ -82,8 +94,8 @@ public class BasicDAOImpl extends HibernateDaoSupport implements BasicDAO {
      * @see org.nexuse2e.dao.BasicDAO#getRecordById(java.lang.Class, java.io.Serializable)
      */
     public Object getRecordById( Class<?> returnClass, Serializable id ) {
-
-        return getHibernateTemplate().get(returnClass, id);
+    	
+        return sessionFactory.getCurrentSession().get(returnClass, id);
         
     } // getRecordById
 
@@ -92,7 +104,7 @@ public class BasicDAOImpl extends HibernateDaoSupport implements BasicDAO {
      */
     public void deleteRecord( Object record ) {
 
-        getHibernateTemplate().delete( record );
+        sessionFactory.getCurrentSession().delete( record );
         
     } // deleteRecordById
     
@@ -100,7 +112,9 @@ public class BasicDAOImpl extends HibernateDaoSupport implements BasicDAO {
      * @see org.nexuse2e.dao.BasicDAO#deleteRecords(java.util.List)
      */
     public void deleteRecords(List<? extends Object> records) {
-        getHibernateTemplate().deleteAll( records );
+        for (Object record : records) {
+        	sessionFactory.getCurrentSession().delete( record );
+		}
     } // deleteRecordById
 
     /* (non-Javadoc)
@@ -108,14 +122,14 @@ public class BasicDAOImpl extends HibernateDaoSupport implements BasicDAO {
      */
     public void saveRecord( Object record ) {
 
-        getHibernateTemplate().save( record );
+        sessionFactory.getCurrentSession().save( record );
     } // saveRecord
 
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.BasicDAO#saveOrUpdateRecord(java.lang.Object)
      */
     public void saveOrUpdateRecord( Object record ) {
-        getHibernateTemplate().saveOrUpdate( record );
+        sessionFactory.getCurrentSession().saveOrUpdate( record );
     } // saveOrUpdateRecord
 
     /* (non-Javadoc)
@@ -123,18 +137,18 @@ public class BasicDAOImpl extends HibernateDaoSupport implements BasicDAO {
      */
     public void updateRecord( Object record ) {
 
-        getHibernateTemplate().update( record );
+        sessionFactory.getCurrentSession().update( record );
     } // updateRecord
 
     protected void lockRecord(Object record) {
-        getHibernateTemplate().lock( record, LockMode.NONE );
+        sessionFactory.getCurrentSession().lock( record, LockMode.NONE );
     }
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.BasicDAO#mergeRecord(java.lang.Object)
      */
     public void mergeRecord( Object record ) {
 
-        getHibernateTemplate().merge( record );
+        sessionFactory.getCurrentSession().merge( record );
     } // updateRecord
 
     /* (non-Javadoc)
@@ -142,7 +156,7 @@ public class BasicDAOImpl extends HibernateDaoSupport implements BasicDAO {
      */
     public void reattachRecord( Object record ) {
 
-        getHibernateTemplate().lock( record, LockMode.NONE );
+        sessionFactory.getCurrentSession().lock( record, LockMode.NONE );
     } // reattachRecord
 
     /* (non-Javadoc)
@@ -153,7 +167,7 @@ public class BasicDAOImpl extends HibernateDaoSupport implements BasicDAO {
         
         for ( Iterator<?> iter = records.iterator(); iter.hasNext(); ) {
             Object record = iter.next();
-            getHibernateTemplate().update( record );
+            sessionFactory.getCurrentSession().update( record );
         }
                
     } // saveOrUpdateRecord
@@ -165,7 +179,11 @@ public class BasicDAOImpl extends HibernateDaoSupport implements BasicDAO {
     public List<?> getListThroughSessionFind( DetachedCriteria criteria,int firstResult, int maxResult ) {
         
         try {
-            return getHibernateTemplate().findByCriteria( criteria,firstResult, maxResult );
+        	Criteria crit = criteria.getExecutableCriteria(sessionFactory.getCurrentSession());
+            crit.setMaxResults(maxResult);
+            crit.setFirstResult(firstResult);
+            
+        	return crit.list();
         } catch ( DataAccessException e ) {
             e.printStackTrace();
             throw e;
@@ -178,8 +196,9 @@ public class BasicDAOImpl extends HibernateDaoSupport implements BasicDAO {
      */
     public int getCountThroughSessionFind( DetachedCriteria criteria ) {
 
-        criteria.setProjection( Projections.rowCount() );
-        Number n = (Number)getHibernateTemplate().findByCriteria( criteria ).get( 0 );
+    	Criteria crit = criteria.getExecutableCriteria(sessionFactory.getCurrentSession());
+    	crit.setProjection( Projections.rowCount() );
+        Number n = (Number)crit.list().get( 0 );
         return (n == null ? 0 : n.intValue());
     }
 

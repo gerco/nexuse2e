@@ -83,7 +83,7 @@ public class FtpDirectoryScannerService extends AbstractFtpService {
                 && file != null && file.exists() && file.length() != 0 ) {
             try {
                 // Open the file to read one line at a time
-                String content = FileUtils.readFileToString( file, null );
+                String content = FileUtils.readFileToString( file );
 
                 LOG.debug( "Submitting file " + file.getAbsolutePath() + " , character size: " + content.length() );
 

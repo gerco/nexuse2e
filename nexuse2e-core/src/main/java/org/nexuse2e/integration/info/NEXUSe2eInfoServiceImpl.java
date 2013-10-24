@@ -36,7 +36,7 @@ import javax.xml.ws.Holder;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
-import org.mortbay.log.Log;
+import org.eclipse.jetty.util.log.Log;
 import org.nexuse2e.Constants;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;

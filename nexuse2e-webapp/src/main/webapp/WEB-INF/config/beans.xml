@@ -25,12 +25,17 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="
-       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
-       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
 
+  
+  
+  
   <bean id="placeholderConfig" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="properties">
       <props>
@@ -98,6 +103,13 @@
     <property name="defaultCharEncoding" value="${default.charEncoding}" />
   </bean>
 
+
+  <context:annotation-config />
+
+
+  <context:component-scan base-package="org.nexuse2e"/>
+ 
+ 
   <!-- RMI  -->
   <bean id="rmiServer" class="org.nexuse2e.integration.NEXUSe2eRMIServer">
     <property name="hostName" value="${rmi.hostName}" />
@@ -119,9 +131,7 @@
   <bean id="engineStatusInterfaceBean" class="org.nexuse2e.integration.EngineStatusInterfaceImpl" />
   <bean id="nexuse2eUtilitiesBean" class="org.nexuse2e.integration.NEXUSe2eUtilitiesImpl" />
 
-  <bean id="internal"
-    class="com.mchange.v2.c3p0.ComboPooledDataSource"
-    destroy-method="close">
+  <bean id="internal" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
     
     <property name="driverClass"><value>${database.driverClassName}</value></property>
     <property name="jdbcUrl"><value>${database.url}</value></property>
@@ -147,8 +157,8 @@
   <bean id="hibernateSessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
     <property name="dataSource" ref="${datasource.type}" />
     <!-- <property name="dataSource" ref="external"/> -->
-    <property name="useTransactionAwareDataSource" value="false" />
-    
+    <!--  <property name="useTransactionAwareDataSource" value="false" />
+     -->
     <property name="mappingResources">
       <list>
         <value>org/nexuse2e/hibernate/nx_conversation.hbm.xml</value>
@@ -158,6 +168,7 @@
         <value>org/nexuse2e/hibernate/nx_participant.hbm.xml</value>
         <value>org/nexuse2e/hibernate/nx_choreography.hbm.xml</value>
         <value>org/nexuse2e/hibernate/nx_action.hbm.xml</value>
+        
         <value>org/nexuse2e/hibernate/nx_partner.hbm.xml</value>
         <value>org/nexuse2e/hibernate/nx_component.hbm.xml</value>
         <value>org/nexuse2e/hibernate/nx_certificate.hbm.xml</value>
@@ -184,7 +195,10 @@
     <property name="hibernateProperties">
       <props>        <prop key="hibernate.show_sql">${database.showSQL}</prop>        <prop key="hibernate.dialect">${database.dialect}</prop>
         <prop key="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</prop>
-        <prop key="hibernate.current_session_context_class">org.hibernate.context.ThreadLocalSessionContext</prop>
+        
+        <!-- 
+        <prop key="hibernate.current_session_context_class">thread</prop>
+         -->
         <prop key="hibernate.query.substitutions">true 1, false 0, yes 'Y', no 'N'</prop>
        	
        	<!--  isolation needs to be configured on the datasource -->
@@ -219,25 +233,23 @@
       <tx:method name="*" propagation="REQUIRED" isolation="READ_COMMITTED"/> <!-- isolation="SERIALIZABLE" READ_COMMITTED-->
     </tx:attributes>
   </tx:advice>
-
-
-  <bean id="hibernateTemplate" class="org.springframework.orm.hibernate4.HibernateTemplate">
+  
+  
+ <!-- 
+  <bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
     <property name="sessionFactory" ref="hibernateSessionFactory"/>
   </bean>
-
+ -->
   <bean id="logDao" class="org.nexuse2e.dao.LogDAOImpl">
-    <property name="hibernateTemplate" ref="hibernateTemplate" />
   </bean>
   <bean id="configDao" class="org.nexuse2e.dao.ConfigDAOImpl">
-    <property name="hibernateTemplate" ref="hibernateTemplate" />
   </bean>
   <bean id="transactionDao" class="org.nexuse2e.dao.TransactionDAOImpl">
-    <property name="hibernateTemplate" ref="hibernateTemplate" />
   </bean>
   <bean id="persistentPropertyDao" class="org.nexuse2e.dao.PersistentPropertyDAOImpl">
-    <property name="hibernateTemplate" ref="hibernateTemplate" />
   </bean>
-
+ 
+  
   <bean id="lockInterceptor" class="org.nexuse2e.dao.LockAcquisitionInterceptor">
   	<property name="timeout" value="500" />
   	<property name="retries" value="20" />
