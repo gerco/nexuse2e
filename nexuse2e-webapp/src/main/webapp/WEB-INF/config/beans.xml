@@ -228,7 +228,7 @@
       <!-- 
       <tx:method name="get*" read-only="true"/> 
       -->
-      <tx:method name="*ForReport" propagation="SUPPORTS" isolation="READ_UNCOMMITTED"/>
+      <tx:method name="*ForReport" propagation="REQUIRED" isolation="READ_UNCOMMITTED"/>
       <tx:method name="updateTransaction" propagation="REQUIRED" isolation="READ_COMMITTED"/> <!-- isolation="SERIALIZABLE" READ_COMMITTED-->
       <tx:method name="*" propagation="REQUIRED" isolation="READ_COMMITTED"/> <!-- isolation="SERIALIZABLE" READ_COMMITTED-->
     </tx:attributes>

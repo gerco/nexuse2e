@@ -89,12 +89,6 @@ public class ActionPojo implements NEXUSe2ePojo {
     @Column(name = "end_flag", nullable=false)
 	private boolean                 pollingRequired=false;
     
-//    <many-to-one foreign-key="fk__action__in_pipeline_id" name="inboundPipeline" column="inbound_nx_pipeline_id" class="org.nexuse2e.pojo.PipelinePojo" not-null="true" cascade="none" index="ix_action_2" lazy="false"/>
-//    
-//    <many-to-one foreign-key="fk__action__out_pipeline_id" name="outboundPipeline" column="outbound_nx_pipeline_id" class="org.nexuse2e.pojo.PipelinePojo" not-null="true" cascade="none" index="ix_action_3" lazy="false"/>
-//    
-//    <many-to-one foreign-key="fk__action__st_upd_pipeline_id" name="statusUpdatePipeline" column="status_update_nx_pipeline_id" class="org.nexuse2e.pojo.PipelinePojo" not-null="false" cascade="none" index="ix_action_4" lazy="false"/>
-    
     @ManyToOne()
     @Index(name="ix_action_2")
     @JoinColumn(name = "inbound_nx_pipeline_id", nullable=false)    
