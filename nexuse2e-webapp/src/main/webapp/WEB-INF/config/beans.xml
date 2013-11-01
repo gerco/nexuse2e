@@ -201,6 +201,9 @@
          -->
         <prop key="hibernate.query.substitutions">true 1, false 0, yes 'Y', no 'N'</prop>
        	
+       	
+       	<prop key="hibernate.hbm2ddl.auto">update</prop>
+       	
        	<!--  isolation needs to be configured on the datasource -->
         
         <!--

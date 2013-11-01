@@ -62,7 +62,7 @@
         </property>
         
         <property name="pollingRequired" type="boolean">
-            <column name="polling_required" not-null="true" default="0">
+            <column name="polling_required" not-null="true" default="false">
                 <comment></comment>
             </column>
         </property>

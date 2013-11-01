@@ -62,11 +62,11 @@
             </column>
         </property>
         <property name="hold" type="boolean">
-            <column name="hold" not-null="true" default="0">
+            <column name="hold" not-null="true" default="false">
             </column>
         </property>
         <property name="pickUp" type="boolean">
-            <column name="pick_up" not-null="true" default="0">
+            <column name="pick_up" not-null="true" default="false">
             </column>
         </property>
         <property name="synchronousTimeout" type="int">
