@@ -36,6 +36,7 @@ import org.nexuse2e.ActionSpecificKey;
 import org.nexuse2e.BeanStatus;
 import org.nexuse2e.Engine;
 import org.nexuse2e.Layer;
+import org.nexuse2e.MessageStatus;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.ProtocolSpecificKey;
 import org.nexuse2e.configuration.EngineConfiguration;
@@ -617,7 +618,7 @@ public class TransactionServiceImpl implements TransactionService {
     public void stopProcessingMessage( String id ) throws NexusException {
 
         MessagePojo messagePojo = getMessage( id );
-        messagePojo.setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_STOPPED );
+        messagePojo.setStatus( org.nexuse2e.MessageStatus.STOPPED.getOrdinal() );
         messagePojo.setModifiedDate( new Date() );
         messagePojo.getConversation().setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_IDLE );
         try {

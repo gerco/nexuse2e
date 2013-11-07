@@ -1,21 +1,21 @@
 /**
- *  NEXUSe2e Business Messaging Open Source
- *  Copyright 2000-2009, Tamgroup and X-ioma GmbH
- *
- *  This is free software; you can redistribute it and/or modify it
- *  under the terms of the GNU Lesser General Public License as
- *  published by the Free Software Foundation version 2.1 of
- *  the License.
- *
- *  This software is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- *  Lesser General Public License for more details.
- *
- *  You should have received a copy of the GNU Lesser General Public
- *  License along with this software; if not, write to the Free
- *  Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- *  02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * NEXUSe2e Business Messaging Open Source
+ * Copyright 2000-2009, Tamgroup and X-ioma GmbH
+ * 
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation version 2.1 of
+ * the License.
+ * 
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 package org.nexuse2e.ui.form;
 
@@ -23,13 +23,14 @@ import java.util.Date;
 
 import org.apache.struts.action.ActionForm;
 import org.nexuse2e.Engine;
+import org.nexuse2e.MessageStatus;
 import org.nexuse2e.configuration.ParameterType;
 import org.nexuse2e.pojo.MessagePojo;
 import org.nexuse2e.util.DateUtil;
 
 /**
  * @author gesch
- *
+ * 
  */
 public class ReportMessageEntryForm extends ActionForm {
 
@@ -56,91 +57,91 @@ public class ReportMessageEntryForm extends ActionForm {
     private String            direction        = null;
     private boolean           outbound         = false;
 
-    public void setMessageProperties( MessagePojo messagePojo ) {
+    public void setMessageProperties(MessagePojo messagePojo) {
 
-        setChoreographyId( messagePojo.getConversation().getChoreography().getName() );
-        setParticipantId( messagePojo.getConversation().getPartner().getPartnerId() );
-        setMessageId( messagePojo.getMessageId() );
+        setChoreographyId(messagePojo.getConversation().getChoreography().getName());
+        setParticipantId(messagePojo.getConversation().getPartner().getPartnerId());
+        setMessageId(messagePojo.getMessageId());
 
-        setConversationId( messagePojo.getConversation().getConversationId() );
-        setNxConversationId( messagePojo.getConversation().getNxConversationId() );
-        if ( messagePojo.getReferencedMessage() == null ) {
-            setReferencedId( "n/a" );
+        setConversationId(messagePojo.getConversation().getConversationId());
+        setNxConversationId(messagePojo.getConversation().getNxConversationId());
+        if (messagePojo.getReferencedMessage() == null) {
+            setReferencedId("n/a");
         } else {
-            setReferencedId( messagePojo.getReferencedMessage().getMessageId() );
+            setReferencedId(messagePojo.getReferencedMessage().getMessageId());
         }
-        setModifiedDate( messagePojo.getModifiedDate() );
+        setModifiedDate(messagePojo.getModifiedDate());
         // LOG.trace("modified: "+pojo.getModifiedDate());
-        setCreatedDate( messagePojo.getCreatedDate() );
+        setCreatedDate(messagePojo.getCreatedDate());
         // LOG.trace("created: "+pojo.getCreatedDate());
-        setExpireDate( messagePojo.getExpirationDate() );
-        setRetries( "" + messagePojo.getRetries() );
+        setExpireDate(messagePojo.getExpirationDate());
+        setRetries("" + messagePojo.getRetries());
 
-        setOutbound( messagePojo.isOutbound() );
+        setOutbound(messagePojo.isOutbound());
 
-        setProtocol( messagePojo.getTRP().getProtocol() + " / " + messagePojo.getTRP().getVersion() );
-        if ( messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ACK ) {
-            setType( "Acknowledgement" );
-        } else if ( messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_NORMAL ) {
-            setType( "Normal" );
-        } else if ( messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ERROR ) {
-            setType( "Error" );
+        setProtocol(messagePojo.getTRP().getProtocol() + " / " + messagePojo.getTRP().getVersion());
+        if (messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ACK) {
+            setType("Acknowledgement");
+        } else if (messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_NORMAL) {
+            setType("Normal");
+        } else if (messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ERROR) {
+            setType("Error");
         } else {
-            setType( "Unknown Messagetype (" + messagePojo.getType() + ")" );
+            setType("Unknown Messagetype (" + messagePojo.getType() + ")");
         }
 
-        switch ( messagePojo.getStatus() ) {
-            case org.nexuse2e.Constants.MESSAGE_STATUS_FAILED:
+        switch (MessageStatus.getByOrdinal(messagePojo.getStatus())) {
+            case FAILED:
                 // setStatus( "Failed (" + messagePojo.getStatus() + ")" );
-                setStatus( "Failed" );
+                setStatus("Failed");
                 break;
-            case org.nexuse2e.Constants.MESSAGE_STATUS_QUEUED:
+            case QUEUED:
                 // setStatus( "Queued (" + messagePojo.getStatus() + ")" );
-                setStatus( "Queued" );
+                setStatus("Queued");
                 break;
-            case org.nexuse2e.Constants.MESSAGE_STATUS_RETRYING:
+            case RETRYING:
                 // setStatus( "Retrying (" + messagePojo.getStatus() + ")" );
-                setStatus( "Retrying" );
+                setStatus("Retrying");
                 break;
-            case org.nexuse2e.Constants.MESSAGE_STATUS_SENT:
+            case SENT:
                 // setStatus( "Sent (" + messagePojo.getStatus() + ")" );
-                setStatus( "Sent" );
+                setStatus("Sent");
                 break;
-            case org.nexuse2e.Constants.MESSAGE_STATUS_STOPPED:
+            case STOPPED:
                 // setStatus( "Stopped (" + messagePojo.getStatus() + ")" );
-                setStatus( "Stopped" );
+                setStatus("Stopped");
                 break;
             default:
                 // setStatus( "unknown (" + messagePojo.getStatus() + ")" );
-                setStatus( "Unknown" );
+                setStatus("Unknown");
         }
-        setAction( messagePojo.getAction().getName() );
-        if ( messagePojo.isOutbound() ) {
-            setDirection( "Outbound" );
+        setAction(messagePojo.getAction().getName());
+        if (messagePojo.isOutbound()) {
+            setDirection("Outbound");
         } else {
-            setDirection( "Inbound" );
+            setDirection("Inbound");
         }
 
-        setEndDate( messagePojo.getEndDate() );
+        setEndDate(messagePojo.getEndDate());
 
-        if ( messagePojo.getEndDate() == null ) {
-            setTurnaroundTime( "Not terminated" );
+        if (messagePojo.getEndDate() == null) {
+            setTurnaroundTime("Not terminated");
         } else {
-            setTurnaroundTime( DateUtil.getDiffTimeRounded( messagePojo.getCreatedDate(), messagePojo.getEndDate() ) );
+            setTurnaroundTime(DateUtil.getDiffTimeRounded(messagePojo.getCreatedDate(), messagePojo.getEndDate()));
         }
     }
 
     private static String getTimezone() {
-        return (String) Engine.getInstance().getActiveConfigurationAccessService().getGenericParameter(
-                "log_display_configuration", ReportingSettingsForm.PARAM_NAME_TIMEZONE, ParameterType.STRING, null );
+        return (String) Engine.getInstance().getActiveConfigurationAccessService()
+                .getGenericParameter("log_display_configuration", ReportingSettingsForm.PARAM_NAME_TIMEZONE, ParameterType.STRING, null);
     }
-    
+
     public String getCreatedDate() {
 
-        if ( createdDate == null || createdDate.equals( "" ) ) {
+        if (createdDate == null || createdDate.equals("")) {
             return "";
         }
-        return DateUtil.localTimeToTimezone( createdDate, getTimezone(), null );
+        return DateUtil.localTimeToTimezone(createdDate, getTimezone(), null);
     }
 
     public String getMessageId() {
@@ -148,7 +149,7 @@ public class ReportMessageEntryForm extends ActionForm {
         return messageId;
     }
 
-    public void setMessageId( String messageId ) {
+    public void setMessageId(String messageId) {
 
         this.messageId = messageId;
     }
@@ -158,7 +159,7 @@ public class ReportMessageEntryForm extends ActionForm {
         return action;
     }
 
-    public void setAction( String action ) {
+    public void setAction(String action) {
 
         this.action = action;
     }
@@ -168,7 +169,7 @@ public class ReportMessageEntryForm extends ActionForm {
         return status;
     }
 
-    public void setStatus( String status ) {
+    public void setStatus(String status) {
 
         this.status = status;
     }
@@ -178,7 +179,7 @@ public class ReportMessageEntryForm extends ActionForm {
         return type;
     }
 
-    public void setType( String type ) {
+    public void setType(String type) {
 
         this.type = type;
     }
@@ -188,7 +189,7 @@ public class ReportMessageEntryForm extends ActionForm {
         return turnaroundTime;
     }
 
-    public void setTurnaroundTime( String turnaroundTime ) {
+    public void setTurnaroundTime(String turnaroundTime) {
 
         this.turnaroundTime = turnaroundTime;
     }
@@ -198,7 +199,7 @@ public class ReportMessageEntryForm extends ActionForm {
         return choreographyId;
     }
 
-    public void setChoreographyId( String choreographyId ) {
+    public void setChoreographyId(String choreographyId) {
 
         this.choreographyId = choreographyId;
     }
@@ -208,11 +209,11 @@ public class ReportMessageEntryForm extends ActionForm {
         return conversationId;
     }
 
-    public void setConversationId( String conversationId ) {
+    public void setConversationId(String conversationId) {
 
         this.conversationId = conversationId;
     }
-    
+
     public int getNxConversationId() {
         return nxConversationId;
     }
@@ -226,7 +227,7 @@ public class ReportMessageEntryForm extends ActionForm {
         return participantId;
     }
 
-    public void setParticipantId( String participantId ) {
+    public void setParticipantId(String participantId) {
 
         this.participantId = participantId;
     }
@@ -236,7 +237,7 @@ public class ReportMessageEntryForm extends ActionForm {
         return protocol;
     }
 
-    public void setProtocol( String protocol ) {
+    public void setProtocol(String protocol) {
 
         this.protocol = protocol;
     }
@@ -246,7 +247,7 @@ public class ReportMessageEntryForm extends ActionForm {
         return referencedId;
     }
 
-    public void setReferencedId( String referencedId ) {
+    public void setReferencedId(String referencedId) {
 
         this.referencedId = referencedId;
     }
@@ -256,7 +257,7 @@ public class ReportMessageEntryForm extends ActionForm {
         return retries;
     }
 
-    public void setRetries( String retries ) {
+    public void setRetries(String retries) {
 
         this.retries = retries;
     }
@@ -266,7 +267,7 @@ public class ReportMessageEntryForm extends ActionForm {
         return direction;
     }
 
-    public void setDirection( String direction ) {
+    public void setDirection(String direction) {
 
         this.direction = direction;
     }
@@ -275,16 +276,17 @@ public class ReportMessageEntryForm extends ActionForm {
      * @return the endDate
      */
     public String getEndDate() {
-        if ( endDate == null || endDate.equals( "" ) ) {
+        if (endDate == null || endDate.equals("")) {
             return "";
         }
-        return DateUtil.localTimeToTimezone( endDate, getTimezone(), null );
+        return DateUtil.localTimeToTimezone(endDate, getTimezone(), null);
     }
 
     /**
-     * @param endDate the endDate to set
+     * @param endDate
+     *            the endDate to set
      */
-    public void setEndDate( Date endDate ) {
+    public void setEndDate(Date endDate) {
 
         this.endDate = endDate;
     }
@@ -298,9 +300,10 @@ public class ReportMessageEntryForm extends ActionForm {
     }
 
     /**
-     * @param expireDate the expireDate to set
+     * @param expireDate
+     *            the expireDate to set
      */
-    public void setExpireDate( Date expireDate ) {
+    public void setExpireDate(Date expireDate) {
 
         this.expireDate = expireDate;
     }
@@ -314,17 +317,19 @@ public class ReportMessageEntryForm extends ActionForm {
     }
 
     /**
-     * @param modifiedDate the modifiedDate to set
+     * @param modifiedDate
+     *            the modifiedDate to set
      */
-    public void setModifiedDate( Date modifiedDate ) {
+    public void setModifiedDate(Date modifiedDate) {
 
         this.modifiedDate = modifiedDate;
     }
 
     /**
-     * @param createdDate the createdDate to set
+     * @param createdDate
+     *            the createdDate to set
      */
-    public void setCreatedDate( Date createdDate ) {
+    public void setCreatedDate(Date createdDate) {
 
         this.createdDate = createdDate;
     }
@@ -334,7 +339,7 @@ public class ReportMessageEntryForm extends ActionForm {
         return outbound;
     }
 
-    public void setOutbound( boolean outbound ) {
+    public void setOutbound(boolean outbound) {
 
         this.outbound = outbound;
     }

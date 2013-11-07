@@ -3,8 +3,8 @@ package org.nexuse2e.patches;
 import java.util.Date;
 import java.util.List;
 
-import org.nexuse2e.Constants;
 import org.nexuse2e.Engine;
+import org.nexuse2e.MessageStatus;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.controller.StateTransitionException;
 import org.nexuse2e.patch.Patch;
@@ -28,11 +28,11 @@ public class StoppedToFailedPatch implements Patch {
             Date start = new Date(System.currentTimeMillis() - (24 * 60 * 60 * 1000 * 3));
             patchReporter.info("Fetching STOPPED messages after " + start);
             List<MessagePojo> messages = Engine.getInstance().getTransactionService().getMessagesForReport(
-                Integer.toString(Constants.MESSAGE_STATUS_STOPPED), 0, 0, null, null, null, start, null, 100000, 0, 1, true);
+                Integer.toString(MessageStatus.STOPPED.getOrdinal()), 0, 0, null, null, null, start, null, 100000, 0, 1, true);
             patchReporter.info("Found " + messages.size() + " messages, setting them to from STOPPED to FAILED");
             for (MessagePojo mp : messages) {
                 patchReporter.info("    Setting conversation " + mp.getConversation().getConversationId() + ", message " + mp.getMessageId() + " to FAILED");
-                mp.setStatus(Constants.MESSAGE_STATUS_FAILED);
+                mp.setStatus(MessageStatus.FAILED.getOrdinal());
                 Engine.getInstance().getTransactionService().updateTransaction(mp, true);
             }
             patchReporter.info("Done. Please Re-queue messages listed above.");

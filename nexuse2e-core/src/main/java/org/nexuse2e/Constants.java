@@ -79,79 +79,46 @@ public class Constants {
     public static final int    CONVERSATION_STATUS_BACKEND_SENT_SENDING_ACK  = 8;
     public static final int    CONVERSATION_STATUS_COMPLETED                 = 9;
 
-    // message status
-    public static final int    MESSAGE_STATUS_FAILED                         = -1;
-    public static final int    MESSAGE_STATUS_UNKNOWN                        = 0;
-    public static final int    MESSAGE_STATUS_RETRYING                       = 1;
-    public static final int    MESSAGE_STATUS_QUEUED                         = 2;
-    public static final int    MESSAGE_STATUS_SENT                           = 3;
-    public static final int    MESSAGE_STATUS_STOPPED                        = 4;
-
-    public static enum MessageStatus {
-        FAILED(-1), UNKNOWN(0), RETRYING(1), QUEUED(2), SENT(3), STOPPED(4);
-
-        int ordinal = 0;
-
-        MessageStatus(int ordinal) {
-            this.ordinal = ordinal;
-        }
-
-        public int getOrdinal() {
-            return this.ordinal;
-        }
-
-        public MessageStatus getByOrdinal(int ordinal) {
-            if (0 <= ordinal) {
-                for (MessageStatus oneType : MessageStatus.values()) {
-                    if (oneType.getOrdinal() == ordinal) {
-                        return oneType;
-                    }
-                }
-            }
-            throw new IllegalArgumentException("Parameter must be the ordinal of a valid MessageStatus!");
-        }
-    }
-
     // Database ID/primary key of system user
-    public static final int    SYSTEM_USER_ID         = 1;
+    public static final int    SYSTEM_USER_ID                                = 1;
 
     /**
      * The configuration root directory relative to Nexus home.
      */
-    public static final String CONFIGROOT             = "WEB-INF/config/";
+    public static final String CONFIGROOT                                    = "WEB-INF/config/";
 
     /**
      * The default mime config file.
      */
-    public static final String DEFAULT_MIME_CONFIG    = "MimeConfig.xml";
+    public static final String DEFAULT_MIME_CONFIG                           = "MimeConfig.xml";
 
     /**
      * The location of the TransportProtocol.xml root.
      */
-    public static final String DERBYROOT              = CONFIGROOT + "database/derby/";
+    public static final String DERBYROOT                                     = CONFIGROOT + "database/derby/";
 
-    public static final String PROTOCOL_ID_EBXML      = "ebxml";
-    public static final String PROTOCOL_ID_HTTP_PLAIN = "httpplain";
+    public static final String PROTOCOL_ID_EBXML                             = "ebxml";
+    public static final String PROTOCOL_ID_HTTP_PLAIN                        = "httpplain";
 
     // File name constant (for message labels, message payload content IDs)
-    public static final String NX_LABEL_FILE_NAME     = "_nxFileName";
+    public static final String NX_LABEL_FILE_NAME                            = "_nxFileName";
 
     public static String getMessageStatusString(int messageStatus) {
 
-        switch (messageStatus) {
-            case org.nexuse2e.Constants.MESSAGE_STATUS_FAILED:
+        switch (org.nexuse2e.MessageStatus.getByOrdinal(messageStatus)) {
+            case FAILED:
                 // setStatus( "Failed (" + messagePojo.getStatus() + ")" );
                 return "Failed";
-            case org.nexuse2e.Constants.MESSAGE_STATUS_QUEUED:
+            case QUEUED:
                 // setStatus( "Queued (" + messagePojo.getStatus() + ")" );
                 return "Queued";
-            case org.nexuse2e.Constants.MESSAGE_STATUS_RETRYING:
+            case RETRYING:
                 // setStatus( "Retrying (" + messagePojo.getStatus() + ")" );
                 return "Retrying";
-            case org.nexuse2e.Constants.MESSAGE_STATUS_SENT:
+            case SENT:
                 // setStatus( "Sent (" + messagePojo.getStatus() + ")" );
                 return "Sent";
-            case org.nexuse2e.Constants.MESSAGE_STATUS_STOPPED:
+            case STOPPED:
                 // setStatus( "Stopped (" + messagePojo.getStatus() + ")" );
                 return "Stopped";
             default:

@@ -29,6 +29,7 @@ import java.util.Queue;
 import org.apache.log4j.Logger;
 import org.nexuse2e.Constants;
 import org.nexuse2e.Engine;
+import org.nexuse2e.MessageStatus;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.controller.StateTransitionException;
 import org.nexuse2e.dao.UpdateTransactionOperation;
@@ -189,7 +190,7 @@ public class ConversationStateMachineImpl implements ConversationStateMachine {
                                     if (LOG.isTraceEnabled()) {
                                         LOG.trace(new LogMessage("message status set to sent", message));
                                     }
-                                    message.setStatus(Constants.MESSAGE_STATUS_SENT);
+                                    message.setStatus(MessageStatus.SENT.getOrdinal());
                                     message.setModifiedDate(new Date());
                                     message.setEndDate(message.getModifiedDate());
                                     if (message.getAction().isEnd()) {
@@ -212,7 +213,7 @@ public class ConversationStateMachineImpl implements ConversationStateMachine {
                             }
                         } else {
                             // Engine.getInstance().getTransactionService().deregisterProcessingMessage( message.getMessageId() );
-                            message.setStatus( Constants.MESSAGE_STATUS_SENT );
+                            message.setStatus( MessageStatus.SENT.getOrdinal() );
                             message.setModifiedDate( new Date() );
                             message.setEndDate( message.getModifiedDate() );
                             referencedMessage.setEndDate( message.getModifiedDate() );
@@ -264,7 +265,7 @@ public class ConversationStateMachineImpl implements ConversationStateMachine {
             public UpdateScope update(ConversationPojo conversation, MessagePojo message, MessagePojo referencedMessage) throws NexusException, StateTransitionException {
                 performChoreograhpyTransition(message, conversation, false);
                 
-                message.setStatus( Constants.MESSAGE_STATUS_SENT );
+                message.setStatus( MessageStatus.SENT.getOrdinal() );
                 message.setModifiedDate( new Date() );
                 message.setEndDate( message.getModifiedDate() );
                 conversation.setStatus( Constants.CONVERSATION_STATUS_PROCESSING );
@@ -292,8 +293,8 @@ public class ConversationStateMachineImpl implements ConversationStateMachine {
                     conversation.setStatus( Constants.CONVERSATION_STATUS_IDLE );
                 }
                 
-                if (message.getStatus() != Constants.MESSAGE_STATUS_SENT) {
-                    message.setStatus(Constants.MESSAGE_STATUS_SENT);
+                if (message.getStatus() != MessageStatus.SENT.getOrdinal()) {
+                    message.setStatus(MessageStatus.SENT.getOrdinal());
                     return UpdateScope.CONVERSATION_AND_MESSAGE;
                 }
                 
@@ -331,18 +332,18 @@ public class ConversationStateMachineImpl implements ConversationStateMachine {
                         conversation.setStatus( Constants.CONVERSATION_STATUS_IDLE );
                     }
                     LOG.trace( new LogMessage( "ref message status set to sent", referencedMessage ) );
-                    referencedMessage.setStatus( Constants.MESSAGE_STATUS_SENT );
+                    referencedMessage.setStatus( MessageStatus.SENT.getOrdinal() );
 
                     // Complete ack message and add to conversation
                     Date endDate = new Date();
                     message.setAction( referencedMessage.getAction() );
-                    message.setStatus( Constants.MESSAGE_STATUS_SENT );
+                    message.setStatus( MessageStatus.SENT.getOrdinal() );
                     message.setModifiedDate( endDate );
                     message.setEndDate( endDate );
                     conversation.addMessage( message );
                     // make sure outbound normal message is set to SENT
                     if (referencedMessage.isOutbound()) { // safety first: should always be true
-                        referencedMessage.setStatus( Constants.MESSAGE_STATUS_SENT );
+                        referencedMessage.setStatus( MessageStatus.SENT.getOrdinal() );
                     }
                     referencedMessage.setModifiedDate( endDate );
                     referencedMessage.setEndDate( endDate );
@@ -372,12 +373,12 @@ public class ConversationStateMachineImpl implements ConversationStateMachine {
                 }
                 
                 conversation.setStatus( Constants.CONVERSATION_STATUS_ERROR );
-                referencedMessage.setStatus( Constants.MESSAGE_STATUS_FAILED );
+                referencedMessage.setStatus( MessageStatus.FAILED.getOrdinal() );
 
                 // Complete error message and add to conversation
                 Date endDate = new Date();
                 message.setAction( referencedMessage.getAction() );
-                message.setStatus( Constants.MESSAGE_STATUS_SENT );
+                message.setStatus( MessageStatus.SENT.getOrdinal() );
                 message.setModifiedDate( endDate );
                 message.setEndDate( endDate );
                 conversation.addMessage( message );
@@ -409,7 +410,7 @@ public class ConversationStateMachineImpl implements ConversationStateMachine {
         synchronized (syncObj) {
             UpdateTransactionOperation operation = new UpdateTransactionOperation() {
                 public UpdateScope update(ConversationPojo conversation, MessagePojo message, MessagePojo referencedMessage) throws NexusException, StateTransitionException {
-                    message.setStatus( Constants.MESSAGE_STATUS_SENT );
+                    message.setStatus( MessageStatus.SENT.getOrdinal() );
                     message.setModifiedDate( new Date() );
                     message.setEndDate( message.getModifiedDate() );
                     
@@ -420,7 +421,7 @@ public class ConversationStateMachineImpl implements ConversationStateMachine {
                     
                     if (conversation.getStatus() == Constants.CONVERSATION_STATUS_ACK_SENT_AWAITING_BACKEND
                             || conversation.getStatus() == Constants.CONVERSATION_STATUS_ERROR // requeued message
-                            || (ack != null && ack.getStatus() == Constants.MESSAGE_STATUS_SENT) // requeued message, check for completed ack added
+                            || (ack != null && ack.getStatus() == MessageStatus.SENT.getOrdinal()) // requeued message, check for completed ack added
                             || conversation.getStatus() == Constants.CONVERSATION_STATUS_IDLE) {
                         if ( message.getAction().isEnd() ) {
                             conversation.setStatus( Constants.CONVERSATION_STATUS_COMPLETED );
@@ -466,7 +467,7 @@ public class ConversationStateMachineImpl implements ConversationStateMachine {
                              + ConversationPojo.getStatusName( Constants.CONVERSATION_STATUS_ERROR ) );
                 }
 
-                message.setStatus( Constants.MESSAGE_STATUS_FAILED );
+                message.setStatus( MessageStatus.FAILED.getOrdinal() );
                 conversation.setStatus( Constants.CONVERSATION_STATUS_ERROR );
                 
                 return UpdateScope.CONVERSATION_AND_MESSAGE;
@@ -514,10 +515,10 @@ public class ConversationStateMachineImpl implements ConversationStateMachine {
                 
                 boolean updateConv = performChoreograhpyTransition(message, conversation, force);
                 boolean updateMsg = false;
-                if (message.getStatus() != Constants.MESSAGE_STATUS_SENT) {
+                if (message.getStatus() != MessageStatus.SENT.getOrdinal()) {
                     updateConv = true;
                     updateMsg = true;
-                    message.setStatus( Constants.MESSAGE_STATUS_QUEUED );
+                    message.setStatus( MessageStatus.QUEUED.getOrdinal() );
                     message.setModifiedDate( new Date() );
 
                     if ( message.isNormal() ) {
@@ -599,7 +600,7 @@ public class ConversationStateMachineImpl implements ConversationStateMachine {
                 if (message.isOutbound()) {
                     // check if current action has QUEUED ACK
                     for (MessagePojo mp : message.getConversation().getMessages()) {
-                        if (!mp.isAck() && mp.getStatus() == Constants.MESSAGE_STATUS_QUEUED &&
+                        if (!mp.isAck() && mp.getStatus() == MessageStatus.QUEUED.getOrdinal() &&
                                 mp.getAction().hasFollowUpAction(currentActionId)) {
                             // found queued inbound message that must be processed before this (non-ack) message
                             // we don't set the current action, since the message processing worker will bring it into correct order

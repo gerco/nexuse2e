@@ -27,6 +27,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.nexuse2e.ActionSpecificKey;
 import org.nexuse2e.Engine;
+import org.nexuse2e.MessageStatus;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.ProtocolSpecificKey;
 import org.nexuse2e.configuration.NexusUUIDGenerator;
@@ -117,7 +118,7 @@ public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
 
         TransactionService ts = Engine.getInstance().getTransactionService();
         List<MessagePojo> messages = ts.getMessagesByActionPartnerDirectionAndStatus(
-                action, messageContext.getPartner(), true, Constants.MESSAGE_STATUS_QUEUED, 0, false );
+                action, messageContext.getPartner(), true, MessageStatus.QUEUED.getOrdinal(), 0, false );
 
         // mark messages as 'sent'
         for (MessagePojo m : messages) {
@@ -141,7 +142,7 @@ public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
         MessagePojo message = new MessagePojo();
         List<MessagePayloadPojo> payloads = new ArrayList<MessagePayloadPojo>();
         for (MessagePojo m : messages) {
-            m.setStatus( Constants.MESSAGE_STATUS_SENT );
+            m.setStatus( MessageStatus.SENT.getOrdinal() );
             m.setEndDate( new Date());
             for (MessagePayloadPojo payload : m.getMessagePayloads()) {
                 try {
@@ -162,7 +163,7 @@ public class ProtocolAdapter implements org.nexuse2e.messaging.ProtocolAdapter {
         message.setModifiedDate( new Date() );
         message.setOutbound( true );
         message.setTRP( messageContext.getMessagePojo().getTRP() );
-        message.setStatus( Constants.MESSAGE_STATUS_QUEUED );
+        message.setStatus( MessageStatus.QUEUED.getOrdinal() );
         message.setType( Constants.INT_MESSAGE_TYPE_NORMAL );
         message.setReferencedMessage( messageContext.getMessagePojo() );
 
