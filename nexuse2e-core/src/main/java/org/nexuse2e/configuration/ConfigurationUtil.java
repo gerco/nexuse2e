@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.nexuse2e.Configurable;
-import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.pojo.LoggerParamPojo;
 import org.nexuse2e.pojo.LoggerPojo;
 import org.nexuse2e.pojo.PipeletParamPojo;

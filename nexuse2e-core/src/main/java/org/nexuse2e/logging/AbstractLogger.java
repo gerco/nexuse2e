@@ -29,8 +29,8 @@ import java.util.Map;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
-import org.nexuse2e.Constants.BeanStatus;
-import org.nexuse2e.Constants.Layer;
+import org.nexuse2e.BeanStatus;
+import org.nexuse2e.Layer;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 

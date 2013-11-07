@@ -26,7 +26,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.apache.log4j.Logger;
-import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.StatusSummary.Status;
 import org.nexuse2e.dao.ConfigDAO;
 import org.nexuse2e.pojo.TRPPojo;

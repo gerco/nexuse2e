@@ -33,11 +33,12 @@ import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.Parser;
 import org.apache.tika.sax.BodyContentHandler;
 import org.nexuse2e.ActionSpecificKey;
+import org.nexuse2e.BeanStatus;
 import org.nexuse2e.Constants;
 import org.nexuse2e.Engine;
+import org.nexuse2e.Layer;
 import org.nexuse2e.Manageable;
 import org.nexuse2e.NexusException;
-import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.IdGenerator;
 import org.nexuse2e.logging.LogMessage;
@@ -59,7 +60,7 @@ import com.ibm.icu.text.CharsetDetector;
  */
 public class BackendPipelineDispatcher implements Manageable, InitializingBean {
 
-    private Constants.BeanStatus                status    = Constants.BeanStatus.UNDEFINED;
+    private BeanStatus                status    = BeanStatus.UNDEFINED;
     Map<ActionSpecificKey, BackendPipeline>     pipelines = null;
     private static Logger                       LOG       = Logger.getLogger( BackendPipelineDispatcher.class );
 
@@ -329,9 +330,9 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
 
         pipelines = config.getBackendOutboundPipelines();
         if ( pipelines == null || pipelines.size() == 0 ) {
-            status = Constants.BeanStatus.ERROR;
+            status = BeanStatus.ERROR;
         }
-        status = Constants.BeanStatus.INITIALIZED;
+        status = BeanStatus.INITIALIZED;
     }
 
     /* (non-Javadoc)
@@ -347,9 +348,9 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
     /* (non-Javadoc)
      * @see org.nexuse2e.Manageable#getRunLevel()
      */
-    public Constants.Layer getActivationLayer() {
+    public Layer getActivationLayer() {
 
-        return Constants.Layer.INTERFACES;
+        return Layer.INTERFACES;
     }
 
     /* (non-Javadoc)
@@ -359,7 +360,7 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
 
         LOG.trace( "start" );
 
-        status = Constants.BeanStatus.ACTIVATED;
+        status = BeanStatus.ACTIVATED;
     }
 
     /* (non-Javadoc)
@@ -369,7 +370,7 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
 
         LOG.trace( "stop" );
 
-        status = Constants.BeanStatus.INITIALIZED;
+        status = BeanStatus.INITIALIZED;
     }
 
     /* (non-Javadoc)
@@ -383,7 +384,7 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
     /* (non-Javadoc)
      * @see org.nexuse2e.Manageable#getStatus()
      */
-    public Constants.BeanStatus getStatus() {
+    public BeanStatus getStatus() {
 
         return status;
     }
@@ -393,7 +394,7 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
      */
     public void afterPropertiesSet() throws Exception {
 
-        status = Constants.BeanStatus.INSTANTIATED;
+        status = BeanStatus.INSTANTIATED;
     }
 
 }

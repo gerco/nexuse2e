@@ -21,8 +21,8 @@ package org.nexuse2e.service;
 
 import java.util.Map;
 
+import org.nexuse2e.Layer;
 import org.nexuse2e.NexusException;
-import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.messaging.MessageProcessor;

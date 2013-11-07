@@ -50,53 +50,6 @@ public class Constants extends org.nexuse2e.Constants {
     public static final String DEFAULT_KEY_STORE                   = "PKCS12";
     public static final String DEFAULT_JCE_PROVIDER                = "BC";
 
-    /**
-     * Used to store incomplete Certificate chain parts in rcp client
-     */
-    public static enum ComponentType {
-        ALL(0), PIPELET(1), LOGGER(2), SERVICE(3);
-
-        private final int value;
-
-        public int getValue() {
-
-            return value;
-        }
-
-        ComponentType(int value) {
-
-            this.value = value;
-        }
-    }
-
-    public static int PIPELINE_TYPE_ALL      = 0;
-    public static int PIPELINE_TYPE_INBOUND  = 1;
-    public static int PIPELINE_TYPE_OUTBOUND = 2;
-
-    public static enum ParameterType {
-        UNKNOWN(0, Object.class), STRING(1, String.class), PASSWORD(2, String.class), ENUMERATION(3, EnumerationParameter.class), LIST(4, ListParameter.class), BOOLEAN(
-                5, Boolean.class), SERVICE(6, String.class), TEXT(7, String.class);
-
-        private final int      value;
-        private final Class<?> type;
-
-        public int getValue() {
-
-            return value;
-        }
-
-        public Class<?> getType() {
-
-            return type;
-        }
-
-        ParameterType(int value, Class<?> type) {
-
-            this.value = value;
-            this.type = type;
-        }
-    }
-
     public static GenericComparator<PipelinePojo>     PIPELINECOMPARATOR        = new GenericComparator<PipelinePojo>("nxPipelineId", true);
     public static GenericComparator<PartnerPojo>      PARTNERCOMPARATOR         = new GenericComparator<PartnerPojo>("partnerId", true);
     public static GenericComparator<ComponentPojo>    COMPONENTCOMPARATOR       = new GenericComparator<ComponentPojo>("type;name", true);

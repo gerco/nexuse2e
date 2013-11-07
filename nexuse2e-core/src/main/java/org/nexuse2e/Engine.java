@@ -41,8 +41,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.hibernate.cfg.Configuration;
-import org.nexuse2e.Constants.BeanStatus;
-import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.BaseConfigurationProvider;
 import org.nexuse2e.configuration.ConfigurationAccessService;
 import org.nexuse2e.configuration.EngineConfiguration;

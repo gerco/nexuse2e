@@ -20,7 +20,6 @@
 package org.nexuse2e;
 
 import org.apache.log4j.Logger;
-import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.messaging.Pipelet;
 import org.nexuse2e.service.Service;
 

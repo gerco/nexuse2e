@@ -23,7 +23,7 @@ import java.util.Date;
 
 import org.apache.struts.action.ActionForm;
 import org.nexuse2e.Engine;
-import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.configuration.ParameterType;
 import org.nexuse2e.pojo.MessagePojo;
 import org.nexuse2e.util.DateUtil;
 

@@ -18,10 +18,10 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import org.nexuse2e.Layer;
 import org.nexuse2e.NexusException;
-import org.nexuse2e.Constants.Layer;
-import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.configuration.ParameterDescriptor;
+import org.nexuse2e.configuration.ParameterType;
 import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.service.AbstractService;
 

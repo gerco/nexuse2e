@@ -23,9 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.nexuse2e.NexusException;
+import org.nexuse2e.configuration.ComponentType;
 import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.configuration.EngineConfiguration;
-import org.nexuse2e.configuration.Constants.ComponentType;
 import org.nexuse2e.pojo.ComponentPojo;
 import org.nexuse2e.ui.structure.ParentalStructureNode;
 import org.nexuse2e.ui.structure.StructureNode;

@@ -19,8 +19,6 @@
  */
 package org.nexuse2e;
 
-import org.nexuse2e.Constants.BeanStatus;
-import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.EngineConfiguration;
 
 /**

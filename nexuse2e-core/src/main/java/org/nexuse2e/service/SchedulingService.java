@@ -22,7 +22,7 @@ package org.nexuse2e.service;
 import java.util.Date;
 import java.util.List;
 
-import org.nexuse2e.Constants.BeanStatus;
+import org.nexuse2e.BeanStatus;
 
 /**
  * Interface for a service that can schedule tasks at a fixed rate.
