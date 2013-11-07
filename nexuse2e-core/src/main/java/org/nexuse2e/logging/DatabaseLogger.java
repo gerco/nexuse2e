@@ -23,8 +23,8 @@ import java.util.Date;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
+import org.nexuse2e.BeanStatus;
 import org.nexuse2e.Engine;
-import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.dao.LogDAO;
 import org.nexuse2e.pojo.LogPojo;

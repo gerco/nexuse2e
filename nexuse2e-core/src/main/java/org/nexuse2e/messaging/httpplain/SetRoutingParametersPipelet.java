@@ -3,7 +3,7 @@ package org.nexuse2e.messaging.httpplain;
 import org.apache.commons.lang.StringUtils;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.ParameterDescriptor;
-import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.configuration.ParameterType;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 

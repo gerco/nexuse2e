@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMapping;
 import org.nexuse2e.configuration.ParameterDescriptor;
-import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.configuration.ParameterType;
 import org.nexuse2e.pojo.ServiceParamPojo;
 import org.nexuse2e.pojo.ServicePojo;
 import org.nexuse2e.service.Service;

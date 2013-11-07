@@ -21,8 +21,6 @@ package org.nexuse2e.configuration;
 
 import java.io.Serializable;
 
-import org.nexuse2e.configuration.Constants.ParameterType;
-
 /**
  * Instances of this class describe generic parameters as they
  * are supported by <code>Configurable</code>s.

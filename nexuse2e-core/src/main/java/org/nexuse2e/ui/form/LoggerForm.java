@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMapping;
 import org.nexuse2e.configuration.ParameterDescriptor;
-import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.configuration.ParameterType;
 import org.nexuse2e.logging.LogAppender;
 import org.nexuse2e.pojo.ComponentPojo;
 import org.nexuse2e.pojo.LoggerParamPojo;

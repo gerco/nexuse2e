@@ -46,13 +46,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.nexuse2e.ActionSpecificKey;
-import org.nexuse2e.Constants.BeanStatus;
+import org.nexuse2e.BeanStatus;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.ProtocolSpecificKey;
 import org.nexuse2e.backend.BackendPipelineDispatcher;
-import org.nexuse2e.configuration.Constants.ComponentType;
-import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.messaging.BackendInboundDispatcher;
 import org.nexuse2e.messaging.BackendOutboundDispatcher;
 import org.nexuse2e.messaging.BackendPipeline;
@@ -1185,7 +1183,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
 
         PipelinePojo pipeline = null;
 
-        List<PipelinePojo> pipelines = getBackendPipelinePojos(Constants.PIPELINE_TYPE_ALL, null);
+        List<PipelinePojo> pipelines = getBackendPipelinePojos(PipelineType.ALL.getOrdinal(), null);
         Iterator<PipelinePojo> pipelineI = pipelines.iterator();
         while (pipelineI.hasNext()) {
             pipeline = pipelineI.next();
@@ -1194,7 +1192,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
             }
         }
 
-        pipelines = getFrontendPipelinePojos(Constants.PIPELINE_TYPE_ALL, null);
+        pipelines = getFrontendPipelinePojos(PipelineType.ALL.getOrdinal(), null);
         pipelineI = pipelines.iterator();
         while (pipelineI.hasNext()) {
             pipeline = pipelineI.next();
@@ -1214,7 +1212,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
 
         PipelinePojo pipeline = null;
 
-        List<PipelinePojo> pipelines = getBackendPipelinePojos(Constants.PIPELINE_TYPE_ALL, null);
+        List<PipelinePojo> pipelines = getBackendPipelinePojos(PipelineType.ALL.getOrdinal(), null);
         Iterator<PipelinePojo> pipelineI = pipelines.iterator();
         while (pipelineI.hasNext()) {
             pipeline = pipelineI.next();
@@ -1222,7 +1220,7 @@ public class EngineConfiguration implements ConfigurationAccessService {
                 return pipeline;
             }
         }
-        pipelines = getFrontendPipelinePojos(Constants.PIPELINE_TYPE_ALL, null);
+        pipelines = getFrontendPipelinePojos(PipelineType.ALL.getOrdinal(), null);
         pipelineI = pipelines.iterator();
         while (pipelineI.hasNext()) {
             pipeline = pipelineI.next();
@@ -1271,14 +1269,14 @@ public class EngineConfiguration implements ConfigurationAccessService {
     public List<PipelinePojo> getFrontendPipelinePojos(int type, Comparator<PipelinePojo> comparator) {
 
         List<PipelinePojo> filteredList = null;
-        if (type != Constants.PIPELINE_TYPE_ALL) {
+        if (type != PipelineType.ALL.getOrdinal()) {
             filteredList = new ArrayList<PipelinePojo>();
             Iterator<PipelinePojo> i = getFrontendPipelineTemplates().iterator();
             while (i.hasNext()) {
                 PipelinePojo pipeline = i.next();
-                if (type == Constants.PIPELINE_TYPE_INBOUND && !pipeline.isOutbound()) {
+                if (type == PipelineType.INBOUND.getOrdinal() && !pipeline.isOutbound()) {
                     filteredList.add(pipeline);
-                } else if (type == Constants.PIPELINE_TYPE_OUTBOUND && pipeline.isOutbound()) {
+                } else if (type == PipelineType.OUTBOUND.getOrdinal() && pipeline.isOutbound()) {
                     filteredList.add(pipeline);
                 }
             }
@@ -1299,14 +1297,14 @@ public class EngineConfiguration implements ConfigurationAccessService {
     public List<PipelinePojo> getBackendPipelinePojos(int type, Comparator<PipelinePojo> comparator) {
 
         List<PipelinePojo> filteredList = null;
-        if (type != Constants.PIPELINE_TYPE_ALL) {
+        if (type != PipelineType.ALL.getOrdinal()) {
             filteredList = new ArrayList<PipelinePojo>();
             Iterator<PipelinePojo> i = getBackendPipelineTemplates().iterator();
             while (i.hasNext()) {
                 PipelinePojo pipeline = i.next();
-                if (type == Constants.PIPELINE_TYPE_INBOUND && !pipeline.isOutbound()) {
+                if (type == PipelineType.INBOUND.getOrdinal() && !pipeline.isOutbound()) {
                     filteredList.add(pipeline);
-                } else if (type == Constants.PIPELINE_TYPE_OUTBOUND && pipeline.isOutbound()) {
+                } else if (type == PipelineType.OUTBOUND.getOrdinal() && pipeline.isOutbound()) {
                     filteredList.add(pipeline);
                 }
             }

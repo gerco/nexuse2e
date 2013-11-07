@@ -5,8 +5,8 @@ import java.util.Date;
 
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.configuration.ComponentType;
 import org.nexuse2e.configuration.EngineConfiguration;
-import org.nexuse2e.configuration.Constants.ComponentType;
 import org.nexuse2e.patch.PatchException;
 import org.nexuse2e.patch.PatchReporter;
 import org.nexuse2e.pojo.ComponentPojo;

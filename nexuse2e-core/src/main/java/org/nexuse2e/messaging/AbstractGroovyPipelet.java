@@ -5,11 +5,11 @@ import groovy.lang.GroovyShell;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.nexuse2e.Constants.BeanStatus;
+import org.nexuse2e.BeanStatus;
 import org.nexuse2e.NexusException;
-import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
+import org.nexuse2e.configuration.ParameterType;
 import org.nexuse2e.logging.LogMessage;
 
 /**

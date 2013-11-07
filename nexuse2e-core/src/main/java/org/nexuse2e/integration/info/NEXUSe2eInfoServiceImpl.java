@@ -36,12 +36,12 @@ import javax.xml.ws.Holder;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
-import org.eclipse.jetty.util.log.Log;
+import org.mortbay.log.Log;
+import org.nexuse2e.BeanStatus;
 import org.nexuse2e.Constants;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.Version;
-import org.nexuse2e.Constants.BeanStatus;
 import org.nexuse2e.configuration.GenericComparator;
 import org.nexuse2e.controller.TransactionService;
 import org.nexuse2e.dao.LogDAO;

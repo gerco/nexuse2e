@@ -33,11 +33,12 @@ import java.util.concurrent.ScheduledFuture;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.nexuse2e.ActionSpecificKey;
+import org.nexuse2e.BeanStatus;
 import org.nexuse2e.Engine;
+import org.nexuse2e.Layer;
+import org.nexuse2e.MessageStatus;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.ProtocolSpecificKey;
-import org.nexuse2e.Constants.BeanStatus;
-import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.IdGenerator;
 import org.nexuse2e.dao.LogDAO;
@@ -69,7 +70,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     private Map<String, WeakReference<Object>>        syncObjects        = new HashMap<String, WeakReference<Object>>();
 
-    private Constants.BeanStatus                      status             = Constants.BeanStatus.UNDEFINED;
+    private BeanStatus                      status             = BeanStatus.UNDEFINED;
 
     private TransactionDAO                            transactionDao     = null;
     private LogDAO                                    logDao             = null;
@@ -617,7 +618,7 @@ public class TransactionServiceImpl implements TransactionService {
     public void stopProcessingMessage( String id ) throws NexusException {
 
         MessagePojo messagePojo = getMessage( id );
-        messagePojo.setStatus( org.nexuse2e.Constants.MESSAGE_STATUS_STOPPED );
+        messagePojo.setStatus( org.nexuse2e.MessageStatus.STOPPED.getOrdinal() );
         messagePojo.setModifiedDate( new Date() );
         messagePojo.getConversation().setStatus( org.nexuse2e.Constants.CONVERSATION_STATUS_IDLE );
         try {
@@ -804,7 +805,7 @@ public class TransactionServiceImpl implements TransactionService {
     public void activate() {
 
         LOG.debug( "Activating..." );
-        status = Constants.BeanStatus.ACTIVATED;
+        status = BeanStatus.ACTIVATED;
     }
 
     /* (non-Javadoc)
@@ -813,7 +814,7 @@ public class TransactionServiceImpl implements TransactionService {
     public void deactivate() {
 
         LOG.debug( "Deactivating..." );
-        status = Constants.BeanStatus.INITIALIZED;
+        status = BeanStatus.INITIALIZED;
     }
 
     /* (non-Javadoc)
@@ -838,7 +839,7 @@ public class TransactionServiceImpl implements TransactionService {
     public void initialize( EngineConfiguration config ) {
 
         LOG.trace( "Initializing..." );
-        status = Constants.BeanStatus.INITIALIZED;
+        status = BeanStatus.INITIALIZED;
     }
 
     /* (non-Javadoc)
@@ -854,7 +855,7 @@ public class TransactionServiceImpl implements TransactionService {
             deregisterProcessingMessage( key );
         }
 
-        status = Constants.BeanStatus.INSTANTIATED;
+        status = BeanStatus.INSTANTIATED;
     }
 
     
@@ -940,7 +941,7 @@ public class TransactionServiceImpl implements TransactionService {
     /**
      * @param status the status to set
      */
-    public void setStatus( Constants.BeanStatus status ) {
+    public void setStatus( BeanStatus status ) {
     
         this.status = status;
     }

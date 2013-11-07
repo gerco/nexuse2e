@@ -38,13 +38,13 @@ import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.log4j.Logger;
-import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.Engine;
+import org.nexuse2e.Layer;
+import org.nexuse2e.MessageStatus;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.CertificateType;
-import org.nexuse2e.configuration.Constants;
-import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.configuration.ParameterDescriptor;
+import org.nexuse2e.configuration.ParameterType;
 import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.FrontendPipeline;
 import org.nexuse2e.messaging.MessageContext;
@@ -278,7 +278,7 @@ public class HttpSenderService extends AbstractService implements SenderAware {
                 if (processReturn) {
                     MessagePojo message = (MessagePojo) messageContext.getMessagePojo().clone();
                     message.setOutbound(false);
-                    message.setStatus(Constants.MESSAGE_STATUS_UNKNOWN);
+                    message.setStatus(MessageStatus.UNKNOWN.getOrdinal());
                     message.setEndDate(null);
                     message.setRetries(0);
                     message.setMessageId(null);

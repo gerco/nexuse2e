@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Level;
-import org.nexuse2e.configuration.Constants.ComponentType;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ComponentPojo;

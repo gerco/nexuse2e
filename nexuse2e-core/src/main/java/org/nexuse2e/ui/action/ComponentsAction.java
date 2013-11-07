@@ -30,9 +30,9 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessages;
+import org.nexuse2e.configuration.ComponentType;
 import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.configuration.EngineConfiguration;
-import org.nexuse2e.configuration.Constants.ComponentType;
 import org.nexuse2e.pojo.ComponentPojo;
 import org.nexuse2e.ui.form.ComponentForm;
 

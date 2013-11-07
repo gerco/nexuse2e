@@ -37,13 +37,13 @@ import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.nexuse2e.BeanStatus;
 import org.nexuse2e.Engine;
-import org.nexuse2e.Constants.BeanStatus;
-import org.nexuse2e.Constants.Layer;
+import org.nexuse2e.Layer;
 import org.nexuse2e.backend.BackendPipelineDispatcher;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
-import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.configuration.ParameterType;
 import org.nexuse2e.tools.mapping.xmldata.MappingDefinition;
 import org.w3c.dom.Document;
 

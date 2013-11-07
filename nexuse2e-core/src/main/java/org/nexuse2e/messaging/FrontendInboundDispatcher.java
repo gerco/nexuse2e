@@ -27,9 +27,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.nexuse2e.Constants.BeanStatus;
-import org.nexuse2e.Constants.Layer;
+import org.nexuse2e.BeanStatus;
 import org.nexuse2e.Engine;
+import org.nexuse2e.Layer;
+import org.nexuse2e.MessageStatus;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.ProtocolSpecificKey;
 import org.nexuse2e.configuration.EngineConfiguration;
@@ -161,7 +162,7 @@ public class FrontendInboundDispatcher extends ChoreographyValidator implements 
         if ( messageContext.getErrors() != null && messageContext.getErrors().size() > 0 ) {
             //headerInvalid = true;
 // Shouldn't only the state machine set the status? Why does processing proceed after message/conv was marked as failed/error?
-//                messageContext.getMessagePojo().setStatus( Constants.MESSAGE_STATUS_FAILED );
+//                messageContext.getMessagePojo().setStatus( Constants.MessageStatus.FAILED.getOrdinal() );
 //                messageContext.getConversation().setStatus( Constants.CONVERSATION_STATUS_ERROR );
         }
 
@@ -240,7 +241,7 @@ public class FrontendInboundDispatcher extends ChoreographyValidator implements 
                     // check if we need to respond to a request message
                     if ( messageContext.getParticipant().getConnection().isReliable() ) {
                         if ( !headerInvalid
-                                && messageContext.getMessagePojo().getStatus() != Constants.MESSAGE_STATUS_FAILED ) {
+                                && messageContext.getMessagePojo().getStatus() != MessageStatus.FAILED.getOrdinal() ) {
                             LOG.trace( new LogMessage( "No error response message found, creating ack",message) );
                             responseMessageContext = null;
                             // generate ack for reliable connections
@@ -268,7 +269,7 @@ public class FrontendInboundDispatcher extends ChoreographyValidator implements 
                             responseMessageContext = null;
                         }
                     } else if ( !headerInvalid
-                            && messageContext.getMessagePojo().getStatus() != Constants.MESSAGE_STATUS_FAILED ) {
+                            && messageContext.getMessagePojo().getStatus() != MessageStatus.FAILED.getOrdinal() ) {
                         LOG.debug(new LogMessage(  "Not reliable, not creating ack - message ID: "
                             + message.getMessageId(),message) );
                         try {
@@ -321,7 +322,7 @@ public class FrontendInboundDispatcher extends ChoreographyValidator implements 
         MessageContext responseMessageContext = null;
         
         if ( !headerInvalid
-                && messageContext.getMessagePojo().getStatus() != Constants.MESSAGE_STATUS_FAILED ) {
+                && messageContext.getMessagePojo().getStatus() != MessageStatus.FAILED.getOrdinal() ) {
             LOG.trace( new LogMessage( "No error response message found, creating ack" , message ) );
             // check if we need to respond to a request message
             responseMessageContext = protocolAdapter.createResponse( messageContext );

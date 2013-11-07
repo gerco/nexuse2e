@@ -22,7 +22,7 @@ package org.nexuse2e.service;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nexuse2e.Constants.Layer;
+import org.nexuse2e.Layer;
 import org.nexuse2e.configuration.ParameterDescriptor;
 
 

@@ -4,7 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.nexuse2e.Engine;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.ParameterDescriptor;
-import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.configuration.ParameterType;
 import org.nexuse2e.dao.PersistentPropertyDAO;
 import org.nexuse2e.dao.PersistentPropertyUpdateCallback;
 import org.nexuse2e.messaging.AbstractPipelet;
