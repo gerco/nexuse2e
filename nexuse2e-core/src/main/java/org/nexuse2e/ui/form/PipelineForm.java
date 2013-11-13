@@ -35,7 +35,7 @@ import org.nexuse2e.configuration.ConfigurationUtil;
 import org.nexuse2e.configuration.Constants;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
-import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.configuration.ParameterType;
 import org.nexuse2e.pojo.ComponentPojo;
 import org.nexuse2e.pojo.PipeletParamPojo;
 import org.nexuse2e.pojo.PipeletPojo;

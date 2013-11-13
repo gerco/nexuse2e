@@ -22,6 +22,7 @@ package org.nexuse2e;
 import java.util.Map;
 
 import org.nexuse2e.configuration.ParameterDescriptor;
+import org.nexuse2e.configuration.ParameterType;
 
 /**
  * A <code>Configurable</code> is an entity within the Nexus Server
@@ -34,7 +35,7 @@ public interface Configurable {
     /**
      * Gets the parameter with the given name and type.
      * @param <T> The parameter type. See
-     * {@link org.nexuse2e.configuration.Constants.ParameterType#getType()}}.
+     * {@link org.nexuse2e.configuration.ParameterType#getType()}}.
      * @param name The parameter name.
      * @return The property.
      * @throws ClassCastException if type and parameter name do not match.

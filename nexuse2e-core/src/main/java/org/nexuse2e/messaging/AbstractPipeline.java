@@ -19,9 +19,9 @@
  */
 package org.nexuse2e.messaging;
 
+import org.nexuse2e.BeanStatus;
+import org.nexuse2e.Layer;
 import org.nexuse2e.NexusException;
-import org.nexuse2e.Constants.BeanStatus;
-import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.EngineConfiguration;
 
 abstract public class AbstractPipeline implements Pipeline {

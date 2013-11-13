@@ -28,14 +28,14 @@ import javax.jws.WebService;
 import javax.xml.ws.Endpoint;
 
 import org.apache.log4j.Logger;
+import org.nexuse2e.BeanStatus;
 import org.nexuse2e.DynamicWSDispatcherServlet;
 import org.nexuse2e.Engine;
+import org.nexuse2e.Layer;
 import org.nexuse2e.NexusException;
-import org.nexuse2e.Constants.BeanStatus;
-import org.nexuse2e.Constants.Layer;
 import org.nexuse2e.configuration.ListParameter;
 import org.nexuse2e.configuration.ParameterDescriptor;
-import org.nexuse2e.configuration.Constants.ParameterType;
+import org.nexuse2e.configuration.ParameterType;
 import org.nexuse2e.messaging.Constants;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.MessagePayloadPojo;

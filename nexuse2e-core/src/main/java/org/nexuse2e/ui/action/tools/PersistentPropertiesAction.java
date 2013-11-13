@@ -34,8 +34,8 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.Engine;
+import org.nexuse2e.MappingType;
 import org.nexuse2e.NexusException;
-import org.nexuse2e.Constants.MappingType;
 import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.dao.PersistentPropertyDAO;
 import org.nexuse2e.pojo.PersistentPropertyPojo;
@@ -111,18 +111,16 @@ public class PersistentPropertiesAction extends NexusE2EAction {
                 }
             }
         } else if ( !StringUtils.isEmpty( action ) && action.equals( "delete" ) ) {
-            if ( !StringUtils.isEmpty( form.getValue() ) ) {
-                int nxId = 0;
-                try {
-                    nxId = Integer.parseInt( form.getNxPersistentPropertyId() );
-                } catch ( Exception e ) {
-                    e.printStackTrace();
-                }
-                if ( nxId != 0 ) {
-                    PersistentPropertyPojo property = dao.getPersistentPropertyById( nxId );
-                    if ( property != null ) { 
-                        dao.deletePersistentProperty( property );
-                    }
+            int nxId = 0;
+            try {
+                nxId = Integer.parseInt( form.getNxPersistentPropertyId() );
+            } catch ( Exception e ) {
+                e.printStackTrace();
+            }
+            if ( nxId != 0 ) {
+                PersistentPropertyPojo property = dao.getPersistentPropertyById( nxId );
+                if ( property != null ) { 
+                    dao.deletePersistentProperty( property );
                 }
             }
         }

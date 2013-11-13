@@ -25,8 +25,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
-import org.nexuse2e.Constants;
 import org.nexuse2e.Engine;
+import org.nexuse2e.MessageStatus;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.controller.StateTransitionException;
 import org.nexuse2e.controller.TransactionService;
@@ -187,7 +187,7 @@ public class MessageWorkerImpl implements MessageWorker {
                 ConversationPojo conv = messageContext.getConversation();
                 if (conv != null && conv.getMessages() != null) {
                     for (MessagePojo m : conv.getMessages()) {
-                        if (m.isAck() && m.isOutbound() && m.getStatus() == Constants.MESSAGE_STATUS_QUEUED) {
+                        if (m.isAck() && m.isOutbound() && m.getStatus() == MessageStatus.QUEUED.getOrdinal()) {
                             if (initialDelay < 25) {
                                 if (LOG.isDebugEnabled()) {
                                     LOG.info(new LogMessage(

@@ -5,6 +5,7 @@ package org.nexuse2e.messaging;
 
 import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
+import org.nexuse2e.MessageStatus;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.controller.StateTransitionException;
 import org.nexuse2e.logging.LogMessage;
@@ -55,8 +56,8 @@ public class MessageHandlingCenter implements MessageProcessor {
      */
     public MessageContext processMessage( MessageContext messageContext ) throws IllegalStateException, NexusException {
 
-        if (messageContext.getMessagePojo().getStatus() != Constants.MESSAGE_STATUS_QUEUED &&
-                messageContext.getMessagePojo().getStatus() != Constants.MESSAGE_STATUS_SENT) {
+        if (messageContext.getMessagePojo().getStatus() != MessageStatus.QUEUED.getOrdinal() &&
+                messageContext.getMessagePojo().getStatus() != MessageStatus.SENT.getOrdinal()) {
             try {
                 messageContext.getStateMachine().queueMessage();
             } catch ( StateTransitionException e ) {

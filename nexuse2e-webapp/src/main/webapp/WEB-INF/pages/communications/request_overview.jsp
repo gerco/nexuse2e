@@ -204,7 +204,7 @@
 			value="true">
 			<td class="NEXUSValue"><nexus:link href="RequestDelete.do"
 				styleClass="button">
-				<img src="images/icons/delete.png" class="button" />Delete Request</nexus:link></td>
+				<img src="images/icons/delete.png" class="button" />Delete Request - Attention: your private key will be deleted!</nexus:link></td>
 		</logic:equal>
 		<logic:notEqual name="requestButtonStateForm" property="deleteRequest"
 			value="true">

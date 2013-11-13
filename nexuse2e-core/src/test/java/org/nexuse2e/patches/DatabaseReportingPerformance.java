@@ -26,8 +26,8 @@ import java.util.List;
 import org.hibernate.CacheMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.nexuse2e.Constants;
 import org.nexuse2e.Engine;
+import org.nexuse2e.MessageStatus;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.dao.TransactionDAO;
 import org.nexuse2e.patch.Patch;
@@ -63,7 +63,7 @@ public class DatabaseReportingPerformance implements Patch {
            for(int i = 0; i < count; i++) {
                start = System.currentTimeMillis();
                msgs =  (List<MessagePojo>) session.createQuery( "select message from MessagePojo as message where (message.status = "
-                       + Constants.MESSAGE_STATUS_RETRYING + " or message.status = " + Constants.MESSAGE_STATUS_QUEUED
+                       + MessageStatus.RETRYING.getOrdinal() + " or message.status = " + MessageStatus.QUEUED.getOrdinal()
                        + ") and message.outbound=true" ).list();
                end = System.currentTimeMillis();
                

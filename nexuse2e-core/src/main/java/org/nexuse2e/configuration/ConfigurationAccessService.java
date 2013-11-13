@@ -27,8 +27,6 @@ import java.util.Map;
 
 import org.nexuse2e.NexusException;
 import org.nexuse2e.backend.BackendPipelineDispatcher;
-import org.nexuse2e.configuration.Constants.ComponentType;
-import org.nexuse2e.configuration.Constants.ParameterType;
 import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.pojo.ChoreographyPojo;

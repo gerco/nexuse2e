@@ -42,6 +42,7 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.IntegerType;
 import org.hibernate.type.Type;
 import org.nexuse2e.Constants;
+import org.nexuse2e.MessageStatus;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.controller.StateTransitionException;
 import org.nexuse2e.dao.UpdateTransactionOperation.UpdateScope;
@@ -98,13 +99,13 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
                 new int[] { Constants.CONVERSATION_STATUS_ERROR, Constants.CONVERSATION_STATUS_PROCESSING } );
 
         followUpMessageStates = new HashMap<Integer, int[]>();
-        followUpMessageStates.put( Constants.MESSAGE_STATUS_FAILED, new int[] { Constants.MESSAGE_STATUS_QUEUED,
-            Constants.MESSAGE_STATUS_SENT} );
-        followUpMessageStates.put( Constants.MESSAGE_STATUS_RETRYING, new int[] { Constants.MESSAGE_STATUS_FAILED,
-            Constants.MESSAGE_STATUS_SENT} );
-        followUpMessageStates.put( Constants.MESSAGE_STATUS_QUEUED, new int[] { Constants.MESSAGE_STATUS_RETRYING,
-            Constants.MESSAGE_STATUS_FAILED, Constants.MESSAGE_STATUS_SENT} );
-        followUpMessageStates.put( Constants.MESSAGE_STATUS_SENT, new int[] { Constants.MESSAGE_STATUS_QUEUED} );
+        followUpMessageStates.put( MessageStatus.FAILED.getOrdinal(), new int[] { MessageStatus.QUEUED.getOrdinal(),
+            MessageStatus.SENT.getOrdinal()} );
+        followUpMessageStates.put( MessageStatus.RETRYING.getOrdinal(), new int[] { MessageStatus.FAILED.getOrdinal(),
+            MessageStatus.SENT.getOrdinal()} );
+        followUpMessageStates.put( MessageStatus.QUEUED.getOrdinal(), new int[] { MessageStatus.RETRYING.getOrdinal(),
+            MessageStatus.FAILED.getOrdinal(), MessageStatus.SENT.getOrdinal()} );
+        followUpMessageStates.put( MessageStatus.SENT.getOrdinal(), new int[] { MessageStatus.QUEUED.getOrdinal()} );
     }
 
     private String getType( int messageType ) {
@@ -236,8 +237,8 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
     public List<MessagePojo> getActiveMessages() throws NexusException {
 
         DetachedCriteria dc = DetachedCriteria.forClass( MessagePojo.class );
-        dc.add( Restrictions.in( "status", new Object[] { Constants.MESSAGE_STATUS_RETRYING,
-                Constants.MESSAGE_STATUS_QUEUED} ) );
+        dc.add( Restrictions.in( "status", new Object[] { MessageStatus.RETRYING.getOrdinal(),
+                MessageStatus.QUEUED.getOrdinal()} ) );
         dc.add( Restrictions.eq( "outbound", true ) );
 
         return (List<MessagePojo>) getListThroughSessionFind( dc, 0, 0 );
@@ -917,11 +918,11 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         int messageStatus = message.getStatus();
         int conversationStatus = message.getConversation().getStatus();
 
-        if (messageStatus < Constants.MESSAGE_STATUS_FAILED
-                || messageStatus > Constants.MESSAGE_STATUS_STOPPED) {
+        if (messageStatus < MessageStatus.FAILED.getOrdinal()
+                || messageStatus > MessageStatus.STOPPED.getOrdinal()) {
             throw new IllegalArgumentException( "Illegal message status: " + messageStatus
-                    + ", only values >= " + Constants.MESSAGE_STATUS_FAILED
-                    + " and <= " + Constants.MESSAGE_STATUS_STOPPED + " allowed" );
+                    + ", only values >= " + MessageStatus.FAILED.getOrdinal()
+                    + " and <= " + MessageStatus.STOPPED.getOrdinal() + " allowed" );
         }
         
         if (conversationStatus < Constants.CONVERSATION_STATUS_ERROR
