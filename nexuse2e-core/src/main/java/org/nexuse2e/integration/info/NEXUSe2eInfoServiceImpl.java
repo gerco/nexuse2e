@@ -36,7 +36,7 @@ import javax.xml.ws.Holder;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
-import org.mortbay.log.Log;
+import org.apache.log4j.Logger;
 import org.nexuse2e.BeanStatus;
 import org.nexuse2e.Constants;
 import org.nexuse2e.Engine;
@@ -57,7 +57,9 @@ import org.nexuse2e.integration.info.wsdl.GetConversationLogMessageCountResponse
 import org.nexuse2e.integration.info.wsdl.GetConversationLogMessages;
 import org.nexuse2e.integration.info.wsdl.GetEngineStatusResponse;
 import org.nexuse2e.integration.info.wsdl.LogLevel;
+import org.nexuse2e.integration.info.wsdl.LogMessageCounts.LogMessageCount;
 import org.nexuse2e.integration.info.wsdl.LogMessages;
+import org.nexuse2e.integration.info.wsdl.LogMessages.LogMessage;
 import org.nexuse2e.integration.info.wsdl.Message;
 import org.nexuse2e.integration.info.wsdl.MessageFilter;
 import org.nexuse2e.integration.info.wsdl.MessagePayload;
@@ -76,8 +78,6 @@ import org.nexuse2e.integration.info.wsdl.StatisticsItem;
 import org.nexuse2e.integration.info.wsdl.StatisticsResponse;
 import org.nexuse2e.integration.info.wsdl.Trp;
 import org.nexuse2e.integration.info.wsdl.Uptime;
-import org.nexuse2e.integration.info.wsdl.LogMessageCounts.LogMessageCount;
-import org.nexuse2e.integration.info.wsdl.LogMessages.LogMessage;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.messaging.MessageHandlingCenter;
 import org.nexuse2e.pojo.ActionPojo;
@@ -96,6 +96,8 @@ import org.nexuse2e.pojo.PartnerPojo;
  * @version $LastChangedRevision:  $ - $LastChangedDate:  $ by $LastChangedBy:  $
  */
 public class NEXUSe2eInfoServiceImpl implements NEXUSe2EInfo {
+    
+    private static Logger LOG = Logger.getLogger(NEXUSe2eInfoServiceImpl.class);
 
     private static final Comparator<String> STRING_COMPARATOR = new Comparator<String>(){
         public int compare(String s1, String s2) {
@@ -397,7 +399,6 @@ public class NEXUSe2eInfoServiceImpl implements NEXUSe2EInfo {
                     Engine.getInstance().changeStatus( BeanStatus.INSTANTIATED );
                     Engine.getInstance().changeStatus( BeanStatus.STARTED );
                 } catch (InstantiationException e) {
-                    Log.warn(e);
                 }
             }
         }.start();
@@ -443,6 +444,7 @@ public class NEXUSe2eInfoServiceImpl implements NEXUSe2EInfo {
             try {
                 status = MessageStatus.fromValue(MessagePojo.getStatusName(mp.getStatus()));
             } catch (IllegalArgumentException ignored) {
+                LOG.info(ignored.getMessage());;
             }
             message.setStatus(status == null ? MessageStatus.UNKNOWN : status);
             Trp trp = new Trp();
