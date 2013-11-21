@@ -37,12 +37,11 @@ public class EngineController {
 
     private EngineMonitor        engineMonitor             = null;
 
-    
+
     /**
-     * 
+     * This method is called by spring, and does some pre-start initialization work.
      */
     public void initialize() {
-
         LOG.debug( "Initializing..." );
         if ( engineControllerStub == null ) {
             try {

@@ -284,14 +284,6 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                 LOG.error( "No MIME mappings found: " + nEx );
             }
 
-            // Set Derby home directory to determine where the DB will be created
-            if ( System.getProperty( "derby.system.home" ) == null ) {
-                LOG.trace( "Setting derby root directory to: " + nexusE2ERoot + Constants.DERBYROOT );
-                System.setProperty( "derby.system.home", nexusE2ERoot + Constants.DERBYROOT );
-            } else {
-                LOG.trace( "Derby root directory already set: " + System.getProperty( "derby.system.home" ) );
-            }
-
             try {
                 // NOTE: & is needed to retrieve the actual bean class and not a proxy!!!
                 localSessionFactoryBean = (LocalSessionFactoryBean) getBeanFactory().getBean(

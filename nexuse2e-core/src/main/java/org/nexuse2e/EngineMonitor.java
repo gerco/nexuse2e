@@ -51,6 +51,7 @@ public class EngineMonitor {
 
     private List<EngineMonitorListener> listeners;
     private Timer                       timer;
+    private String                      nexusE2ERoot               = null;
     private boolean                     shutdownInitiated          = false;
     private boolean                     autoStart                  = true;
     private String                           nexusE2ERoot                   = null;
@@ -76,7 +77,18 @@ public class EngineMonitor {
     private int                         interval                    = 10000; 
     
     protected EngineStatusSummary       currentEngineStatusSummary = null;
+    
+    public void initialize() {
+        // Set Derby home directory to determine where the DB will be created
+        nexusE2ERoot = Engine.getInstance().getNexusE2ERoot();
+        if (null == System.getProperty("derby.system.home") && null != nexusE2ERoot) {
+            LOG.trace( "Setting derby root directory to: " + nexusE2ERoot + Constants.DERBYROOT );
+            System.setProperty( "derby.system.home", nexusE2ERoot + Constants.DERBYROOT );
+        } else {
+            LOG.trace( "Derby root directory already set: " + System.getProperty( "derby.system.home" ) );
+        }
 
+    }
     
     /**
      * 

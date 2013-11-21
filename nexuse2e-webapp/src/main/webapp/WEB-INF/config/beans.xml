@@ -74,7 +74,7 @@
     <property name="engineMonitor" ref="engineMonitor" />
   </bean>
 
-  <bean id="engineMonitor" class="org.nexuse2e.EngineMonitor">
+  <bean id="engineMonitor" class="org.nexuse2e.EngineMonitor" init-method="initialize">
     <property name="timeout" value="10000"/>
   	<property name="interval" value="10000"/>
   	<property name="autoStart" value="true" />
