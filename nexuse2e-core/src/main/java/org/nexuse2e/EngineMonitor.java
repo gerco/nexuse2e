@@ -37,7 +37,6 @@ import javax.sql.DataSource;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.nexuse2e.BeanStatus;
 import org.nexuse2e.StatusSummary.Status;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
@@ -54,6 +53,7 @@ public class EngineMonitor {
     private Timer                       timer;
     private boolean                     shutdownInitiated          = false;
     private boolean                     autoStart                  = true;
+    private String                           nexusE2ERoot                   = null;
     private DataSource					dataSource 				   = null;
     
     public DataSource getDataSource() {
@@ -82,6 +82,14 @@ public class EngineMonitor {
      * 
      */
     public void start() {
+        // Set Derby home directory to determine where the DB will be created
+        nexusE2ERoot = Engine.getInstance().getNexusE2ERoot();
+        if ( System.getProperty( "derby.system.home" ) == null ) {
+            LOG.trace( "Setting derby root directory to: " + nexusE2ERoot + Constants.DERBYROOT );
+            System.setProperty( "derby.system.home", nexusE2ERoot + Constants.DERBYROOT );
+        } else {
+            LOG.trace( "Derby root directory already set: " + System.getProperty( "derby.system.home" ) );
+        }
     	if(dataSource == null){
     		LOG.error("DataSouece not provided, the configuration is not valid. Please update beans.xml "
     				+ "files engine monitor section. Also be aware of the unit change for timeout, its miliseconds now. Monitoring will be disabled");
