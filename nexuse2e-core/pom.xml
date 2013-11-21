@@ -892,7 +892,7 @@
    <profile>
      <id>Mac.profile</id>
      <properties>
-       <tools.jar>/System/Library/Frameworks/JavaVM.framework/Versions/1.5.0/Classes/classes.jar</tools.jar>
+       <tools.jar>${java.home}/../lib/tools.jar</tools.jar>
      </properties>
      <activation>
        <os>

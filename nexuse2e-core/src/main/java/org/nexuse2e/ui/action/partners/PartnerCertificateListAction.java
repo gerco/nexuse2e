@@ -19,8 +19,8 @@
  */
 package org.nexuse2e.ui.action.partners;
 
+import java.util.ArrayList;
 import java.util.Set;
-import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,7 +32,6 @@ import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.EngineConfiguration;
-import org.nexuse2e.configuration.GenericComparator;
 import org.nexuse2e.pojo.CertificatePojo;
 import org.nexuse2e.pojo.PartnerPojo;
 import org.nexuse2e.ui.action.NexusE2EAction;
@@ -76,12 +75,11 @@ public class PartnerCertificateListAction extends NexusE2EAction {
                 form.setProperties( partnerPojo );
 
                 Set<CertificatePojo> certs = partnerPojo.getCertificates();
-                form.setCertificates( new TreeSet<Certificate>( new GenericComparator<Certificate>( "id", true ) ) );
+                form.setCertificates( new ArrayList<Certificate>() );
                 for (CertificatePojo cert : certs) {
                     CollaborationPartnerForm.Certificate formCert = form.new Certificate();
                     formCert.setProperties( cert );
                     form.addCertificate( formCert );
-
                 }
             }
         } catch ( NexusException e ) {
