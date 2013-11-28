@@ -54,7 +54,6 @@ public class EngineMonitor {
     private String                      nexusE2ERoot               = null;
     private boolean                     shutdownInitiated          = false;
     private boolean                     autoStart                  = true;
-    private String                           nexusE2ERoot                   = null;
     private DataSource					dataSource 				   = null;
     
     public DataSource getDataSource() {
