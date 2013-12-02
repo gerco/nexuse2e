@@ -33,11 +33,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nexuse2e.StatusSummary.Status;
+import org.springframework.web.context.support.WebApplicationObjectSupport;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
@@ -45,7 +47,7 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
  * @author gesch
  *
  */
-public class EngineMonitor {
+public class EngineMonitor extends WebApplicationObjectSupport {
 
     private static Logger               LOG                        = Logger.getLogger( EngineMonitor.class );
 
@@ -55,7 +57,7 @@ public class EngineMonitor {
     private boolean                     shutdownInitiated          = false;
     private boolean                     autoStart                  = true;
     private DataSource					dataSource 				   = null;
-    
+
     public DataSource getDataSource() {
 		return dataSource;
 	}
@@ -76,19 +78,34 @@ public class EngineMonitor {
     private int                         interval                    = 10000; 
     
     protected EngineStatusSummary       currentEngineStatusSummary = null;
-    
+
     public void initialize() {
         // Set Derby home directory to determine where the DB will be created
         nexusE2ERoot = Engine.getInstance().getNexusE2ERoot();
+        try {
+            if (nexusE2ERoot == null) {
+                ServletContext currentContext = getServletContext();
+                String webAppPath = currentContext.getRealPath("");
+                webAppPath = webAppPath.replace('\\', '/');
+                if (!webAppPath.endsWith("/")) {
+                    webAppPath += "/";
+                }
+                nexusE2ERoot = webAppPath;
+            }
+        } catch (IllegalStateException isex) {
+            if (nexusE2ERoot == null) {
+                throw new IllegalStateException("nexusE2ERoot must be set if not running in a WebApplicationContext");
+            }
+        }
         if (null == System.getProperty("derby.system.home") && null != nexusE2ERoot) {
-            LOG.trace( "Setting derby root directory to: " + nexusE2ERoot + Constants.DERBYROOT );
-            System.setProperty( "derby.system.home", nexusE2ERoot + Constants.DERBYROOT );
+            LOG.trace("Setting derby root directory to: " + nexusE2ERoot + Constants.DERBYROOT);
+            System.setProperty("derby.system.home", nexusE2ERoot + Constants.DERBYROOT);
         } else {
-            LOG.trace( "Derby root directory already set: " + System.getProperty( "derby.system.home" ) );
+            LOG.trace("Derby root directory already set: " + System.getProperty("derby.system.home"));
         }
 
     }
-    
+
     /**
      * 
      */
