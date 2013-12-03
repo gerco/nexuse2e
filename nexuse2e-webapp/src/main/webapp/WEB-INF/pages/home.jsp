@@ -79,6 +79,10 @@
 		<td class="NEXUSNameNoWidth">NEXUSe2e Charset Encoding</td>
 		<td class="NEXUSNameNoWidth"><%= org.nexuse2e.Engine.getInstance().getDefaultCharEncoding() %></td>
 	</tr>
+	<tr>
+		<td class="NEXUSNameNoWidth">JCE status / cipher limitations</td>
+		<td class="NEXUSNameNoWidth"><%= org.nexuse2e.Engine.getInstance().getJCEInstalledStatus() %></td>
+	</tr>
 </table>
 
 <center><logic:messagesPresent>

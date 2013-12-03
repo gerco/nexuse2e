@@ -20,6 +20,7 @@
 package org.nexuse2e;
 
 import java.io.InputStream;
+import java.security.NoSuchAlgorithmException;
 import java.security.Security;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -31,6 +32,7 @@ import javax.activation.CommandMap;
 import javax.activation.FileTypeMap;
 import javax.activation.MailcapCommandMap;
 import javax.activation.MimetypesFileTypeMap;
+import javax.crypto.Cipher;
 import javax.servlet.ServletContext;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -83,6 +85,8 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
 
     private static Engine                    instance                       = null;
     private EngineController                 engineController               = null;
+
+    private static int                       cipherMax                      = 0;
 
     private EngineConfiguration              currentConfiguration;
     private LocalSessionFactoryBean          localSessionFactoryBean        = null;
@@ -140,6 +144,13 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
         LOG.trace( "creating engine instance" );
         if ( instance == null ) {
             instance = this;
+            try {
+                String cipherTrans = "RSA/ECB/PKCS1Padding";
+                Engine.cipherMax = Cipher.getMaxAllowedKeyLength(cipherTrans);
+                LOG.debug("Engine: Retrieved maximum allowed key lenght for " + cipherTrans + ", got " + cipherMax);
+            } catch (NoSuchAlgorithmException nsae) {
+                LOG.error("Engine: Could not retrieve maximum key length, original message was: " + nsae.getMessage());
+            }
         }
     }
 
@@ -1421,5 +1432,20 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
 	public void setDefaultCharEncoding(String defaultCharEncoding) {
 		this.defaultCharEncoding = defaultCharEncoding;
 	}
+
+    /**
+     * Returns true iff the allowed cipher length is unlimited, i.e., the Java Cryptographic Extension is installed in the current JVM.
+     * 
+     * @return
+     */
+    public String getJCEInstalledStatus() {
+        if (Engine.cipherMax == Integer.MAX_VALUE) {
+            return "JCE installed";
+        } else if (Engine.cipherMax == 0) {
+            return "JCE not installed";
+        } else {
+            return "JCE not installed, maximum key length is: " + Engine.cipherMax;
+        }
+    }
 
 } // Engine
