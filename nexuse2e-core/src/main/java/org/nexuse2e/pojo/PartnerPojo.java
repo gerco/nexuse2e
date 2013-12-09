@@ -32,7 +32,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -51,7 +50,7 @@ import javax.xml.bind.annotation.XmlType;
  *
  */
 @Entity
-@Table(name = "nx_partner",  uniqueConstraints = { @UniqueConstraint( columnNames = { "type", "partnerid" } ) } )
+@Table(name = "nx_partner", uniqueConstraints = { @UniqueConstraint(columnNames = { "type", "partner_id" }) })
 @XmlType(name = "PartnerType")
 @XmlAccessorType(XmlAccessType.NONE)
 public class PartnerPojo implements NEXUSe2ePojo {
@@ -113,22 +112,18 @@ public class PartnerPojo implements NEXUSe2ePojo {
 	@Column(name = "partner_id_type", length=128, nullable=false)
 	private String                partnerIdType;
     
-	@OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "partner_id",referencedColumnName="partner_id")
+    @OneToMany(fetch = FetchType.LAZY)
     private Set<ConversationPojo> conversations    = new HashSet<ConversationPojo>( 0 );
 	
-	@OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "partner_id",referencedColumnName="partner_id")
+    @OneToMany(fetch = FetchType.LAZY)
     private Set<CertificatePojo>  certificates     = new HashSet<CertificatePojo>( 0 );
 	
-	@OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "partner_id",referencedColumnName="partner_id")
+    @OneToMany(fetch = FetchType.LAZY)
     @XmlElementWrapper(name = "Connections")
     @XmlElement(name = "Connection")
     private Set<ConnectionPojo>   connections      = new HashSet<ConnectionPojo>( 0 );
     
-	@OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "partner_id",referencedColumnName="partner_id")
+    @OneToMany(fetch = FetchType.LAZY)
     private List<ParticipantPojo> participants     = new ArrayList<ParticipantPojo>( 0 );
     
 	

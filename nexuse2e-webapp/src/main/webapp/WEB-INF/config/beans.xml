@@ -165,38 +165,7 @@
     <!-- <property name="dataSource" ref="external"/> -->
     <!--  <property name="useTransactionAwareDataSource" value="false" />
      -->
-    <property name="mappingResources">
-      <list>
-        <value>org/nexuse2e/hibernate/nx_conversation.hbm.xml</value>
-        <value>org/nexuse2e/hibernate/nx_message.hbm.xml</value>
-        <value>org/nexuse2e/hibernate/nx_message_label.hbm.xml</value>
-        <value>org/nexuse2e/hibernate/nx_message_payload.hbm.xml</value>
-        <value>org/nexuse2e/hibernate/nx_participant.hbm.xml</value>
-        <value>org/nexuse2e/hibernate/nx_choreography.hbm.xml</value>
-        <value>org/nexuse2e/hibernate/nx_action.hbm.xml</value>
-        
-        <value>org/nexuse2e/hibernate/nx_partner.hbm.xml</value>
-        <value>org/nexuse2e/hibernate/nx_component.hbm.xml</value>
-        <value>org/nexuse2e/hibernate/nx_certificate.hbm.xml</value>
-        <value>org/nexuse2e/hibernate/nx_connection.hbm.xml</value>
-        <value>org/nexuse2e/hibernate/nx_pipelet_param.hbm.xml</value>
-        <value>org/nexuse2e/hibernate/nx_follow_up_action.hbm.xml</value>
-        <value>org/nexuse2e/hibernate/nx_user.hbm.xml</value>
-        <value>org/nexuse2e/hibernate/nx_grant.hbm.xml</value>
-        <value>org/nexuse2e/hibernate/nx_role.hbm.xml</value>
-        <value>org/nexuse2e/hibernate/nx_pipeline.hbm.xml</value>
-        <value>org/nexuse2e/hibernate/nx_pipelet.hbm.xml</value>
-        <value>org/nexuse2e/hibernate/nx_service.hbm.xml</value>
-        <value>org/nexuse2e/hibernate/nx_service_param.hbm.xml</value>
-        <value>org/nexuse2e/hibernate/nx_trp.hbm.xml</value>
-        <value>org/nexuse2e/hibernate/nx_log.hbm.xml</value>
-        <value>org/nexuse2e/hibernate/nx_logger.hbm.xml</value>
-        <value>org/nexuse2e/hibernate/nx_logger_param.hbm.xml</value>
-        <value>org/nexuse2e/hibernate/nx_generic_param.hbm.xml</value>
-        <value>org/nexuse2e/hibernate/nx_mapping.hbm.xml</value>
-        <value>org/nexuse2e/hibernate/nx_persistent_property.hbm.xml</value>
-      </list>
-    </property>
+    <property name="packagesToScan" value="org.nexuse2e"/>
     
     <property name="hibernateProperties">
       <props>        <prop key="hibernate.show_sql">${database.showSQL}</prop>        <prop key="hibernate.dialect">${database.dialect}</prop>

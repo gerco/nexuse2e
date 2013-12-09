@@ -58,7 +58,7 @@ public class ActionPojo implements NEXUSe2ePojo {
     private static final long       serialVersionUID = 3011019828384391232L;
 
     @Id
-    @Column(name = "nx_partner_id")
+    @Column(name = "nx_action_id")
     @GeneratedValue(strategy=GenerationType.AUTO)
     private int                     nxActionId;
     
@@ -67,18 +67,16 @@ public class ActionPojo implements NEXUSe2ePojo {
     @JoinColumn(name = "nx_choreography_id", nullable=false)    
     private ChoreographyPojo        choreography;
     
-    @Column(name = "modified_date")
+    @Column(name = "created_date")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date                    createdDate;
     
-    @Column(name = "created_date")
+    @Column(name = "modified_date")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date                    modifiedDate;
     
-    @Column(name = "modified_nx_user_id", nullable=false, columnDefinition = "INTEGER")
+    @Column(name = "modified_nx_user_id", nullable = false)
 	private int                     modifiedNxUserId;
-    
-    
     
     @Column(name = "start_flag", nullable=false)
 	private boolean                 start=false;
@@ -86,7 +84,7 @@ public class ActionPojo implements NEXUSe2ePojo {
     @Column(name = "end_flag", nullable=false)
 	private boolean                 end=false;
     
-    @Column(name = "end_flag", nullable=false)
+    @Column(name = "polling_required", nullable = false)
 	private boolean                 pollingRequired=false;
     
     @ManyToOne()
@@ -101,25 +99,23 @@ public class ActionPojo implements NEXUSe2ePojo {
     
     @ManyToOne()
     @Index(name="ix_action_4")
-    @JoinColumn(name = "status_update_nx_pipeline_id", nullable=false)    
+    @JoinColumn(name = "status_update_nx_pipeline_id")
     private PipelinePojo            statusUpdatePipeline;
     
-    @Column(name = "name", length=128)
+    @Column(name = "name", length = 64, nullable = false)
     private String                  name;
     
-    @Column(name = "document_type", length=128, nullable=true)
+    @Column(name = "document_type", length = 64, nullable = true)
     private String                  documentType;
     
     
-    @OneToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL, mappedBy="action")
-    @JoinColumn(name = "nx_action_id",referencedColumnName="nx_action_id")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "action")
     @XmlElementWrapper(name = "FollowUpActions")
     @XmlElement(name = "FollowUpAction")
     private Set<FollowUpActionPojo> followUpActions  = new HashSet<FollowUpActionPojo>( 0 );
     
     
-    @OneToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL, mappedBy="followUpAction")
-    @JoinColumn(name = "follow_up_nx_action_id",referencedColumnName="follow_up_nx_action_id")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "followUpAction")
     @XmlElementWrapper(name = "FollowedActions")
     @XmlElement(name = "FollowedAction")
     private Set<FollowUpActionPojo> followedActions  = new HashSet<FollowUpActionPojo>( 0 );

@@ -21,10 +21,21 @@ package org.nexuse2e.pojo;
 
 import java.util.Date;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
 
+@Entity
+@Table(name = "nx_generic_param")
 @XmlType(name = "GenericParamType")
 @XmlAccessorType(XmlAccessType.NONE)
 public class GenericParamPojo implements NEXUSe2ePojo {
@@ -33,16 +44,42 @@ public class GenericParamPojo implements NEXUSe2ePojo {
      * 
      */
     private static final long serialVersionUID = -3820944519302968469L;
+
+    @Id
+    @Column(name = "nx_generic_param_id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int               nxGenericParamId;
+
+    @Column(name = "category", nullable = false, length = 128)
     private String            category;
+
+    @Column(name = "param_tag", nullable = true, length = 128)
     private String            tag;
+
+    @Column(name = "created_date", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date              createdDate;
+
+    @Column(name = "modified_date", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date              modifiedDate;
+
+    @Column(name = "modified_nx_user_id", nullable = false)
     private int               modifiedNxUserId;
+
+    @Transient
     private RolePojo          role;
+
+    @Column(name = "param_name", nullable = false, length = 64)
     private String            paramName;
+
+    @Column(name = "param_label", length = 64)
     private String            label;
+
+    @Column(name = "param_value", length = 1024, nullable = true)
     private String            value;
+
+    @Column(name = "sequence_number")
     private int               sequenceNumber;
     
     /**

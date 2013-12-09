@@ -19,6 +19,13 @@
  */
 package org.nexuse2e.pojo;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 /**
  * Storage class for persistent properties. Persistent properties are key-value style
  * generic properties that are not part of the NEXUSe2e configuration.
@@ -26,12 +33,25 @@ package org.nexuse2e.pojo;
  * @author Jonas Reese
  * @version $LastChangedRevision:  $ - $LastChangedDate:  $ by $LastChangedBy:  $
  */
+@Entity
+@Table(name = "nx_persistent_property")
 public class PersistentPropertyPojo {
 
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int nxPersistentPropertyId;
+
+    @Column(name = "namespace", length = 128)
     private String namespace;
+
+    @Column(name = "version", length = 128)
     private String version;
+
+    @Column(name = "name", length = 128)
     private String name;
+
+    @Column(name = "value", length = 128)
     private String value;
 
     /**

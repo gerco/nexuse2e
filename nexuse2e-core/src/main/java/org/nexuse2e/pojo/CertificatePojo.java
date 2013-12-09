@@ -26,13 +26,20 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.hibernate.annotations.Index;
 import org.nexuse2e.configuration.CertificateType;
 
 @Entity
@@ -48,23 +55,43 @@ public class CertificatePojo implements NEXUSe2ePojo {
     private static final long serialVersionUID = 6193340972799640301L;
 
     @Id
-    @Column(name = "nx_partner_id")
+    @Column(name = "nx_certificate_id")
     @GeneratedValue(strategy=GenerationType.AUTO)
     private int               nxCertificateId;
 
+    @Column(name = "type", nullable = false)
     private int               type;
     
+    @Column(name = "password", length = 64)
     private String            password;
     
+    @Column(name = "created_date", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date              createdDate;
     
+    @Column(name = "modified_date", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date              modifiedDate;
+
+    @Column(name = "modified_nx_user_id", nullable = false)
     private int               modifiedNxUserId;
+
+    @ManyToOne()
+    @Index(name = "ix_certificate_1")
+    @JoinColumn(name = "nx_partner_id", nullable = true)
     private PartnerPojo       partner;
+
+    @Column(name = "name", length = 512, nullable = false)
     private String            name;
+
+    @Column(name = "description", length = 256)
     private String            description;
+
+    @Column(name = "binary_data", nullable = false)
+    @Lob
     private byte[]            binaryData;
 
+    @Transient
     private int               nxPartnerId;
 
     // Constructors
