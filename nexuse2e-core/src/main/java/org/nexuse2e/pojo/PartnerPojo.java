@@ -45,6 +45,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 /**
  * @author GEsch
  *
@@ -112,18 +115,20 @@ public class PartnerPojo implements NEXUSe2ePojo {
 	@Column(name = "partner_id_type", length=128, nullable=false)
 	private String                partnerIdType;
     
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.EAGER)
     private Set<ConversationPojo> conversations    = new HashSet<ConversationPojo>( 0 );
 	
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.EAGER)
     private Set<CertificatePojo>  certificates     = new HashSet<CertificatePojo>( 0 );
 	
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     @XmlElementWrapper(name = "Connections")
     @XmlElement(name = "Connection")
     private Set<ConnectionPojo>   connections      = new HashSet<ConnectionPojo>( 0 );
     
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<ParticipantPojo> participants     = new ArrayList<ParticipantPojo>( 0 );
     
 	

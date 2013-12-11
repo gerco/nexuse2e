@@ -46,6 +46,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Index;
 
 /**
@@ -97,7 +99,8 @@ public class ServicePojo implements NEXUSe2ePojo {
     @Column(name = "description", length = 64)
     private String                 description;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "service")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "service")
+    @Fetch(value = FetchMode.SUBSELECT)
     @XmlElementWrapper(name = "ServiceParams")
     @XmlElement(name = "ServiceParam")
     private List<ServiceParamPojo> serviceParams    = new ArrayList<ServiceParamPojo>( 0 );

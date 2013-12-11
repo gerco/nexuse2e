@@ -47,6 +47,8 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.log4j.Level;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Index;
 
 /**
@@ -101,7 +103,8 @@ public class LoggerPojo implements NEXUSe2ePojo {
     @Column(name = "description", length = 64)
     private String                      description;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "logger")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "logger")
+    @Fetch(value = FetchMode.SUBSELECT)
     @XmlElementWrapper(name = "LoggerParams")
     @XmlElement(name = "LoggerParam")
     private Collection<LoggerParamPojo> loggerParams;

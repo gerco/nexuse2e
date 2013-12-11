@@ -48,6 +48,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.nexuse2e.ui.security.AccessController;
 import org.nexuse2e.ui.security.AccessController.ParsedRequest;
 
@@ -86,7 +88,8 @@ public class RolePojo implements NEXUSe2ePojo {
     @Column(name = "modified_nx_user_id", nullable = false)
     private int                    modifiedNxUserId;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(value = FetchMode.SUBSELECT)
     @MapKey(name = "target")
     private Map<String,GrantPojo>  grantMap           = new HashMap<String,GrantPojo>();
 

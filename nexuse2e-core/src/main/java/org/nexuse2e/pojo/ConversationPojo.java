@@ -39,6 +39,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Index;
 import org.nexuse2e.Constants;
 
@@ -102,8 +104,9 @@ public class ConversationPojo implements NEXUSe2ePojo {
     @JoinColumn(name = "current_nx_action_id", nullable = false)
     private ActionPojo        currentAction;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "conversation")
-    private List<MessagePojo> messages         = new ArrayList<MessagePojo>( 0 );
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "conversation")
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<MessagePojo> messages         = new ArrayList<MessagePojo>(0);
 
     // Constructors
 

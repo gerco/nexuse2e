@@ -46,6 +46,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Index;
 
 /**
@@ -108,7 +110,8 @@ public class PipeletPojo implements NEXUSe2ePojo {
     @Column(name = "description", length = 64)
     private String                 description;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "pipelet")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "pipelet")
+    @Fetch(value = FetchMode.SUBSELECT)
     @XmlElementWrapper(name = "PipeletParams")
     @XmlElement(name = "PipeletParam")
     private List<PipeletParamPojo> pipeletParams;

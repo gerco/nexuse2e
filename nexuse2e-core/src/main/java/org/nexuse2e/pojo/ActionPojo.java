@@ -44,6 +44,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Index;
 
 @Entity
@@ -109,13 +111,15 @@ public class ActionPojo implements NEXUSe2ePojo {
     private String                  documentType;
     
     
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "action")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "action")
+    @Fetch(value = FetchMode.SUBSELECT)
     @XmlElementWrapper(name = "FollowUpActions")
     @XmlElement(name = "FollowUpAction")
     private Set<FollowUpActionPojo> followUpActions  = new HashSet<FollowUpActionPojo>( 0 );
     
     
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "followUpAction")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "followUpAction")
+    @Fetch(value = FetchMode.SUBSELECT)
     @XmlElementWrapper(name = "FollowedActions")
     @XmlElement(name = "FollowedAction")
     private Set<FollowUpActionPojo> followedActions  = new HashSet<FollowUpActionPojo>( 0 );

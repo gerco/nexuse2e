@@ -45,6 +45,8 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Index;
 import org.nexuse2e.MessageStatus;
 import org.nexuse2e.messaging.Constants;
@@ -128,11 +130,13 @@ public class MessagePojo implements NEXUSe2ePojo {
     @Column(name = "modified_nx_user_id", nullable = false)
     private int                      modifiedNxUserId;
 
-    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "message")
+    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "message")
+    @Fetch(value = FetchMode.SUBSELECT)
     @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE })
     private List<MessagePayloadPojo> messagePayloads  = new ArrayList<MessagePayloadPojo>(0);
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "message")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "message")
+    @Fetch(value = FetchMode.SUBSELECT)
     private List<MessageLabelPojo>   messageLabels    = new ArrayList<MessageLabelPojo>(0);
 
     @Transient

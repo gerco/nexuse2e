@@ -43,6 +43,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Index;
 
 /**
@@ -134,7 +136,8 @@ public class ConnectionPojo implements NEXUSe2ePojo {
     @Column(name = "description", length = 64)
     private String               description;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "connection")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "connection")
+    @Fetch(value = FetchMode.SUBSELECT)
     private Set<ParticipantPojo> participants      = new HashSet<ParticipantPojo>( 0 );
     
     @Transient
