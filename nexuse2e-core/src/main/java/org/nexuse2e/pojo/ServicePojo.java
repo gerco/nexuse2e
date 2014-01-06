@@ -99,7 +99,7 @@ public class ServicePojo implements NEXUSe2ePojo {
     @Column(name = "description", length = 64)
     private String                 description;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "service")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "service")
     @Fetch(value = FetchMode.SUBSELECT)
     @XmlElementWrapper(name = "ServiceParams")
     @XmlElement(name = "ServiceParam")

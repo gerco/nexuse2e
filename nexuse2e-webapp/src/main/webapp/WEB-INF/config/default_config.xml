@@ -21,6 +21,17 @@
 
 -->
 <NEXUSe2eConfiguration>
+    <Certificates/>
+    <Partners>
+        <Partner type="1" partnerIdType="Custom" partnerId="Localhost" nxPartnerId="1" name="Localhost">
+            <Connections/>
+        </Partner>
+        <Partner type="2" partnerIdType="Custom" partnerId="Xioma" nxPartnerId="2" name="Xioma">
+            <Connections>
+                <Connection uri="http://localhost:8080/NEXUSe2e/handler/ebxml20" timeout="30" synchronousTimeout="0" synchronous="false" secure="true" retries="3" reliable="true" nxTrpId="2" nxConnectionId="1" nxCertificateId="0" name="Xioma HTTP" messageInterval="30"/>
+            </Connections>
+        </Partner>
+    </Partners>
     <Choreographies>
         <Choreography nxChoreographyId="1" name="GenericFile" description="GenericFile">
             <Participants>
@@ -34,17 +45,6 @@
             </Actions>
         </Choreography>
     </Choreographies>
-    <Certificates/>
-    <Partners>
-        <Partner type="1" partnerIdType="Custom" partnerId="Localhost" nxPartnerId="1" name="Localhost">
-            <Connections/>
-        </Partner>
-        <Partner type="2" partnerIdType="Custom" partnerId="Xioma" nxPartnerId="2" name="Xioma">
-            <Connections>
-                <Connection uri="http://localhost:8080/NEXUSe2e/handler/ebxml20" timeout="30" synchronousTimeout="0" synchronous="false" secure="true" retries="3" reliable="true" nxTrpId="2" nxConnectionId="1" nxCertificateId="0" name="Xioma HTTP" messageInterval="30"/>
-            </Connections>
-        </Partner>
-    </Partners>
     <FrontendPipelines>
         <Pipeline outbound="false" nxTrpId="1" nxPipelineId="3" name="ebXML10InboundPipeline" frontend="true" description="ebXML 1.0 Inbound Pipeline">
             <Pipelets>

@@ -111,14 +111,14 @@ public class ActionPojo implements NEXUSe2ePojo {
     private String                  documentType;
     
     
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "action")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "action")
     @Fetch(value = FetchMode.SUBSELECT)
     @XmlElementWrapper(name = "FollowUpActions")
     @XmlElement(name = "FollowUpAction")
     private Set<FollowUpActionPojo> followUpActions  = new HashSet<FollowUpActionPojo>( 0 );
     
     
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "followUpAction")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "followUpAction")
     @Fetch(value = FetchMode.SUBSELECT)
     @XmlElementWrapper(name = "FollowedActions")
     @XmlElement(name = "FollowedAction")

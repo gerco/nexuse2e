@@ -176,8 +176,9 @@
          -->
         <prop key="hibernate.query.substitutions">true 1, false 0, yes 'Y', no 'N'</prop>
        	
-       	
        	<prop key="hibernate.hbm2ddl.auto">update</prop>
+       	<prop key="hibernate.show_sql">true</prop>
+       	
        	
        	<!--  isolation needs to be configured on the datasource -->
         
@@ -190,6 +191,8 @@
         -->      </props>
     </property>
   </bean>
+  
+  <tx:annotation-driven transaction-manager="txManager"/>
 
   <bean id="txManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
     <property name="sessionFactory" ref="hibernateSessionFactory" />

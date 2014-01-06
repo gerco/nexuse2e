@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -104,7 +103,7 @@ public class ConversationPojo implements NEXUSe2ePojo {
     @JoinColumn(name = "current_nx_action_id", nullable = false)
     private ActionPojo        currentAction;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "conversation")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "conversation")
     @Fetch(value = FetchMode.SUBSELECT)
     private List<MessagePojo> messages         = new ArrayList<MessagePojo>(0);
 

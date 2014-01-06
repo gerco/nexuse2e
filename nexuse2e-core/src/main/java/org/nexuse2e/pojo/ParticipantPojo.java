@@ -23,6 +23,7 @@ package org.nexuse2e.pojo;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -79,7 +80,7 @@ public class ParticipantPojo implements NEXUSe2ePojo {
     @JoinColumn(name = "nx_local_partner_id", nullable = false)
 	private PartnerPojo localPartner;
 
-    @ManyToOne()
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @Index(name = "ix_participant_5")
     @JoinColumn(name = "nx_connection_id", nullable = false)
 	private ConnectionPojo connection;
@@ -100,7 +101,7 @@ public class ParticipantPojo implements NEXUSe2ePojo {
 
     @ManyToOne()
     @Index(name = "ix_participant_1")
-    @JoinColumn(name = "nx_local_certificate_id", nullable = false)
+    @JoinColumn(name = "nx_local_certificate_id")
 	private CertificatePojo localCertificate;
 
     @Column(name = "char_encoding", length = 24)

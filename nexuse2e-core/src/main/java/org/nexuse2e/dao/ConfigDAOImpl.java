@@ -67,6 +67,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#saveTRP(org.nexuse2e.pojo.TRPPojo)
      */
+    @Transactional
     public void saveTRP( TRPPojo trp ) {
 
         saveRecord( trp );
@@ -76,6 +77,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#updateTRP(org.nexuse2e.pojo.TRPPojo)
      */
+    @Transactional
     public void updateTRP( TRPPojo trp ) {
 
         updateRecord( trp );
@@ -85,6 +87,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#savePartner(org.nexuse2e.pojo.PartnerPojo)
      */
+    @Transactional
     public void savePartner( PartnerPojo partner ) {
 
         partner.setCreatedDate( new Date() );
@@ -96,6 +99,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#updatePartner(org.nexuse2e.pojo.PartnerPojo)
      */
+    @Transactional
     public void updatePartner( PartnerPojo partner ) {
 
         partner.setModifiedDate( new Date() );
@@ -105,6 +109,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#deletePartner(org.nexuse2e.pojo.PartnerPojo)
      */
+    @Transactional
     public void deletePartner( PartnerPojo partner ) {
 
         if ( partner != null ) {
@@ -119,6 +124,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#deleteConnection(org.nexuse2e.pojo.ConnectionPojo)
      */
+    @Transactional
     public void deleteConnection( ConnectionPojo connection ) {
 
         if ( connection != null ) {
@@ -139,6 +145,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#saveChoreography(org.nexuse2e.pojo.ChoreographyPojo)
      */
+    @Transactional
     public void saveChoreography( ChoreographyPojo choreography ) {
 
         choreography.setCreatedDate( new Date() );
@@ -150,6 +157,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#updateChoreography(org.nexuse2e.pojo.ChoreographyPojo)
      */
+    @Transactional
     public void updateChoreography( ChoreographyPojo choreography ) {
 
         choreography.setModifiedDate( new Date() );
@@ -159,6 +167,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#deleteChoreography(org.nexuse2e.pojo.ChoreographyPojo)
      */
+    @Transactional
     public void deleteChoreography( ChoreographyPojo choreography ) {
 
         if ( choreography != null ) {
@@ -179,6 +188,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#savePipeline(org.nexuse2e.pojo.PipelinePojo)
      */
+    @Transactional
     public void savePipeline( PipelinePojo pipeline ) {
 
         pipeline.setCreatedDate( new Date() );
@@ -190,6 +200,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#updatePipeline(org.nexuse2e.pojo.PipelinePojo)
      */
+    @Transactional
     public void updatePipeline( PipelinePojo pipeline ) {
 
         pipeline.setModifiedDate( new Date() );
@@ -199,6 +210,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#deletePipeline(org.nexuse2e.pojo.PipelinePojo)
      */
+    @Transactional
     public void deletePipeline( PipelinePojo pipeline ) {
 
         if ( pipeline != null ) {
@@ -241,6 +253,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#saveTrp(org.nexuse2e.pojo.TRPPojo)
      */
+    @Transactional
     public void saveTrp( TRPPojo trp ) {
 
         saveRecord( trp );
@@ -250,6 +263,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#updateTrp(org.nexuse2e.pojo.TRPPojo)
      */
+    @Transactional
     public void updateTrp( TRPPojo trp ) {
 
         updateRecord( trp );
@@ -258,6 +272,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#deleteTrp(org.nexuse2e.pojo.TRPPojo)
      */
+    @Transactional
     public void deleteTrp( TRPPojo trp ) {
 
         if ( trp != null ) {
@@ -288,6 +303,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#saveComponent(org.nexuse2e.pojo.ComponentPojo)
      */
+    @Transactional
     public void saveComponent( ComponentPojo component ) {
 
         saveRecord( component );
@@ -297,6 +313,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#updateComponent(org.nexuse2e.pojo.ComponentPojo)
      */
+    @Transactional
     public void updateComponent( ComponentPojo component ) {
 
         updateRecord( component );
@@ -305,6 +322,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#deleteComponent(org.nexuse2e.pojo.ComponentPojo)
      */
+    @Transactional
     public void deleteComponent( ComponentPojo component ) throws NexusException {
 
         if ( component != null ) {
@@ -325,6 +343,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#deleteLogger(org.nexuse2e.pojo.LoggerPojo)
      */
+    @Transactional
     public void deleteLogger( LoggerPojo logger ) {
 
         if ( logger != null ) {
@@ -335,6 +354,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#updateLogger(org.nexuse2e.pojo.LoggerPojo)
      */
+    @Transactional
     public void updateLogger( LoggerPojo logger ) {
 
         updateRecord( logger );
@@ -344,6 +364,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#saveLogger(org.nexuse2e.pojo.LoggerPojo)
      */
+    @Transactional
     public void saveLogger( LoggerPojo logger ) {
 
         saveRecord( logger );
@@ -364,6 +385,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#deleteService(org.nexuse2e.pojo.ServicePojo)
      */
+    @Transactional
     public void deleteService( ServicePojo service ) {
 
         if ( service != null ) {
@@ -374,6 +396,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#updateService(org.nexuse2e.pojo.ServicePojo)
      */
+    @Transactional
     public void updateService( ServicePojo service ) {
 
         updateRecord( service );
@@ -382,6 +405,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#saveService(org.nexuse2e.pojo.ServicePojo)
      */
+    @Transactional
     public void saveService( ServicePojo service ) {
 
         saveRecord( service );
@@ -400,6 +424,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#deleteCertificate(org.nexuse2e.pojo.CertificatePojo)
      */
+    @Transactional
     public void deleteCertificate( CertificatePojo certificate ) {
 
         if ( certificate != null ) {
@@ -410,6 +435,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#updateCertificate(org.nexuse2e.pojo.CertificatePojo)
      */
+    @Transactional
     public void updateCertificate( CertificatePojo certificate ) {
 
         updateRecord( certificate );
@@ -419,6 +445,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#saveCertificate(org.nexuse2e.pojo.CertificatePojo)
      */
+    @Transactional
     public void saveCertificate( CertificatePojo certificate ) {
 
         saveRecord( certificate );
@@ -441,6 +468,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#updateUser(org.nexuse2e.pojo.UserPojo)
      */
+    @Transactional
     public void updateUser( UserPojo user ) {
 
         updateRecord( user );
@@ -450,6 +478,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#saveUser(org.nexuse2e.pojo.UserPojo)
      */
+    @Transactional
     public void saveUser( UserPojo user ) {
 
         saveRecord( user );
@@ -459,6 +488,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#deleteUser(org.nexuse2e.pojo.UserPojo)
      */
+    @Transactional
     public void deleteUser( UserPojo user ) {
 
         if ( user != null ) {
@@ -482,6 +512,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#updateRole(org.nexuse2e.pojo.RolePojo)
      */
+    @Transactional
     public void updateRole( RolePojo role ) {
 
         updateRecord( role );
@@ -491,6 +522,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#saveRole(org.nexuse2e.pojo.RolePojo)
      */
+    @Transactional
     public void saveRole( RolePojo role ) throws NexusException {
 
         saveRecord( role );
@@ -500,6 +532,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#deleteRole(org.nexuse2e.pojo.RolePojo)
      */
+    @Transactional
     public void deleteRole( RolePojo role ) throws NexusException {
 
         if ( role != null ) {
@@ -520,6 +553,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#updateGenericParameter(org.nexuse2e.pojo.GenericParamPojo)
      */
+    @Transactional
     public void updateGenericParameter( GenericParamPojo param ) {
 
         updateRecord( param );
@@ -529,6 +563,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#saveGenericParameter(org.nexuse2e.pojo.GenericParamPojo)
      */
+    @Transactional
     public void saveGenericParameter( GenericParamPojo param ) {
 
         saveRecord( param );
@@ -538,6 +573,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#deleteGemericParameter(org.nexuse2e.pojo.GenericParamPojo)
      */
+    @Transactional
     public void deleteGemericParameter( GenericParamPojo param ) {
 
         if ( param != null ) {
@@ -558,6 +594,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#updateMapping(org.nexuse2e.pojo.MappingPojo)
      */
+    @Transactional
     public void updateMapping( MappingPojo mapping ) {
 
         updateRecord( mapping );
@@ -567,6 +604,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#saveMapping(org.nexuse2e.pojo.MappingPojo)
      */
+    @Transactional
     public void saveMapping( MappingPojo mapping ) {
 
         saveRecord( mapping );
@@ -576,6 +614,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#deleteMapping(org.nexuse2e.pojo.MappingPojo)
      */
+    @Transactional
     public void deleteMapping( MappingPojo mapping ) {
 
         if ( mapping != null ) {
@@ -586,6 +625,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#deleteAll()
      */
+    @Transactional
     public void deleteAll() throws NexusException {
 
         String[] typeNames = new String[] { "MessageLabelPojo", "MessagePayloadPojo", "MessagePojo",
@@ -713,6 +753,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#saveDelta(org.nexuse2e.configuration.EngineConfiguration)
      */
+    @Transactional
     public void saveDelta( EngineConfiguration configuration ) {
 
         // patch records that got a temporary (negative) ID
@@ -740,6 +781,7 @@ public class ConfigDAOImpl extends BasicDAOImpl implements ConfigDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.ConfigDAO#saveConfigurationToDB(org.nexuse2e.configuration.EngineConfiguration)
      */
+    @Transactional
     public void saveConfigurationToDB( EngineConfiguration configuration ) throws NexusException {
 
         

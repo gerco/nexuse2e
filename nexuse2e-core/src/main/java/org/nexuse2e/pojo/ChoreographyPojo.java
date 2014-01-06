@@ -86,13 +86,13 @@ public class ChoreographyPojo implements NEXUSe2ePojo {
     @Column(name = "modified_nx_user_id", nullable = false)
     private int                  modifiedNxUserId;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "choreography")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "choreography")
     @Fetch(value = FetchMode.SUBSELECT)
     @XmlElementWrapper(name = "Participants")
     @XmlElement(name = "Participant")
     private List<ParticipantPojo> participants     = new ArrayList<ParticipantPojo>( 0 );
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "choreography")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "choreography")
     @Fetch(value = FetchMode.SUBSELECT)
     @XmlElementWrapper(name = "Actions")
     @XmlElement(name = "Action")

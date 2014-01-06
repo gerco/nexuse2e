@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -115,19 +116,21 @@ public class PartnerPojo implements NEXUSe2ePojo {
 	@Column(name = "partner_id_type", length=128, nullable=false)
 	private String                partnerIdType;
     
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "partner")
+    @Fetch(value = FetchMode.SUBSELECT)
     private Set<ConversationPojo> conversations    = new HashSet<ConversationPojo>( 0 );
 	
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "partner")
+    @Fetch(value = FetchMode.SUBSELECT)
     private Set<CertificatePojo>  certificates     = new HashSet<CertificatePojo>( 0 );
 	
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "partner")
     @Fetch(value = FetchMode.SUBSELECT)
     @XmlElementWrapper(name = "Connections")
     @XmlElement(name = "Connection")
     private Set<ConnectionPojo>   connections      = new HashSet<ConnectionPojo>( 0 );
     
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "partner")
     @Fetch(value = FetchMode.SUBSELECT)
     private List<ParticipantPojo> participants     = new ArrayList<ParticipantPojo>( 0 );
     

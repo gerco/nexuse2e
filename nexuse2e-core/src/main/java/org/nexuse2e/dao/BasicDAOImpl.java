@@ -26,8 +26,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.annotation.Resource;
-
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.LockMode;
@@ -102,72 +100,80 @@ public class BasicDAOImpl implements BasicDAO {
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.BasicDAO#deleteRecord(java.lang.Object)
      */
+    @Transactional
     public void deleteRecord( Object record ) {
 
-        sessionFactory.getCurrentSession().delete( record );
+        sessionFactory.getCurrentSession().delete(record);
         
     } // deleteRecordById
     
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.BasicDAO#deleteRecords(java.util.List)
      */
+    @Transactional
     public void deleteRecords(List<? extends Object> records) {
         for (Object record : records) {
-        	sessionFactory.getCurrentSession().delete( record );
+            sessionFactory.getCurrentSession().delete(record);
 		}
     } // deleteRecordById
 
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.BasicDAO#saveRecord(java.lang.Object)
      */
+    @Transactional
     public void saveRecord( Object record ) {
 
-        sessionFactory.getCurrentSession().save( record );
+        sessionFactory.getCurrentSession().save(record);
     } // saveRecord
 
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.BasicDAO#saveOrUpdateRecord(java.lang.Object)
      */
+    @Transactional
     public void saveOrUpdateRecord( Object record ) {
-        sessionFactory.getCurrentSession().saveOrUpdate( record );
+        sessionFactory.getCurrentSession().saveOrUpdate(record);
     } // saveOrUpdateRecord
 
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.BasicDAO#updateRecord(java.lang.Object)
      */
+    @Transactional
     public void updateRecord( Object record ) {
 
-        sessionFactory.getCurrentSession().update( record );
+        sessionFactory.getCurrentSession().update(record);
     } // updateRecord
 
+    @Transactional
     protected void lockRecord(Object record) {
-        sessionFactory.getCurrentSession().lock( record, LockMode.NONE );
+        sessionFactory.getCurrentSession().lock(record, LockMode.NONE);
     }
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.BasicDAO#mergeRecord(java.lang.Object)
      */
+    @Transactional
     public void mergeRecord( Object record ) {
 
-        sessionFactory.getCurrentSession().merge( record );
+        sessionFactory.getCurrentSession().merge(record);
     } // updateRecord
 
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.BasicDAO#reattachRecord(java.lang.Object)
      */
+    @Transactional
     public void reattachRecord( Object record ) {
 
-        sessionFactory.getCurrentSession().lock( record, LockMode.NONE );
+        sessionFactory.getCurrentSession().lock(record, LockMode.NONE);
     } // reattachRecord
 
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.BasicDAO#updateRecords(java.util.Collection)
      */
+    @Transactional
     public void updateRecords( Collection<?> records ) {
 
-        
-        for ( Iterator<?> iter = records.iterator(); iter.hasNext(); ) {
+        for (Iterator<?> iter = records.iterator(); iter.hasNext();) {
             Object record = iter.next();
-            sessionFactory.getCurrentSession().update( record );
+            sessionFactory.getCurrentSession().update(record);
         }
                
     } // saveOrUpdateRecord

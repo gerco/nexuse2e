@@ -93,7 +93,7 @@ public class UserPojo implements NEXUSe2ePojo {
 
     @ManyToOne()
     @Index(name = "ix_user_1")
-    @JoinColumn(name = "nx_role_id", nullable = false)
+    @JoinColumn(name = "nx_role_id", nullable = true)
     private RolePojo          role;
 
     @Transient

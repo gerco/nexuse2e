@@ -36,6 +36,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -72,7 +73,7 @@ public class PipelinePojo implements NEXUSe2ePojo {
     private int                     nxPipelineId;
 
     @ManyToOne()
-    @JoinColumn(name = "nx_trp_id", nullable = false)
+    @JoinColumn(name = "nx_trp_id", nullable = true)
     private TRPPojo                 trp;
 
     @Column(name = "direction_flag", nullable = false)
@@ -99,6 +100,7 @@ public class PipelinePojo implements NEXUSe2ePojo {
     private String                  name;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "pipeline")
+    @OrderBy("nx_pipeline_id,position ASC")
     @Fetch(value = FetchMode.SUBSELECT)
     @XmlElementWrapper(name = "Pipelets")
     @XmlElement(name = "Pipelet")

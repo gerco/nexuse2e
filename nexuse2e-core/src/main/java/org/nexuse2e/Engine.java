@@ -749,7 +749,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                     throw new InstantiationException( message );
                 }
                 currentConfiguration.createBaseConfiguration( baseConfigurationProvider );
-                configDAO.saveConfigurationToDB( currentConfiguration );
+                configDAO.saveConfigurationToDB(currentConfiguration);
             }
 
         } catch ( Exception e ) {
