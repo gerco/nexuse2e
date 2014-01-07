@@ -28,7 +28,7 @@
 <%@ taglib uri="/tags/nexus" prefix="nexus"%>
 <%@ taglib uri="/tags/struts-html-el" prefix="html-el"%>
 
-<%@page import="org.nexuse2e.configuration.Constants.ParameterType"%>
+<%@page import="org.nexuse2e.configuration.ParameterType"%>
 
 <% /*<nexus:helpBar helpDoc="documentation/Collaboration_Partners.htm" /> */ %>
 
