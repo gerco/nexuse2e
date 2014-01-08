@@ -28,6 +28,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,6 +37,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -88,9 +91,6 @@ public class RolePojo implements NEXUSe2ePojo {
     @Column(name = "modified_nx_user_id", nullable = false)
     private int                    modifiedNxUserId;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    @Fetch(value = FetchMode.SUBSELECT)
-    @MapKey(name = "target")
     private Map<String,GrantPojo>  grantMap           = new HashMap<String,GrantPojo>();
 
     @Transient
@@ -197,6 +197,11 @@ public class RolePojo implements NEXUSe2ePojo {
         this.modifiedNxUserId = modifiedNxUserId;
     }
 
+    @Access(AccessType.PROPERTY)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @MapKey(name = "target")
+    @JoinColumn(name="nxGrantId", nullable=false)
+    @Fetch(value = FetchMode.SUBSELECT)
     public Map<String,GrantPojo> getGrantMap() {
 
         if (grants != null) {
