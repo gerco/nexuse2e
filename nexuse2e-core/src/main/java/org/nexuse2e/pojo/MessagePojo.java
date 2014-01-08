@@ -95,6 +95,9 @@ public class MessagePojo implements NEXUSe2ePojo {
     @Column(name = "status", nullable = false)
     private int                      status;
 
+    @Column(name = "backend_status", nullable = false)
+    private int                      backendStatus;
+
     @ManyToOne()
     @Index(name = "ix_message_3")
     @JoinColumn(name = "nx_trp_id")
@@ -346,6 +349,14 @@ public class MessagePojo implements NEXUSe2ePojo {
         this.status = status;
     }
 
+    public int getBackendStatus() {
+        return backendStatus;
+    }
+
+    public void setBackendStatus(int backendStatus) {
+        this.backendStatus = backendStatus;
+    }
+
     public TRPPojo getTRP() {
 
         return this.TRP;
@@ -575,6 +586,24 @@ public class MessagePojo implements NEXUSe2ePojo {
      */
     public String getStatusName() {
         return getStatusName(getStatus());
+    }
+
+    public static String getBackendStatusName(int backendStatus) {
+        try {
+            return MessageStatus.getByOrdinal(backendStatus).toString();
+        } catch (Exception e) {
+            // Pokemon!
+            return "UNKNOWN";
+        }
+    }
+
+    /**
+     * Gets the human-readable name of this message's type.
+     * 
+     * @return The type name, not <code>null</code>.
+     */
+    public String getBackendStatusName() {
+        return getStatusName(getBackendStatus());
     }
 
     public static String getTypeName(int type) {
