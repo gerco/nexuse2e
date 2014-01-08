@@ -23,6 +23,7 @@ package org.nexuse2e;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -193,11 +194,13 @@ public class EngineMonitor extends WebApplicationObjectSupport {
 		String cause = "";
 		Future<String> future = executor.submit(new Callable<String>() {
 			public String call() {
+				Connection con = null;
 				try {
-					Connection con = dataSource.getConnection();
+					con = dataSource.getConnection();
 					PreparedStatement statement = con.prepareStatement("select count(*) from nx_trp");
 					ResultSet result = statement.executeQuery();
 					result.next();
+					
 					int count = result.getInt(1);
 					if(count == 0) {
 						return "no TRP's found in database";
@@ -207,6 +210,15 @@ public class EngineMonitor extends WebApplicationObjectSupport {
 					return "Exception while fetching testdata from database: " + e;
 				} catch (Error e) {
 					return "Error while fetching testdata from database: " + e;
+				} finally {
+					if(con != null){
+						try {
+							con.close();
+						} catch (SQLException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
 				}
 				return "";
 			}
