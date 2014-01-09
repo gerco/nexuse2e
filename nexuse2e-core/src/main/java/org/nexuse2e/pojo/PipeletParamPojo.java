@@ -84,7 +84,7 @@ public class PipeletParamPojo implements NEXUSe2ePojo {
     @Column(name = "param_label", length = 64)
     private String              label;
 
-    @Column(name = "param_value", length = 8192, nullable = true)
+    @Column(name = "param_value", length = 8192, columnDefinition="TEXT", nullable = true)
     private String              value;
 
     @Column(name = "sequence_number")
