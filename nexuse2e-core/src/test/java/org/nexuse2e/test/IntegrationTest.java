@@ -49,10 +49,10 @@ public class IntegrationTest {
 //	    }
 //	}
 //	
-//	@Test
-//	public void test1() {
+	@Test
+	public void test1() {
 //		int port = mTomcat.getConnector().getLocalPort();
 //		System.out.println("port: "+port);
 //		
-//	}
+	}
 }
