@@ -120,7 +120,7 @@ public class PartnerPojo implements NEXUSe2ePojo {
     @Fetch(value = FetchMode.SUBSELECT)
     private Set<ConversationPojo> conversations    = new HashSet<ConversationPojo>( 0 );
 	
-    @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "partner")
+    @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL }, mappedBy = "partner")
     @Fetch(value = FetchMode.SUBSELECT)
     private Set<CertificatePojo>  certificates     = new HashSet<CertificatePojo>( 0 );
 	
