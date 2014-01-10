@@ -38,6 +38,7 @@ public class ReportingPropertiesForm extends ActionForm {
      */
     private static final long                       serialVersionUID                  = 3017346285374318341L;
     private String                                  status                            = null;
+    private String            backendStatus             = null;
     private String                                  choreographyId                    = null;
     private List<Integer>                           originIds                         = null;
     private String                                  conversationId                    = null;
@@ -323,6 +324,16 @@ public class ReportingPropertiesForm extends ActionForm {
     public void setStatus( String status ) {
 
         this.status = status;
+    }
+
+    public String getBackendStatus() {
+
+        return backendStatus;
+    }
+
+    public void setBackendStatus(String backendStatus) {
+
+        this.backendStatus = backendStatus;
     }
 
     public boolean isConversationEnabled() {
