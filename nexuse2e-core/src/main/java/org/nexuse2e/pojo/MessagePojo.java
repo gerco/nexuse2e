@@ -133,7 +133,7 @@ public class MessagePojo implements NEXUSe2ePojo {
     @Column(name = "modified_nx_user_id", nullable = false)
     private int                      modifiedNxUserId;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, orphanRemoval = true, mappedBy = "message")
+    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "message")
     @Fetch(value = FetchMode.SUBSELECT)
     @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE })
     private List<MessagePayloadPojo> messagePayloads  = new ArrayList<MessagePayloadPojo>(0);
