@@ -92,6 +92,10 @@
 			property="status" /></td>
 	</tr>
 	<tr>
+		<td class="NEXUSName">Backend Status</td>
+		<td class="NEXUSValue"><bean:write name="reportMessageEntryForm" property="backendStatus" /></td>
+	</tr>
+	<tr>
 		<td class="NEXUSName">Date Created</td>
 		<td class="NEXUSValue"><bean:write name="reportMessageEntryForm"
 			property="createdDate" /></td>
