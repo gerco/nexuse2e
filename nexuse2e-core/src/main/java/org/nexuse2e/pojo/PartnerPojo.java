@@ -26,7 +26,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -46,6 +45,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -120,11 +120,13 @@ public class PartnerPojo implements NEXUSe2ePojo {
     @Fetch(value = FetchMode.SUBSELECT)
     private Set<ConversationPojo> conversations    = new HashSet<ConversationPojo>( 0 );
 	
-    @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL }, mappedBy = "partner")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "partner")
+    @Cascade(value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @Fetch(value = FetchMode.SUBSELECT)
     private Set<CertificatePojo>  certificates     = new HashSet<CertificatePojo>( 0 );
 	
-    @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL }, mappedBy = "partner")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "partner")
+    @Cascade(value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @Fetch(value = FetchMode.SUBSELECT)
     @XmlElementWrapper(name = "Connections")
     @XmlElement(name = "Connection")
