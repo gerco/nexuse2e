@@ -81,6 +81,7 @@ public class ReportingSettingsSaveAction extends NexusE2EAction {
                 .isMessColParticipantId() ) );
         values.put( ReportingSettingsForm.PARAM_NAME_MSGCOL_SELECT, Boolean.valueOf( form.isMessColSelect() ) );
         values.put( ReportingSettingsForm.PARAM_NAME_MSGCOL_STATUS, Boolean.valueOf( form.isMessColStatus() ) );
+        values.put(ReportingSettingsForm.PARAM_NAME_MSGCOL_BACKEND_STATUS, Boolean.valueOf(form.isMessColBackendStatus()));
         values.put( ReportingSettingsForm.PARAM_NAME_MSGCOL_TURNAROUND, Boolean.valueOf( form
                 .isMessColTurnaround() ) );
         values.put( ReportingSettingsForm.PARAM_NAME_MSGCOL_TYPE, Boolean.valueOf( form.isMessColType() ) );

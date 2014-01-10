@@ -77,6 +77,7 @@ public abstract class ReportingAction extends NexusE2EAction {
                 true ) );
         form.setMessColSelect( getBooleanValue( values, ReportingSettingsForm.PARAM_NAME_MSGCOL_SELECT, true ) );
         form.setMessColStatus( getBooleanValue( values, ReportingSettingsForm.PARAM_NAME_MSGCOL_STATUS, true ) );
+        form.setMessColBackendStatus(getBooleanValue(values, ReportingSettingsForm.PARAM_NAME_MSGCOL_BACKEND_STATUS, true));
         form.setMessColTurnaround( getBooleanValue( values, ReportingSettingsForm.PARAM_NAME_MSGCOL_TURNAROUND,
                         true ) );
         form.setMessColType( getBooleanValue( values, ReportingSettingsForm.PARAM_NAME_MSGCOL_TYPE, true ) );
