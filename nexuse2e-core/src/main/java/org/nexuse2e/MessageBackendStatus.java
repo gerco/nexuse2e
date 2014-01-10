@@ -14,7 +14,7 @@ public enum MessageBackendStatus {
     }
 
     public static MessageBackendStatus getByOrdinal(int ordinal) {
-        if (0 <= ordinal) {
+        if (-1 <= ordinal) {
             for (MessageBackendStatus oneType : MessageBackendStatus.values()) {
                 if (oneType.getOrdinal() == ordinal) {
                     return oneType;
