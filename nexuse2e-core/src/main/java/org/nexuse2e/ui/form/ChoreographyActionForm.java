@@ -127,6 +127,8 @@ public class ChoreographyActionForm extends ActionForm {
         if ( getStatusUpdatePipelineId() != 0 ) {
             action.setStatusUpdatePipeline( Engine.getInstance().getActiveConfigurationAccessService()
                     .getPipelinePojoByNxPipelineId( getStatusUpdatePipelineId() ) );
+        } else {
+        	action.setStatusUpdatePipeline(null);
         }
 
         return action;
