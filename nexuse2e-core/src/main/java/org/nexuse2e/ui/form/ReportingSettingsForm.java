@@ -52,6 +52,7 @@ public class ReportingSettingsForm extends ActionForm {
     public static String                            PARAM_NAME_MSGCOL_MSGID           = "msgColMsgId";
     public static String                            PARAM_NAME_MSGCOL_PARTICIPANTID   = "msgColParticipantId";
     public static String                            PARAM_NAME_MSGCOL_STATUS          = "msgColStatus";
+    public static String                     PARAM_NAME_MSGCOL_BACKEND_STATUS  = "msgColBackendStatus";
     public static String                            PARAM_NAME_MSGCOL_TYPE            = "msgColType";
     public static String                            PARAM_NAME_MSGCOL_ACTION          = "msgColAction";
     public static String                            PARAM_NAME_MSGCOL_CREATED         = "msgColCreated";
@@ -85,6 +86,7 @@ public class ReportingSettingsForm extends ActionForm {
     private boolean                                 messColMessageId                  = false;
     private boolean                                 messColParticipantId              = false;
     private boolean                                 messColStatus                     = false;
+    private boolean                          messColBackendStatus              = false;
     private boolean                                 messColType                       = false;
     private boolean                                 messColAction                     = false;
     private boolean                                 messColCreated                    = false;
@@ -135,6 +137,8 @@ public class ReportingSettingsForm extends ActionForm {
                     "Log Column Participant Id", "Should Message ParticipantId Name be displayed", true ) );
             parameterMap.put( PARAM_NAME_MSGCOL_STATUS, new ParameterDescriptor( ParameterType.BOOLEAN,
                     "Log Column Status", "Should Message Log Status be displayed", true ) );
+            parameterMap.put(PARAM_NAME_MSGCOL_BACKEND_STATUS, new ParameterDescriptor(ParameterType.BOOLEAN, "Log Column Status",
+                    "Should Message Log Backend Status be displayed", true));
             parameterMap.put( PARAM_NAME_MSGCOL_TYPE, new ParameterDescriptor( ParameterType.BOOLEAN,
                     "Log Column Type", "Should Message Log Type be displayed", true ) );
             parameterMap.put( PARAM_NAME_MSGCOL_ACTION, new ParameterDescriptor( ParameterType.BOOLEAN,
@@ -319,6 +323,16 @@ public class ReportingSettingsForm extends ActionForm {
         this.messColStatus = messColStatus;
     }
 
+    public boolean isMessColBackendStatus() {
+
+        return messColBackendStatus;
+    }
+
+    public void setMessColBackendStatus(boolean messColBackendStatus) {
+
+        this.messColBackendStatus = messColBackendStatus;
+    }
+
     public boolean isMessColTurnaround() {
 
         return messColTurnaround;
@@ -499,6 +513,7 @@ public class ReportingSettingsForm extends ActionForm {
         setMessColMessageId( false );
         setMessColParticipantId( false );
         setMessColStatus( false );
+        setMessColBackendStatus(false);
         setMessColType( false );
         setMessColAction( false );
         setMessColCreated( false );

@@ -131,13 +131,13 @@
           </tr>
           <tr>
             <td class="NEXUSValue"><html:checkbox property="messColStatus"></html:checkbox>Status</td>
+            <td class="NEXUSValue"><html:checkbox property="messColBackendStatus"></html:checkbox>Backend Status</td>
             <td class="NEXUSValue"><html:checkbox property="messColType"></html:checkbox>Type</td>
-            <td class="NEXUSValue"><html:checkbox property="messColAction"></html:checkbox>Action</td>
           </tr>
           <tr>
             <td class="NEXUSValue"><html:checkbox property="messColCreated"></html:checkbox>Created Date</td>
             <td class="NEXUSValue"><html:checkbox property="messColTurnaround"></html:checkbox>Turnaround Time</td>
-            <td class="NEXUSValue">&nbsp;</td>
+            <td class="NEXUSValue"><html:checkbox property="messColAction"></html:checkbox>Action</td>
           </tr>         
     </table>
     <table class="NEXUS_TABLE" width="100%" style="margin-bottom: 0pt;">

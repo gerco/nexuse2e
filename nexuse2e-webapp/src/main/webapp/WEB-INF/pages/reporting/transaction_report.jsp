@@ -567,6 +567,10 @@
 						property="messColStatus" value="true">
 						<th class="NEXUSSection">Status</th>
 					</logic:equal>
+					<logic:equal name="reportingSettingsForm"
+						property="messColBackendStatus" value="true">
+						<th class="NEXUSSection">Backend Status</th>
+					</logic:equal>
 					<logic:equal name="reportingSettingsForm" property="messColType"
 						value="true">
 						<th class="NEXUSSection">Message Type</th>
@@ -611,6 +615,11 @@
 							property="messColStatus" value="true">
 							<td class="NEXUSValue"><bean:write name="message"
 								property="status" /></td>
+						</logic:equal>
+						<logic:equal name="reportingSettingsForm"
+							property="messColBackendStatus" value="true">
+							<td class="NEXUSValue"><bean:write name="message"
+								property="backendStatus" /></td>
 						</logic:equal>
 						<logic:equal name="reportingSettingsForm" property="messColType"
 							value="true">

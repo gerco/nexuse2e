@@ -43,7 +43,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -133,9 +132,8 @@ public class MessagePojo implements NEXUSe2ePojo {
     @Column(name = "modified_nx_user_id", nullable = false)
     private int                      modifiedNxUserId;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE }, orphanRemoval = true, mappedBy = "message")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "message")
     @Fetch(value = FetchMode.SUBSELECT)
-    @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE })
     private List<MessagePayloadPojo> messagePayloads  = new ArrayList<MessagePayloadPojo>(0);
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "message")

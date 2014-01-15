@@ -23,6 +23,7 @@ import java.util.Date;
 
 import org.apache.struts.action.ActionForm;
 import org.nexuse2e.Engine;
+import org.nexuse2e.MessageBackendStatus;
 import org.nexuse2e.MessageStatus;
 import org.nexuse2e.configuration.ParameterType;
 import org.nexuse2e.pojo.MessagePojo;
@@ -46,6 +47,7 @@ public class ReportMessageEntryForm extends ActionForm {
     private String            type             = null;
     private String            referencedId     = null;
     private String            status           = null;
+    private String            backendStatus    = null;
     private String            action           = null;
     private Date              modifiedDate     = null;
     private Date              createdDate      = null;
@@ -115,6 +117,16 @@ public class ReportMessageEntryForm extends ActionForm {
                 // setStatus( "unknown (" + messagePojo.getStatus() + ")" );
                 setStatus("Unknown");
         }
+
+        switch (MessageBackendStatus.getByOrdinal(messagePojo.getBackendStatus())) {
+            case FAILED:
+                setBackendStatus("Failed");
+            case SENT:
+                setBackendStatus("Sent");
+            default:
+                setBackendStatus("Unknown");
+        }
+
         setAction(messagePojo.getAction().getName());
         if (messagePojo.isOutbound()) {
             setDirection("Outbound");
@@ -172,6 +184,16 @@ public class ReportMessageEntryForm extends ActionForm {
     public void setStatus(String status) {
 
         this.status = status;
+    }
+
+    public String getBackendStatus() {
+
+        return backendStatus;
+    }
+
+    public void setBackendStatus(String backendStatus) {
+
+        this.backendStatus = backendStatus;
     }
 
     public String getType() {
