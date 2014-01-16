@@ -145,7 +145,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
         if ( instance == null ) {
             instance = this;
             try {
-                String cipherTrans = "RSA/ECB/PKCS1Padding";
+                String cipherTrans = "AES";
                 Engine.cipherMax = Cipher.getMaxAllowedKeyLength(cipherTrans);
                 LOG.debug("Engine: Retrieved maximum allowed key length for " + cipherTrans + ", got " + cipherMax);
             } catch (NoSuchAlgorithmException nsae) {
