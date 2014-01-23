@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionErrors;
@@ -75,6 +76,10 @@ public abstract class NexusE2EAction extends Action {
     public static final String    JAVA_CLASSPATH               = "java_classpath";
     public static final String    SERVICE_UPTIME               = "service_uptime";
     public static final String    ENGINE_UPTIME                = "engine_uptime";
+    
+    public static final String    INSTANCES                    = "instances";
+    public static final String    DESCRIPTION                  = "description";
+    
 
     protected static final String SUBMIT_BUTTON                = "Submit";
 
@@ -121,6 +126,16 @@ public abstract class NexusE2EAction extends Action {
             e.printStackTrace();
         }
 
+        String instanceId = (String)request.getParameter("instanceId");
+        String commandId = (String)request.getParameter("commandId");
+        if(StringUtils.isNotEmpty(instanceId) && StringUtils.isNotEmpty(commandId) ) {
+        	Engine.getInstance().getEngineController().getAdvancedController().executeCommand(instanceId, commandId);
+    	}
+        
+        if(Engine.getInstance().getEngineController().getAdvancedController() != null) {
+        	request.setAttribute(INSTANCES, Engine.getInstance().getEngineController().getAdvancedController().getInstances());
+        	request.setAttribute(DESCRIPTION, Engine.getInstance().getEngineController().getAdvancedController().getDescription());
+        }
         
         
         if ( user != null ) {

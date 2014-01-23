@@ -62,12 +62,12 @@ public class ConversationPojo implements NEXUSe2ePojo {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int               nxConversationId;
 
-    @ManyToOne()
+    @ManyToOne(fetch=FetchType.LAZY,optional=false)
     @Index(name = "ix_conversation_1")
     @JoinColumn(name = "nx_choreography_id", nullable = false)
     private ChoreographyPojo  choreography;
 
-    @ManyToOne()
+    @ManyToOne(fetch=FetchType.LAZY,optional=false)
     @Index(name = "ix_conversation_1")
     @JoinColumn(name = "nx_partner_id", nullable = false)
     private PartnerPojo       partner;

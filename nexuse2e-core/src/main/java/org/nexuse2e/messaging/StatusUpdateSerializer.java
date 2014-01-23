@@ -255,7 +255,7 @@ public class StatusUpdateSerializer implements Manageable {
                             try {
                                 statusUpdatePipeline.processMessage( messageContext );
                             } catch ( NexusException e ) {
-                                LOG.error( "Error processing status update message!" );
+                            	LOG.error(new LogMessage( "Error processing status update message!",messageContext,e) );
                             }
                         } else {
                             LOG.debug( new LogMessage("No status pipeline found for message: "

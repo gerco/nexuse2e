@@ -84,7 +84,47 @@
 		<td class="NEXUSNameNoWidth"><%= org.nexuse2e.Engine.getInstance().getJCEInstalledStatus() %></td>
 	</tr>
 </table>
+<table colspan="4" class="NEXUS_TABLE" width="100%">
 
+	<tr>
+		<td class="NEXUSSection">Instances</td>
+		
+	</tr>
+</table>
+
+	<nested:iterate id="instance" name="instances">
+		
+		<td>
+			<table class="NEXUS_TABLE" style="width:20%">
+				<tr>
+					<td class="NEXUSSection">
+						Label:
+					</td>
+					<td class="NEXUSSection">
+						<bean:write name="instance" property="label" />
+					</td>
+				</tr>
+				<bean:size id="size" name="instance" property="commands"/>
+				<nested:iterate id="command" indexId="counter" name="instance" property="commands">
+					<tr>
+						<% if(counter.intValue() == 0) {%>
+						<td style="background-color:<bean:write name="instance" property="statusColor" />;" rowspan="<%=size %>" class="NEXUSNameNoWidth">
+							
+						</td>
+						<% } %>
+						
+						<td class="NEXUSNameNoWidth">
+							<nexus:link href="Home.do?instanceId=${instance.id}&commandId=${command.name}" styleClass="NEXUS_TAB_UNSELECTED_LINK">
+            					<bean:write name="command" property="label" />
+            				</nexus:link>
+						</td>
+					</tr>
+				</nested:iterate>
+			</table>
+			
+		</td>
+	</nested:iterate>
+${description}
 <center><logic:messagesPresent>
 	<div class="NexusError"><html:errors /></div>
 </logic:messagesPresent></center>

@@ -36,7 +36,11 @@ public class EngineController {
     private Engine               engine                    = null;
 
     private EngineMonitor        engineMonitor             = null;
-
+   
+    private AdvancedControllerInterface advancedController = null;
+    private String               advancedControllerClass   = "org.nexuse2e.DefaultAdvancedController";
+    
+    
 
     /**
      * This method is called by spring, and does some pre-start initialization work.
@@ -47,6 +51,9 @@ public class EngineController {
             try {
                 engineControllerStub = (EngineControllerStub) Class.forName( engineControllerStubClass ).newInstance();
                 LOG.debug( "EngineControllerStub instantiated" );
+
+                advancedController = (AdvancedControllerInterface) Class.forName( advancedControllerClass ).newInstance();
+                LOG.debug( "AdvancedController instantiated" );
 
                 if ( engine != null ) {
                     engine.setEngineController( this );
@@ -186,5 +193,21 @@ public class EngineController {
 
         this.engineMonitor = engineMonitor;
     }
+    
+    public AdvancedControllerInterface getAdvancedController() {
+		return advancedController;
+	}
+
+	public void setAdvancedController(AdvancedControllerInterface advancedController) {
+		this.advancedController = advancedController;
+	}
+
+	public String getAdvancedControllerClass() {
+		return advancedControllerClass;
+	}
+
+	public void setAdvancedControllerClass(String advancedControllerClass) {
+		this.advancedControllerClass = advancedControllerClass;
+	}
 
 } // EngineController
