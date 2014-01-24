@@ -98,13 +98,13 @@ public class ConversationPojo implements NEXUSe2ePojo {
     @Column(name = "message_count", nullable = false)
     private int               messageCount;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @Index(name = "ix_conversation_3")
     @JoinColumn(name = "current_nx_action_id", nullable = false)
     private ActionPojo        currentAction;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "conversation")
-    @Fetch(value = FetchMode.SUBSELECT)
+    @Fetch(value = FetchMode.JOIN)
     private List<MessagePojo> messages         = new ArrayList<MessagePojo>(0);
 
     // Constructors
