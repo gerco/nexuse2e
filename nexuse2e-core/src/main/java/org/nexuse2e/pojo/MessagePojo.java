@@ -132,11 +132,11 @@ public class MessagePojo implements NEXUSe2ePojo {
     @Column(name = "modified_nx_user_id", nullable = false)
     private int                      modifiedNxUserId;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "message")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "message")
     @Fetch(value = FetchMode.SUBSELECT)
     private List<MessagePayloadPojo> messagePayloads  = new ArrayList<MessagePayloadPojo>(0);
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "message")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "message")
     @Fetch(value = FetchMode.SUBSELECT)
     private List<MessageLabelPojo>   messageLabels    = new ArrayList<MessageLabelPojo>(0);
 
