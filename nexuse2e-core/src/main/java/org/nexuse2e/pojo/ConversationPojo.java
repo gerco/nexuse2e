@@ -98,7 +98,7 @@ public class ConversationPojo implements NEXUSe2ePojo {
     @Column(name = "message_count", nullable = false)
     private int               messageCount;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @Index(name = "ix_conversation_3")
     @JoinColumn(name = "current_nx_action_id", nullable = false)
     private ActionPojo        currentAction;
