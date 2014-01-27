@@ -83,6 +83,7 @@ public class BackendInboundDispatcher implements InitializingBean, Manageable {
                     throw new NexusException( "Error cloning original MessagePojo!" );
                 }
 
+                messageContext.getMessagePojo().setBackendStatus(1);
                 backendInboundPipeline.processMessage( messageContext );
             } else {
                 throw new NexusException( "No backend inbound pipeline found for message: "
