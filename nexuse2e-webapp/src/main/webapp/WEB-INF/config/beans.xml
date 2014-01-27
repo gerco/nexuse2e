@@ -168,7 +168,8 @@
     <property name="packagesToScan" value="org.nexuse2e"/>
     
     <property name="hibernateProperties">
-      <props>        <prop key="hibernate.show_sql">${database.showSQL}</prop>        <prop key="hibernate.dialect">${database.dialect}</prop>
+      <props>        <prop key="hibernate.show_sql">${database.showSQL}</prop>
+        <prop key="hibernate.format_sql">${database.formatSQL}</prop>        <prop key="hibernate.dialect">${database.dialect}</prop>
         <prop key="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</prop>
         
         <!-- 
