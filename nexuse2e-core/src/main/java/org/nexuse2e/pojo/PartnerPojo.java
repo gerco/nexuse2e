@@ -26,6 +26,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -64,6 +66,7 @@ public class PartnerPojo implements NEXUSe2ePojo {
      */
     private static final long     serialVersionUID = -2216607774115857281L;
     
+    @Access(AccessType.PROPERTY)
     @Id
     @Column(name = "nx_partner_id")
     @GeneratedValue(strategy=GenerationType.AUTO)
