@@ -2319,14 +2319,17 @@ public class EngineConfiguration implements ConfigurationAccessService {
             CertificatePojo key = getFirstCertificateByType(CertificateType.CACERT_METADATA.getOrdinal(), true);
             String cacertspwd = "changeit";
             if (key == null) {
-                synchronized (this) {
-					key = new CertificatePojo();
-					key.setName("CaKeyStoreData");
-					key.setType(CertificateType.CACERT_METADATA.getOrdinal());
-					key.setBinaryData(new byte[0]);
-					key.setPassword(EncryptionUtil.encryptString(cacertspwd));
-					updateCertificate(key);
-				}
+                synchronized (this) { // don't block normal read, but in this sync case the read needs to be excecuted a second time to be sure, its still null
+                	key = getFirstCertificateByType(CertificateType.CACERT_METADATA.getOrdinal(), true);
+					if(key == null) {
+						key = new CertificatePojo();
+						key.setName("CaKeyStoreData");
+						key.setType(CertificateType.CACERT_METADATA.getOrdinal());
+						key.setBinaryData(new byte[0]);
+						key.setPassword(EncryptionUtil.encryptString(cacertspwd));
+						updateCertificate(key);	
+					}
+                }
             } else {
                 cacertspwd = EncryptionUtil.decryptString(key.getPassword());
             }
