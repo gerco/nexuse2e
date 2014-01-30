@@ -86,7 +86,7 @@ public class MessagePojo implements NEXUSe2ePojo {
     @Column(name = "type", nullable = false)
     private int                      type;
 
-    @ManyToOne(fetch=FetchType.LAZY,optional=false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @Index(name = "ix_message_2")
     @JoinColumn(name = "nx_action_id", nullable = false)
     private ActionPojo               action;
