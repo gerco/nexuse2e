@@ -68,7 +68,7 @@ public class RolePojo implements NEXUSe2ePojo {
     // Fields    
 
     private static final long      serialVersionUID = 4542844458155873891L;
-
+    @Access(AccessType.PROPERTY)
     @Id
     @Column(name = "nx_role_id")
     @GeneratedValue(strategy = GenerationType.AUTO)

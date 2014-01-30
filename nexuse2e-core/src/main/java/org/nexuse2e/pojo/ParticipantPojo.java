@@ -23,6 +23,8 @@ package org.nexuse2e.pojo;
 
 import java.util.Date;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -60,7 +62,7 @@ public class ParticipantPojo implements NEXUSe2ePojo {
 	private static final long serialVersionUID = -4038533703653628428L;
 
 	// Fields
-
+	@Access(AccessType.PROPERTY)
     @Id
     @Column(name = "nx_participant_id")
     @GeneratedValue(strategy = GenerationType.AUTO)

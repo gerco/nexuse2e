@@ -25,6 +25,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Vector;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -66,7 +68,7 @@ public class LoggerPojo implements NEXUSe2ePojo {
      * 
      */
     private static final long           serialVersionUID = -4468546723751324561L;
-
+    @Access(AccessType.PROPERTY)
     @Id
     @Column(name = "nx_logger_id")
     @GeneratedValue(strategy = GenerationType.AUTO)

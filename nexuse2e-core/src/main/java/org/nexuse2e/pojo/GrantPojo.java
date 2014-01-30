@@ -23,6 +23,8 @@ package org.nexuse2e.pojo;
 
 import java.util.Date;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -50,7 +52,7 @@ public class GrantPojo implements NEXUSe2ePojo {
      * 
      */
     private static final long serialVersionUID = -6954829251364806284L;
-
+    @Access(AccessType.PROPERTY)
     @Id
     @Column(name = "nx_grant_id")
     @GeneratedValue(strategy = GenerationType.AUTO)

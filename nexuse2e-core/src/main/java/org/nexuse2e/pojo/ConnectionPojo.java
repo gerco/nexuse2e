@@ -25,6 +25,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -62,7 +64,7 @@ public class ConnectionPojo implements NEXUSe2ePojo {
     private static final long    serialVersionUID = -4954523807447710912L;
 
     // Fields    
-
+    @Access(AccessType.PROPERTY)
     @Id
     @Column(name = "nx_connection_id")
     @GeneratedValue(strategy = GenerationType.AUTO)

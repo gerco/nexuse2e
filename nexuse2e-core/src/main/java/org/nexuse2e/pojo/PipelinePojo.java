@@ -26,6 +26,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -66,7 +68,7 @@ public class PipelinePojo implements NEXUSe2ePojo {
     private static final long       serialVersionUID = -6721613192309857469L;
 
     // Fields
-
+    @Access(AccessType.PROPERTY)
     @Id
     @Column(name = "nx_pipeline_id")
     @GeneratedValue(strategy = GenerationType.AUTO)

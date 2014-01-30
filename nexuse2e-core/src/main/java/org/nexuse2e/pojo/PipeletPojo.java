@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -65,7 +67,7 @@ public class PipeletPojo implements NEXUSe2ePojo {
     private static final long      serialVersionUID = 1602063679628056983L;
 
     // Fields
-
+    @Access(AccessType.PROPERTY)
     @Id
     @Column(name = "nx_pipelet_id")
     @GeneratedValue(strategy = GenerationType.AUTO)

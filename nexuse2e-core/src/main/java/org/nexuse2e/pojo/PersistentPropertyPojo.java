@@ -19,6 +19,8 @@
  */
 package org.nexuse2e.pojo;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -36,7 +38,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "nx_persistent_property")
 public class PersistentPropertyPojo {
-
+	@Access(AccessType.PROPERTY)
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)

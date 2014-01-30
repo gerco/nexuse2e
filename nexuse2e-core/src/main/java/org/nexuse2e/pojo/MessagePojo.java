@@ -27,6 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -65,7 +67,7 @@ public class MessagePojo implements NEXUSe2ePojo {
     private static final long        serialVersionUID = 7535700207629664430L;
 
     // Fields
-
+    @Access(AccessType.PROPERTY)
     @Id
     @Column(name = "nx_message_id")
     @GeneratedValue(strategy = GenerationType.AUTO)

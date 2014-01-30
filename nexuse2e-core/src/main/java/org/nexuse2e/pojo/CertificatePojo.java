@@ -21,6 +21,8 @@ package org.nexuse2e.pojo;
 
 import java.util.Date;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -55,6 +57,7 @@ public class CertificatePojo implements NEXUSe2ePojo {
      */
     private static final long serialVersionUID = 6193340972799640301L;
 
+    @Access(AccessType.PROPERTY)
     @Id
     @Column(name = "nx_certificate_id")
     @GeneratedValue(strategy=GenerationType.AUTO)

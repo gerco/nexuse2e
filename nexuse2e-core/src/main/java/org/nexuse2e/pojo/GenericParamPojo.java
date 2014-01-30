@@ -21,6 +21,8 @@ package org.nexuse2e.pojo;
 
 import java.util.Date;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -44,7 +46,7 @@ public class GenericParamPojo implements NEXUSe2ePojo {
      * 
      */
     private static final long serialVersionUID = -3820944519302968469L;
-
+    @Access(AccessType.PROPERTY)
     @Id
     @Column(name = "nx_generic_param_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
