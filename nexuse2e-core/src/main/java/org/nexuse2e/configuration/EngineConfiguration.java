@@ -2319,12 +2319,14 @@ public class EngineConfiguration implements ConfigurationAccessService {
             CertificatePojo key = getFirstCertificateByType(CertificateType.CACERT_METADATA.getOrdinal(), true);
             String cacertspwd = "changeit";
             if (key == null) {
-                key = new CertificatePojo();
-                key.setName("CaKeyStoreData");
-                key.setType(CertificateType.CACERT_METADATA.getOrdinal());
-                key.setBinaryData(new byte[0]);
-                key.setPassword(EncryptionUtil.encryptString(cacertspwd));
-                updateCertificate(key);
+                synchronized (this) {
+					key = new CertificatePojo();
+					key.setName("CaKeyStoreData");
+					key.setType(CertificateType.CACERT_METADATA.getOrdinal());
+					key.setBinaryData(new byte[0]);
+					key.setPassword(EncryptionUtil.encryptString(cacertspwd));
+					updateCertificate(key);
+				}
             } else {
                 cacertspwd = EncryptionUtil.decryptString(key.getPassword());
             }
