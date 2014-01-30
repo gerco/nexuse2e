@@ -114,7 +114,7 @@
 						<% } %>
 						
 						<td class="NEXUSNameNoWidth">
-							<nexus:link href="Home.do?instanceId=${instance.id}&commandId=${command.name}" styleClass="NEXUS_TAB_UNSELECTED_LINK">
+							<nexus:link href="Home.do?instanceId=${instance.id}&commandId=${command.name}" styleClass="NexusLink">
             					<bean:write name="command" property="label" />
             				</nexus:link>
 						</td>
