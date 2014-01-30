@@ -26,6 +26,7 @@ import java.util.Date;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -65,22 +66,22 @@ public class ParticipantPojo implements NEXUSe2ePojo {
     @GeneratedValue(strategy = GenerationType.AUTO)
 	private int nxParticipantId;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @Index(name = "ix_participant_2")
     @JoinColumn(name = "nx_partner_id", nullable = false)
 	private PartnerPojo partner;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @Index(name = "ix_participant_3")
     @JoinColumn(name = "nx_choreography_id", nullable = false)
 	private ChoreographyPojo choreography;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @Index(name = "ix_participant_4")
     @JoinColumn(name = "nx_local_partner_id", nullable = false)
 	private PartnerPojo localPartner;
 
-    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToOne(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @Index(name = "ix_participant_5")
     @JoinColumn(name = "nx_connection_id", nullable = false)
 	private ConnectionPojo connection;
@@ -99,7 +100,7 @@ public class ParticipantPojo implements NEXUSe2ePojo {
     @Column(name = "description", length = 64)
 	private String description;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @Index(name = "ix_participant_1")
     @JoinColumn(name = "nx_local_certificate_id")
 	private CertificatePojo localCertificate;

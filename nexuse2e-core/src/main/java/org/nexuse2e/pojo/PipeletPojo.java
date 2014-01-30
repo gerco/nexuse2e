@@ -71,12 +71,12 @@ public class PipeletPojo implements NEXUSe2ePojo {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int                    nxPipeletId;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @Index(name = "ix_pipelet_1")
     @JoinColumn(name = "nx_pipeline_id", nullable = false)
     private PipelinePojo           pipeline;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @Index(name = "ix_pipelet_1")
     @JoinColumn(name = "nx_component_id", nullable = false)
     private ComponentPojo          component;

@@ -97,7 +97,7 @@ public class MessagePojo implements NEXUSe2ePojo {
     @Column(name = "backend_status", nullable = false)
     private int                      backendStatus;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @Index(name = "ix_message_3")
     @JoinColumn(name = "nx_trp_id")
     private TRPPojo                  TRP;

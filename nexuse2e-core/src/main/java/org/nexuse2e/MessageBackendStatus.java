@@ -1,7 +1,7 @@
 package org.nexuse2e;
 
 public enum MessageBackendStatus {
-    FAILED(-1), UNKNOWN(0), SENT(1);
+    FAILED(-1), UNKNOWN(0), SENT(1), OUTBOUND(2);
 
     int ordinal = 0;
 

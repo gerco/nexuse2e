@@ -23,6 +23,7 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -76,7 +77,7 @@ public class CertificatePojo implements NEXUSe2ePojo {
     @Column(name = "modified_nx_user_id", nullable = false)
     private int               modifiedNxUserId;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @Index(name = "ix_certificate_1")
     @JoinColumn(name = "nx_partner_id", nullable = true)
     private PartnerPojo       partner;

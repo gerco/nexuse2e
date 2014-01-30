@@ -68,17 +68,17 @@ public class ConnectionPojo implements NEXUSe2ePojo {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int                  nxConnectionId;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @Index(name = "ix_connection_1")
     @JoinColumn(name = "nx_certificate_id")
     private CertificatePojo      certificate;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @Index(name = "ix_connection_2")
     @JoinColumn(name = "nx_trp_id")
     private TRPPojo              trp;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @Index(name = "ix_connection_3")
     @JoinColumn(name = "nx_partner_id")
     private PartnerPojo          partner;

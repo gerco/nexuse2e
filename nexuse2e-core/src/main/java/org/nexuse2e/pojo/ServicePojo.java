@@ -71,7 +71,7 @@ public class ServicePojo implements NEXUSe2ePojo {
     @GeneratedValue(strategy=GenerationType.AUTO)
     private int                    nxServiceId;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @Index(name = "ix_service_1")
     @JoinColumn(name = "nx_component_id", nullable = false)
     private ComponentPojo          component;

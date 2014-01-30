@@ -25,6 +25,7 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -56,7 +57,7 @@ public class MessagePayloadPojo implements NEXUSe2ePojo {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int               nxMessagePayloadId;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @Index(name = "ix_message_payload_1")
     @JoinColumn(name = "nx_message_id", nullable = false)
     private MessagePojo       message;

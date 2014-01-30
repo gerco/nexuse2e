@@ -72,7 +72,7 @@ public class PipelinePojo implements NEXUSe2ePojo {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int                     nxPipelineId;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "nx_trp_id", nullable = true)
     private TRPPojo                 trp;
 

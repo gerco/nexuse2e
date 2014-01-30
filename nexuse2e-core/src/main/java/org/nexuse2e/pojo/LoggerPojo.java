@@ -72,7 +72,7 @@ public class LoggerPojo implements NEXUSe2ePojo {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int                         nxLoggerId;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @Index(name = "ix_logger_1")
     @JoinColumn(name = "nx_component_id", nullable = false)
     private ComponentPojo               component;

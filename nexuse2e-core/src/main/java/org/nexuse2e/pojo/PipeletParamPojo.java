@@ -25,6 +25,7 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -62,7 +63,7 @@ public class PipeletParamPojo implements NEXUSe2ePojo {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int                 nxPipeletParamId;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @Index(name = "ix_pipelet_param_1")
     @JoinColumn(name = "nx_pipelet_id", nullable = true)
     private PipeletPojo         pipelet;

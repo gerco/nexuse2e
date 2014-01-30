@@ -25,6 +25,7 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -91,7 +92,7 @@ public class UserPojo implements NEXUSe2ePojo {
     @Column(name = "visible", nullable = false)
     private boolean           visible;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @Index(name = "ix_user_1")
     @JoinColumn(name = "nx_role_id", nullable = true)
     private RolePojo          role;

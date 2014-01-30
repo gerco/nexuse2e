@@ -25,6 +25,7 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -68,12 +69,12 @@ public class FollowUpActionPojo implements NEXUSe2ePojo {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int               nxFollowUpActionId;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @Index(name = "ix_follow_up_action_1")
     @JoinColumn(name = "nx_action_id", nullable = false)
     private ActionPojo        action;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @Index(name = "ix_follow_up_action_2")
     @JoinColumn(name = "follow_up_nx_action_id", nullable = false)
     private ActionPojo        followUpAction;

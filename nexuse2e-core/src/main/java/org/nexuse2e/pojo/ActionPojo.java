@@ -67,7 +67,7 @@ public class ActionPojo implements NEXUSe2ePojo {
     @GeneratedValue(strategy=GenerationType.AUTO)
     private int                     nxActionId;
     
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     @Index(name="ix_action_1")
     @JoinColumn(name = "nx_choreography_id", nullable=false)    
     private ChoreographyPojo        choreography;
