@@ -71,7 +71,7 @@ public class MessagePojo implements NEXUSe2ePojo {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int                      nxMessageId;
 
-    @ManyToOne()
+    @ManyToOne(fetch=FetchType.EAGER)
     @Index(name = "ix_message_1")
     @JoinColumn(name = "nx_conversation_id", nullable = false)
     private ConversationPojo         conversation;
@@ -86,7 +86,7 @@ public class MessagePojo implements NEXUSe2ePojo {
     @Column(name = "type", nullable = false)
     private int                      type;
 
-    @ManyToOne()
+    @ManyToOne(fetch=FetchType.LAZY,optional=false)
     @Index(name = "ix_message_2")
     @JoinColumn(name = "nx_action_id", nullable = false)
     private ActionPojo               action;

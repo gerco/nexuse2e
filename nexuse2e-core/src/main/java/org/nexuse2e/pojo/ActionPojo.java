@@ -23,6 +23,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -59,6 +61,7 @@ public class ActionPojo implements NEXUSe2ePojo {
      */
     private static final long       serialVersionUID = 3011019828384391232L;
 
+    @Access(AccessType.PROPERTY)
     @Id
     @Column(name = "nx_action_id")
     @GeneratedValue(strategy=GenerationType.AUTO)
@@ -89,17 +92,17 @@ public class ActionPojo implements NEXUSe2ePojo {
     @Column(name = "polling_required", nullable = false)
 	private boolean                 pollingRequired=false;
     
-    @ManyToOne()
+    @ManyToOne(fetch=FetchType.EAGER)
     @Index(name="ix_action_2")
     @JoinColumn(name = "inbound_nx_pipeline_id", nullable=false)    
     private PipelinePojo            inboundPipeline;
     
-    @ManyToOne()
+    @ManyToOne(fetch=FetchType.EAGER)
     @Index(name="ix_action_3")
     @JoinColumn(name = "outbound_nx_pipeline_id", nullable=false)    
     private PipelinePojo            outboundPipeline;
     
-    @ManyToOne()
+    @ManyToOne(fetch=FetchType.EAGER)
     @Index(name="ix_action_4")
     @JoinColumn(name = "status_update_nx_pipeline_id")
     private PipelinePojo            statusUpdatePipeline;

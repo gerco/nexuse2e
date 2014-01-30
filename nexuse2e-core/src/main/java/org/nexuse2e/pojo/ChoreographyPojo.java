@@ -27,6 +27,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -64,6 +66,7 @@ public class ChoreographyPojo implements NEXUSe2ePojo {
 
     // Fields    
 
+    @Access(AccessType.PROPERTY)
     @Id
     @Column(name = "nx_choreography_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
