@@ -31,6 +31,7 @@ import java.security.cert.X509Certificate;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
 
 import org.apache.commons.httpclient.ConnectTimeoutException;
@@ -54,6 +55,7 @@ public class CertSSLProtocolSocketFactory implements SecureProtocolSocketFactory
     private KeyStore            truststore         = null;
     private SSLContext          sslcontext         = null;
     private CertificatePojo     trustedPartnerCert = null;
+    private String[]            enabledProtocols   = null;
 
     /**
      * Constructor for AuthSSLProtocolSocketFactory. Either a keystore or truststore file
@@ -110,16 +112,16 @@ public class CertSSLProtocolSocketFactory implements SecureProtocolSocketFactory
             return sslcontext;
         } catch ( NoSuchAlgorithmException e ) {
             LOG.error( e.getMessage(), e );
-            throw new Error( "Unsupported algorithm exception: " + e.getMessage() );
+            throw new Error( "Unsupported algorithm exception", e );
         } catch ( KeyStoreException e ) {
             LOG.error( e.getMessage(), e );
-            throw new Error( "Keystore exception: " + e.getMessage() );
+            throw new Error( "Keystore exception", e );
         } catch ( GeneralSecurityException e ) {
             LOG.error( e.getMessage(), e );
-            throw new Error( "Key management exception: " + e.getMessage() );
+            throw new Error( "Key management exception", e );
         } catch ( Exception e ) {
             LOG.error( e.getMessage(), e );
-            throw new Error( "error reading keystore/truststore file: " + e.getMessage() );
+            throw new Error( "error reading keystore/truststore file", e );
         }
     }
 
@@ -131,6 +133,29 @@ public class CertSSLProtocolSocketFactory implements SecureProtocolSocketFactory
         return this.sslcontext;
     }
 
+    /**
+     * Initialize the given socket.
+     * @param socket The socket to be initialized.
+     * @return The initialized socket, or a new socket object that wraps-up the given socket.
+     */
+    protected Socket init(Socket socket) {
+        
+        if (socket instanceof SSLSocket) {
+            SSLSocket sslSocket = (SSLSocket) socket;
+            if (enabledProtocols == null) {
+                String httpsProtocols = System.getProperty("https.protocols");
+                if (httpsProtocols != null) {
+                    enabledProtocols = httpsProtocols.split(",");
+                } else {
+                    enabledProtocols = sslSocket.getEnabledProtocols();
+                }
+            }
+            sslSocket.setEnabledProtocols(enabledProtocols);
+        }
+        
+        return socket;
+    }
+    
     /**
      * Attempts to get a new socket connection to the given host within the given time limit.
      * <p>
@@ -173,7 +198,7 @@ public class CertSSLProtocolSocketFactory implements SecureProtocolSocketFactory
     public Socket createSocket( String host, int port, InetAddress clientHost, int clientPort ) throws IOException,
             UnknownHostException {
 
-        return getSSLContext().getSocketFactory().createSocket( host, port, clientHost, clientPort );
+        return init(getSSLContext().getSocketFactory().createSocket( host, port, clientHost, clientPort ));
     }
 
     /**
@@ -181,7 +206,7 @@ public class CertSSLProtocolSocketFactory implements SecureProtocolSocketFactory
      */
     public Socket createSocket( String host, int port ) throws IOException, UnknownHostException {
 
-        return getSSLContext().getSocketFactory().createSocket( host, port );
+        return init(getSSLContext().getSocketFactory().createSocket( host, port ));
     }
 
     /**
@@ -190,6 +215,6 @@ public class CertSSLProtocolSocketFactory implements SecureProtocolSocketFactory
     public Socket createSocket( Socket socket, String host, int port, boolean autoClose ) throws IOException,
             UnknownHostException {
 
-        return getSSLContext().getSocketFactory().createSocket( socket, host, port, autoClose );
+        return init(getSSLContext().getSocketFactory().createSocket( socket, host, port, autoClose ));
     }
 }

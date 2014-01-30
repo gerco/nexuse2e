@@ -125,21 +125,25 @@ public class FileUtil {
         }
         BufferedReader reader = new BufferedReader(new FileReader(input));
         PrintWriter writer = new PrintWriter(output);
-        String line;
-        if (ignoreCase) {
-            pattern = pattern.toLowerCase();
-            while ((line = reader.readLine()) != null) {
-                if (line.toLowerCase().contains(pattern)) {
-                    writer.println(line);
+        try {
+            String line;
+            if (ignoreCase) {
+                pattern = pattern.toLowerCase();
+                while ((line = reader.readLine()) != null) {
+                    if (line.toLowerCase().contains(pattern)) {
+                        writer.println(line);
+                    }
+                }
+            } else {
+                while ((line = reader.readLine()) != null) {
+                    if (line.contains(pattern)) {
+                        writer.println(line);
+                    }
                 }
             }
-        } else {
-            while ((line = reader.readLine()) != null) {
-                if (line.contains(pattern)) {
-                    writer.println(line);
-                }
-            }
+        } finally {
+            reader.close();
+            writer.close();
         }
-        
     }
 }

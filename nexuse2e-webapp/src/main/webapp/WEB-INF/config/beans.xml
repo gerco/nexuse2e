@@ -178,7 +178,6 @@
         <prop key="hibernate.query.substitutions">true 1, false 0, yes 'Y', no 'N'</prop>
        	
        	<prop key="hibernate.hbm2ddl.auto">update</prop>
-       	<prop key="hibernate.show_sql">false</prop>
        	<!-- 
        	<prop key="hibernate.default_schema">nexuse2e.dbo</prop>
        	 -->
