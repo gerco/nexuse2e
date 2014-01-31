@@ -84,7 +84,6 @@ public class BackendInboundDispatcher implements InitializingBean, Manageable {
                 }
 
                 backendInboundPipeline.processMessage(messageContext);
-                messageContext.getMessagePojo().setBackendStatus(1);
             } else {
                 throw new NexusException( "No backend inbound pipeline found for message: "
                         + messageContext.getMessagePojo().getMessageId() + " ("

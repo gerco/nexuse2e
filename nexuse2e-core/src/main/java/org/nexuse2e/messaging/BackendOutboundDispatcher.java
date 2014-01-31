@@ -91,7 +91,6 @@ public class BackendOutboundDispatcher extends ChoreographyValidator implements 
         protocolAdapter.addProtcolSpecificParameters( messageContext );
 
         // Forward the message to check the transistion, persist it and pass to backend
-        messageContext.getMessagePojo().setBackendStatus(2);
         MessageHandlingCenter.getInstance().processMessage(messageContext);
 
         return messageContext;
