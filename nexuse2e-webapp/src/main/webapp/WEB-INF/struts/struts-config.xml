@@ -115,6 +115,12 @@
     </action>
     
     <action
+        path="/InstanceController"
+        type="org.nexuse2e.ui.action.AdvancedControllerAction">
+        <forward name="success" redirect="true" path="/Home.do" />
+    </action>
+    
+    <action
         path="/Home"
         type="org.nexuse2e.ui.action.NoOpAction">
         <forward name="success" path="/WEB-INF/pages/home.jsp" />

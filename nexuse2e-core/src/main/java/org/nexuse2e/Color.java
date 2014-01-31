@@ -6,7 +6,7 @@ package org.nexuse2e;
  * keep the clustering implementation in mind before making global changes.
  */
 public enum Color {
-	GREY, 
+	GRAY, 
 	GREEN, 
 	RED,
 	YELLOW;

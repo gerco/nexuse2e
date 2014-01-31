@@ -80,7 +80,7 @@ public class DefaultInstance implements InstanceInterface {
 			case INACTIVE:
 				return Color.YELLOW;
 			case UNKNOWN:
-				return Color.GREY;
+				return Color.GRAY;
 			default:
 				return Color.RED;
 			}

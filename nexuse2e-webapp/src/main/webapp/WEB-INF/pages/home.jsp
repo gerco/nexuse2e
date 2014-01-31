@@ -94,10 +94,10 @@
 
 	<nested:iterate id="instance" name="instances">
 		
-		<td>
-			<table class="NEXUS_TABLE" style="width:20%">
+		
+			<table class="NEXUS_TABLE">
 				<tr>
-					<td class="NEXUSSection">
+					<td class="NEXUSSection" style="width:100px;">
 						Label:
 					</td>
 					<td class="NEXUSSection">
@@ -115,8 +115,8 @@
 				<nested:iterate id="command" indexId="counter" name="instance" property="commands">
 					<tr>
 						<% if(counter.intValue() == 0) {%>
-						<td style="background-color:<bean:write name="instance" property="statusColor" />;" rowspan="<%=size %>" class="NEXUSNameNoWidth">
-							
+						<td style="text-align: center;background-color:white;" rowspan="<%=size %>" class="NEXUSNameNoWidth">
+							<img src="images/icons/icon-lights-<bean:write name="instance" property="statusColor" />.png" border="0" alt="" class="button">
 						</td>
 						<% } %>
 						
@@ -139,7 +139,7 @@
 				%>
 			</table>
 			
-		</td>
+		
 	</nested:iterate>
 ${description}
 <center><logic:messagesPresent>
