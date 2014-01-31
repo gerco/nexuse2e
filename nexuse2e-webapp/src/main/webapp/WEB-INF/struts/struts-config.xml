@@ -345,6 +345,15 @@
       <forward name="error" path="/WEB-INF/pages/communications/ca_certificate_add.jsp"/>
       <forward name="new" path="/CACertificateSaveSingleCert.do"/>
     </action>
+    <action path="/CACertificateChainMissingVerifyAddCert" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.CACertVerifyAddAction">
+      <forward name="update" path="/WEB-INF/pages/communications/ca_certificate_verify_add.jsp"/>
+      <forward name="error" path="/WEB-INF/pages/communications/ca_certificate_add.jsp"/>
+      <forward name="new" path="/CACertificateSaveSingleCertForChain.do"/>
+    </action>
+    <action path="/CACertificateSaveSingleCertForChain" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.CACertSaveSingleCertAction">
+      <forward name="success" path="/WEB-INF/pages/communications/request_import_cert.jsp"/>
+      <forward name="error" path="/WEB-INF/pages/communications/ca_certificate_missing.jsp"/>
+    </action>
     <action path="/CACertificateExportKeyStore" name="protectedFileAccessForm" type="org.nexuse2e.ui.action.communications.CACertExportAction">
       <forward name="success" path="/WEB-INF/pages/communications/ca_certificate_export.jsp"/>
     </action>

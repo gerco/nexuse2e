@@ -43,7 +43,7 @@
 	                </tr>
 				</table>
 				
-        <html:form action="CACertificateVerifyAddCert.do" method="POST" enctype="multipart/form-data"> 
+        <html:form action="CACertificateChainMissingVerifyAddCert.do" method="POST" enctype="multipart/form-data"> 
             <table class="NEXUS_TABLE" width="100%">
                 <tr>
                     <td colspan="2" class="NEXUSSection">Add CA Certificate</td>
