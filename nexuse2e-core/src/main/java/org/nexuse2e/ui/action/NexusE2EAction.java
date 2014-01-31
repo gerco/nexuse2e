@@ -126,11 +126,7 @@ public abstract class NexusE2EAction extends Action {
             e.printStackTrace();
         }
 
-        String instanceId = (String)request.getParameter("instanceId");
-        String commandId = (String)request.getParameter("commandId");
-        if(StringUtils.isNotEmpty(instanceId) && StringUtils.isNotEmpty(commandId) ) {
-        	Engine.getInstance().getEngineController().getAdvancedController().executeCommand(instanceId, commandId);
-    	}
+        
         
         if(Engine.getInstance().getEngineController().getAdvancedController() != null) {
         	request.setAttribute(INSTANCES, Engine.getInstance().getEngineController().getAdvancedController().getInstances());

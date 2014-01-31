@@ -27,9 +27,11 @@ public class DefaultInstance implements InstanceInterface {
 	@Override
 	public List<InstanceCommand> getCommands() {
 		List<InstanceCommand> commands = new ArrayList<InstanceCommand>();
-		commands.add(new InstanceCommand("Stop Engine", "stop"));
-		commands.add(new InstanceCommand("Start Engine", "start"));
+		//commands.add(new InstanceCommand("Stop Engine", "stop"));
+		//commands.add(new InstanceCommand("Start Engine", "start"));
 		commands.add(new InstanceCommand("Restart Engine", "restart"));
+		
+		
 		return commands;
 	}
 
@@ -93,36 +95,36 @@ public class DefaultInstance implements InstanceInterface {
 	@Override
 	public void executeCommand(String commandId) {
 		if("restart".equals(commandId)) {
-			new Thread() {
-	            public void run() {
+//			new Thread() {
+//	            public void run() {
 	                try {
 	                    Engine.getInstance().changeStatus( BeanStatus.INSTANTIATED );
 	                    Engine.getInstance().changeStatus( BeanStatus.STARTED );
 	                } catch (InstantiationException e) {
 	                }
-	            }
-	        }.start();
+//	            }
+//	        }.start();
 		}
-		if("stop".equals(commandId)) {
-			new Thread() {
-	            public void run() {
-	                try {
-	                    Engine.getInstance().changeStatus( BeanStatus.INSTANTIATED );
-	                } catch (InstantiationException e) {
-	                }
-	            }
-	        }.start();
-		}
-		if("start".equals(commandId)) {
-			new Thread() {
-	            public void run() {
-	                try {
-	                    Engine.getInstance().changeStatus( BeanStatus.STARTED );
-	                } catch (InstantiationException e) {
-	                }
-	            }
-	        }.start();
-		}
+//		if("stop".equals(commandId)) {
+////			new Thread() {
+////	            public void run() {
+//	                try {
+//	                    Engine.getInstance().changeStatus( BeanStatus.INSTANTIATED );
+//	                } catch (InstantiationException e) {
+//	                }
+////	            }
+////	        }.start();
+//		}
+//		if("start".equals(commandId)) {
+////			new Thread() {
+////	            public void run() {
+//	                try {
+//	                    Engine.getInstance().changeStatus( BeanStatus.STARTED );
+//	                } catch (InstantiationException e) {
+//	                }
+////	            }
+////	        }.start();
+//		}
 	}
 
 }

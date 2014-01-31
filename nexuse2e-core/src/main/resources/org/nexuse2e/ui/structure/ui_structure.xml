@@ -60,6 +60,7 @@
   <nxs:menu>
     <!-- a page is a branch - it contains subpages and commands -->
     <nxs:page target="Home.do" label="NEXUSe2e" icon="images/nexuse2e_16x16.gif">
+      <nxs:command target="InstanceController.do" label="Instances Controlpanel" icon="images/icons/bullet_orange.png"/>
       <nxs:page target="ServerConfiguration.do" label="Server Configuration" icon="images/icons/server_edit.png">
         <nxs:page target="UserMaintenance.do" label="User Maintenance" icon="images/icons/user.png">
           <nxs:page target="UserList.do" label="Users" icon="images/icons/user.png">
