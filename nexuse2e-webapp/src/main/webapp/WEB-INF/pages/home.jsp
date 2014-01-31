@@ -105,6 +105,13 @@
 					</td>
 				</tr>
 				<bean:size id="size" name="instance" property="commands"/>
+				<% 
+				int filler = 0;
+					if(size < 4) {
+						filler = 4-size;
+						size = 4;
+					} 
+				%>
 				<nested:iterate id="command" indexId="counter" name="instance" property="commands">
 					<tr>
 						<% if(counter.intValue() == 0) {%>
@@ -114,12 +121,22 @@
 						<% } %>
 						
 						<td class="NEXUSNameNoWidth">
-							<nexus:link href="Home.do?instanceId=${instance.id}&commandId=${command.name}" styleClass="NexusLink">
+							<nexus:link href="InstanceController.do?instanceId=${instance.id}&commandId=${command.name}" styleClass="NexusLink">
             					<bean:write name="command" property="label" />
             				</nexus:link>
 						</td>
 					</tr>
 				</nested:iterate>
+				<% if (filler > 0){
+					for(int i = 0; i < filler; i++){%>
+					<tr>
+						<td class="NEXUSNameNoWidth">&nbsp;
+						</td>
+					</tr>
+					<%	
+					}
+				}
+				%>
 			</table>
 			
 		</td>
