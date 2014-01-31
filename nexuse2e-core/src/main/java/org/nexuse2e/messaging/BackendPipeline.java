@@ -22,6 +22,7 @@ package org.nexuse2e.messaging;
 import org.apache.log4j.Logger;
 import org.nexuse2e.ActionSpecific;
 import org.nexuse2e.ActionSpecificKey;
+import org.nexuse2e.MessageBackendStatus;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.logging.LogMessage;
 
@@ -80,9 +81,15 @@ public class BackendPipeline extends AbstractPipeline implements ActionSpecific 
             } else {
                 LOG.error( new LogMessage( "No pipelets found.", messageContext.getMessagePojo() ) );
             }
+            if (messageContext.getMessagePojo().isOutbound()) {
+                messageContext.getMessagePojo().setBackendStatus(MessageBackendStatus.OUTBOUND.getOrdinal());
+            } else {
+                messageContext.getMessagePojo().setBackendStatus(MessageBackendStatus.SENT.getOrdinal());
+            }
             messageContext = pipelineEndpoint.processMessage( messageContext );
 
         } catch ( Exception e ) {
+            messageContext.getMessagePojo().setBackendStatus(MessageBackendStatus.FAILED.getOrdinal());
             throw new NexusException( "Error processing backend pipeline: " + e.getMessage(), e );
         }
 
