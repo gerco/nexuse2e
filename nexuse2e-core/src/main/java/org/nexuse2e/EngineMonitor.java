@@ -37,7 +37,6 @@ import java.util.concurrent.TimeUnit;
 import javax.servlet.ServletContext;
 import javax.sql.DataSource;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nexuse2e.StatusSummary.Status;
 import org.springframework.web.context.support.WebApplicationObjectSupport;
@@ -58,7 +57,8 @@ public class EngineMonitor extends WebApplicationObjectSupport {
     private boolean                     shutdownInitiated          = false;
     private boolean                     autoStart                  = true;
     private DataSource					dataSource 				   = null;
-
+    private ExecutorService 			executor 				   = null;
+	
     public DataSource getDataSource() {
 		return dataSource;
 	}
@@ -81,8 +81,10 @@ public class EngineMonitor extends WebApplicationObjectSupport {
     protected EngineStatusSummary       currentEngineStatusSummary = null;
 
     public void initialize() {
-        // Set Derby home directory to determine where the DB will be created
-        nexusE2ERoot = Engine.getInstance().getNexusE2ERoot();
+    	
+    	
+    	// Set Derby home directory to determine where the DB will be created
+    	nexusE2ERoot = Engine.getInstance().getNexusE2ERoot();
         try {
             if (nexusE2ERoot == null) {
                 ServletContext currentContext = getServletContext();
@@ -111,6 +113,8 @@ public class EngineMonitor extends WebApplicationObjectSupport {
      * 
      */
     public void start() {
+    	executor = Executors.newFixedThreadPool(1);
+    	
         // Set Derby home directory to determine where the DB will be created
         nexusE2ERoot = Engine.getInstance().getNexusE2ERoot();
         if ( System.getProperty( "derby.system.home" ) == null ) {
@@ -131,11 +135,11 @@ public class EngineMonitor extends WebApplicationObjectSupport {
     }
 
     /**
-     * 
+     * shutdown probe timer and additional connection timeout guards
      */
     public void stop() {
-
-        timer.cancel();
+    	executor.shutdown();
+    	timer.cancel();
     }
 
     /**
@@ -190,52 +194,79 @@ public class EngineMonitor extends WebApplicationObjectSupport {
 
 		// statement query timeout doesn't work for mssql mirror database. Maybe
 		// its working for mssql standalone.
-		ExecutorService executor = Executors.newFixedThreadPool(1);
-		String cause = "";
-		Future<String> future = executor.submit(new Callable<String>() {
-			public String call() {
-				Connection con = null;
-				try {
-					con = dataSource.getConnection();
-					PreparedStatement statement = con.prepareStatement("select count(*) from nx_trp");
-					ResultSet result = statement.executeQuery();
-					result.next();
-					
-					int count = result.getInt(1);
-					if(count == 0) {
-						return "no TRP's found in database";
-			        }
-					
-				} catch (Exception e) {
-					return "Exception while fetching testdata from database: " + e;
-				} catch (Error e) {
-					return "Error while fetching testdata from database: " + e;
-				} finally {
-					if(con != null){
-						try {
-							con.close();
-						} catch (SQLException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-				}
-				return "";
-			}
-		});
-
+		
+		Boolean successful = false;
+		Future<Boolean> future = null;
+		String causeMsg = null;
 		try {
-			cause = future.get(timeout, TimeUnit.MILLISECONDS);
-		} catch (Exception e) {
-			cause = "Timeout while fetching testdata from database: " + e;
-		} finally {
-			if(!future.isDone()){
-				future.cancel(true);
+			final Connection con = dataSource.getConnection();
+			
+			try {
+				
+				future = executor.submit(new Callable<Boolean>() {
+					public Boolean call() throws Exception {
+						ResultSet result = null;
+						try {
+							PreparedStatement statement = con.prepareStatement("select count(*) from nx_trp");
+							System.out.println("execute query");
+							result = statement.executeQuery();
+							result.next();
+							System.out.println("done");
+							int count = result.getInt(1);
+							if(count == 0) {
+								throw new NexusException("no TRP's found in database");
+					        }
+							
+						} catch (Exception e) {
+							throw e;
+						} finally {
+							if(result != null) {
+								try {
+									result.close();
+								} catch (SQLException e) {
+									// force close in case the result is not closed yet. isClosed throws an unexpected exception with mssql drivers. 
+								}
+							}
+							if(con != null && !con.isClosed()){
+								try {
+									con.close();
+								} catch (SQLException e) {
+									// isClosed seems to work for connections and mssql
+								}
+							}
+						}
+						return true;
+					}
+				});
+				System.out.println("execute");
+				
+				
+				successful = future.get(timeout, TimeUnit.MILLISECONDS);
+				System.out.println("executed");
+			} catch (Exception e) {
+				System.out.println("canceled: "+e+" - "+e.getMessage());
+				causeMsg = "Exception occured while probing database: " + e.getMessage();
+			} finally {
+				System.out.println("finally");
+				try {
+					if(con != null && !con.isClosed()) {
+						con.close();
+					}
+				} catch (SQLException e) {
+					//finally failed to close...
+				}
+				if(!future.isDone()){
+					future.cancel(true);
+				}
 			}
+		} catch (SQLException e) {
+			causeMsg = "failed to open connection";
 		}
 
-		if (StringUtils.isNotEmpty(cause)) {
-			summary.setCause(cause);
+		
+
+		if (!successful) {
+			summary.setCause(causeMsg);
 			summary.setDatabaseStatus(Status.ERROR);
 			summary.setStatus(Status.ERROR);
 			return summary;
