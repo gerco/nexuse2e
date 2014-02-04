@@ -29,6 +29,7 @@ import java.util.Queue;
 import org.apache.log4j.Logger;
 import org.nexuse2e.Constants;
 import org.nexuse2e.Engine;
+import org.nexuse2e.MessageBackendStatus;
 import org.nexuse2e.MessageStatus;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.controller.StateTransitionException;
@@ -411,6 +412,7 @@ public class ConversationStateMachineImpl implements ConversationStateMachine {
             UpdateTransactionOperation operation = new UpdateTransactionOperation() {
                 public UpdateScope update(ConversationPojo conversation, MessagePojo message, MessagePojo referencedMessage) throws NexusException, StateTransitionException {
                     message.setStatus( MessageStatus.SENT.getOrdinal() );
+                    message.setBackendStatus(MessageBackendStatus.SENT.getOrdinal());
                     message.setModifiedDate( new Date() );
                     message.setEndDate( message.getModifiedDate() );
                     
