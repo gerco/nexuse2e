@@ -45,7 +45,7 @@ public class DefaultAdvancedController implements AdvancedControllerInterface {
 	 */
 	@Override
 	public String getDescription() {
-		return "local instance, no cluster administration configured/installed (see www.nexuse2e.org)";
+		return "local instance, no cluster administration configured/installed (visit www.nexuse2e.org for further details)";
 	}
 
 	@Override

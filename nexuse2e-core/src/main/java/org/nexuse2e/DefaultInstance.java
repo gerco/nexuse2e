@@ -22,15 +22,21 @@ package org.nexuse2e;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
+/**
+ * @author GEsch
+ * the default implementation executes the commands directly on the on the engine/enginecontroller. Abstraction is
+ * only used for consistent handing for standalone and cluster instances. 
+ */
 public class DefaultInstance implements InstanceInterface {
 
+	private static Logger        LOG        = Logger.getLogger( DefaultInstance.class );
+    
 	@Override
 	public List<InstanceCommand> getCommands() {
 		List<InstanceCommand> commands = new ArrayList<InstanceCommand>();
-		//commands.add(new InstanceCommand("Stop Engine", "stop"));
-		//commands.add(new InstanceCommand("Start Engine", "start"));
 		commands.add(new InstanceCommand("Restart Engine", "restart"));
-		
 		
 		return commands;
 	}
@@ -78,7 +84,7 @@ public class DefaultInstance implements InstanceInterface {
 			case ERROR:
 				return Color.RED;
 			case INACTIVE:
-				return Color.YELLOW;
+				return Color.RED;
 			case UNKNOWN:
 				return Color.GRAY;
 			default:
@@ -95,36 +101,13 @@ public class DefaultInstance implements InstanceInterface {
 	@Override
 	public void executeCommand(String commandId) {
 		if("restart".equals(commandId)) {
-//			new Thread() {
-//	            public void run() {
-	                try {
-	                    Engine.getInstance().changeStatus( BeanStatus.INSTANTIATED );
-	                    Engine.getInstance().changeStatus( BeanStatus.STARTED );
-	                } catch (InstantiationException e) {
-	                }
-//	            }
-//	        }.start();
+            try {
+                Engine.getInstance().changeStatus( BeanStatus.INSTANTIATED );
+                Engine.getInstance().changeStatus( BeanStatus.STARTED );
+            } catch (InstantiationException e) {
+            	LOG.error("Engine restart failed.",e);
+            }
 		}
-//		if("stop".equals(commandId)) {
-////			new Thread() {
-////	            public void run() {
-//	                try {
-//	                    Engine.getInstance().changeStatus( BeanStatus.INSTANTIATED );
-//	                } catch (InstantiationException e) {
-//	                }
-////	            }
-////	        }.start();
-//		}
-//		if("start".equals(commandId)) {
-////			new Thread() {
-////	            public void run() {
-//	                try {
-//	                    Engine.getInstance().changeStatus( BeanStatus.STARTED );
-//	                } catch (InstantiationException e) {
-//	                }
-////	            }
-////	        }.start();
-//		}
 	}
 
 }
