@@ -21,12 +21,32 @@ package org.nexuse2e;
 
 import java.util.List;
 
+/**
+ * @author GEsch
+ * this interface provides the different options for additional ui rendering and command execution options in different NEXUSe2e intances. 
+ */
 public interface AdvancedControllerInterface {
 	
+	/**
+	 * returns a list of all currently visible and accessable instances including "this" instance. For standalone instances 
+	 * there is only one entry in this list.
+	 * @return
+	 * 
+	 */
 	public List<InstanceInterface> getInstances();
 	
+	/**
+	 * a string which is currently only rendered in the main screen below the instances.
+	 * @return
+	 */
 	public String getDescription();
 
+	/**
+	 * this method should be used to access the different instances. The instance id should match one of the ids provided with the
+	 * getInstances list. The commandId depend on the different instance implementations and is provided by getCommands on InstanceInterface
+	 * @param instanceId
+	 * @param commandId
+	 */
 	public void executeCommand(String instanceId, String commandId);
 	
 }
