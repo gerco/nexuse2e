@@ -25,7 +25,7 @@ import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.MessagePojo;
 
 /**
- * @author mbreilmann
+ * @author mbreilmann,gesch
  * 
  */
 public class LogMessage implements Serializable {
@@ -36,42 +36,64 @@ public class LogMessage implements Serializable {
 	private String conversationId = "unknown";
 	private String messageId = "unknown";
 	private Throwable throwable;
+	private String choreograhyId ="unknown";
+    private String actionId = "unknown";
 
-    /**
-     * @param description
-     */
-    public LogMessage(String description, Throwable t) {
-
-        this.description = description;
-    }
+    
 
     /**
      * @param description
      * @param conversationId
      * @param messageId
      */
-    public LogMessage(String description, String conversationId,
-            String messageId, Throwable t) {
+    public LogMessage(String description, String conversationId, String messageId, Throwable t) {
 
-        this.description = description;
-        this.conversationId = conversationId;
-        this.messageId = messageId;
-        this.throwable = t;
+    	 if(description != null) {
+         	this.description = description;
+         }
+         if(conversationId != null) {
+             this.conversationId = conversationId;
+         }
+         if(messageId != null) {
+             this.messageId = messageId;
+         }
+         if(messageId != null) {
+    	    this.throwable = t;
+         }
     }
 
+    /**
+     * @param description
+     * @param messagePojo
+     * @param t
+     */
     public LogMessage(String description, MessagePojo messagePojo, Throwable t) {
 
         this.description = description;
         if (messagePojo != null) {
+        	if(messagePojo.getAction() != null) {
+        		this.actionId = messagePojo.getAction().getName();
+        	}
             if (messagePojo.getConversation() != null) {
-                this.conversationId = messagePojo.getConversation()
-                        .getConversationId();
+            	if(messagePojo.getConversation().getChoreography() != null) {
+            		this.choreograhyId = messagePojo.getConversation().getChoreography().getName();
+            	}
+                this.conversationId = messagePojo.getConversation().getConversationId();
             }
             this.messageId = messagePojo.getMessageId();
         }
-        this.throwable = t;
+        if(t != null) {
+            this.throwable = t;
+        }
     }
 
+    /**
+     * @param description
+     */
+    public LogMessage(String description, Throwable t) {
+    	this(description,null,null,t);
+    }
+    
     /**
      * @param description
      * @param messageContext
@@ -84,8 +106,7 @@ public class LogMessage implements Serializable {
      * @param description
      */
     public LogMessage(String description) {
-
-        this.description = description;
+    	this(description,null,null,null);
     }
 
     /**
@@ -93,12 +114,8 @@ public class LogMessage implements Serializable {
      * @param conversationId
      * @param messageId
      */
-    public LogMessage(String description, String conversationId,
-            String messageId) {
-
-        this.description = description;
-        this.conversationId = conversationId;
-        this.messageId = messageId;
+    public LogMessage(String description, String conversationId, String messageId) {
+    	this(description,conversationId,messageId,null);
     }
 
     /**
@@ -106,15 +123,7 @@ public class LogMessage implements Serializable {
      * @param messagePojo
      */
     public LogMessage(String description, MessagePojo messagePojo) {
-
-        this.description = description;
-        if (messagePojo != null) {
-            if (messagePojo.getConversation() != null) {
-                this.conversationId = messagePojo.getConversation()
-                        .getConversationId();
-            }
-            this.messageId = messagePojo.getMessageId();
-        }
+    	this(description,messagePojo,null);
     }
 
     /**
@@ -122,8 +131,7 @@ public class LogMessage implements Serializable {
      * @param messageContext
      */
     public LogMessage(String description, MessageContext messageContext) {
-        this(description, (messageContext != null ? messageContext
-                .getMessagePojo() : null));
+        this(description, (messageContext != null ? messageContext.getMessagePojo() : null));
     }
 
 	/**
@@ -230,7 +238,7 @@ public class LogMessage implements Serializable {
 
 	    String errorMessage = getErrorMessage();
 		if (full) {
-			return conversationId + "/" + messageId + ": " + description + (errorMessage != null ? ": " + errorMessage : "");
+			return conversationId + "/" + messageId + " ("+choreograhyId+"->"+actionId+"): " + description + (errorMessage != null ? ": " + errorMessage : "");
 		} else {
 			return description + (errorMessage != null ? ": " + errorMessage : "");
 		}
