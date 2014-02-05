@@ -88,11 +88,11 @@
             </td>
             </tr>
             <tr>
-                <td class="NEXUSName">Timeout</td>
+                <td class="NEXUSName">Timeout (sec)</td>
                 <td class="NEXUSValue"><html:text size="50" property="timeout"/></td>
             </tr>
             <tr>
-                <td class="NEXUSName">Message Interval</td>
+                <td class="NEXUSName">Message Interval (sec)</td>
                 <td class="NEXUSValue"><html:text size="50" property="messageInterval"/></td>
             </tr>
             <tr>
