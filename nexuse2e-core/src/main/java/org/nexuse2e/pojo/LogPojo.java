@@ -74,7 +74,7 @@ public class LogPojo implements NEXUSe2ePojo {
     @Column(name = "message_id", length = 96, nullable = false)
     private String            messageId;
 
-    @Column(name = "description", length = 255, nullable = false)
+    @Column(name = "description", length = 4000, nullable = false)
     private String            description;
 
     @Column(name = "created_date", nullable = false)

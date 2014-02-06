@@ -70,8 +70,8 @@ public class DatabaseLogger extends AbstractLogger {
             description = loggingevent.getMessage().toString();
         }
 
-        if ( ( description != null ) && ( description.length() > 255 ) ) {
-            description = description.substring( 0, 254 );
+        if ( ( description != null ) && ( description.length() > 4000 ) ) {
+            description = description.substring( 0, 3999 );
         }
 
         try {
@@ -115,7 +115,8 @@ public class DatabaseLogger extends AbstractLogger {
                 logDao.saveLog( pojo );
             }
         } catch ( Exception ex ) {
-            ex.printStackTrace();
+            System.out.println("In case of truncation, please double check the database settings for the table nx_log. The description should be varchar(4000)");
+        	ex.printStackTrace();
         }
     }
 
