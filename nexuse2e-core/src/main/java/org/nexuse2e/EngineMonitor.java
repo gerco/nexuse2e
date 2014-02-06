@@ -208,10 +208,8 @@ public class EngineMonitor extends WebApplicationObjectSupport {
 						ResultSet result = null;
 						try {
 							PreparedStatement statement = con.prepareStatement("select count(*) from nx_trp");
-							System.out.println("execute query");
 							result = statement.executeQuery();
 							result.next();
-							System.out.println("done");
 							int count = result.getInt(1);
 							if(count == 0) {
 								throw new NexusException("no TRP's found in database");
@@ -238,16 +236,11 @@ public class EngineMonitor extends WebApplicationObjectSupport {
 						return true;
 					}
 				});
-				System.out.println("execute");
-				
 				
 				successful = future.get(timeout, TimeUnit.MILLISECONDS);
-				System.out.println("executed");
 			} catch (Exception e) {
-				System.out.println("canceled: "+e+" - "+e.getMessage());
 				causeMsg = "Exception occured while probing database: " + e.getMessage();
 			} finally {
-				System.out.println("finally");
 				try {
 					if(con != null && !con.isClosed()) {
 						con.close();
