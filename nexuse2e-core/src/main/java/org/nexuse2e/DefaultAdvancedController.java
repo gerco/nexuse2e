@@ -33,7 +33,7 @@ public class DefaultAdvancedController implements AdvancedControllerInterface {
 	 */
 	@Override
 	public List<InstanceInterface> getInstances() {
-		List<InstanceInterface> interfaces = new ArrayList<>();
+		List<InstanceInterface> interfaces = new ArrayList<InstanceInterface>();
 		InstanceInterface defaultInstance = new DefaultInstance(); // contains the engine access for monitoring status and the predefined commands.
 		interfaces.add(defaultInstance);
 		return interfaces;
