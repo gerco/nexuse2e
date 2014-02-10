@@ -28,7 +28,7 @@
     <dependency>
       <groupId>org.nexuse2e</groupId>
       <artifactId>nexuse2e-core</artifactId>
-      <version>5.0.0</version>
+      <version>5.0.1</version>
     </dependency>
   </dependencies>
  <!-- build -->
