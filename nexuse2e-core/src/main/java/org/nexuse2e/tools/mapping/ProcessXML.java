@@ -438,10 +438,6 @@ public class ProcessXML {
                                             System.out.println( "temp.getNodeName():" + me.getValue().substring( 5 ) ); //$NON-NLS-1$
                                         }
                                     }
-                                    if ( r == null ) {
-                                        System.out.println( "no record found!" );
-                                        return null;
-                                    }
                                 } else {
                                     System.out.println( "no magic found!!!" );
                                 }

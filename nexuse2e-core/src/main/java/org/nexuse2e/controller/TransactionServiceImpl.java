@@ -36,7 +36,6 @@ import org.nexuse2e.ActionSpecificKey;
 import org.nexuse2e.BeanStatus;
 import org.nexuse2e.Engine;
 import org.nexuse2e.Layer;
-import org.nexuse2e.MessageStatus;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.ProtocolSpecificKey;
 import org.nexuse2e.configuration.EngineConfiguration;

@@ -25,6 +25,7 @@ import java.security.Key;
 import java.security.KeyStore;
 import java.security.NoSuchProviderException;
 import java.security.cert.CertStore;
+import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -230,11 +231,10 @@ public class MimeMessageUnpackager extends AbstractPipelet {
         return new MessagePayloadPojo(null, sequenceNumber, mimetype, charset, mbp.getContentID(), data, new Date(), new Date(), 0);
     }
 
-    @SuppressWarnings("unchecked")
     private X509Certificate[] verifySignature(SMIMESigned s) throws Exception {
 
         X509Certificate firstCert = null;
-        Collection firstSignerChain = null;
+        Collection<? extends Certificate> firstSignerChain = null;
         X509Certificate cert = null;
 
         // certificates and crls passed in the signature
@@ -246,11 +246,11 @@ public class MimeMessageUnpackager extends AbstractPipelet {
         // check each signer
         for (Object o : signers.getSigners()) {
             SignerInformation signer = (SignerInformation) o;
-            Collection certCollection = certs.getCertificates(signer.getSID());
+            Collection<? extends Certificate> certCollection = certs.getCertificates(signer.getSID());
             if (firstSignerChain == null) {
                 firstSignerChain = certCollection;
             }
-            Iterator certIt = certCollection.iterator();
+            Iterator<? extends Certificate> certIt = certCollection.iterator();
             if (certIt.hasNext()) {
                 cert = (X509Certificate) certIt.next();
                 if (firstCert == null) {

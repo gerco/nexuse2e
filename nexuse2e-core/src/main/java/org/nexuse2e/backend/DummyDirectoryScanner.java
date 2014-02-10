@@ -151,6 +151,7 @@ public class DummyDirectoryScanner {
                                 backendPipelineDispatcher.processMessage( partnerId, choreographyId, actionId, null,
                                         null, null, data );
                                 newfile.renameTo( new File( newfile.getAbsoluteFile() + "_done" ) );
+                                fis.close();
                             }
                         }
                     }
@@ -162,14 +163,6 @@ public class DummyDirectoryScanner {
                 e.printStackTrace();
             }
 
-        }
-
-        /**
-         * @return the targetDirectory
-         */
-        public File getTargetDirectory() {
-
-            return targetDirectory;
         }
 
         /**

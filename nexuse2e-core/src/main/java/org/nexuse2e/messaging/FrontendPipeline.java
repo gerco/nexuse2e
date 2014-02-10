@@ -67,13 +67,13 @@ public class FrontendPipeline extends AbstractPipeline implements ProtocolSpecif
     public MessageContext processMessage( MessageContext messageContext )
             throws IllegalArgumentException, IllegalStateException, NexusException {
 
+        if ( messageContext == null ) {
+            throw new IllegalArgumentException( "No content found" );
+        }
+
         if ( !validateProtocolSpecificKey( messageContext.getProtocolSpecificKey() ) ) {
             throw new IllegalArgumentException( "PipelineKey:" + getKey() + " doesn't match MessageKey:"
                     + messageContext.getProtocolSpecificKey() );
-        }
-
-        if ( messageContext == null ) {
-            throw new IllegalArgumentException( "No content found" );
         }
 
         if ( forwardPipelets == null ) {

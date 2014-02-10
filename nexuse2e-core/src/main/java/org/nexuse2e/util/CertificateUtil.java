@@ -183,6 +183,11 @@ public class CertificateUtil {
             return kp;
         } catch (IOException e) {
             LOG.error("Error while reading Private Key from Pojo: " + e);
+        } finally {
+            try {
+                pemReader.close();
+            } catch (IOException ignored) {
+            }
         }
         return null;
     }
@@ -599,6 +604,11 @@ public class CertificateUtil {
         } catch (IOException e) {
             LOG.error("error while creating PrivateKey Pojo: " + e);
             return null;
+        } finally {
+            try {
+                writer.close();
+            } catch (IOException ignored) {
+            }
         }
         return sw.getBuffer().toString();
     }
@@ -691,6 +701,11 @@ public class CertificateUtil {
             writer.flush();
         } catch (IOException e) {
             LOG.error("Error while creating pem data: " + e);
+        } finally {
+            try {
+                writer.close();
+            } catch (IOException ignored) {
+            }
         }
 
         return sw.toString();
@@ -814,7 +829,6 @@ public class CertificateUtil {
      */
     public static CertificatePojo createPojoFromPKCS12(int type, KeyStore keyStore, String password) throws NexusException {
 
-        NexusException exception = null;
         try {
             // Fix MS IIS exported PKCS12 structures (.pfx) (remove all aliases, create new keyStore with friendly named alias)
             Key pk = getPrivateKey(keyStore);
@@ -846,70 +860,14 @@ public class CertificateUtil {
                 return certificatePojo;
 
             } else {
-                exception = new NexusException("No certificate chain found, can't import certificate!!");
+                throw new NexusException("No certificate chain found, can't import certificate");
             }
         } catch (Exception e) {
-            exception = new NexusException("Error importing key store: " + e);
-            e.printStackTrace();
+            if (e instanceof NexusException) {
+                throw (NexusException) e;
+            }
+            throw new NexusException("Error importing key store", e);
         }
-
-        if (exception != null) {
-            throw exception;
-        }
-        return null;
-
-        // NexusException exception = null;
-        // try {
-        // // Fix MS IIS exported PKCS12 structures (.pfx) (remove all aliases, create new keyStore with friendly named alias)
-        // Key pk = getPrivateKey( keyStore );
-        // Certificate[] tempCerts = getCertificateChain( keyStore );
-        // KeyStore newKs = KeyStore.getInstance( "PKCS12", "BC" );
-        // newKs.load( null, null );
-        // newKs.setKeyEntry( DEFAULT_CERT_ALIAS, pk, password.toCharArray(), tempCerts );
-        // keyStore = newKs;
-        //
-        // Enumeration e = keyStore.aliases();
-        // if ( !e.hasMoreElements() ) {
-        // exception = new NexusException( "No alias found in key store!" );
-        // }
-        // Certificate[] certificates = keyStore.getCertificateChain( (String) e.nextElement() );
-        // if ( ( certificates != null ) && ( certificates.length != 0 ) ) {
-        // String dn = createCertificateId( (X509Certificate) certificates[0] );
-        //
-        // CertificatePojo certificatePojo = new CertificatePojo();
-        // certificatePojo.setType( type );
-        // certificatePojo.setName( dn );
-        //
-        // System.out.println("dn: "+dn);
-        //
-        // keyStore.setKeyEntry( dn, pk, password.toCharArray(), tempCerts );
-        // if(!dn.equals( DEFAULT_CERT_ALIAS )){
-        // keyStore.deleteEntry( DEFAULT_CERT_ALIAS );
-        // }
-        // ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        // keyStore.store( baos, password.toCharArray() );
-        // byte[] certData = baos.toByteArray();
-        // certificatePojo.setBinaryData( certData );
-        //
-        // certificatePojo.setPassword( EncryptionUtil.encryptString( password ) );
-        // certificatePojo.setCreatedDate( new Date() );
-        // certificatePojo.setModifiedDate( new Date() );
-        //
-        // return certificatePojo;
-        //
-        // } else {
-        // exception = new NexusException( "No certificate chain found, can't import certificate!!" );
-        // }
-        // } catch ( Exception e ) {
-        // exception = new NexusException( "Error importing key store: " + e );
-        // e.printStackTrace();
-        // }
-        //
-        // if ( exception != null ) {
-        // throw exception;
-        // }
-        // return null;
-
     }
 
     /**
