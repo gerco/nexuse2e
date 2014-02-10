@@ -101,7 +101,7 @@
 						Label:
 					</td>
 					<td class="NEXUSSection">
-						<bean:write name="instance" property="label" />
+						${instance.label}
 					</td>
 				</tr>
 				<bean:size id="size" name="instance" property="commands"/>
@@ -116,13 +116,13 @@
 					<tr>
 						<% if(counter.intValue() == 0) {%>
 						<td style="text-align: center;background-color:white;" rowspan="<%=size %>" class="NEXUSNameNoWidth">
-							<img src="images/icons/icon-lights-<bean:write name="instance" property="statusColor" />.png" border="0" alt="" class="button">
+							<img src="images/icons/icon-lights-${instance.statusColor}.png" border="0" alt="" class="button">
 						</td>
 						<% } %>
 						
 						<td class="NEXUSNameNoWidth">
 							<nexus:link href="InstanceController.do?instanceId=${instance.id}&commandId=${command.name}" styleClass="NexusLink">
-            					<bean:write name="command" property="label" />
+            					${command.label}
             				</nexus:link>
 						</td>
 					</tr>

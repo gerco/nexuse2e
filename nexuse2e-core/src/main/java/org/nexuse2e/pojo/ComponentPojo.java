@@ -55,7 +55,7 @@ public class ComponentPojo implements NEXUSe2ePojo {
     // Fields
     @Access(AccessType.PROPERTY)
     @Id
-    @Column(name = "nx_certificate_id")
+    @Column(name = "nx_component_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int               nxComponentId;
 
