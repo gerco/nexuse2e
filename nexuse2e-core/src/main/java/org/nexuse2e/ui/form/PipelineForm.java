@@ -218,8 +218,8 @@ public class PipelineForm extends ActionForm {
     @Override
     public void reset( ActionMapping mapping, HttpServletRequest request ) {
 
-        System.out.println("mapping.name: "+mapping.getName());
-        System.out.println("request: "+request.getParameterNames());
+//        System.out.println("mapping.name: "+mapping.getName());
+//        System.out.println("request: "+request.getParameterNames());
 //        Enumeration e = request.getParameterNames();
 //        while(e.hasMoreElements() ) {
 //            System.out.println("param:"+e.nextElement());
