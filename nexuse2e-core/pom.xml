@@ -244,7 +244,7 @@
    <dependency>
      <groupId>org.hibernate</groupId>
      <artifactId>hibernate-core</artifactId>
-     <version>4.2.6.Final</version>
+     <version>4.2.8.Final</version>
      <scope>compile</scope>
      <!-- 
      <exclusions>
@@ -262,7 +262,7 @@
    <dependency>
    	 <groupId>org.hibernate</groupId>
    	 <artifactId>hibernate-ehcache</artifactId>
-   	 <version>4.2.6.Final</version>
+   	 <version>4.2.8.Final</version>
    </dependency>
    <!-- 
    <dependency>
