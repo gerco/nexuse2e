@@ -236,11 +236,13 @@
      <version>2.0.5312</version>
      <scope>test</scope>
    </dependency>
+   <!-- hibernate bundles 3.18.1 with 4.2.8
    <dependency>
      <groupId>javassist</groupId>
      <artifactId>javassist</artifactId>
      <version>3.12.1.GA</version>
    </dependency>
+    -->
    <dependency>
      <groupId>org.hibernate</groupId>
      <artifactId>hibernate-core</artifactId>
