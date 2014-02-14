@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
 import org.bouncycastle.jce.PKCS10CertificationRequest;
 import org.nexuse2e.configuration.CertificateType;
@@ -129,6 +130,10 @@ public class RequestVerifyCertChainAction extends NexusE2EAction {
             X509Certificate cert = CertificateUtil.getX509Certificate(form.getCertficate().getFileData());
             if (cert != null) {
                 certs.add(cert);
+            } else {
+                ActionMessage errorMessage = new ActionMessage("certificates.import.invalid_file");
+                errors.add(ActionMessages.GLOBAL_MESSAGE, errorMessage);
+                return incomplete;
             }
 
         }
