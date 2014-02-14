@@ -43,11 +43,11 @@
 	enctype="multipart/form-data">
 	<table class="NEXUS_TABLE" width="100%">
 		<tr>
-			<td colspan="2" class="NEXUSSection">Select import directory: <bean:write
+			<td colspan="2" class="NEXUSSection">Select archive file (.zip) to import<bean:write
 				name="protectedFileAccessForm" property="alias" /></td>
 		</tr>
 		<tr>
-			<td class="NEXUSName">Path</td>
+			<td class="NEXUSName">File:</td>
 			<td class="NEXUSValue"><html:file property="certficate" size="60" onkeypress="return checkKey(event);" /></td>
 		</tr>
 	</table>
