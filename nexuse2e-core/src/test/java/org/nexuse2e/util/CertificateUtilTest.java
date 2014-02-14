@@ -23,82 +23,101 @@ import org.mockito.MockitoAnnotations;
 
 /**
  * @author JJerke
- *
+ * 
+ *         Tests for CertificateUtil.java
+ *         As this class contains certificates, the tests can fail as a result of the certificates expiring. So if something goes wrong, make sure the
+ *         certificates are still valid before you do anything else.
  */
 public class CertificateUtilTest {
 
-    private final String        head         = "-----BEGIN CERTIFICATE-----\r\n" + "MIIE6DCCA9CgAwIBAgIGVhzhMAXcMA0GCSqGSIb3DQEBBAUAMIGiMSEwHwYJKoZI\r\n"
-                                                     + "hvcNAQkBFhJjYW1haWxAY2FzZXJ2ZXIuY2ExEzARBgNVBAYTCkNBIENvdW50cnkx\r\n"
-                                                     + "ETAPBgNVBAgTCENBIFN0YXRlMRQwEgYDVQQHEwtDQSBMb2NhdGlvbjEPMA0GA1UE\r\n"
-                                                     + "ChMGQ0EgT3JnMRAwDgYDVQQLEwdDQSBVbml0MRwwGgYDVQQDExNORVhVU2UyZSBU\r\n"
-                                                     + "ZXN0IENoYWluMB4XDTE0MDIxMzIzMDAwMFoXDTI0MDIxMzIzMDAwMFowgcYxETAP\r\n"
-                                                     + "BgNVBAMMCFRlc3RuYW1lMRQwEgYDVQQGEwtUZXN0Y291bnRyeTEQMA4GA1UECgwH\r\n"
-                                                     + "VGVzdG9yZzERMA8GA1UECwwIVGVzdHVuaXQxEDAOBgNVBAcMB1Rlc3Rsb2MxEjAQ\r\n"
-                                                     + "BgNVBAgMCVRlc3RzdGF0ZTEnMCUGCSqGSIb3DQEJARYYdGVzdG1haWxAdGVzdHNl\r\n"
-                                                     + "cnZlci50ZXN0MScwJQYJKoZIhvcNAQkBFhh0ZXN0bWFpbEB0ZXN0c2VydmVyLnRl\r\n"
-                                                     + "c3QwggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAwggIKAoICAQDvgTwKc141NAY/v1ts\r\n"
-                                                     + "fZOuwDaPwdj+hU6utPO1hPBqlbZQx8hWSzptJUxfn2vQYuOyU+z64rAnz2WLNm2Z\r\n"
-                                                     + "Gi9LDlBAL9vTx92pg1SjHJjLd1AWNhUKEpQgQP1rWIVKKeVLJA0jnAmTiwB0Cfih\r\n"
-                                                     + "SuRfUhjwyPvuKkU9PL6Sgr2ikMCLUN+QioZC+1hM+xmThN679i734N0agybWPLrf\r\n"
-                                                     + "qn2TFSKbcvjriuOoxM/UdHBP6ZIEgmMTUSaV9a1mwD8NPFxvS86nL8qFiuu/c/la\r\n"
-                                                     + "EGjliTk91hC3RvbZJGj+3tdnUwaQELozrekpUHMiKJj68tr0DiJhxe9yT0qPcA/b\r\n"
-                                                     + "FFdjGE4zjSG6N5A2FQRTEQHFD6+mlkwecSTm2V8LDlcnPgSqXRq5ERLjrTB4y4rE\r\n"
-                                                     + "OjF2tUI8d2xt9gy0tnJHT7tjZbW1GZ//WO3Z0kKfGyBQSvdC4U0d6gxapj1ugnkT\r\n"
-                                                     + "X1anYisgi0mGQiBqvyiomeXy0JW+azhA7arqyBbDxZio4M1NB3eToeWoFnfDvAkL\r\n"
-                                                     + "t+J6R3nLFSgmcVjBZlK0QjuxiAsg86g1WsQACjVUITphnmyn37BXfn1dDoUFoKyj\r\n"
-                                                     + "aaTsUVbtA9rFtnN/iB5iqY3q+d6ZAx6o4oyRDbk25Cpeh1iWy+EY+h14fon1E+kJ\r\n"
-                                                     + "sb9NqeOzYeMo9AL4lNRsDO0K+QIDAQABMA0GCSqGSIb3DQEBBAUAA4IBAQAp48pU\r\n"
-                                                     + "/Le4ie0Ou+QfsPhvmghJw2YTaaAUOV4oqWUOUJUxzcjoWEi8kLifRWLiZvk6IUz3\r\n"
-                                                     + "Fp7P6aGwrTTkSzV70IzTm11DnV8vSggd/00HpG14AiTziwPInwQGojnfR4cn12BM\r\n"
-                                                     + "nt3rxOGOy8BQyd1yJbBEXbVQZy5JYhzKcrX6pFmCpEBE62b/j1Q3/QG/yeBtt+Ox\r\n"
-                                                     + "SOSs7Q8O7b5r1ckdfUc+8YFrTD+BzxqOW/79pzYFZjmqiKStVFvRVQGOg+ireaNQ\r\n"
-                                                     + "toWTuw9LgyZIjN5p2TtZtxugF6qEgZMEUd8tFWsPEPl1CyTxiPv9tKqoDxJ+OC2T\r\n" + "d2QPtBi+ciRiQjZ9\r\n"
-                                                     + "-----END CERTIFICATE-----\r\n" + "";
+    // Certificate for test-intranet.direkt-gruppe.de, valid until 31.05.2015
+    private final String        head         = "-----BEGIN CERTIFICATE-----\r\n" + "MIIF1jCCBL6gAwIBAgIHS38t90ZtkDANBgkqhkiG9w0BAQUFADCByjELMAkGA1UE\r\n"
+                                                     + "BhMCVVMxEDAOBgNVBAgTB0FyaXpvbmExEzARBgNVBAcTClNjb3R0c2RhbGUxGjAY\r\n"
+                                                     + "BgNVBAoTEUdvRGFkZHkuY29tLCBJbmMuMTMwMQYDVQQLEypodHRwOi8vY2VydGlm\r\n"
+                                                     + "aWNhdGVzLmdvZGFkZHkuY29tL3JlcG9zaXRvcnkxMDAuBgNVBAMTJ0dvIERhZGR5\r\n"
+                                                     + "IFNlY3VyZSBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTERMA8GA1UEBRMIMDc5Njky\r\n"
+                                                     + "ODcwHhcNMTMwNjAzMTMzNTUwWhcNMTUwNTMxMTE1MDU0WjBMMSEwHwYDVQQLExhE\r\n"
+                                                     + "b21haW4gQ29udHJvbCBWYWxpZGF0ZWQxJzAlBgNVBAMTHnRlc3QtaW50cmFuZXQu\r\n"
+                                                     + "ZGlyZWt0LWdydXBwZS5kZTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEB\r\n"
+                                                     + "AOQnkAKDQZt3UyboDB3qm55bdnOYgyB7QbjRKYgwE6dfV8tyvQl622tnh+6Jw00n\r\n"
+                                                     + "0zEwRCEeqU2HLDUJNEIcu0YbP9i4KQy0+oQC6VP7+MDptLnZwECVbK4daHFwSkbS\r\n"
+                                                     + "AJ4PfrrTBxwBE7bw4J30M8ZFSdtsSJUlmHzYyYYK09nynhnKRAGZ6ZrsH9FKRYQS\r\n"
+                                                     + "Bb6DB0XmhWa11NP6e546Eu/dz6wxZ8pnjz1jLgSZLljIQYdCSewcudlztP+90q2/\r\n"
+                                                     + "xsdkjg0/ktrh9a0WZt18gEQpFUeKtdHz0qbI1A0OWidqnaVN3XDYW5LbROgMvAxM\r\n"
+                                                     + "Cwt6HEBbM8hH67Zdt6eO2lMCAwEAAaOCAjwwggI4MA8GA1UdEwEB/wQFMAMBAQAw\r\n"
+                                                     + "HQYDVR0lBBYwFAYIKwYBBQUHAwEGCCsGAQUFBwMCMA4GA1UdDwEB/wQEAwIFoDAz\r\n"
+                                                     + "BgNVHR8ELDAqMCigJqAkhiJodHRwOi8vY3JsLmdvZGFkZHkuY29tL2dkczEtOTIu\r\n"
+                                                     + "Y3JsMFMGA1UdIARMMEowSAYLYIZIAYb9bQEHFwEwOTA3BggrBgEFBQcCARYraHR0\r\n"
+                                                     + "cDovL2NlcnRpZmljYXRlcy5nb2RhZGR5LmNvbS9yZXBvc2l0b3J5LzCBgAYIKwYB\r\n"
+                                                     + "BQUHAQEEdDByMCQGCCsGAQUFBzABhhhodHRwOi8vb2NzcC5nb2RhZGR5LmNvbS8w\r\n"
+                                                     + "SgYIKwYBBQUHMAKGPmh0dHA6Ly9jZXJ0aWZpY2F0ZXMuZ29kYWRkeS5jb20vcmVw\r\n"
+                                                     + "b3NpdG9yeS9nZF9pbnRlcm1lZGlhdGUuY3J0MB8GA1UdIwQYMBaAFP2sYTKTbEXW\r\n"
+                                                     + "4u6FX5q653aZaMznMIGoBgNVHREEgaAwgZ2CHnRlc3QtaW50cmFuZXQuZGlyZWt0\r\n"
+                                                     + "LWdydXBwZS5kZYIid3d3LnRlc3QtaW50cmFuZXQuZGlyZWt0LWdydXBwZS5kZYIc\r\n"
+                                                     + "dGVzdC1wZW9wbGUuZGlyZWt0LWdydXBwZS5kZYIddGVzdC1zZXJ2aWNlLmRpcmVr\r\n"
+                                                     + "dC1ncnVwcGUuZGWCGnRlc3QtdGVhbS5kaXJla3QtZ3J1cHBlLmRlMB0GA1UdDgQW\r\n"
+                                                     + "BBQg90vobb//fYRHV0mmvJ1Bel/StDANBgkqhkiG9w0BAQUFAAOCAQEAPmPc/Tl9\r\n"
+                                                     + "4X2xiSWqY7xVhYrbk7fi9Ff30opprW038pyXeInVH87lzPhVjxGbZ8G5ADV3s7Vs\r\n"
+                                                     + "1JYQlU+FyFxIl5cgEfccsVa3eDB2RxUGCeByxcv8IcuXDrEKZIf5qp8T+fUSX/69\r\n"
+                                                     + "6NA1wUvPk0W1X5kzRtQfTe3rordjaBE7s6go1nwvfIoLOHQvw3u+722Wxrwsk1aP\r\n"
+                                                     + "F3vHjx7ucZq1uW2G0RzPMjifUnGXVy/UUoSnRI+IkYmbZqAlK8Mj5JNrzsP4ArZL\r\n"
+                                                     + "FUkCOwkkSPwkrRcy0PyY+3SosTqv9Jr8Fd3xcBBWIG/gP7Pw0RYAjl87mCLKDPxM\r\n" + "TL/41pBKMS6QnA==\r\n"
+                                                     + "-----END CERTIFICATE-----";
 
-    private final String        ca           = "-----BEGIN CERTIFICATE-----\r\n" + "MIIDxDCCAqygAwIBAgIGQvewmTyoMA0GCSqGSIb3DQEBBAUAMIGiMSEwHwYJKoZI\r\n"
-                                                     + "hvcNAQkBFhJjYW1haWxAY2FzZXJ2ZXIuY2ExEzARBgNVBAYTCkNBIENvdW50cnkx\r\n"
-                                                     + "ETAPBgNVBAgTCENBIFN0YXRlMRQwEgYDVQQHEwtDQSBMb2NhdGlvbjEPMA0GA1UE\r\n"
-                                                     + "ChMGQ0EgT3JnMRAwDgYDVQQLEwdDQSBVbml0MRwwGgYDVQQDExNORVhVU2UyZSBU\r\n"
-                                                     + "ZXN0IENoYWluMB4XDTE0MDEwODIzMDAwMFoXDTI0MDEwODIzMDAwMFowgaIxITAf\r\n"
-                                                     + "BgkqhkiG9w0BCQEWEmNhbWFpbEBjYXNlcnZlci5jYTETMBEGA1UEBhMKQ0EgQ291\r\n"
-                                                     + "bnRyeTERMA8GA1UECBMIQ0EgU3RhdGUxFDASBgNVBAcTC0NBIExvY2F0aW9uMQ8w\r\n"
-                                                     + "DQYDVQQKEwZDQSBPcmcxEDAOBgNVBAsTB0NBIFVuaXQxHDAaBgNVBAMTE05FWFVT\r\n"
-                                                     + "ZTJlIFRlc3QgQ2hhaW4wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCH\r\n"
-                                                     + "/8o0s5PLmUGaDbx2mF8xvYHzQE9nUVnFrEyKUg3AJ64w6rltHYog5Ro07s3JBSBm\r\n"
-                                                     + "CqZfH5NnSsg62ikP5RMiVK/bT8TEPyW4t9GGcJzzicC55gFe2di8+jCw37vYfHGT\r\n"
-                                                     + "UTdWsTCYOBzrgwS6K1AHys+nUcyp1g7zS/YaIOhO+GXu1FhbKJq1PSe8NnPx2glG\r\n"
-                                                     + "/+xk6YoqcndJekV3/+75lwGXHDTKr1ux70jpVxw3/jRFPpRj3Z7jgASm9FodFY1v\r\n"
-                                                     + "QYB68H31g7n8v5JW4bHc1cCVdkXm4NEd0L5klBelylWBVf9k17gr5p7Ak/8k/mn5\r\n"
-                                                     + "60OyHEXk2+E227tyiVm/AgMBAAEwDQYJKoZIhvcNAQEEBQADggEBAHmxRIC/PNAv\r\n"
-                                                     + "cesQ/yeLkIt2DeQ7QI9AIPg3Xu0eb1xE3XzzRKJE2COsXtyo+o1qx/M0uKac6p1i\r\n"
-                                                     + "HedYj556g35eZn8Pji9Xxy4VqZ/90Nr3G4vk63cDlpmd2XVOo9QeVAPKsymkfxKS\r\n"
-                                                     + "uMrAFToJ48n3hD03L6aIvVuxYBNhjDZz+oZfq+htC2+J2R1sCU0wAB5lb6ke6a3T\r\n"
-                                                     + "tqNc6Vey2xDmwRCwIoRcKifEyaz5Mfoj3u7ZK5Qp2PgwBfiRytVyQ4x6wySCQOn5\r\n"
-                                                     + "x2ZpczpsUzHmUxReVE8SNJ4K+UouKD+XPjE5XCFge5DWu4rLsrJGn/nRF8AzAOFl\r\n" + "O8FZdi/UR4g=\r\n"
-                                                     + "-----END CERTIFICATE-----\r\n" + "";
+    // Intermediate CA certificate for Go Daddy Secure Certification Authority, valid until 16.11.2026
+    private final String        intermediate           = "-----BEGIN CERTIFICATE-----\r\n" + "MIIE3jCCA8agAwIBAgICAwEwDQYJKoZIhvcNAQEFBQAwYzELMAkGA1UEBhMCVVMx\r\n"
+                                                     + "ITAfBgNVBAoTGFRoZSBHbyBEYWRkeSBHcm91cCwgSW5jLjExMC8GA1UECxMoR28g\r\n"
+                                                     + "RGFkZHkgQ2xhc3MgMiBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTAeFw0wNjExMTYw\r\n"
+                                                     + "MTU0MzdaFw0yNjExMTYwMTU0MzdaMIHKMQswCQYDVQQGEwJVUzEQMA4GA1UECBMH\r\n"
+                                                     + "QXJpem9uYTETMBEGA1UEBxMKU2NvdHRzZGFsZTEaMBgGA1UEChMRR29EYWRkeS5j\r\n"
+                                                     + "b20sIEluYy4xMzAxBgNVBAsTKmh0dHA6Ly9jZXJ0aWZpY2F0ZXMuZ29kYWRkeS5j\r\n"
+                                                     + "b20vcmVwb3NpdG9yeTEwMC4GA1UEAxMnR28gRGFkZHkgU2VjdXJlIENlcnRpZmlj\r\n"
+                                                     + "YXRpb24gQXV0aG9yaXR5MREwDwYDVQQFEwgwNzk2OTI4NzCCASIwDQYJKoZIhvcN\r\n"
+                                                     + "AQEBBQADggEPADCCAQoCggEBAMQt1RWMnCZM7DI161+4WQFapmGBWTtwY6vj3D3H\r\n"
+                                                     + "KrjJM9N55DrtPDAjhI6zMBS2sofDPZVUBJ7fmd0LJR4h3mUpfjWoqVTr9vcyOdQm\r\n"
+                                                     + "VZWt7/v+WIbXnvQAjYwqDL1CBM6nPwT27oDyqu9SoWlm2r4arV3aLGbqGmu75RpR\r\n"
+                                                     + "SgAvSMeYddi5Kcju+GZtCpyz8/x4fKL4o/K1w/O5epHBp+YlLpyo7RJlbmr2EkRT\r\n"
+                                                     + "cDCVw5wrWCs9CHRK8r5RsL+H0EwnWGu1NcWdrxcx+AuP7q2BNgWJCJjPOq8lh8BJ\r\n"
+                                                     + "6qf9Z/dFjpfMFDniNoW1fho3/Rb2cRGadDAW/hOUoz+EDU8CAwEAAaOCATIwggEu\r\n"
+                                                     + "MB0GA1UdDgQWBBT9rGEyk2xF1uLuhV+auud2mWjM5zAfBgNVHSMEGDAWgBTSxLDS\r\n"
+                                                     + "kdRMEXGzYcs9of7dqGrU4zASBgNVHRMBAf8ECDAGAQH/AgEAMDMGCCsGAQUFBwEB\r\n"
+                                                     + "BCcwJTAjBggrBgEFBQcwAYYXaHR0cDovL29jc3AuZ29kYWRkeS5jb20wRgYDVR0f\r\n"
+                                                     + "BD8wPTA7oDmgN4Y1aHR0cDovL2NlcnRpZmljYXRlcy5nb2RhZGR5LmNvbS9yZXBv\r\n"
+                                                     + "c2l0b3J5L2dkcm9vdC5jcmwwSwYDVR0gBEQwQjBABgRVHSAAMDgwNgYIKwYBBQUH\r\n"
+                                                     + "AgEWKmh0dHA6Ly9jZXJ0aWZpY2F0ZXMuZ29kYWRkeS5jb20vcmVwb3NpdG9yeTAO\r\n"
+                                                     + "BgNVHQ8BAf8EBAMCAQYwDQYJKoZIhvcNAQEFBQADggEBANKGwOy9+aG2Z+5mC6IG\r\n"
+                                                     + "OgRQjhVyrEp0lVPLN8tESe8HkGsz2ZbwlFalEzAFPIUyIXvJxwqoJKSQ3kbTJSMU\r\n"
+                                                     + "A2fCENZvD117esyfxVgqwcSeIaha86ykRvOe5GPLL5CkKSkB2XIsKd83ASe8T+5o\r\n"
+                                                     + "0yGPwLPk9Qnt0hCqU7S+8MxZC9Y7lhyVJEnfzuz9p0iRFEUOOjZv2kWzRaJBydTX\r\n"
+                                                     + "RE4+uXR21aITVSzGh6O1mawGhId/dQb8vxRMDsxuxN89txJx9OjxUUAiKEngHUuH\r\n"
+                                                     + "qDTMBqLdElrRhjZkAzVvb3du6/KFUJheqwNTrZEjYx8WnM25sgVjOuH0aBsXBTWV\r\n" + "U+4=\r\n"
+                                                     + "-----END CERTIFICATE-----";
 
-    // This certificate is unrelated to the above, but is explicitly added as trusted. In other words, CertificateUtil has no useful pre-trusted certificate.
-    private final String        trusted      = "-----BEGIN CERTIFICATE-----\r\n" + "MIIDXzCCAkegAwIBAgIJAJv8cLGiRS/JMA0GCSqGSIb3DQEBBQUAMEYxCzAJBgNV\r\n"
-                                                     + "BAYTAkRFMQswCQYDVQQIDAJISDELMAkGA1UECgwCREcxCzAJBgNVBAsMAlNPMRAw\r\n"
-                                                     + "DgYDVQQDDAdDQSBST09UMB4XDTE0MDEzMDE0NTAyNFoXDTE0MDMwMTE0NTAyNFow\r\n"
-                                                     + "RjELMAkGA1UEBhMCREUxCzAJBgNVBAgMAkhIMQswCQYDVQQKDAJERzELMAkGA1UE\r\n"
-                                                     + "CwwCU08xEDAOBgNVBAMMB0NBIFJPT1QwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAw\r\n"
-                                                     + "ggEKAoIBAQCoc6QLARKPRhUZlBygaaCAYqmjLbbGcL0rEblef5LeulpSzmyUjY3O\r\n"
-                                                     + "RkwMjzAUuOKptSNNnwfWpv+rsyMgdqE/+nEscCgTlVfMJGMFOozQNoS3pVzoY+z1\r\n"
-                                                     + "wa3+ZLZoOxzPdFxGDlZnp4z8YDE+CQGg1cCgZ3CDk/CgeJQW0hqNETkU9wFVrjqE\r\n"
-                                                     + "is4h3KILexIvU190ww40oy24Jg1nG/uTg0e5+VF4xvXN/mCbW3eIBlnz2fzb7Sc5\r\n"
-                                                     + "Zy2TjyJSCRriMsltX4bxYslu0xc38eOceapRpK5nab4miHTUH8Hxw5UHF85wyRuG\r\n"
-                                                     + "FPoy7E1fx8yYpYB+IlTpLHlCWEFnJMUdAgMBAAGjUDBOMB0GA1UdDgQWBBQM6/Ip\r\n"
-                                                     + "x2R69TC1AOJvWyeKMG+WFDAfBgNVHSMEGDAWgBQM6/Ipx2R69TC1AOJvWyeKMG+W\r\n"
-                                                     + "FDAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBBQUAA4IBAQA0UKVPyCSolME3nXug\r\n"
-                                                     + "Wr2WuovRltJTcKTB4HftPOZWQmwvWIUYQc3v6UuCfpeN+SRn9CrxkyyM0JcRJmNs\r\n"
-                                                     + "RdbcXNWiBpvycz0MIZUUlRTGx7CYdor+7PHAtG71DlGMQvhMBrYVZtEECX9S+/lJ\r\n"
-                                                     + "3qawHn8t/0297ywJpPj8nQYqsUWQdCPoMmIHWcoSzqdy2v+0rAy+jsf4p6mmjKpw\r\n"
-                                                     + "asg1h/BN2yHxzpWSEs0W7wFLEYvkcfJikxYQyyFe71zR26zG6bnbmLPKZNoLqw/C\r\n"
-                                                     + "0mIORvRUxloQA7x0xcWmrzOFcbRn5mLOm0jR/VsyvIQ4hyIIi1Fw/mGqkOOj9KiP\r\n" + "bTf/\r\n"
-                                                     + "-----END CERTIFICATE-----\r\n" + "";
+    // Self-signed CA certificate from Go Daddy Class 2 Certification Authority, valid until29.07.2034
+    private final String        trusted      = "-----BEGIN CERTIFICATE-----\r\n" + "MIIEADCCAuigAwIBAgIBADANBgkqhkiG9w0BAQUFADBjMQswCQYDVQQGEwJVUzEh\r\n"
+                                                     + "MB8GA1UEChMYVGhlIEdvIERhZGR5IEdyb3VwLCBJbmMuMTEwLwYDVQQLEyhHbyBE\r\n"
+                                                     + "YWRkeSBDbGFzcyAyIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MB4XDTA0MDYyOTE3\r\n"
+                                                     + "MDYyMFoXDTM0MDYyOTE3MDYyMFowYzELMAkGA1UEBhMCVVMxITAfBgNVBAoTGFRo\r\n"
+                                                     + "ZSBHbyBEYWRkeSBHcm91cCwgSW5jLjExMC8GA1UECxMoR28gRGFkZHkgQ2xhc3Mg\r\n"
+                                                     + "MiBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTCCASAwDQYJKoZIhvcNAQEBBQADggEN\r\n"
+                                                     + "ADCCAQgCggEBAN6d1+pXGEmhW+vXX0iG6r7d/+TvZxz0ZWizV3GgXne77ZtJ6XCA\r\n"
+                                                     + "PVYYYwhv2vLM0D9/AlQiVBDYsoHUwHU9S3/Hd8M+eKsaA7Ugay9qK7HFiH7Eux6w\r\n"
+                                                     + "wdhFJ2+qN1j3hybX2C32qRe3H3I2TqYXP2WYktsqbl2i/ojgC95/5Y0V4evLOtXi\r\n"
+                                                     + "EqITLdiOr18SPaAIBQi2XKVlOARFmR6jYGB0xUGlcmIbYsUfb18aQr4CUWWoriMY\r\n"
+                                                     + "avx4A6lNf4DD+qta/KFApMoZFv6yyO9ecw3ud72a9nmYvLEHZ6IVDd2gWMZEewo+\r\n"
+                                                     + "YihfukEHU1jPEX44dMX4/7VpkI+EdOqXG68CAQOjgcAwgb0wHQYDVR0OBBYEFNLE\r\n"
+                                                     + "sNKR1EwRcbNhyz2h/t2oatTjMIGNBgNVHSMEgYUwgYKAFNLEsNKR1EwRcbNhyz2h\r\n"
+                                                     + "/t2oatTjoWekZTBjMQswCQYDVQQGEwJVUzEhMB8GA1UEChMYVGhlIEdvIERhZGR5\r\n"
+                                                     + "IEdyb3VwLCBJbmMuMTEwLwYDVQQLEyhHbyBEYWRkeSBDbGFzcyAyIENlcnRpZmlj\r\n"
+                                                     + "YXRpb24gQXV0aG9yaXR5ggEAMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQEFBQAD\r\n"
+                                                     + "ggEBADJL87LKPpH8EsahB4yOd6AzBhRckB4Y9wimPQoZ+YeAEW5p5JYXMP80kWNy\r\n"
+                                                     + "OO7MHAGjHZQopDH2esRU1/blMVgDoszOYtuURXO1v0XJJLXVggKtI3lpjbi2Tc7P\r\n"
+                                                     + "TMozI+gciKqdi0FuFskg5YmezTvacPd+mSYgFFQlq25zheabIZ0KbIIOqPjCDPoQ\r\n"
+                                                     + "HmyW74cNxA9hi63ugyuV+I6ShHI56yDqg+2DzZduCLzrTia2cyvk0/ZM/iZx4mER\r\n"
+                                                     + "dEr/VxqHD3VILs9RaRegAhJhldXRQLIQTO7ErBBDpqWeCtWVYpoNz4iCxTIM5Cuf\r\n"
+                                                     + "ReYNnyicsbkqWletNw+vHX/bvZ8=\r\n" + "-----END CERTIFICATE-----";
 
-    private X509Certificate     headCert, caCert, trustCert;
+    private X509Certificate     headCert, intCert, trustCert;
 
     final List<X509Certificate> certs        = new ArrayList<X509Certificate>();
     final List<X509Certificate> trustedCerts = new ArrayList<X509Certificate>();
@@ -119,11 +138,11 @@ public class CertificateUtilTest {
         }
 
         headCert = getX509Certificate(head.getBytes());
-        caCert = getX509Certificate(ca.getBytes());
+        intCert = getX509Certificate(intermediate.getBytes());
         trustCert = getX509Certificate(trusted.getBytes());
 
         certs.add(headCert);
-        certs.add(caCert);
+        certs.add(intCert);
         certs.add(trustCert);
 
         trustedCerts.add(trustCert);
@@ -139,13 +158,13 @@ public class CertificateUtilTest {
     @Test
     public void testGetX509Certificate() {
         X509Certificate headCertTest = CertificateUtil.getX509Certificate(head.getBytes());
-        X509Certificate intCertTest = CertificateUtil.getX509Certificate(ca.getBytes());
+        X509Certificate intCertTest = CertificateUtil.getX509Certificate(intermediate.getBytes());
         X509Certificate trustCertTest = CertificateUtil.getX509Certificate(trusted.getBytes());
 
         assertEquals(headCertTest.getIssuerX500Principal(), headCert.getIssuerX500Principal());
         assertEquals(headCertTest.getSubjectX500Principal(), headCert.getSubjectX500Principal());
-        assertEquals(intCertTest.getIssuerX500Principal(), caCert.getIssuerX500Principal());
-        assertEquals(intCertTest.getSubjectX500Principal(), caCert.getSubjectX500Principal());
+        assertEquals(intCertTest.getIssuerX500Principal(), intCert.getIssuerX500Principal());
+        assertEquals(intCertTest.getSubjectX500Principal(), intCert.getSubjectX500Principal());
         assertEquals(trustCertTest.getIssuerX500Principal(), trustCert.getIssuerX500Principal());
         assertEquals(trustCertTest.getSubjectX500Principal(), trustCert.getSubjectX500Principal());
 
