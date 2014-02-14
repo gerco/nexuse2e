@@ -138,7 +138,7 @@
 				<logic:notEmpty name="selectedPartner">
 					<html:option value="0">as new certificate</html:option>
 					<logic:iterate name="selectedPartner" property="certificates" id="certificate">
-						<html-el:option value="${certificate.nxCertificateId}">replacing ${certificate.name}
+						<html-el:option value="${certificate.nxCertificateId}">replacing ${certificate.name} (${certificate.nxCertificateId})
 						<c:if test="${!empty certificate.description}">(${certificate.description})</c:if></html-el:option>
 					</logic:iterate>
 				</logic:notEmpty>
