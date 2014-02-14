@@ -943,24 +943,28 @@ public class CertificateUtil {
 
             if (modulus.equals(requestModulus) && exponent.equals(requestExponent)) {
                 // headcert
-            } else {
+            } else if (cert.getIssuerX500Principal().equals(cert.getSubjectX500Principal())) {
+                // Certificate is self-signed
                 trust.add(new TrustAnchor(cert, null));
             }
         }
 
         try {
+            // Add certificate chain
             CollectionCertStoreParameters ccsp = new CollectionCertStoreParameters(list);
             CertStore store = CertStore.getInstance("Collection", ccsp, Constants.DEFAULT_JCE_PROVIDER);
 
-            CertPathBuilder cpb = CertPathBuilder.getInstance("PKIX", Constants.DEFAULT_JCE_PROVIDER);
+            // Set certificate to verify
             X509CertSelector targetConstraints = new X509CertSelector();
-
             targetConstraints.setCertificate(head);
 
+            // Trust should contain only trusted certificates, see for-loop above. The second parameter is the certificate to check.
             PKIXBuilderParameters params = new PKIXBuilderParameters(trust, targetConstraints);
             params.setRevocationEnabled(false);
             params.addCertStore(store);
             params.setDate(new Date());
+
+            CertPathBuilder cpb = CertPathBuilder.getInstance("PKIX", Constants.DEFAULT_JCE_PROVIDER);
             try {
                 return (PKIXCertPathBuilderResult) cpb.build(params);
             } catch (CertPathBuilderException e) {
