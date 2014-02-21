@@ -130,7 +130,7 @@ public class EngineMonitor extends WebApplicationObjectSupport {
     		LOG.debug( "Engine monitor initalized" );
             timer = new Timer();
             TestSuite suite = new TestSuite();
-            timer.schedule( suite, 0, interval );
+            timer.schedule( suite, 30000, interval ); //delayed first schedule
         }
     }
 

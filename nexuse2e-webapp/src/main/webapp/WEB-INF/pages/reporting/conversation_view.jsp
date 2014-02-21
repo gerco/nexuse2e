@@ -161,7 +161,7 @@
 					property="severity" /></td>
 				<td class="NEXUSValue"><bean:write name="conv"
 					property="issuedDate" /></td>
-				<td class="NEXUSValue"><bean:write name="conv"
+				<td class="NEXUSValue" style="white-space: normal;"><bean:write name="conv"
 					property="description" /></td>
 				<td class="NEXUSValue"></td>
 				<td class="NEXUSValue"><bean:write name="conv"

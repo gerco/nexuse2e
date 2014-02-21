@@ -158,7 +158,6 @@ public class Pop3Receiver extends AbstractService implements ReceiverAware, Runn
 
         Store store = null;
         Folder folder = null;
-        int mailsReceived = 0;
         boolean result = false;
 
         if ( ( popServer == null ) || ( popUser == null ) || ( popPassword == null ) ) {
@@ -199,7 +198,6 @@ public class Pop3Receiver extends AbstractService implements ReceiverAware, Runn
                 Address[] addresses = msgs[msgNum].getFrom();
                 LOG.debug( "Sender: " + ( (InternetAddress) addresses[0] ).getAddress() );
 
-                mailsReceived++;
                 if ( LOG.isDebugEnabled() ) {
                     if ( msgs[msgNum] instanceof MimeMessage ) {
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();

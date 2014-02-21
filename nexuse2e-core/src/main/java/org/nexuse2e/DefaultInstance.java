@@ -78,6 +78,9 @@ public class DefaultInstance implements InstanceInterface {
 	public Color getStatusColor() {
 		try {
 			EngineStatusSummary summary = Engine.getInstance().getEngineController().getEngineMonitor().getStatus();
+			if (summary == null) {
+			    return Color.GRAY;
+			}
 			switch(summary.getStatus()) {
 			case ACTIVE:
 				return Color.GREEN;

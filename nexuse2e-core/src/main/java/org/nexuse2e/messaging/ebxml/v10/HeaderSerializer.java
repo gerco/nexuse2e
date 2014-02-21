@@ -279,8 +279,7 @@ public class HeaderSerializer extends AbstractPipelet {
                     String localURI = null;
                     if ( !localConnections.isEmpty() ) {
                         // Try to find connection that is names ebxml10
-                        for ( Iterator iterator = localConnections.iterator(); iterator.hasNext(); ) {
-                            ConnectionPojo connectionPojo = (ConnectionPojo) iterator.next();
+                        for (ConnectionPojo connectionPojo : localConnections) {
                             if ( connectionPojo.getName().equalsIgnoreCase( "ebxml10" )
                                     || connectionPojo.getName().equalsIgnoreCase( "ebms10" )
                                     || connectionPojo.getUri().contains( "ebxml10" ) ) {
@@ -338,9 +337,7 @@ public class HeaderSerializer extends AbstractPipelet {
 
                     // newMsg.addManifestEntry( newMsg.getMessageID() + "-body" + ( i + 1 ) );
 
-                    Iterator bodyParts = messagePojo.getMessagePayloads().iterator();
-                    while ( bodyParts.hasNext() ) {
-                        MessagePayloadPojo bodyPart = (MessagePayloadPojo) bodyParts.next();
+                    for (MessagePayloadPojo bodyPart : messagePojo.getMessagePayloads()) {
                         LOG.trace( new LogMessage( "ContentID:" + bodyPart.getContentId(),messagePojo) );
                         createManifestReference( soapFactory, soapManifest, bodyPart.getContentId(), "Payload-"
                                 + bodyPart.getSequenceNumber(), bodyPart.getMimeType(), null );

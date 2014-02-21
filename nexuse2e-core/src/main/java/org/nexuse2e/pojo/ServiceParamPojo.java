@@ -96,7 +96,7 @@ public class ServiceParamPojo implements NEXUSe2ePojo {
 
     // non-persistent fields
     @Transient
-    private ParameterDescriptor parameterDescriptor;
+    private transient ParameterDescriptor parameterDescriptor;
 
     // Constructors
 

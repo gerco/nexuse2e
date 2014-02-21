@@ -64,7 +64,6 @@ public class HeaderSerializer extends AbstractPipelet {
     /**
      * 
      */
-    @SuppressWarnings("unchecked")
     public MessageContext processMessage( MessageContext messageContext ) throws NexusException {
 
         try {
@@ -258,10 +257,8 @@ public class HeaderSerializer extends AbstractPipelet {
 
                     // newMsg.addManifestEntry( newMsg.getMessageID() + "-body" + ( i + 1 ) );
 
-                    Iterator bodyParts = messagePojo.getMessagePayloads().iterator();
-                    while ( bodyParts.hasNext() ) {
-                        MessagePayloadPojo bodyPart = (MessagePayloadPojo) bodyParts.next();
-                        LOG.trace( new LogMessage( "ContentID:" + bodyPart.getContentId() ,messagePojo));
+                    for (MessagePayloadPojo bodyPart : messagePojo.getMessagePayloads()) {
+                        LOG.trace(new LogMessage("ContentID:" + bodyPart.getContentId(), messagePojo));
                         createManifestReference( soapFactory, soapManifest, bodyPart.getContentId(), "Payload-" + bodyPart.getSequenceNumber(), bodyPart.getMimeType(), null );
                         // MBE: Changed 20100215 due to interop problem - 20103007: changed back
                         // createManifestReference( soapFactory, soapManifest, "cid:" + bodyPart.getContentId(), "Payload-" + bodyPart.getSequenceNumber(), bodyPart.getMimeType(), null );

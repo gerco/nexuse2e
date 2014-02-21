@@ -367,7 +367,7 @@
         <tr>                  
             <logic:equal name="reportingSettingsForm" property="engineColSeverity" value="true"><td class="NEXUSValue"><bean:write name="conv" property="severity"/></td></logic:equal>
             <logic:equal name="reportingSettingsForm" property="engineColIssued" value="true"><td class="NEXUSValue"><bean:write name="conv" property="issuedDate"/></td></logic:equal>
-            <td class="NEXUSValue"><bean:write name="conv" property="description"/></td>
+            <td class="NEXUSValue" style="white-space: normal;"><bean:write name="conv" property="description"/></td>
             <logic:equal name="reportingSettingsForm" property="engineColOrigin" value="true"><td class="NEXUSValue"></td></logic:equal>
             <logic:equal name="reportingSettingsForm" property="engineColClassName" value="true"><td class="NEXUSValue"><bean:write name="conv" property="className"/></td></logic:equal>
             <logic:equal name="reportingSettingsForm" property="engineColmethodName" value="true"><td class="NEXUSValue"><bean:write name="conv" property="methodName"/></td></logic:equal>

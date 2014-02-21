@@ -22,7 +22,6 @@ package org.nexuse2e;
 import java.util.Map;
 
 import org.nexuse2e.configuration.ParameterDescriptor;
-import org.nexuse2e.configuration.ParameterType;
 
 /**
  * A <code>Configurable</code> is an entity within the Nexus Server

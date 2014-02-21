@@ -1,12 +1,5 @@
 package org.nexuse2e.test;
 
-import java.io.File;
-import java.util.Properties;
-
-import org.apache.catalina.LifecycleState;
-import org.apache.catalina.startup.Tomcat;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 public class IntegrationTest {

@@ -92,7 +92,7 @@ public class ServicePojo implements NEXUSe2ePojo {
     @Column(name = "position", nullable = false)
     private int                    position;
 
-    @Column(name = "autostart", nullable = false)
+    @Column(name = "autostart_flag", nullable = false)
     private boolean                autostart;
 
     @Column(name = "name", length = 64, nullable = false)

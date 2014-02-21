@@ -91,10 +91,10 @@ public class CertificatePojo implements NEXUSe2ePojo {
     @Column(name = "description", length = 256)
     private String            description;
 
-    @Column(name = "binary_data", nullable = false)
+    @Column(name = "binary_data", nullable = true)
     @Lob
     private byte[]            binaryData;
-
+    
     @Transient
     private int               nxPartnerId;
 
