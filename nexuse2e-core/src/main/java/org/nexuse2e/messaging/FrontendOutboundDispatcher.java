@@ -182,6 +182,11 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
                 returnedMessageContext = pipeline.processMessage( messageContext );
                 messageContext.getStateMachine().sentMessage();
                 
+                // if this message is not reliable, requeueing must be stopped after processing the frontend pipeline successfully.
+                if(messageContext.getParticipant() != null && messageContext.getParticipant().getConnection() != null && !messageContext.getParticipant().getConnection().isReliable()) {
+                	cancelRetrying(messageContext, false);
+                }
+                
                 if (!messagePojo.isAck()) {
                     Engine.getInstance().getTransactionService().updateRetryCount( messagePojo );
                 }

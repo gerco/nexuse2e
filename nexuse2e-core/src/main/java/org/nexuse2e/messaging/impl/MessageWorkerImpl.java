@@ -97,7 +97,9 @@ public class MessageWorkerImpl implements MessageWorker {
         worker.retries = 0;
         worker.interval = org.nexuse2e.messaging.Constants.DEFAULT_MESSAGE_INTERVAL;
         worker.reliable = messageContext.getParticipant().getConnection().isReliable();
-        if (!messageContext.getMessagePojo().isAck() && worker.reliable) {
+        
+        // none ack messages must be requeued if properly configured.
+        if (!messageContext.getMessagePojo().isAck() ) { // && worker.reliable
             ParticipantPojo participantPojo = messageContext.getMessagePojo().getParticipant();
             if (participantPojo != null) {
                 worker.retries = participantPojo.getConnection().getRetries();
