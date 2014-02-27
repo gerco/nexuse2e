@@ -103,7 +103,7 @@ public class ConnectionPojo implements NEXUSe2ePojo {
     @Column(name = "hold", nullable = false)
     private boolean              hold;
 
-    @Column(name = "pickup", nullable = false)
+    @Column(name = "pick_up", nullable = false)
     private boolean              pickUp;
 
     @Column(name = "synchronous_timeout", nullable = false)
