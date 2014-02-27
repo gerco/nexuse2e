@@ -30,11 +30,11 @@ http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
 	<import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
 	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
 
-    <jaxws:endpoint 
+    <jaxws:endpoint publish="false"
       id="nexusE2EInterface" 
       implementor="#nexusE2EInterfaceBean" 
       address="/NEXUSe2eInterface" />
-	  
+
     <jaxws:endpoint 
       id="engineStatusInterface" 
       implementor="#engineStatusInterfaceBean" 
