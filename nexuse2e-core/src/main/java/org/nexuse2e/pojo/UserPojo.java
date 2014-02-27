@@ -88,10 +88,10 @@ public class UserPojo implements NEXUSe2ePojo {
     @Column(name = "modified_nx_user_id", nullable = false)
     private int               modifiedNxUserId;
 
-    @Column(name = "active", nullable = false)
+    @Column(name = "active_flag", nullable = false)
     private boolean           active;
 
-    @Column(name = "visible", nullable = false)
+    @Column(name = "visible_flag", nullable = false)
     private boolean           visible;
 
     @ManyToOne(fetch = FetchType.EAGER)
