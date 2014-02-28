@@ -99,7 +99,7 @@ public class LoggerPojo implements NEXUSe2ePojo {
     @Column(name = "autostart_flag", nullable = false)
     private boolean                     autostart;
 
-    @Column(name = "filter", length = 4096, nullable = false)
+    @Column(name = "filter", length = 4000, nullable = false)
     private String                      filter;
 
     @Column(name = "description", length = 64)
