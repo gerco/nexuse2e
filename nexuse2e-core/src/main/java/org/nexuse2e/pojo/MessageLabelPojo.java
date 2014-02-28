@@ -74,7 +74,7 @@ public class MessageLabelPojo implements NEXUSe2ePojo {
     @Column(name = "modified_nx_user_id", nullable = false)
     private int               modifiedNxUserId;
 
-    @Column(name = "message_labe", length = 64)
+    @Column(name = "message_label", length = 64)
     private String            label;
 
     @Column(name = "message_label_value", length = 512, nullable = false)
