@@ -96,7 +96,7 @@ public class MessagePojo implements NEXUSe2ePojo {
     @Column(name = "status", nullable = false)
     private int                      status;
 
-    @Column(name = "backend_status", nullable = false)
+    @Column(name = "backend_status", nullable = false, columnDefinition="int default 1")
     private int                      backendStatus = 0;
 
     @ManyToOne(fetch = FetchType.EAGER)
