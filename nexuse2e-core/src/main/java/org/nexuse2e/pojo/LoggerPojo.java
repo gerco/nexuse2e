@@ -90,7 +90,7 @@ public class LoggerPojo implements NEXUSe2ePojo {
     @Column(name = "modified_nx_user_id", nullable = false)
     private int                         modifiedNxUserId;
 
-    @Column(name = "treshold", nullable = false)
+    @Column(name = "threshold", nullable = false)
     private int                         threshold        = Level.INFO_INT;
 
     @Column(name = "name", length = 64, nullable = false)
