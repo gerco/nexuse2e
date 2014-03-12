@@ -119,7 +119,7 @@ public class PartnerPojo implements NEXUSe2ePojo {
 	@Column(name = "partner_id_type", length=128, nullable=false)
 	private String                partnerIdType;
     
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "partner")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "partner")
     @Fetch(value = FetchMode.SUBSELECT)
     private Set<ConversationPojo> conversations    = new HashSet<ConversationPojo>( 0 );
 	
