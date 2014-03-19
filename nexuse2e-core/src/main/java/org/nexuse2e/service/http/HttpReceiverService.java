@@ -23,8 +23,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -51,6 +49,7 @@ import org.nexuse2e.ClusterException;
 import org.nexuse2e.Engine;
 import org.nexuse2e.Layer;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.configuration.NexusUUIDGenerator;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.ParameterType;
 import org.nexuse2e.logging.LogMessage;
@@ -141,25 +140,16 @@ public class HttpReceiverService extends AbstractControllerService implements Re
             //out.flush();
             //out.close();
         } catch ( ClusterException ce ) {
-            ce.printStackTrace();
-            LOG.error(ce.getMessage());
+        	LOG.error( new LogMessage("cluster communication failed", ce ));
             response.setStatus( ce.getResponseCode() );
-            
         } catch ( Exception e ) {
         	// print stack trace to console
-            e.printStackTrace();
-            // prepare the response string (basically the SOAP faultString)
-            if ( e.getMessage() == null || e instanceof RuntimeException ) {
-            	// createErrorResponse() must not get a message that is null.
-                // RuntimeExceptions are usually unexpected. For easier debugging, we include the complete stack trace in the message.
-            	StringWriter sw = new StringWriter();
-            	e.printStackTrace( new PrintWriter( sw ) );
-            	createErrorResponse( request, response, sw.toString() );
-            } else {
-            	// Usually we will have a NexusException here. Hence we have a meaningful message that can be passed to the sender.
-            	// NexusExceptions should always be related to expected errors, so there is no need for a stack trace.
-            	createErrorResponse( request, response, e.getMessage() );
-            }
+        	NexusUUIDGenerator gen = new NexusUUIDGenerator();
+        	String id = gen.getId();
+        	LOG.error( new LogMessage("processing failed (error-ref:"+id+")", e ));
+            
+        	// prepare the response string (basically the SOAP faultString)
+            createErrorResponse( request, response, "unabled to process incoming message (error-ref:"+id+")" );
         }
 
         return null;
