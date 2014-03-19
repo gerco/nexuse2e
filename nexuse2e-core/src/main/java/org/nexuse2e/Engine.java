@@ -579,12 +579,23 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     public boolean isBinaryType( String contentType ) {
 
         if (contentType != null) {
-            contentType = contentType.toLowerCase().trim();
             
-            MimeMapping tempMimeMapping = (MimeMapping) mimeMappings.get( contentType );
-    
-            if ( tempMimeMapping != null ) {
-                if (!tempMimeMapping.dataHandler.equalsIgnoreCase( binary_base64.class.getName() ) ) {
+        	contentType = contentType.toLowerCase().trim();
+            MimeMapping mimeMapping = (MimeMapping) mimeMappings.get( contentType );
+            
+            //in case simple mapping doesn't fit, maybe its a combined value, try splitting header parameter (NEXUS-201)
+            if ( mimeMapping == null ) {
+            	String[] fragments = contentType.split(";");
+            	for (String fragment : fragments) {
+            		mimeMapping = (MimeMapping) mimeMappings.get( fragment.trim() );
+            		if(mimeMapping != null) {
+            			break;
+            		}
+            	}
+            }    
+            
+            if ( mimeMapping != null ) {
+                if (!mimeMapping.dataHandler.equalsIgnoreCase( binary_base64.class.getName() ) ) {
                     return false;
                 }
             }
