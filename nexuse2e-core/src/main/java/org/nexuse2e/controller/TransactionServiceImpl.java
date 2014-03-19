@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.nexuse2e.ActionSpecificKey;
@@ -414,12 +415,19 @@ public class TransactionServiceImpl implements TransactionService {
         senderId = participant.getLocalPartner().getPartnerId();
         senderIdType = participant.getLocalPartner().getPartnerIdType();
 
+        
+        
+        
         //TODO refactor and standard constants
         message.getCustomParameters().put(
-                org.nexuse2e.messaging.ebxml.v20.Constants.PARAMETER_PREFIX_EBXML20 + "from", senderId );
+                org.nexuse2e.messaging.ebxml.v20.Constants.PARAMETER_PREFIX_EBXML20 + org.nexuse2e.messaging.ebxml.v20.Constants.PROTOCOLSPECIFIC_FROM, senderId );
         message.getCustomParameters().put(
-                org.nexuse2e.messaging.ebxml.v20.Constants.PARAMETER_PREFIX_EBXML20 + "fromIdType", senderIdType );
+                org.nexuse2e.messaging.ebxml.v20.Constants.PARAMETER_PREFIX_EBXML20 + org.nexuse2e.messaging.ebxml.v20.Constants.PROTOCOLSPECIFIC_FROMIDTYPE, senderIdType );
 
+        
+       
+        
+        
         message.setTRP( participant.getConnection().getTrp() );
         ActionPojo action = null;
         if ( message.isNormal() ) {
@@ -454,6 +462,16 @@ public class TransactionServiceImpl implements TransactionService {
         message.setConversation( complete( conversation ) );
         message.setAction( action );
 
+        // double check internal configuration and message parameters
+        String targetId = message.getCustomParameters().get(org.nexuse2e.messaging.ebxml.v20.Constants.PARAMETER_PREFIX_EBXML20 + org.nexuse2e.messaging.ebxml.v20.Constants.PROTOCOLSPECIFIC_TO);
+        if(StringUtils.isNotEmpty(targetId)) {
+        	if(!targetId.equals(senderId)) {
+        		LOG.warn(new LogMessage("configured server identity "+senderId+" doesn't match the to-id "+targetId,message));
+        	}
+        }
+        
+        
+        
         return message;
     } // initializeMessage
     
