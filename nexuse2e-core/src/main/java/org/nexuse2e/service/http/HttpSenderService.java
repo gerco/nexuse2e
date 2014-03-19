@@ -124,7 +124,7 @@ public class HttpSenderService extends AbstractService implements SenderAware {
                     LOG.trace(new LogMessage("participant.name: " + participant.getPartner().getName(), messageContext.getMessagePojo()));
                     LOG.trace(new LogMessage("participant.localcerts: " + participant.getLocalCertificate(), messageContext.getMessagePojo()));
                     if (participant.getLocalCertificate() != null) {
-                        LOG.trace(new LogMessage("localcert.name: " + participant.getLocalCertificate().getName(), messageContext.getMessagePojo()));
+                        LOG.trace(new LogMessage("localcert.name("+participant.getLocalCertificate().getNxCertificateId()+"): " + participant.getLocalCertificate().getName(), messageContext.getMessagePojo()));
                     }
                 }
 
