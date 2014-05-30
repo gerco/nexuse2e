@@ -158,14 +158,14 @@
    */
   function checkForChangedConfiguration(changed) {
 	  if (changed) {
-  	  document.getElementById('applyConfiguration').className="apply_active";
+  	  document.getElementById('applyConfiguration').parentNode.className="active";
   	  document.getElementById('applyConfiguration').href="javascript: update('ApplyConfiguration.do')";
-  	  document.getElementById('revertConfiguration').className="apply_active";
+  	  document.getElementById('revertConfiguration').parentNode.className="active";
   	  document.getElementById('revertConfiguration').href="javascript: update('RevertConfiguration.do')";
   	} else {
-  	  document.getElementById('applyConfiguration').className="apply_inactive";
+  	  document.getElementById('applyConfiguration').parentNode.className="inactive";
   	  document.getElementById('applyConfiguration').href="#";
-  	  document.getElementById('revertConfiguration').className="apply_inactive";
+  	  document.getElementById('revertConfiguration').parentNode.className="inactive";
   	  document.getElementById('revertConfiguration').href="#";
   	}
   }
@@ -320,32 +320,34 @@
 	    	var anim1 = dojo.animateProperty({node: "logo_div", properties: { height: { end: 0 } } })
 	    	var anim2 = dojo.animateProperty({node: "navigator", properties: { top: { end: 32 } } })
 	    	var anim3 = dojo.animateProperty({node: "docpane", properties: { top: { end: 32 } } })
-	    	var anim4 = dojo.animateProperty({node: "machine_div", properties: { opacity: { end: 0 } } })
-	    	var anim5 = dojo.animateProperty({node: "toolbar", properties: { top: { end: 0 } } })
-	    	var anim6 = dojo.animateProperty({node: "header", properties: { height: { end: 32 } } })
-	    	var anim7 = dojo.animateProperty({node: "navigator", properties: { height: { end: contentheight } } })
+	    	var anim4 = dojo.animateProperty({node: "machine_div_1", properties: { opacity: { end: 0 } } })
+	    	var anim5 = dojo.animateProperty({node: "machine_div_2", properties: { opacity: { end: 0 } } })
+	    	var anim6 = dojo.animateProperty({node: "nav-global", properties: { top: { end: 0 } } })
+	    	var anim7 = dojo.animateProperty({node: "header", properties: { height: { end: 32 } } })
+	    	var anim8 = dojo.animateProperty({node: "navigator", properties: { height: { end: contentheight } } })
 	    
-	    	var anim8 = dojo.animateProperty({node: "machine_div", properties: { height: { end: 0 },right:{end: 100 },top:{end: 0 } } })
-	    	var anim9 = dojo.animateProperty({node: "machine_div2", properties: { height: { end: 0 },right:{end: 100 }, top:{end: 0 } } })
-	    	var anim10 = dojo.animateProperty({node: "machine_div3", properties: { height: { end: 0 },right:{end: 100 }, top:{end: 0 } } })
+	    	var anim9 = dojo.animateProperty({node: "machine_div", properties: { height: { end: 0 },right:{end: 100 },top:{end: 0 } } })
+	    	var anim10 = dojo.animateProperty({node: "machine_div2", properties: { height: { end: 0 },right:{end: 100 }, top:{end: 0 } } })
+	    	var anim11 = dojo.animateProperty({node: "machine_div3", properties: { height: { end: 0 },right:{end: 100 }, top:{end: 0 } } })
         	dojo.byId("hide_banner").setAttribute("src", "images/icons/bullet_arrow_down.png")
     	}
     	else {
     		var contentheight = dojo.style("navigator", "height") - 164
     		var anim1 = dojo.animateProperty({node: "logo_div", properties: { height: { end: 164 } } })
-        	var anim2 = dojo.animateProperty({node: "navigator", properties: { top: { end: 196 } } })
-        	var anim3 = dojo.animateProperty({node: "docpane", properties: { top: { end: 196 } } })
-        	var anim4 = dojo.animateProperty({node: "machine_div", properties: { opacity: { end: 100 } } })
-        	var anim5 = dojo.animateProperty({node: "toolbar", properties: { top: { end: 164 } } })
-       		var anim6 = dojo.animateProperty({node: "header", properties: { height: { end: 196 } } })
-      		var anim7 = dojo.animateProperty({node: "navigator", properties: { height: { end: contentheight } } })
+        	var anim2 = dojo.animateProperty({node: "navigator", properties: { top: { end: 202 } } })
+        	var anim3 = dojo.animateProperty({node: "docpane", properties: { top: { end: 202 } } })
+        	var anim4 = dojo.animateProperty({node: "machine_div_1", properties: { opacity: { end: 100 } } })
+        	var anim5 = dojo.animateProperty({node: "machine_div_2", properties: { opacity: { end: 100 } } })
+        	var anim6 = dojo.animateProperty({node: "nav-global", properties: { top: { end: 164 } } })
+       		var anim7 = dojo.animateProperty({node: "header", properties: { height: { end: 202 } } })
+      		var anim8 = dojo.animateProperty({node: "navigator", properties: { height: { end: contentheight } } })
       		
-      		var anim8 = dojo.animateProperty({node: "machine_div", properties: { height: { end: 0 },right:{end: 20 },top:{end: 20 } } })
-	    	var anim9 = dojo.animateProperty({node: "machine_div2", properties: { height: { end: 28 },right:{end: 20 }, top:{end: 0 } } })
-	    	var anim10 = dojo.animateProperty({node: "machine_div3", properties: { height: { end: 13 },right:{end: 20 }, top:{end: 0 } } })
+      		var anim9 = dojo.animateProperty({node: "machine_div", properties: { height: { end: 0 },right:{end: 20 },top:{end: 20 } } })
+	    	var anim10 = dojo.animateProperty({node: "machine_div2", properties: { height: { end: 28 },right:{end: 20 }, top:{end: 0 } } })
+	    	var anim11 = dojo.animateProperty({node: "machine_div3", properties: { height: { end: 13 },right:{end: 20 }, top:{end: 0 } } })
 	    	dojo.byId("hide_banner").setAttribute("src", "images/icons/bullet_arrow_up.png")
       	}
-    	dojo.fx.combine([anim1, anim2, anim3, anim4, anim5, anim6, anim7, anim8, anim9, anim10]).play();
+    	dojo.fx.combine([anim1, anim2, anim3, anim4, anim5, anim6, anim7, anim8, anim9, anim10, anim11]).play();
       }
     </script>
     
@@ -353,37 +355,30 @@
 <div dojoType="dijit.layout.BorderContainer" id="content" design="headline" gutters="false" style="width: 100%; height: 100%;">
   <div dojoType="dijit.layout.ContentPane" id="header" region="top">
   	<tiles:insert attribute="header"/>
-  	<table id="toolbar" cellpadding="0" cellspacing="0" style="margin: 0px; padding: 0px;">
-			<tr style="margin: 0px; padding: 0px">
-				<td id="toolbar-left">
-					<span style="width:20px;" onclick="hide();"><img id="hide_banner" alt="hide Banner" src="images/icons/bullet_arrow_up.png"></span>
-					<div dojoType="dijit.ProgressBar" style="width:120px; margin-right: 19px; visibility: hidden;float: right;" jsId="progressBar" id="downloadProgress" places="0" indeterminate="true"></div>
-				</td>
-				<td style="text-align: left;">
-					<span style="margin: 6px 0 0 22px;">
-						<nexus:link id="applyConfiguration" href="#" styleClass="apply_inactive"><img class="apply_inactive" alt="" src="images/icons/server_go.png">apply</nexus:link>
-					</span>
-					<span style="margin: 6px 0 0 22px;">
-						<nexus:link id="revertConfiguration" href="#" styleClass="apply_inactive"><img class="apply_inactive" alt="" src="images/icons/arrow_rotate_anticlockwise.png">revert</nexus:link>
-					</span>
-				</td>
-				<td style="text-align: right;padding-right: 10px">
-					<!-- 
-					<span style="margin: 6px 0 0 22px;">
-						<a href="documentation/nexuse2e_help.html" target="_blank" class="navigationactive"><img src="images/icons/help.png" class="navigationactive">&nbsp;help</a>
-					</span>
-					-->
-					<span style="margin: 6px 0 0 22px;">	
-						<a href="Logout.do" class="navigationactive">logout</a>
-					</span>
-				</td>
-			</tr>
-		</table>
+  	<div id="nav-global">
+		<div id="nav-global-box">
+			<div id="nav-global-box-spacer">
+				<span style="width:20px;" onclick="hide();"><img id="hide_banner" alt="hide Banner" src="images/icons/bullet_arrow_up.png"></span>
+				<div dojoType="dijit.ProgressBar" style="width:120px; margin-right: 19px; visibility: hidden;float: right;" jsId="progressBar" id="downloadProgress" places="0" indeterminate="true"></div>
+			</div>
+			<ul>
+				<li class="inactive">
+					<nexus:link id="applyConfiguration" href="#"><span>Apply</span></nexus:link>
+				</li>
+				<li class="inactive">
+					<nexus:link id="revertConfiguration" href="#"><span>Revert</span></nexus:link>
+				</li>
+				<li class="last">	
+					<a href="Logout.do" class="navigationactive"><span>Logout</span></a>
+				</li>
+			</ul>
+		</div>
 	</div>
+  </div>
   <div dojoType="dijit.layout.ContentPane" id="navigator" region="leading">
-		<tiles:insert attribute="menu"/>
-	</div>
+	<tiles:insert attribute="menu"/>
+  </div>
   <div dojoType="dojox.layout.ContentPane" refreshOnShow="true" id="docpane" region="center" preventCache="true" executeScripts="true" scriptHasHooks="false" cleanContent="true">
-		<tiles:insert attribute="document"/>
-	</div>
+	<tiles:insert attribute="document"/>
+  </div>
 </div>

@@ -23,7 +23,7 @@ html,body {
 	overflow: hidden;
 	padding: 0px;
 	margin: 0px;
-	background-color: #FFFFFF;
+	background-color: #333333;
 	text-align: center;
 	font-size: 10pt;
 	font-family: Helvetica, Arial, sans-serif;
@@ -55,44 +55,27 @@ form {
 
 #header {
 	position: absolute;
-	top: 0px;
-	left: 0px;
-	background-color: #666666;
-	height: 196px;
+	top: 0;
+	left: 0;
 	width: 100%;
 	text-align: left;
 	vertical-align: bottom;
-	color: #FFFFFF;
-	font-weight: bold;
-	background-image: url(../images/banner.jpg);
-	background-repeat: repeat;
-	background-position: 0px 0px;
+	color: #ffffff;
+	background: #ffffff url(../images/banner.png) no-repeat scroll right top;
 }
 
-#toolbar {
-	top: 196px;
-	left: 0px;
-	margin: 0px;
-	padding: 0px;
-	background-color: #666666;
-	height: 32px;
-	width: 100%;
-	text-align: left;
-	vertical-align: bottom;
-	color: #FFFFFF;
-	font-weight: bold;
-	background-image: url(../images/navigation.gif);
-	background-repeat: repeat;
-	background-position: 0px 0px;
+#header ul {
+    list-style: none outside none;
+    margin: 0;
+    padding: 0;
 }
 
-#toolbar-left {
-	width: 235px;
-	top: 0px;
-	left: 0px;
-	padding: 0px;
-	margin: 0px;
-	background-image: url(../images/reflection.jpg);
+#logo_div {
+	margin-left: 10px;
+	height: 164px;
+	width: 200px;
+	display: inline-block;
+	background-image: url(../images/logo.png);
 }
 
 #content {
@@ -103,166 +86,98 @@ form {
 	position: relative;
 }
 
-a.apply_active:link {
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 15px;
-    font-weight: bold;
-    font-variant: small-caps;
-    color: #F37F36;
-    cursor: pointer;
+#machine_div_1 {
+	background-color: #e66009;
+	position: absolute;
+	top: 35px;
+	height:32px;
+	line-height:32px;
+	right: 0;
+	display:inline;
+	font-size: 20px;
+	padding-left: 15px;
+	padding-right: 40px;
 }
 
-a.apply_active:active {
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 15px;
-    font-weight: bold;
-    font-variant: small-caps;
-    color: #F37F36;
-    cursor: pointer;
+#machine_div_2 {
+	background-color: #ff914c;
+	position: absolute;
+	top: 68px;
+	height:24px;
+	line-height:24px;
+	right: 0;
+	display:inline;
+	padding-left: 15px;
+	padding-right: 40px;
 }
 
-a.apply_active:visited {
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 15px;
-    font-weight: bold;
-    font-variant: small-caps;
-    color: #F37F36;
-    cursor: pointer;
+#logged_in_user {
+	color: #333333;
+	position: absolute;
+	top: 140px;
+	height:24px;
+	line-height:24px;
+	right: 0;
+	display:inline;
+	padding-right: 10px;
 }
 
-a.apply_active:hover {
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 15px;
-    font-weight: bold;
-    font-variant: small-caps;
-    color: #E56009;
-    cursor: pointer;
+#nav-global {
+	background-color: #333333;
+	height:37px;
 }
 
-img.apply_active {
-    border-width: 0px;
-    border-style: none;
-    vertical-align: middle;
-    cursor: pointer;
+#nav-global-box {
+	background-color: #333333;
 }
 
-a.apply_inactive:link {
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 15px;
-    font-weight: bold;
-    font-variant: small-caps;
-    color: #999999;
-    cursor: default;
+#nav-global-box-spacer {
+	background-color: #474747;
+	width: 210px;
+	height: 37px;
+	float: left;
 }
 
-a.apply_inactive:active {
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 15px;
-    font-weight: bold;
-    font-variant: small-caps;
-    color: #999999;
-    cursor: default;
+#nav-global em, #nav em {
+	display: none;
 }
 
-a.apply_inactive:visited {
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 15px;
-    font-weight: bold;
-    font-variant: small-caps;
-    color: #999999;
-    cursor: default;
+#nav-global ul li {
+	font-size: 14px;
+	float: left;
 }
 
-a.apply_inactive:hover {
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 15px;
-    font-weight: bold;
-    font-variant: small-caps;
-    color: #444444;
-    cursor: default;
+#nav-global ul li:first-child {
+	border-left: 1px solid #999999;
 }
 
-img.apply_inactive {
-    border-width: 0px;
-    border-style: none;
-    vertical-align: middle;
-    cursor: default;
+#nav-global ul li.last {
+	float:right;
+	border-left: 1px solid #999999;
 }
 
-a.navigationactive:link {
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 15px;
-	font-weight: bold;
-	font-variant: small-caps;
-	color: #EEEEEE;
+#nav-global ul li span {
+	padding: 8px 10px;
+	border-right: 1px solid #999999;
+	float: left;
+	color: #ffffff;
+	font-weight: normal;
+	text-decoration: none;
+	background-color: #474747;
 }
 
-a.navigationactive:active {
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 15px;
-	font-weight: bold;
-	font-variant: small-caps;
-	color: #EEEEEE;
+#nav-global ul li.inactive span {
+	color: #6f6f6f;
 }
 
-a.navigationactive:visited {
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 15px;
-	font-weight: bold;
-	font-variant: small-caps;
-	color: #EEEEEE;
+#nav-global ul li span:hover, #nav-global ul li.on span {
+	padding: 8px 10px;
+	background-color: #6f6f6f;
+	cursor: pointer;
 }
 
-a.navigationactive:hover {
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 15px;
-	font-weight: bold;
-	font-variant: small-caps;
-	color: #444444;
-}
-
-img.navigationactive {
-	border-width: 0px;
-	border-style: none;
-	vertical-align: middle;
-}
-
-a.navigationnonactive:link {
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 15px;
-	font-weight: bold;
-	font-variant: small-caps;
-	color: #999999;
-}
-
-a.navigationnonactive:active {
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 15px;
-	font-weight: bold;
-	font-variant: small-caps;
-	color: #999999;
-}
-
-a.navigationnonactive:visited {
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 15px;
-	font-weight: bold;
-	font-variant: small-caps;
-	color: #999999;
-}
-
-a.navigationnonactive:hover {
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 15px;
-	font-weight: bold;
-	font-variant: small-caps;
-	color: #444444;
-}
-
-img.navigationnonactive {
-	border-width: 0px;
-	border-style: none;
-	vertical-align: middle;
+#nav-global ul li.inactive span:hover, #nav-global ul li.on span {
+	color: #333333;
 }
 
 #navigator {
@@ -298,31 +213,33 @@ a.button {
 }
 
 
-
 /*
  * ================
  * OLD NEXUS styles
  * ================
  */
-TABLE {
+table {
 	background: white;
 	width: 100%;
 	padding: 0pt;
 	margin-bottom: 10pt;
 	border-width: 0pt;
 	border-style: none;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-TABLE.NEXUS_TABLE {
+table.NEXUS_TABLE {
 	background: #EEEEEE;
 }
 
-TABLE.NEXUS_BUTTON_TABLE {
+table.NEXUS_BUTTON_TABLE {
 	background: #FFFFFF;
 	color: #E56009;
 }
 
-TD {
+td {
+	text-align:left;
 	margin: 0;
 	border-width: 0pt;
 	border-style: none;
@@ -331,7 +248,7 @@ TD {
 	font-size: 10pt;
 }
 
-TABLE.NEXUS_TAB_TABLE {
+table.NEXUS_TAB_TABLE {
 	width: 0;
 	padding: 0;
 	margin: 0;
@@ -339,7 +256,7 @@ TABLE.NEXUS_TAB_TABLE {
 	border-collapse: collapse;
 }
 
-TD.NEXUS_TAB_UNSELECTED {
+td.NEXUS_TAB_UNSELECTED {
 	padding: 0;
 	background: #666666;
 	height: 20px;
@@ -347,36 +264,36 @@ TD.NEXUS_TAB_UNSELECTED {
 	white-space: nowrap;
 }
 
-A.NEXUS_TAB_UNSELECTED_LINK {
+a.NEXUS_TAB_UNSELECTED_LINK {
 	color: #FFFFFF;
 	text-decoration: none;
 }
 
-A.NEXUS_TAB_UNSELECTED_LINK:visited {
+a.NEXUS_TAB_UNSELECTED_LINK:visited {
 	color: #FFFFFF;
 }
 
-A.NEXUS_TAB_UNSELECTED_LINK:link {
+a.NEXUS_TAB_UNSELECTED_LINK:link {
 	color: #FFFFFF;
 }
 
-A.NEXUS_TAB_UNSELECTED_LINK:active {
+a.NEXUS_TAB_UNSELECTED_LINK:active {
 	color: #FFFFFF;
 }
 
-TD.NEXUS_TAB_LEFT_UNSELECTED {
+td.NEXUS_TAB_LEFT_UNSELECTED {
 	padding: 0;
 	width: 20px;
 	height: 20px;
 }
 
-TD.NEXUS_TAB_RIGHT_UNSELECTED {
+td.NEXUS_TAB_RIGHT_UNSELECTED {
 	padding: 0;
 	width: 20px;
 	height: 20px;
 }
 
-TD.NEXUS_TAB_SELECTED {
+td.NEXUS_TAB_SELECTED {
 	padding: 0;
 	background: #CCCCCC;
 	height: 20px;
@@ -385,23 +302,23 @@ TD.NEXUS_TAB_SELECTED {
 	white-space: nowrap;
 }
 
-TD.NEXUS_TAB_LEFT_SELECTED {
+td.NEXUS_TAB_LEFT_SELECTED {
 	padding: 0;
 	width: 20px;
 	height: 20px;
 }
 
-TD.NEXUS_TAB_RIGHT_SELECTED {
+td.NEXUS_TAB_RIGHT_SELECTED {
 	padding: 0;
 	width: 20px;
 	height: 20px;
 }
 
-TD.BUTTON_LEFT {
+td.BUTTON_LEFT {
 	text-align: left;
 }
 
-TD.BUTTON_RIGHT {
+td.BUTTON_RIGHT {
 	text-align: right;
 	width: 95%;
 }
