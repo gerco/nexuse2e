@@ -19,6 +19,7 @@
      02110-1301 USA, or see the FSF site: http://www.fsf.org.
 
 --%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page import="org.nexuse2e.Version"%>
 
 <div id="logo_div">
@@ -30,5 +31,7 @@
 	<%= Version.getVersion() %>
 </div>
 <div id="logged_in_user">
-	You're logged in as ${nxUser.firstName} ${nxUser.lastName}
+	<c:if test="${not empty nxUser}">
+		You're logged in as ${nxUser.firstName} ${nxUser.lastName}
+	</c:if>
 </div>

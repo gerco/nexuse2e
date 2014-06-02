@@ -20,7 +20,7 @@
 package org.nexuse2e.ui;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
 
 /**
  * Wrapper class to represent an entry in the navigator tree of the Web UI
@@ -35,7 +35,7 @@ public class NavigatorItem {
     private String        label       = null;
     private NavigatorItem parent      = null;
     private String        onClick     = null;
-    private ArrayList     children    = new ArrayList();
+    private List<NavigatorItem>     children    = new ArrayList<NavigatorItem>();
     private boolean       inError     = false;
     private boolean       shownInTree = true;
     private String        id          = null;
@@ -97,9 +97,7 @@ public class NavigatorItem {
             }
             buffer.append( "\n" );
 
-            for ( Iterator iter = children.iterator(); iter.hasNext(); ) {
-                NavigatorItem item = (NavigatorItem) iter.next();
-
+            for (NavigatorItem item : children) {
                 buffer.append( item.toString() );
             }
         }
@@ -114,9 +112,7 @@ public class NavigatorItem {
         if ( children.isEmpty() ) {
             return false;
         }
-        Iterator i = children.iterator();
-        while ( i.hasNext() ) {
-            NavigatorItem temp = (NavigatorItem) i.next();
+        for (NavigatorItem temp : children) {
             if ( temp.isShownInTree() ) {
                 return true;
             }
@@ -204,12 +200,12 @@ public class NavigatorItem {
         this.inError = inError;
     }
 
-    public ArrayList getChildren() {
+    public List<NavigatorItem> getChildren() {
 
         return children;
     }
 
-    public void setChildren( ArrayList children ) {
+    public void setChildren( List<NavigatorItem> children ) {
 
         this.children = children;
     }

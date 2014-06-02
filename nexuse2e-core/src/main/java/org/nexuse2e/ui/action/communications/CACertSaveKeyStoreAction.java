@@ -78,7 +78,7 @@ public class CACertSaveKeyStoreAction extends NexusE2EAction {
             ByteArrayInputStream bais = new ByteArrayInputStream(data);
             KeyStore jks = KeyStore.getInstance("JKS");
             jks.load(bais, pwd.toCharArray());
-            Enumeration e = jks.aliases();
+            Enumeration<String> e = jks.aliases();
             List<CertificatePojo> certs = new ArrayList<CertificatePojo>();
 
             while (e.hasMoreElements()) {

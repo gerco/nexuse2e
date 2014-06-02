@@ -102,9 +102,6 @@ public class TrpMaintenanceAction extends NexusE2EAction {
                     return 0;
                 }
                 if (trp2 == null) {
-                    if (trp1 == null) {
-                        return 1;
-                    }
                     return 0;
                 }
                 String t1 = trp1.getTransport();
