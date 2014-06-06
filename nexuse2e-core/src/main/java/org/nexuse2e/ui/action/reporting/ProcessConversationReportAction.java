@@ -97,6 +97,28 @@ public class ProcessConversationReportAction extends ReportingAction {
 
         String searchFor = form.getSearchFor();
 
+        if ("conversation".equals(searchFor) && "purge".equals(command)) {
+            String[] values = form.getSelected();
+            for (String oneString : values) {
+                StringTokenizer st = new StringTokenizer(oneString, "|");
+                if (3 != st.countTokens()) {
+                    ActionMessage errorMessage = new ActionMessage( "generic.error", "Can't purge conversation: >" + oneString + "<" );
+                    errors.add( ActionMessages.GLOBAL_MESSAGE, errorMessage );
+                    addRedirect( request, URL, TIMEOUT );
+                    continue;
+                }
+                String participantId = st.nextToken();
+                String choreographyId = st.nextToken();
+                String conversationId = st.nextToken();
+
+                ConversationPojo toDelete = Engine.getInstance().getTransactionService().getConversation(conversationId);
+                if (null != toDelete) {
+                    LOG.debug("Purging conversation " + conversationId + " for choreography " + choreographyId + " and participant " + participantId);
+                    Engine.getInstance().getTransactionService().deleteConversation(toDelete);
+                }
+            }
+        }
+
         if ( searchFor != null && searchFor.equals( "message" ) && command != null && command.equals( "requeue" ) ) {
             String[] values = form.getSelected();
             for ( int i = 0; i < values.length; i++ ) {
