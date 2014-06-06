@@ -535,6 +535,9 @@
 			</td>
 			<td class="BUTTON_RIGHT">
 				<nobr>
+					<nexus:submit onClick="javascript: document.forms['reportingPropertiesForm'].command.value='purge'; enableLinks();">
+						<img src="images/icons/delete.png" name="deleteButton" class="button" />Purge Selected
+					</nexus:submit>
 					<nexus:submit onClick="javascript: document.forms['reportingPropertiesForm'].command.value='first'; enableLinks();">
 						<img src="images/icons/tick.png" name="resultsButton" class="button" />Refresh Results
 					</nexus:submit>
@@ -553,10 +556,7 @@
 		<logic:notEmpty name="collection">
 			<table class="NEXUS_TABLE" width="100%">
 				<tr>
-					<logic:equal name="reportingSettingsForm"
-						property="messColSelect" value="true">
 						<th class="NEXUSSection"></th>
-					</logic:equal>
 					<th class="NEXUSSection">Message ID</th>
 					<th class="NEXUSSection">Conversation ID</th>
 					<logic:equal name="reportingSettingsForm"
@@ -591,13 +591,10 @@
 				<logic:iterate indexId="counter" id="message" name="collection">
 					<tr>
 
-						<logic:equal name="reportingSettingsForm"
-							property="messColSelect" value="true">
 							<td class="NEXUSValue">
 							<html-el:multibox
 								property="selected"
 								value="${message.participantId}|${message.choreographyId}|${message.conversationId}|${message.messageId}" /></td>
-						</logic:equal>
 						<td class="NEXUSValue"><nexus:link styleClass="NexusLink"
 							href="MessageView.do?mId=${message.messageId}&convId=${message.conversationId}&chorId=${message.choreographyId}&partnerId=${message.participantId}">
 							<bean:write name="message" property="messageId" />
@@ -674,10 +671,7 @@
 		<logic:notEmpty name="collection">
 			<table class="NEXUS_TABLE" width="100%">
 				<tr>
-					<logic:equal name="reportingSettingsForm"
-						property="convColSelect" value="true">
 						<th class="NEXUSSection"></th>
-					</logic:equal>
 					<logic:equal name="reportingSettingsForm"
 						property="convColChorId" value="true">
 						<th class="NEXUSSection">Choreography ID</th>
@@ -706,13 +700,10 @@
 				</tr>
 				<logic:iterate indexId="counter" id="conv" name="collection">
 					<tr>
-						<logic:equal name="reportingSettingsForm"
-							property="convColSelect" value="true">
 							<td class="NEXUSValue">
 							<html-el:multibox
 								property="selected"
 								value="${conv.participantId}|${conv.choreographyId}|${conv.conversationId}" /></td>
-						</logic:equal>
 						<logic:equal name="reportingSettingsForm"
 							property="convColChorId" value="true">
 							<td class="NEXUSValue"><bean:write name="conv"
