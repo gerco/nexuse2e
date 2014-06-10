@@ -199,7 +199,7 @@
 			<td><nexus:crumbs styleClass="NEXUSScreenPathLink">Reporting</nexus:crumbs></td>
 		</tr>
 		<tr>
-			<td class="NEXUSScreenName">Conversation Reporting</td>
+			<td class="NEXUSScreenName">Conversation Reporting & Purging</td>
 		</tr>
 	</table>
 
@@ -535,7 +535,7 @@
 			</td>
 			<td class="BUTTON_RIGHT">
 				<nobr>
-					<nexus:submit onClick="javascript: document.forms['reportingPropertiesForm'].command.value='purge'; enableLinks();">
+					<nexus:submit onClick="javascript: enableLinks(); if(confirm('Purge the selected conversations?')) {document.forms['reportingPropertiesForm'].command.value='purge';} else {document.forms['reportingPropertiesForm'].command.value='first';}">
 						<img src="images/icons/delete.png" name="deleteButton" class="button" />Purge Selected
 					</nexus:submit>
 					<nexus:submit onClick="javascript: document.forms['reportingPropertiesForm'].command.value='first'; enableLinks();">
