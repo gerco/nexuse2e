@@ -535,9 +535,11 @@
 			</td>
 			<td class="BUTTON_RIGHT">
 				<nobr>
-					<nexus:submit onClick="javascript: enableLinks(); if(confirm('Purge the selected conversations?')) {document.forms['reportingPropertiesForm'].command.value='purge';} else {document.forms['reportingPropertiesForm'].command.value='first';}">
-						<img src="images/icons/delete.png" name="deleteButton" class="button" />Purge Selected
-					</nexus:submit>
+				    <logic:equal name="reportingPropertiesForm" property="command" value="purge">
+                        <nexus:submit onClick="javascript: enableLinks(); if(confirm('Purge the selected conversations?')) {document.forms['reportingPropertiesForm'].command.value='purge';} else {document.forms['reportingPropertiesForm'].command.value='first';}">
+                            <img src="images/icons/delete.png" name="deleteButton" class="button" />Purge Selected
+                        </nexus:submit>
+					</logic:equal>
 					<nexus:submit onClick="javascript: document.forms['reportingPropertiesForm'].command.value='first'; enableLinks();">
 						<img src="images/icons/tick.png" name="resultsButton" class="button" />Refresh Results
 					</nexus:submit>
