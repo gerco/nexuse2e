@@ -266,7 +266,6 @@
           <nxs:command target="ConversationView.do" label="View Specific Conversation" icon="images/icons/bullet_orange.png"/>
           <nxs:command target="MessageView.do" label="View Specific Message" icon="images/icons/bullet_orange.png"/>
           <nxs:command target="DataSaveAs.do?type=content" label="Download Message Header/Content" icon="images/icons/bullet_orange.png"/>
-          <nxs:command target="ProcessConversationReport.do?command=purge" label="Purge Selected" icon="images/icons/bullet_orange.png"/>
         </nxs:page>
         <nxs:page target="ProcessEngineLog.do" label="Engine Log" icon="images/icons/server_chart.png">
           <nxs:command target="ProcessEngineLog.do?noReset=true" label="Process Engine Log" icon="images/bullet_orange.png"/> 
