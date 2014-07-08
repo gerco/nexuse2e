@@ -74,6 +74,7 @@ public class ReportingPropertiesForm extends ActionForm {
     private int                                     allItemsCount                     = 0;
     private int                                     pageSize                          = 20;
     private String                                  command                           = null;
+    private String                                  type                              = null;
     private String                                  participantId                     = null;
     private String                                  origin                            = null;
     private String                                  severity                          = null;
@@ -601,5 +602,13 @@ public class ReportingPropertiesForm extends ActionForm {
     public void setSelected(String[] selected) {
 
         this.selected = selected;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
