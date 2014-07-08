@@ -194,7 +194,7 @@
           <nxs:command target="ProvisioningSubmission.do" label="Execute" icon="images/icons/bullet_orange.png"/>
         </nxs:page>
         -->
-        <nxs:page target="ProcessConversationReport.do?command=purge" label="Database Purge" icon="images/icons/bullet_orange.png">
+        <nxs:page target="ProcessConversationReport.do?type=purge" label="Database Purge" icon="images/icons/bullet_orange.png">
           <nxs:command target="ProcessConversationReport.do" label="Process Conversation Report" icon="images/icons/report.png"/>
           <nxs:command target="ConversationView.do" label="View Specific Conversation" icon="images/icons/bullet_orange.png"/>
           <nxs:command target="MessageView.do" label="View Specific Message" icon="images/icons/bullet_orange.png"/>
