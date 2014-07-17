@@ -24,7 +24,10 @@ import java.io.FileInputStream;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.cxf.interceptor.LoggingInInterceptor;
 import org.apache.cxf.interceptor.LoggingOutInterceptor;
@@ -38,6 +41,7 @@ public class NEXUSe2eInterfaceClient {
     public final static String PARTNER          = "p";
     public final static String ACTION           = "a";
     public final static String FILENAME         = "f";
+    public final static String PRIMARY_KEY      = "k";
 
     private static String      serviceURLString = "http://localhost:8080/NEXUSe2e/cxf/NEXUSe2eInterface";
 
@@ -57,16 +61,19 @@ public class NEXUSe2eInterfaceClient {
 
             options = new Options();
             options.addOption( URL, "url", true, "Web service URL" );
-            options.addOption( FILENAME, "file", true, "File name" );
             options.addOption( CHOREOGRAPHY, "choreography", true, "Choreography ID" );
             options.addOption( PARTNER, "partner", true, "Partner ID" );
             options.addOption( ACTION, "action", true, "Action ID" );
+            OptionGroup optionGroup = new OptionGroup();
+            optionGroup.addOption(new Option(FILENAME, "file", true, "File name"));
+            optionGroup.addOption(new Option(PRIMARY_KEY, "primarykey", true, "Primary Key"));
+            options.addOptionGroup(optionGroup);
 
             CommandLineParser parser = new PosixParser();
             CommandLine cl = parser.parse( options, args );
 
-            if ( !cl.hasOption( URL ) || !cl.hasOption( FILENAME ) || !cl.hasOption( CHOREOGRAPHY )
-                    || !cl.hasOption( PARTNER ) || !cl.hasOption( ACTION ) ) {
+            if ( !cl.hasOption( URL ) || !cl.hasOption( CHOREOGRAPHY )
+                    || !cl.hasOption( PARTNER ) || !cl.hasOption( ACTION ) || (!cl.hasOption( FILENAME ) && !cl.hasOption(PRIMARY_KEY)) ) {
                 HelpFormatter formatter = new HelpFormatter();
                 formatter.printHelp( "org.nexuse2e.client.webservice.NEXUSe2eInterfaceClient", options );
                 System.exit( 1 );
@@ -98,14 +105,24 @@ public class NEXUSe2eInterfaceClient {
             // String result = service.createConversation( "GenericFile", "torino8080" );
             // String result = service.sendNewStringMessage( "GenericFile", "torino8080", "SendFile", "<test who=\"roma\" />" );
 
-            FileInputStream fis = new FileInputStream( fileName );
-            byte[] buffer = new byte[fis.available()];
-            fis.read( buffer );
-            fis.close();
+            String result;
             // TODO (encoding) configurable encoding for WS client ?
-            String result = nexuse2eInterface.sendNewStringMessage( choreographyId, partnerId, actionId, new String( buffer ) );
+            if (cl.hasOption(PRIMARY_KEY)) {
+                result = nexuse2eInterface.triggerSendingNewMessage(
+                        choreographyId, partnerId, actionId, null, cl.getOptionValue(PRIMARY_KEY));
+            } else {
+                FileInputStream fis = new FileInputStream( fileName );
+                byte[] buffer = new byte[fis.available()];
+                fis.read( buffer );
+                fis.close();
+                result = nexuse2eInterface.sendNewStringMessage( choreographyId, partnerId, actionId, new String( buffer ) );
+            }
 
             System.out.println( "NEXUSe2EInterfaceService done: " + result );
+        } catch (ParseException pex) {
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp( "org.nexuse2e.client.webservice.NEXUSe2eInterfaceClient", options );
+            System.exit( 1 );
         } catch ( Throwable t ) {
             t.printStackTrace();
         }

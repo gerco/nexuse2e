@@ -146,7 +146,9 @@ public class BackendPipelineDispatcher implements Manageable, InitializingBean {
             List<ErrorDescriptor> errors ) throws NexusException {
 
         List<byte[]> payloads = new ArrayList<byte[]>();
-        payloads.add( payload );
+        if (payload != null) {
+            payloads.add( payload );
+        }
         return processMessage( partnerId, choreographyId, actionId, conversationId, messageId, label, primaryKey,
                 payloads, errors );
     }
