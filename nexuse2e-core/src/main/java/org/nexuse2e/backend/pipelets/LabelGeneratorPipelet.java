@@ -21,7 +21,6 @@
 package org.nexuse2e.backend.pipelets;
 
 import java.io.ByteArrayInputStream;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -69,7 +68,7 @@ public class LabelGeneratorPipelet extends AbstractPipelet {
     public static final String      LABEL_PREFIX            = "labelPrefix";
 
     private String                  xPathListString         = null;
-    private String                  labelPrefix             = "";
+    //private String                  labelPrefix             = "";
     private HashMap<String, String> labelDefinitions        = new HashMap<String, String>();
 
     public LabelGeneratorPipelet() {
@@ -126,11 +125,10 @@ public class LabelGeneratorPipelet extends AbstractPipelet {
         // Set label prefix
         String tempLabelPrefix = getParameter( LABEL_PREFIX );
         if ( tempLabelPrefix != null ) {
-            labelPrefix = tempLabelPrefix;
+            //labelPrefix = tempLabelPrefix;
         }
 
-        for ( Iterator iter = labelDefinitions.keySet().iterator(); iter.hasNext(); ) {
-            String element = (String) iter.next();
+        for (String element : labelDefinitions.keySet()) {
             LOG.debug( "Found: " + element + " - " + labelDefinitions.get( element ) );
         }
         super.initialize( config );
