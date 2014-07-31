@@ -97,14 +97,11 @@ public class ProcessConversationReportAction extends ReportingAction {
         }
 
         boolean purge = false;
-        String type = request.getParameter("type");
+        String type = StringUtils.isNotBlank(request.getParameter("type")) ? request.getParameter("type") : form.getType();
         if (StringUtils.isNotBlank(type) && "purge".equals(type)) {
             purge = true;
-            form.setType("purge");
-        } else {
-            purge = false;
-            form.setType("report");
         }
+        
         String searchFor = form.getSearchFor();
 
         if ("conversation".equals(searchFor) && StringUtils.isNotBlank(command) && "purge".equals(command) && purge) {

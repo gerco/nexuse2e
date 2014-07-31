@@ -139,7 +139,7 @@ public class Version {
 	/**
 	 * Reads the value of a main attribute of a (cached) version of
 	 * the MANIFEST.MF in the JAR file this class belongs to. 
-	 * @param name The name of the main attribute
+	 * @param att The name of the main attribute
 	 * @return The value of the main attribute or <code>null</code>, if no such value exists.
 	 * @throws IOException, if an error occurs while reading the MANIFEST.MF file.
 	 */

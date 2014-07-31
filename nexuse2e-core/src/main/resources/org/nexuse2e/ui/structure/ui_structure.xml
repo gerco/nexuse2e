@@ -261,7 +261,7 @@
         </nxs:page>
       </nxs:page>
       <nxs:page target="ReportingStatistics.do" label="Reporting" icon="images/icons/chart_curve.png">
-        <nxs:page target="ProcessConversationReport.do?command=first" label="Transaction Reporting" icon="images/icons/report.png">
+        <nxs:page target="ProcessConversationReport.do?type=show" label="Transaction Reporting" icon="images/icons/report.png">
           <nxs:command target="ProcessConversationReport.do" label="Process Conversation Report" icon="images/icons/bullet_orange.png"/>
           <nxs:command target="ConversationView.do" label="View Specific Conversation" icon="images/icons/bullet_orange.png"/>
           <nxs:command target="MessageView.do" label="View Specific Message" icon="images/icons/bullet_orange.png"/>
