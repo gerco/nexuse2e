@@ -27,28 +27,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.Access;
+import javax.persistence.*;
 import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.Index;
+import org.hibernate.annotations.*;
 import org.nexuse2e.MessageStatus;
 import org.nexuse2e.messaging.Constants;
 import org.nexuse2e.messaging.ErrorDescriptor;
@@ -58,6 +43,7 @@ import org.nexuse2e.messaging.ErrorDescriptor;
  */
 @Entity
 @Table(name = "nx_message")
+@org.hibernate.annotations.Table(appliesTo = "nx_message", indexes = { @Index(name = "fk_message_recover", columnNames = { "status", "direction_flag" }) })
 @DynamicUpdate
 public class MessagePojo implements NEXUSe2ePojo {
 
@@ -70,6 +56,7 @@ public class MessagePojo implements NEXUSe2ePojo {
     @Access(AccessType.PROPERTY)
     @Id
     @Column(name = "nx_message_id")
+    @Index(name="fk_message_message_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int                      nxMessageId;
 
@@ -124,6 +111,7 @@ public class MessagePojo implements NEXUSe2ePojo {
     private Date                     endDate;
 
     @Column(name = "created_date", nullable = false)
+    @Index(name="fk_message_created_date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date                     createdDate;
 

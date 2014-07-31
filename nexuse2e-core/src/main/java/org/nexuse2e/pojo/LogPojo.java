@@ -21,6 +21,8 @@ package org.nexuse2e.pojo;
 
 // Generated 22.12.2006 15:46:31 by Hibernate Tools 3.2.0.beta6a
 
+import org.hibernate.annotations.Index;
+
 import java.util.Date;
 
 import javax.persistence.Access;
@@ -78,8 +80,9 @@ public class LogPojo implements NEXUSe2ePojo {
     private String            description;
 
     @Column(name = "created_date", nullable = false)
+    @Index(name = "fk_log_created_date")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date              createdDate;
+    private Date createdDate;
 
     // Constructors
 
@@ -89,8 +92,8 @@ public class LogPojo implements NEXUSe2ePojo {
     }
 
     /** full constructor */
-    public LogPojo( String logId, String className, String methodName, int eventId, int severity,
-            String conversationId, String messageId, String description, Date createdDate ) {
+    public LogPojo(String logId, String className, String methodName, int eventId, int severity, String conversationId, String messageId, String description,
+                   Date createdDate) {
 
         this.logId = logId;
         this.className = className;
@@ -109,7 +112,7 @@ public class LogPojo implements NEXUSe2ePojo {
         return this.nxLogId;
     }
 
-    public void setNxLogId( int nxLogId ) {
+    public void setNxLogId(int nxLogId) {
 
         this.nxLogId = nxLogId;
     }
@@ -117,17 +120,17 @@ public class LogPojo implements NEXUSe2ePojo {
     public int getNxId() {
         return nxLogId;
     }
-    
-    public void setNxId( int nxId ) {
+
+    public void setNxId(int nxId) {
         this.nxLogId = nxId;
     }
-    
+
     public String getLogId() {
 
         return this.logId;
     }
 
-    public void setLogId( String logId ) {
+    public void setLogId(String logId) {
 
         this.logId = logId;
     }
@@ -137,7 +140,7 @@ public class LogPojo implements NEXUSe2ePojo {
         return this.className;
     }
 
-    public void setClassName( String className ) {
+    public void setClassName(String className) {
 
         this.className = className;
     }
@@ -147,7 +150,7 @@ public class LogPojo implements NEXUSe2ePojo {
         return this.methodName;
     }
 
-    public void setMethodName( String methodName ) {
+    public void setMethodName(String methodName) {
 
         this.methodName = methodName;
     }
@@ -157,7 +160,7 @@ public class LogPojo implements NEXUSe2ePojo {
         return this.eventId;
     }
 
-    public void setEventId( int eventId ) {
+    public void setEventId(int eventId) {
 
         this.eventId = eventId;
     }
@@ -167,7 +170,7 @@ public class LogPojo implements NEXUSe2ePojo {
         return this.severity;
     }
 
-    public void setSeverity( int severity ) {
+    public void setSeverity(int severity) {
 
         this.severity = severity;
     }
@@ -177,7 +180,7 @@ public class LogPojo implements NEXUSe2ePojo {
         return this.conversationId;
     }
 
-    public void setConversationId( String conversationId ) {
+    public void setConversationId(String conversationId) {
 
         this.conversationId = conversationId;
     }
@@ -187,7 +190,7 @@ public class LogPojo implements NEXUSe2ePojo {
         return this.messageId;
     }
 
-    public void setMessageId( String messageId ) {
+    public void setMessageId(String messageId) {
 
         this.messageId = messageId;
     }
@@ -197,7 +200,7 @@ public class LogPojo implements NEXUSe2ePojo {
         return this.description;
     }
 
-    public void setDescription( String description ) {
+    public void setDescription(String description) {
 
         this.description = description;
     }
@@ -207,7 +210,7 @@ public class LogPojo implements NEXUSe2ePojo {
         return this.createdDate;
     }
 
-    public void setCreatedDate( Date createdDate ) {
+    public void setCreatedDate(Date createdDate) {
 
         this.createdDate = createdDate;
     }

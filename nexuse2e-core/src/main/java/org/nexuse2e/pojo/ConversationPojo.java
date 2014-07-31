@@ -57,10 +57,11 @@ public class ConversationPojo implements NEXUSe2ePojo {
      */
     private static final long serialVersionUID = 75029204917804416L;
 
-    // Fields    
+    // Fields
     @Access(AccessType.PROPERTY)
     @Id
     @Column(name = "nx_conversation_id")
+    @Index(name="fk_conversation_conversation_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int               nxConversationId;
 
