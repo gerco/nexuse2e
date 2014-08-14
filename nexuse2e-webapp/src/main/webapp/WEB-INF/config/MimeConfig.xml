@@ -29,6 +29,9 @@
 		<Handler MimeType="text/xml">
 			<Class>org.nexuse2e.messaging.mime.text_xml</Class>
 		</Handler>
+        <Handler MimeType="text/csv">
+            <Class>org.nexuse2e.messaging.mime.text_plain</Class>
+        </Handler>
 		<Handler MimeType="application/pdf">
 			<Class>org.nexuse2e.messaging.mime.binary_base64</Class>
 		</Handler>
@@ -79,6 +82,10 @@
 		</Handler>
 	</MimeHandlers>
 	<FileMappings>
+        <MimeMapping MimeType="text/csv">
+            <FileType>csv</FileType>
+            <FileType>CSV</FileType>
+        </MimeMapping>
 		<MimeMapping MimeType="text/plain">
 			<FileType>txt</FileType>
 			<FileType>TXT</FileType>
