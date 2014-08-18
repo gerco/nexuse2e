@@ -23,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -206,7 +207,13 @@ public class HttpReceiverService extends AbstractControllerService implements Re
                 response.sendError( 500, "NEXUSe2e - Processing error creating SOAPFault " + e );
             }
         } else {
-            response.sendError( 500, "NEXUSe2e - Processing error: " + message );
+        	// create simple output for none ebxml requests.
+        	response.setContentType( "text/plain" );
+        	response.setStatus(400);
+        	PrintWriter pw = new PrintWriter(response.getOutputStream());
+        	pw.write("NEXUSe2e - Processing error: " + message);
+        	pw.flush();
+        	
         }
     }
 
