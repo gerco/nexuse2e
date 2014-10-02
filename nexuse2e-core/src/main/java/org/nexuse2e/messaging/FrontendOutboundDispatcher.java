@@ -28,6 +28,7 @@ import org.nexuse2e.controller.StateTransitionException;
 import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.pojo.MessagePojo;
 import org.nexuse2e.pojo.ParticipantPojo;
+import org.nexuse2e.util.NexusThreadStorage;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
@@ -47,6 +48,10 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
      * @see org.nexuse2e.messaging.Pipelet#processMessage(org.nexuse2e.messaging.MessageContext)
      */
     public MessageContext processMessage( MessageContext messageContext ) throws NexusException {
+
+        // Set some thread-local information so everyone in the pipeline can always access it
+        NexusThreadStorage.set("conversationId", messageContext.getConversation().getConversationId());
+        NexusThreadStorage.set("messageId", messageContext.getMessagePojo().getMessageId());
 
         // for  participants with "hold" connections, do not go on with processing
         if (messageContext.getParticipant().getConnection().isHold()) {
@@ -75,6 +80,10 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
 
         // do it
         sendMessage(pipeline, messageContext, retries);
+
+        // ThreadLocal-objects need to be manually removed
+        NexusThreadStorage.remove("conversationId");
+        NexusThreadStorage.remove("messageId");
 
         return messageContext;
     } // processMessage
