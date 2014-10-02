@@ -87,6 +87,10 @@ public class FrontendInboundDispatcher extends ChoreographyValidator implements 
 
         LOG.debug(new LogMessage("Entering FrontendInboundDispatcher.processMessage...", messagePojo));
 
+        // Set some thread-local information so everyone in the pipeline can always access it
+        NexusThreadStorage.set("conversationId", messageContext.getConversation().getConversationId());
+        NexusThreadStorage.set("messageId", messageContext.getMessagePojo().getMessageId());
+
         // extract header data
         // Shouldn't only the state machine set the status?
         //            if ( messagePojo.getConversation() != null
@@ -174,10 +178,6 @@ public class FrontendInboundDispatcher extends ChoreographyValidator implements 
                 "Received " + msgType + " (" + messagePojo.getMessageId() + ") from " + participant.getPartner().getPartnerId() + " for " + choreography
                     .getName() + (action != null ? "/" + action.getName() : ""), messagePojo));
         }
-
-        // Set some thread-local information so everyone in the pipeline can always access it
-        NexusThreadStorage.set("conversationId", messageContext.getConversation().getConversationId());
-        NexusThreadStorage.set("messageId", messageContext.getMessagePojo().getMessageId());
 
         // handle different message types
         if (messagePojo.isNormal()) {

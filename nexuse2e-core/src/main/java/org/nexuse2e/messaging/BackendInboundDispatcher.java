@@ -35,6 +35,7 @@ import org.nexuse2e.pojo.ActionPojo;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.ConversationPojo;
 import org.nexuse2e.pojo.MessagePojo;
+import org.nexuse2e.util.NexusThreadStorage;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
@@ -64,6 +65,11 @@ public class BackendInboundDispatcher implements InitializingBean, Manageable {
     	}
 
         if ( backendInboundPipelines != null ) {
+
+            // Set some thread-local information so everyone in the pipeline can always access it
+            NexusThreadStorage.set("conversationId", messageContext.getConversation().getConversationId());
+            NexusThreadStorage.set("messageId", messageContext.getMessagePojo().getMessageId());
+
             ActionPojo action = messageContext.getMessagePojo().getAction();
             ConversationPojo conversation = messageContext.getMessagePojo().getConversation();
             ChoreographyPojo choreography = (conversation == null ? null : conversation.getChoreography());
@@ -90,6 +96,10 @@ public class BackendInboundDispatcher implements InitializingBean, Manageable {
                         + messageContext.getMessagePojo().getConversation().getChoreography().getName() + " - "
                         + messageContext.getMessagePojo().getAction() + ")" );
             }
+
+            // ThreadLocal-objects need to be manually removed
+            NexusThreadStorage.remove("conversationId");
+            NexusThreadStorage.remove("messageId");
         } else {
             throw new NexusException( "No backend inbound pipelines configured!" );
         }

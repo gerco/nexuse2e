@@ -71,6 +71,10 @@ public class BackendOutboundDispatcher extends ChoreographyValidator implements 
      */
     public MessageContext processMessage(MessageContext messageContext) throws NexusException {
 
+        // Set some thread-local information so everyone in the pipeline can always access it
+        NexusThreadStorage.set("conversationId", messageContext.getConversation().getConversationId());
+        NexusThreadStorage.set("messageId", messageContext.getMessagePojo().getMessageId());
+
         ChoreographyPojo choreography = validateChoreography(messageContext);
         LOG.trace(new LogMessage("Matching choreography found: " + choreography.getName(), messageContext.getMessagePojo()));
 
@@ -91,10 +95,6 @@ public class BackendOutboundDispatcher extends ChoreographyValidator implements 
             throw new NexusException("No ProtocolAdapter found for key: " + key);
         }
         protocolAdapter.addProtcolSpecificParameters(messageContext);
-
-        // Set some thread-local information so everyone in the pipeline can always access it
-        NexusThreadStorage.set("conversationId", messageContext.getConversation().getConversationId());
-        NexusThreadStorage.set("messageId", messageContext.getMessagePojo().getMessageId());
 
         // Forward the message to check the transistion, persist it and pass to backend
         MessageHandlingCenter.getInstance().processMessage(messageContext);

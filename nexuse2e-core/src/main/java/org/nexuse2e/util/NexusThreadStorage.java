@@ -27,37 +27,37 @@ import java.util.Map;
 
 
 /**
- * A thread-local bound storage map for data. Usually to be used for pre-setting conversation and message ID so all NexusException instances will always have the information available during an entire pipeline's execution.
+ * A thread-local bound STORAGE map for data. Usually to be used for pre-setting conversation and message ID so all NexusException instances will always have the information available during an entire pipeline's execution.
  * Created by JJerke on 02.10.2014.
  */
 public class NexusThreadStorage {
 
-    private static final ThreadLocal<Map<String, Object>> storage = new ThreadLocal<Map<String, Object>>();
+    private static final ThreadLocal<Map<String, Object>> STORAGE = new ThreadLocal<Map<String, Object>>();
 
     public static void set(String identifier, Object data) {
         if (StringUtils.isBlank(identifier) || null == data) {
             return;
         }
-        if (null == storage.get()) {
-            storage.set(new HashMap<String, Object>());
+        if (null == STORAGE.get()) {
+            STORAGE.set(new HashMap<String, Object>());
         }
-        storage.get().put(identifier, data);
+        STORAGE.get().put(identifier, data);
     }
 
     public static void remove(String identifier) {
-        if (null == storage.get() || StringUtils.isBlank(identifier)) {
+        if (null == STORAGE.get() || StringUtils.isBlank(identifier)) {
             return;
         }
-        storage.get().remove(identifier);
-        if (storage.get().isEmpty()) {
-            storage.remove();
+        STORAGE.get().remove(identifier);
+        if (STORAGE.get().isEmpty()) {
+            STORAGE.remove();
         }
     }
 
     public static Object get(String identifier) {
-        if (null == storage.get() || StringUtils.isBlank(identifier)) {
+        if (null == STORAGE.get() || StringUtils.isBlank(identifier)) {
             return null;
         }
-        return storage.get().get(identifier);
+        return STORAGE.get().get(identifier);
     }
 }
