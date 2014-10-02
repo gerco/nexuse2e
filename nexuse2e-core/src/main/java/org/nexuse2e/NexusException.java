@@ -19,75 +19,94 @@
  */
 package org.nexuse2e;
 
-import javax.xml.ws.WebFault;
 
 import org.nexuse2e.logging.LogMessage;
+import org.nexuse2e.messaging.MessageProcessor;
+import org.nexuse2e.util.NexusThreadStorage;
 
-@WebFault(name = "NexusException", targetNamespace="http://integration.nexuse2e.org")
+import javax.xml.ws.WebFault;
+
+
+@WebFault(name = "NexusException", targetNamespace = "http://integration.nexuse2e.org")
 public class NexusException extends Exception {
 
-    private int               severity;
-    private String            messageId;
-    private String            choreographyId;
-    private String            partnerId;
-    private String            conversationId;
-    private String            transportId;
-    private String            protocolId;
-    private String            protocolVersion;
+    private int    severity;
+    private String messageId;
+    private String choreographyId;
+    private String partnerId;
+    private String conversationId;
+    private String transportId;
+    private String protocolId;
+    private String protocolVersion;
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1701877587184448016L;
 
     /**
      * @param message
      */
-    public NexusException( String message ) {
+    public NexusException(String message) {
 
-        super( message );
+        super(message);
     }
 
     /**
      * @param nested exception
      */
-    public NexusException( Exception nested ) {
+    public NexusException(Exception nested) {
 
-        super( nested );
+        super(nested);
     }
 
-    public NexusException( String message, Exception nested ) {
+    public NexusException(String message, Exception nested) {
 
-        super( message, nested );
+        super(message, nested);
     }
-    
+
     /**
      * Initializes the exception from a LogMessage instance.
+     *
      * @param logMessage The LogMessage that carries the information for this exception.
      */
-    public NexusException( LogMessage logMessage ) {
-    	super( logMessage.toString(false) );
-    	setInfoFromLogMessage( logMessage );
+    public NexusException(LogMessage logMessage) {
+        super(logMessage.toString(false));
+        setInfoFromLogMessage(logMessage);
     }
-    
+
     /**
      * Initializes the exception from a LogMessage instance.
+     *
      * @param logMessage The LogMessage that carries the information for this exception.
-     * @param nested The nested cause of this exception.
+     * @param nested     The nested cause of this exception.
      */
-    public NexusException( LogMessage logMessage, Exception nested ) {
-    	super( logMessage.toString(false), nested );
-    	setInfoFromLogMessage( logMessage );
+    public NexusException(LogMessage logMessage, Exception nested) {
+        super(logMessage.toString(false), nested);
+        setInfoFromLogMessage(logMessage);
     }
-    
+
+    // attempts to pre-fill values for message ID and conversation ID from thread-local values
+    {
+        Object conversationId = NexusThreadStorage.get("conversationId");
+        Object messageId = NexusThreadStorage.get("messageId");
+        if (null != conversationId && conversationId instanceof String) {
+            this.conversationId = (String) conversationId;
+        }
+        if (null != messageId && messageId instanceof String) {
+            this.messageId = (String) messageId;
+        }
+    }
+
     /**
      * Initializes the <code>conversationId</code> and <code>messageId</code>
      * fields of this instance from the given <code>logMessage</code>.
+     *
      * @param logMessage The LogMessage that carries the information for this exception.
      */
-    private void setInfoFromLogMessage( LogMessage logMessage ) {
-    	setConversationId( logMessage.getConversationId() );
-    	setMessageId( logMessage.getMessageId() );
+    private void setInfoFromLogMessage(LogMessage logMessage) {
+        setConversationId(logMessage.getConversationId());
+        setMessageId(logMessage.getMessageId());
     }
 
     public String getConversationDetails() {
@@ -106,7 +125,7 @@ public class NexusException extends Exception {
     /**
      * @param choreographyId the choreographyId to set
      */
-    public void setChoreographyId( String choreographyId ) {
+    public void setChoreographyId(String choreographyId) {
 
         this.choreographyId = choreographyId;
     }
@@ -122,7 +141,7 @@ public class NexusException extends Exception {
     /**
      * @param conversationId the conversationId to set
      */
-    public void setConversationId( String conversationId ) {
+    public void setConversationId(String conversationId) {
 
         this.conversationId = conversationId;
     }
@@ -138,7 +157,7 @@ public class NexusException extends Exception {
     /**
      * @param messageId the messageId to set
      */
-    public void setMessageId( String messageId ) {
+    public void setMessageId(String messageId) {
 
         this.messageId = messageId;
     }
@@ -154,7 +173,7 @@ public class NexusException extends Exception {
     /**
      * @param partnerId the partnerId to set
      */
-    public void setPartnerId( String partnerId ) {
+    public void setPartnerId(String partnerId) {
 
         this.partnerId = partnerId;
     }
@@ -170,7 +189,7 @@ public class NexusException extends Exception {
     /**
      * @param severity the severity to set
      */
-    public void setSeverity( int severity ) {
+    public void setSeverity(int severity) {
 
         this.severity = severity;
     }
@@ -186,7 +205,7 @@ public class NexusException extends Exception {
     /**
      * @param protocolId the protocolId to set
      */
-    public void setProtocolId( String protocolId ) {
+    public void setProtocolId(String protocolId) {
 
         this.protocolId = protocolId;
     }
@@ -202,7 +221,7 @@ public class NexusException extends Exception {
     /**
      * @param protocolVersion the protocolVersion to set
      */
-    public void setProtocolVersion( String protocolVersion ) {
+    public void setProtocolVersion(String protocolVersion) {
 
         this.protocolVersion = protocolVersion;
     }
@@ -218,53 +237,52 @@ public class NexusException extends Exception {
     /**
      * @param transportId the transportId to set
      */
-    public void setTransportId( String transportId ) {
+    public void setTransportId(String transportId) {
 
         this.transportId = transportId;
     }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Throwable#getMessage()
-	 */
-	@Override
-	public String getMessage() {
-		return getMessage(true);
-	}
-	
-	/**
-	 * @param full
-	 * @return
-	 */
-	public String getMessage(boolean full) {
-		if(full) {
-			return conversationId + "/" + messageId + ": "+super.getMessage();
-		} else {
-			return super.getMessage();
-		}
-	}
-	
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Throwable#toString()
-	 */
-	@Override
-	public String toString() {
-		return toString(true);
-	}
+    /* (non-Javadoc)
+     * @see java.lang.Throwable#getMessage()
+     */
+    @Override
+    public String getMessage() {
+        return getMessage(true);
+    }
 
-	/**
-	 * @param full
-	 * @return
-	 */
-	public String toString(boolean full) {
-		String s = getClass().getName();
-	    String message = super.getLocalizedMessage();
-	    message = (message != null) ? (s + ": " + message) : s;
-		if(full) {
-			return conversationId + "/" + messageId + ": " + message;
-		} else {
-			return message;
-		}
-	}
-	
+    /**
+     * @param full
+     * @return
+     */
+    public String getMessage(boolean full) {
+        if (full) {
+            return conversationId + "/" + messageId + ": " + super.getMessage();
+        } else {
+            return super.getMessage();
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Throwable#toString()
+     */
+    @Override
+    public String toString() {
+        return toString(true);
+    }
+
+    /**
+     * @param full
+     * @return
+     */
+    public String toString(boolean full) {
+        String s = getClass().getName();
+        String message = super.getLocalizedMessage();
+        message = (message != null) ? (s + ": " + message) : s;
+        if (full) {
+            return conversationId + "/" + messageId + ": " + message;
+        } else {
+            return message;
+        }
+    }
+
 }

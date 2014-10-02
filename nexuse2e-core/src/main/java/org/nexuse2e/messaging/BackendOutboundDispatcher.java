@@ -19,10 +19,6 @@
  */
 package org.nexuse2e.messaging;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.nexuse2e.BeanStatus;
@@ -37,10 +33,17 @@ import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.pojo.ChoreographyPojo;
 import org.nexuse2e.pojo.MessagePojo;
 import org.nexuse2e.pojo.ParticipantPojo;
+import org.nexuse2e.util.NexusThreadStorage;
 import org.springframework.beans.factory.InitializingBean;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+
 /**
- * Component dispatching outbound messages to the correct queue based on their choreography (business process). 
+ * Component dispatching outbound messages to the correct queue based on their choreography (business process).
  * Additionally the message is checked for consistency with the messaging protocol it belongs to and processing
  * fails if any inconsistencies are detected.
  *
@@ -48,61 +51,68 @@ import org.springframework.beans.factory.InitializingBean;
  */
 public class BackendOutboundDispatcher extends ChoreographyValidator implements Pipelet, InitializingBean {
 
-    private static Logger                        LOG                        = Logger
-                                                                                    .getLogger( BackendOutboundDispatcher.class );
+    private static Logger LOG = Logger.getLogger(BackendOutboundDispatcher.class);
 
-    private ProtocolAdapter[]                    protocolAdapters;
+    private ProtocolAdapter[] protocolAdapters;
 
-    private FrontendInboundDispatcher            frontendInboundDispatcher  = null;
-    private FrontendOutboundDispatcher           frontendOutboundDispatcher = null;
-    private BeanStatus                           status                     = BeanStatus.UNDEFINED;
+    private FrontendInboundDispatcher  frontendInboundDispatcher  = null;
+    private FrontendOutboundDispatcher frontendOutboundDispatcher = null;
+    private BeanStatus                 status                     = BeanStatus.UNDEFINED;
 
-    private boolean                              forwardPipeline;
-    private boolean                              frontendPipeline;
+    private boolean forwardPipeline;
+    private boolean frontendPipeline;
 
-    private Map<String, Object>                  parameters                 = new HashMap<String, Object>();
+    private Map<String, Object> parameters = new HashMap<String, Object>();
 
-    private Pipeline                             pipeline;
+    private Pipeline pipeline;
 
     /* (non-Javadoc)
      * @see org.nexuse2e.messaging.Pipelet#processMessage(org.nexuse2e.messaging.MessageContext)
      */
-    public MessageContext processMessage( MessageContext messageContext ) throws NexusException {
+    public MessageContext processMessage(MessageContext messageContext) throws NexusException {
 
-        ChoreographyPojo choreography = validateChoreography( messageContext );
-        LOG.trace( new LogMessage( "Matching choreography found: " + choreography.getName(),messageContext.getMessagePojo()) );
+        ChoreographyPojo choreography = validateChoreography(messageContext);
+        LOG.trace(new LogMessage("Matching choreography found: " + choreography.getName(), messageContext.getMessagePojo()));
 
-        ParticipantPojo participant = validateParticipant( messageContext );
-        LOG.trace( new LogMessage( "Matching participant found: " + participant.getPartner().getPartnerId(),messageContext.getMessagePojo()) );
+        ParticipantPojo participant = validateParticipant(messageContext);
+        LOG.trace(new LogMessage("Matching participant found: " + participant.getPartner().getPartnerId(), messageContext.getMessagePojo()));
 
         // create protocolspecific key
 
-        ProtocolSpecificKey key = new ProtocolSpecificKey( messageContext.getMessagePojo().getTRP().getProtocol()
-                .toLowerCase(), messageContext.getMessagePojo().getTRP().getVersion(), messageContext.getMessagePojo()
-                .getTRP().getTransport().toLowerCase() );
-        messageContext.setProtocolSpecificKey( key );
-        LOG.debug( new LogMessage( "ProtocolKey:" + key,messageContext.getMessagePojo()) );
+        ProtocolSpecificKey key =
+            new ProtocolSpecificKey(messageContext.getMessagePojo().getTRP().getProtocol().toLowerCase(), messageContext.getMessagePojo().getTRP().getVersion(),
+                                    messageContext.getMessagePojo().getTRP().getTransport().toLowerCase());
+        messageContext.setProtocolSpecificKey(key);
+        LOG.debug(new LogMessage("ProtocolKey:" + key, messageContext.getMessagePojo()));
 
-        ProtocolAdapter protocolAdapter = getProtocolAdapterByKey( messageContext.getProtocolSpecificKey() );
-        if ( protocolAdapter == null ) {
-            LOG.error( new LogMessage( "No protocol implementation found for key: " + messageContext.getProtocolSpecificKey(),messageContext.getMessagePojo()) );
-            throw new NexusException( "No ProtocolAdapter found for key: " + key );
+        ProtocolAdapter protocolAdapter = getProtocolAdapterByKey(messageContext.getProtocolSpecificKey());
+        if (protocolAdapter == null) {
+            LOG.error(new LogMessage("No protocol implementation found for key: " + messageContext.getProtocolSpecificKey(), messageContext.getMessagePojo()));
+            throw new NexusException("No ProtocolAdapter found for key: " + key);
         }
-        protocolAdapter.addProtcolSpecificParameters( messageContext );
+        protocolAdapter.addProtcolSpecificParameters(messageContext);
+
+        // Set some thread-local information so everyone in the pipeline can always access it
+        NexusThreadStorage.set("conversationId", messageContext.getConversation().getConversationId());
+        NexusThreadStorage.set("messageId", messageContext.getMessagePojo().getMessageId());
 
         // Forward the message to check the transistion, persist it and pass to backend
         MessageHandlingCenter.getInstance().processMessage(messageContext);
+
+        // ThreadLocal-objects need to be manually removed
+        NexusThreadStorage.remove("conversationId");
+        NexusThreadStorage.remove("messageId");
 
         return messageContext;
     } // processMessage
 
     /**
-     * Recover messages from persisten storage that need to be resent based on their status and messaging 
+     * Recover messages from persisten storage that need to be resent based on their status and messaging
      * protocol requirements.
      */
     public void recoverMessages() {
 
-        LOG.info( "Searching for messages to recover..." );
+        LOG.info("Searching for messages to recover...");
 
         List<MessagePojo> activeMessagePojos = null;
 
@@ -112,35 +122,34 @@ public class BackendOutboundDispatcher extends ChoreographyValidator implements 
         try {
             TransactionService transactionService = Engine.getInstance().getTransactionService();
             activeMessagePojos = transactionService.getActiveMessages();
-            LOG.trace( "Found active messages: " + activeMessagePojos.size() );
+            LOG.trace("Found active messages: " + activeMessagePojos.size());
             long startTime = System.currentTimeMillis();
-            for ( MessagePojo messagePojo : activeMessagePojos ) {
+            for (MessagePojo messagePojo : activeMessagePojos) {
 
                 long time = System.currentTimeMillis();
                 try {
-                    MessageContext messageContext = transactionService.createMessageContext( messagePojo );
-                    totalGetMessageTime += ( System.currentTimeMillis() - time );
+                    MessageContext messageContext = transactionService.createMessageContext(messagePojo);
+                    totalGetMessageTime += (System.currentTimeMillis() - time);
 
-                    if ( ( messageContext != null ) && messagePojo.isOutbound() ) {
-                        LOG.debug(new LogMessage(  "Recovered message: " + messagePojo.getMessageId(),messagePojo) );
+                    if ((messageContext != null) && messagePojo.isOutbound()) {
+                        LOG.debug(new LogMessage("Recovered message: " + messagePojo.getMessageId(), messagePojo));
 
                         time = System.currentTimeMillis();
-                        MessageHandlingCenter.getInstance().requeueMessage( messageContext );
-                        totalQueueingTime += ( System.currentTimeMillis() - time );
+                        MessageHandlingCenter.getInstance().requeueMessage(messageContext);
+                        totalQueueingTime += (System.currentTimeMillis() - time);
                     }
-                } catch ( Exception ex ) {
+                } catch (Exception ex) {
                     String messageId = "";
-                    if ( messagePojo != null ) {
+                    if (messagePojo != null) {
                         messageId = messagePojo.getMessageId();
                     }
-                    LOG.error(new LogMessage( "Error recovering message " + messageId, messagePojo, ex), ex);
+                    LOG.error(new LogMessage("Error recovering message " + messageId, messagePojo, ex), ex);
                 }
             }
-            LOG.trace( "took " + totalQueueingTime + " ms for message queueing and " + totalGetMessageTime
-                    + " ms for retrieving messages, total time is " + ( System.currentTimeMillis() - startTime )
-                    + " ms" );
-        } catch ( NexusException e ) {
-            LOG.error( e );
+            LOG.trace("took " + totalQueueingTime + " ms for message queueing and " + totalGetMessageTime + " ms for retrieving messages, total time is " + (
+                System.currentTimeMillis() - startTime) + " ms");
+        } catch (NexusException e) {
+            LOG.error(e);
         }
 
     } // recoverMessages
@@ -149,11 +158,11 @@ public class BackendOutboundDispatcher extends ChoreographyValidator implements 
      * @param key
      * @return
      */
-    public ProtocolAdapter getProtocolAdapterByKey( ProtocolSpecificKey key ) {
+    public ProtocolAdapter getProtocolAdapterByKey(ProtocolSpecificKey key) {
 
-        if ( getProtocolAdapters() != null ) {
-            for ( int i = 0; i < getProtocolAdapters().length; i++ ) {
-                if ( getProtocolAdapters()[i].getKey().equalsIgnoreTransport( key ) ) {
+        if (getProtocolAdapters() != null) {
+            for (int i = 0; i < getProtocolAdapters().length; i++) {
+                if (getProtocolAdapters()[i].getKey().equalsIgnoreTransport(key)) {
                     return getProtocolAdapters()[i];
                 }
             }
@@ -172,7 +181,7 @@ public class BackendOutboundDispatcher extends ChoreographyValidator implements 
     /**
      * @param protocolAdapter the protocolAdapter to set
      */
-    public void setProtocolAdapters( ProtocolAdapter[] protocolAdapter ) {
+    public void setProtocolAdapters(ProtocolAdapter[] protocolAdapter) {
 
         this.protocolAdapters = protocolAdapter;
     }
@@ -182,7 +191,7 @@ public class BackendOutboundDispatcher extends ChoreographyValidator implements 
      */
     public void afterPropertiesSet() throws Exception {
 
-        if ( protocolAdapters == null || protocolAdapters.length == 0 ) {
+        if (protocolAdapters == null || protocolAdapters.length == 0) {
             status = BeanStatus.ERROR;
         }
         status = BeanStatus.INSTANTIATED;
@@ -201,23 +210,23 @@ public class BackendOutboundDispatcher extends ChoreographyValidator implements 
      */
     public void initialize() {
 
-        initialize( Engine.getInstance().getCurrentConfiguration() );
+        initialize(Engine.getInstance().getCurrentConfiguration());
 
     }
 
     /* (non-Javadoc)
      * @see org.nexuse2e.Manageable#initialize(org.nexuse2e.configuration.EngineConfiguration)
      */
-    public void initialize( EngineConfiguration config ) {
+    public void initialize(EngineConfiguration config) {
 
-        LOG.trace( "Initializing..." );
+        LOG.trace("Initializing...");
 
         frontendOutboundDispatcher = config.getStaticBeanContainer().getFrontendOutboundDispatcher();
-        if ( frontendOutboundDispatcher == null ) {
+        if (frontendOutboundDispatcher == null) {
             status = BeanStatus.ERROR;
         }
         frontendInboundDispatcher = config.getStaticBeanContainer().getFrontendInboundDispatcher();
-        if ( frontendInboundDispatcher == null ) {
+        if (frontendInboundDispatcher == null) {
             status = BeanStatus.ERROR;
         }
         status = BeanStatus.INITIALIZED;
@@ -228,7 +237,7 @@ public class BackendOutboundDispatcher extends ChoreographyValidator implements 
      */
     public void teardown() {
 
-        LOG.trace( "Freeing resources..." );
+        LOG.trace("Freeing resources...");
 
         status = BeanStatus.INSTANTIATED;
     } // teardown
@@ -246,7 +255,7 @@ public class BackendOutboundDispatcher extends ChoreographyValidator implements 
      */
     public void activate() {
 
-        LOG.trace( "activate" );
+        LOG.trace("activate");
 
     }
 
@@ -255,7 +264,7 @@ public class BackendOutboundDispatcher extends ChoreographyValidator implements 
      */
     public void deactivate() {
 
-        LOG.trace( "deactivate" );
+        LOG.trace("deactivate");
 
     }
 
@@ -271,9 +280,9 @@ public class BackendOutboundDispatcher extends ChoreographyValidator implements 
      * @see org.nexuse2e.Configurable#getParameter(java.lang.String)
      */
     @SuppressWarnings("unchecked")
-    public <T> T getParameter( String name ) {
+    public <T> T getParameter(String name) {
 
-        return (T) parameters.get( name );
+        return (T) parameters.get(name);
     }
 
     /* (non-Javadoc)
@@ -290,15 +299,15 @@ public class BackendOutboundDispatcher extends ChoreographyValidator implements 
      */
     public Map<String, Object> getParameters() {
 
-        return Collections.unmodifiableMap( parameters );
+        return Collections.unmodifiableMap(parameters);
     }
 
     /* (non-Javadoc)
      * @see org.nexuse2e.Configurable#setParameter(java.lang.String, java.lang.Object)
      */
-    public void setParameter( String name, Object value ) {
+    public void setParameter(String name, Object value) {
 
-        parameters.put( name, value );
+        parameters.put(name, value);
     }
 
     /* (non-Javadoc)
@@ -320,7 +329,7 @@ public class BackendOutboundDispatcher extends ChoreographyValidator implements 
     /* (non-Javadoc)
      * @see org.nexuse2e.messaging.Pipelet#setForwardPipelet(boolean)
      */
-    public void setForwardPipelet( boolean isForwardPipelet ) {
+    public void setForwardPipelet(boolean isForwardPipelet) {
 
         forwardPipeline = isForwardPipelet;
 
@@ -329,7 +338,7 @@ public class BackendOutboundDispatcher extends ChoreographyValidator implements 
     /* (non-Javadoc)
      * @see org.nexuse2e.messaging.Pipelet#setFrontendPipelet(boolean)
      */
-    public void setFrontendPipelet( boolean isFrontendPipelet ) {
+    public void setFrontendPipelet(boolean isFrontendPipelet) {
 
         frontendPipeline = isFrontendPipelet;
 
@@ -346,7 +355,7 @@ public class BackendOutboundDispatcher extends ChoreographyValidator implements 
     /* (non-Javadoc)
      * @see org.nexuse2e.messaging.Pipelet#setPipeline(org.nexuse2e.messaging.Pipeline)
      */
-    public void setPipeline( Pipeline pipeline ) {
+    public void setPipeline(Pipeline pipeline) {
 
         this.pipeline = pipeline;
     }
