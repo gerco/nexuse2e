@@ -58,6 +58,7 @@
       <list>
         <value>/WEB-INF/config/database.properties</value>
         <value>/WEB-INF/config/bean.properties</value>
+        <value>file:///#{systemProperties['externalconfig']}</value>
       </list>
     </property>
   </bean>
