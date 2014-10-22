@@ -592,11 +592,14 @@
 				</tr>
 				<logic:iterate indexId="counter" id="message" name="collection">
 					<tr>
-
-							<td class="NEXUSValue">
-							<html-el:multibox
-								property="selected"
-								value="${message.participantId}|${message.choreographyId}|${message.conversationId}|${message.messageId}" /></td>
+						<logic:notEqual name="reportingPropertiesForm" property="type" value="purge">
+							<logic:equal name="reportingSettingsForm" property="messColSelect" value="true">
+								<td class="NEXUSValue">
+								<html-el:multibox
+									property="selected"
+									value="${message.participantId}|${message.choreographyId}|${message.conversationId}|${message.messageId}" /></td>
+							</logic:equal>
+						</logic:notEqual>
 						<td class="NEXUSValue"><nexus:link styleClass="NexusLink"
 							href="MessageView.do?mId=${message.messageId}&convId=${message.conversationId}&chorId=${message.choreographyId}&partnerId=${message.participantId}">
 							<bean:write name="message" property="messageId" />
@@ -643,29 +646,30 @@
 					</tr>
 				</logic:iterate>
 			</table>
-			<logic:equal name="reportingSettingsForm" property="messColSelect"
-				value="true">
-				<table class="NEXUS_BUTTON_TABLE" width="100%">
-					<tr>
-						<td class="BUTTON_LEFT" width="75px"><a href="#" id="startLink"
-							onClick="javascript: selectAll(true);return false;" class="NexusLink">
-							<nobr>Select all</nobr>
-						</a><br /><a href="#" id="startLink"
-							onClick="javascript: selectAll(false)" class="NexusLink">
-							<nobr>Deselect all</nobr>
-						</a></td>
+			<logic:notEqual name="reportingPropertiesForm" property="type" value="purge">
+				<logic:equal name="reportingSettingsForm" property="messColSelect" value="true">
+					<table class="NEXUS_BUTTON_TABLE" width="100%">
+						<tr>
+							<td class="BUTTON_LEFT" width="75px"><a href="#" id="startLink"
+								onClick="javascript: selectAll(true);return false;" class="NexusLink">
+								<nobr>Select all</nobr>
+							</a><br /><a href="#" id="startLink"
+								onClick="javascript: selectAll(false)" class="NexusLink">
+								<nobr>Deselect all</nobr>
+							</a></td>
 
-						<td class="BUTTON_RIGHT"><nobr><nexus:submit
-							onClick="document.forms['reportingPropertiesForm'].command.value='requeue';">
-							<img src="images/icons/arrow_redo.png" name="clearButton" class="button">
-							Re-Queue</nexus:submit></nobr></td>
-						<td class="BUTTON_RIGHT"><nobr><nexus:submit
-							onClick="document.forms['reportingPropertiesForm'].command.value='stop';">
-							<img src="images/icons/arrow_rotate_anticlockwise.png" name="clearButton" class="button">
-							Stop</nexus:submit></nobr></td>
-					</tr>
-				</table>
-			</logic:equal>
+							<td class="BUTTON_RIGHT"><nobr><nexus:submit
+								onClick="document.forms['reportingPropertiesForm'].command.value='requeue';">
+								<img src="images/icons/arrow_redo.png" name="clearButton" class="button">
+								Re-Queue</nexus:submit></nobr></td>
+							<td class="BUTTON_RIGHT"><nobr><nexus:submit
+								onClick="document.forms['reportingPropertiesForm'].command.value='stop';">
+								<img src="images/icons/arrow_rotate_anticlockwise.png" name="clearButton" class="button">
+								Stop</nexus:submit></nobr></td>
+						</tr>
+					</table>
+				</logic:equal>
+			</logic:notEqual>
 		</logic:notEmpty>
 	</logic:equal>
 	<logic:notEqual name="reportingPropertiesForm" property="searchFor"
@@ -702,12 +706,14 @@
 				</tr>
 				<logic:iterate indexId="counter" id="conv" name="collection">
 					<tr>
-						<logic:equal name="reportingSettingsForm" property="convColSelect" value="true">
-							<td class="NEXUSValue">
-							<html-el:multibox
-								property="selected"
-								value="${conv.participantId}|${conv.choreographyId}|${conv.conversationId}" /></td>
-						</logic:equal>
+						<logic:notEqual name="reportingPropertiesForm" property="type" value="purge">
+							<logic:equal name="reportingSettingsForm" property="convColSelect" value="true">
+								<td class="NEXUSValue">
+								<html-el:multibox
+									property="selected"
+									value="${conv.participantId}|${conv.choreographyId}|${conv.conversationId}" /></td>
+							</logic:equal>
+						</logic:notEqual>
 						<logic:equal name="reportingSettingsForm"
 							property="convColChorId" value="true">
 							<td class="NEXUSValue"><bean:write name="conv"
@@ -745,25 +751,27 @@
 					</tr>
 				</logic:iterate>
 			</table>
-			<logic:equal name="reportingSettingsForm" property="convColSelect" value="true">
-				<table class="NEXUS_BUTTON_TABLE" width="100%" border="1">
-					<tr>
-						<td class="BUTTON_LEFT" width="75px"><a href="#" id="startLink"
-							onClick="javascript: selectAll(true);return false;" class="NexusLink">
-							<nobr>Select all</nobr>
-						</a><br /><a href="#" id="startLink"
-							onClick="javascript: selectAll(false)" class="NexusLink">
-							<nobr>Deselect all</nobr>
-						</a></td>
-						<td  class="BUTTON_RIGHT">
-							<nexus:submit onClick="document.forms['reportingPropertiesForm'].command.value='delete';">
-								<img src="images/icons/delete.png" name="clearButton" class="button">
-								Delete
-							</nexus:submit>
-						</td>
-					</tr>
-				</table>
-			</logic:equal>
+			<logic:notEqual name="reportingPropertiesForm" property="type" value="purge">
+				<logic:equal name="reportingSettingsForm" property="convColSelect" value="true">
+					<table class="NEXUS_BUTTON_TABLE" width="100%" border="1">
+						<tr>
+							<td class="BUTTON_LEFT" width="75px"><a href="#" id="startLink"
+								onClick="javascript: selectAll(true);return false;" class="NexusLink">
+								<nobr>Select all</nobr>
+							</a><br /><a href="#" id="startLink"
+								onClick="javascript: selectAll(false)" class="NexusLink">
+								<nobr>Deselect all</nobr>
+							</a></td>
+							<td  class="BUTTON_RIGHT">
+								<nexus:submit onClick="document.forms['reportingPropertiesForm'].command.value='delete';">
+									<img src="images/icons/delete.png" name="clearButton" class="button">
+									Delete
+								</nexus:submit>
+							</td>
+						</tr>
+					</table>
+				</logic:equal>
+			</logic:notEqual>
 		</logic:notEmpty>
 	</logic:notEqual>
 
