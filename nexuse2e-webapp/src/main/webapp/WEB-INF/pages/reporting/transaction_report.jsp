@@ -755,10 +755,12 @@
 							onClick="javascript: selectAll(false)" class="NexusLink">
 							<nobr>Deselect all</nobr>
 						</a></td>
-						<td  class="BUTTON_RIGHT"><nexus:submit
-							onClick="document.forms['reportingPropertiesForm'].command.value='delete';">
-							<img src="images/icons/delete.png" name="clearButton" class="button">
-						Delete</nexus:submit></td>
+						<td  class="BUTTON_RIGHT">
+							<nexus:submit onClick="document.forms['reportingPropertiesForm'].command.value='delete';">
+								<img src="images/icons/delete.png" name="clearButton" class="button">
+								Delete
+							</nexus:submit>
+						</td>
 					</tr>
 				</table>
 			</logic:equal>
