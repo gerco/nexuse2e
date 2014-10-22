@@ -536,8 +536,8 @@
 			<td class="BUTTON_RIGHT">
 				<nobr>
 				    <logic:equal name="reportingPropertiesForm" property="type" value="purge">
-                        <nexus:submit onClick="javascript: enableLinks(); if(confirm('Purge the selected conversations?')) {document.forms['reportingPropertiesForm'].command.value='purge';} else {document.forms['reportingPropertiesForm'].command.value='report';}">
-                            <img src="images/icons/delete.png" name="deleteButton" class="button" />Purge Selected
+                        <nexus:submit onClick="javascript: enableLinks(); if(confirm('Purge all conversations filtered by the current settings? Please review them before confirming this action.')) {document.forms['reportingPropertiesForm'].command.value='purge';} else {document.forms['reportingPropertiesForm'].command.value='report';}">
+                            <img src="images/icons/delete.png" name="deleteButton" class="button" />Purge All
                         </nexus:submit>
 					</logic:equal>
 					<nexus:submit onClick="javascript: document.forms['reportingPropertiesForm'].command.value='first'; enableLinks();">
@@ -702,10 +702,12 @@
 				</tr>
 				<logic:iterate indexId="counter" id="conv" name="collection">
 					<tr>
+						<logic:equal name="reportingSettingsForm" property="convColSelect" value="true">
 							<td class="NEXUSValue">
 							<html-el:multibox
 								property="selected"
 								value="${conv.participantId}|${conv.choreographyId}|${conv.conversationId}" /></td>
+						</logic:equal>
 						<logic:equal name="reportingSettingsForm"
 							property="convColChorId" value="true">
 							<td class="NEXUSValue"><bean:write name="conv"
