@@ -51,7 +51,7 @@
 	<logic:equal name="databasePurgeForm" property="type" value="select">
 	<table width="100%">
 		<tr>
-			<td colspan="4" class="NEXUSSection">Parameters for purging messages</td>
+			<td colspan="4" class="NEXUSSection">Parameters for purging</td>
 		</tr>
 		
 		
@@ -255,26 +255,12 @@
             </tr>
         	
 	</table>
-	
-	
-	<table width="100%">
-		<tr>
-			<td class="NEXUSName">Delete Conversations:</td><td class="NEXUSValue"><html:checkbox property="purgeMessages"/></td>
-		</tr>
-		<tr>
-			<td class="NEXUSName">Delete Log Entries:</td><td class="NEXUSValue"><html:checkbox property="purgeLog"/></td>
-		</tr>
-	</table>
 	</logic:equal>
 	
 	
 	<logic:equal name="databasePurgeForm" property="type" value="preview">
 		<input name="startEnabled" value="${databasePurgeForm.startEnabled }" type="hidden">
 		<input name="endEnabled" value="${databasePurgeForm.endEnabled }" type="hidden">
-		
-		<input name="purgeMessages" value="${databasePurgeForm.purgeMessages }" type="hidden">
-		<input name="purgeLog" value="${databasePurgeForm.purgeLog }" type="hidden">
-		
 		
 		<input name="endHour" value="${databasePurgeForm.endHour }" type="hidden">
 		<input name="endMin" value="${databasePurgeForm.endMin }" type="hidden">
@@ -290,13 +276,7 @@
 			
 		<table width="100%">
 			<tr>
-				<td colspan="2" class="NEXUSSection">Parameters for purging messages</td>
-			</tr>
-			<tr>
-				<td class="NEXUSName">Conversations:</td><td class="NEXUSValue">${databasePurgeForm.convCount}</td>
-			</tr>
-			<tr>
-				<td class="NEXUSName">Messages:</td><td class="NEXUSValue">${databasePurgeForm.messageCount}</td>
+				<td colspan="2" class="NEXUSSection">Warning! Following number of log entries will be purged!</td>
 			</tr>
 			<tr>
 				<td class="NEXUSName">LogEntries:</td><td class="NEXUSValue">${databasePurgeForm.logEntryCount}</td>

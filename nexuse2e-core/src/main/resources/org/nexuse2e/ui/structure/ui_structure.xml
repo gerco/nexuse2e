@@ -199,6 +199,8 @@
           <nxs:command target="ConversationView.do" label="View Specific Conversation" icon="images/icons/bullet_orange.png"/>
           <nxs:command target="MessageView.do" label="View Specific Message" icon="images/icons/bullet_orange.png"/>
           <nxs:command target="DataSaveAs.do?type=content" label="Download Message Header/Content" icon="images/icons/bullet_orange.png"/>
+        </nxs:page>
+        <nxs:page target="DatabasePurge.do?type=select" label="Engine Log Purge" icon="images/icons/bullet_orange.png">
           <nxs:command target="DatabasePurge.do?type=select" label="Execute" icon="images/icons/bullet_orange.png"/>
         </nxs:page>
         <nxs:page target="GroovyShell.do?type=select" label="Groovy Shell" icon="images/icons/wrench.png">
