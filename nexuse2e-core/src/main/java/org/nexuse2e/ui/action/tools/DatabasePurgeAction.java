@@ -58,13 +58,7 @@ public class DatabasePurgeAction extends NexusE2EAction {
             LOG.debug( "start: "+ dbForm.getStartDay()+"."+dbForm.getStartMonth()+"."+dbForm.getStartYear()+" "+dbForm.getStartHour()+":"+dbForm.getStartMin() );
             Date[] dates = getTimestamps( dbForm );
             
-            if(dbForm.isPurgeMessages()) {
-                dbForm.setConvCount( (int) Engine.getInstance().getTransactionService().getConversationsCount( dates[0], dates[1] ) );
-                dbForm.setMessageCount( (int) Engine.getInstance().getTransactionService().getMessagesCount( dates[0], dates[1] ) );
-            }
-            if(dbForm.isPurgeLog()) {
-                dbForm.setLogEntryCount( (int) Engine.getInstance().getTransactionService().getLogCount( dates[0], dates[1] ) );
-            }
+            dbForm.setLogEntryCount( (int) Engine.getInstance().getTransactionService().getLogCount( dates[0], dates[1] ) );
             
             
             LOG.debug( "preview purgeable data" );
@@ -72,23 +66,11 @@ public class DatabasePurgeAction extends NexusE2EAction {
            
             LOG.debug( "removing data" );
             Date[] dates = getTimestamps( dbForm );
-            
-            if(dbForm.isPurgeMessages()) {
-                LOG.debug( "purging selected messages" );
-                
-                try {
-                    Engine.getInstance().getTransactionService().removeConversations( dates[0], dates[1] );
-                } catch ( Exception e ) {
-                    LOG.error( "Error while deleting conversations", e );
-                }    
-            }
-            if(dbForm.isPurgeLog()) {
-                LOG.debug( "purging selected log entries" );
-                try {
-                    Engine.getInstance().getTransactionService().removeLogEntries( dates[0], dates[1] );
-                } catch ( Exception e ) {
-                    LOG.error( "Error while deleting conversations", e );
-                }    
+            LOG.debug( "purging selected log entries" );
+            try {
+                Engine.getInstance().getTransactionService().removeLogEntries( dates[0], dates[1] );
+            } catch ( Exception e ) {
+                LOG.error( "Error while deleting log entries", e );
             }
              
            

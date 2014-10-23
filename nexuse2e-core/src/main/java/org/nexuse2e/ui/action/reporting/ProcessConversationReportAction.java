@@ -104,28 +104,6 @@ public class ProcessConversationReportAction extends ReportingAction {
         
         String searchFor = form.getSearchFor();
 
-        if ("conversation".equals(searchFor) && StringUtils.isNotBlank(command) && "purge".equals(command) && purge) {
-            String[] values = form.getSelected();
-            for (String oneString : values) {
-                StringTokenizer st = new StringTokenizer(oneString, "|");
-                if (3 != st.countTokens()) {
-                    ActionMessage errorMessage = new ActionMessage("generic.error", "Can't purge conversation: >" + oneString + "<");
-                    errors.add(ActionMessages.GLOBAL_MESSAGE, errorMessage);
-                    addRedirect(request, URL, TIMEOUT);
-                    continue;
-                }
-                String participantId = st.nextToken();
-                String choreographyId = st.nextToken();
-                String conversationId = st.nextToken();
-
-                ConversationPojo toDelete = Engine.getInstance().getTransactionService().getConversation(conversationId);
-                if (null != toDelete) {
-                    LOG.debug("Purging conversation " + conversationId + " for choreography " + choreographyId + " and participant " + participantId);
-                    Engine.getInstance().getTransactionService().deleteConversation(toDelete);
-                }
-            }
-        }
-
         if (searchFor != null && searchFor.equals("message") && command != null && command.equals("requeue")) {
             String[] values = form.getSelected();
             for (String messageIdent : values) {
@@ -279,7 +257,7 @@ public class ProcessConversationReportAction extends ReportingAction {
 
             form.setAllItemsCount(items);
             List<MessagePojo> reportMessages = null;
-            if (command == null || command.equals("") || command.equals("first") || command.equals("transaction")) {
+            if (command == null || command.equals("") || command.equals("first") || command.equals("transaction") || "purge".equals(command)) {
                 int pos = form.getStartCount();
                 if (pos == 0 || !command.equals("transaction")) {
                     reportMessages = Engine.getInstance().getTransactionService()
@@ -359,10 +337,14 @@ public class ProcessConversationReportAction extends ReportingAction {
             }
             if (reportMessages != null) {
                 for (MessagePojo pojo : reportMessages) {
-                    ReportMessageEntryForm entry = new ReportMessageEntryForm();
-                    entry.setMessageProperties(pojo);
-                    logItems.add(entry);
-
+                    // If the intent is to delete all filtered messages, no need to add them to the output, that's supposed to end up empty.
+                    if (StringUtils.isNotBlank(command) && "purge".equals(command) && purge) {
+                        Engine.getInstance().getTransactionService().deleteMessage(pojo);
+                    } else {
+                        ReportMessageEntryForm entry = new ReportMessageEntryForm();
+                        entry.setMessageProperties(pojo);
+                        logItems.add(entry);
+                    }
                 }
             }
 
@@ -374,7 +356,7 @@ public class ProcessConversationReportAction extends ReportingAction {
 
             form.setAllItemsCount(items);
             List<ConversationPojo> conversations = null;
-            if (command == null || command.equals("") || command.equals("first") || command.equals("transaction")) {
+            if (command == null || command.equals("") || command.equals("first") || command.equals("transaction") || "purge".equals(command)) {
                 int pos = form.getStartCount();
                 if (pos == 0 || !"transaction".equals(command)) {
 
@@ -465,11 +447,15 @@ public class ProcessConversationReportAction extends ReportingAction {
             }
             if (conversations != null) {
                 for (ConversationPojo pojo : conversations) {
-                    ReportConversationEntryForm entry = new ReportConversationEntryForm();
-                    entry.setValues(pojo);
-                    entry.setTimezone(timezone);
-                    logItems.add(entry);
-
+                    // If the intent is to delete all filtered choreographies, no need to add them to the output, that's supposed to end up empty.
+                    if (StringUtils.isNotBlank(command) && "purge".equals(command) && purge) {
+                        Engine.getInstance().getTransactionService().deleteConversation(pojo);
+                    } else {
+                        ReportConversationEntryForm entry = new ReportConversationEntryForm();
+                        entry.setValues(pojo);
+                        entry.setTimezone(timezone);
+                        logItems.add(entry);
+                    }
                 }
             }
         }
