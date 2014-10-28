@@ -257,7 +257,15 @@ public class ProcessConversationReportAction extends ReportingAction {
 
             form.setAllItemsCount(items);
             List<MessagePojo> reportMessages = null;
-            if (command == null || command.equals("") || command.equals("first") || command.equals("transaction") || "purge".equals(command)) {
+            if (StringUtils.isNotBlank(command) && "purge".equals(command) && purge) {
+                reportMessages = Engine.getInstance().getTransactionService()
+                    .getMessagesForReport(status, nxChoreographyId, nxPartnerId, conversationId, messageId, null, getStartDate(form), getEndDate(form),
+                                          Integer.MAX_VALUE, 0, TransactionDAO.SORT_CREATED, false);
+                for (MessagePojo message : reportMessages) {
+                    Engine.getInstance().getTransactionService().deleteMessage(message);
+                }
+            }
+            if (command == null || command.equals("") || command.equals("first") || command.equals("transaction")) {
                 int pos = form.getStartCount();
                 if (pos == 0 || !command.equals("transaction")) {
                     reportMessages = Engine.getInstance().getTransactionService()
@@ -337,14 +345,9 @@ public class ProcessConversationReportAction extends ReportingAction {
             }
             if (reportMessages != null) {
                 for (MessagePojo pojo : reportMessages) {
-                    // If the intent is to delete all filtered messages, no need to add them to the output, that's supposed to end up empty.
-                    if (StringUtils.isNotBlank(command) && "purge".equals(command) && purge) {
-                        Engine.getInstance().getTransactionService().deleteMessage(pojo);
-                    } else {
-                        ReportMessageEntryForm entry = new ReportMessageEntryForm();
-                        entry.setMessageProperties(pojo);
-                        logItems.add(entry);
-                    }
+                    ReportMessageEntryForm entry = new ReportMessageEntryForm();
+                    entry.setMessageProperties(pojo);
+                    logItems.add(entry);
                 }
             }
 
@@ -356,6 +359,14 @@ public class ProcessConversationReportAction extends ReportingAction {
 
             form.setAllItemsCount(items);
             List<ConversationPojo> conversations = null;
+            if (StringUtils.isNotBlank(command) && "purge".equals(command) && purge) {
+                conversations = Engine.getInstance().getTransactionService()
+                    .getConversationsForReport(status, nxChoreographyId, nxPartnerId, conversationId, getStartDate(form), getEndDate(form),
+                                               Integer.MAX_VALUE, 0, TransactionDAO.SORT_CREATED, false);
+                for (ConversationPojo conv : conversations) {
+                    Engine.getInstance().getTransactionService().deleteConversation(conv);
+                }
+            }
             if (command == null || command.equals("") || command.equals("first") || command.equals("transaction") || "purge".equals(command)) {
                 int pos = form.getStartCount();
                 if (pos == 0 || !"transaction".equals(command)) {
@@ -447,15 +458,10 @@ public class ProcessConversationReportAction extends ReportingAction {
             }
             if (conversations != null) {
                 for (ConversationPojo pojo : conversations) {
-                    // If the intent is to delete all filtered choreographies, no need to add them to the output, that's supposed to end up empty.
-                    if (StringUtils.isNotBlank(command) && "purge".equals(command) && purge) {
-                        Engine.getInstance().getTransactionService().deleteConversation(pojo);
-                    } else {
-                        ReportConversationEntryForm entry = new ReportConversationEntryForm();
-                        entry.setValues(pojo);
-                        entry.setTimezone(timezone);
-                        logItems.add(entry);
-                    }
+                    ReportConversationEntryForm entry = new ReportConversationEntryForm();
+                    entry.setValues(pojo);
+                    entry.setTimezone(timezone);
+                    logItems.add(entry);
                 }
             }
         }
