@@ -180,11 +180,16 @@
 		});
 		
 	this.selectAll = function (state) {
-      var checkboxes = document.forms['reportingPropertiesForm'].selected;
-      for (i = 0; i < checkboxes.length; i++) {     
-      	checkboxes[i].checked = state; 
-	  	}
-	  }
+		var checkboxes = document.forms['reportingPropertiesForm'].selected;
+		if (checkboxes.length) {
+			for (i = 0; i < checkboxes.length; i++) {
+				checkboxes[i].checked = state;
+			}
+		} else {
+			checkboxes.checked = state;
+		}
+	}
+
           
   </script>
 
