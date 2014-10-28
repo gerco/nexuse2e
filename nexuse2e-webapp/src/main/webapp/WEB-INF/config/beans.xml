@@ -58,7 +58,8 @@
       <list>
         <value>/WEB-INF/config/database.properties</value>
         <value>/WEB-INF/config/bean.properties</value>
-        <value>file:///#{systemProperties['externalconfig']}</value>
+        <value>file:///#{systemProperties['externalconfig']}//database.properties</value>
+        <value>file:///#{systemProperties['externalconfig']}//bean.properties</value>
       </list>
     </property>
     <property name="ignoreResourceNotFound" value="true"/>
