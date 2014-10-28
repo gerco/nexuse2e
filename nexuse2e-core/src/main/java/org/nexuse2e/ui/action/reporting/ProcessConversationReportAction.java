@@ -264,6 +264,7 @@ public class ProcessConversationReportAction extends ReportingAction {
                 for (MessagePojo message : reportMessages) {
                     Engine.getInstance().getTransactionService().deleteMessage(message);
                 }
+                command = "first";
             }
             if (command == null || command.equals("") || command.equals("first") || command.equals("transaction")) {
                 int pos = form.getStartCount();
@@ -366,8 +367,9 @@ public class ProcessConversationReportAction extends ReportingAction {
                 for (ConversationPojo conv : conversations) {
                     Engine.getInstance().getTransactionService().deleteConversation(conv);
                 }
+                command = "first";
             }
-            if (command == null || command.equals("") || command.equals("first") || command.equals("transaction") || "purge".equals(command)) {
+            if (command == null || command.equals("") || command.equals("first") || command.equals("transaction")) {
                 int pos = form.getStartCount();
                 if (pos == 0 || !"transaction".equals(command)) {
 
