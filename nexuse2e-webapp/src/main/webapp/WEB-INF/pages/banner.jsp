@@ -21,11 +21,38 @@
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page import="org.nexuse2e.Version"%>
+<%@ page import="java.io.FileReader" %>
+<%@ page import="java.io.BufferedReader" %>
+<%@ page import="java.io.IOException" %>
+
+<%
+     String machineName = null;
+     String filePath = "";
+     String configPath = System.getProperty("externalconfig");
+     if (null != configPath && !"".equals(configPath)) {
+          try {
+               filePath = filePath.concat(configPath).concat("\\machine_name.txt");
+               BufferedReader br = new BufferedReader(new FileReader(filePath));
+               machineName = br.readLine();
+          } catch (IOException ioe) {
+               try {
+                    filePath = filePath.concat(configPath).concat("../config/machine_name.txt");
+                    BufferedReader br = new BufferedReader(new FileReader(filePath));
+                    machineName = br.readLine();
+               } catch (IOException ioeInternal) {
+                    machineName = "NEXUSe2e";
+               }
+
+          }
+     }
+
+%>
 
 <div id="logo_div">
 </div>
 <div id="machine_div_1">
-	<%@ include file="../config/machine_name.txt" %>
+     <c:set var="machine_name"><%= machineName %></c:set>
+     <c:out value="${machine_name}" />
 </div>
 <div id="machine_div_2">
 	<%= Version.getVersion() %>
