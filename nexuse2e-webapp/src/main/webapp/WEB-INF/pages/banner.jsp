@@ -46,7 +46,7 @@
 <div id="machine_div_1">
      <c:set var="machine_name"><%= machineName %></c:set>
      <c:choose>
-          <c:when test="not empty ${machine_name}"><c:out value="${machine_name}" /></c:when>
+          <c:when test="${not empty machine_name}"><c:out value="${machine_name}" /></c:when>
           <c:otherwise><%@ include file="../config/machine_name.txt" %></c:otherwise>
      </c:choose>
 
