@@ -24,15 +24,15 @@
 <%@ page import="java.io.BufferedReader" %>
 <%@ page import="java.io.FileReader" %>
 <%@ page import="java.io.IOException" %>
+<%@ page import="java.io.File" %>
 
 <%
      String machineName = null;
-     String filePath = "";
      String configPath = System.getProperty("externalconfig");
      if (null != configPath && !"".equals(configPath)) {
           try {
-               filePath = filePath.concat(configPath).concat("\\machine_name.txt");
-               BufferedReader br = new BufferedReader(new FileReader(filePath));
+               File file = new File(configPath, "machine_name.txt");
+               BufferedReader br = new BufferedReader(new FileReader(file));
                machineName = br.readLine();
           } catch (IOException ioe) {
                machineName = "";
