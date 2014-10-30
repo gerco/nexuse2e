@@ -27,7 +27,7 @@
 <%@ page import="java.io.File" %>
 
 <%
-     String machineName = null;
+     String machineName = "";
      String configPath = System.getProperty("externalconfig");
      if (null != configPath && !"".equals(configPath)) {
           try {
