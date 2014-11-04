@@ -48,6 +48,10 @@
 		<td class="NEXUSNameNoWidth">${NEXUSe2e_version}</td>
 	</tr>
 	<tr>
+		<td class="NEXUSNameNoWidth">NEXUSe2e configuration used</td>
+		<td class="NEXUSNameNoWidth">${NEXUSe2e_configpath}</td>
+	</tr>
+	<tr>
 		<td class="NEXUSNameNoWidth">Java Version</td>
 		<td class="NEXUSNameNoWidth">${java_version}</td>
 	</tr>
@@ -114,7 +118,7 @@
 				%>
 				<nested:iterate id="command" indexId="counter" name="instance" property="commands">
 					<tr>
-						<% if(counter.intValue() == 0) {%>
+						<% if(counter == 0) {%>
 						<td style="text-align: center;background-color:white;" rowspan="<%=size %>" class="NEXUSNameNoWidth">
 							<img src="images/icons/icon-lights-${instance.statusColor}.png" border="0" alt="" class="button">
 						</td>
