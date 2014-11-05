@@ -84,7 +84,7 @@
 		<td class="NEXUSNameNoWidth"><%= org.nexuse2e.Engine.getInstance().getDefaultCharEncoding() %></td>
 	</tr>
 	<tr>
-		<td class="NEXUSNameNoWidth">JCE status / cipher limitations</td>
+		<td class="NEXUSNameNoWidth">Cipher limitations / JCE status</td>
 		<td class="NEXUSNameNoWidth"><%= org.nexuse2e.Engine.getInstance().getJCEInstalledStatus() %></td>
 	</tr>
 </table>
