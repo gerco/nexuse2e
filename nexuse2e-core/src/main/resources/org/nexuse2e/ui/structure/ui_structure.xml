@@ -182,18 +182,10 @@
           </nxs:page>
         </nxs:page>
       </nxs:page>
-      <!--
-        <nxs:command type="provider" target="testTargetProvider" label="TestTargetProviderLabel" icon="images/tree/nexus.gif"/>
-      -->
       <nxs:page target="Tools.do" label="Tools" icon="images/icons/wrench.png">
         <nxs:page target="MessageSubmission.do" label="Message Submission" icon="images/icons/lorry_go.png">
           <nxs:command target="MessageSubmission.do" label="Execute" icon="images/icons/bullet_orange.png"/>
         </nxs:page>
-        <!-- Commented out, because the feature is not working
-        <nxs:page target="ProvisioningSubmission.do" label="Provisioning" icon="images/icons/television_add.png">
-          <nxs:command target="ProvisioningSubmission.do" label="Execute" icon="images/icons/bullet_orange.png"/>
-        </nxs:page>
-        -->
         <nxs:page target="ProcessConversationReport.do?type=purge" label="Database Purge" icon="images/icons/bullet_orange.png">
           <nxs:command target="ProcessConversationReport.do" label="Process Conversation Report" icon="images/icons/report.png"/>
           <nxs:command target="ConversationView.do" label="View Specific Conversation" icon="images/icons/bullet_orange.png"/>
@@ -248,18 +240,12 @@
             <nxs:page type="provider" provider="actionTargetProvider" target="ActionSettingsView.do" label="View Action" icon="images/icons/bullet_orange.png">
             </nxs:page>
           </nxs:page>
-          <!-- 
-          <nxs:page target="NotifierList.do?nxChoreographyId=${nxChoreographyId}" label="Notifiers" icon="images/tree/notifiers.gif"/>
-           -->
           <nxs:page target="ParticipantList.do?nxChoreographyId=${nxChoreographyId}" label="Participants" icon="images/icons/group.png">
             <nxs:page type="provider" provider="participantTargetProvider" target="ParticipantView.do" label="View Participant" icon="images/icons/bullet_orange.png">
                <nxs:command target="ParticipantUpdate.do" label="Update Participant" icon="images/icons/bullet_orange.png"/>
                <nxs:command target="ParticipantDelete.do" label="Delete Participant" icon="images/icons/bullet_orange.png"/>
             </nxs:page>
           </nxs:page>
-          <!-- <nxs:page target="ReportingForward.do?nxChoreographyId=${nxChoreographyId}" label="Reports" icon="images/icons/chart_curve.png">
-            <nxs:command target="ProcessConversationReport.do" label="Process Conversation Report" icon="images/icons/bullet_orange.png"/> 
-          </nxs:page> -->
         </nxs:page>
       </nxs:page>
       <nxs:page target="ReportingStatistics.do" label="Reporting" icon="images/icons/chart_curve.png">

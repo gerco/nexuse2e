@@ -47,15 +47,6 @@
         <td class="NEXUSNameNoWidth"><nexus:link styleClass="NexusLink"
                                                  href="MessageSubmission.do">Message Submission</nexus:link></td>
     </tr>
-    <%-- Commented out, feature is not working
-    <tr>
-        <td class="NEXUSIcon"><nexus:link styleClass="NexusImgLink"
-            href="ProvisioningSubmission.do">
-            <img border="0" src="images/icons/television_add.png">
-        </nexus:link></td>
-        <td class="NEXUSNameNoWidth"><nexus:link styleClass="NexusLink"
-            href="ProvisioningSubmission.do">Partner Provisioning</nexus:link></td>
-    </tr>--%>
     <tr>
         <td class="NEXUSIcon"><nexus:link styleClass="NexusImgLink"
                                           href="ProcessConversationReport.do?type=purge">
