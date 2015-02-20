@@ -72,8 +72,12 @@ public class AuthSSLX509TrustManager implements X509TrustManager {
             while ( enumeration.hasMoreElements() ) {
                 String alias = enumeration.nextElement();
                 X509Certificate cert = (X509Certificate) keyStore.getCertificate( alias );
-                trustedCertificates.put( cert.getSubjectDN(), cert );
-                LOG.debug( "Found trusted cert: " + cert.getSubjectDN() );
+				if (cert != null) {
+					trustedCertificates.put(cert.getSubjectDN(), cert);
+					LOG.debug("Found trusted cert: " + cert.getSubjectDN());
+				} else {
+					LOG.debug("No cert associated with alias: " + alias);
+				}
             }
         } catch ( Exception ex ) {
             LOG.error( "Error processing trusted certificates! ", ex );
