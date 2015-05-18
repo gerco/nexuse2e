@@ -73,7 +73,8 @@ public class TreeProvider implements AjaxRequestHandler {
         if (user != null) {
             engineConfiguration = Engine.getInstance().getConfiguration( user.getNxUserId() );
         } else {
-            engineConfiguration = Engine.getInstance().getCurrentConfiguration();
+            // no user, no configuration
+            return "";
         }
 
         Map<?, ?> params = request.getParameterMap();
