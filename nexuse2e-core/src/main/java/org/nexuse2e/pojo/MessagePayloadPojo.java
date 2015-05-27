@@ -67,7 +67,7 @@ public class MessagePayloadPojo implements NEXUSe2ePojo {
     @Column(name = "sequence_number", nullable = false)
     private int               sequenceNumber;
 
-    @Column(name = "mime_type", length = 64, nullable = false)
+    @Column(name = "mime_type", length = 128, nullable = false)
     private String            mimeType;
 
     @Column(name = "content_id", length = 96, nullable = false)

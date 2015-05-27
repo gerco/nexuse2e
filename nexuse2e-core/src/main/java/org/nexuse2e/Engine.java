@@ -582,7 +582,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
             
         	contentType = contentType.toLowerCase().trim();
             MimeMapping mimeMapping = (MimeMapping) mimeMappings.get( contentType );
-            
+
             //in case simple mapping doesn't fit, maybe its a combined value, try splitting header parameter (NEXUS-201)
             if ( mimeMapping == null ) {
             	String[] fragments = contentType.split(";");
@@ -592,9 +592,9 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
             			break;
             		}
             	}
-            }    
-            
-            if ( mimeMapping != null ) {
+            }
+
+            if ( mimeMapping != null && mimeMapping.dataHandler != null ) {
                 if (!mimeMapping.dataHandler.equalsIgnoreCase( binary_base64.class.getName() ) ) {
                     return false;
                 }
