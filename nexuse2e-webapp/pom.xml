@@ -45,15 +45,6 @@
          <archive>
            <manifest>
              <mainClass>org.nexuse2e.Version</mainClass>
-               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-               <manifestEntries>
-                   <Application-Name>${project.name}</Application-Name>
-                   <Application-Artifact-Id>${project.artifactId}</Application-Artifact-Id>
-                   <Application-Group-Id>${project.groupId}</Application-Group-Id>
-                   <Implementation-Svn-Revision>${env.SVN_REVISION}</Implementation-Svn-Revision>
-                   <Implementation-Version>${project.version}</Implementation-Version>
-                   <Implementation-Build-Date>${env.BUILD_ID}</Implementation-Build-Date>
-               </manifestEntries>
            </manifest>
          </archive>
          <warName>NEXUSe2e</warName>
@@ -72,7 +63,18 @@
              </includes>
            </resource>
          </webResources>
+         <manifest>
+           <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+         </manifest>
          <archive>
+           <manifestEntries>
+             <Application-Name>${project.name}</Application-Name>
+             <Application-Artifact-Id>${project.artifactId}</Application-Artifact-Id>
+             <Application-Group-Id>${project.groupId}</Application-Group-Id>
+             <Implementation-Svn-Revision>${env.SVN_REVISION}</Implementation-Svn-Revision>
+             <Implementation-Version>${project.version}</Implementation-Version>
+             <Implementation-Build-Date>${env.BUILD_ID}</Implementation-Build-Date>
+           </manifestEntries>
          </archive>
        </configuration>
      </plugin>
