@@ -52,6 +52,12 @@ import org.nexuse2e.pojo.MessagePojo;
  */
 public class HTTPMessageUnpackager extends AbstractPipelet {
 
+    // map identifiers
+    // content type: used for isBinary & mimetype on payload
+    private static final String CONTENT_TYPE = "content-type";
+    // optional setting for future use. Could be used to interpret the content.
+    private static final String CHARTSET = "charset";
+
     private static Logger       LOG = Logger.getLogger( HTTPMessageUnpackager.class );
 
     private static String		CRLF = "\r\n";
@@ -129,9 +135,18 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
             for ( int i = 1; i < messageBodyParts.length; i++ ) {
                 MimeBodyPart mimeBodyPart = messageBodyParts[i];
                 Object bodyPartContent = mimeBodyPart.getContent();
+
+
+                String bodyPartContentTypeString = mimeBodyPart.getContentType();
+                Map<String, String> contentTypeParamMap = stripParameters(bodyPartContentTypeString);
+                String bodyPartContentType = contentTypeParamMap.get(CONTENT_TYPE);
+
+
+                LOG.trace("BodyPart Mimetype: "+bodyPartContentType);
+
                 if ( bodyPartContent instanceof ByteArrayInputStream ) {
                     ByteArrayInputStream contentIS = (ByteArrayInputStream) bodyPartContent;
-                    if ( isBinaryType( mimeBodyPart.getContentType() ) ) {
+                    if ( isBinaryType( bodyPartContentType ) ) {
                     	LOG.trace(new LogMessage("extracting binary content",messageContext));
                         bodyPart = retrieveBinaryContent( contentIS );
                     } else {
@@ -139,10 +154,8 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
                         bodyPart = retrieveContent( contentIS );
                     }
                 } else {
-                	
-                	LOG.trace("BodyPart Mimetype: "+mimeBodyPart.getContentType());
-                	
-                    if ( isBinaryType( mimeBodyPart.getContentType() ) ) {
+                    LOG.trace(new LogMessage("extracting string based text content",messageContext));
+                	if ( isBinaryType( bodyPartContentType ) ) {
                     	// TODO decode( packedMessage ) seems to encrypt the content for some reason
                     	bodyPart = Base64.decodeBase64(Base64.decodeBase64((byte[]) ( bodyPartContent )));
                     } else {
@@ -164,7 +177,7 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
                 LOG.trace( new LogMessage( "contentId:" + contentId,messagePojo) );
                 messagePayloadPojo.setContentId( contentId );
                 // MBR 20071213: added toLowerCase
-                messagePayloadPojo.setMimeType( mimeBodyPart.getContentType().toLowerCase() );
+                messagePayloadPojo.setMimeType( bodyPartContentType );
                 messagePayloadPojo.setMessage( messagePojo );
                 payloads.add( messagePayloadPojo );
             }
@@ -182,6 +195,40 @@ public class HTTPMessageUnpackager extends AbstractPipelet {
         return messageContext;
 
     } // processMessage
+
+    /**
+     * Strips all useful and ignoreable parameters from the given content string. The
+     * format is defined in http://tools.ietf.org/html/rfc2046#section-4.1 & http://tools.ietf.org/html/rfc6838#section-4.2
+     * Even if parameters are completely ignored, stripping is required because of interop issues with e2open.
+     *
+     * @param bodyPartContentTypeString the whole string containing all the parameters and the content type / subtype.
+     * @return a map containing all parameters and the type/subtype as key {@value #CONTENT_TYPE}.
+     */
+    private Map<String,String> stripParameters(String bodyPartContentTypeString) {
+        Map<String, String> paramsMap = new HashMap<String, String>();
+        String[] fragments = bodyPartContentTypeString.split(";");
+        for (int i = 0; i< fragments.length ; i++) {
+            String pair = fragments[i].trim();
+            if(i == 0) {
+                // content type should be lowercase for isBinaryMapping
+                paramsMap.put(CONTENT_TYPE,pair.toLowerCase());
+            } else {
+                // key value pairs with more than one equals are not supported...
+                String[] pairArray = pair.split("=");
+                if(pairArray.length == 2) {
+                    String key = pairArray[0].trim();
+                    String value = pairArray[1].trim();
+
+                    // make sure charset has a exactly defined key for future use.
+                    if("charset".equalsIgnoreCase(key)) {
+                        key = CHARTSET;
+                    }
+                    paramsMap.put(key, value);
+                }
+            }
+        }
+        return paramsMap;
+    }
 
     /**
      * dcode a mime message based on a byte array.
