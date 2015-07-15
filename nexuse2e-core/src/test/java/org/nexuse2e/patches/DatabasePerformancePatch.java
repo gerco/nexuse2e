@@ -35,7 +35,7 @@ public class DatabasePerformancePatch extends DatabasePatch implements Patch {
         {"nx_log","fk_log_created_date","created_date","CREATE INDEX fk_log_created_date ON nx_log(created_date)"},
         
         {"nx_conversation","fk_conversation_created_date","created_date","CREATE INDEX fk_conversation_created_date ON nx_conversation(created_date)"},
-        {"nx_conversation","fk_conversation_conversation_id","conversation_id","CREATE INDEX fk_conversation_conversation_id ON nx_conversation(conversation_id)"}
+        {"nx_conversation","fk_conv_conv_id","conversation_id","CREATE INDEX fk_conv_conv_id ON nx_conversation(conversation_id)"}
     };
     
     public void executePatch() throws PatchException {
