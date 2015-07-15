@@ -61,7 +61,7 @@ public class ConversationPojo implements NEXUSe2ePojo {
     @Access(AccessType.PROPERTY)
     @Id
     @Column(name = "nx_conversation_id")
-    @Index(name="fk_conversation_conversation_id")
+    @Index(name="fk_conv_conv_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int               nxConversationId;
 
