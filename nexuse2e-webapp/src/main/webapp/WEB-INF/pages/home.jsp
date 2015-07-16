@@ -19,6 +19,9 @@
      02110-1301 USA, or see the FSF site: http://www.fsf.org.
 
 --%>
+<%@ page import="java.util.Set" %>
+<%@ page import="java.util.Map" %>
+
 <%@ taglib uri="/tags/struts-bean" prefix="bean"%>
 <%@ taglib uri="/tags/struts-html" prefix="html"%>
 <%@ taglib uri="/tags/struts-nested" prefix="nested"%>
@@ -84,9 +87,32 @@
 		<td class="NEXUSNameNoWidth"><%= org.nexuse2e.Engine.getInstance().getDefaultCharEncoding() %></td>
 	</tr>
 	<tr>
+		<td class="NEXUSNameNoWidth">JVM Default Timezone</td>
+		<td class="NEXUSNameNoWidth"><%= java.util.TimeZone.getDefault().getID() %></td>
+	</tr>
+	<tr>
 		<td class="NEXUSNameNoWidth">Cipher limitations / JCE status</td>
 		<td class="NEXUSNameNoWidth"><%= org.nexuse2e.Engine.getInstance().getJCEInstalledStatus() %></td>
 	</tr>
+    <tr>
+        <td class="NEXUSNameNoWidth">JVM Parameters</td>
+        <td class="NEXUSNameNoWidth">
+            <div style="max-height: 200px;white-space: normal;overflow: auto;">
+            <%
+                try {
+                    Set<Map.Entry<Object,Object>> paramSet = System.getProperties().entrySet();
+                    for (Map.Entry param : paramSet) {
+                        out.print(param.getKey()+"="+param.getValue()+"<br>");
+                    }
+                } catch (Exception e) {
+                    %>
+                    n.a.
+                    <%
+                }
+            %>
+            </div>
+        </td>
+    </tr>
 </table>
 <table colspan="4" class="NEXUS_TABLE" width="100%">
 
