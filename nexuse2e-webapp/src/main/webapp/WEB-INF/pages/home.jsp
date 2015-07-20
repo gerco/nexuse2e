@@ -21,6 +21,12 @@
 --%>
 <%@ page import="java.util.Set" %>
 <%@ page import="java.util.Map" %>
+<%@ page import="java.io.File" %>
+<%@ page import="org.nexuse2e.Engine" %>
+<%@ page import="org.hibernate.internal.SessionFactoryImpl" %>
+<%@ page import="org.hibernate.service.jdbc.connections.internal.DatasourceConnectionProviderImpl" %>
+<%@ page import="com.mchange.v2.c3p0.ComboPooledDataSource" %>
+<%@ page import="org.springframework.beans.BeansException" %>
 
 <%@ taglib uri="/tags/struts-bean" prefix="bean"%>
 <%@ taglib uri="/tags/struts-html" prefix="html"%>
@@ -94,7 +100,39 @@
 		<td class="NEXUSNameNoWidth">Cipher limitations / JCE status</td>
 		<td class="NEXUSNameNoWidth"><%= org.nexuse2e.Engine.getInstance().getJCEInstalledStatus() %></td>
 	</tr>
-    <tr>
+
+	<tr>
+		<td class="NEXUSNameNoWidth">Database Dialect</td>
+		<td class="NEXUSNameNoWidth"><%= ((SessionFactoryImpl) Engine.getInstance().getBeanFactory().getBean("hibernateSessionFactory")).getDialect() %></td>
+	</tr>
+	<tr>
+		<td class="NEXUSNameNoWidth">Database Driver Class</td>
+		<td class="NEXUSNameNoWidth">
+			<%
+				try {
+					String driverClass = ((ComboPooledDataSource)((DatasourceConnectionProviderImpl)((SessionFactoryImpl)Engine.getInstance().getBeanFactory().getBean("hibernateSessionFactory")).getConnectionProvider()).getDataSource()).getDriverClass();
+					out.print(driverClass);
+				} catch (Exception e) {
+					out.print("n.a.");
+				}
+			%>
+		</td>
+	</tr>
+	<tr>
+		<td class="NEXUSNameNoWidth">Database URL</td>
+		<td class="NEXUSNameNoWidth">
+			<%
+				try {
+					String dburl = ((ComboPooledDataSource)((DatasourceConnectionProviderImpl)((SessionFactoryImpl) Engine.getInstance().getBeanFactory().getBean("hibernateSessionFactory")).getConnectionProvider()).getDataSource()).getJdbcUrl();
+					out.print(dburl);
+				} catch (Exception e) {
+					out.print("n.a.");
+				}
+			%>
+		</td>
+	</tr>
+
+	<tr>
         <td class="NEXUSNameNoWidth">JVM Parameters</td>
         <td class="NEXUSNameNoWidth">
             <div style="max-height: 200px;white-space: normal;overflow: auto;">
@@ -110,6 +148,52 @@
                     <%
                 }
             %>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td class="NEXUSNameNoWidth">Libraries</td>
+        <td class="NEXUSNameNoWidth">
+            <div style="max-height: 200px;white-space: normal;overflow: auto;">
+				<table class="NEXUS_TABLE" width="100%">
+					<td style="width:40%" class="NEXUSSection">Filename</td>
+					<td style="width:30%" class="NEXUSSection">Version</td>
+					<td style="width:30%" class="NEXUSSection">Size (kb)</td>
+				<%
+                    try {
+						File libDir = new File(System.getProperty("webapp.root"),"WEB-INF/lib");
+						if(libDir.isDirectory()) {
+							File[] files = libDir.listFiles();
+							for (File file : files) {
+							%>
+								<tr>
+							<%
+								String ver = "na";
+								String name = file.getName();
+								if(name.endsWith(".jar")) {
+									name = name.substring(0,name.length()-4);
+									if(name.lastIndexOf("-") > 0) {
+										ver = name.substring(name.lastIndexOf("-")+1, name.length());
+										name = name.substring(0,name.lastIndexOf("-"));
+									}
+								}
+								String size = ""+file.length()/1000d;
+							out.print("<td class=\"NEXUSNameNoWidth\">"+name+"</td><td class=\"NEXUSNameNoWidth\">"+ver+"</td><td class=\"NEXUSNameNoWidth\">"+size+"</td>");
+							%>
+								</tr>
+							<%
+							}
+						} else {
+							out.print("no lib dir found");
+						}
+
+                    } catch (Exception e) {
+                %>
+                n.a.
+                <%
+                    }
+                %>
+                </table>
             </div>
         </td>
     </tr>
