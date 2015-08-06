@@ -563,7 +563,11 @@
 		<logic:notEmpty name="collection">
 			<table class="NEXUS_TABLE" width="100%">
 				<tr>
-					<th class="NEXUSSection"></th>
+					<logic:notEqual name="reportingPropertiesForm" property="type" value="purge">
+						<logic:equal name="reportingSettingsForm" property="messColSelect" value="true">
+							<th class="NEXUSSection"></th>
+						</logic:equal>
+					</logic:notEqual>
 					<th class="NEXUSSection">Message ID</th>
 					<th class="NEXUSSection">Conversation ID</th>
 					<logic:equal name="reportingSettingsForm"
