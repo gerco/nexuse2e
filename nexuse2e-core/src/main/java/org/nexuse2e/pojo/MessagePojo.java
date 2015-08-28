@@ -645,14 +645,6 @@ public class MessagePojo implements NEXUSe2ePojo {
 
     @Override
     public String toString() {
-        String actionName = "<not loaded>";
-        if (action != null) {
-            try {
-                actionName = action.getName();
-            } catch (Exception notLoadedException) {
-                // avoid LazyInitializationException being thrown here
-            }
-        }
-        return messageId + " " + getTypeName() + " " + actionName + " " + getStatusName(status) + " " + createdDate;
+        return "message[id:" + messageId + ",status:" + getStatusName(status) + ",created:" + getCreatedDate() + "]";
     }
 }

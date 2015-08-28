@@ -422,38 +422,6 @@ public class ConversationPojo implements NEXUSe2ePojo {
     
     @Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append( "\n" );
-		sb.append( "- - 8< - -" );
-		sb.append( "\n" );
-		sb.append( "State machine dump of conversation " + getConversationId() );
-		sb.append( "\n" );
-		sb.append( "Status: " + ConversationPojo.getStatusName( getStatus() ) );
-		sb.append( "\n" );
-		List<MessagePojo> messages = getMessages();
-		if ( messages != null ) {
-			sb.append( "Number of messages: " + messages.size() );
-			sb.append( "\n" );
-			if ( messages.size() > 0 ) {
-				sb.append( "Messages: ");
-				sb.append( "\n" );
-				try {
-    				for ( int i = 0; i < messages.size(); i++ ) {
-    				    MessagePojo currMsg = messages.get( i );
-    					sb.append( "\t#" + ( i + 1 ) + "\t" );
-    					sb.append( currMsg.toString() );
-    					sb.append( "\n" );
-    				}
-				} catch ( IndexOutOfBoundsException e ) {
-				    sb.append( "List of messages possibly not complete, because of concurrent modification" );
-                    sb.append( "\n" );
-				}
-			}
-		} else {
-			sb.append( "List of messages is null" );
-			sb.append( "\n" );
-		}
-		sb.append( "- - >8 - -" );
-		return sb.toString();
+		return "conversation[id:" + getConversationId() + ",state:" + ConversationPojo.getStatusName(getStatus()) + "]";
 	}
 }
