@@ -119,24 +119,24 @@ public class PartnerPojo implements NEXUSe2ePojo {
 	@Column(name = "partner_id_type", length=128, nullable=false)
 	private String                partnerIdType;
     
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "partner")
-    @Fetch(value = FetchMode.SUBSELECT)
-    private Set<ConversationPojo> conversations    = new HashSet<ConversationPojo>( 0 );
+//    @OneToMany(fetch = FetchType.LAZY, mappedBy = "partner")
+//    @Fetch(value = FetchMode.SUBSELECT)
+//    private Set<ConversationPojo> conversations    = new HashSet<ConversationPojo>( 0 );
 	
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "partner")
     @Cascade(value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @Fetch(value = FetchMode.SUBSELECT)
+    @Fetch(value = FetchMode.SELECT)
     private Set<CertificatePojo>  certificates     = new HashSet<CertificatePojo>( 0 );
 	
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "partner")
     @Cascade(value = org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-    @Fetch(value = FetchMode.SUBSELECT)
+    @Fetch(value = FetchMode.SELECT)
     @XmlElementWrapper(name = "Connections")
     @XmlElement(name = "Connection")
     private Set<ConnectionPojo>   connections      = new HashSet<ConnectionPojo>( 0 );
     
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "partner")
-    @Fetch(value = FetchMode.SUBSELECT)
+    @Fetch(value = FetchMode.SELECT)
     private List<ParticipantPojo> participants     = new ArrayList<ParticipantPojo>( 0 );
     
 	
@@ -188,7 +188,7 @@ public class PartnerPojo implements NEXUSe2ePojo {
         this.description = description;
         this.partnerId = partnerId;
         this.partnerIdType = partnerIdType;
-        this.conversations = conversations;
+//        this.conversations = conversations;
         this.certificates = certificates;
         this.connections = connections;
         this.participants = participants;
@@ -376,15 +376,15 @@ public class PartnerPojo implements NEXUSe2ePojo {
         this.partnerIdType = partnerIdType;
     }
 
-    public Set<ConversationPojo> getConversations() {
-
-        return this.conversations;
-    }
-
-    public void setConversations( Set<ConversationPojo> conversations ) {
-
-        this.conversations = conversations;
-    }
+//    public Set<ConversationPojo> getConversations() {
+//
+//        return this.conversations;
+//    }
+//
+//    public void setConversations( Set<ConversationPojo> conversations ) {
+//
+//        this.conversations = conversations;
+//    }
 
     /**
      * Required for JAXB

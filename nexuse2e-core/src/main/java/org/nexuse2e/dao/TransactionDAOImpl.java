@@ -19,15 +19,6 @@
  */
 package org.nexuse2e.dao;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -57,6 +48,15 @@ import org.nexuse2e.pojo.NEXUSe2ePojo;
 import org.nexuse2e.pojo.PartnerPojo;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Data access object (DAO) to provide persistence services for transaction related entities.
  *
@@ -69,7 +69,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
 
     private static Map<Integer, int[]> followUpConversationStates;
     private static Map<Integer, int[]> followUpMessageStates;
-    
+
     static {
         followUpConversationStates = new HashMap<Integer, int[]>();
         followUpConversationStates.put( Constants.CONVERSATION_STATUS_ERROR, new int[] {
@@ -126,15 +126,15 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
      */
     private void printConversationInfo( String prefix, ConversationPojo pojo, MessagePojo lastMessage ) {
         if (pojo != null) {
-            
+
             // DEBUG
             int id = pojo.getNxConversationId();
             pojo.setNxConversationId( 0 );
             String s = pojo.toString();
             pojo.setNxConversationId( id );
             // END OF DEBUG
-            
-            
+
+
             List<MessagePojo> messages = pojo.getMessages();
             if (lastMessage == null) {
                 lastMessage = (messages == null || messages.isEmpty() ? null : messages.get( messages.size() - 1 ));
@@ -322,7 +322,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
 
         int min = (minLevel == null ? 0 : minLevel.toInt());
         int max = (maxLevel == null ? 1000000 : maxLevel.toInt());
-        
+
         Session session = sessionFactory.getCurrentSession();
         StringBuilder query = new StringBuilder( "select count(nx_log_id) as msg_count, severity from nx_log log " );
         if (minLevel != null || maxLevel != null) {
@@ -375,7 +375,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
 
         Timestamp startTs = (start == null ? null : (start instanceof Timestamp ? (Timestamp) start : new Timestamp( start.getTime() )));
         Timestamp endTs = (end == null ? null : (end instanceof Timestamp ? (Timestamp) end : new Timestamp( end.getTime() )));
-        
+
         if (StringUtils.isEmpty( prefix )) {
             prefix = "";
         } else {
@@ -444,7 +444,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
                 sqlquery2.setTimestamp( name, map.get( name ) );
             }
         }
-        
+
         map = null;
         query = new StringBuilder( "delete from nx_message where referenced_nx_message_id is not null" );
         if (start != null || end != null) {
@@ -490,7 +490,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         sqlquery3.executeUpdate();
         sqlquery4.executeUpdate();
         sqlquery5.executeUpdate();
-    
+
         return result;
     }
 
@@ -519,15 +519,15 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
             String conversationId, Date start, Date end, int field, boolean ascending ) {
 
         DetachedCriteria dc = DetachedCriteria.forClass( ConversationPojo.class );
-        
+
         if ( status != null ) {
-            
+
             if ( status.indexOf( ',' ) == -1 ) {
                 dc.add( Restrictions.eq( "status", Integer.parseInt( status ) ) );
 
             } else {
                 String[] statusValues = status.split( "," );
-                Integer[] intValues = new Integer[statusValues.length]; 
+                Integer[] intValues = new Integer[statusValues.length];
                 for(int i = 0; i < statusValues.length; i ++){
                     intValues[i]=Integer.parseInt( statusValues[i] );
                 }
@@ -547,7 +547,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
             dc.add( Restrictions.ge( "createdDate", start ) );
         }
         if ( end != null ) {
-            
+
             dc.add( Restrictions.le( "createdDate", end ) );
         }
 
@@ -563,7 +563,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
      * @param status
      * @param nxChoreographyId
      * @param nxPartnerId
-     * @param nxConversationId
+     * @param conversationId
      * @param messageId
      * @param type
      * @param start
@@ -583,20 +583,20 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
 
             } else {
                 String[] statusValues = status.split( "," );
-                Integer[] intValues = new Integer[statusValues.length]; 
+                Integer[] intValues = new Integer[statusValues.length];
                 for(int i = 0; i < statusValues.length; i ++){
                     intValues[i]=Integer.parseInt( statusValues[i] );
                 }
                 dc.add( Restrictions.in( "status", intValues ) );
             }
         }
-        
+
         DetachedCriteria conv = null;
         if ( conversationId != null ) {
             conv = dc.createCriteria( "conversation");
             conv.add(Restrictions.like( "conversationId", "%" + conversationId.trim() + "%" ) );
         }
-        
+
         if ( nxChoreographyId != 0 ) {
             if(conv == null) {
                 conv = dc.createCriteria( "conversation");
@@ -611,7 +611,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
             conv.createCriteria( "partner" ).add(
                     Restrictions.eq( "nxPartnerId", nxPartnerId ) );
         }
-        
+
         if ( messageId != null ) {
             dc.add( Restrictions.like( "messageId", "%" + messageId.trim() + "%" ) );
         }
@@ -642,7 +642,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
 	    			+ MessagePojo.getStatusName( messagePojo.getStatus() )
 	    			+ "/" + ConversationPojo.getStatusName( messagePojo.getConversation().getStatus() ), messagePojo ) );
         }
-        
+
         if ( LOG.isDebugEnabled() ) {
         	LOG.debug( new LogMessage( "storeTransaction: " + conversationPojo + " - " + messagePojo, messagePojo ) );
         }
@@ -655,7 +655,6 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
     } // storeTransaction
 
     /**
-     * @param objectName
      * @param field
      * @param ascending
      * @return
@@ -926,17 +925,17 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
                     + ", only values >= " + MessageStatus.FAILED.getOrdinal()
                     + " and <= " + MessageStatus.STOPPED.getOrdinal() + " allowed" );
         }
-        
+
         if (conversationStatus < Constants.CONVERSATION_STATUS_ERROR
                 || conversationStatus > Constants.CONVERSATION_STATUS_COMPLETED) {
             throw new IllegalArgumentException( "Illegal conversation status: " + conversationStatus
                     + ", only values >= " + Constants.CONVERSATION_STATUS_ERROR
                     + " and <= " + Constants.CONVERSATION_STATUS_COMPLETED + " allowed" );
         }
-        
+
         int allowedMessageStatus = messageStatus;
         int allowedConversationStatus = conversationStatus;
-        
+
         MessagePojo persistentMessage;
         ConversationPojo persistentConversation;
         if ( message.getNxMessageId() > 0 ) {
@@ -960,7 +959,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
                 message.setStatus( allowedMessageStatus );
             }
             message.getConversation().setStatus( allowedConversationStatus );
-            
+
             if (messageStatus == allowedMessageStatus && conversationStatus == allowedConversationStatus) {
                 if (persistentMessage != null) {
                     persistentMessage.setProperties( message );
@@ -981,11 +980,11 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
                 }
             }
         }
-            
-          
-        
+
+
+
         String errMsg = null;
-        
+
         if (allowedMessageStatus != messageStatus) {
             errMsg = "Illegal transition: Cannot set message status for " + message.getMessageId() + " from " +
             MessagePojo.getStatusName( allowedMessageStatus ) + " to " + MessagePojo.getStatusName( messageStatus );
@@ -1002,7 +1001,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         if (errMsg != null) {
             throw new StateTransitionException( errMsg );
         }
-        
+
 
     } // updateTransaction
 
@@ -1014,6 +1013,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         MessagePojo persistentMessage;
         ConversationPojo persistentConversation;
         Session session = sessionFactory.getCurrentSession();
+
         if (message.getConversation() != null && message.getConversation().getNxConversationId() > 0) {
             persistentConversation = (ConversationPojo) session.get(ConversationPojo.class, message.getConversation().getNxConversationId());
         } else {
@@ -1024,14 +1024,14 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         } else {
             persistentMessage = message;
         }
-        
+
         if (persistentConversation != null && persistentMessage != null) {
             String oldActionName = (persistentConversation.getCurrentAction() == null ? null : persistentConversation.getCurrentAction().getName());
-            
+
             // remember persistent status for state transition check
             int persistentMessageStatus = persistentMessage.getStatus();
             int persistentConversationStatus = persistentConversation.getStatus();
-            
+
             // perform update operation
             UpdateScope updateScope = UpdateScope.NOTHING;
             MessagePojo persistentReferencedMessage = null;
@@ -1044,7 +1044,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
                     updateScope = UpdateScope.NOTHING;
                 }
             }
-            
+
             int allowedMessageStatus = persistentMessage.getStatus();
             int allowedConversationStatus = persistentConversation.getStatus();
             if (!force) {
@@ -1066,7 +1066,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
             }
 
             // persist result
-            List<NEXUSe2ePojo> entities = new ArrayList<NEXUSe2ePojo>(); 
+            List<NEXUSe2ePojo> entities = new ArrayList<NEXUSe2ePojo>();
             if (updateScope.updateConversation()) {
                 if (LOG.isTraceEnabled()) {
                     LOG.trace("persisting conv " + persistentConversation.getConversationId() + " with action " +
@@ -1083,7 +1083,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
             for (Object entity : entities) {
                 session.saveOrUpdate(entity);
             }
-            
+
             // write possible changes back so that we can go on working with original message
             if (updateScope.updateConversation()) {
                 message.getConversation().setStatus(allowedConversationStatus);
@@ -1107,10 +1107,10 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
                 message.setRetries(message.getRetries());
                 message.setModifiedDate(persistentMessage.getModifiedDate());
             }
-            
-            
+
+
             String errMsg = null;
-            
+
             if (allowedMessageStatus != messageStatus && updateScope != UpdateScope.NOTHING) {
                 errMsg = "Illegal transition: Cannot set message status for " + message.getMessageId() + " from " +
                 MessagePojo.getStatusName( allowedMessageStatus ) + " to " + MessagePojo.getStatusName( messageStatus );
@@ -1131,7 +1131,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
 
     } // updateTransaction
 
-    
+
     public void updateRetryCount( MessagePojo message ) throws NexusException {
         MessagePojo persistentMessage = (MessagePojo) sessionFactory.getCurrentSession().get( MessagePojo.class, message.getNxMessageId() );
         if (persistentMessage != null) {
@@ -1172,8 +1172,8 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         }
         return persistentMessageStatus;
     }
-    
-    
+
+
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.TransactionDAO#getCreatedMessagesSinceCount(java.util.Date)
      */
@@ -1183,16 +1183,16 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         dc.add( Restrictions.ge( "createdDate", since ) );
         return getCountThroughSessionFind( dc );
     }
-    
+
     public List<int[]> getConversationStatesSince( Date since ) {
-        
+
         DetachedCriteria dc = DetachedCriteria.forClass( ConversationPojo.class );
         dc.add( Restrictions.ge( "createdDate", since ) );
         ProjectionList pros = Projections.projectionList();
         pros.add( Projections.groupProperty( "status" ) );
         pros.add( Projections.count( "status" ) );
         dc.setProjection( pros );
-        
+
         List<?> l = getListThroughSessionFind( dc, 0, Integer.MAX_VALUE );
         List<int[]> list = new ArrayList<int[]>( l.size() );
         for (Object o : l) {
@@ -1202,12 +1202,12 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
             };
             list.add( kv );
         }
-        
+
         return list;
     }
-    
+
     public List<int[]> getMessageStatesSince( Date since ) {
-        
+
         DetachedCriteria dc = DetachedCriteria.forClass( MessagePojo.class );
         dc.add( Restrictions.ge( "createdDate", since ) );
         dc.add( Restrictions.eq( "type", 1 ) );
@@ -1215,7 +1215,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         pros.add( Projections.groupProperty( "status" ) );
         pros.add( Projections.count( "status" ) );
         dc.setProjection( pros );
-        
+
         List<?> l = getListThroughSessionFind( dc, 0, Integer.MAX_VALUE );
         List<int[]> list = new ArrayList<int[]>( l.size() );
         for (Object o : l) {
@@ -1225,12 +1225,12 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
             };
             list.add( kv );
         }
-        
+
         return list;
     }
-    
+
     public List<String[]> getMessagesPerConversationSince( Date since ) {
-        
+
         DetachedCriteria dc = DetachedCriteria.forClass( MessagePojo.class );
         dc.createAlias( "conversation", "theConversation", Criteria.INNER_JOIN );
         dc.createAlias( "theConversation.choreography", "theChoreography", Criteria.INNER_JOIN );
@@ -1240,7 +1240,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         dc.setProjection( pros );
         dc.add( Restrictions.ge( "createdDate", since ) );
         dc.add( Restrictions.eq( "type", 1 ) );
-        
+
 
         List<?> l = getListThroughSessionFind( dc, 0, Integer.MAX_VALUE );
         List<String[]> list = new ArrayList<String[]>( l.size() );
@@ -1251,10 +1251,10 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
             };
             list.add( kv );
         }
-        
+
         return list;
     }
-    
+
     public List<int[]> getMessagesPerHourLast24Hours() {
 
         String hourFunction = "HOUR(created_date)";
@@ -1264,9 +1264,9 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         } else if (t == DatabaseType.ORACLE) {
             hourFunction = "EXTRACT(HOUR FROM created_date)";
         }
-        
+
         Calendar cal = Calendar.getInstance();
-        
+
         cal.add( Calendar.DATE, -1 );
         cal.set( Calendar.MINUTE, 0 );
         cal.set( Calendar.SECOND, 0 );
@@ -1274,7 +1274,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         cal.add( Calendar.HOUR_OF_DAY, 1 );
         int currentHourOfDay = cal.get( Calendar.HOUR_OF_DAY );
         List<int[]> list = new ArrayList<int[]>( 24 );
-        
+
         if (t == DatabaseType.DERBY) {
             // derby doesn't like functional expressions in GRUP BY, so we create one query per hour
             for (int i = 0; i < 24; i++) {
@@ -1287,7 +1287,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
                 dc.add( Restrictions.eq( "type", 1 ) );
                 dc.add( Restrictions.ge( "createdDate", from ) );
                 dc.add( Restrictions.lt( "createdDate", to ) );
-        
+
                 List<?> l = getListThroughSessionFind( dc, 0, Integer.MAX_VALUE );
                 Object o = l.get( 0 );
                 int[] kv = new int[] {
@@ -1308,20 +1308,20 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
             dc.add( Restrictions.ge( "createdDate", cal.getTime() ) );
             dc.add( Restrictions.eq( "type", 1 ) );
             dc.addOrder( Order.asc( "createdDate" ) );
-    
+
             List<?> l = getListThroughSessionFind( dc, 0, Integer.MAX_VALUE );
-    
-            
+
+
             // create default 0-message entries
             for (int i = currentHourOfDay; i < currentHourOfDay + 24; i++) {
                 list.add( new int[] { i % 24, 0 } );
             }
-            
+
             // put list entries to appropriate positions
             for (Object o : l) {
                 int hour = ((Number) ((Object[]) o)[0]).intValue();
                 int value = ((Number) ((Object[]) o)[1]).intValue();
-                
+
                 int index = hour - currentHourOfDay;
                 if (index < 0) {
                     index += 24;
@@ -1329,14 +1329,14 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
                 list.set( index, new int[] { hour, value } );
             }
         }
-        
+
         return list;
     }
 
     public Session getDBSession() {
         return sessionFactory.getCurrentSession().getSessionFactory().openSession();
     }
-    
+
     public void releaseDBSession( Session session ) {
         session.close();
     }

@@ -103,7 +103,7 @@ public class PipelinePojo implements NEXUSe2ePojo {
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "pipeline")
     @OrderBy("nx_pipeline_id,position ASC")
-    @Fetch(value = FetchMode.SUBSELECT)
+    @Fetch(value = FetchMode.SELECT)
     @XmlElementWrapper(name = "Pipelets")
     @XmlElement(name = "Pipelet")
     private Collection<PipeletPojo> pipelets;
