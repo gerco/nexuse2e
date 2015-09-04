@@ -1459,13 +1459,4 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
         }
     }
 
-    /**
-     * Returns the maximum memory limit of the current JVM (i.e., the value for the -Xmx switch).
-     *
-     * @return The maximum amount of memory the JVM can use, in byte.
-     */
-    public long getMaxMemory() {
-        return Runtime.getRuntime().maxMemory();
-    }
-
 } // Engine
