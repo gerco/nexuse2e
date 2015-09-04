@@ -115,14 +115,14 @@ public class ActionPojo implements NEXUSe2ePojo {
     
     
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "action")
-    @Fetch(value = FetchMode.SUBSELECT)
+    @Fetch(value = FetchMode.SELECT)
     @XmlElementWrapper(name = "FollowUpActions")
     @XmlElement(name = "FollowUpAction")
     private Set<FollowUpActionPojo> followUpActions  = new HashSet<FollowUpActionPojo>( 0 );
     
     
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "followUpAction")
-    @Fetch(value = FetchMode.SUBSELECT)
+    @Fetch(value = FetchMode.SELECT)
     @XmlElementWrapper(name = "FollowedActions")
     @XmlElement(name = "FollowedAction")
     private Set<FollowUpActionPojo> followedActions  = new HashSet<FollowUpActionPojo>( 0 );
@@ -416,7 +416,7 @@ public class ActionPojo implements NEXUSe2ePojo {
 
     /**
      * Required for JAXB
-     * @param statusUpdatePipelineId
+     * @param statusUpdateNxPipelineId
      */
     public void setStatusUpdateNxPipelineId( int statusUpdateNxPipelineId ) {
 
@@ -435,7 +435,6 @@ public class ActionPojo implements NEXUSe2ePojo {
 
     /**
      * Required for JAXB
-     * @param statusUpdatePipelineId
      */
     @XmlAttribute
     public boolean isPollingRequired() {
@@ -468,7 +467,6 @@ public class ActionPojo implements NEXUSe2ePojo {
     
     /**
      * Required for JAXB
-     * @param statusUpdatePipelineId
      */
     @XmlAttribute
     public String getDocumentType() {

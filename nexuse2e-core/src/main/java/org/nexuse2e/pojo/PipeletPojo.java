@@ -113,7 +113,7 @@ public class PipeletPojo implements NEXUSe2ePojo {
     private String                 description;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "pipelet")
-    @Fetch(value = FetchMode.SUBSELECT)
+    @Fetch(value = FetchMode.SELECT)
     @XmlElementWrapper(name = "PipeletParams")
     @XmlElement(name = "PipeletParam")
     private List<PipeletParamPojo> pipeletParams;

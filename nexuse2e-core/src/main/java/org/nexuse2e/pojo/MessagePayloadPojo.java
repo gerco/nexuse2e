@@ -249,24 +249,7 @@ public class MessagePayloadPojo implements NEXUSe2ePojo {
 
     @Override
     public String toString() {
-
-        StringBuffer buffer = new StringBuffer();
-        buffer.append( "nxMessagePayloadId: " + nxMessagePayloadId + "\n" );
-        if ( message != null ) {
-            buffer.append( "nxMessageId: " + message.getNxMessageId() + "\n" );
-        } else {
-            buffer.append( "nxMessageId: n/a\n" );
-        }
-        buffer.append( "sequenceNumber: " + sequenceNumber + "\n" );
-        buffer.append( "mimeType: " + mimeType + "\n" );
-        buffer.append( "contentId: " + contentId + "\n" );
-        buffer.append( "payloadData: " + payloadData + "\n" );
-        buffer.append( "createdDate: " + createdDate + "\n" );
-        buffer.append( "modifiedDate: " + modifiedDate + "\n" );
-        buffer.append( "modifiedNxUserId: " + modifiedNxUserId + "\n" );
-        buffer.append( "charset: " + charset + "\n" );
-
-        return buffer.toString();
+        return "messagepayload[id:" + nxMessagePayloadId + "]";
     }
 
     /* (non-Javadoc)
