@@ -97,6 +97,10 @@
 		<td class="NEXUSNameNoWidth"><%= java.util.TimeZone.getDefault().getID() %></td>
 	</tr>
 	<tr>
+		<td class="NEXUSNameNoWidth">JVM Maximum Memory (b)</td>
+		<td class="NEXUSNameNoWidth"><%= String.valueOf(Runtime.getRuntime().maxMemory()) %></td>
+	</tr>
+	<tr>
 		<td class="NEXUSNameNoWidth">Cipher limitations / JCE status</td>
 		<td class="NEXUSNameNoWidth"><%= org.nexuse2e.Engine.getInstance().getJCEInstalledStatus() %></td>
 	</tr>
