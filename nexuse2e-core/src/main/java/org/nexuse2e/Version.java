@@ -83,12 +83,14 @@ public class Version {
 			String buildNo = getMainAttribute(MainAttribute.JenkinsBuildNumber);
 			String buildDate = getMainAttribute(MainAttribute.ImplementationBuildDate);
 			result = (version != null && version.length() > 0 ? version : "unspecified version") + (revision != null && revision.length() > 0 ?
-				", revision: " + revision :
+				", revision: " + revision.substring(0,7) :
 				"") + ", build: " + (buildNo != null && buildNo.length() > 0 ? buildNo : "unofficial") + (buildDate != null && buildDate.length() > 0 ?
 				" " + buildDate :
 				"");
 		} catch (IOException e) {
 		}
+
+
 
 		return result;
 	}
