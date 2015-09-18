@@ -50,52 +50,55 @@ public class Version {
     	ApplicationName( "Application-Name" ),
     	ApplicationArtifactId( "Application-Artifact-Id" ),
     	ApplicationGroupId( "Application-Group-Id" ),
-    	ImplementationSvnRevision( "Implementation-Svn-Revision" ),
-    	ImplementationVersion( "Implementation-Version" ),
-    	ImplementationBuildDate( "Implementation-Build-Date" ),
-    	HudsonBuildNumber( "Hudson-Build-Number" ),
-    	HudsonProject( "Hudson-Project" ),
-    	HudsonVersion( "Hudson-Version" );
-    	
-    	private String name;
-    	
-    	MainAttribute( String name ) {
-    		this.name = name;
-    	}
-    	
-    	public String getName() {
-    		return name;
-    	}
-    	
-    }
+    	ImplementationGitRevision("Implementation-Git-Revision"),
+		ImplementationVersion("Implementation-Version"),
+		ImplementationBuildDate("Implementation-Build-Date"),
+		HudsonBuildNumber("Hudson-Build-Number"),
+		HudsonProject("Hudson-Project"),
+		HudsonVersion("Hudson-Version");
 
-    /**
-     * Returns the official version string for this product.
-     * @return The official version string for this product,
-     *  	   or an empty string, if no version information
-     *         is present.
-     */
-    public static String getVersion() {
-    	String result = "No version information found";
-    	try {
-    		String version = getMainAttribute( MainAttribute.ImplementationVersion );
-    		String revision = getMainAttribute( MainAttribute.ImplementationSvnRevision );
-    		String buildNo = getMainAttribute( MainAttribute.HudsonBuildNumber );
-    		String buildDate = getMainAttribute( MainAttribute.ImplementationBuildDate );
-    		result = ( version != null && version.length() > 0 ? version : "unspecified version" ) + ( revision != null && revision.length() > 0 ? ", revision: " + revision : "" )
-    				 + ", build: " + ( buildNo != null && buildNo.length() > 0 ? buildNo : "unofficial" )
-    				 + ( buildDate != null && buildDate.length() > 0 ? " " + buildDate : "" );
-    	} catch ( IOException e ) {}
-    	
-        return result;
-    }
-    
-    /**
+		private String name;
+
+		MainAttribute(String name) {
+			this.name = name;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+	}
+
+	/**
+	 * Returns the official version string for this product.
+	 * @return The official version string for this product,
+	 *  	   or an empty string, if no version information
+	 *         is present.
+	 */
+	public static String getVersion() {
+		String result = "No version information found";
+		try {
+			String version = getMainAttribute(MainAttribute.ImplementationVersion);
+			String revision = getMainAttribute(MainAttribute.ImplementationGitRevision);
+			String buildNo = getMainAttribute(MainAttribute.HudsonBuildNumber);
+			String buildDate = getMainAttribute(MainAttribute.ImplementationBuildDate);
+			result = (version != null && version.length() > 0 ? version : "unspecified version") + (revision != null && revision.length() > 0 ?
+				", revision: " + revision :
+				"") + ", build: " + (buildNo != null && buildNo.length() > 0 ? buildNo : "unofficial") + (buildDate != null && buildDate.length() > 0 ?
+				" " + buildDate :
+				"");
+		} catch (IOException e) {
+		}
+
+		return result;
+	}
+
+	/**
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception {
-		
-		System.out.println( "NexusE2E Version: " + getVersion() );
+
+		System.out.println("NexusE2E Version: " + getVersion());
 	}
 
 	/**
