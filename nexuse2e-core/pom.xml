@@ -662,6 +662,8 @@
              <Application-Artifact-Id>${project.artifactId}</Application-Artifact-Id>
              <Application-Group-Id>${project.groupId}</Application-Group-Id>
              <Implementation-Version>${project.version}</Implementation-Version>
+               <Implementation-Git-Revision>${env.GIT_COMMIT}</Implementation-Git-Revision>
+               <Jenkins-Build-Number>${env.BUILD_ID}</Jenkins-Build-Number>
            </manifestEntries>
          </archive>
        </configuration>

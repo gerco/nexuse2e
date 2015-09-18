@@ -51,8 +51,8 @@
                             <Application-Name>${project.name}</Application-Name>
                             <Application-Artifact-Id>${project.artifactId}</Application-Artifact-Id>
                             <Application-Group-Id>${project.groupId}</Application-Group-Id>
-                            <Implementation-Git-Revision>${env.GIT_COMMIT}</Implementation-Git-Revision>
                             <Implementation-Version>${project.version}</Implementation-Version>
+                            <Implementation-Git-Revision>${env.GIT_COMMIT}</Implementation-Git-Revision>
                             <Jenkins-Build-Number>${env.BUILD_ID}</Jenkins-Build-Number>
                         </manifestEntries>
                     </archive>
