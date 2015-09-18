@@ -53,9 +53,9 @@ public class Version {
     	ImplementationGitRevision("Implementation-Git-Revision"),
 		ImplementationVersion("Implementation-Version"),
 		ImplementationBuildDate("Implementation-Build-Date"),
-		HudsonBuildNumber("Hudson-Build-Number"),
-		HudsonProject("Hudson-Project"),
-		HudsonVersion("Hudson-Version");
+		JenkinsBuildNumber("Jenkins-Build-Number"),
+		JenkinsProject("Jenkins-Project"),
+		JenkinsVersion("Jenkins-Version");
 
 		private String name;
 
@@ -80,7 +80,7 @@ public class Version {
 		try {
 			String version = getMainAttribute(MainAttribute.ImplementationVersion);
 			String revision = getMainAttribute(MainAttribute.ImplementationGitRevision);
-			String buildNo = getMainAttribute(MainAttribute.HudsonBuildNumber);
+			String buildNo = getMainAttribute(MainAttribute.JenkinsBuildNumber);
 			String buildDate = getMainAttribute(MainAttribute.ImplementationBuildDate);
 			result = (version != null && version.length() > 0 ? version : "unspecified version") + (revision != null && revision.length() > 0 ?
 				", revision: " + revision :
@@ -107,23 +107,21 @@ public class Version {
 	 * @return An object representation of the manifest file.
 	 * @throws IOException, if an error occurs while reading the file.
 	 */
-	private static Manifest read( Class<?> clazz ) throws IOException {
-		String path = clazz.getResource( toResourceName( clazz ) )
-				.toString();
-		String manifestPath = extractRoot( path, clazz )
-				+ "/META-INF/MANIFEST.MF";
-		InputStream stream = new URL( manifestPath ).openStream();
+	private static Manifest read(Class<?> clazz) throws IOException {
+		String path = clazz.getResource(toResourceName(clazz)).toString();
+		String manifestPath = extractRoot(path, clazz) + "/META-INF/MANIFEST.MF";
+		InputStream stream = new URL(manifestPath).openStream();
 		try {
-			return new Manifest( stream );
+			return new Manifest(stream);
 		} finally {
-			IOUtils.closeQuietly( stream );
+			IOUtils.closeQuietly(stream);
 		}
 	}
 
 	/*
 	 * Helper method for read()
 	 */
-	private static String extractRoot( String path, Class<?> mainClass ) {
+	private static String extractRoot(String path, Class<?> mainClass ) {
 		if ( path.contains( "!" ) ) {
 			return path.substring( 0, path.lastIndexOf( "!" ) + 1 );
 		} else {

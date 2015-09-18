@@ -53,7 +53,7 @@
                             <Application-Group-Id>${project.groupId}</Application-Group-Id>
                             <Implementation-Git-Revision>${env.GIT_COMMIT}</Implementation-Git-Revision>
                             <Implementation-Version>${project.version}</Implementation-Version>
-                            <Implementation-Build-Date>${env.BUILD_ID}</Implementation-Build-Date>
+                            <Jenkins-Build-Number>${env.BUILD_ID}</Jenkins-Build-Number>
                         </manifestEntries>
                     </archive>
                     <warName>NEXUSe2e</warName>
