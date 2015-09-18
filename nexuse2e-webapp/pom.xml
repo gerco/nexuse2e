@@ -28,7 +28,7 @@
         <dependency>
             <groupId>org.nexuse2e</groupId>
             <artifactId>nexuse2e-core</artifactId>
-            <version>5.5.0</version>
+            <version>5.5.1</version>
         </dependency>
     </dependencies>
     <!-- build -->
@@ -51,7 +51,7 @@
                             <Application-Name>${project.name}</Application-Name>
                             <Application-Artifact-Id>${project.artifactId}</Application-Artifact-Id>
                             <Application-Group-Id>${project.groupId}</Application-Group-Id>
-                            <Implementation-Svn-Revision>${env.TAG}</Implementation-Svn-Revision>
+                            <Implementation-Git-Revision>${env.TAG}</Implementation-Git-Revision>
                             <Implementation-Version>${project.version}</Implementation-Version>
                             <Implementation-Build-Date>${env.BUILD_ID}</Implementation-Build-Date>
                         </manifestEntries>
