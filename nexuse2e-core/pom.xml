@@ -11,7 +11,7 @@
   <!-- this project -->
   <artifactId>nexuse2e-core</artifactId>
   <packaging>jar</packaging>
-  <version>5.5.0</version>
+  <version>5.5.1</version>
   <name>NEXUSe2e Core Library</name>
   <url>http://www.nexuse2e.org</url>
   <!-- license -->
@@ -661,9 +661,9 @@
              <Application-Name>${project.name}</Application-Name>
              <Application-Artifact-Id>${project.artifactId}</Application-Artifact-Id>
              <Application-Group-Id>${project.groupId}</Application-Group-Id>
-             <!-- <Implementation-Svn-Revision>${env.SVN_REVISION}</Implementation-Svn-Revision> -->
              <Implementation-Version>${project.version}</Implementation-Version>
-             <!-- <Implementation-Build-Date>${env.BUILD_ID}</Implementation-Build-Date> -->
+               <Implementation-Git-Revision>${env.GIT_COMMIT}</Implementation-Git-Revision>
+               <Jenkins-Build-Number>${env.BUILD_ID}</Jenkins-Build-Number>
            </manifestEntries>
          </archive>
        </configuration>

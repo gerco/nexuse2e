@@ -50,52 +50,57 @@ public class Version {
     	ApplicationName( "Application-Name" ),
     	ApplicationArtifactId( "Application-Artifact-Id" ),
     	ApplicationGroupId( "Application-Group-Id" ),
-    	ImplementationSvnRevision( "Implementation-Svn-Revision" ),
-    	ImplementationVersion( "Implementation-Version" ),
-    	ImplementationBuildDate( "Implementation-Build-Date" ),
-    	HudsonBuildNumber( "Hudson-Build-Number" ),
-    	HudsonProject( "Hudson-Project" ),
-    	HudsonVersion( "Hudson-Version" );
-    	
-    	private String name;
-    	
-    	MainAttribute( String name ) {
-    		this.name = name;
-    	}
-    	
-    	public String getName() {
-    		return name;
-    	}
-    	
-    }
+    	ImplementationGitRevision("Implementation-Git-Revision"),
+		ImplementationVersion("Implementation-Version"),
+		ImplementationBuildDate("Implementation-Build-Date"),
+		JenkinsBuildNumber("Jenkins-Build-Number"),
+		JenkinsProject("Jenkins-Project"),
+		JenkinsVersion("Jenkins-Version");
 
-    /**
-     * Returns the official version string for this product.
-     * @return The official version string for this product,
-     *  	   or an empty string, if no version information
-     *         is present.
-     */
-    public static String getVersion() {
-    	String result = "No version information found";
-    	try {
-    		String version = getMainAttribute( MainAttribute.ImplementationVersion );
-    		String revision = getMainAttribute( MainAttribute.ImplementationSvnRevision );
-    		String buildNo = getMainAttribute( MainAttribute.HudsonBuildNumber );
-    		String buildDate = getMainAttribute( MainAttribute.ImplementationBuildDate );
-    		result = ( version != null && version.length() > 0 ? version : "unspecified version" ) + ( revision != null && revision.length() > 0 ? ", revision: " + revision : "" )
-    				 + ", build: " + ( buildNo != null && buildNo.length() > 0 ? buildNo : "unofficial" )
-    				 + ( buildDate != null && buildDate.length() > 0 ? " " + buildDate : "" );
-    	} catch ( IOException e ) {}
-    	
-        return result;
-    }
-    
-    /**
+		private String name;
+
+		MainAttribute(String name) {
+			this.name = name;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+	}
+
+	/**
+	 * Returns the official version string for this product.
+	 * @return The official version string for this product,
+	 *  	   or an empty string, if no version information
+	 *         is present.
+	 */
+	public static String getVersion() {
+		String result = "No version information found";
+		try {
+			String version = getMainAttribute(MainAttribute.ImplementationVersion);
+			String revision = getMainAttribute(MainAttribute.ImplementationGitRevision);
+			String buildNo = getMainAttribute(MainAttribute.JenkinsBuildNumber);
+			String buildDate = getMainAttribute(MainAttribute.ImplementationBuildDate);
+			result = (version != null && version.length() > 0 ? version : "unspecified version") + (revision != null && revision.length() > 0 ?
+				", revision: " + revision.substring(0,7) :
+				"") + ", build: " + (buildNo != null && buildNo.length() > 0 ? buildNo : "unofficial") + (buildDate != null && buildDate.length() > 0 ?
+				" " + buildDate :
+				"");
+		} catch (IOException e) {
+		}
+
+
+
+		return result;
+	}
+
+	/**
 	 * @param args
 	 */
 	public static void main(String[] args) throws Exception {
-		
-		System.out.println( "NexusE2E Version: " + getVersion() );
+
+		System.out.println("NexusE2E Version: " + getVersion());
 	}
 
 	/**
@@ -104,23 +109,21 @@ public class Version {
 	 * @return An object representation of the manifest file.
 	 * @throws IOException, if an error occurs while reading the file.
 	 */
-	private static Manifest read( Class<?> clazz ) throws IOException {
-		String path = clazz.getResource( toResourceName( clazz ) )
-				.toString();
-		String manifestPath = extractRoot( path, clazz )
-				+ "/META-INF/MANIFEST.MF";
-		InputStream stream = new URL( manifestPath ).openStream();
+	private static Manifest read(Class<?> clazz) throws IOException {
+		String path = clazz.getResource(toResourceName(clazz)).toString();
+		String manifestPath = extractRoot(path, clazz) + "/META-INF/MANIFEST.MF";
+		InputStream stream = new URL(manifestPath).openStream();
 		try {
-			return new Manifest( stream );
+			return new Manifest(stream);
 		} finally {
-			IOUtils.closeQuietly( stream );
+			IOUtils.closeQuietly(stream);
 		}
 	}
 
 	/*
 	 * Helper method for read()
 	 */
-	private static String extractRoot( String path, Class<?> mainClass ) {
+	private static String extractRoot(String path, Class<?> mainClass ) {
 		if ( path.contains( "!" ) ) {
 			return path.substring( 0, path.lastIndexOf( "!" ) + 1 );
 		} else {
