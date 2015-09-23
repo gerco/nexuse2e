@@ -141,13 +141,13 @@ public class HttpReceiverService extends AbstractControllerService implements Re
             //out.flush();
             //out.close();
         } catch ( ClusterException ce ) {
-        	LOG.error( new LogMessage("cluster communication failed", ce ));
+        	LOG.error( new LogMessage("cluster communication failed",ce), ce);
             response.setStatus( ce.getResponseCode() );
         } catch ( Exception e ) {
         	// print stack trace to console
         	NexusUUIDGenerator gen = new NexusUUIDGenerator();
         	String id = gen.getId();
-        	LOG.error( new LogMessage("processing failed (error-ref:"+id+")", e ));
+        	LOG.error( new LogMessage("processing failed (error-ref:"+id+")",e),e);
             
         	// prepare the response string (basically the SOAP faultString)
             createErrorResponse( request, response, "unabled to process incoming message (error-ref:"+id+")" );
