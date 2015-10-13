@@ -17,7 +17,7 @@ public class PasswordValidator {
 	private Pattern pattern;
 	private Matcher matcher;
 	
-	private static String PASSWORD_PATTERN; // Engine.getInstance().getPasswordValidation();
+	private static String PASSWORD_PATTERN; 
 	
 	public PasswordValidator() {
 		PASSWORD_PATTERN = Engine.getInstance().getPasswordValidation();
