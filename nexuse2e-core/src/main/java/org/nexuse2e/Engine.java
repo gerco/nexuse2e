@@ -110,6 +110,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     private String                           certificatePath                = null;
     private String                           nexusE2ERoot                   = null;
     private String                           databaseDialect                = null;
+    private String							 passwordValidation				= null;
 
     private Map<Object, EngineConfiguration> configurations                 = new HashMap<Object, EngineConfiguration>();
 
@@ -1269,6 +1270,14 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
         this.certificatePath = certificatePath;
     }
 
+    public String getPasswordValidation() {
+    	return passwordValidation;
+    }
+    
+    public void setPasswordValidation ( String passwordValidation ) {
+    	this.passwordValidation = passwordValidation;
+    }
+    
     /**
      * @return
      */

@@ -104,6 +104,7 @@
     <property name="databaseDialect" value="${database.dialect}" />
     <property name="transactionService" ref="transactionService" />
     <property name="configDao" ref="configDao" />
+  	<property name="passwordValidation" value="${password.validation}" />    
     <property name="messageWorker" ref="messageWorker" />
     <property name="defaultCharEncoding" value="${default.charEncoding}" />
   </bean>
