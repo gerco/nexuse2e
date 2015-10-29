@@ -26,7 +26,9 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
+import org.nexuse2e.Engine;
 import org.nexuse2e.pojo.UserPojo;
+import org.nexuse2e.ui.action.user.PasswordValidator;
 
 /**
  * Form for user data.
@@ -48,7 +50,7 @@ public class UserForm extends ActionForm {
     private String middleName;
     private String loginName;
     private boolean active = true;
-
+    private PasswordValidator passwordValidator = new PasswordValidator();  
     /**
      * @param user the user to set
      */
@@ -107,6 +109,9 @@ public class UserForm extends ActionForm {
             } else {
                 if ( passwordRepeat == null || !newPassword.equals( passwordRepeat ) ) {
                     errors.add( ActionMessages.GLOBAL_MESSAGE, new ActionMessage( "nexususer.error.password.confirmMismatch" ) );
+                //new password must be validated with regex from beans.properties
+                } else if ( passwordValidator.validate(newPassword) == false ) { 
+                	errors.add( ActionMessages.GLOBAL_MESSAGE, new ActionMessage( "nexususer.error.password.validationMismatch" ) );
                 }
             }
         } else if ( password == null || password.length() == 0 ) {
