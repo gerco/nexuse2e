@@ -32,10 +32,9 @@
       </snapshots>
     </repository>
     <repository>
-      <id>java.net</id>
-      <name>java.net Repository</name>
-      <layout>default</layout>
-      <url>http://download.java.net/maven/2</url>
+      <id>java.net-Public</id>
+      <name>Maven Java Net Snapshots and Releases</name>
+      <url>https://maven.java.net/content/groups/public/</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
