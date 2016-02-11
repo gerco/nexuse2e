@@ -58,13 +58,14 @@ public class FtpSenderService extends AbstractService implements SenderAware {
 
     private static Logger      LOG                       = Logger.getLogger( FtpSenderService.class );
 
-    public static final String BASE_FILE_NAME_PARAM_NAME = "baseFileName";
-    public static final String FILE_EXTENSION_PARAM_NAME = "fileExtension";
-    public static final String TEMP_FILE_PARAM_NAME      = "useTempFile";
-    public static final String APPEND_TIMESTAMP          = "appendTimestamp";
-    public static final String TIMESTAMP_PATTERN         = "timestampPattern";
-    public static final String USE_CONTENT_ID            = "useContentId";
-    public static final String TRANSFER_MODE_PARAM_NAME  = "transferMode";
+    public static final String BASE_FILE_NAME_PARAM_NAME 	= "baseFileName";
+    public static final String FILE_EXTENSION_PARAM_NAME 	= "fileExtension";
+    public static final String TEMP_FILE_PARAM_NAME      	= "useTempFile";
+    public static final String APPEND_TIMESTAMP          	= "appendTimestamp";
+    public static final String TIMESTAMP_PATTERN         	= "timestampPattern";
+    public static final String USE_CONTENT_ID            	= "useContentId";
+    public static final String TRANSFER_MODE_PARAM_NAME  	= "transferMode";
+    public static final String CONNECTION_MODE_PARAM_NAME 	= "connectionMode";
 
     public static final String DEFAULT_TIMESTAMP_PATTERN = "yyyyMMddHHmmssSSS";
 
@@ -112,6 +113,12 @@ public class FtpSenderService extends AbstractService implements SenderAware {
         transferModeListParam.addElement( "ASCII", "ascii" );
         parameterMap.put( TRANSFER_MODE_PARAM_NAME, new ParameterDescriptor( ParameterType.LIST, "Transfer mode",
                 "Use Automatic/Binary/ASCII transfer mode (default is Auto)", transferModeListParam ) );
+        
+        ListParameter connectionModeListParam = new ListParameter();
+        connectionModeListParam.addElement( "Active", "active" );
+        connectionModeListParam.addElement( "Passive", "passive" );
+        parameterMap.put(CONNECTION_MODE_PARAM_NAME, new ParameterDescriptor( ParameterType.LIST, "Connection mode", 
+        		"Use Active or Passive connection mode (default is Active)", connectionModeListParam ) );
 
     }
 
@@ -193,6 +200,19 @@ public class FtpSenderService extends AbstractService implements SenderAware {
             ftpClient.connect( url.getHost() );
             int reply = ftpClient.getReplyCode();
 
+            ListParameter connectionmode = getParameter( CONNECTION_MODE_PARAM_NAME );
+            if ( connectionmode != null && "passive".equals( connectionmode.getSelectedValue() )) {
+            	ftpClient.enterLocalPassiveMode();
+            	if ( LOG.isDebugEnabled() ) {
+            		LOG.debug( "Will use FTP-Passive mode for connection.");
+            	};
+            } else {
+            	ftpClient.enterLocalActiveMode();
+            	if ( LOG.isDebugEnabled() ) {
+            		LOG.debug( "Will use FTP-Active mode for connection.");
+            	};
+            }
+            
             if ( FTPReply.isPositiveCompletion( reply ) ) {
 
                 // only set password, if specified

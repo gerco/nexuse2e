@@ -91,6 +91,7 @@ public abstract class AbstractFtpService extends AbstractService {
     public static final String TRANSFER_MODE_PARAM_NAME             = "transferMode";
     public static final String RENAMING_PREFIX_PARAM_NAME           = "prefix";
     public static final String CHANGE_FILE_PARAM_NAME               = "changeFile";
+    public static final String CONNECTION_MODE_PARAM_NAME 			= "connectionMode";
 
     private SchedulingService  schedulingService;
     private SchedulerClient    schedulerClient;
@@ -180,6 +181,12 @@ public abstract class AbstractFtpService extends AbstractService {
             }
         });
         parameterMap.put(CERTIFICATE_PARAM_NAME, certsParamDesc);
+        
+        ListParameter connectionModeListParam = new ListParameter();
+        connectionModeListParam.addElement( "Passive", "passive" );
+        connectionModeListParam.addElement( "Active", "active" );
+        parameterMap.put(CONNECTION_MODE_PARAM_NAME, new ParameterDescriptor( ParameterType.LIST, "Connection mode", 
+        		"Use Active or Passive connection mode (default is Passive)", connectionModeListParam ) );
     }
 
     private void addCertificatesToDropdown(ListParameter certsDropdown) {
@@ -386,7 +393,20 @@ public abstract class AbstractFtpService extends AbstractService {
                 if (!FTPReply.isPositiveCompletion(reply)) {
                     throw new NexusException("FTP server refused connection.");
                 }
-                ftp.enterLocalPassiveMode();
+                
+                ListParameter connectionmode = getParameter( CONNECTION_MODE_PARAM_NAME );
+                if ( connectionmode != null && "active".equals( connectionmode.getSelectedValue() )) {
+                	ftp.enterLocalActiveMode();
+                	if ( LOG.isDebugEnabled() ) {
+                		LOG.debug( "Will use FTP-Active mode for connection.");
+                	};
+                } else {
+                	ftp.enterLocalPassiveMode();
+                	if ( LOG.isDebugEnabled() ) {
+                		LOG.debug( "Will use FTP-Passive mode for connection.");
+                	};
+                }
+                
 
                 String user = getParameter(USER_PARAM_NAME);
                 String password = getParameter(PASSWORD_PARAM_NAME);
