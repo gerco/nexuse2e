@@ -616,12 +616,14 @@
 	<artifactId>groovy</artifactId>
 	<version>1.7.7</version>
    </dependency>
+   <!-- 
    <dependency>
     <groupId>org.freemarker</groupId>
     <artifactId>freemarker</artifactId>
-    <!-- Latest 2.3.x (not 2.4.x), at least 2.3.19 -->
+    Latest 2.3.x (not 2.4.x), at least 2.3.19
     <version>[2.3.19,2.4)</version>
-   </dependency>
+   </dependency>  
+   -->
    <dependency>
      <groupId>org.mockito</groupId>
      <artifactId>mockito-core</artifactId>
