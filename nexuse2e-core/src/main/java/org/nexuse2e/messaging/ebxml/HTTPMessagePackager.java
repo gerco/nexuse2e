@@ -19,6 +19,8 @@
  */
 package org.nexuse2e.messaging.ebxml;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +45,7 @@ import org.nexuse2e.pojo.MessagePojo;
 public class HTTPMessagePackager extends AbstractPipelet {
 
     private static Logger       LOG = Logger.getLogger( HTTPMessagePackager.class );
-    
+
     private static String		CRLF = "\r\n";
 
     private Map<String, Object> parameters;
@@ -62,7 +64,7 @@ public class HTTPMessagePackager extends AbstractPipelet {
      */
     public MessageContext processMessage( MessageContext messageContext ) {
 
-        String serializedSOAPMessage = null;
+        byte[] serializedSOAPMessage = null;
         MessagePojo messagePojo = messageContext.getMessagePojo();
         LOG.debug( new LogMessage("Entering HTTPMessagePackager.processMessage...",messagePojo) );
 
@@ -78,7 +80,7 @@ public class HTTPMessagePackager extends AbstractPipelet {
         }
 
         if ( serializedSOAPMessage != null ) {
-            messageContext.setData( serializedSOAPMessage.getBytes() );
+            messageContext.setData( serializedSOAPMessage );
             //LOG.trace( new String(messageContext.getData()) );
         } else {
             throw new IllegalArgumentException( "unable to create SOAPMessage" );
@@ -87,20 +89,23 @@ public class HTTPMessagePackager extends AbstractPipelet {
         return messageContext;
     }
 
-    // TODO move to header (for ack and normal msg)
-    //    method.setRequestHeader( "SOAPAction", "\"ebXML\"" );
-    //    method.setRequestHeader( "Content-Type", contentType.toString() );
-
     /**
+     * Returns a JAX SOAP message for a given message pojo.
      *
+     * @param messagePojo The {@link MessagePojo} for which to generate the message.
+     * @return A byte[] containing the message.
+     * @throws SOAPException
+     * @throws ParseException
+     * @throws IOException
      */
-    private static String getJAXMSOAPMsg( MessagePojo messagePojo ) throws SOAPException, ParseException {
+    private static byte[] getJAXMSOAPMsg( MessagePojo messagePojo ) throws SOAPException, ParseException, IOException {
 
         String soapId = getSOAPId( messagePojo );
         String hdrContentId = "Content-ID: " + soapId;
         // TODO (encoding) which encoding is used for headers ?
         String ebXMLHeader = new String( messagePojo.getHeaderData() );
 
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         StringBuffer msgBuffer = new StringBuffer();
         msgBuffer.append( Constants.MIMEPARTBOUNDARY + CRLF );
         // Add ebXML Header
@@ -122,26 +127,34 @@ public class HTTPMessagePackager extends AbstractPipelet {
                 msgBuffer.append( payloadContentID + CRLF );
                 msgBuffer.append( "Content-Type: " + payloadPojo.getMimeType() + CRLF + CRLF );
 
-                
+                msgBuffer = flushToBytes(msgBuffer, baos);
+
                 if(Engine.getInstance().isBinaryType(payloadPojo.getMimeType())) {
                 	LOG.trace(new LogMessage("using binary for mime type: "+payloadPojo.getMimeType()));
-                	msgBuffer.append( new String(Base64.encodeBase64( payloadPojo.getPayloadData() )) + CRLF );
+                	baos.write(Base64.encodeBase64(payloadPojo.getPayloadData()));
                 } else {
-                	msgBuffer.append( new String( payloadPojo.getPayloadData() ) + CRLF );
+                    baos.write(payloadPojo.getPayloadData());
                 }
-                
+
+
             }
         }
 
         msgBuffer.append( Constants.MIMEPACKBOUNDARY + CRLF );
-        
-        return msgBuffer.toString();
+
+        // flush to bytes
+        flushToBytes(msgBuffer, baos);
+
+        return baos.toByteArray();
     }
 
     /**
-     *
+     * Returns an ack message
+     * @param messagePojo
+     * @return
+     * @throws ParseException
      */
-    private static String getJAXMSOAPAck( MessagePojo messagePojo ) throws ParseException {
+    private static byte[] getJAXMSOAPAck( MessagePojo messagePojo ) throws ParseException {
 
         String soapId = getSOAPId( messagePojo );
         String hdrContentId = "Content-ID: " + soapId;
@@ -155,7 +168,19 @@ public class HTTPMessagePackager extends AbstractPipelet {
         ackBuffer.append( ackHeader + CRLF + CRLF );
         ackBuffer.append( Constants.MIMEPACKBOUNDARY );
 
-        return ackBuffer.toString();
+        return ackBuffer.toString().getBytes();
+    }
+
+    /**
+     * Flushes {@link StringBuffer} to {@link java.io.ByteArrayOutputStream} and returns a new empty {@link StringBuffer}.
+     * @param sb must not be <code>null</code>
+     * @param baos must not be <code>null</code>
+     * @return a new empty {@link StringBuffer}.
+     * @throws IOException
+     */
+    private static StringBuffer flushToBytes(StringBuffer sb, java.io.ByteArrayOutputStream baos) throws IOException {
+        baos.write(sb.toString().getBytes());
+        return new StringBuffer();
     }
 
     /**
