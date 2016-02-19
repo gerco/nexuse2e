@@ -32,6 +32,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.configuration.ParameterDescriptor;
+import org.nexuse2e.configuration.ParameterType;
 import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
@@ -46,6 +47,7 @@ public class HTTPMessagePackager extends AbstractPipelet {
 
     private static Logger       LOG = Logger.getLogger( HTTPMessagePackager.class );
 
+    private static final String BINARY_ENCODING_PARAMETER_NAME = "binary_encoding";
     private static String		CRLF = "\r\n";
 
     private Map<String, Object> parameters;
@@ -54,8 +56,8 @@ public class HTTPMessagePackager extends AbstractPipelet {
      * Default constructor.
      */
     public HTTPMessagePackager() {
+        parameterMap.put(BINARY_ENCODING_PARAMETER_NAME, new ParameterDescriptor(ParameterType.BOOLEAN, "Binary encoding", "Whether to use BINARY instead of BASE64 as the encoding for binary content", false));
 
-        parameters = new HashMap<String, Object>();
         frontendPipelet = true;
     }
 
@@ -206,22 +208,22 @@ public class HTTPMessagePackager extends AbstractPipelet {
 
     public void afterPropertiesSet() throws Exception {
     }
-
-    @SuppressWarnings("unchecked")
-    public <T> T getParameter( String name ) {
-
-        return (T) parameters.get( name );
-    }
-
+    
     @SuppressWarnings("unchecked")
     public Map<String, ParameterDescriptor> getParameterMap() {
 
-        return Collections.EMPTY_MAP;
+        return parameterMap;
     }
 
     public Map<String, Object> getParameters() {
 
         return Collections.unmodifiableMap( parameters );
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T getParameter( String name ) {
+
+        return (T) parameters.get( name );
     }
 
     /* (non-Javadoc)
