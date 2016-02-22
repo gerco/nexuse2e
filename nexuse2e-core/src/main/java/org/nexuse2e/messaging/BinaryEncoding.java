@@ -29,7 +29,7 @@ package org.nexuse2e.messaging;
 public enum BinaryEncoding {
 
     UNSUPPORTED("Unsupported encoding"),
-    BINARY("BINARY"),
+    BINARY("Binary"),
     BASE64("Base 64");
 
     private final String encoding;
@@ -44,7 +44,7 @@ public enum BinaryEncoding {
 
     public static BinaryEncoding fromString(String desiredEncoding) {
         for (BinaryEncoding b : values()) {
-            if (b.getName().equalsIgnoreCase(desiredEncoding)) {
+            if (b.toString().equalsIgnoreCase(desiredEncoding)) {
                 return b;
             }
         }

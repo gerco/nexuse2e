@@ -55,9 +55,8 @@ public class HTTPMessagePackager extends AbstractPipelet {
      */
     public HTTPMessagePackager() {
         ListParameter paramList = new ListParameter();
-        for (BinaryEncoding encoding : BinaryEncoding.values()) {
-            paramList.addElement(encoding.getName(), encoding.toString());
-        }
+        paramList.addElement(BinaryEncoding.BASE64.getName(), BinaryEncoding.BASE64.toString());
+        paramList.addElement(BinaryEncoding.BINARY.getName(), BinaryEncoding.BINARY.toString());
         paramList.setSelectedIndex(0);
         parameterMap.put(ENCODING_PARAMETER_NAME,
                          new ParameterDescriptor(ParameterType.LIST, "Binary encoding", "Which encoding to use for binary content", paramList));
@@ -70,7 +69,8 @@ public class HTTPMessagePackager extends AbstractPipelet {
      */
     public MessageContext processMessage(MessageContext messageContext) {
 
-        String selectedEncoding = getParameter(ENCODING_PARAMETER_NAME);
+        ListParameter listParam = getParameter(ENCODING_PARAMETER_NAME);
+        String selectedEncoding = listParam.getSelectedValue();
         if (StringUtils.isNotBlank(selectedEncoding)) {
             encoding = BinaryEncoding.fromString(selectedEncoding);
         }
