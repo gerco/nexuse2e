@@ -20,6 +20,7 @@
 package org.nexuse2e.logging;
 
 
+import org.apache.commons.lang.StringUtils;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.MessagePojo;
 
@@ -70,18 +71,18 @@ public class LogMessage implements Serializable {
 
         this.description = description;
         if (messagePojo != null) {
-            if (messagePojo.getAction() != null && messagePojo.getAction().getName() != null) {
+            if (messagePojo.getAction() != null && StringUtils.isNotBlank(messagePojo.getAction().getName())) {
                 this.actionId = messagePojo.getAction().getName();
             }
             if (messagePojo.getConversation() != null) {
-                if (messagePojo.getConversation().getChoreography() != null && messagePojo.getConversation().getChoreography().getName() != null) {
+                if (messagePojo.getConversation().getChoreography() != null && StringUtils.isNotBlank(messagePojo.getConversation().getChoreography().getName())) {
                     this.choreograhyId = messagePojo.getConversation().getChoreography().getName();
                 }
-                if (messagePojo.getConversation().getConversationId() != null) {
+                if (StringUtils.isNotBlank(messagePojo.getConversation().getConversationId())) {
                     this.conversationId = messagePojo.getConversation().getConversationId();
                 }
             }
-            if (messagePojo.getMessageId() != null) {
+            if (StringUtils.isNotBlank(messagePojo.getMessageId())) {
                 this.messageId = messagePojo.getMessageId();
             }
         }
