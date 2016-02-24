@@ -95,8 +95,4 @@ public class StaticEbmsHeaderPipelet extends AbstractPipelet {
 		return valid;
 	}
 
-	private void addParameterToHeader() {
-		// TODO Auto-generated method stub
-
-	}
 }

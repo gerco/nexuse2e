@@ -236,12 +236,16 @@ public class HeaderSerializer extends AbstractPipelet {
 				SOAPElement fromElement = createPartyElement(soapFactory, "From", from, fromIdType, null);
 				SOAPElement toElement = createPartyElement(soapFactory, "To", to, toIDType, null);
 				
-				createSOAPElement(soapFactory, fromElement, "Role", childText);
-
-				
-				
 				msgHeader.addChildElement(fromElement);
 				msgHeader.addChildElement(toElement);
+				
+				if (org.apache.commons.lang.StringUtils.isNotEmpty(Constants.PROTOCOLSPECIFIC_ROLE_FROM)
+						&& !org.apache.commons.lang.StringUtils.isNotEmpty(Constants.PROTOCOLSPECIFIC_ROLE_TO)){
+					
+					createSOAPElement(soapFactory, fromElement, "Role", Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_ROLE_FROM);
+					createSOAPElement(soapFactory, toElement, "Role", Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_ROLE_TO);
+					
+				}
 
 				// CPA & ConversationId
 				// ------------------------------------------------
@@ -573,7 +577,7 @@ public class HeaderSerializer extends AbstractPipelet {
 
 		partyId.addTextNode(party);
 		// soapEl.addChildElement( partyId );
-
+		
 		if (location != null) {
 			createSOAPElement(soapFactory, soapEl, Constants.LOCATION_ID, location);
 		}
