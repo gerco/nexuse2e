@@ -20,6 +20,10 @@
 
 package org.nexuse2e.messaging.generic;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.configuration.ParameterDescriptor;
@@ -27,6 +31,7 @@ import org.nexuse2e.configuration.ParameterType;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.messaging.ebxml.v20.Constants;
+import org.nexuse2e.pojo.MessageLabelPojo;
 import org.nexuse2e.pojo.MessagePojo;
 
 public class StaticEbmsHeaderPipelet extends AbstractPipelet {
@@ -50,18 +55,20 @@ public class StaticEbmsHeaderPipelet extends AbstractPipelet {
 		if (messageContext != null) {
 			MessagePojo currentMassagePojo = messageContext.getMessagePojo();
 			if (currentMassagePojo != null) {
-				if (validRoleParameters()) {
-					currentMassagePojo.addCustomParameter(
-							Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_ROLE_FROM,
-							getParameter(ROLE_ELEMENT_VALUE_FROM).toString());
-					currentMassagePojo.addCustomParameter(
-							Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_ROLE_TO,
-							getParameter(ROLE_ELEMENT_VALUE_TO).toString());
+				
+				List<MessageLabelPojo> messageLabels = currentMassagePojo.getMessageLabels();
+		        if ( messageLabels == null ) {
+		            messageLabels = new ArrayList<MessageLabelPojo>();
+		            currentMassagePojo.setMessageLabels( messageLabels );
+		        }
+				
+				if (validRoleParameters()) {					
+					messageLabels.add(createLabel(currentMassagePojo, Constants.PROTOCOLSPECIFIC_ROLE_FROM, getParameter(ROLE_ELEMENT_VALUE_FROM).toString()));
+					messageLabels.add(createLabel(currentMassagePojo, Constants.PROTOCOLSPECIFIC_ROLE_TO, getParameter(ROLE_ELEMENT_VALUE_TO).toString()));					
 				}
-				if (validServiceParameter()) {
-					currentMassagePojo.addCustomParameter(
-							Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_SERVICE,
-							getParameter(SERVICE_ELEMENT_VALUE).toString());
+				
+				if (validServiceParameter()) {					
+					messageLabels.add(createLabel(currentMassagePojo, Constants.PROTOCOLSPECIFIC_SERVICE, getParameter(SERVICE_ELEMENT_VALUE).toString()));					
 				}
 
 			} else {
@@ -76,8 +83,8 @@ public class StaticEbmsHeaderPipelet extends AbstractPipelet {
 
 	private boolean validRoleParameters() throws NexusException {
 		boolean valid = false;
-		String newRoleFrom = getParameter(ROLE_ELEMENT_VALUE_FROM);
-		String newRoleTo = getParameter(ROLE_ELEMENT_VALUE_TO);
+		String newRoleFrom = getParameter(ROLE_ELEMENT_VALUE_FROM).toString();
+		String newRoleTo = getParameter(ROLE_ELEMENT_VALUE_TO).toString();
 
 		if (StringUtils.isNotEmpty(newRoleFrom) && StringUtils.isNotEmpty(newRoleTo)) {
 			valid = true;
@@ -87,12 +94,27 @@ public class StaticEbmsHeaderPipelet extends AbstractPipelet {
 
 	private boolean validServiceParameter() throws NexusException {
 		boolean valid = false;
-		String newService = getParameter(SERVICE_ELEMENT_VALUE);
+		String newService = getParameter(SERVICE_ELEMENT_VALUE).toString();
 
 		if (StringUtils.isNotEmpty(newService)) {
 			valid = true;
 		}
 		return valid;
+	}
+	
+	/**
+	 * Creates a messageLabelPojo to be added to a List.
+	 * @param currentMassagePojo
+	 * @param label
+	 * @param value
+	 * @return
+	 * @throws NexusException
+	 */
+	private MessageLabelPojo createLabel(MessagePojo currentMassagePojo, String label, String value) throws NexusException {
+		
+		MessageLabelPojo messageLabelPojo = new MessageLabelPojo(currentMassagePojo, new Date(), new Date(), 1, label, value);
+		
+		return messageLabelPojo;
 	}
 
 }

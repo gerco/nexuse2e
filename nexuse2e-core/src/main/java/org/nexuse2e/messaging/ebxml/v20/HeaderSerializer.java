@@ -36,6 +36,7 @@ import javax.xml.soap.SOAPHeaderElement;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.soap.SOAPPart;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nexuse2e.Constants.Severity;
 import org.nexuse2e.Engine;
@@ -49,6 +50,7 @@ import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.ErrorDescriptor;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.messaging.TimestampFormatter;
+import org.nexuse2e.pojo.MessageLabelPojo;
 import org.nexuse2e.pojo.MessagePayloadPojo;
 import org.nexuse2e.pojo.MessagePojo;
 
@@ -236,28 +238,66 @@ public class HeaderSerializer extends AbstractPipelet {
 				SOAPElement fromElement = createPartyElement(soapFactory, "From", from, fromIdType, null);
 				SOAPElement toElement = createPartyElement(soapFactory, "To", to, toIDType, null);
 				
-				msgHeader.addChildElement(fromElement);
-				msgHeader.addChildElement(toElement);
-				
-				if (org.apache.commons.lang.StringUtils.isNotEmpty(Constants.PROTOCOLSPECIFIC_ROLE_FROM)
-						&& !org.apache.commons.lang.StringUtils.isNotEmpty(Constants.PROTOCOLSPECIFIC_ROLE_TO)){
-					
-					createSOAPElement(soapFactory, fromElement, "Role", Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_ROLE_FROM);
-					createSOAPElement(soapFactory, toElement, "Role", Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_ROLE_TO);
-					
-				}
 
 				// CPA & ConversationId
 				// ------------------------------------------------
+				
 				createSOAPElement(soapFactory, msgHeader, "CPAId", cpaIdScheme.makeCPAId(messagePojo));
 				createSOAPElement(soapFactory, msgHeader, "ConversationId",
 						messagePojo.getConversation().getConversationId());
+				
+				// ROLE
+				// --------------------------------------------------------
+				
+				List<MessageLabelPojo> messageLabels = messageContext.getMessagePojo().getMessageLabels();
+				
+				String roleFrom = null;
+				String roleTo = null;
+				
+				boolean includeLabels = ( messageLabels != null ) && ( messageLabels.size() != 0 );
+				
+				if (includeLabels) {
+					for ( Iterator<MessageLabelPojo> iter = messageLabels.iterator(); iter.hasNext(); ) {
+						
+						MessageLabelPojo messageLabelPojo = iter.next();
+						
+						if (messageLabelPojo.getLabel() == "role_from") {
+							roleFrom = messageLabelPojo.getValue().toString();
+						}
+						
+						if (messageLabelPojo.getLabel() == "role_to") {
+							roleTo = messageLabelPojo.getValue().toString();
+						}
+					}
+				}
+					
+					if (StringUtils.isNotBlank(roleFrom) && StringUtils.isNotBlank(roleTo)) {
+					
+						createSOAPElement(soapFactory, fromElement, "Role", roleFrom);
+						createSOAPElement(soapFactory, toElement, "Role", roleTo);
+						
+					}
 
+				msgHeader.addChildElement(fromElement);
+				msgHeader.addChildElement(toElement);
+				
 				// SERVICE
 				// -------------------------------------------------------------
 				// service is hard coded to meet spec. Services are not used.
-				String service = messagePojo.getCustomParameters()
-						.get(Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_SERVICE);
+				
+				String service = null;
+				
+				if (includeLabels) {
+					for ( Iterator<MessageLabelPojo> iter = messageLabels.iterator(); iter.hasNext(); ) {
+						
+						MessageLabelPojo messageLabelPojo = iter.next();
+						
+						if (messageLabelPojo.getLabel() == "service") {
+							service = messageLabelPojo.getValue().toString();
+						}
+					}
+				}
+				
 				if (service == null) {
 					service = messagePojo.getConversation().getChoreography().getName();
 				}
@@ -271,7 +311,7 @@ public class HeaderSerializer extends AbstractPipelet {
 				}
 
 				createSOAPElement(soapFactory, msgHeader, "Service", serviceVal + service);
-
+				
 				// ACTION
 				// --------------------------------------------------------------
 
@@ -574,7 +614,7 @@ public class HeaderSerializer extends AbstractPipelet {
 				party = value;
 			}
 		}
-
+		
 		partyId.addTextNode(party);
 		// soapEl.addChildElement( partyId );
 		
