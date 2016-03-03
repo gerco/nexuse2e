@@ -20,6 +20,7 @@
 package org.nexuse2e.messaging.ebxml.v20;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -261,12 +262,14 @@ public class HeaderSerializer extends AbstractPipelet {
 						
 						MessageLabelPojo messageLabelPojo = iter.next();
 						
-						if (messageLabelPojo.getLabel() == "role_from") {
+						if (messageLabelPojo.getLabel().equals(Constants.PARAMETER_PREFIX_EBXML20 + "role_from")  ) {
 							roleFrom = messageLabelPojo.getValue().toString();
+							LOG.debug("Sender Role found, will add " + roleFrom + " to the FROM Header Element.");
 						}
 						
-						if (messageLabelPojo.getLabel() == "role_to") {
+						if (messageLabelPojo.getLabel().equals(Constants.PARAMETER_PREFIX_EBXML20 + "role_to")) {
 							roleTo = messageLabelPojo.getValue().toString();
+							LOG.debug("Receiver Role found, will add " + roleTo + " to the TO Header Element.");
 						}
 					}
 				}
@@ -292,8 +295,9 @@ public class HeaderSerializer extends AbstractPipelet {
 						
 						MessageLabelPojo messageLabelPojo = iter.next();
 						
-						if (messageLabelPojo.getLabel() == "service") {
+						if (messageLabelPojo.getLabel().equals(Constants.PARAMETER_PREFIX_EBXML20 + "service")) {
 							service = messageLabelPojo.getValue().toString();
+							LOG.debug("Custom Service found, will add " + service + " to the Header Element.");
 						}
 					}
 				}

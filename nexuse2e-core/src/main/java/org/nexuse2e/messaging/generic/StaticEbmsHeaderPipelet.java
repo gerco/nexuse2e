@@ -25,17 +25,24 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.ParameterType;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.messaging.ebxml.v20.Constants;
+import org.nexuse2e.messaging.ebxml.v20.HeaderSerializer;
 import org.nexuse2e.pojo.MessageLabelPojo;
 import org.nexuse2e.pojo.MessagePojo;
 
+import com.mysql.jdbc.log.Log;
+
 public class StaticEbmsHeaderPipelet extends AbstractPipelet {
 
+	private static Logger LOG = Logger.getLogger(StaticEbmsHeaderPipelet.class);
+	
 	public static final String ROLE_ELEMENT_VALUE_FROM = "roleFrom";
 	public static final String ROLE_ELEMENT_VALUE_TO = "roleTo";
 	public static final String SERVICE_ELEMENT_VALUE = "service";
@@ -48,7 +55,7 @@ public class StaticEbmsHeaderPipelet extends AbstractPipelet {
 		parameterMap.put(SERVICE_ELEMENT_VALUE, new ParameterDescriptor(ParameterType.STRING, "Service",
 				"Sets the value for the header element service", ""));
 	}
-
+	
 	@Override
 	public MessageContext processMessage(MessageContext messageContext)
 			throws IllegalArgumentException, IllegalStateException, NexusException {
@@ -63,12 +70,14 @@ public class StaticEbmsHeaderPipelet extends AbstractPipelet {
 		        }
 				
 				if (validRoleParameters()) {					
-					messageLabels.add(createLabel(currentMassagePojo, Constants.PROTOCOLSPECIFIC_ROLE_FROM, getParameter(ROLE_ELEMENT_VALUE_FROM).toString()));
-					messageLabels.add(createLabel(currentMassagePojo, Constants.PROTOCOLSPECIFIC_ROLE_TO, getParameter(ROLE_ELEMENT_VALUE_TO).toString()));					
+					messageLabels.add(createLabel(currentMassagePojo, Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_ROLE_FROM, getParameter(ROLE_ELEMENT_VALUE_FROM).toString()));
+					messageLabels.add(createLabel(currentMassagePojo, Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_ROLE_TO, getParameter(ROLE_ELEMENT_VALUE_TO).toString()));		
+					LOG.debug("Role Parameters found and set.");
 				}
 				
 				if (validServiceParameter()) {					
-					messageLabels.add(createLabel(currentMassagePojo, Constants.PROTOCOLSPECIFIC_SERVICE, getParameter(SERVICE_ELEMENT_VALUE).toString()));					
+					messageLabels.add(createLabel(currentMassagePojo, Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_SERVICE, getParameter(SERVICE_ELEMENT_VALUE).toString()));
+					LOG.debug("Service Parameter found and set.");
 				}
 
 			} else {
@@ -88,6 +97,9 @@ public class StaticEbmsHeaderPipelet extends AbstractPipelet {
 
 		if (StringUtils.isNotEmpty(newRoleFrom) && StringUtils.isNotEmpty(newRoleTo)) {
 			valid = true;
+		} else if ((StringUtils.isEmpty(newRoleFrom) && StringUtils.isNotEmpty(newRoleTo)) || 
+						StringUtils.isNotEmpty(newRoleFrom) && StringUtils.isEmpty(newRoleTo)) {
+			LOG.warn("Role Parameter will be ignored, please set both Role Parameters.");
 		}
 		return valid;
 	}
