@@ -71,7 +71,7 @@ public class HTTPMessagePackager extends AbstractPipelet {
 
         ListParameter listParam = getParameter(ENCODING_PARAMETER_NAME);
         if (listParam == null) {
-            LOG.info("You are using a HTTPMessagePackager without having set the binary encoding option. The most likely cause is that you recently upgraded your NEXUSe2e and did not have this configuration option before. Will continue with Base 64 encoding for backwards compatibility; to get rid of this warning please configure your HTTPMessagePackager Pipelets and set the binary encoding option, most likely to Base 64.");
+            LOG.trace("You are using a HTTPMessagePackager without having set the binary encoding option. The most likely cause is that you recently upgraded your NEXUSe2e and did not have this configuration option before. Will continue with Base 64 encoding for backwards compatibility; to get rid of this warning please configure your HTTPMessagePackager Pipelets and set the binary encoding option, most likely to Base 64.");
         } else {
             String selectedEncoding = listParam.getSelectedValue();
             if (StringUtils.isNotBlank(selectedEncoding)) {

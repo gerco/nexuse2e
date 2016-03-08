@@ -11,7 +11,7 @@
   <!-- this project -->
   <artifactId>nexuse2e-core</artifactId>
   <packaging>jar</packaging>
-  <version>5.6.1</version>
+  <version>5.6.2</version>
   <name>NEXUSe2e Core Library</name>
   <url>http://www.nexuse2e.org</url>
   <!-- license -->
@@ -616,11 +616,14 @@
 	<artifactId>groovy</artifactId>
 	<version>1.7.7</version>
    </dependency>
+   <!-- 
    <dependency>
     <groupId>org.freemarker</groupId>
     <artifactId>freemarker</artifactId>
-    <version>2.3.23</version>
-   </dependency>
+    Latest 2.3.x (not 2.4.x), at least 2.3.19
+    <version>[2.3.19,2.4)</version>
+   </dependency>  
+   -->
    <dependency>
      <groupId>org.mockito</groupId>
      <artifactId>mockito-core</artifactId>
@@ -639,6 +642,12 @@
     <artifactId>tika-core</artifactId>
     <version>0.8</version>
    </dependency>
+     <dependency>
+         <groupId>org.freemarker</groupId>
+         <artifactId>freemarker</artifactId>
+         <version>2.3.23</version>
+     </dependency>
+
  </dependencies>
  <!-- build -->
  <build>
