@@ -38,6 +38,9 @@ import javax.mail.internet.ParseException;
 import javax.xml.soap.SOAPException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 
 /**
@@ -49,6 +52,10 @@ public class HTTPMessagePackager extends AbstractPipelet {
     private static final String         ENCODING_PARAMETER_NAME = "binary_encoding";
     private static       String         CRLF                    = "\r\n";
     private static       BinaryEncoding encoding                = BinaryEncoding.BASE64;
+    private static		 String  		CONTENT_DISPOSITION_PARAMETER		= "content_disposition";
+    private static		 boolean    	contentDisposition		= false;	
+    private static 		 String 		TRIM_CONTENT_PARAMETER	= "trim_content";
+    private static		 boolean 		trimContent				= false;
 
     /**
      * Default constructor.
@@ -60,7 +67,10 @@ public class HTTPMessagePackager extends AbstractPipelet {
         paramList.setSelectedIndex(0);
         parameterMap.put(ENCODING_PARAMETER_NAME,
                          new ParameterDescriptor(ParameterType.LIST, "Binary encoding", "Which encoding to use for binary content", paramList));
-
+        parameterMap.put(CONTENT_DISPOSITION_PARAMETER, new ParameterDescriptor(ParameterType.BOOLEAN, "Include content disposition", "If binary encoding is used, the content disposition will be added to the message.",
+                Boolean.FALSE));
+        parameterMap.put(TRIM_CONTENT_PARAMETER, new ParameterDescriptor(ParameterType.BOOLEAN, "Cut ContentId", "If binary encoding is used, the content id will be shortened to only contain the file name, must be unique afterwards.",
+                Boolean.FALSE));
         frontendPipelet = true;
     }
 
@@ -76,13 +86,20 @@ public class HTTPMessagePackager extends AbstractPipelet {
             String selectedEncoding = listParam.getSelectedValue();
             if (StringUtils.isNotBlank(selectedEncoding)) {
                 encoding = BinaryEncoding.fromString(selectedEncoding);
+                if (encoding.toString().equals("BINARY")) {
+                	contentDisposition = (boolean) getParameter(CONTENT_DISPOSITION_PARAMETER);
+                	LOG.trace("Content disposition is activated.");
+                	
+                	trimContent = (boolean) getParameter(TRIM_CONTENT_PARAMETER);
+                	LOG.trace("Content ID shortened. No duplicate filenames allowed.");
+                }
             }
         }
 
         byte[] serializedSOAPMessage = null;
         MessagePojo messagePojo = messageContext.getMessagePojo();
         LOG.debug(new LogMessage("Entering HTTPMessagePackager.processMessage...", messagePojo));
-
+        
         try {
             if (messagePojo.getType() == org.nexuse2e.messaging.Constants.INT_MESSAGE_TYPE_ACK) {
                 serializedSOAPMessage = getJAXMSOAPAck(messagePojo);
@@ -133,7 +150,12 @@ public class HTTPMessagePackager extends AbstractPipelet {
             for (MessagePayloadPojo payloadPojo : messagePojo.getMessagePayloads()) {
                 // add bodyparts
                 msgBuffer.append(Constants.MIMEPARTBOUNDARY + CRLF);
-
+                
+                // Cut Id from content if binary and trim parameter set
+                if (payloadPojo.getContentId() != null && payloadPojo.getContentId().trim().length() > 0 && trimContent && encoding.toString().equals("BINARY")) {
+                	payloadPojo.setContentId(payloadPojo.getContentId().replaceAll("__body_\\d+", ""));
+                }
+                
                 // String payloadContentID = "Content-ID: " + "<" + getContentId( messagePojo.getMessageId(), payloadPojo.getSequenceNumber() ) + ">";
                 // MBE: Changed 20100215 due to interop problem
                 String payloadContentID = "Content-ID: " + "<" + payloadPojo.getContentId() + ">";
@@ -146,7 +168,17 @@ public class HTTPMessagePackager extends AbstractPipelet {
                 if (Engine.getInstance().isBinaryType(payloadPojo.getMimeType())) {
                     LOG.trace(new LogMessage("Using binary for mime type: " + payloadPojo.getMimeType()));
                     switch (encoding) {
-                        case BINARY:
+                        case BINARY:                        	
+                        	
+                        	// Add content disposition if content disposition parameter is set
+                        	if (payloadPojo.getContentId() != null && payloadPojo.getContentId().trim().length() > 0 && contentDisposition) {
+                                msgBuffer.append( "Content-Disposition: attachment; filename=\"" + payloadPojo.getContentId() +  "\"" + CRLF );
+                            }
+                        	msgBuffer.append( "Content-Transfer-Encoding: binary" + CRLF + CRLF );
+                        	
+                        	// Cut contentId if parameter is set
+                        	 
+                        	messagePojo.getMessagePayloads();
                             baos.write(payloadPojo.getPayloadData());
                             break;
                         case UNSUPPORTED:

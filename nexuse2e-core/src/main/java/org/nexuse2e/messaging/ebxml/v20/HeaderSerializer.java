@@ -289,6 +289,7 @@ public class HeaderSerializer extends AbstractPipelet {
 				// service is hard coded to meet spec. Services are not used.
 				
 				String service = null;
+				String serviceType = null;
 				
 				if (includeLabels) {
 					for ( Iterator<MessageLabelPojo> iter = messageLabels.iterator(); iter.hasNext(); ) {
@@ -298,6 +299,12 @@ public class HeaderSerializer extends AbstractPipelet {
 						if (messageLabelPojo.getLabel().equals(Constants.PARAMETER_PREFIX_EBXML20 + "service")) {
 							service = messageLabelPojo.getValue().toString();
 							LOG.debug("Custom Service found, will add " + service + " to the Header Element.");
+
+						}
+						
+						if(messageLabelPojo.getLabel().equals(Constants.PARAMETER_PREFIX_EBXML20 + "serviceType")) {
+							serviceType = messageLabelPojo.getValue().toString();
+							LOG.debug("Customt Type for Service found, will add " + serviceType + " to Service Element if Service is custom.");
 						}
 					}
 				}
@@ -313,8 +320,9 @@ public class HeaderSerializer extends AbstractPipelet {
 				if (!(service.startsWith("uri:") || service.startsWith("urn:"))) {
 					serviceVal += "uri:";
 				}
-
-				createSOAPElement(soapFactory, msgHeader, "Service", serviceVal + service);
+					
+				createServiceElement(soapFactory, msgHeader, "Service", serviceVal + service, serviceType);
+				//createSOAPElement(soapFactory, msgHeader, "Service", serviceVal + service);
 				
 				// ACTION
 				// --------------------------------------------------------------
@@ -585,6 +593,30 @@ public class HeaderSerializer extends AbstractPipelet {
 		SOAPElement soapEl = parent.addChildElement(childName, Constants.EBXML_NAMESPACE_PREFIX,
 				Constants.EBXML_NAMESPACE);
 		soapEl.removeNamespaceDeclaration(Constants.EBXML_NAMESPACE_PREFIX);
+		
+		soapEl.addTextNode(childText);
+	}
+	
+	/**
+	 * Create an ebXML Service element with optional type attribute
+	 * 
+	 * @param soapFactory
+	 * @param parent
+	 * @param childName
+	 * @param childText
+	 * @param type Optional type attribute 
+	 * @throws SOAPException
+	 */
+	private void createServiceElement(SOAPFactory soapFactory, SOAPElement parent, String childName, String childText, String type) throws SOAPException {
+		
+		SOAPElement soapEl = parent.addChildElement(childName, Constants.EBXML_NAMESPACE_PREFIX,
+				Constants.EBXML_NAMESPACE);
+		soapEl.removeNamespaceDeclaration(Constants.EBXML_NAMESPACE_PREFIX);
+		
+		if (type != null && !type.equals("")) {
+			soapEl.addAttribute(soapFactory.createName(Constants.EBXML_NAMESPACE_PREFIX + ":type"), type);
+		}
+		
 		soapEl.addTextNode(childText);
 	}
 

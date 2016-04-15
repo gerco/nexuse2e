@@ -18,7 +18,7 @@
  *  02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.nexuse2e.messaging.generic;
+package org.nexuse2e.backend.pipelets;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,17 +27,13 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nexuse2e.NexusException;
-import org.nexuse2e.configuration.EngineConfiguration;
 import org.nexuse2e.configuration.ParameterDescriptor;
 import org.nexuse2e.configuration.ParameterType;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.messaging.ebxml.v20.Constants;
-import org.nexuse2e.messaging.ebxml.v20.HeaderSerializer;
 import org.nexuse2e.pojo.MessageLabelPojo;
 import org.nexuse2e.pojo.MessagePojo;
-
-import com.mysql.jdbc.log.Log;
 
 public class StaticEbmsHeaderPipelet extends AbstractPipelet {
 
@@ -46,6 +42,7 @@ public class StaticEbmsHeaderPipelet extends AbstractPipelet {
 	public static final String ROLE_ELEMENT_VALUE_FROM = "roleFrom";
 	public static final String ROLE_ELEMENT_VALUE_TO = "roleTo";
 	public static final String SERVICE_ELEMENT_VALUE = "service";
+	public static final String SERVICE_TYPE_VALUE = "serviceType";
 
 	public StaticEbmsHeaderPipelet() {
 		parameterMap.put(ROLE_ELEMENT_VALUE_FROM, new ParameterDescriptor(ParameterType.STRING, "Role From",
@@ -54,6 +51,8 @@ public class StaticEbmsHeaderPipelet extends AbstractPipelet {
 				"Sets the value for the header element role of the party receiving", ""));
 		parameterMap.put(SERVICE_ELEMENT_VALUE, new ParameterDescriptor(ParameterType.STRING, "Service",
 				"Sets the value for the header element service", ""));
+		parameterMap.put(SERVICE_TYPE_VALUE, new ParameterDescriptor(ParameterType.STRING, "Service Type",
+				"Sets the type attribute value of service the element. Will only be used if service is set. ", ""));
 	}
 	
 	@Override
@@ -78,6 +77,11 @@ public class StaticEbmsHeaderPipelet extends AbstractPipelet {
 				if (validServiceParameter()) {					
 					messageLabels.add(createLabel(currentMassagePojo, Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_SERVICE, getParameter(SERVICE_ELEMENT_VALUE).toString()));
 					LOG.debug("Service Parameter found and set.");
+					
+					if (validServiceTypeParameter()) {
+						messageLabels.add(createLabel(currentMassagePojo, Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_SERVICE_TYPE, getParameter(SERVICE_TYPE_VALUE).toString()));
+						LOG.debug("Service Type Attribute found and set.");
+					}
 				}
 
 			} else {
@@ -111,6 +115,17 @@ public class StaticEbmsHeaderPipelet extends AbstractPipelet {
 		if (StringUtils.isNotEmpty(newService)) {
 			valid = true;
 		}
+		return valid;
+	}
+	
+	private boolean validServiceTypeParameter() throws NexusException {
+		boolean valid = false;
+		String newType = getParameter(SERVICE_TYPE_VALUE).toString();
+		
+		if (StringUtils.isNotEmpty(newType)) {
+			valid = true;
+		}
+		
 		return valid;
 	}
 	

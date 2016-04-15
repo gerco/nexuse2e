@@ -50,6 +50,7 @@ public class Constants extends org.nexuse2e.messaging.ebxml.Constants {
     public static final String PROTOCOLSPECIFIC_FROMIDTYPE         = "fromIDType";
     public static final String PROTOCOLSPECIFIC_TOIDTYPE           = "toIDType";
     public static final String PROTOCOLSPECIFIC_SERVICE            = "service";
+    public static final String PROTOCOLSPECIFIC_SERVICE_TYPE	   = "serviceType";	
     public static final String PROTOCOLSPECIFIC_ROLE_FROM		   = "role_from";
     public static final String PROTOCOLSPECIFIC_ROLE_TO            = "role_to";
     

@@ -97,7 +97,7 @@ comment on column nx_certificate.modified_nx_user_id is '';
 comment on column nx_certificate.name is '';
 comment on column nx_certificate.description is '';
 comment on column nx_certificate.binary_data is '';
-create table nx_choreography (nx_choreography_id integer not null, description varchar(64), name varchar(64) not null unique, created_date timestamp not null, modified_date timestamp not null, modified_nx_user_id integer not null, primary key (nx_choreography_id));
+create table nx_choreography (nx_choreography_id integer not null, description varchar(255), name varchar(255) not null unique, created_date timestamp not null, modified_date timestamp not null, modified_nx_user_id integer not null, primary key (nx_choreography_id));
 comment on table nx_choreography is '';
 comment on column nx_choreography.description is '';
 comment on column nx_choreography.name is '';
