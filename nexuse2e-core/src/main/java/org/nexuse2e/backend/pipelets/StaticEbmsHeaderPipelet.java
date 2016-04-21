@@ -43,6 +43,7 @@ public class StaticEbmsHeaderPipelet extends AbstractPipelet {
 	public static final String ROLE_ELEMENT_VALUE_TO = "roleTo";
 	public static final String SERVICE_ELEMENT_VALUE = "service";
 	public static final String SERVICE_TYPE_VALUE = "serviceType";
+	public static final String TRIM_CONTENT_PARAMETER = "trim_content";
 
 	public StaticEbmsHeaderPipelet() {
 		parameterMap.put(ROLE_ELEMENT_VALUE_FROM, new ParameterDescriptor(ParameterType.STRING, "Role From",
@@ -52,7 +53,9 @@ public class StaticEbmsHeaderPipelet extends AbstractPipelet {
 		parameterMap.put(SERVICE_ELEMENT_VALUE, new ParameterDescriptor(ParameterType.STRING, "Service",
 				"Sets the value for the header element service", ""));
 		parameterMap.put(SERVICE_TYPE_VALUE, new ParameterDescriptor(ParameterType.STRING, "Service Type",
-				"Sets the type attribute value of service the element. Will only be used if service is set. ", ""));
+				"Sets the type attribute value of service element. Will only be used if service is set. ", ""));
+		parameterMap.put(TRIM_CONTENT_PARAMETER, new ParameterDescriptor(ParameterType.BOOLEAN, "Cut ContentId", "The content id will be shortened to only contain the file name, must be unique afterwards.",
+                Boolean.FALSE));
 	}
 	
 	@Override
@@ -83,6 +86,8 @@ public class StaticEbmsHeaderPipelet extends AbstractPipelet {
 						LOG.debug("Service Type Attribute found and set.");
 					}
 				}
+				
+				messageLabels.add(createLabel(currentMassagePojo, Constants.TRIM_CONTENT_ID, getParameter(TRIM_CONTENT_PARAMETER).toString()));
 
 			} else {
 				throw new NexusException("MessagePojo is null");

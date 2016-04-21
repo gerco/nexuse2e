@@ -20,6 +20,14 @@
 package org.nexuse2e.messaging.ebxml;
 
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.mail.internet.ParseException;
+import javax.xml.soap.SOAPException;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -31,16 +39,9 @@ import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.messaging.AbstractPipelet;
 import org.nexuse2e.messaging.BinaryEncoding;
 import org.nexuse2e.messaging.MessageContext;
+import org.nexuse2e.pojo.MessageLabelPojo;
 import org.nexuse2e.pojo.MessagePayloadPojo;
 import org.nexuse2e.pojo.MessagePojo;
-
-import javax.mail.internet.ParseException;
-import javax.xml.soap.SOAPException;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
 
 
 /**
@@ -54,7 +55,6 @@ public class HTTPMessagePackager extends AbstractPipelet {
     private static       BinaryEncoding encoding                = BinaryEncoding.BASE64;
     private static		 String  		CONTENT_DISPOSITION_PARAMETER		= "content_disposition";
     private static		 boolean    	contentDisposition		= false;	
-    private static 		 String 		TRIM_CONTENT_PARAMETER	= "trim_content";
     private static		 boolean 		trimContent				= false;
 
     /**
@@ -68,8 +68,6 @@ public class HTTPMessagePackager extends AbstractPipelet {
         parameterMap.put(ENCODING_PARAMETER_NAME,
                          new ParameterDescriptor(ParameterType.LIST, "Binary encoding", "Which encoding to use for binary content", paramList));
         parameterMap.put(CONTENT_DISPOSITION_PARAMETER, new ParameterDescriptor(ParameterType.BOOLEAN, "Include content disposition", "If binary encoding is used, the content disposition will be added to the message.",
-                Boolean.FALSE));
-        parameterMap.put(TRIM_CONTENT_PARAMETER, new ParameterDescriptor(ParameterType.BOOLEAN, "Cut ContentId", "If binary encoding is used, the content id will be shortened to only contain the file name, must be unique afterwards.",
                 Boolean.FALSE));
         frontendPipelet = true;
     }
@@ -90,8 +88,19 @@ public class HTTPMessagePackager extends AbstractPipelet {
                 	contentDisposition = (boolean) getParameter(CONTENT_DISPOSITION_PARAMETER);
                 	LOG.trace("Content disposition is activated.");
                 	
-                	trimContent = (boolean) getParameter(TRIM_CONTENT_PARAMETER);
-                	LOG.trace("Content ID shortened. No duplicate filenames allowed.");
+                	List<MessageLabelPojo> messageLabels = messageContext.getMessagePojo().getMessageLabels();
+                	boolean includeLabels = ( messageLabels != null ) && ( messageLabels.size() != 0 );
+					if (includeLabels) {
+						for ( Iterator<MessageLabelPojo> iter = messageLabels.iterator(); iter.hasNext(); ) {
+							
+							MessageLabelPojo messageLabelPojo = iter.next();
+							
+							if (messageLabelPojo.getLabel().equals("trimContId")) {
+								trimContent = Boolean.valueOf(messageLabelPojo.getValue().toString());
+								LOG.debug("Payload sequence number will be deleted from Content-Id.");
+							}
+						}
+					}
                 }
             }
         }
@@ -156,6 +165,12 @@ public class HTTPMessagePackager extends AbstractPipelet {
                 	payloadPojo.setContentId(payloadPojo.getContentId().replaceAll("__body_\\d+", ""));
                 }
                 
+            	// Add content disposition if content disposition parameter is set
+            	if (payloadPojo.getContentId() != null && payloadPojo.getContentId().trim().length() > 0 && contentDisposition && encoding.toString().equals("BINARY")) {
+            		msgBuffer.append( "Content-Disposition: attachment; filename=\"" + payloadPojo.getContentId() +  "\"" + CRLF );
+            		msgBuffer.append( "Content-Transfer-Encoding: binary" + CRLF + CRLF );
+                }
+                
                 // String payloadContentID = "Content-ID: " + "<" + getContentId( messagePojo.getMessageId(), payloadPojo.getSequenceNumber() ) + ">";
                 // MBE: Changed 20100215 due to interop problem
                 String payloadContentID = "Content-ID: " + "<" + payloadPojo.getContentId() + ">";
@@ -169,15 +184,6 @@ public class HTTPMessagePackager extends AbstractPipelet {
                     LOG.trace(new LogMessage("Using binary for mime type: " + payloadPojo.getMimeType()));
                     switch (encoding) {
                         case BINARY:                        	
-                        	
-                        	// Add content disposition if content disposition parameter is set
-                        	if (payloadPojo.getContentId() != null && payloadPojo.getContentId().trim().length() > 0 && contentDisposition) {
-                                msgBuffer.append( "Content-Disposition: attachment; filename=\"" + payloadPojo.getContentId() +  "\"" + CRLF );
-                            }
-                        	msgBuffer.append( "Content-Transfer-Encoding: binary" + CRLF + CRLF );
-                        	
-                        	// Cut contentId if parameter is set
-                        	 
                         	messagePojo.getMessagePayloads();
                             baos.write(payloadPojo.getPayloadData());
                             break;

@@ -53,6 +53,7 @@ public class Constants extends org.nexuse2e.messaging.ebxml.Constants {
     public static final String PROTOCOLSPECIFIC_SERVICE_TYPE	   = "serviceType";	
     public static final String PROTOCOLSPECIFIC_ROLE_FROM		   = "role_from";
     public static final String PROTOCOLSPECIFIC_ROLE_TO            = "role_to";
+    public static final String TRIM_CONTENT_ID					   = "trimContId";
     
     
     public static final String CPAID_SCHEME_PARAM_NAME   = "cpaIdScheme";

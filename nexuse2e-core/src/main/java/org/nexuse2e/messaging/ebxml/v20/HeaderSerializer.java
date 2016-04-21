@@ -20,7 +20,6 @@
 package org.nexuse2e.messaging.ebxml.v20;
 
 import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -413,7 +412,24 @@ public class HeaderSerializer extends AbstractPipelet {
 
 					for (MessagePayloadPojo bodyPart : messagePojo.getMessagePayloads()) {
 						LOG.trace(new LogMessage("ContentID:" + bodyPart.getContentId(), messagePojo));
-
+						
+		                // JUBES functionality: Check if payload sequence id needs to be deleted from Content-Id  
+						if (includeLabels) {
+							boolean trimContentId = false;
+							for ( Iterator<MessageLabelPojo> iter = messageLabels.iterator(); iter.hasNext(); ) {
+								
+								MessageLabelPojo messageLabelPojo = iter.next();
+								
+								if (messageLabelPojo.getLabel().equals("trimContId")) {
+									trimContentId = Boolean.valueOf(messageLabelPojo.getValue().toString());
+									
+									if(bodyPart.getContentId() != null && bodyPart.getContentId().trim().length() > 0 && trimContentId) {
+										bodyPart.setContentId(bodyPart.getContentId().replaceAll("__body_\\d+", ""));
+										LOG.debug("Payload sequence number will be deleted from Content-Id. Make sure that every file name is unique.");
+									}
+								}
+							}
+						}
 						// createManifestReference( soapFactory, soapManifest,
 						// bodyPart.getContentId(), "Payload-" +
 						// bodyPart.getSequenceNumber(), bodyPart.getMimeType(),
