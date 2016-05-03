@@ -238,14 +238,6 @@ public class HeaderSerializer extends AbstractPipelet {
 				SOAPElement fromElement = createPartyElement(soapFactory, "From", from, fromIdType, null);
 				SOAPElement toElement = createPartyElement(soapFactory, "To", to, toIDType, null);
 				
-
-				// CPA & ConversationId
-				// ------------------------------------------------
-				
-				createSOAPElement(soapFactory, msgHeader, "CPAId", cpaIdScheme.makeCPAId(messagePojo));
-				createSOAPElement(soapFactory, msgHeader, "ConversationId",
-						messagePojo.getConversation().getConversationId());
-				
 				// ROLE
 				// --------------------------------------------------------
 				
@@ -257,53 +249,58 @@ public class HeaderSerializer extends AbstractPipelet {
 				boolean includeLabels = ( messageLabels != null ) && ( messageLabels.size() != 0 );
 				
 				if (includeLabels) {
-					for ( Iterator<MessageLabelPojo> iter = messageLabels.iterator(); iter.hasNext(); ) {
+					for ( MessageLabelPojo label : messageLabels ) {
 						
-						MessageLabelPojo messageLabelPojo = iter.next();
-						
-						if (messageLabelPojo.getLabel().equals(Constants.PARAMETER_PREFIX_EBXML20 + "role_from")  ) {
-							roleFrom = messageLabelPojo.getValue().toString();
+						if (label.getLabel().equals(Constants.PARAMETER_PREFIX_EBXML20 + "role_from")  ) {
+							roleFrom = label.getValue().toString();
 							LOG.debug("Sender Role found, will add " + roleFrom + " to the FROM Header Element.");
 						}
 						
-						if (messageLabelPojo.getLabel().equals(Constants.PARAMETER_PREFIX_EBXML20 + "role_to")) {
-							roleTo = messageLabelPojo.getValue().toString();
+						if (label.getLabel().equals(Constants.PARAMETER_PREFIX_EBXML20 + "role_to")) {
+							roleTo = label.getValue().toString();
 							LOG.debug("Receiver Role found, will add " + roleTo + " to the TO Header Element.");
 						}
 					}
 				}
 					
-					if (StringUtils.isNotBlank(roleFrom) && StringUtils.isNotBlank(roleTo)) {
+				if (StringUtils.isNotBlank(roleFrom) && StringUtils.isNotBlank(roleTo)) {
 					
-						createSOAPElement(soapFactory, fromElement, "Role", roleFrom);
-						createSOAPElement(soapFactory, toElement, "Role", roleTo);
+					createSOAPElement(soapFactory, fromElement, "Role", roleFrom);
+					createSOAPElement(soapFactory, toElement, "Role", roleTo);
 						
-					}
+				}
 
 				msgHeader.addChildElement(fromElement);
 				msgHeader.addChildElement(toElement);
+
+				// CPA & ConversationId
+				// ------------------------------------------------
+				
+				createSOAPElement(soapFactory, msgHeader, "CPAId", cpaIdScheme.makeCPAId(messagePojo));
+				createSOAPElement(soapFactory, msgHeader, "ConversationId",
+						messagePojo.getConversation().getConversationId());
 				
 				// SERVICE
 				// -------------------------------------------------------------
-				// service is hard coded to meet spec. Services are not used.
+				// service can be be configured via StaticEbmsHeaderPipelet, default service is hard coded to meet specs.
 				
 				String service = null;
 				String serviceType = null;
 				
 				if (includeLabels) {
-					for ( Iterator<MessageLabelPojo> iter = messageLabels.iterator(); iter.hasNext(); ) {
+					//Iterator<MessageLabelPojo> iter = messageLabels.iterator(); iter.hasNext(); {
+					for (MessageLabelPojo label : messageLabels) {	
+						//MessageLabelPojo messageLabelPojo = iter.next();
 						
-						MessageLabelPojo messageLabelPojo = iter.next();
-						
-						if (messageLabelPojo.getLabel().equals(Constants.PARAMETER_PREFIX_EBXML20 + "service")) {
-							service = messageLabelPojo.getValue().toString();
-							LOG.debug("Custom Service found, will add " + service + " to the Header Element.");
+						if (label.getLabel().equals(Constants.PARAMETER_PREFIX_EBXML20 + "service")) {
+							service = label.getValue().toString();
+							LOG.trace("Custom Service found, will add " + service + " to the Header Element.");
 
 						}
 						
-						if(messageLabelPojo.getLabel().equals(Constants.PARAMETER_PREFIX_EBXML20 + "serviceType")) {
-							serviceType = messageLabelPojo.getValue().toString();
-							LOG.debug("Customt Type for Service found, will add " + serviceType + " to Service Element if Service is custom.");
+						if(label.getLabel().equals(Constants.PARAMETER_PREFIX_EBXML20 + "serviceType")) {
+							serviceType = label.getValue().toString();
+							LOG.trace("Custom Type for Service found, will add " + serviceType + " to Service Element if Service is custom.");
 						}
 					}
 				}
@@ -321,7 +318,6 @@ public class HeaderSerializer extends AbstractPipelet {
 				}
 					
 				createServiceElement(soapFactory, msgHeader, "Service", serviceVal + service, serviceType);
-				//createSOAPElement(soapFactory, msgHeader, "Service", serviceVal + service);
 				
 				// ACTION
 				// --------------------------------------------------------------
@@ -416,14 +412,12 @@ public class HeaderSerializer extends AbstractPipelet {
 		                // JUBES functionality: Check if payload sequence id needs to be deleted from Content-Id  
 						if (includeLabels) {
 							boolean trimContentId = false;
-							for ( Iterator<MessageLabelPojo> iter = messageLabels.iterator(); iter.hasNext(); ) {
+							for ( MessageLabelPojo label : messageLabels ) {
 								
-								MessageLabelPojo messageLabelPojo = iter.next();
-								
-								if (messageLabelPojo.getLabel().equals("trimContId")) {
-									trimContentId = Boolean.valueOf(messageLabelPojo.getValue().toString());
+								if (label.getLabel().equals("trimContId")) {
+									trimContentId = Boolean.valueOf(label.getValue().toString());
 									
-									if(bodyPart.getContentId() != null && bodyPart.getContentId().trim().length() > 0 && trimContentId) {
+									if(trimContentId && bodyPart.getContentId() != null && bodyPart.getContentId().trim().length() > 0) {
 										bodyPart.setContentId(bodyPart.getContentId().replaceAll("__body_\\d+", ""));
 										LOG.debug("Payload sequence number will be deleted from Content-Id. Make sure that every file name is unique.");
 									}
@@ -629,7 +623,7 @@ public class HeaderSerializer extends AbstractPipelet {
 				Constants.EBXML_NAMESPACE);
 		soapEl.removeNamespaceDeclaration(Constants.EBXML_NAMESPACE_PREFIX);
 		
-		if (type != null && !type.equals("")) {
+		if (type != null && !type.equals("")) { //stringutils
 			soapEl.addAttribute(soapFactory.createName(Constants.EBXML_NAMESPACE_PREFIX + ":type"), type);
 		}
 		

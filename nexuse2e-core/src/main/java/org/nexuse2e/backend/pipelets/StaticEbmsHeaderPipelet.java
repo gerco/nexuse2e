@@ -74,16 +74,16 @@ public class StaticEbmsHeaderPipelet extends AbstractPipelet {
 				if (validRoleParameters()) {					
 					messageLabels.add(createLabel(currentMassagePojo, Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_ROLE_FROM, getParameter(ROLE_ELEMENT_VALUE_FROM).toString()));
 					messageLabels.add(createLabel(currentMassagePojo, Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_ROLE_TO, getParameter(ROLE_ELEMENT_VALUE_TO).toString()));		
-					LOG.debug("Role Parameters found and set.");
+					LOG.trace("Role Parameters found and set.");
 				}
 				
 				if (validServiceParameter()) {					
 					messageLabels.add(createLabel(currentMassagePojo, Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_SERVICE, getParameter(SERVICE_ELEMENT_VALUE).toString()));
-					LOG.debug("Service Parameter found and set.");
+					LOG.trace("Service Parameter found and set.");
 					
 					if (validServiceTypeParameter()) {
 						messageLabels.add(createLabel(currentMassagePojo, Constants.PARAMETER_PREFIX_EBXML20 + Constants.PROTOCOLSPECIFIC_SERVICE_TYPE, getParameter(SERVICE_TYPE_VALUE).toString()));
-						LOG.debug("Service Type Attribute found and set.");
+						LOG.trace("Service Type Attribute found and set.");
 					}
 				}
 				
