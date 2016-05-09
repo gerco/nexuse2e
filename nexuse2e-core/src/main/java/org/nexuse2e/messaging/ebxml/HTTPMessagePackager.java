@@ -84,19 +84,15 @@ public class HTTPMessagePackager extends AbstractPipelet {
             String selectedEncoding = listParam.getSelectedValue();
             if (StringUtils.isNotBlank(selectedEncoding)) {
                 encoding = BinaryEncoding.fromString(selectedEncoding);
-                if (encoding.toString().equals("BINARY")) {
-                	contentDisposition = (boolean) getParameter(CONTENT_DISPOSITION_PARAMETER);
-                	LOG.trace("Content disposition is activated.");
-                	
-                	List<MessageLabelPojo> messageLabels = messageContext.getMessagePojo().getMessageLabels(); //for each, hashmap
-                	boolean includeLabels = ( messageLabels != null ) && ( messageLabels.size() != 0 );
-					if (includeLabels) {
-						for ( MessageLabelPojo label : messageLabels ) {
-							
-							if (label.getLabel().equals("trimContId")) {
-								trimContent = Boolean.valueOf(label.getValue().toString());
-								LOG.trace("Payload sequence number will be deleted from Content-Id.");
-							}
+            	contentDisposition = (boolean) getParameter(CONTENT_DISPOSITION_PARAMETER);
+            	LOG.trace("Content disposition is activated.");
+            	List<MessageLabelPojo> messageLabels = messageContext.getMessagePojo().getMessageLabels();
+            	boolean includeLabels = ( messageLabels != null ) && ( messageLabels.size() != 0 );
+				if (includeLabels) {
+					for ( MessageLabelPojo label : messageLabels ) {
+						if (label.getLabel().equals("trimContId")) {
+							trimContent = Boolean.valueOf(label.getValue().toString());
+							LOG.trace("Payload sequence number will be deleted from Content-Id.");
 						}
 					}
                 }
@@ -159,12 +155,12 @@ public class HTTPMessagePackager extends AbstractPipelet {
                 msgBuffer.append(Constants.MIMEPARTBOUNDARY + CRLF);
                 
                 // Cut Id from content if binary and trim parameter set
-                if (trimContent && payloadPojo.getContentId() != null && payloadPojo.getContentId().trim().length() > 0 && encoding.toString().equals("BINARY")) {
+                if (trimContent && payloadPojo.getContentId() != null && payloadPojo.getContentId().trim().length() > 0) {
                 	payloadPojo.setContentId(payloadPojo.getContentId().replaceAll("__body_\\d+", ""));
                 }
                 
             	// Add content disposition if content disposition parameter is set
-            	if (contentDisposition && payloadPojo.getContentId() != null && payloadPojo.getContentId().trim().length() > 0 && encoding.toString().equals("BINARY")) {
+            	if (contentDisposition && payloadPojo.getContentId() != null && payloadPojo.getContentId().trim().length() > 0) {
             		msgBuffer.append( "Content-Disposition: attachment; filename=\"" + payloadPojo.getContentId() +  "\"" + CRLF );
             		msgBuffer.append( "Content-Transfer-Encoding: binary" + CRLF + CRLF );
                 }
