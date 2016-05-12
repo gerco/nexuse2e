@@ -313,7 +313,8 @@ public class HeaderSerializer extends AbstractPipelet {
 					service = "urn:oasis:names:tc:ebxml-msg:service";
 				}
 				String serviceVal = "";
-				if (!(service.startsWith("uri:") || service.startsWith("urn:"))) {
+				if (!(service.startsWith("uri:") || service.startsWith("urn:")) 
+						&& ( StringUtils.isBlank(serviceType) && StringUtils.isEmpty(serviceType))) {
 					serviceVal += "uri:";
 				}
 					

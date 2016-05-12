@@ -162,7 +162,7 @@ public class HTTPMessagePackager extends AbstractPipelet {
             	// Add content disposition if content disposition parameter is set
             	if (contentDisposition && payloadPojo.getContentId() != null && payloadPojo.getContentId().trim().length() > 0) {
             		msgBuffer.append( "Content-Disposition: attachment; filename=\"" + payloadPojo.getContentId() +  "\"" + CRLF );
-            		msgBuffer.append( "Content-Transfer-Encoding: binary" + CRLF + CRLF );
+            		msgBuffer.append( "Content-Transfer-Encoding: " + encoding.toString().toLowerCase() + CRLF );
                 }
                 
                 // String payloadContentID = "Content-ID: " + "<" + getContentId( messagePojo.getMessageId(), payloadPojo.getSequenceNumber() ) + ">";
