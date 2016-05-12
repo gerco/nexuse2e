@@ -193,6 +193,7 @@ public class HTTPMessagePackager extends AbstractPipelet {
                     baos.write(payloadPojo.getPayloadData());
                 }
 
+                msgBuffer.append(CRLF);
             }
         }
 
