@@ -72,10 +72,10 @@ public class ChoreographyPojo implements NEXUSe2ePojo {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int                  nxChoreographyId;
 
-    @Column(name = "description", length = 64)
+    @Column(name = "description", length = 255)
     private String               description;
 
-    @Column(name = "name", length = 64, nullable = false, unique = true)
+    @Column(name = "name", length = 255, nullable = false, unique = true)
     private String               name;
 
     @Column(name = "created_date")
