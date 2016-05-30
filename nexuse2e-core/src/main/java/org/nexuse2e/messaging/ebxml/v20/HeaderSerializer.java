@@ -288,9 +288,7 @@ public class HeaderSerializer extends AbstractPipelet {
 				String serviceType = null;
 				
 				if (includeLabels) {
-					//Iterator<MessageLabelPojo> iter = messageLabels.iterator(); iter.hasNext(); {
 					for (MessageLabelPojo label : messageLabels) {	
-						//MessageLabelPojo messageLabelPojo = iter.next();
 						
 						if (label.getLabel().equals(Constants.PARAMETER_PREFIX_EBXML20 + "service")) {
 							service = label.getValue().toString();

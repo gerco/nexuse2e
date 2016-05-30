@@ -22,7 +22,6 @@ package org.nexuse2e.messaging.ebxml;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.mail.internet.ParseException;
@@ -84,7 +83,7 @@ public class HTTPMessagePackager extends AbstractPipelet {
             String selectedEncoding = listParam.getSelectedValue();
             if (StringUtils.isNotBlank(selectedEncoding)) {
                 encoding = BinaryEncoding.fromString(selectedEncoding);
-            	contentDisposition = (boolean) getParameter(CONTENT_DISPOSITION_PARAMETER);
+            	contentDisposition = getParameter(CONTENT_DISPOSITION_PARAMETER);
             	LOG.trace("Content disposition is activated.");
             	List<MessageLabelPojo> messageLabels = messageContext.getMessagePojo().getMessageLabels();
             	boolean includeLabels = ( messageLabels != null ) && ( messageLabels.size() != 0 );
@@ -178,7 +177,6 @@ public class HTTPMessagePackager extends AbstractPipelet {
                     LOG.trace(new LogMessage("Using binary for mime type: " + payloadPojo.getMimeType()));
                     switch (encoding) {
                         case BINARY:                        	
-                        	messagePojo.getMessagePayloads();
                             baos.write(payloadPojo.getPayloadData());
                             break;
                         case UNSUPPORTED:
