@@ -19,6 +19,7 @@
  */
 package org.nexuse2e.messaging;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nexuse2e.BeanStatus;
 import org.nexuse2e.Engine;
@@ -89,7 +90,7 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
     } // processMessage
 
     /**
-     * @param protocolSpecificKey
+     * @param messageContext
      * @return
      */
     private FrontendPipeline getProtocolSpecificPipeline( MessageContext messageContext ) {
@@ -227,9 +228,40 @@ public class FrontendOutboundDispatcher extends AbstractPipelet implements Initi
 
         } else {
             if ( messagePojo.getType() == Constants.INT_MESSAGE_TYPE_NORMAL ) {
-                LOG.error( new LogMessage(
-                        "Maximum number of retries reached without receiving acknowledgment - choreography: "
-                                + messagePojo.getConversation().getChoreography().getName() + ", partner: " + messagePojo.getConversation().getPartner().getPartnerId(), messagePojo ) );
+
+                if(Engine.getInstance().getAdvancedRetryLogging() && StringUtils.isNotBlank(Engine.getInstance().getRetryLoggingTemplate())) {
+
+                    try {
+                        String choreographyName = messagePojo.getConversation().getChoreography().getName();
+                        String partnerId = messagePojo.getConversation().getPartner().getPartnerId();
+                        String fileName = messageContext.getMessagePojo().getMessagePayloads().get(0).getContentId();
+
+
+                        String message = Engine.getInstance().getRetryLoggingTemplate();
+                        message = message.replace("{filename}",fileName);
+                        message = message.replace("{partnerId}",partnerId);
+                        message = message.replace("{choreographyId}",choreographyName);
+                        message = message.replace("{actionId}",messagePojo.getAction().getName());
+                        message = message.replace("{connectionUrl}",messagePojo.getParticipant().getConnection().getUri());
+                        message = message.replace("{retries}",""+messagePojo.getRetries());
+                        message = message.replace("{messageStatus}",messagePojo.getStatusName());
+                        message = message.replace("{messageId}",messagePojo.getMessageId());
+                        message = message.replace("{conversationId}",messagePojo.getConversation().getConversationId());
+
+                        LOG.error(new LogMessage(message,messagePojo));
+
+
+                    } catch (Exception e) {
+                        LOG.error(new LogMessage(
+                            "(Templating failed) - Maximum number of retries reached without receiving acknowledgment - choreography: " + messagePojo.getConversation().getChoreography().getName() + ", partner: " + messagePojo.getConversation().getPartner().getPartnerId(), messagePojo));
+
+                    }
+
+                } else {
+
+                    LOG.error(new LogMessage(
+                        "Maximum number of retries reached without receiving acknowledgment - choreography: " + messagePojo.getConversation().getChoreography().getName() + ", partner: " + messagePojo.getConversation().getPartner().getPartnerId(), messagePojo));
+                }
             } else {
                 LOG.debug( new LogMessage( "Max number of retries reached!", messagePojo ) );
             }

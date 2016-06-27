@@ -58,6 +58,7 @@ public class ProcessConversationReportAction extends ReportingAction {
 
     private static String URL     = "reporting.error.url";
     private static String TIMEOUT = "reporting.error.timeout";
+    private static final int MAX_PAGE_SIZE = 1024;
 
     /* (non-Javadoc)
      * @see com.tamgroup.nexus.e2e.ui.action.NexusE2EAction#executeNexusE2EAction(org.apache.struts.action.ActionMapping,
@@ -361,11 +362,17 @@ public class ProcessConversationReportAction extends ReportingAction {
             form.setAllItemsCount(items);
             List<ConversationPojo> conversations = null;
             if (StringUtils.isNotBlank(command) && "purge".equals(command) && purge) {
-                conversations = Engine.getInstance().getTransactionService()
-                    .getConversationsForReport(status, nxChoreographyId, nxPartnerId, conversationId, getStartDate(form), getEndDate(form),
-                                               Integer.MAX_VALUE, 0, TransactionDAO.SORT_CREATED, false);
-                for (ConversationPojo conv : conversations) {
-                    Engine.getInstance().getTransactionService().deleteConversation(conv);
+                int convCount = -1;
+                while(convCount != 0) {
+                    conversations = Engine.getInstance().getTransactionService()
+                        .getConversationsForReport(status, nxChoreographyId, nxPartnerId, conversationId, getStartDate(form), getEndDate(form),
+                                                   MAX_PAGE_SIZE, 0, TransactionDAO.SORT_CREATED, false);
+                    convCount = conversations.size();
+                    if(convCount > 0) {
+                        for (ConversationPojo conv : conversations) {
+                            Engine.getInstance().getTransactionService().deleteConversation(conv);
+                        }
+                    }
                 }
                 command = "first";
             }

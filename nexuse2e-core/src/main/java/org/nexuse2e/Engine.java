@@ -96,9 +96,9 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
 
     private TransactionService               transactionService;
     private ConfigDAO                        configDao;
-    
+
     private MessageWorker                    messageWorker;
-    
+
     private Map<String, IdGenerator>         idGenrators                    = null;
 
     private Map<String, TimestampFormatter>  timestampFormatters            = null;
@@ -126,6 +126,8 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     private String							 defaultCharEncoding			= null;
 
     private MimetypesFileTypeMap             mimetypesFileTypeMap           = null;
+    private boolean                          advancedRetryLogging           = false;
+    private String                           retryLoggingTemplate;
 
     static {
         // Make sure we have the right JCE provider available...
@@ -136,6 +138,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
             Security.addProvider( bcp );
         }
     }
+
 
     /**
      * Singleton pattern constructor ?
@@ -176,7 +179,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
 
     /**
      * @param targetStatus
-     * @throws InstantiationException 
+     * @throws InstantiationException
      */
     //public synchronized void changeStatus( BeanStatus targetStatus ) throws InstantiationException {
     public void changeStatus( BeanStatus targetStatus ) throws InstantiationException {
@@ -357,10 +360,10 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
 
             for ( Manageable bean : currentConfiguration.getStaticBeanContainer().getManagableBeans().values() ) {
                 LOG.trace( "Initializing bean: " + bean.getClass().getName() );
-                
-                
+
+
                 if ( bean.getStatus() == null || bean.getStatus().getValue() < BeanStatus.INITIALIZED.getValue() ) {
-                    
+
                     try {
                         bean.initialize( currentConfiguration );
                     } catch ( Exception e ) {
@@ -488,6 +491,22 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
         }
     }
 
+    public void setAdvancedRetryLogging(boolean advancedRetryLogging) {
+        this.advancedRetryLogging = advancedRetryLogging;
+    }
+
+    public boolean getAdvancedRetryLogging() {
+        return advancedRetryLogging;
+    }
+
+    public void setRetryLoggingTemplate(String retryLoggingTemplate) {
+        this.retryLoggingTemplate = retryLoggingTemplate;
+    }
+
+    public String getRetryLoggingTemplate() {
+        return retryLoggingTemplate;
+    }
+
     /**
      * Inner class to wrap MIME type to handler mappings
      */
@@ -580,7 +599,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     public boolean isBinaryType( String contentType ) {
 
         if (contentType != null) {
-            
+
         	contentType = contentType.toLowerCase().trim();
             MimeMapping mimeMapping = (MimeMapping) mimeMappings.get( contentType );
 
@@ -732,7 +751,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
 //
 //        return (PersistentPropertyDAO) getDao( "persistentPropertyDao" );
 //    }
-    
+
     private void createEngineConfiguration() throws InstantiationException {
 
         try {
@@ -782,7 +801,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
      * current configuration. This method should be called with care because it deletes
      * all configuration data, messages conversations and log records.
      * @param xmlInput The input stream that provides the configuration in XML.
-     * @throws NexusException 
+     * @throws NexusException
      */
     public void importConfiguration( InputStream xmlInput ) throws NexusException {
 
@@ -946,7 +965,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
      * @see org.nexuse2e.Manageable#start()
      */
     public void start() {
-        
+
         LOG.info( "*** NEXUSe2e Server Version: " + Version.getVersion() + " ***" );
         LOG.debug( "Engine.start..." );
 
@@ -975,7 +994,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
                 backendOutboundDispatcher.recoverMessages();
             }
             engineStartTime = System.currentTimeMillis();
-            
+
             LOG.info( "***** Nexus E2E engine started. *****" );
         } else {
             LOG.error( "Failed to start Engine, no configuration found!" );
@@ -1018,7 +1037,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     }
 
     /**
-     * 
+     *
      */
     public void stop() {
 
@@ -1046,7 +1065,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     } // deactivate
 
     /**
-     * 
+     *
      */
     public void deactivate() {
 
@@ -1273,11 +1292,11 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     public String getPasswordValidation() {
     	return passwordValidation;
     }
-    
+
     public void setPasswordValidation ( String passwordValidation ) {
     	this.passwordValidation = passwordValidation;
     }
-    
+
     /**
      * @return
      */
@@ -1354,69 +1373,69 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
         this.databaseDialect = databaseDialect;
     }
 
-    
+
     /**
      * @return the engineStartTime
      */
     public long getEngineStartTime() {
-    
+
         return engineStartTime;
     }
 
-    
+
     /**
      * @param engineStartTime the engineStartTime to set
      */
     public void setEngineStartTime( long engineStartTime ) {
-    
+
         this.engineStartTime = engineStartTime;
     }
 
-    
+
     /**
      * @return the serviceStartTime
      */
     public long getServiceStartTime() {
-    
+
         return serviceStartTime;
     }
 
-    
+
     /**
      * @param serviceStartTime the serviceStartTime to set
      */
     public void setServiceStartTime( long serviceStartTime ) {
-    
+
         this.serviceStartTime = serviceStartTime;
     }
 
-    
+
     /**
      * @return the configDao
      */
     public ConfigDAO getConfigDao() {
-    
+
         return configDao;
     }
 
-    
+
     /**
      * @param configDao the configDao to set
      */
     public void setConfigDao( ConfigDAO configDao ) {
-    
+
         this.configDao = configDao;
     }
 
-    
+
     /**
      * @param transactionService the transactionService to set
      */
     public void setTransactionService( TransactionService transactionService ) {
-    
+
         this.transactionService = transactionService;
     }
-    
+
     /**
      * Gets the <code>MessageWorker</code> implementation that is used
      * by this engine.
@@ -1426,7 +1445,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
     public MessageWorker getMessageWorker() {
         return messageWorker;
     }
-    
+
     /**
      * Sets the <code>MessageWorker</code> used by this engine.
      * @param messageWorker The message worker implementation to be used.
@@ -1455,7 +1474,7 @@ public class Engine extends WebApplicationObjectSupport implements BeanNameAware
 
     /**
      * Returns true iff the allowed cipher length is unlimited, i.e., the Java Cryptographic Extension is installed in the current JVM.
-     * 
+     *
      * @return
      */
     public String getJCEInstalledStatus() {
