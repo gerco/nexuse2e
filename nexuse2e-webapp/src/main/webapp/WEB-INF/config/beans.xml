@@ -107,6 +107,24 @@
   	<property name="passwordValidation" value="${password.validation}" />    
     <property name="messageWorker" ref="messageWorker" />
     <property name="defaultCharEncoding" value="${default.charEncoding}" />
+    <property name="advancedRetryLogging" value="true" />
+    <property name="retryLoggingTemplate">
+      <value>
+        Dear admin,
+        The following data file was generated but could not be transferred successfully:
+
+        {filename}
+
+        Further information:
+        Partner:      {partnerId}
+        Choreography: {choreographyId}
+        messageId: {messageId}
+        conversationId: {conversationId}
+        Action:       {actionId}
+        Destination:  {connectionUrl}
+        Retries:      {retries}
+      </value>
+    </property>
   </bean>
 
 
@@ -178,7 +196,11 @@
         <prop key="hibernate.format_sql">${database.formatSQL}</prop>
         <prop key="hibernate.dialect">${database.dialect}</prop>
         <prop key="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</prop>
-        
+
+        <prop key="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</prop>
+        <prop key="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory</prop>
+        <prop key="hibernate.cache.use_second_level_cache">true</prop>
+        <prop key="hibernate.cache.use_query_cache">true</prop>
         <!-- 
         <prop key="hibernate.current_session_context_class">thread</prop>
          -->
@@ -219,7 +241,11 @@
       <!-- 
       <tx:method name="get*" read-only="true"/> 
       -->
+      <!-- default
       <tx:method name="*ForReport" propagation="REQUIRED" isolation="READ_UNCOMMITTED"/>
+      -->
+      <!-- oracle -->
+      <tx:method name="*ForReport" propagation="REQUIRED" isolation="READ_COMMITTED"/>
       <tx:method name="updateTransaction" propagation="REQUIRED" isolation="READ_COMMITTED"/> <!-- isolation="SERIALIZABLE" READ_COMMITTED-->
       <tx:method name="*" propagation="REQUIRED" isolation="READ_COMMITTED"/> <!-- isolation="SERIALIZABLE" READ_COMMITTED-->
     </tx:attributes>
