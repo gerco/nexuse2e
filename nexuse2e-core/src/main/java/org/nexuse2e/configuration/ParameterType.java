@@ -1,8 +1,14 @@
 package org.nexuse2e.configuration;
 
 public enum ParameterType {
-    UNKNOWN(0, Object.class), STRING(1, String.class), PASSWORD(2, String.class), ENUMERATION(3, EnumerationParameter.class), LIST(4, ListParameter.class), BOOLEAN(
-            5, Boolean.class), SERVICE(6, String.class), TEXT(7, String.class);
+    UNKNOWN(0, Object.class),
+    STRING(1, String.class),
+    PASSWORD(2, String.class),
+    ENUMERATION(3, EnumerationParameter.class),
+    LIST(4, ListParameter.class),
+    BOOLEAN(5, Boolean.class),
+    SERVICE(6, String.class),
+    TEXT(7, String.class);
 
     private final int      value;
     private final Class<?> type;

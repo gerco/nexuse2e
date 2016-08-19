@@ -460,7 +460,7 @@
    <dependency>
      <groupId>mysql</groupId>
      <artifactId>mysql-connector-java</artifactId>
-     <version>5.0.4</version>
+     <version>5.1.36</version>
      <scope>compile</scope>
    </dependency>
    <dependency>
