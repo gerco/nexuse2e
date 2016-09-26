@@ -50,6 +50,7 @@ public class AdvancedFileSavePipelet extends AbstractPipelet {
     public static final String DEFAULT_TEMPLATE_PARAM_NAME  = "defaultTemplate";
     public static final String USE_CONTENT_ID_PARAM_NAME    = "useContentId";
     public static final String STOP_ON_ERROR_PARAM_NAME     = "stopOnError";
+    public static final String IGNORE_ACKS_PARAM_NAME       = "ignoreAcks";
     public static final String TEMPLATES_MAP_PARAM_NAME     = "templatesMap";
 
     private TimestampFormatter formatter;
@@ -62,7 +63,7 @@ public class AdvancedFileSavePipelet extends AbstractPipelet {
         }
         setFrontendPipelet(true);
 
-        parameterMap.put(DIRECTORY_PARAM_NAME, new ParameterDescriptor(ParameterType.STRING, "Save directory", "Path to directory where to store files", ""));
+        parameterMap.put(DIRECTORY_PARAM_NAME, new ParameterDescriptor(ParameterType.STRING, "Target directory", "Path to directory where to store files", ""));
         parameterMap.put(DEFAULT_TEMPLATE_PARAM_NAME, new ParameterDescriptor(ParameterType.STRING, "the default template",
                                                                               "the default output template use for writing files. Also the fallback if "
                                                                               + "nothing else matches", ""));
@@ -74,6 +75,11 @@ public class AdvancedFileSavePipelet extends AbstractPipelet {
         parameterMap.put(STOP_ON_ERROR_PARAM_NAME,
                          new ParameterDescriptor(ParameterType.BOOLEAN, "Stop on Errror", "Message processing fails in case off issues while writing the file.",
                                                  Boolean.FALSE));
+
+        parameterMap.put(IGNORE_ACKS_PARAM_NAME, new ParameterDescriptor(ParameterType.BOOLEAN, "Ignore technical acks",
+                                                                         "Normally Acks are also exported. By checking this box, they will be ignored",
+                                                                         Boolean.FALSE));
+
         parameterMap.put(TEMPLATES_MAP_PARAM_NAME, new ParameterDescriptor(ParameterType.ENUMERATION, "",
                                                                            "Map of templates an nodes: node=\"ProductMovementReport\", "
                                                                            + "value=\"c:/ProductMovementReport.xslt\"", new EnumerationParameter()));
@@ -83,8 +89,11 @@ public class AdvancedFileSavePipelet extends AbstractPipelet {
     @Override
     public MessageContext processMessage(MessageContext messageContext) throws NexusException /* ,IllegalArgumentException, IllegalStateException  */ {
 
+        if(getParameter(IGNORE_ACKS_PARAM_NAME) != null && (Boolean)getParameter(IGNORE_ACKS_PARAM_NAME) && messageContext.getMessagePojo().isAck()) {
+            return messageContext;
+        }
         try {
-            if(messageContext.getMessagePojo().getMessagePayloads() == null || messageContext.getMessagePojo().getMessagePayloads().size() == 0) {
+            if (messageContext.getMessagePojo().getMessagePayloads() == null || messageContext.getMessagePojo().getMessagePayloads().size() == 0) {
                 String templatePath = getParameter(DEFAULT_TEMPLATE_PARAM_NAME);
                 File template = new File(templatePath);
                 if (template.exists() && template.canRead()) {
@@ -131,19 +140,18 @@ public class AdvancedFileSavePipelet extends AbstractPipelet {
         return messageContext;
     }
 
-    private String writePayload(ByteArrayOutputStream baos, MessagePayloadPojo payload, MessageContext messageContext )
-        throws IOException {
+    private String writePayload(ByteArrayOutputStream baos, MessagePayloadPojo payload, MessageContext messageContext) throws IOException {
 
         String destinationDirectory = getParameter(DIRECTORY_PARAM_NAME);
 
-        File destDirFile = new File( destinationDirectory );
+        File destDirFile = new File(destinationDirectory);
         // StringBuffer fileName = new StringBuffer();
 
-        if ( destDirFile.exists() && !destDirFile.isDirectory() ) {
-            throw new FileNotFoundException( "Not a directory: " + destDirFile );
+        if (destDirFile.exists() && !destDirFile.isDirectory()) {
+            throw new FileNotFoundException("Not a directory: " + destDirFile);
         }
-        if(!destDirFile.exists()) {
-            if(!destDirFile.mkdirs()) {
+        if (!destDirFile.exists()) {
+            if (!destDirFile.mkdirs()) {
                 LOG.error("failed to create output directory");
             }
         }
@@ -151,22 +159,20 @@ public class AdvancedFileSavePipelet extends AbstractPipelet {
         String fileName = null;
 
         boolean useContentId = getParameter(USE_CONTENT_ID_PARAM_NAME);
-        if ( useContentId && payload != null) {
+        if (useContentId && payload != null) {
             fileName = destinationDirectory + File.separatorChar + payload.getContentId();
         } else {
             String fileNamePattern = getParameter(FILE_NAME_PATTERN_PARAM_NAME);
-            String baseFileName = ServerPropertiesUtil.replaceServerProperties(fileNamePattern, messageContext );
+            String baseFileName = ServerPropertiesUtil.replaceServerProperties(fileNamePattern, messageContext);
             String extension = ".xml";
             int seqNo = 0;
             if (payload != null) {
                 seqNo = payload.getSequenceNumber();
             }
-            fileName = destinationDirectory + File.separatorChar + baseFileName + "_" + seqNo
-                       + "." + extension;
+            fileName = destinationDirectory + File.separatorChar + baseFileName + "_" + seqNo + "." + extension;
         }
 
-
-        BufferedOutputStream fileOutputStream = new BufferedOutputStream(new FileOutputStream(fileName) );
+        BufferedOutputStream fileOutputStream = new BufferedOutputStream(new FileOutputStream(fileName));
         baos.writeTo(fileOutputStream);
         fileOutputStream.flush();
         fileOutputStream.close();
@@ -182,17 +188,17 @@ public class AdvancedFileSavePipelet extends AbstractPipelet {
 
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer(new StreamSource(template));
-            transformer.setParameter( "messageId", messageContext.getMessagePojo().getMessageId() );
-            transformer.setParameter( "conversationId", messageContext.getMessagePojo().getConversation().getConversationId() );
+            transformer.setParameter("messageId", messageContext.getMessagePojo().getMessageId());
+            transformer.setParameter("conversationId", messageContext.getMessagePojo().getConversation().getConversationId());
             String date = formatter.getTimestamp(messageContext.getMessagePojo().getCreatedDate());
 
-            transformer.setParameter( "createdDate", date);
-            transformer.setParameter( "choreographyId", messageContext.getMessagePojo().getConversation().getChoreography().getName());
-            transformer.setParameter( "actionId", messageContext.getMessagePojo().getAction().getName());
-            transformer.setParameter( "direction", messageContext.getMessagePojo().isOutbound()?"Outbound":"Inbound");
-            transformer.setParameter( "messageType", messageContext.getMessagePojo().isAck()?"TechnicalAck":"BusinessMessage");
+            transformer.setParameter("createdDate", date);
+            transformer.setParameter("choreographyId", messageContext.getMessagePojo().getConversation().getChoreography().getName());
+            transformer.setParameter("actionId", messageContext.getMessagePojo().getAction().getName());
+            transformer.setParameter("direction", messageContext.getMessagePojo().isOutbound() ? "Outbound" : "Inbound");
+            transformer.setParameter("messageType", messageContext.getMessagePojo().isAck() ? "TechnicalAck" : "BusinessMessage");
 
-            if(messageContext.getMessagePojo().isOutbound()) {
+            if (messageContext.getMessagePojo().isOutbound()) {
                 transformer.setParameter("fromId", messageContext.getMessagePojo().getParticipant().getLocalPartner().getPartnerId());
                 transformer.setParameter("fromType", messageContext.getMessagePojo().getParticipant().getLocalPartner().getPartnerIdType());
                 transformer.setParameter("toId", messageContext.getMessagePojo().getConversation().getPartner().getPartnerId());
@@ -203,7 +209,6 @@ public class AdvancedFileSavePipelet extends AbstractPipelet {
                 transformer.setParameter("fromId", messageContext.getMessagePojo().getConversation().getPartner().getPartnerId());
                 transformer.setParameter("fromType", messageContext.getMessagePojo().getConversation().getPartner().getPartnerIdType());
             }
-
 
             transformer.transform(new DOMSource(document), new StreamResult(baos));
 
@@ -241,7 +246,7 @@ public class AdvancedFileSavePipelet extends AbstractPipelet {
             documentBuilderFactory.setNamespaceAware(false);
             DocumentBuilder builder = null;
             builder = documentBuilderFactory.newDocumentBuilder();
-            if(data != null) {
+            if (data != null) {
                 return builder.parse(new ByteArrayInputStream(data));
             } else {
                 return builder.newDocument();
