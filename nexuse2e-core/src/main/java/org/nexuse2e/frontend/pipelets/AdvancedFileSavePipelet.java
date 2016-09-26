@@ -81,33 +81,53 @@ public class AdvancedFileSavePipelet extends AbstractPipelet {
     }
 
     @Override
-    public MessageContext processMessage(MessageContext messageContext) throws IllegalArgumentException, IllegalStateException, NexusException {
+    public MessageContext processMessage(MessageContext messageContext) throws NexusException /* ,IllegalArgumentException, IllegalStateException  */ {
 
-        for (MessagePayloadPojo messagePayloadPojo : messageContext.getMessagePojo().getMessagePayloads()) {
-            byte[] data = messagePayloadPojo.getPayloadData();
-            String templatePath = getParameter(DEFAULT_TEMPLATE_PARAM_NAME);
-            Document document = createDocument(data);
-            if (data != null) {
-                EnumerationParameter enumeration = getParameter(TEMPLATES_MAP_PARAM_NAME);
-                for (Map.Entry<String, String> expressionTemplateEntry : enumeration.getElements().entrySet()) {
-                    if (expressionTemplateEntry.getKey() != null && isDocumentMatchingExpression(document, expressionTemplateEntry.getKey())) {
-                        templatePath = expressionTemplateEntry.getValue();
+        try {
+            if(messageContext.getMessagePojo().getMessagePayloads() == null || messageContext.getMessagePojo().getMessagePayloads().size() == 0) {
+                String templatePath = getParameter(DEFAULT_TEMPLATE_PARAM_NAME);
+                File template = new File(templatePath);
+                if (template.exists() && template.canRead()) {
+                    ByteArrayOutputStream baos = applyTemplate(messageContext, null, template);
+                    try {
+                        writePayload(baos, null, messageContext);
+                    } catch (IOException e) {
+                        LOG.error("failed to persist file in file system.", e);
+                    }
+                }
+            } else {
+                for (MessagePayloadPojo messagePayloadPojo : messageContext.getMessagePojo().getMessagePayloads()) {
+                    byte[] data = messagePayloadPojo.getPayloadData();
+                    String templatePath = getParameter(DEFAULT_TEMPLATE_PARAM_NAME);
+                    Document document = createDocument(data);
+                    if (data != null) {
+                        EnumerationParameter enumeration = getParameter(TEMPLATES_MAP_PARAM_NAME);
+                        for (Map.Entry<String, String> expressionTemplateEntry : enumeration.getElements().entrySet()) {
+                            if (expressionTemplateEntry.getKey() != null && isDocumentMatchingExpression(document, expressionTemplateEntry.getKey())) {
+                                templatePath = expressionTemplateEntry.getValue();
+                            }
+                        }
+                    }
 
+                    File template = new File(templatePath);
+                    if (template.exists() && template.canRead()) {
+                        ByteArrayOutputStream baos = applyTemplate(messageContext, document, template);
+                        try {
+                            writePayload(baos, messagePayloadPojo, messageContext);
+                        } catch (IOException e) {
+                            LOG.error("failed to persist file in file system.", e);
+                        }
                     }
                 }
             }
-
-            File template = new File(templatePath);
-            if (template.exists() && template.canRead()) {
-                ByteArrayOutputStream baos = applyTemplate(messageContext, document, template);
-                try {
-                    writePayload(baos,messagePayloadPojo,messageContext);
-                } catch (IOException e) {
-                    LOG.error("failed to persist file in file system.",e);
-                }
+        } catch (NexusException e) {
+            boolean stopOnError = getParameter(STOP_ON_ERROR_PARAM_NAME);
+            if (stopOnError) {
+                throw e;
+            } else {
+                LOG.error("failed to convert and persist message.", e);
             }
         }
-
         return messageContext;
     }
 
@@ -126,19 +146,22 @@ public class AdvancedFileSavePipelet extends AbstractPipelet {
             if(!destDirFile.mkdirs()) {
                 LOG.error("failed to create output directory");
             }
-
         }
 
         String fileName = null;
 
         boolean useContentId = getParameter(USE_CONTENT_ID_PARAM_NAME);
-        if ( useContentId ) {
+        if ( useContentId && payload != null) {
             fileName = destinationDirectory + File.separatorChar + payload.getContentId();
         } else {
             String fileNamePattern = getParameter(FILE_NAME_PATTERN_PARAM_NAME);
             String baseFileName = ServerPropertiesUtil.replaceServerProperties(fileNamePattern, messageContext );
             String extension = ".xml";
-            fileName = destinationDirectory + File.separatorChar + baseFileName + "_" + payload.getSequenceNumber()
+            int seqNo = 0;
+            if (payload != null) {
+                seqNo = payload.getSequenceNumber();
+            }
+            fileName = destinationDirectory + File.separatorChar + baseFileName + "_" + seqNo
                        + "." + extension;
         }
 
