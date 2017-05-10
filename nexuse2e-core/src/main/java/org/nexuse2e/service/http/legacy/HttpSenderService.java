@@ -17,14 +17,12 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.nexuse2e.service.http;
+package org.nexuse2e.service.http.legacy;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Objects;
 
 import javax.mail.internet.ContentType;
 
@@ -39,7 +37,6 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.nexuse2e.Engine;
 import org.nexuse2e.Layer;
@@ -109,16 +106,9 @@ public class HttpSenderService extends AbstractService implements SenderAware {
         HttpClient client = null;
 
         MessageContext returnMessageContext = null;
-        URL receiverURL = null;
-        try {
-            receiverURL = new URL(messageContext.getParticipant().getConnection().getUri());
-        } catch (MalformedURLException e) {
-            throw new NexusException(new LogMessage("Error creating HTTP POST call for: " + messageContext.getParticipant().getConnection().getUri(),messageContext), e);
-
-        }
-
         try {
 
+            URL receiverURL = new URL(messageContext.getParticipant().getConnection().getUri());
             String pwd = messageContext.getParticipant().getConnection().getPassword();
             String user = messageContext.getParticipant().getConnection().getLoginName();
             LOG.debug(new LogMessage("ConnectionURL:" + receiverURL, messageContext.getMessagePojo()));
@@ -169,7 +159,6 @@ public class HttpSenderService extends AbstractService implements SenderAware {
             client.getHttpConnectionManager().getParams().setConnectionTimeout(timeout);
             client.getHttpConnectionManager().getParams().setSoTimeout(timeout);
             method = new PostMethod(receiverURL.getPath());
-            method.setQueryString(receiverURL.getQuery());
             method.setFollowRedirects(false);
             method.getParams().setSoTimeout(timeout);
             LOG.trace(new LogMessage("Created new NexusHttpConnection with timeout: " + timeout + ", SSL: " + participant.getConnection().isSecure(),
@@ -184,7 +173,8 @@ public class HttpSenderService extends AbstractService implements SenderAware {
                 method.setDoAuthentication(true);
             }
         } catch (Exception e) {
-            throw new NexusException(new LogMessage("Error creating HTTP POST call: " + e, e),e);
+            e.printStackTrace();
+            throw new NexusException("Error creating HTTP POST call: " + e, e);
         }
 
         try {
@@ -208,7 +198,26 @@ public class HttpSenderService extends AbstractService implements SenderAware {
                 contentType.setParameter("start", messageContext.getMessagePojo().getMessageId() + messageContext.getMessagePojo().getTRP().getProtocol()
                         + "-Header");
 
+                // LOG.trace( "********* Content-Type:" + contentType.toString() );
                 contentTypeString = contentType.toString();
+
+                /*
+                 * Alternative implementation for content type
+                 * StringBuffer buffer = new StringBuffer( "multipart/related" );
+                 * ParameterFormatter tempParameterFormatter = new ParameterFormatter();
+                 * buffer.append( "; " );
+                 * tempParameterFormatter.format( buffer, new NameValuePair( "type", "text/xml" ) );
+                 * buffer.append( "; " );
+                 * tempParameterFormatter.format( buffer, new NameValuePair( "boundary", "MIME_boundary" ) );
+                 * buffer.append( "; " );
+                 * tempParameterFormatter.format( buffer, new NameValuePair( "start", messageContext.getMessagePojo()
+                 * .getMessageId()
+                 * + messageContext.getMessagePojo().getTRP().getProtocol() + "-Header" ) );
+                 *
+                 * contentTypeString = buffer.toString();
+                 */
+
+                // LOG.trace( "********* NEW Content-Type:" + contentTypeString );
 
                 RequestEntity requestEntity = new ByteArrayRequestEntity((byte[]) messageContext.getData(), "Content-Type:" + contentTypeString);
 
@@ -217,8 +226,7 @@ public class HttpSenderService extends AbstractService implements SenderAware {
                 method.setRequestHeader("SOAPAction", "\"ebXML\"");
                 method.setRequestHeader("Content-Type", contentTypeString);
             } else if (trpPojo.getProtocol().equalsIgnoreCase(org.nexuse2e.Constants.PROTOCOL_ID_HTTP_PLAIN)) {
-
-                StringBuilder uriParams = new StringBuilder();
+                StringBuffer uriParams = new StringBuffer();
                 uriParams.append("ChoreographyID=" + messageContext.getMessagePojo().getConversation().getChoreography().getName());
                 uriParams.append("&ActionID=" + messageContext.getMessagePojo().getConversation().getCurrentAction().getName());
 
@@ -231,25 +239,17 @@ public class HttpSenderService extends AbstractService implements SenderAware {
                 uriParams.append("&ParticipantID=" + participantPojo.getLocalPartner().getPartnerId());
                 uriParams.append("&ConversationID=" + messageContext.getMessagePojo().getConversation().getConversationId());
                 uriParams.append("&MessageID=" + messageContext.getMessagePojo().getMessageId());
-
-
-                String preConfiguredQuery = receiverURL.getQuery();
-                String queryString;
-                if(StringUtils.isBlank(preConfiguredQuery)) {
-                    queryString = uriParams.toString();
-                } else {
-                    queryString = preConfiguredQuery + "&" + uriParams.toString();
-                }
-                method.setQueryString(queryString);
-                method.setRequestHeader("Content-Type", "text/plain");
-                LOG.debug(new LogMessage("URL: " + method.getURI(), messageContext.getMessagePojo()));
-
+                URI uri = method.getURI();
+                uri.setQuery(uriParams.toString());
+                method.setURI(uri);
+                LOG.debug(new LogMessage("URI: " + uri, messageContext.getMessagePojo()));
+                // TODO (encoding) http plain should use ByteArrayRequestEntity / InputStreamRequestEnity? Content Type ?
                 method.setRequestEntity(new ByteArrayRequestEntity((byte[]) messageContext.getData()));
             } else {
                 RequestEntity requestEntity = new ByteArrayRequestEntity((byte[]) messageContext.getData(), "text/xml");
                 method.setRequestEntity(requestEntity);
             }
-            LOG.info("resulting URL:"+client.getHostConfiguration().getHostURL()+method.getURI());
+
             client.executeMethod(method);
             LOG.debug(new LogMessage("HTTP call done", messageContext.getMessagePojo()));
             int statusCode = method.getStatusCode();
@@ -293,11 +293,12 @@ public class HttpSenderService extends AbstractService implements SenderAware {
             method.releaseConnection();
 
         } catch (ConnectTimeoutException e) {
-            LogMessage lm = new LogMessage("Message submission failed, connection timeout for URL: " + messageContext.getParticipant().getConnection().getUri(), messageContext.getMessagePojo(),e);
+            LogMessage lm = new LogMessage("Message submission failed, connection timeout for URL: " + messageContext.getParticipant().getConnection().getUri()
+                    + " - " + e, messageContext.getMessagePojo());
             LOG.warn(lm, e);
             throw new NexusException(lm, e);
         } catch (Exception ex) {
-            LogMessage lm = new LogMessage("Message submission failed for URL: "+messageContext.getParticipant().getConnection().getUri(), messageContext.getMessagePojo(),ex);
+            LogMessage lm = new LogMessage("Message submission failed: " + ex, messageContext.getMessagePojo());
             LOG.warn(lm, ex);
             throw new NexusException(lm, ex);
         }
