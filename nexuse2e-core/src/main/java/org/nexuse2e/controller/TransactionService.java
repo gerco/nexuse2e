@@ -28,6 +28,7 @@ import java.util.concurrent.ScheduledFuture;
 import org.apache.log4j.Level;
 import org.nexuse2e.Manageable;
 import org.nexuse2e.NexusException;
+import org.nexuse2e.dao.TransactionDAO;
 import org.nexuse2e.dao.UpdateTransactionOperation;
 import org.nexuse2e.messaging.MessageContext;
 import org.nexuse2e.pojo.ActionPojo;
@@ -614,8 +615,6 @@ public interface TransactionService extends Manageable {
     /**
      * @param start
      * @param end
-     * @param session
-     * @param transaction
      * @return
      * @throws NexusException
      */
@@ -629,6 +628,10 @@ public interface TransactionService extends Manageable {
      * @throws NexusException If something went wrong.
      */
     public abstract long removeConversations( Date start, Date end ) throws NexusException;
-    
-    
+
+    /**
+     * provides the transaction dao for direct access.
+     * @return the TransactionDAO
+     */
+    public TransactionDAO getTransactionDao();
 } // TransactionService

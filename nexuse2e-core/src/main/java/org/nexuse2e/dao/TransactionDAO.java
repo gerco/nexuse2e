@@ -19,6 +19,7 @@
  */
 package org.nexuse2e.dao;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -121,12 +122,44 @@ public interface TransactionDAO {
             boolean ascending ) throws NexusException;
 
     /**
-     * Gets the number of conversations created between the given start and end dates.
-     * @param start The start date. May be <code>null</code> for stone age.
-     * @param end The end date. May be <code>null</code> for Star Wars age.
-     * @return The number of conversations that have been created between <code>start</code> and <code>end</code>.
-     * @throws NexusException If something went wrong.
+     * provides a plain list of conversation ids for the given parameters
+     * @param status
+     * @param nxChoreographyId
+     * @param nxPartnerId
+     * @param conversationId
+     * @param start
+     * @param end
+     * @return
+     * @throws NexusException
      */
+    public List<BigDecimal> getConversationsForReportPlain(String status, int nxChoreographyId, int nxPartnerId, String conversationId, Date start, Date end) throws NexusException;
+
+
+    /**
+     * delete conversations
+     * @throws NexusException
+     */
+    public void removeConversations(String status, int nxChoreographyId, int nxPartnerId, String conversationId, Date start, Date end) throws NexusException;
+
+    /**
+     * @param status
+     * @param nxChoreographyId
+     * @param nxPartnerId
+     * @param conversationId
+     * @param messageId
+     * @param startDate
+     * @param endDate
+     * @throws NexusException
+     */
+    void removeMessages(String status, int nxChoreographyId, int nxPartnerId, String conversationId, String messageId, Date startDate, Date endDate) throws NexusException;
+
+        /**
+         * Gets the number of conversations created between the given start and end dates.
+         * @param start The start date. May be <code>null</code> for stone age.
+         * @param end The end date. May be <code>null</code> for Star Wars age.
+         * @return The number of conversations that have been created between <code>start</code> and <code>end</code>.
+         * @throws NexusException If something went wrong.
+         */
     public abstract long getConversationsCount( Date start, Date end ) throws NexusException;
 
     /**
@@ -364,4 +397,6 @@ public interface TransactionDAO {
      * @param session The session to be released.
      */
     public void releaseDBSession( Session session );
+
+
 }
