@@ -919,7 +919,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
             dc.createCriteria("partner").add(Restrictions.eq("nxPartnerId", nxPartnerId));
         }
         if (conversationId != null) {
-            dc.add(Restrictions.like("conversationId", "%" + conversationId.trim() + "%"));
+            dc.add(Restrictions.like("conversationId",  conversationId.trim() ));
         }
         if (start != null) {
             dc.add(Restrictions.ge("createdDate", start));
@@ -972,7 +972,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         DetachedCriteria conv = null;
         if (conversationId != null) {
             conv = dc.createCriteria("conversation");
-            conv.add(Restrictions.like("conversationId", "%" + conversationId.trim() + "%"));
+            conv.add(Restrictions.like("conversationId",  conversationId.trim()));
         }
 
         if (nxChoreographyId != 0) {
@@ -991,7 +991,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         }
 
         if (messageId != null) {
-            dc.add(Restrictions.like("messageId", "%" + messageId.trim() + "%"));
+            dc.add(Restrictions.like("messageId", messageId.trim() ));
         }
         if (type != null) {
             dc.add(Restrictions.eq("type", type));
