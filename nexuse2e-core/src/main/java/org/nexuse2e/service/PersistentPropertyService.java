@@ -182,6 +182,7 @@ public class PersistentPropertyService extends DatabaseServiceImpl implements
             if ( result != null && result.next() ) {
                 value = result.getString( 1 );
             }
+            con.commit();
         } finally {
             if ( stmt != null ) {
                 stmt.close();
