@@ -52,8 +52,8 @@ public class HTTPMessagePackager extends AbstractPipelet {
     private static final String         ENCODING_PARAMETER_NAME = "binary_encoding";
     private static       String         CRLF                    = "\r\n";
     private static       BinaryEncoding encoding                = BinaryEncoding.BASE64;
-    private static		 String  		CONTENT_DISPOSITION_PARAMETER		= "content_disposition";
-    private static		 boolean    	contentDisposition		= false;	
+    private static final String  		CONTENT_DISPOSITION_PARAMETER		= "content_disposition";
+    private static       Boolean    	contentDisposition		= false;
     private static		 boolean 		trimContent				= false;
 
     /**
@@ -84,6 +84,9 @@ public class HTTPMessagePackager extends AbstractPipelet {
             if (StringUtils.isNotBlank(selectedEncoding)) {
                 encoding = BinaryEncoding.fromString(selectedEncoding);
             	contentDisposition = getParameter(CONTENT_DISPOSITION_PARAMETER);
+            	if(contentDisposition == null) {
+            	    contentDisposition = false;
+                }
             	LOG.trace("Content disposition is activated.");
             	List<MessageLabelPojo> messageLabels = messageContext.getMessagePojo().getMessageLabels();
             	boolean includeLabels = ( messageLabels != null ) && ( messageLabels.size() != 0 );
@@ -159,7 +162,7 @@ public class HTTPMessagePackager extends AbstractPipelet {
                 }
                 
             	// Add content disposition if content disposition parameter is set
-            	if (contentDisposition && payloadPojo.getContentId() != null && payloadPojo.getContentId().trim().length() > 0) {
+            	if (contentDisposition != null && contentDisposition && payloadPojo.getContentId() != null && payloadPojo.getContentId().trim().length() > 0) {
             		msgBuffer.append( "Content-Disposition: attachment; filename=\"" + payloadPojo.getContentId() +  "\"" + CRLF );
             		msgBuffer.append( "Content-Transfer-Encoding: " + encoding.toString().toLowerCase() + CRLF );
                 }
