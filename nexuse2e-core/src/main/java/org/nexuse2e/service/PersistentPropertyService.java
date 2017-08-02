@@ -239,7 +239,9 @@ public class PersistentPropertyService extends DatabaseServiceImpl implements
             
             con.commit();
         } catch ( SQLException e ) {
-            con.rollback();
+            if (con != null) {
+                con.rollback();
+            }
             throw e;
         } finally {
             if ( stmt != null ) {
@@ -305,7 +307,9 @@ public class PersistentPropertyService extends DatabaseServiceImpl implements
             
             con.commit();
         } catch ( SQLException e ) {
-            con.rollback();
+            if (con != null) {
+                con.rollback();
+            }
             throw e;
         } finally {
             if ( stmt != null ) {
