@@ -24,9 +24,12 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.hibernate.*;
 import org.hibernate.criterion.*;
+import org.hibernate.dialect.Dialect;
+import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.type.IntegerType;
 import org.hibernate.type.Type;
 import org.nexuse2e.Constants;
+import org.nexuse2e.Engine;
 import org.nexuse2e.MessageStatus;
 import org.nexuse2e.NexusException;
 import org.nexuse2e.controller.StateTransitionException;
@@ -34,6 +37,7 @@ import org.nexuse2e.dao.UpdateTransactionOperation.UpdateScope;
 import org.nexuse2e.logging.LogMessage;
 import org.nexuse2e.pojo.*;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -47,7 +51,7 @@ import java.util.*;
 @Repository
 public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
 
-    private static Logger LOG = Logger.getLogger(TransactionDAOImpl.class);
+    protected static Logger LOG = Logger.getLogger(TransactionDAOImpl.class);
 
     private static Map<Integer, int[]> followUpConversationStates;
     private static Map<Integer, int[]> followUpMessageStates;
@@ -250,7 +254,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
                 "ON nx_conversation.nx_partner_id = nx_partner.nx_partner_id ");
 
         if (StringUtils.isNotEmpty(status) || nxChoreographyId > 0 || nxPartnerId > 0 || StringUtils.isNotEmpty(conversationId)
-                || StringUtils.isNotEmpty(messageId) ||  start != null || end != null) {
+                || StringUtils.isNotEmpty(messageId) || start != null || end != null) {
 
             sqlQuery.append(" WHERE ");
             String prefix = "";
@@ -319,6 +323,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
 
     /**
      * internal mapping method for converting database specific values into integers for further consistent processing.
+     *
      * @param idList
      * @return
      */
@@ -326,10 +331,10 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         Integer[] ids = new Integer[idList.size()];
         for (int i = 0; i < idList.size(); i++) {
             Object value = idList.get(i);
-            if(value instanceof BigDecimal) { // stupid oracle behavior
-                ids[i] = ((BigDecimal)value).intValue();
+            if (value instanceof BigDecimal) { // stupid oracle behavior
+                ids[i] = ((BigDecimal) value).intValue();
             } else { // default
-                ids[i] = (Integer)value;
+                ids[i] = (Integer) value;
             }
         }
         return ids;
@@ -343,7 +348,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
                                                             String conversationId, Date start, Date end, int itemsPerPage, int page, int field, boolean ascending)
             throws NexusException {
 
-        List<BigDecimal> idList = getConversationsForReportPlain(status,nxChoreographyId,nxPartnerId,conversationId,start,end);
+        List<BigDecimal> idList = getConversationsForReportPlain(status, nxChoreographyId, nxPartnerId, conversationId, start, end);
 
 
         int fromIndex = itemsPerPage * page;
@@ -364,11 +369,12 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
 
         return new ArrayList<ConversationPojo>();
     }
+
     /* (non-Javadoc)
      * @see org.nexuse2e.dao.TransactionDAO#getConversationsForReport(java.lang.String, int, int, java.lang.String, java.util.Date, java.util.Date, int, int, int, boolean)
      */
     @SuppressWarnings("unchecked")
-    public List<BigDecimal> getConversationsForReportPlain(String status, int nxChoreographyId, int nxPartnerId,String conversationId, Date start, Date end)
+    public List<BigDecimal> getConversationsForReportPlain(String status, int nxChoreographyId, int nxPartnerId, String conversationId, Date start, Date end)
             throws NexusException {
 
         StringBuilder sqlQuery = new StringBuilder("SELECT " +
@@ -419,7 +425,6 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         setTimestampFields(start, end, query);
 
         List<BigDecimal> idList = query.list();
-
 
 
         return idList;
@@ -559,87 +564,78 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         return map;
     }
 
-    public void removeMessages(String status, int nxChoreographyId, int nxPartnerId, String conversationId, String messageId, Date start, Date end) throws NexusException {
+    @Transactional
+    public void removeMessages(String status, int nxChoreographyId, int nxPartnerId, String conversationId, String messageId, Date start, Date end) throws HibernateException {
 
-        try {
+        removeMessagesForPostgres(status, nxChoreographyId, nxPartnerId, conversationId, messageId, start, end);
 
-            StringBuilder sqlQueryLabels = new StringBuilder("DELETE label FROM nx_message_label label " +
-                    "INNER JOIN nx_message msg " +
-                    "ON label.nx_message_id = msg.nx_message_id " +
-                    "INNER JOIN nx_conversation conv " +
-                    "ON conv.nx_conversation_id = msg.nx_conversation_id " +
-                    "INNER JOIN nx_choreography choreo " +
-                    "ON conv.nx_choreography_id = choreo.nx_choreography_id " +
-                    "INNER JOIN nx_partner partner " +
-                    "ON  conv.nx_partner_id = partner.nx_partner_id " +
-                    "INNER JOIN nx_action action " +
-                    "ON conv.current_nx_action_id = action.nx_action_id");
+        StringBuilder sqlQueryLabels = new StringBuilder("DELETE label FROM nx_message_label label " +
+                "INNER JOIN nx_message msg " +
+                "ON label.nx_message_id = msg.nx_message_id " +
+                "INNER JOIN nx_conversation conv " +
+                "ON conv.nx_conversation_id = msg.nx_conversation_id " +
+                "INNER JOIN nx_choreography choreo " +
+                "ON conv.nx_choreography_id = choreo.nx_choreography_id " +
+                "INNER JOIN nx_partner partner " +
+                "ON  conv.nx_partner_id = partner.nx_partner_id " +
+                "INNER JOIN nx_action action " +
+                "ON conv.current_nx_action_id = action.nx_action_id");
 
-            StringBuilder sqlQueryPayloads = new StringBuilder("DELETE payload FROM nx_message_payload payload " +
-                    "INNER JOIN nx_message msg " +
-                    "ON payload.nx_message_id = msg.nx_message_id " +
-                    "INNER JOIN nx_conversation conv " +
-                    "ON conv.nx_conversation_id = msg.nx_conversation_id " +
-                    "INNER JOIN nx_choreography choreo " +
-                    "ON conv.nx_choreography_id = choreo.nx_choreography_id " +
-                    "INNER JOIN nx_partner partner " +
-                    "ON  conv.nx_partner_id = partner.nx_partner_id " +
-                    "INNER JOIN nx_action action " +
-                    "ON conv.current_nx_action_id = action.nx_action_id");
-
-
-            StringBuilder sqlQueryMsg = new StringBuilder("DELETE msg FROM nx_message msg " +
-                    "INNER JOIN nx_conversation conv " +
-                    "ON conv.nx_conversation_id = msg.nx_conversation_id " +
-                    "INNER JOIN nx_choreography choreo " +
-                    "ON conv.nx_choreography_id = choreo.nx_choreography_id " +
-                    "INNER JOIN nx_partner partner " +
-                    "ON  conv.nx_partner_id = partner.nx_partner_id " +
-                    "INNER JOIN nx_action action " +
-                    "ON conv.current_nx_action_id = action.nx_action_id");
+        StringBuilder sqlQueryPayloads = new StringBuilder("DELETE payload FROM nx_message_payload payload " +
+                "INNER JOIN nx_message msg " +
+                "ON payload.nx_message_id = msg.nx_message_id " +
+                "INNER JOIN nx_conversation conv " +
+                "ON conv.nx_conversation_id = msg.nx_conversation_id " +
+                "INNER JOIN nx_choreography choreo " +
+                "ON conv.nx_choreography_id = choreo.nx_choreography_id " +
+                "INNER JOIN nx_partner partner " +
+                "ON  conv.nx_partner_id = partner.nx_partner_id " +
+                "INNER JOIN nx_action action " +
+                "ON conv.current_nx_action_id = action.nx_action_id");
 
 
+        StringBuilder sqlQueryMsg = new StringBuilder("DELETE msg FROM nx_message msg " +
+                "INNER JOIN nx_conversation conv " +
+                "ON conv.nx_conversation_id = msg.nx_conversation_id " +
+                "INNER JOIN nx_choreography choreo " +
+                "ON conv.nx_choreography_id = choreo.nx_choreography_id " +
+                "INNER JOIN nx_partner partner " +
+                "ON  conv.nx_partner_id = partner.nx_partner_id " +
+                "INNER JOIN nx_action action " +
+                "ON conv.current_nx_action_id = action.nx_action_id");
 
-            appendMsgWhereCause(status, nxChoreographyId, nxPartnerId, conversationId, messageId, start, end, sqlQueryLabels);
-            appendMsgWhereCause(status, nxChoreographyId, nxPartnerId, conversationId, messageId, start, end, sqlQueryPayloads);
-            appendMsgWhereCause(status, nxChoreographyId, nxPartnerId, conversationId, messageId, start, end, sqlQueryMsg);
 
-            SQLQuery queryLabel = sessionFactory.getCurrentSession().createSQLQuery(sqlQueryLabels.toString());
-            SQLQuery queryPayload = sessionFactory.getCurrentSession().createSQLQuery(sqlQueryPayloads.toString());
-            SQLQuery queryMsg = sessionFactory.getCurrentSession().createSQLQuery(sqlQueryMsg.toString());
+        appendMsgWhereCause(status, nxChoreographyId, nxPartnerId, conversationId, messageId, start, end, sqlQueryLabels);
+        appendMsgWhereCause(status, nxChoreographyId, nxPartnerId, conversationId, messageId, start, end, sqlQueryPayloads);
+        appendMsgWhereCause(status, nxChoreographyId, nxPartnerId, conversationId, messageId, start, end, sqlQueryMsg);
 
-            setTimestampFields(start, end, queryLabel);
-            setTimestampFields(start, end, queryPayload);
-            setTimestampFields(start, end, queryMsg);
+        SQLQuery queryLabel = sessionFactory.getCurrentSession().createSQLQuery(sqlQueryLabels.toString());
+        SQLQuery queryPayload = sessionFactory.getCurrentSession().createSQLQuery(sqlQueryPayloads.toString());
+        SQLQuery queryMsg = sessionFactory.getCurrentSession().createSQLQuery(sqlQueryMsg.toString());
 
-            queryLabel.executeUpdate();
-            queryPayload.executeUpdate();
-            queryMsg.executeUpdate();
+        setTimestampFields(start, end, queryLabel);
+        setTimestampFields(start, end, queryPayload);
+        setTimestampFields(start, end, queryMsg);
 
-        }catch (HibernateException e) {
-            LOG.error("failed to delete conversations",e);
-        }
+        queryLabel.executeUpdate();
+        queryPayload.executeUpdate();
+        queryMsg.executeUpdate();
 
 
     }
 
-    /* (non-Javadoc)
-     * @see org.nexuse2e.dao.TransactionDAO#removeConversations(java.util.Date, java.util.Date)
-     */
-    public void removeConversations(String status, int nxChoreographyId, int nxPartnerId, String conversationId, Date start, Date end)  {
+    private void removeMessagesForPostgres(String status, int nxChoreographyId, int nxPartnerId, String conversationId, String messageId, Date start, Date end) {
         try {
-
-            StringBuilder sqlQueryLabels = new StringBuilder("DELETE label FROM nx_message_label label " +
-                    "INNER JOIN nx_message msg " +
-                    "ON label.nx_message_id = msg.nx_message_id " +
-                    "INNER JOIN nx_conversation conv " +
-                    "ON conv.nx_conversation_id = msg.nx_conversation_id " +
-                    "INNER JOIN nx_choreography choreo " +
-                    "ON conv.nx_choreography_id = choreo.nx_choreography_id " +
-                    "INNER JOIN nx_partner partner " +
-                    "ON  conv.nx_partner_id = partner.nx_partner_id " +
-                    "INNER JOIN nx_action action " +
-                    "ON conv.current_nx_action_id = action.nx_action_id");
+            StringBuilder sqlQueryLabels = new StringBuilder("DELETE FROM nx_message_label label " +
+                    "USING nx_message msg, nx_conversation conv, " +
+                    "nx_choreography choreo, " +
+                    "nx_partner partner, " +
+                    "nx_action action " +
+                    "WHERE label.nx_message_id = msg.nx_message_id " +
+                    "AND conv.nx_conversation_id = msg.nx_conversation_id " +
+                    "AND conv.nx_choreography_id = choreo.nx_choreography_id " +
+                    "AND  conv.nx_partner_id = partner.nx_partner_id " +
+                    "AND conv.current_nx_action_id = action.nx_action_id");
 
             StringBuilder sqlQueryPayloads = new StringBuilder("DELETE payload FROM nx_message_payload payload " +
                     "INNER JOIN nx_message msg " +
@@ -675,10 +671,10 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
                     "ON conv.current_nx_action_id = action.nx_action_id");
 
 
-            appendConvWhereCause(status, nxChoreographyId, nxPartnerId, conversationId, start, end, sqlQueryLabels);
-            appendConvWhereCause(status, nxChoreographyId, nxPartnerId, conversationId, start, end, sqlQueryPayloads);
-            appendConvWhereCause(status, nxChoreographyId, nxPartnerId, conversationId, start, end, sqlQueryMsg);
-            appendConvWhereCause(status, nxChoreographyId, nxPartnerId, conversationId, start, end, sqlQueryConv);
+            appendConvWhereCause(status, nxChoreographyId, nxPartnerId, conversationId, start, end, sqlQueryLabels, true);
+            appendConvWhereCause(status, nxChoreographyId, nxPartnerId, conversationId, start, end, sqlQueryPayloads, true);
+            appendConvWhereCause(status, nxChoreographyId, nxPartnerId, conversationId, start, end, sqlQueryMsg, true);
+            appendConvWhereCause(status, nxChoreographyId, nxPartnerId, conversationId, start, end, sqlQueryConv, true);
 
             SQLQuery queryLabel = sessionFactory.getCurrentSession().createSQLQuery(sqlQueryLabels.toString());
             SQLQuery queryPayload = sessionFactory.getCurrentSession().createSQLQuery(sqlQueryPayloads.toString());
@@ -695,14 +691,164 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
             queryMsg.executeUpdate();
             queryConv.executeUpdate();
 
-        }catch (HibernateException e) {
-            LOG.error("failed to delete conversations",e);
+        } catch (HibernateException e) {
+            LOG.error("failed to delete conversations", e);
         }
 
 
     }
 
-    private void setTimestampFields(Date start, Date end, SQLQuery queryConv) {
+
+    /* (non-Javadoc)
+     * @see org.nexuse2e.dao.TransactionDAO#removeConversations(java.util.Date, java.util.Date)
+     */
+    @Transactional
+    public void removeConversations(String status, int nxChoreographyId, int nxPartnerId, String conversationId, Date start, Date end) {
+
+        String databaseDialect = getDatabaseDialect().toString();
+
+        if (databaseDialect.equals("org.hibernate.dialect.PostgreSQLDialect")) {
+            removeConversationsForPostgres(status, nxChoreographyId, nxPartnerId, conversationId, start, end);
+            return;
+        }
+
+        StringBuilder sqlQueryLabels = new StringBuilder("DELETE label FROM nx_message_label label " +
+                "INNER JOIN nx_message msg " +
+                "ON label.nx_message_id = msg.nx_message_id " +
+                "INNER JOIN nx_conversation conv " +
+                "ON conv.nx_conversation_id = msg.nx_conversation_id " +
+                "INNER JOIN nx_choreography choreo " +
+                "ON conv.nx_choreography_id = choreo.nx_choreography_id " +
+                "INNER JOIN nx_partner partner " +
+                "ON  conv.nx_partner_id = partner.nx_partner_id " +
+                "INNER JOIN nx_action action " +
+                "ON conv.current_nx_action_id = action.nx_action_id");
+
+        StringBuilder sqlQueryPayloads = new StringBuilder("DELETE payload FROM nx_message_payload payload " +
+                "INNER JOIN nx_message msg " +
+                "ON payload.nx_message_id = msg.nx_message_id " +
+                "INNER JOIN nx_conversation conv " +
+                "ON conv.nx_conversation_id = msg.nx_conversation_id " +
+                "INNER JOIN nx_choreography choreo " +
+                "ON conv.nx_choreography_id = choreo.nx_choreography_id " +
+                "INNER JOIN nx_partner partner " +
+                "ON  conv.nx_partner_id = partner.nx_partner_id " +
+                "INNER JOIN nx_action action " +
+                "ON conv.current_nx_action_id = action.nx_action_id");
+
+
+        StringBuilder sqlQueryMsg = new StringBuilder("DELETE msg FROM nx_message msg " +
+                "INNER JOIN nx_conversation conv " +
+                "ON conv.nx_conversation_id = msg.nx_conversation_id " +
+                "INNER JOIN nx_choreography choreo " +
+                "ON conv.nx_choreography_id = choreo.nx_choreography_id " +
+                "INNER JOIN nx_partner partner " +
+                "ON  conv.nx_partner_id = partner.nx_partner_id " +
+                "INNER JOIN nx_action action " +
+                "ON conv.current_nx_action_id = action.nx_action_id");
+
+
+        StringBuilder sqlQueryConv = new StringBuilder("DELETE conv " +
+                "FROM nx_conversation conv " +
+                "INNER JOIN nx_choreography choreo " +
+                "ON conv.nx_choreography_id = choreo.nx_choreography_id " +
+                "INNER JOIN nx_partner partner " +
+                "ON  conv.nx_partner_id = partner.nx_partner_id " +
+                "INNER JOIN nx_action action " +
+                "ON conv.current_nx_action_id = action.nx_action_id");
+
+
+        appendConvWhereCause(status, nxChoreographyId, nxPartnerId, conversationId, start, end, sqlQueryLabels, false);
+        appendConvWhereCause(status, nxChoreographyId, nxPartnerId, conversationId, start, end, sqlQueryPayloads, false);
+        appendConvWhereCause(status, nxChoreographyId, nxPartnerId, conversationId, start, end, sqlQueryMsg, false);
+        appendConvWhereCause(status, nxChoreographyId, nxPartnerId, conversationId, start, end, sqlQueryConv, false);
+
+        SQLQuery queryLabel = sessionFactory.getCurrentSession().createSQLQuery(sqlQueryLabels.toString());
+        SQLQuery queryPayload = sessionFactory.getCurrentSession().createSQLQuery(sqlQueryPayloads.toString());
+        SQLQuery queryMsg = sessionFactory.getCurrentSession().createSQLQuery(sqlQueryMsg.toString());
+        SQLQuery queryConv = sessionFactory.getCurrentSession().createSQLQuery(sqlQueryConv.toString());
+
+        setTimestampFields(start, end, queryLabel);
+        setTimestampFields(start, end, queryPayload);
+        setTimestampFields(start, end, queryMsg);
+        setTimestampFields(start, end, queryConv);
+
+        queryLabel.executeUpdate();
+        queryPayload.executeUpdate();
+        queryMsg.executeUpdate();
+        queryConv.executeUpdate();
+
+
+    }
+
+
+    private void removeConversationsForPostgres(String status, int nxChoreographyId, int nxPartnerId, String conversationId, Date start, Date end) {
+
+        StringBuilder sqlQueryLabels = new StringBuilder("DELETE FROM nx_message_label label " +
+                "USING nx_message msg, nx_conversation conv, " +
+                "nx_choreography choreo, " +
+                "nx_partner partner, " +
+                "nx_action action " +
+                "WHERE label.nx_message_id = msg.nx_message_id " +
+                "AND conv.nx_conversation_id = msg.nx_conversation_id " +
+                "AND conv.nx_choreography_id = choreo.nx_choreography_id " +
+                "AND  conv.nx_partner_id = partner.nx_partner_id " +
+                "AND conv.current_nx_action_id = action.nx_action_id");
+
+        StringBuilder sqlQueryPayloads = new StringBuilder("DELETE FROM nx_message_payload payload " +
+                "USING nx_message msg, nx_conversation conv, " +
+                "nx_choreography choreo, " +
+                "nx_partner partner, " +
+                "nx_action action " +
+                "WHERE payload.nx_message_id = msg.nx_message_id " +
+                "AND conv.nx_conversation_id = msg.nx_conversation_id " +
+                "AND conv.nx_choreography_id = choreo.nx_choreography_id " +
+                "AND conv.nx_partner_id = partner.nx_partner_id " +
+                "AND conv.current_nx_action_id = action.nx_action_id");
+
+
+        StringBuilder sqlQueryMsg = new StringBuilder("DELETE FROM nx_message msg " +
+                "USING nx_conversation conv, " +
+                "nx_choreography choreo, " +
+                "nx_partner partner, " +
+                "nx_action action " +
+                "WHERE conv.nx_conversation_id = msg.nx_conversation_id " +
+                "AND conv.nx_choreography_id = choreo.nx_choreography_id " +
+                "AND conv.nx_partner_id = partner.nx_partner_id " +
+                "AND conv.current_nx_action_id = action.nx_action_id ");
+
+        StringBuilder sqlQueryConv = new StringBuilder("DELETE FROM nx_conversation conv " +
+                "USING nx_choreography choreo, nx_partner partner, nx_action action " +
+                "WHERE conv.nx_choreography_id = choreo.nx_choreography_id " +
+                "AND conv.nx_partner_id = partner.nx_partner_id " +
+                "AND conv.current_nx_action_id = action.nx_action_id");
+
+
+        appendConvWhereCause(status, nxChoreographyId, nxPartnerId, conversationId, start, end, sqlQueryLabels, true);
+        appendConvWhereCause(status, nxChoreographyId, nxPartnerId, conversationId, start, end, sqlQueryPayloads, true);
+        appendConvWhereCause(status, nxChoreographyId, nxPartnerId, conversationId, start, end, sqlQueryMsg, true);
+        appendConvWhereCause(status, nxChoreographyId, nxPartnerId, conversationId, start, end, sqlQueryConv, true);
+
+        SQLQuery queryLabel = sessionFactory.getCurrentSession().createSQLQuery(sqlQueryLabels.toString());
+        SQLQuery queryPayload = sessionFactory.getCurrentSession().createSQLQuery(sqlQueryPayloads.toString());
+        SQLQuery queryMsg = sessionFactory.getCurrentSession().createSQLQuery(sqlQueryMsg.toString());
+        SQLQuery queryConv = sessionFactory.getCurrentSession().createSQLQuery(sqlQueryConv.toString());
+
+        setTimestampFields(start, end, queryLabel);
+        setTimestampFields(start, end, queryPayload);
+        setTimestampFields(start, end, queryMsg);
+        setTimestampFields(start, end, queryConv);
+
+        queryLabel.executeUpdate();
+        queryPayload.executeUpdate();
+        queryMsg.executeUpdate();
+        queryConv.executeUpdate();
+
+
+    }
+
+
+    protected void setTimestampFields(Date start, Date end, SQLQuery queryConv) {
         if (start != null) {
             queryConv.setTimestamp("start", start);
         }
@@ -749,9 +895,14 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         }
     }
 
-    private void appendConvWhereCause(String status, int nxChoreographyId, int nxPartnerId, String conversationId, Date start, Date end, StringBuilder sqlQuery) {
+    protected void appendConvWhereCause(String status, int nxChoreographyId, int nxPartnerId, String conversationId, Date start, Date end,
+                                        StringBuilder sqlQuery, boolean isPostgreSql) {
         if (StringUtils.isNotEmpty(status) || nxChoreographyId > 0 || nxPartnerId > 0 || StringUtils.isNotEmpty(conversationId) || start != null || end != null) {
-            sqlQuery.append(" WHERE ");
+            if (isPostgreSql) {
+                sqlQuery.append(" AND ");
+            } else {
+                sqlQuery.append(" WHERE ");
+            }
             String prefix = "";
             if (start != null) {
                 sqlQuery.append("conv.created_date >= :start");
@@ -919,7 +1070,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
             dc.createCriteria("partner").add(Restrictions.eq("nxPartnerId", nxPartnerId));
         }
         if (conversationId != null) {
-            dc.add(Restrictions.like("conversationId",  conversationId.trim() ));
+            dc.add(Restrictions.like("conversationId", conversationId.trim()));
         }
         if (start != null) {
             dc.add(Restrictions.ge("createdDate", start));
@@ -972,7 +1123,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         DetachedCriteria conv = null;
         if (conversationId != null) {
             conv = dc.createCriteria("conversation");
-            conv.add(Restrictions.like("conversationId",  conversationId.trim()));
+            conv.add(Restrictions.like("conversationId", conversationId.trim()));
         }
 
         if (nxChoreographyId != 0) {
@@ -991,7 +1142,7 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
         }
 
         if (messageId != null) {
-            dc.add(Restrictions.like("messageId", messageId.trim() ));
+            dc.add(Restrictions.like("messageId", messageId.trim()));
         }
         if (type != null) {
             dc.add(Restrictions.eq("type", type));
@@ -1717,4 +1868,10 @@ public class TransactionDAOImpl extends BasicDAOImpl implements TransactionDAO {
     public void releaseDBSession(Session session) {
         session.close();
     }
+
+    private Dialect getDatabaseDialect() {
+        return ((SessionFactoryImpl) Engine.getInstance()
+                .getBeanFactory().getBean("hibernateSessionFactory")).getDialect();
+    }
+
 }
